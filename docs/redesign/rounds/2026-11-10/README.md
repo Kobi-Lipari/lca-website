@@ -1,4 +1,4 @@
-# The newsletter, rounds 1 to 4 (Tuesday, November 10, 2026)
+# The newsletter, rounds 1 to 5 (Tuesday, November 10, 2026)
 
 Three rounds on one day for LCA's monthly newsletter. Rounds 1 and 2 are on canvas page "18 · Newsletter"; round 3, ten options for the president, is on page "19 · Newsletter options for the president" (canvas version 25). Round 1 drew four fuller directions (canvas version 23). Round 2 drew the simple version K then asked for, with a board of K's picks (canvas version 24). K picked on Tue, Nov 10, 2026: the simple version first; the page reads left to right as Your picks, Newsletter-E and its part 2, then round 1's A to D as ideas for later.
 
@@ -120,3 +120,17 @@ K kept page options 2, 4 and 5 and email options 1, 4 and 5 (the lead had sugges
 The counts are examples. The newsletter goes to accounts with an active membership (K's decision 28), about 155; the boards first said 243, the number of addresses on all accounts, and the lead corrected the three kept page boards.
 
 For K to decide, raised by note 4: people added by hand only when they asked to get email from LCA (recommended, as drawn), or anyone.
+
+## Round 5: tournament send-outs, and choosing the sender
+
+Two more asks from K the same evening: "template trouanment registration send outs that my president can see to solve the problem of helping clubs advertise their tournamnets", and "how we can select which email handle to use for the send (like selecting which club it is being sent on behalf of) making sure this is selected when using a club oriented template". `newsletter3-specs.json` carries them as `revision5`; `results/newsletter5-tournament-results.json` and `results/newsletter5-page-results.json` hold the runs. Canvas version 27: page 19 has three rows, the kept pages, the kept emails, and the tournament send-outs.
+
+**A club's tournament send-out** (`Newsletter-Tournament-1`, `-4` and `-5`), one in each kept email look. The sender is the club, "through the Louisiana Chess Association". The header names the club and the event; then two sentences from the club; the facts (when, where, sections, rounds and time control, entry fee, registration); one button, "Register on King Registration", with the same link as text under it; "Good to know"; who runs it, with replies reaching the club; and LCA's footer for tournament email with its one-click unsubscribe and the line "Sent through the Louisiana Chess Association for" the club. The tournament drawn, Baton Rouge Winter Open on Sat, Jan 9, 2027, is an example.
+
+**Choosing the sender**, on page options 2, 4 and 5. A "From" row under the Start from bar and above Subject, closed, reading "Louisiana Chess Association · LCA Newsletter". Opened, it lists LCA's own senders (LCA Newsletter, LCA Tournaments) and, under "On behalf of a club", a search and the clubs. Members see the club's name as the sender and their replies go to the club; LCA's footer and unsubscribe stay. The pinned templates are now five, two of them for tournaments: "Club tournament announcement", which asks which club, and "LCA tournament announcement". Choosing the club template outlines the From row with "Choose the club this is sent for", fills the letter with bracketed prompts, and keeps Send inactive ("Choose a club first") until a club is chosen.
+
+No address is shown for any sender: the address forms are the address map's choices, which K has not decided.
+
+For K to decide, with the lead's recommendation first: a club's tournament send-out goes to every member who gets LCA tournament email, on behalf of the club (or only to that club's own list); and for now LCA admins, the president and the media manager send on behalf of any club (a club's own representative later, for their club only).
+
+Page option 5's one sentence was changed by the lead: it no longer says the page fits one screen with no scrolling, since the writing area is now at least 520 px tall.

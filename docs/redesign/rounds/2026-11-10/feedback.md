@@ -47,3 +47,7 @@ in the options, make the "LCA NEWSLETTER" text at the header thing that is above
 Also, I want to make sure something like that 'past newsletters' button is very apparent so they can save alot of times by selecting one our our pinned templates or one of the last ones that they did. I also want  to make sure their writting section doesnt get squished by anytgin or is every to pull bigger so they can edit things by touch without much trouble (big edit area, so no big finger problems). and ensure that they have an easy way to import or manually add in new emails to send this too and preview those along with the originals and their total (keep these in our big email bank).
 
 Lets keep and iterate with these ntoes, on newletter page 2,4, 5 and the email 1, 4, 5
+
+On tournament send-outs and the sender:
+
+we should also create template trouanment registration send outs that my president can see to solve the problem of helping clubs advertise their tournamnets. we should also look at how we can select which email handle to use for the send (like selecting which club it is being sent on behalf of) making sure this is selected when using a club oriented template etc.

@@ -1,0 +1,344 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Tournament send-out 5</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/6107adb451dbab26ee5d89f4189b81f8">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1a2744}
+.nb-root{width:1440px;margin:0 auto;box-sizing:border-box;padding:36px 72px 48px;background:#ecebe6;color:#1a2744;font-family:Geist,system-ui,sans-serif}
+.nb-root *{box-sizing:border-box}
+.nb-strip{display:flex;align-items:center;justify-content:space-between;gap:32px;padding:24px 30px 26px;background:#ffffff;border:1px solid #dddcd4;border-radius:16px}
+.nb-strip .k-kicker{margin:0}
+.nb-name{margin:8px 0 0;font-size:40px;line-height:1.1;font-weight:700;letter-spacing:-.015em;color:#1a2744}
+.nb-sent{margin:8px 0 0;font-size:18px;line-height:1.5;color:#3d4556}
+.nb-strip .k-sample{flex:none}
+.nb-grid{display:grid;grid-template-columns:780px 390px;justify-content:space-between;align-items:start;margin-top:36px}
+.nb-col{display:flex;flex-direction:column;gap:14px}
+.nb-phones{display:flex;flex-direction:column;gap:48px}
+.nb-cap{margin:0;font-size:14px;line-height:1.4;color:#555c6b}
+
+.nm-win{background:#ffffff;border:1px solid #cfcec6;border-radius:14px;overflow:hidden;box-shadow:0 18px 40px rgba(16,24,43,.12)}
+.nm-top{display:flex;align-items:center;gap:8px;height:40px;padding:0 16px;background:#eeede8;border-bottom:1px solid #d9d8d1}
+.nm-top i{display:block;width:12px;height:12px;border-radius:50%;background:#cfcdc4}
+.nm-top span{flex:1;text-align:center;margin-right:52px;font-size:13px;font-weight:600;color:#3d4556}
+.nm-tools{display:flex;align-items:center;gap:6px;height:48px;padding:0 14px;border-bottom:1px solid #ecebe4}
+.nm-tools span{display:inline-flex;align-items:center;gap:7px;height:34px;padding:0 10px;border-radius:7px;font-size:13.5px;font-weight:600;color:#3d4556}
+.nm-tools .nm-gap{flex:1;padding:0}
+.nm-head{padding:20px 28px 18px;border-bottom:1px solid #ecebe4}
+.nm-head h3{margin:0;font-size:22px;line-height:1.25;font-weight:600;color:#1a2744}
+.nm-who{display:grid;grid-template-columns:42px minmax(0,1fr) auto;gap:12px;align-items:center;margin-top:14px}
+.nm-av{display:flex;align-items:center;justify-content:center;width:42px;height:42px;border-radius:50%;background:#1a2744}
+.nm-av svg{width:23px;height:23px;fill:#ffffff}
+.nm-who b{display:block;font-size:15px;line-height:1.3;color:#1a2744}
+.nm-who small{display:block;font-size:13px;line-height:1.4;color:#555c6b}
+.nm-when{font-size:13px;color:#3d4556;text-align:right}
+.nm-body{background:#f1efe8;padding:32px 0 36px}
+
+/* the email */
+.em{width:600px;margin:0 auto;background:#ffffff;font-family:Geist,Arial,sans-serif;font-size:16px;line-height:1.6;color:#1f2a40;box-shadow:0 0 0 1px #e8e5da}
+.em p{margin:0 0 12px}
+.em a{color:#1a2744;text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:1px}
+.em b{font-weight:700;color:#1a2744}
+.cv{padding:36px 36px 34px;background:#1a2744;border-bottom:4px solid #c8a94a;color:#ffffff}
+.cv-top{display:flex;align-items:center;gap:12px}
+.cv-top svg{width:30px;height:30px;fill:#ffffff;flex:none}
+.cv-top small{font-size:17px;line-height:1.1;letter-spacing:.08em;font-weight:700;color:#e7cf7a}
+.em .cv-month{display:flex;align-items:baseline;gap:16px;margin:26px 0 0;line-height:.9}
+.cv-month strong{font-size:76px;font-weight:800;letter-spacing:-.035em;color:#ffffff}
+.cv-month span{font-size:38px;font-weight:700;letter-spacing:-.02em;color:#c8a94a}
+.cv-rule{height:1px;background:rgba(255,255,255,.24);margin:28px 0 18px}
+.em .cv-in{margin:0 0 12px;font-size:12px;line-height:1;letter-spacing:.2em;font-weight:700;text-transform:uppercase;color:#c9d0de}
+.cv-toc{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:1fr 1fr;grid-auto-flow:column;grid-template-rows:repeat(3,auto);gap:9px 28px}
+.cv-toc li{display:flex;align-items:baseline;gap:11px;font-size:15px;line-height:1.35}
+.cv-toc span{width:12px;flex:none;font-size:13px;font-weight:700;color:#c8a94a;font-variant-numeric:tabular-nums}
+.em .cv-toc a{color:#ffffff;text-decoration-color:rgba(255,255,255,.5);text-underline-offset:4px}
+.em-in{padding:36px 36px 38px}
+.em-sec+.em-sec{margin-top:28px}
+.em-h{display:flex;align-items:center;gap:12px;margin:0 0 12px;font-size:20px;line-height:1.25;font-weight:700;letter-spacing:-.01em;color:#1a2744}
+.em-n{display:flex;align-items:center;justify-content:center;width:24px;height:24px;flex:none;border-radius:3px;background:#1a2744;color:#ffffff;font-size:13px;font-weight:700;line-height:1;letter-spacing:0}
+.em-l{margin:0 0 10px}
+.em .em-last{margin-bottom:0}
+.em-foot{padding:26px 36px 28px;background:#1a2744;font-size:14px;line-height:1.55;color:#ffffff}
+.em-foot p{margin:0}
+.em .em-foot p{margin:0}
+.em .em-foot .em-links{display:flex;flex-direction:column;align-items:flex-start;gap:8px;margin-top:12px}
+.em .em-links a{color:#ffffff;font-weight:600;text-decoration-color:rgba(255,255,255,.6)}
+
+/* phones */
+.np-sb{display:flex;justify-content:space-between;align-items:center;height:46px;padding:0 28px;font-size:15px;font-weight:600;color:#1a2744;flex:none}
+.np-sbi{display:flex;gap:6px;align-items:center}
+.np-sbi i{display:block;width:16px;height:10px;border-radius:2px;background:currentColor}
+.np-sbi i+i{width:23px;height:11px;border-radius:3px;border:1.5px solid currentColor;background:transparent}
+.np-nav{display:flex;justify-content:space-between;align-items:center;height:44px;padding:0 16px;font-size:16px;color:#2d5fb5;flex:none}
+.np-nav span{display:inline-flex;align-items:center;gap:4px}
+.np-mh{padding:4px 20px 14px;border-bottom:1px solid #ecebe4;flex:none}
+.np-mh h3{margin:0;font-size:20px;line-height:1.25;font-weight:600;color:#1a2744}
+.np-mh .nm-who{grid-template-columns:36px minmax(0,1fr);gap:10px;margin-top:12px}
+.np-mh .nm-av{width:36px;height:36px}
+.np-mh .nm-av svg{width:20px;height:20px}
+.np-mh .nm-who b{font-size:14.5px}
+.k-phone .em{width:auto;box-shadow:none;font-size:16px;line-height:1.6}
+.k-phone .em p{margin-bottom:11px}
+.k-phone .cv{padding:24px 20px 22px}
+.k-phone .cv-top svg{width:26px;height:26px}
+.k-phone .cv-top small{font-size:15px;letter-spacing:.08em}
+.k-phone .cv-month{margin-top:20px;gap:10px}
+.k-phone .cv-month strong{font-size:50px}
+.k-phone .cv-month span{font-size:25px}
+.k-phone .cv-rule{margin:20px 0 14px}
+.k-phone .cv-in{font-size:11px;margin-bottom:10px}
+.k-phone .cv-toc{grid-template-columns:1fr;grid-auto-flow:row;grid-template-rows:none;gap:7px}
+.k-phone .em-in{padding:24px 20px 16px}
+.k-phone .em-sec+.em-sec{margin-top:26px}
+.k-phone .em-h{font-size:19px;gap:10px;margin-bottom:10px}
+.k-phone .em-foot{padding:22px 20px 22px}
+.k-phone .em-foot p:first-child{text-wrap:balance}
+.k-phone .em .em-foot p{margin:0}
+.k-phone .em .em-foot .em-links{margin-top:12px}
+.np-bot{display:flex;justify-content:space-around;align-items:center;height:52px;border-top:1px solid #ecebe4;color:#2d5fb5;flex:none;background:#ffffff}
+.np-safe{flex:none;height:26px;display:flex;align-items:flex-end;justify-content:center;padding-bottom:8px;background:#ffffff}
+.np-safe i{display:block;width:124px;height:5px;border-radius:3px;background:#10182b}
+.np-scroll{display:flex;flex-direction:column}
+.np-end{flex:1;display:flex;flex-direction:column}
+.np-end .em-foot{flex:1}
+
+/* dark setting */
+.np-dark{background:#151719}
+.np-dark .np-sb{color:#ffffff}
+.np-dark .np-nav,.np-dark .np-bot{color:#8fb0f0}
+.np-dark .np-nav{position:relative;z-index:2;background:#151719;border-bottom:1px solid #2b2e33}
+.np-dark .np-bot{background:#151719;border-top-color:#2b2e33}
+.np-dark .np-safe{background:#151719}
+.np-dark .np-safe i{background:#ffffff}
+.np-dark .em{background:#151719;color:#e4e5e8}
+.np-dark .em b,.np-dark .em-h{color:#ffffff}
+.np-dark .em-n{background:#2f4475}
+.np-dark .em a{color:#c9d7f5}
+.np-dark .em .em-foot{background:#1a2744;border-top:4px solid #c8a94a}
+.np-dark .em .em-links a{color:#ffffff}
+
+/* tournament send-out additions */
+.nm-av.nm-club{background:#2f6b4f;font-family:Geist,Arial,sans-serif;font-size:15px;font-weight:700;letter-spacing:.02em;color:#ffffff}
+.np-mh .nm-av.nm-club{font-size:13px}
+.nm-who small+small{margin-top:1px}
+.cv-top{align-items:center}
+.em .cv-name{margin:24px 0 0;font-size:70px;line-height:.94;font-weight:800;letter-spacing:-.035em;color:#ffffff}
+.em .cv-date{display:flex;align-items:baseline;flex-wrap:wrap;gap:4px 14px;margin:18px 0 0;line-height:1.1}
+.cv-date strong{font-size:34px;font-weight:700;letter-spacing:-.015em;color:#c8a94a}
+.cv-date span{font-size:22px;font-weight:600;color:#dfe4ee}
+.cv-act{display:flex;align-items:center;justify-content:space-between;gap:20px;margin-top:28px;padding:18px 20px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.16);border-radius:6px}
+.em .cv-fee{margin:0;line-height:1.25;color:#dfe4ee;font-size:15px}
+.cv-fee strong{display:block;font-size:34px;line-height:1.05;font-weight:800;letter-spacing:-.02em;color:#ffffff}
+.em .t-btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;height:54px;padding:0 24px;flex:none;background:#c8a94a;border-radius:4px;font-family:Geist,Arial,sans-serif;font-size:17px;font-weight:700;line-height:1;color:#1a2744;text-decoration:none;white-space:nowrap}
+.t-btn svg{width:17px;height:17px;stroke-width:2.2}
+.gl{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:96px minmax(0,1fr);gap:9px 16px}
+.gl dt{font-size:12.5px;line-height:1.6;letter-spacing:.12em;font-weight:700;text-transform:uppercase;color:#c8a94a}
+.gl dd{margin:0;font-size:15px;line-height:1.5;color:#ffffff}
+.em-h .em-n svg{width:15px;height:15px;fill:none;stroke:#ffffff;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.tf{display:grid;grid-template-columns:1fr 1fr;gap:0 28px;margin:0}
+.tf-c{padding:14px 0 16px;border-top:1px solid #dcd8cc}
+.tf-c:nth-child(-n+2){border-top:2px solid #1a2744}
+.tf-c dt{margin:0 0 5px;font-size:12.5px;line-height:1.3;letter-spacing:.12em;font-weight:700;text-transform:uppercase;color:#1a2744}
+.tf-c dd{margin:0;font-size:16px;line-height:1.55}
+.tf-big{font-size:22px;line-height:1;font-weight:800;letter-spacing:-.01em;color:#1a2744}
+.ta{margin:6px 0 0;padding:26px 28px 24px;background:#1a2744;border-bottom:4px solid #c8a94a;color:#ffffff}
+.em .ta-say{margin:0 0 16px;font-size:17px;line-height:1.45;color:#ffffff}
+.ta-say b{color:#ffffff !important}
+.em .ta-alt{margin:14px 0 0;font-size:14.5px;line-height:1.55;color:#dfe4ee}
+.em .ta-alt a{color:#ffffff;font-weight:600;text-decoration-color:rgba(255,255,255,.6)}
+.em .em-sent{margin-top:16px;padding-top:14px;border-top:1px solid rgba(255,255,255,.2);font-size:13px;line-height:1.5;color:#c9d0de}
+.em .em-foot .em-sent{margin-top:16px}
+
+/* phone */
+.k-phone .cv-top{align-items:flex-start}
+.k-phone .cv-top small span{display:block}
+.k-phone .em .cv-name{margin-top:18px;font-size:46px}
+.k-phone .em .cv-date{margin-top:12px;gap:2px 10px}
+.k-phone .cv-date strong{font-size:25px}
+.k-phone .cv-date span{font-size:17px}
+.k-phone .cv-act{display:block;margin-top:18px;padding:14px 14px 14px}
+.k-phone .cv-fee strong{display:inline;font-size:28px;margin-right:6px}
+.k-phone .em .cv-fee{font-size:15px}
+.k-phone .em .t-btn{display:flex;width:100%;margin-top:12px;height:52px;padding:0 12px;font-size:16.5px}
+.k-phone .gl{grid-template-columns:84px minmax(0,1fr);gap:7px 12px}
+.k-phone .gl dt{font-size:12px}
+.k-phone .gl dd{font-size:15px}
+.k-phone .ta{margin:0;padding:20px 18px 18px}
+.k-phone .em .ta-say{font-size:16px;margin-bottom:14px}
+.k-phone .em .ta-alt{font-size:14px}
+.k-phone .em .em-sent{font-size:12.5px}
+.np-dark .ta{background:#1a2744}
+.np-dark .em .ta-alt a{color:#ffffff}
+.np-dark .em .em-foot .em-sent{color:#c9d0de}
+.cv-act .cv-fee{flex:1;min-width:0}
+.cv-fee strong{white-space:nowrap}
+.np-dark .em-sec+.em-sec{margin-top:18px}
+.np-dark .ta{padding:14px 16px 14px}
+.np-dark .em .ta-say{margin-bottom:12px;font-size:15.5px}
+.np-dark .em .t-btn{margin-top:0;height:50px}
+.np-dark .em .ta-alt{margin-top:10px}
+.np-dark .em-h{margin-bottom:8px}
+.np-dark .em p.em-l{margin-bottom:6px}
+.k-phone .np-dark .em-foot,.np-dark .em-foot{padding:18px 20px 16px}
+.np-dark .em .em-foot .em-links{margin-top:10px;gap:6px}
+.np-dark .em .em-foot .em-sent{margin-top:12px;padding-top:10px}
+.cv-fee span{white-space:nowrap}
+.em .cv-act .t-btn{padding:0 20px;font-size:16.5px}
+.cv-fee strong{margin-bottom:4px}
+.np-dark .em a.t-btn{color:#1a2744}
+.k-phone .cv-fee strong{display:block;margin:0 0 3px}
+.k-phone .em .cv-act .t-btn{padding:0 12px}
+.k-phone .np-dark .em .t-btn{height:52px}
+</style>
+</helmet>
+<div class="nb-root" style="width:1440px;height:2400px">
+
+<header class="nb-strip" aria-label="About this option">
+<div><p class="k-kicker">LCA Newsletter · A tournament send-out · In the look of email option 5</p>
+<h1 class="nb-name">A club's tournament announcement</h1>
+<p class="nb-sent">A ready-made email a club can send through LCA to announce its tournament and open registration.</p></div>
+<span class="k-sample">Sample data</span>
+</header>
+
+<div class="nb-grid">
+<section class="nb-col" aria-label="On a computer">
+<div class="nm-win">
+<div class="nm-top"><i></i><i></i><i></i><span>Baton Rouge Winter&nbsp;Open&nbsp;· Sat,&nbsp;Jan&nbsp;9,&nbsp;2027&nbsp;· registration is open</span></div>
+<div class="nm-tools">
+<span><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 6L4 12l6 6"></path><path d="M4 12h10a6 6 0 0 1 6 6v1"></path></svg>Reply</span>
+<span><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 6l6 6-6 6"></path><path d="M20 12H10a6 6 0 0 0-6 6v1"></path></svg>Forward</span>
+<span class="nm-gap"></span>
+<span><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="5" rx="1"></rect><path d="M5 9v10h14V9"></path><path d="M10 13h4"></path></svg>Archive</span>
+<span><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16"></path><path d="M9 7V4h6v3"></path><path d="M6 7l1 13h10l1-13"></path></svg>Delete</span>
+</div>
+<div class="nm-head"><h3>Baton Rouge Winter&nbsp;Open&nbsp;· Sat,&nbsp;Jan&nbsp;9,&nbsp;2027&nbsp;· registration is open</h3>
+<div class="nm-who"><span class="nm-av nm-club" aria-hidden="true">BR</span><span><b>Baton Rouge Chess Club</b><small>through the Louisiana Chess Association</small><small>to me</small></span><span class="nm-when">Mon,&nbsp;Dec&nbsp;7,&nbsp;2026, 9:00&nbsp;AM</span></div></div>
+<div class="nm-body"><article class="em" aria-label="The Baton Rouge Winter Open announcement">
+<div class="cv">
+<div class="cv-top"><svg viewBox="0 0 100 100" role="img" aria-label="LCA rook"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><small>TOURNAMENT · FROM BATON ROUGE CHESS CLUB</small></div>
+<h2 class="cv-name">Baton Rouge<br>Winter Open</h2>
+<p class="cv-date"><strong>Sat,&nbsp;Jan&nbsp;9,&nbsp;2027</strong><span>· Baton&nbsp;Rouge</span></p>
+<div class="cv-rule"></div>
+<p class="cv-in">At a glance</p>
+<dl class="gl">
+<dt>Rounds</dt><dd>Four, at 9:00&nbsp;AM, 11:30&nbsp;AM, 2:00&nbsp;PM and 4:30&nbsp;PM</dd>
+<dt>Sections</dt><dd>Open, Under&nbsp;1400, and Scholastic (K&nbsp;to&nbsp;12)</dd>
+<dt>Entry</dt><dd>$25 through Sat,&nbsp;Jan&nbsp;2,&nbsp;2027, then $35</dd>
+<dt>Closes</dt><dd>Fri,&nbsp;Jan&nbsp;8,&nbsp;2027 at 8:00&nbsp;PM, on King Registration</dd>
+</dl>
+</div>
+<div class="em-in">
+<section class="em-sec">
+<p>Baton Rouge Chess Club warmly invites you to the Baton Rouge Winter Open, a one-day rated tournament to start the new year.</p>
+<p class="em-last">Players of every level are welcome, and young players have a section of their own. We hope to see you there.</p>
+</section>
+<section class="em-sec">
+<h4 class="em-h"><span class="em-n"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2"></rect><path d="M4 10h16"></path><path d="M9 3v4"></path><path d="M15 3v4"></path></svg></span>The details</h4>
+<dl class="tf">
+<div class="tf-c"><dt>When</dt><dd><b>Sat,&nbsp;Jan&nbsp;9,&nbsp;2027.</b> Rounds at 9:00&nbsp;AM, 11:30&nbsp;AM, 2:00&nbsp;PM and 4:30&nbsp;PM.</dd></div>
+<div class="tf-c"><dt>Where</dt><dd>Baton Rouge; the exact place is on the registration page.</dd></div>
+<div class="tf-c"><dt>Sections</dt><dd>Open, Under&nbsp;1400, and Scholastic (K&nbsp;to&nbsp;12).</dd></div>
+<div class="tf-c"><dt>Rounds and time control</dt><dd>Four rounds, game in 45 minutes with a 5&nbsp;second delay, US&nbsp;Chess rated.</dd></div>
+<div class="tf-c"><dt>Entry fee</dt><dd><span class="tf-big">$25</span> through Sat,&nbsp;Jan&nbsp;2,&nbsp;2027, then <span class="tf-big">$35</span>.</dd></div>
+<div class="tf-c"><dt>Registration</dt><dd>On King Registration, closes <b>Fri,&nbsp;Jan&nbsp;8,&nbsp;2027 at 8:00&nbsp;PM</b>.</dd></div>
+</dl>
+</section>
+<section class="em-sec"><div class="ta"><a class="t-btn" href="#">Register on King Registration <svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17L17 7"></path><path d="M8 7h9v9"></path></svg></a>
+<p class="ta-alt">If the button does not show, use this link: <a href="#">https://www.kingregistration.com/…</a></p></div></section>
+<section class="em-sec">
+<h4 class="em-h"><span class="em-n"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span>Good to know</h4>
+<p class="em-l">Bring a set and a clock if you have them.</p>
+<p class="em-l em-last">A current US&nbsp;Chess membership is needed to play.</p>
+</section>
+<section class="em-sec">
+<h4 class="em-h"><span class="em-n"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 6L4 12l6 6"></path><path d="M4 12h10a6 6 0 0 1 6 6v1"></path></svg></span>Who runs it</h4>
+<p class="em-last">Run by Baton Rouge Chess Club. Questions? Reply to this email and it reaches the club.</p>
+</section>
+</div>
+<footer class="em-foot"><p>You get tournament email from LCA because you are an LCA member.</p>
+<p class="em-links"><a href="#">Unsubscribe from tournament email</a><a href="#">Choose which LCA emails you get</a><a href="#">LCA on Facebook ↗</a></p>
+<p class="em-sent">Sent through the Louisiana Chess Association for Baton Rouge Chess Club.</p></footer>
+</article></div>
+</div>
+<p class="nb-cap">On a computer</p>
+</section>
+
+<div class="nb-phones">
+<section class="nb-col" aria-label="On a phone">
+<div class="k-phone"><div class="k-phone-screen">
+<div class="np-sb"><span>9:04</span><span class="np-sbi"><i></i><i></i></span></div>
+<div class="np-nav"><span><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"></path></svg>Inbox</span><span><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 15l7-7 7 7"></path></svg><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"></path></svg></span></div>
+<div class="np-mh"><h3>Baton Rouge Winter&nbsp;Open&nbsp;· Sat,&nbsp;Jan&nbsp;9,&nbsp;2027&nbsp;· registration is open</h3><div class="nm-who"><span class="nm-av nm-club" aria-hidden="true">BR</span><span><b>Baton Rouge Chess Club</b><small>through the Louisiana Chess Association</small><small>to me · Mon,&nbsp;Dec&nbsp;7,&nbsp;2026, 9:00&nbsp;AM</small></span></div></div>
+<div class="k-phone-scroll"><div class="em">
+<div class="cv">
+<div class="cv-top"><svg viewBox="0 0 100 100" role="img" aria-label="LCA rook"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><small><span>TOURNAMENT · FROM</span><span>BATON ROUGE CHESS CLUB</span></small></div>
+<h2 class="cv-name">Baton Rouge<br>Winter Open</h2>
+<p class="cv-date"><strong>Sat,&nbsp;Jan&nbsp;9,&nbsp;2027</strong><span>· Baton&nbsp;Rouge</span></p>
+<div class="cv-rule"></div>
+<p class="cv-in">At a glance</p>
+<dl class="gl">
+<dt>Rounds</dt><dd>Four, at 9:00&nbsp;AM, 11:30&nbsp;AM, 2:00&nbsp;PM and 4:30&nbsp;PM</dd>
+<dt>Sections</dt><dd>Open, Under&nbsp;1400, and Scholastic (K&nbsp;to&nbsp;12)</dd>
+<dt>Entry</dt><dd>$25 through Sat,&nbsp;Jan&nbsp;2,&nbsp;2027, then $35</dd>
+<dt>Closes</dt><dd>Fri,&nbsp;Jan&nbsp;8,&nbsp;2027 at 8:00&nbsp;PM, on King Registration</dd>
+</dl>
+</div>
+<div class="em-in">
+<section class="em-sec">
+<p>Baton Rouge Chess Club warmly invites you to the Baton Rouge Winter Open, a one-day rated tournament to start the new year.</p>
+<p class="em-last">Players of every level are welcome, and young players have a section of their own. We hope to see you there.</p>
+</section>
+</div>
+</div></div>
+<div class="np-bot"><svg class="k-i-lg" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="5" rx="1"></rect><path d="M5 9v10h14V9"></path><path d="M10 13h4"></path></svg><svg class="k-i-lg" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16"></path><path d="M9 7V4h6v3"></path><path d="M6 7l1 13h10l1-13"></path></svg><svg class="k-i-lg" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 6L4 12l6 6"></path><path d="M4 12h10a6 6 0 0 1 6 6v1"></path></svg><svg class="k-i-lg" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20l4-1L19 8l-3-3L5 16z"></path></svg></div>
+<div class="np-safe"><i></i></div>
+</div></div>
+<p class="nb-cap">On a phone</p>
+</section>
+
+<section class="nb-col" aria-label="On a phone, dark setting">
+<div class="k-phone" style="border-color:#000000"><div class="k-phone-screen np-dark">
+<div class="np-sb"><span>9:06</span><span class="np-sbi"><i></i><i></i></span></div>
+<div class="np-nav"><span><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"></path></svg>Inbox</span><span><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 15l7-7 7 7"></path></svg><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"></path></svg></span></div>
+<div class="k-phone-scroll np-scroll"><div class="np-end em">
+<div class="em-in" style="padding-top:12px">
+<section class="em-sec"><div class="ta"><a class="t-btn" href="#">Register on King Registration <svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17L17 7"></path><path d="M8 7h9v9"></path></svg></a>
+<p class="ta-alt">If the button does not show, use this link: <a href="#">https://www.kingregistration.com/…</a></p></div></section>
+<section class="em-sec">
+<h4 class="em-h"><span class="em-n"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span>Good to know</h4>
+<p class="em-l">Bring a set and a clock if you have them.</p>
+<p class="em-l em-last">A current US&nbsp;Chess membership is needed to play.</p>
+</section>
+<section class="em-sec">
+<h4 class="em-h"><span class="em-n"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 6L4 12l6 6"></path><path d="M4 12h10a6 6 0 0 1 6 6v1"></path></svg></span>Who runs it</h4>
+<p class="em-last">Run by Baton Rouge Chess Club. Questions? Reply to this email and it reaches the club.</p>
+</section>
+</div>
+<footer class="em-foot"><p>You get tournament email from LCA because you are an LCA member.</p>
+<p class="em-links"><a href="#">Unsubscribe from tournament email</a><a href="#">Choose which LCA emails you get</a><a href="#">LCA on Facebook ↗</a></p>
+<p class="em-sent">Sent through the Louisiana Chess Association for Baton Rouge Chess Club.</p></footer>
+</div></div>
+<div class="np-bot"><svg class="k-i-lg" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="5" rx="1"></rect><path d="M5 9v10h14V9"></path><path d="M10 13h4"></path></svg><svg class="k-i-lg" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16"></path><path d="M9 7V4h6v3"></path><path d="M6 7l1 13h10l1-13"></path></svg><svg class="k-i-lg" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 6L4 12l6 6"></path><path d="M4 12h10a6 6 0 0 1 6 6v1"></path></svg><svg class="k-i-lg" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20l4-1L19 8l-3-3L5 16z"></path></svg></div>
+<div class="np-safe"><i></i></div>
+</div></div>
+<p class="nb-cap">On a phone, dark setting</p>
+</section>
+</div>
+</div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":2400}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

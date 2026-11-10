@@ -1,0 +1,187 @@
+{
+ "label": "newsletter-round-5-page",
+ "set": "page",
+ "results": [
+  {
+   "board": {
+    "n": 2,
+    "name": "Write beside the email",
+    "file": "Newsletter-Page-2.dc.html"
+   },
+   "drawn": {
+    "file": "Newsletter-Page-2.dc.html",
+    "height": 4750,
+    "changes": [
+     "Note D on the computer page: a From row directly under the Start from bar and above Subject. It has the label \"From\", a wide closed drop-down reading \"Louisiana Chess Association · LCA Newsletter\" and the grey words \"Who members see as the sender.\" beside it. It uses the Subject field's style and its 48px height.",
+     "The sender line in the side preview and in the phone preview now reads \"Louisiana Chess Association · LCA Newsletter\", matching the From row. On the phone, \"LCA Newsletter\" is kept together on one line.",
+     "The tablet and the phone page now show the From row too: on the tablet between the Start from bar and the tools, on the phone above Subject with the grey words on the label line. The tablet is now 590 tall instead of 580 so the From row fits.",
+     "Note E: in the Start from chooser, Pinned templates now has five cards: Monthly newsletter; Club tournament announcement (\"For a club's event. Asks which club.\" with a \"For a club\" tag); LCA tournament announcement (\"For an LCA event\"); Results and thanks; Short notice. The template thumbnails are slightly smaller and the column is wider (444px), so the names no longer wrap.",
+     "New picture \"After pressing From\": the field open with a navy outline and an up arrow, and the list below it. \"From LCA\" holds LCA Newsletter (ticked, with the word \"Chosen\") and LCA Tournaments. \"On behalf of a club\" holds a \"Find a club\" search and the five clubs with the colour dots from News-Final (Baton Rouge #2f6b4f, Bunkie #7a4a9a, Picayune #2f6f9f, New Orleans Westbank #6b3f8f, Casa de Ajedrez #b5532c). Under them are the two grey lines.",
+     "New picture \"After choosing Club tournament announcement\": the top of the writing area with \"Send a test to me\" and an inactive \"Choose a club first\" button with a lock icon. The From field is outlined in navy and reads \"Choose the club this is sent for\", with the tag \"Needed before you can send\". The subject has bracketed blanks, and the letter shows the seven bracketed prompts in grey, each on its own line. The caption's grey line reads \"Pick the club and the sender, the preview and the footer change with it.\"",
+     "The row of smaller pictures is now two rows. Row 1: Start from (444px), Make bigger (304px, scaled down to fit), Add or review people (404px). Row 2: After pressing From (424px) and the club template picture (752px). Every picture has its caption.",
+     "Counts and the \"Sample data\" tag: the counts were already 167 people (155 members and 12 you added) and stay that way; there is still exactly one \"Sample data\" tag.",
+     "Writing box set to its 520px minimum (was 528), and the gaps between frames tightened from 32px to 26px, so the board stays under the 4800 limit.",
+     "The side preview now also shows the Scholastic and Board business sections, word for word from Email option 1. The left column grew, and without them the preview would have left an empty patch at its foot.",
+     "The root and the $preview height are both 4750: the rendered content ends at 4741 including the bottom padding. Checked: no overflow, every tag closed, no 243, no USCF and no em or en dashes."
+    ],
+    "note": "Option 2 now has a From choice under the Start from bar, in the same style as the Subject field, and the email preview always shows the chosen sender. Two new pictures show the From list (LCA's own senders, then five clubs) and the Club tournament announcement template asking for its club before it can be sent.",
+    "unresolved": [
+     "The tablet is 590 tall, not the \"about 620\" the earlier notes asked for. I took 30px off it to keep the whole board under 4800 (it renders at 4741).",
+     "The club template picture keeps a Subject field with grey blanks (\"[Tournament name] · [Day and date] · registration is open\"). The spec does not give the template's subject, so these words are mine.",
+     "The rows in the open From list are 40px tall, slightly under the 44px used for the writing tools. A desktop drop-down is not covered by the 44px touch rule, but if K wants 44px there the board needs about 30px more height."
+    ]
+   },
+   "review": {
+    "file": "Newsletter-Page-2.dc.html",
+    "height": 4750,
+    "counts": "I checked the visible text after stripping tags and SVG. The member count is 155 everywhere and 243 and 255 appear nowhere. \"167 people will get it: 155 members and 12 you added\" shows on the computer page and in the Add or review people panel. \"Send to 167 people\" shows on the computer page and in the Make bigger picture. The panel tabs read \"Members · 155\", \"Added by you · 12\" and \"Left out · 3\". The past newsletter card reads \"Sent Mon, Nov 16, 2026 to 155 members\". The import line reads \"14 found · 12 added · 1 is already a member · 1 unsubscribed earlier, so left out\". There is one \"Sample data\" tag. There are no em or en dashes, no USCF, no \".5\" and no sender email address; the only addresses shown are made-up example.com addresses for people added by hand. The Start from chooser has five pinned templates: Monthly newsletter; Club tournament announcement, with the \"For a club\" tag in words; LCA tournament announcement; Results and thanks; Short notice. The From picture lists the five clubs with their dot colours, which match News-Final exactly (#2f6b4f, #7a4a9a, #2f6f9f, #6b3f8f, #b5532c). Content ends at 4745px, so the declared height is 4750 on both the root and $preview, under the 4800 limit. The tag check found only the usual bare data-dc-script attribute that every board uses.",
+    "changes": [
+     "Phone page: the From drop-down wrapped onto two lines (58px tall, against the Subject field's 44px). I moved the From row out of the 'Your letter' card so it sits directly under the Start from bar at the page's full width. It is now one line at 14px and 44px tall, the same as Subject, and reads 'Louisiana Chess Association · LCA Newsletter' in full (measured 290px of text with no cut-off). The grey words 'Who members see as the sender.' stay on the label line.",
+     "Tablet: there was no Subject field, so the From row was not 'above Subject'. I added From and Subject as two 48px rows with their labels on the left, in that order between the Start from bar and the writing tools, with 'Who members see as the sender.' beside From.",
+     "Tablet: I made it 616 tall (was 590), tightened its top spacing a little and shortened the bottom fade from 70px to 30px. The selected word 'Sulphur', its finger handles and the Bold, Link, Copy pop-up are now clear instead of washed out by the fade.",
+     "Add or review people panel: I cut the list of added people from three rows to two, keeping both kinds of grey note ('Typed in today' and 'From the list imported Mon, Nov 23, 2026'), and changed the line under it to 'and 10 more · Show all 12'. This shortens the row of three pictures enough to pay for the taller tablet and keep the board under 4800.",
+     "Checked and left as they were, because they were already right: the computer From row sits under the Start from bar and above Subject, at 48px like Subject, and the preview's sender line reads the same. The 'After pressing From' picture has both groups, LCA Newsletter marked Chosen with a tick, 'Find a club', the five clubs and both grey lines word for word. The 'After choosing Club tournament announcement' picture has the navy-outlined From row, 'Choose the club this is sent for', the 'Needed before you can send' tag, the seven bracketed prompts in order, the inactive 'Choose a club first' button and the grey line. The writing area is 762 of 1200px (63.5 percent) with a 520px text area, and Make bigger, Pull to make taller, Hide, the 44px tools, the larger LCA NEWSLETTER line, More options and the arrow on Send are all still there."
+    ],
+    "remaining_concerns": [
+     "The phone From drop-down uses 14px type next to the 16px Subject field. That is the largest size at which the full sender wording fits on one line inside a 390-wide phone.",
+     "The phone From row now sits outside the white 'Your letter' card, next to the Start from bar, while on the computer and the tablet it is inside the letter area. The order is the same everywhere (Start from, then From, then Subject), but the grouping on the phone differs slightly.",
+     "The 'After pressing Make bigger' picture is still a small thumbnail (about 36 percent size), so its own text cannot be read closely. That fits the brief's 'small', but it is the least finished-looking of the five pictures.",
+     "The previous designer left a measure.mjs and other files in the shared render folder, so I kept my work in a private subfolder at <scratchpad>/render/np2r. I also briefly copied a measuring script into docs-wt/docs/redesign/tools by mistake and deleted it straight away. git status in docs-wt now shows only an earlier change to HANDOFF.md, which I did not make."
+    ]
+   }
+  },
+  {
+   "board": {
+    "n": 4,
+    "name": "The letter on the desk",
+    "file": "Newsletter-Page-4.dc.html"
+   },
+   "drawn": {
+    "file": "Newsletter-Page-4.dc.html",
+    "height": 4750,
+    "changes": [
+     "Note D, From row: added to the letter sheet directly above Subject, in the same dashed-rule field style. Both rows are now a fixed 48px tall, with matching label widths so the From drop-down and the Subject text line up. The row holds the label \"From:\", a closed drop-down reading \"Louisiana Chess Association · LCA Newsletter\" and the grey words \"Who members see as the sender.\"",
+     "Added the same From row to the Make bigger picture, the tablet and the phone page. On the phone the drop-down shows two lines, \"Louisiana Chess Association\" over \"LCA Newsletter\", at 44px tall for touch.",
+     "The sender line in both email previews (the small phone at the side and the See the email phone) now reads \"Louisiana Chess Association\" over \"LCA Newsletter · to you\", so it matches the From row.",
+     "The computer window is 48px taller (1176 to 1224) to make room for the From row. The writing area is still 528px tall, and Pull to make taller still clears the bottom bar.",
+     "Note E, Start from chooser: Pinned templates now has five cards: Monthly newsletter; Club tournament announcement (\"For a club's event. Asks which club.\" with a small navy tag \"For a club\"); LCA tournament announcement (\"For an LCA event\"); Results and thanks; Short notice. Cards were tightened a little and the first column widened from 384 to 428px so the cards wrap less.",
+     "Make bigger picture: shrunk from 0.44 to 0.40 of full size (now 320 wide) to make room for the wider chooser.",
+     "New second row of smaller pictures. First: \"After pressing From\", with the drop-down open. Group \"From LCA\" has LCA Newsletter (ticked, with the word \"Chosen\") and LCA Tournaments. Group \"On behalf of a club\" has a Find a club search field and the five clubs with News-Final's colour dots: Baton Rouge #2f6b4f, Bunkie #7a4a9a, Picayune #2f6f9f, New Orleans Westbank #6b3f8f, Casa de Ajedrez #b5532c. The two grey lines from the spec sit under the groups.",
+     "Second: \"After choosing Club tournament announcement\", the top of the letter on the desk. The From row is outlined in navy, its drop-down reads \"Choose the club this is sent for\" and an amber tag in words says \"Needed before you can send\". The seven bracketed prompts sit in grey, each on its own line. In a strip at the foot, the Send button is greyed out with a lock and reads \"Choose a club first\". The caption's grey line reads \"Pick the club and the sender, the preview and the footer change with it.\"",
+     "Tablet: band 84 to 74px, a little less top padding and a 650px crop (spec says about 620). This keeps the selected word, its finger handles and the From row in view now that the From row pushes the page down.",
+     "Counts were already 155 members and 167 people (167 people will get it: 155 members and 12 you added) from an earlier pass. Checked: no 243 anywhere.",
+     "Root height and $preview height changed from 4000 to 4750 (rendered content ends at 4723 plus 24 padding). Checked: tags balanced, no em or en dashes, no USCF, no holes, no iframes."
+    ],
+    "note": "Option 4 now has a From choice on the letter, right above Subject, and the email preview's sender line matches it. Two new pictures show the From list (LCA's own senders, then the five clubs) and the club tournament template, which cannot be sent until a club is chosen.",
+    "unresolved": [
+     "In this option Subject sits on the letter sheet under the floating writing tools, so the From row is directly above Subject but not directly under the Start from bar (the tools are between them). I chose this so From matches the Subject field's style and keeps the desk layout. The alternative would be to move the tools.",
+     "The club tournament template's band shows \"TOURNAMENT\" with a greyed \"[Tournament name]\", and its Subject shows \"[Tournament name] · registration is open\". The spec does not give this wording. The words are mine, covered by the Sample data tag.",
+     "The tablet picture is cropped at 650px tall, against the spec's \"about 620\", so the selection handles stay visible."
+    ]
+   },
+   "review": {
+    "file": "Newsletter-Page-4.dc.html",
+    "height": 4750,
+    "counts": "Content measured 4743px with the root height removed, so the root and $preview are declared 4750 (under 4800). The count is 155 members everywhere: the dock and the Make bigger dock say \"167 people will get it: 155 members and 12 you added\", the Send buttons say \"Send to 167 people\", the people panel has the \"Members · 155\" tab and the November card says \"Sent Mon, Nov 16, 2026 to 155 members\". 243 and 255 appear nowhere in the copy. There is exactly 1 \"Sample data\" tag. The From row shows on 4 page views (computer, Make bigger, tablet, phone) and outlined once in the club template picture. The Start from chooser has 5 pinned templates and 2 past newsletters. The From menu has 2 LCA senders and 5 clubs, each with a colour dot. No em or en dashes, no USCF, no x.5 numbers, no {{holes}}, iframes or animation. Every tag is closed. The only addresses are 5 at example.com, all people being added, never a sender.",
+    "changes": [
+     "D: On the computer page the From row was inside the letter sheet, under the navy band, not directly under the Start from bar. I moved it to the desk directly under the Start from bar and above the floating tools, so it sits above the sheet's Subject row. It is a 48px row, the same height as the Subject row: the label \"From\", a wide 440px drop-down reading \"Louisiana Chess Association · LCA Newsletter\" with a chevron, and the grey words \"Who members see as the sender.\"",
+     "D: The same move on the tablet (under the Start from bar, above the tools) and on the phone page (under the Start from bar). On the phone it is a 52px drop-down with the grey words underneath, and the phone sheet's Subject row was set to the same 52px. In the Make bigger picture the From row now sits at the top of the desk, above the tools.",
+     "E: In the After choosing Club tournament announcement picture, the navy-outlined From row (\"Choose the club this is sent for\", with the \"Needed before you can send\" tag) moved out of the sheet to above it, matching the new order. The bracketed prompts, the inactive \"Choose a club first\" Send button and the grey line under the picture are unchanged.",
+     "Labels \"From:\" and \"Subject:\" became \"From\" and \"Subject\" throughout, so the field labels match.",
+     "Computer letter body went from 528px to 520px (the scroll track to match), so the grab handle still clears the bar at the foot. The writing area is still 750 of 1200 (62.5 percent), and the sheet with its band and Subject row is about 668px tall.",
+     "Captions: the tablet text and the phone text now mention the From row, and the phone page caption became \"The From row on top, See the email at the foot.\" (it no longer wraps).",
+     "Spacing: the tablet crop went from 650 to 620 tall, the gaps between sections from 36/40 to 32/36. This keeps the board under 4800; it measured 4789 before."
+    ],
+    "remaining_concerns": [
+     "On the phone, the closed From drop-down shows the sender on two lines (\"Louisiana Chess Association\" in bold, then \"LCA Newsletter\") and not one line with \" · \" between them. The full one-line text does not fit at 390px wide with a 44px-or-larger touch target. The words are the same; only the line break differs from the computer and tablet.",
+     "On the phone page, the From row and its grey line push the letter down, so only the first heading of the letter shows above See the email. Each control is still finger-sized and nothing is clipped.",
+     "The club colour dots (Baton Rouge green #2f6b4f, Bunkie purple #7a4a9a, Picayune blue #2f6f9f, Westbank purple #6b3f8f, Casa de Ajedrez orange #b5532c) were kept as the earlier designer set them. Bunkie and Westbank are two similar purples, and I could not check them against News-Final from inside this task."
+    ]
+   }
+  },
+  {
+   "board": {
+    "n": 5,
+    "name": "Everything on one screen",
+    "file": "Newsletter-Page-5.dc.html"
+   },
+   "drawn": {
+    "file": "Newsletter-Page-5.dc.html",
+    "height": 4750,
+    "changes": [
+     "Computer page: added a From row directly under the Start from bar and above Subject. It is drawn in the same labelled-field style as Subject, at the same 486px width and 46px height, with its label cell matched to Subject's so the two values line up. It is a closed drop-down reading 'Louisiana Chess Association · LCA Newsletter', with the grey words 'Who members see as the sender.' beside it. The write, check and send bar is now a two-row grid: step 1 (Write) covers From and Subject, and steps 2 (Check) and 3 (Send) sit beside Subject as before.",
+     "Side preview: the sender line now matches the From choice and wraps cleanly as 'Louisiana Chess Association ·' then 'LCA Newsletter'. The phone preview's sender line was changed the same way.",
+     "Start from chooser: Pinned templates now has five cards: Monthly newsletter; Club tournament announcement ('For a club's event. Asks which club.' plus a 'For a club' tag in words); LCA tournament announcement ('For an LCA event'); Results and thanks; Short notice.",
+     "New second row of smaller pictures, under the first three and lined up with the same grid. 'After pressing From' (384 wide) shows the drop-down open: From LCA has LCA Newsletter (ticked, with the word Chosen) and LCA Tournaments; On behalf of a club has a 'Find a club' search box and the five clubs with their News-Final colour dots. The two grey lines sit under the groups.",
+     "'After choosing Club tournament announcement' (792 wide) is drawn at true size. The From field has a navy outline and reads 'Choose the club this is sent for', with a 'Needed before you can send' tag. The Subject holds bracketed blanks. Send a test to me is still available, and Send is inactive, reading 'Choose a club first' with a lock icon. Below that is the letter box with its full tools and the seven bracketed prompts in grey, each on its own line. The caption is the required grey line.",
+     "Tablet: added the From row (same field style, with the grey note beside it) above Subject, with step 1 covering both.",
+     "Phone page: added a From field above Subject, with the value wrapping to two lines and the grey note under it. The caption now mentions who it is from.",
+     "Counts checked: 167 people (155 members and 12 you added) everywhere. Neither 243 nor 255 appears anywhere.",
+     "Root height and $preview height set to 4750, from a rendered content bottom of 4746, which is under the 4800 limit."
+    ],
+    "note": "Option 5 now has a From choice above the subject, so members see who sent it, either LCA's own senders or a club the email goes out for. The Club tournament announcement template asks for the club and keeps Send locked until one is chosen.",
+    "unresolved": [
+     "The 'After pressing From' picture is 384 wide, too narrow for the full sender name in the labelled-field style, so its open field puts the word 'From' above the field instead of in a label cell. The From row on the page itself uses the same labelled style as Subject.",
+     "In the phone preview sheet, the two-line sender name pushes the email down about 20px, so the last paragraph shown ('and bring one new player to a club night.') now sits partly under the fade at the Back to writing bar.",
+     "The board's own tagline still says 'Everything fits on one screen with no scrolling', which is kept word for word from the spec, although the earlier revision says the page no longer has to fit one screen exactly."
+    ]
+   },
+   "review": {
+    "file": "Newsletter-Page-5.dc.html",
+    "height": 4750,
+    "counts": "Final render: 1440 wide, content ends at 4746, so the declared height is 4750. The root style and $preview both already said 4750 and the board is under the 4800 limit. Measured sizes: on the computer, From and Subject are both 486 x 46 and the From row sits directly under the 48px Start from bar. On the tablet, From and Subject are both 477 x 48. On the phone, From and Subject are now both 52 tall (before the fix, From was 71 tall and Subject 52). The writing area is 754 of 1200 wide (62.8 percent) and the text box is 540 tall. All seven computer writing tools are 44 tall and the tablet tools are 48. Counts: \"243\" appears 0 times. Every \"255\" is part of an rgba colour, not a count. \"155 members\" or \"Members · 155\" appears everywhere a count is shown, and \"167 people will get it: 155 members and 12 you added\" is present. There are 5 pinned templates, with \"For a club\" in words on Club tournament announcement. The From menu has 2 groups, 2 LCA senders with LCA Newsletter ticked (\"Chosen\"), \"Find a club\", and 5 clubs whose dot colours exactly match News-Final (#2f6b4f, #7a4a9a, #2f6f9f, #6b3f8f, #b5532c), plus the 2 grey lines word for word. The club template picture has 7 bracketed prompts word for word, the inactive \"Choose a club first\" button, \"Needed before you can send\", and the grey line. There is 1 \"Sample data\" tag, 0 em or en dashes, and 0 sender email addresses: the only addresses shown are the 5 example.com ones on the people list. Times are 2:15 PM and 6:00 PM. Every date has its weekday. There are 0 USCF, 0 decimal halves and 0 {{holes}}.",
+    "changes": [
+     "Phone page, note D: the From value 'Louisiana Chess Association · LCA Newsletter' wrapped onto two lines, so the From field was 71px tall against the Subject field's 52px. There is no way to fit it at 15px on a 390 phone with the step column (it needs about 311px and had 266px). I made the step 1 block a full-width white band across the phone screen. 'Write' with its number circle is now a header row ('1 Write') instead of a side column. The From and Subject fields now run the full width of the band, with values at 14px. From reads on one line, both fields are exactly 52px tall, and the grey 'Who members see as the sender.' still sits under it. The From value is also set to stay on one line and end in '...' if a longer sender name ever doesn't fit.",
+     "Nothing else needed changing: the computer and tablet From rows, the From picture, the club template picture, the chooser, the counts, the captions and the declared height (4750) all checked out against revision5 and the earlier revision."
+    ],
+    "remaining_concerns": [
+     "In both small email previews (the side preview on the computer and the phone's See the email screen), the sender line 'Louisiana Chess Association · LCA Newsletter' wraps onto two lines with the dot at the end of the first line. It matches the From row word for word, but it would look tidier on one line or broken before the dot. I left it as it was.",
+     "The 'After pressing Make bigger' picture is a whole window shown at reduced scale, so the words inside it are too small to read. It is also centred vertically between two taller panels. This is the earlier designer's deliberate layout and the spec calls this picture small, so I left it.",
+     "On the phone, the From and Subject values are now 14px instead of 15px, so the full sender name fits on one line. It is still readable, but slightly smaller than the letter text."
+    ]
+   }
+  }
+ ],
+ "setCheck": {
+  "per_file": [
+   {
+    "file": "Newsletter-Page-2.dc.html",
+    "height": 4750,
+    "verdict": "Passes D to G. The From row (48px, the same as Subject) sits between the Start from bar and Subject on the computer, the tablet and the phone, the preview's sender line matches it, and the Make bigger picture now reads as finished as the other two boards'."
+   },
+   {
+    "file": "Newsletter-Page-4.dc.html",
+    "height": 4700,
+    "verdict": "Passes D to G once its shared pictures were brought into line word for word. The From row is 48px like the Subject row on the computer and the tablet, and on the phone it now reads in full on one line. Both previews' sender lines match the From row."
+   },
+   {
+    "file": "Newsletter-Page-5.dc.html",
+    "height": 4750,
+    "verdict": "Passes D to G. The From and Subject fields are the same height on the computer (46px), the tablet (48px) and the phone (52px). The template chooser no longer squeezes its cards, and the Make bigger picture is filled, so it matches the other two boards."
+   }
+  ],
+  "changes": [
+   "Page 4, After pressing From: removed the extra grey line 'Louisiana Chess Association' under LCA Newsletter and LCA Tournaments, so the two From LCA rows match pages 2 and 5 word for word.",
+   "Page 4, After pressing From caption: 'LCA's own senders first, then the clubs, each with its colour.' became 'LCA's own senders first, then the clubs.' to match pages 2 and 5.",
+   "Page 4, After choosing Club tournament announcement: Subject now reads '[Tournament name] · [Day and date] · registration is open', the same as pages 2 and 5.",
+   "Page 4, After choosing Club tournament announcement: the 'Needed before you can send' tag is now the kit's k-tag k-tag-soon with no icon, the same style as pages 2 and 5.",
+   "Page 4, Start from chooser: the 'For a club' tag now uses the same kit style as pages 2 and 5 (k-tag k-tag-ext cx-ctag) in place of its own outlined pill.",
+   "Page 4, side preview and phone preview: the sender line now reads 'Louisiana Chess Association · LCA Newsletter' (then 'to you'), matching the From row. Before, it read 'Louisiana Chess Association' then 'LCA Newsletter · to you'. A non-breaking space keeps 'LCA Newsletter' together.",
+   "Page 4, phone page: the From row had shown the sender split over two lines without the '·'. It now has 'From' and the grey 'Who members see as the sender.' on one line, then a full-width 46px drop-down reading 'Louisiana Chess Association · LCA Newsletter' in full.",
+   "Pages 2, 4 and 5, Add or review people: made the list of added people the same on all three, two rows (pat@example.com, coach.rivers@example.com) and then 'and 10 more · Show all 12'. Pages 4 and 5 had shown three rows and 'and 9 more'.",
+   "Page 5, Start from chooser: moved the 'For a club' tag onto its own line under the grey words, as on pages 2 and 4. It had been squeezed inline after the text.",
+   "Page 5, row of smaller pictures: widened the chooser column from 384px to 444px, the same as page 2, so 'Club tournament announcement', 'LCA tournament announcement', 'December 2026, as it is now' and the caption no longer wrap awkwardly. The Make bigger thumbnail scale went from .4333 to .3619 so its top bar still fits. The From and club-template row stays at 384px so the template picture's toolbar is not clipped.",
+   "Page 5, Make bigger picture: added the Sat, May 8, 2027 line and the Results heading and headline, so the thumbnail no longer ends in an empty white band.",
+   "Page 2, Make bigger picture: added the Ken Ferguson Memorial line (with 'Registers on the organizer's site ↗') and the Grand Prix Final line to fill the empty band at the bottom, and gave the thumbnail a 1px border and white background so it no longer blends into the board.",
+   "Page 4: set the declared root height and $preview to 4700, from the rendered 4700 (rounded up to the next 50; it was 4750). Pages 2 and 5 stay at 4750: they render at 4745 and 4707.",
+   "Checked all three after editing. At scale 1, the visible text has no em or en dashes, no 'USCF', no '.5', no 243 or 255, and no email address other than example.com ones. Every date has its weekday, there is exactly one 'Sample data' tag per board, the tags are balanced, the skeleton is unchanged, and nothing is animated. Writing area: 761px (63%) on page 2, 750px (62.5%) on page 4 and 754px (62.8%) on page 5, each more than 520px tall. Tools are 44px on the computer and 48px on the tablet."
+  ],
+  "remaining_concerns": [
+   "Page 5's label strip still says 'Everything fits on one screen with no scrolling…'. This is the option's own sentence, which the spec says to use word for word, but the earlier revision says page 5 no longer has to fit one screen exactly. K may want to soften that sentence before sending.",
+   "On page 4 the Subject is a line inside the letter sheet, not a separate field, so 'the same height as the Subject field' can only be partly checked there. The From row and that Subject line are both 48px on the computer and the tablet. On the phone, the From drop-down is 46px and the Subject line in the sheet is 52px.",
+   "'Sent Mon, Nov 16, 2026 to 155 members' still wraps onto a second line in the Start from chooser on pages 4 and 5 (wider Use this buttons). It is tidy, but not identical to page 2, where it fits on one line.",
+   "The Make bigger thumbnails on pages 2 and 5 are true miniatures, so their text is about 6px: fine as a picture, but not readable close up. Page 4's reads best because of its navy band.",
+   "When I set up my measuring script, I briefly copied it into docs-wt/docs/redesign/tools and deleted it at once. git status there now shows only docs/redesign/HANDOFF.md as modified, a change that was there before I started and that I did not touch."
+  ]
+ }
+}
