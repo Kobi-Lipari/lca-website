@@ -1,0 +1,212 @@
+{
+ "label": "newsletter-round-2-revised",
+ "results": [
+  {
+   "board": {
+    "file": "Newsletter-Picks.dc.html",
+    "title": "Newsletter · Your picks",
+    "width": 1440,
+    "page": "newsletter",
+    "name": "Newsletter-Picks · Your picks"
+   },
+   "drawn": {
+    "file": "Newsletter-Picks.dc.html",
+    "title": "Newsletter · Your picks",
+    "width": 1440,
+    "height": 2850,
+    "second_file": "",
+    "second_title": "",
+    "second_height": 0,
+    "note": "This board records K's picks of Tue, Nov 10, 2026 (the recommended answer on 1 to 7, with pick 8 left for later) and shows where each extra now lives: Add, the arrow on the Send button, and More options. To change a pick, K replies with its number and letter, like \"2B\".",
+    "unresolved": [
+     "When I checked, Newsletter-E.dc.html and Newsletter-E-2.dc.html had not been revised yet. Their frame labels still read B6 'Pick 4, the other answer' and B7 'Someone else is writing', and there was no B6a, B6b or B8. This board's 'Look at' and 'Still there when you want it' lines use the revision's frame names (B2, B5, B6, B6a, B6b, B7, C2, C3), so the reviewer should confirm they match once the Newsletter-E revision lands.",
+     "The <title> text changed from 'Newsletter · Your picks, with a recommendation for each' to 'Newsletter · Your picks', to match the canvas title. Everything else in the file's skeleton is unchanged.",
+     "To keep the board under 2900, the tiny pictures in the cards are a little smaller than in the first version (each picture strip is 60px tall). At full scale nothing is clipped. The rendered height is 2850 and the declared height and $preview are both 2850."
+    ]
+   },
+   "review": {
+    "file": "Newsletter-Picks.dc.html",
+    "height": 2850,
+    "second_height": 0,
+    "counts": "FINISHED SIMPLE VERSION, labels as drawn. Newsletter-E.dc.html: frame \"A · Creating and sending · the December 2026 issue, Mon, Nov 23, 2026, 2:15 PM, signed in as the media manager\" (steps \"1 Write it\", \"2 Check it\", \"3 Send it\" with \"Coming up\" under Write it; side panels \"Who is here\", \"Past newsletters\", \"Stuck?\"). Frame \"B · The same page's other moments\" with panels B1 · After pressing Send; B2 · The arrow on Send, opened; B3 · See it as members will; B4 · After it is sent; B5 · Starting a new month; B6 · Add, opened; B6a · Add, then A photo; B6b · Add, then An event line; B7 · More options, opened; B8 · Someone else is writing. Newsletter-E-2.dc.html (part 2): C1 · Opened (after an inbox view, with \"Your pick 5\" and \"Your pick 6\"); C2 · The plain top, when someone chooses it under More options; C3 · With a photo, when someone adds one; plus frames coded D and E.\nTHE THREE CLOSED CONTROLS ON FRAME A, exact labels: (1) the button \"Add a photo, event or line\" at the end of the writing tools (Bold, Italic, Heading, List, Link, Undo), closed; (2) the arrow part of the Send button \"Send to 243 members\", which has no visible words and is labelled \"Other ways to send\"; the hint under it reads \"To send it later, use the arrow.\"; (3) \"More options\", with the grey line \"Top of the email · Who gets it · Words shown in the inbox · Where replies go\".\nWHAT FRAME B SHOWS EACH HOLDS: B6, A photo · An event line · A dividing line. B2, Send later · Send the test to someone else. B7, Top of the email · Who gets it · Words shown in the inbox · Where replies go.\nTHE EIGHT PICKS on the board, in order:\n1. Which newsletter do we build first? Your pick A \"E, the simple one\" (B \"one of round 1's four (A, B, C or D)\", Not chosen). Why: E needs nothing the site does not have yet, a volunteer can use it the first time, and it can be on the live site first. Still there: Round 1's A to D stay on this page, further right, as ideas for later. Look at: Newsletter-E, frame A.\n2. How does it go out? Your pick A \"A person presses Send, after a test and one confirm step\" (B \"goes out by itself on the 1st at 8:00 AM\", Not chosen). Why: nothing unfinished can go out by accident ... \"Send later\" still lets a person pick the 1st at 8:00 AM. Still there: Send later is under the arrow on Send (frame B2). Going out by itself every month is not built for now. Look at: Newsletter-E, frame A step 3, and frames B1 and B2.\n3. What does a new month start from? Your pick A \"The usual six headings, ready to fill or delete\" (B copy of last month's issue, C blank page, both Optional). Why: nobody faces an empty page or sends last month's news by mistake. Still there: The other two starts are in the same drop-down (frame B5). Look at: Newsletter-E, frame B5.\n4. How do tournaments get in? Your pick A \"Type the line and paste the King Registration link yourself\" (B the Add an event form, Optional). Why: it is exactly what leaders do in an email today and needs nothing built; the form can come when the site holds tournaments. Still there: \"Add a photo, event or line\", then An event line (frames B6 and B6b). Look at: Newsletter-E, frame A's Coming up, and frames B6 and B6b.\n5. What does the top of the email look like? Your pick A \"A navy band with the rook and the month\" (B Plain, Optional). Why: it looks like LCA at a glance and costs the leaders nothing, because the site writes the month. Still there: More options, then Top of the email (frame B7); the plain top is frame C2 on part 2. Look at: Newsletter-E part 2, frames C1 and C2; Newsletter-E, frame B7.\n6. Photos? Your pick A \"None for now, words and links only\" (B one photo per issue, Optional). Why: the site's text box does not take photos today, so this is the one option that adds real building; photos can follow. Still there: \"Add a photo, event or line\", then A photo (frames B6 and B6a); an email with a photo is frame C3 on part 2. Never required. Look at: Newsletter-E part 2, frames C1 and C3; Newsletter-E, frames B6 and B6a.\n7. Can anyone read an issue on the site? Your pick A \"Not in the first version; add a page per issue right after\" (B and C Not chosen). Why: the email is what members asked for; a page per issue is worth adding next because its link can be posted on LCA's Facebook page. Still there: A page for each issue is added right after the first version. Look at: the Picks board only (nothing is drawn for it yet).\n8. Later, which way should it grow? Chip \"No need to decide now\"; the lead's suggestion paragraph. Why (added): the first version needs none of it; the site has to hold tournaments and results before it can fill anything in. Still there (added): Round 1's Newsletter-C and Newsletter-D stay on this page, further right, as ideas for later. Look at: round 1's boards, Newsletter-C and Newsletter-D.\nOTHER CHECKS: heading chip \"Decided Tue, Nov 10, 2026\" is there in words; 7 \"Your pick\" chips (picks 1 to 7, always option A); no card says \"Recommended\" (the word appears only in \"You picked the recommended answer on 1 to 7\"); 8 Why, 8 Still there, 8 Look at lines; the \"Where the extras live\" panel, both small panels and the last line are there; no em or en dashes; no trade words; tags balanced; no holes or iframes. Content renders 2842 tall, so the root height and $preview height are 2850, under 2900.",
+    "changes": [
+     "K's quote changed from the ellipsis character to three dots, exactly as the revision gives it: \"allowing for choice ... an option but not default\"",
+     "Where the extras live, row 1: control renamed from \"Add\" to \"Add a photo, event or line\" to match frame A, and its small picture redrawn as Undo then \"+ Add a photo, event or line\" with its arrow (as in B6)",
+     "Where the extras live, row 2: renamed from \"The arrow on the Send button\" to \"The arrow on Send\" (B2's wording), with the sub-line \"labelled Other ways to send\" (frame A's label for it)",
+     "Where the extras live, row 3: what it holds corrected from \"Inbox preview line\" and \"Replies go to\" to \"Words shown in the inbox\" and \"Where replies go\", as frame A and B7 show",
+     "Pick 2's Still there line now says \"under the arrow on Send (frame B2)\"",
+     "The Still there lines for picks 4 and 6 now name the control as \"Add a photo, event or line\", in quotation marks",
+     "Look at lines for picks 5 and 6 now say clearly that B7, B6 and B6a are on Newsletter-E, not on part 2",
+     "Pick 5 small pictures now read \"LCA Newsletter / December 2026\", matching C1, C2 and B7",
+     "Pick 8 gained its Why and Still there lines, so every card has all three lines; its paragraph was set at 16.5px to match the other cards",
+     "Gaps tightened (card gap 6, grid gap 14, and margins and padding on the Where the extras live panel) so the content renders 2842 tall; the declared height stays 2850"
+    ],
+    "remaining_concerns": [
+     "The finished simple version names the Add control in two ways: frame A's button reads \"Add a photo, event or line\", but the panel labels B6, B6a and B6b say just \"Add\". This board follows frame A for the control and quotes the B6, B6a and B6b labels as drawn. The revision's own wording used plain \"Add\", so its lead may want Newsletter-E's button and panel labels brought into line. That is not done here, because the other boards were out of scope.",
+     "The arrow on Send has no visible words on frame A, only the screen-reader label \"Other ways to send\". This board calls it \"The arrow on Send\" and gives that label underneath.",
+     "B7's drop-down reads \"Dark blue top with the month\". Pick 5 keeps the flow's words, \"A navy band with the rook and the month\". The meaning is the same, but the wording differs from what K will see in B7.",
+     "Pick 3's Still there line keeps the revision's word \"drop-down\" in a sentence, not as a label. If even that is too technical, it could read \"the same list\".",
+     "Pick 8's Why and Still there lines are new wording written by this review. The revision gave none for pick 8, and the check asked for all three lines on every card."
+    ]
+   }
+  },
+  {
+   "board": {
+    "file": "Newsletter-E.dc.html",
+    "title": "Newsletter · E · The simple one, for now",
+    "width": 1440,
+    "page": "newsletter",
+    "name": "Newsletter-E · The simple one, for now"
+   },
+   "drawn": {
+    "file": "Newsletter-E.dc.html",
+    "title": "Newsletter · E · The simple one, for now",
+    "width": 1440,
+    "height": 3850,
+    "second_file": "Newsletter-E-2.dc.html",
+    "second_title": "Newsletter · E · The simple one, as it arrives (part 2)",
+    "second_height": 2950,
+    "note": "What: The easiest page for the monthly newsletter, revised after K's picks. You write it like an email, paste your links, send yourself a test, then send it to the members. The page opens with three steps. The extras wait behind three closed controls: Add (a photo, an event line, a dividing line), the arrow on Send (send later, send the test to someone else) and More options (top of the email, who gets it, inbox preview line, replies go to). Frame B opens each one in turn. Part 2 shows the December 2026 issue as a member receives it.\n\nBuilt from: today's Group email page, Nav-Header-Final, Work-J, Newsletter-A and A-2, Tourn-List-Final, Home-Final-Phones.\n\nK's feedback applied: K asked for it \"much easier to use for now\", with leaders \"mannually linking kingregistration tournaments\". So tournaments are typed in with a pasted link, and nothing is filled in from the site. K then asked for \"allowing for choice\", for a photo as \"an option but not default\", and said \"it doesnt necessarily all need to be shown all at teh same time\". So a photo, an event form, a plain top and send later are now options that stay off until someone chooses them. Open for K: Picks 1 to 7 are decided (see Your picks). Pick 8, how it grows later, waits.",
+    "unresolved": [
+     "To keep frame A at 19 controls or fewer, the Stuck? card now shows LouisianaChess@gmail.com as plain bold text, not a link. The 19 are: Subject, the message box, Bold, Italic, Heading, List, Link, Undo, Add, the link box's address field, Add link, Cancel, Send a test to me, See it as members will, Send to 243 members, the arrow on Send, More options, See the report and Start December from this one. The crumb bar's Admin sections button is counted as Work-J chrome, like the header.",
+     "The revision calls frame B 'nine panels', but it lists ten labels: B1, B2, B3, B4, B5, B6, B6a, B6b, B7 and B8. All ten are drawn, stacked in four columns, with B4 and B7 side by side underneath.",
+     "B8 (someone else is writing) was left exactly as before apart from its label, as the revision asks. So its greyed tool row shows the six tools without Add, while frame A's tool row now has Add.",
+     "On part 2, the old gold code chips for C2 and C3 are gone, because the labels now start with 'C2 ·' and 'C3 ·' as the revision words them. The grey line 'The top 300px of the same email' was also dropped from C2, along with small padding trims, to keep part 2 at 2950. The C3 photo is now 128px tall instead of 150px."
+    ]
+   },
+   "review": {
+    "file": "Newsletter-E.dc.html (part 2: Newsletter-E-2.dc.html). Renders: <scratchpad>/render/out/Newsletter-E.full.png and <scratchpad>/render/out/Newsletter-E-2.full.png",
+    "height": 3900,
+    "second_height": 2950,
+    "counts": "HEIGHTS. Measured with the root set to auto height: main board 3881, so the declared height and $preview are 3900, exactly the 3900 limit. Part 2 is 2941, declared 2950, under its 3000 limit.\n\nFRAME A CONTROLS. 18 on the page itself, under the 19 limit. Header, footer and the Work-J crumb bar are not counted.\n1. Subject field\n2. Bold\n3. Italic\n4. Heading\n5. List\n6. Link\n7. Undo\n8. \"Add a photo, event or line\" (closed)\n9. Message box\n10. Link box field \"Paste the web address you copied\"\n11. Add link\n12. Cancel\n13. Send a test to me\n14. See it as members will\n15. Send to 243 members\n16. The arrow on Send (closed)\n17. More options (closed)\n18. See November's report\nThe crumb bar has two more: the \"Admin\" crumb and \"Admin sections\". With them the total is 20. Links typed inside the letter are content, not controls.\n\nTHE RULE. In frame A nothing extra is open and nothing extra is asked for. The open link box is part of step 1, as the revision says. The three closed controls and the panel that shows each one open:\n- Add: B6, then B6a and B6b.\n- The arrow on Send: B2.\n- More options: B7.\n\nPANELS. All present under their exact labels: A; B1, B2, B3, B4, B5, B6, B6a, B6b, B7, B8; C1, C2, C3; D; E.\n\nYOUR PICK BADGES.\n- Main board: Your pick 1 at frame A's heading, Your pick 4 at the typed Coming up lines, Your pick 2 at step 3, Your pick 2 at B1, Your pick 3 at B5.\n- Part 2: Your pick 5 and Your pick 6 at C1.\n- Each legend key shows a generic \"Your pick N\".\n\nOPTIONAL CHIPS.\n- Main board: B2's panel header, Send later, B6a, B6b, the Plain choice in B7, and one in the key.\n- Part 2: C2, C3, and one in the key.\n\nPHRASES. \"not in this version\" and \"the other answer\" appear nowhere. There are no em or en dashes, no USCF, no .5, no he or his, no AI references, and none of the banned trade words.\n\nSITE DATA. Nothing on either board reads from the site's calendar, results, club pages or News. Every event, result and club line is typed with a pasted link.\n\nDATES. Every date has its weekday:\n- Main board: Tue, Nov 10, 2026; Mon, Nov 23, 2026; Sat, Dec 5, 2026; Sat to Mon, Jan 16 to 18, 2027; Sat, May 8, 2027; Sat to Mon, Sep 5 to 7, 2026; Mon, Dec 7, 2026; Sat, Nov 14, 2026; Mon, Nov 16, 2026; Tue, Dec 1, 2026.\n- Part 2 adds Sun, Sep 6, 2026.\n- Times on the page: 2:09 PM, 2:15 PM, 4:00 PM, 6:00 PM, 8:00 AM. The phone status bars show 8:04 and 8:06.\n\nLINK LABELS.\n- Main board: Register on King Registration ↗ (twice); Registers on the organizer's site ↗; Details on King Registration ↗; Full results ↗; renew your membership; Club page (3); Scholastic page; See November's report; Change (2); Cancel; Close; See who has unsubscribed (2). Plus the header, crumb and footer links of the decided chrome.\n- Part 2: the same event links; Full results ↗; Club page; Scholastic page; Read the draft minutes; Unsubscribe from the newsletter; Choose which LCA emails you get; LCA on Facebook ↗; Undo.\n- The partner event never gets \"Register\" alone or a count.\n\nEMAIL. C1 has the navy band and no photo; the only photo in the email is in C3. The footer is exactly as the flow gives it. There is no postal address and no link to read the issue on the site.\n\nLEGENDS AND MARKUP. The main legend has 6 notes and part 2 has 4. Every numbered badge has its note. Header and footer match Nav-Header-Final and the decided footer. All elements are closed and all attributes quoted (parser check).\n\nNOTE FOR THE CANVAS STICKY.\n\"What: The easiest page for the monthly newsletter: write it like an email, paste your links, send yourself a test, then send it to the members. Nothing is read from the rest of the site.\nK's feedback applied: K asked for it \"much easier to use for now\", with leaders \"mannually linking kingregistration tournaments\", so tournaments are typed with a pasted link, and round 1's event picker, site-filled blocks, cover, chess position, locks and panels are gone. Then K asked for \"allowing for choice\", a photo as \"an option but not default\", and said \"it doesnt necessarily all need to be shown all at teh same time\": so the extras wait closed behind Add, the arrow on Send and More options.\nOpen for K: Picks 1 to 7 are decided (see Your picks). Pick 8, how it grows later, waits.\"",
+    "changes": [
+     "Tournament line typing: a short how-to band now sits right under the tool row. It says to type the day, name and city, then the words to click (Register on King Registration), and link them. It says commas between the parts are fine, the site adds the ↗, and An event line under Add is the other way. The old helper line far below the box is gone.",
+     "Link: the link box is now labelled \"Paste the web address you copied\". It opens directly under the marked words instead of out in the side column. The how-to band says Link reminds you if no words are marked.",
+     "Add: the closed tool is relabelled \"Add a photo, event or line\" in frame A and in B6, so it says what is inside. It is still closed.",
+     "B6b: added the buttons \"Add this line\" and \"Cancel\". The Day field is now \"Day or days\" with a range example. One grey line now says that a link to another site writes \"Registers on the organizer's site\". The B6 grey line now reads \"Fill in the day, name, city and link; it writes the tournament line for you.\"",
+     "Step 2: the grey line now reads \"Goes only to the address you sign in with, marked Test.\" Under the green \"Test sent Mon, Nov 23, 2026 at 2:09 PM.\" a new grey line reads \"You have changed the letter since this test. Send another if you like.\"",
+     "Step 3: now reads \"243 members will get it: every LCA member with an email address.\" The Sample data line is now \"2 others asked not to get it, so they are not counted.\" \"one email per address\" is gone. The revision's three sentences under Send keep their words and order, with \"To send it later, use the arrow.\" set in bold.",
+     "Saving: the page status now reads \"Saved automatically at 2:15 PM\", and that line is repeated under the message box with \"You can leave this page and come back to it.\"",
+     "Side column: \"Past issues\" is now \"Past newsletters\". \"Start December from this one\" is removed, because it could wipe a written letter, and starting from a copy lives in B5. \"See the report\" is now \"See November's report\". Who is here now reads \"You, the media manager · Writing\" and \"President · Has it open to read; cannot change it\", plus \"This box shows only while someone else has the page open.\"",
+     "More options, closed row and B7: \"Inbox preview line\" is now \"Words shown in the inbox\" and \"Replies go to\" is now \"Where replies go\". \"Navy band with the month\" is now \"Dark blue top with the month\", with a small picture of each choice (dark blue, Plain). \"Each row has one control. Closed again when the page next opens.\" is now \"Your choices are saved. The list closes again next time.\"",
+     "B2: the Send later item now says \"Pick a day and time; it asks once to confirm.\" The waiting state adds \"You can still change the letter until then.\"",
+     "B6a and B6: \"cursor\" is now \"where you last clicked in the letter\". Caption hint: \"shows under the photo; leave empty if you like\". Last line: \"Most issues need none, and one is plenty.\"",
+     "B8: the banner adds \"If this lasts more than an hour, write to LouisianaChess@gmail.com.\" B3's note now points to More options (B7) for changing the top.",
+     "Frame A label now says it is drawn part way through: a new month opens with the six headings (B5), and every word under them was typed by a person.",
+     "Layout to stay under 3900:\n- Main column widened from 760 to 800.\n- Frame B columns rebalanced: B1 with B2, B3 with B5, B6 with B6b, B6a with B8.\n- Tighter spacing.\n- \"Revised\" merged into the Replaces line.\n- Legend notes and the canvas note shortened, with the six notes and K's required quotes kept.\n- The Your pick / Optional key moved into the title strip.",
+     "Fixed an unclosed span that one of my edits had introduced in frame A's label row (parser check is now clean).",
+     "Part 2: legend key badge is now \"Your pick N\". The canvas note no longer names the \"Read this issue on the site\" link or the postal address; it now says the email has no link to a page on the site. Nothing else on part 2 changed. Declared heights: main 3850 to 3900, part 2 unchanged at 2950."
+    ],
+    "remaining_concerns": [
+     "Where I kept the revision over the volunteer:\n- More options stays as the closed row under step 3, not above Send.\n- \"Send the test to someone else\" stays under the arrow on Send (B2), not in step 2.\n- The \"Optional\" chips stay, though the volunteer found them meaningless.\n- \"Who is here\" stays in the drawn moment, now saying it shows only when someone else has the page open.\n- \"Registers on the organizer's site ↗\" stays word for word, because the copy rule requires it, though the volunteer read it as a typing mistake.\n- \"Admin sections\" and the role names (\"Media manager\") stay, because they come from the decided Work-J chrome and the flow's people rule.",
+     "The main board sits exactly at its 3900 limit (natural 3881). Any later addition must take height from elsewhere.",
+     "Frame A has 18 controls without the crumb bar, 20 with \"Admin\" and \"Admin sections\". I treat the crumb bar as admin chrome, like the header.",
+     "I added \"Add this line\" and \"Cancel\" to B6b, even though the brief says not to add new controls. The form could not be finished without them. They live only in frame B, not frame A.",
+     "Changing the B8 banner and adding a pictured choice in B7 go slightly past the revision's \"unchanged\" for B8 and the exact B7 wording.",
+     "The Newsletter-Picks board, which I did not touch, still says \"Add\", \"inbox preview line\" and \"Replies go to\". Its \"Where the extras live\" panel should be brought in line with the new labels: \"Add a photo, event or line\", \"Words shown in the inbox\", \"Where replies go\", \"Dark blue top with the month\".",
+     "The pasted address in the link box no longer carries its own Sample data badge (there was no room in the one-row box). It is listed in frame A's single Sample data badge, as the flow allows.",
+     "The volunteer's \"show the untouched page\" panel is not drawn. A frame A note and B5 explain the starting state instead, because a new panel would not fit under the height limit."
+    ]
+   },
+   "walk": {
+    "could_finish": true,
+    "found_the_extras": "ADD ONE PHOTO. Looked first along the row of buttons over the message box for the word Photo or Picture, the way Facebook has it. It is not there. \"+ Add\" was my second try, only because nothing else was left to press. B6 shows \"A photo\" as the first thing in it, and the form in B6A (Choose a photo, describe it, caption, Add photo) is clear enough to finish. Found, on the second look, by guessing: the word \"Add\" on its own does not say photo.\n\nSEND IT NEXT TUESDAY MORNING. Looked first at step 3, Send it. The grey line under the gold button says \"To send it later, use the arrow\", and B2 shows Send later, then Day and Time, a button that spells out the day and time, then \"Waiting to go out ... Change · Cancel\". Found, first place I looked, and only because of that sentence. Without it I would never press a small arrow attached to a button that mails 243 people.\n\nCHANGE HOW THE TOP OF THE EMAIL LOOKS. I did not look in the right place first. In frame A the message box starts at \"A note from the president\", so nothing tells me the email has a top that can be changed. I looked at the Subject box and the Heading button, then pressed \"See it as members will\" (B3), where I saw the navy band for the first time but nothing on it to change it with. Only after that did I find \"More options\", below Send it, at the very bottom of the page. The words \"Top of the email\" are printed on the closed row and that is the only reason I found it. B7 then makes it one menu with two choices (Navy band with the month, Plain). Found, third place I looked.",
+    "stalls": [
+     {
+      "where": "Step 1, typing the tournament line under Coming up",
+      "what_confused_me": "The three lines already there end three different ways: \"Register on King Registration\", \"Registers on the organizer's site\", \"Details on King Registration\". I did not know which words I was meant to type. Each has a small arrow after it that I cannot type and nobody explains, and the parts are separated by a raised dot that is not on my keyboard. My own line would come out looking different from the others, with a dash or a comma.",
+      "plain_fix": "Say under the box exactly what to type, for example: Type the day, the name and the city, then the words \"Register on King Registration\". Say that the little arrow is added by the site. Do not make people type a dot that is not on the keyboard."
+     },
+     {
+      "where": "Step 1, pressing Link (the box that says \"Paste the address\")",
+      "what_confused_me": "The how-to sentence sits under the bottom of a long message box, far from the Link button and from Coming up, so I pressed Link before I had read it. The drawing does not show what happens if I press Link without selecting words first, or if I simply paste the address straight into the letter, which is what I do in email and on Facebook. \"Paste the address\" also made me think for a second of the tournament's street address, because I had just typed a city. And the box opens over in the right-hand column under \"Stuck?\", not next to the words I marked.",
+      "plain_fix": "Put the how-to sentence right under the row of buttons. Label the box \"Paste the web address you copied\". Open it beside the marked words. If nothing is selected, have Link say \"First mark the words that should become the link\"."
+     },
+     {
+      "where": "B6B, Add then An event line",
+      "what_confused_me": "After I fill in Event, Day, City and Link there is no button to put the line into the letter. The photo form has \"Add photo\"; this form has nothing, and no way to close it. I would be stuck with a filled-in form. There is also one box for Day, but the Ken Ferguson Memorial runs Sat to Mon. And I cannot tell whether it always writes \"Register on King Registration\" even if the link I paste is some other site.",
+      "plain_fix": "Add a button, \"Add this line\", and a Cancel. Allow a last day for events longer than one day. Say what words it writes when the link is not King Registration."
+     },
+     {
+      "where": "Step 1, two ways to add a tournament",
+      "what_confused_me": "The sentence under the box tells me to type the line and use Link. Hidden inside \"+ Add\" is \"An event line\", which does the same job by filling boxes. Nothing in frame A says the second way exists, and I could not tell which one I was supposed to use.",
+      "plain_fix": "Pick one as the way and name it in the sentence under the box. If both stay, the sentence should say: \"or press Add, then An event line, and fill in the boxes\"."
+     },
+     {
+      "where": "Toolbar, \"+ Add\"",
+      "what_confused_me": "\"Add\" does not say what it adds. I only opened it because I had run out of other places to look for a photo.",
+      "plain_fix": "Label it with what is inside: \"Add a photo or an event\"."
+     },
+     {
+      "where": "Step 2, Check it, \"Send a test to me\"",
+      "what_confused_me": "It says the test goes \"only to your own address\" but never shows the address. I am signed in as Media manager; I do not know whether that is my own email or the association's Gmail, so I do not know which inbox to open on my phone. Also the green tick says the test went at 2:09 PM while the top of the page says Saved 2:15 PM, so the letter has changed since the test and the page does not say so.",
+      "plain_fix": "Show the address on the button line and in the green line: \"Test sent to (my address)\". When the letter changes after a test, change the green line to \"You have changed the letter since this test. Send another?\""
+     },
+     {
+      "where": "Step 3, Send it, the count",
+      "what_confused_me": "\"Goes to 243 members ... 2 have unsubscribed and will not get it.\" I could not tell whether 243 already leaves those 2 out or whether really 241 will get it. \"one email per address\" made me stop too; I did not know what it was telling me.",
+      "plain_fix": "\"243 members will get it. 2 others asked not to be emailed.\" Drop \"one email per address\", or say it plainly: \"Families who share an address get one copy.\""
+     },
+     {
+      "where": "Right column, Past issues, \"Start December from this one\"",
+      "what_confused_me": "I already have a December letter written. This link sounds as if it would replace my letter with November's. Nothing says it will ask first. A curious first-timer presses it to see what it does.",
+      "plain_fix": "Hide this link once December has words in it, or name it for what it does, \"Replace this letter with November's\", and ask before doing it."
+     },
+     {
+      "where": "More options, at the very bottom, and B7",
+      "what_confused_me": "It comes after Send it, where I thought the page was finished, yet it holds a thing that changes how the email looks. Inside it, the sentence \"Each row has one control. Closed again when the page next opens.\" reads like a note to the builder; \"Closed again\" made me wonder whether my choice of Plain is thrown away next time. After choosing I cannot see what the top now looks like without going back up to \"See it as members will\".",
+      "plain_fix": "Move More options above Send it, or add a link \"Change how the top looks\" beside \"See it as members will\". Remove that sentence, or replace it with \"Your choices are saved\". Show a small picture of each choice."
+     },
+     {
+      "where": "B2, Send later",
+      "what_confused_me": "Once it says \"Waiting to go out\", I do not know whether I can still fix a typo and whether Tuesday's email would include the fix. I do not know whether \"Send on Tue, Dec 1 ...\" asks me to confirm the way Send now does. And \"Send the test to someone else\" is under the arrow of the gold button that mails everyone; I would look for it in step 2, Check it.",
+      "plain_fix": "Add one line under \"Waiting to go out\": \"You can still change the letter until then\" (or say that it is locked). Move \"Send the test to someone else\" into step 2 beside \"Send a test to me\"."
+     },
+     {
+      "where": "B6A, the photo form",
+      "what_confused_me": "Two boxes to write in about one photo, the description and the caption; I would type the same thing in both. \"It goes where your cursor is\": my cursor is on this form, I took it to mean the mouse arrow. \"One photo is plenty\": I could not tell whether that is a rule or advice.",
+      "plain_fix": "Under Caption: \"Shows under the photo. Leave empty if you like.\" Change the last line to \"The photo goes where you last clicked in the letter.\" Say \"One photo per newsletter\" if it is a rule; drop it if it is not."
+     },
+     {
+      "where": "Top of the page, \"Draft · Saved 2:15 PM\"",
+      "what_confused_me": "There is no Save button anywhere. I guessed that the small grey \"Saved 2:15 PM\" beside the title means the page saves by itself, but it is out of sight once I scroll down to type, and I did not know whether leaving the page to look up a tournament date would lose my work.",
+      "plain_fix": "Say \"Saved automatically at 2:15 PM\" and repeat it under the message box."
+     },
+     {
+      "where": "B8, someone else is writing",
+      "what_confused_me": "If I open the page while the President has it open, everything is grey and it says \"It opens for you when they close it.\" If they left it open and went home, there is nothing I can press and nobody to ask.",
+      "plain_fix": "Say what to do: \"If this lasts more than an hour, write to LouisianaChess@gmail.com\", or let it open for me after a set time without typing."
+     },
+     {
+      "where": "Frame A as a drawing",
+      "what_confused_me": "It is not the page as it first opens: the letter is already written, Link is already pressed, a test has already gone. I could not see what an untouched December looks like, or whether the tournaments and the results paragraph were typed by a person or put there by the site. I worked out the empty state from the one grey line under Board business.",
+      "plain_fix": "Add one panel showing the page before anything is typed: the six headings, each with \"Write here, or delete this heading.\", and no green test line."
+     }
+    ],
+    "felt_like_too_much": [
+     "The \"Who is here\" card at the top right. I am doing this alone, and \"President · reading\" told me the president is watching me type, which made me nervous. Show it only when a second person really has the page open.",
+     "The \"Past issues\" card with its two links, \"See the report\" and \"Start December from this one\". I needed neither to write and send December, and the second one looks able to wipe my letter.",
+     "\"one email per address\" in step 3. A detail I did not need and did not understand.",
+     "The grey line under the gold Send button does three jobs in one breath: you will be asked to confirm, it cannot be taken back, use the arrow to send later. The send-later part is easy to miss in there, and it is the only pointer to that menu."
+    ],
+    "words_i_did_not_know": [
+     "Inbox preview line",
+     "one email per address",
+     "An event line (understood only after reading the small line under it)",
+     "Paste the address (a web address or a street address?)",
+     "The small arrow after link words, as in \"Register on King Registration\" followed by an arrow",
+     "Registers on the organizer's site (reads like a typing mistake)",
+     "Start December from this one",
+     "Past issues (next to \"Stuck?\" I first read \"issues\" as problems; \"Past newsletters\" would be plain)",
+     "Admin sections",
+     "Media manager (you) (the page calls me by a job title, not my name)",
+     "Navy band with the month (I did not know what a band was until I saw the preview)",
+     "cursor (the mouse arrow or the blinking line?)",
+     "Each row has one control (\"control\")",
+     "Optional, the small tag beside Send later and beside the top-of-email choices: if it is really on the page, it tells me nothing",
+     "Bounced (explained right there on the report as \"the address no longer works\", so that one is fine)"
+    ]
+   }
+  }
+ ]
+}

@@ -1,11 +1,12 @@
-# The newsletter, round 1 (Tuesday, November 10, 2026)
+# The newsletter, rounds 1 and 2 (Tuesday, November 10, 2026)
 
-Four directions for LCA's monthly newsletter, drawn for K to pick from. They are on the canvas on a new page, "18 · Newsletter" (canvas version 23, published Tue, Nov 10, 2026). K has not picked yet.
+Two rounds on one day for LCA's monthly newsletter, both on canvas page "18 · Newsletter". Round 1 drew four fuller directions (canvas version 23). Round 2 drew the simple version K then asked for, with a board of K's picks (canvas version 24). K picked on Tue, Nov 10, 2026: the simple version first; the page reads left to right as Your picks, Newsletter-E and its part 2, then round 1's A to D as ideas for later.
 
 - `feedback.md`: K's words, verbatim.
 - `newsletter-specs.json`: what every designer was given. `fb` is K's words and how they were read, `flow` is what the four options share (the moment drawn, the five frames, the managing facts, the email's footer, the sample issue, the checked weekdays, the open questions), and `boards` holds each option's spec.
 - `results/newsletter-results.json`: the draw and review results, in the shape `docs/redesign/tools/publish-pages.py` reads.
 - `results/newsletter-fix-results.json`: the fix pass before publishing, with its checks.
+- `newsletter2-specs.json` and `results/newsletter2-results.json`: round 2's spec, with its `revision` after K's picks, and its results, the first-time volunteer's walkthrough among them.
 
 The boards are in `../../canvas/boards` as `Newsletter-A` to `Newsletter-D`, each with a part 2, and the canvas layout is `../../canvas/canvas.json`.
 
@@ -52,3 +53,31 @@ After the boards were drawn and reviewed, one fix pass ran on all eight, each fi
 ## How the round was run
 
 The specs were written by hand from K's words. `docs/redesign/tools/draw-boards.js` drew and reviewed the four options, one designer drawing and a second reviewing each. The published `project/canvas.json` was read first and matched this repository's copy. The boards were placed with `publish-pages.py` on a new page, id `newsletter`, starting at x 640, with a title note and a note for the page, and published with the eight new boards as the files map.
+
+## Round 2: the simple version, and K's picks
+
+After seeing round 1, K asked for the newsletter to be "much easier to use for now", since the site does not yet hold tournaments or results and LCA's tournaments are linked by hand to King Registration for a couple more months, and asked to be shown where to make picks, with a recommendation for each.
+
+**Newsletter-E, "The simple one, for now"** (with part 2, as it arrives). One page, three numbered steps: write it, check it, send it. It is today's Group email page grown a little: a subject, the site's text box, "Send a test to me", one confirm step. Nothing on it reads from the site's calendar, results, club pages or News; a tournament is a typed line with a pasted King Registration link.
+
+**Newsletter-Picks, "Your picks"**. Eight picks, each with its options, the answer K picked, why, where to look, and where the other answer still lives. K's answer was "all recommended":
+
+1. Build the simple version first.
+2. A person presses Send, after a test and one confirm step. "Send later" lets them pick a day and time. Going out by itself every month is not built for now.
+3. A new month starts from the usual six headings.
+4. Tournaments are typed, with a pasted King Registration link.
+5. The email opens with a navy band holding the rook and the month.
+6. No photo by default.
+7. A page on the site for each issue is not in the first version and is added right after.
+8. How it grows later is not decided. The lead's suggestion: keep the simple letter, let the site fill in Coming up and Results as round 1's option C does once it holds them, and add option D's Position of the month if someone wants to keep it up.
+
+**K's design rule, given with the picks: simple by default, with choice kept.** In K's words: "allowing for choice, like having the image thing as an option but not default", and "we can have alot of stuff there but it doesnt necessarily all need to be shown all at teh same time. use of drop downs, other components, etc are nice." So the page opens with the three steps only, and the extras wait behind three closed controls, each shown opened in frame B:
+- "Add a photo, event or line", at the end of the writing tools: a photo (never required), an event line written from four boxes, a dividing line.
+- The arrow on the Send button: send later, and send the test to someone else.
+- "More options", a closed row under step 3: the top of the email (dark blue with the month, or plain), who gets it, the words shown in the inbox, and where replies go.
+
+Drawn this way unless K says otherwise: one person writes at a time and the others can read; opens and clicks are not tracked; the weekly Monday "News by email" on the decided News page waits, so the newsletter is the only regular email for now.
+
+**How round 2 was checked.** Before the second designer's review, a first-time volunteer walked the page through from the drawing alone: write the issue, add a tournament with its link, send a test, send it, then find each extra. They finished without being shown, and their fourteen stalls were fixed by plainer words and order, among them: the how-to for a link and a tournament line moved right under the writing tools; "Add" became "Add a photo, event or line"; the count reads "243 members will get it"; the page says "Saved automatically"; "Past issues" became "Past newsletters"; the event form gained "Add this line" and "Cancel". Five of their points were not taken. Three keep K's rule: More options stays a closed row under step 3, "Send the test to someone else" stays under the arrow, and the "Optional" chips stay on the board. Two were for room: "Who is here" stays in the drawn moment, now saying it shows only while someone else has the page open, and no extra panel shows the untouched page, which frame B5 and a note on frame A cover.
+
+**Where it is built.** The first newsletter, the week of Monday, November 16, 2026, goes out from today's Group email page (the mail plan's part one). Newsletter-E is the page the newsletter part builds after it.

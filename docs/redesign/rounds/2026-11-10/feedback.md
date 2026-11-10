@@ -25,3 +25,11 @@ On the postal address, after asking whether a non-profit would be penalized for 
 okay, well then if the checks go well, lets roll without physical postal stuffs
 
 skip the rest of hte research and go with what you have now, taking too long and not that important
+
+After seeing round 1's four designs:
+
+lets make the newsletter thing much easier to use for now since the rest of the site isnt finished for those complex integrations. for example we wont have tournaments hosted in site yet so will be mannually linking kingregistration tournaments for a couple more months still, etc. also, be sure to help me know where to make picks and choices, and recommendations, etc.
+
+On the eight picks:
+
+all recommended but I like the design concept of allowing for choice, like having the image thing as an option but not default. same thing with screen usage, we can have alot of stuff there but it doesnt necessarily all need to be shown all at teh same time. use of drop downs, other components, etc are nice.

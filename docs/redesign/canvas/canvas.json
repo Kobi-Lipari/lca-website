@@ -1693,7 +1693,7 @@
    "page": "newsletter",
    "title": "Newsletter · A · The monthly letter",
    "w": 1440,
-   "x": 640,
+   "x": 5200,
    "y": 0
   },
   "Newsletter-A-2.dc.html": {
@@ -1701,7 +1701,7 @@
    "page": "newsletter",
    "title": "Newsletter · A · The monthly letter, as it arrives",
    "w": 1440,
-   "x": 2160,
+   "x": 6720,
    "y": 0
   },
   "Newsletter-B.dc.html": {
@@ -1709,7 +1709,7 @@
    "page": "newsletter",
    "title": "Newsletter · B · The issue, with a cover",
    "w": 1440,
-   "x": 3680,
+   "x": 8240,
    "y": 0
   },
   "Newsletter-B-2.dc.html": {
@@ -1717,7 +1717,7 @@
    "page": "newsletter",
    "title": "Newsletter · B · The issue, as it arrives",
    "w": 1440,
-   "x": 5200,
+   "x": 9760,
    "y": 0
   },
   "Newsletter-C.dc.html": {
@@ -1725,7 +1725,7 @@
    "page": "newsletter",
    "title": "Newsletter · C · The month, built from the site",
    "w": 1440,
-   "x": 6720,
+   "x": 11280,
    "y": 0
   },
   "Newsletter-C-2.dc.html": {
@@ -1733,7 +1733,7 @@
    "page": "newsletter",
    "title": "Newsletter · C · The month, as it arrives",
    "w": 1440,
-   "x": 8240,
+   "x": 12800,
    "y": 0
   },
   "Newsletter-D.dc.html": {
@@ -1741,7 +1741,7 @@
    "page": "newsletter",
    "title": "Newsletter · D · The bulletin, with chess in it",
    "w": 1440,
-   "x": 9760,
+   "x": 14320,
    "y": 0
   },
   "Newsletter-D-2.dc.html": {
@@ -1749,7 +1749,31 @@
    "page": "newsletter",
    "title": "Newsletter · D · The bulletin, as it arrives",
    "w": 1440,
-   "x": 11280,
+   "x": 15840,
+   "y": 0
+  },
+  "Newsletter-Picks.dc.html": {
+   "h": 2850,
+   "page": "newsletter",
+   "title": "Newsletter · Start here · Your picks",
+   "w": 1440,
+   "x": 640,
+   "y": 0
+  },
+  "Newsletter-E.dc.html": {
+   "h": 3900,
+   "page": "newsletter",
+   "title": "Newsletter · E · The simple one, for now",
+   "w": 1440,
+   "x": 2160,
+   "y": 0
+  },
+  "Newsletter-E-2.dc.html": {
+   "h": 2950,
+   "page": "newsletter",
+   "title": "Newsletter · E · The simple one, as it arrives",
+   "w": 1440,
+   "x": 3680,
    "y": 0
   }
  },
@@ -3438,7 +3462,7 @@
    "page": "newsletter",
    "text": "What: The newsletter is a letter from LCA to its members, and the page where it is made is that letter, open on the screen. Frame A shows one white sheet at the email's own width and type: the subject and inbox preview line, then \"Dear members,\", the president's note and five plain sections. What the leaders type is exactly what arrives. A Draft status, the send rule and \"Mark as ready to send\" sit in the rail. Frame B shows the three states, the November report, Settings and a section's History. Part 2 shows the December issue in an inbox, opened on a computer, on two phones (one in the dark setting), and the one-click unsubscribe page. The trade-off: it has the least design and the most voice of the four options, and an issue is only as good as what someone writes that month.\n\nBuilt from: Nav-Header-Final (the signed-in header), Work-J (the admin chrome, cards and status words; the admin sidebar folds behind \"Admin sections\" while writing), Work-H-2 (an email written in the workspace), News-Final (the club colour dots and the issue's facts), Tourn-List-Final (the title strip and the December Meet), Home-Final-Phones (the phone bezels) and the kit.\n\nK's feedback applied: LCA admins, the president and the media manager write it together on the site, one person in a section at a time, with History and Restore. It goes out on the same date and time each month unless someone changes this month's. It goes to every member email the site holds, and new members are added when they join. Leaving the newsletter stops this list only. No postal address in any email, as K decided. Open for K: (1) the send rule: someone must mark the issue ready, a reminder goes out the day before, and otherwise nothing is sent; (2) turn-taking or everyone typing at once; (3) the 1st of each month at 8:00 AM Central; (4) each issue readable on the site; (5) whether the newsletter replaces the weekly \"News by email\" or both run; (6) opens and clicks are not tracked.",
    "w": 760,
-   "x": 640,
+   "x": 5200,
    "y": 3410
   },
   "s_Newsletter-B": {
@@ -3446,7 +3470,7 @@
    "page": "newsletter",
    "text": "What: Option B makes every month an issue with a cover. The leaders build it from numbered pieces: a navy cover with the month set large, one photo and three cover lines, then a feature and shorter pieces. The page is a builder. The pieces are on the left, the piece being written is in the middle, and the email as members get it is on the right, updating as anyone types. When there is no photo, a navy cover with the rook mark stands in. An empty piece (Board business) is left out of the email. Part 2 shows the December 2026 issue received on Tue, Dec 1, 2026 on a computer and on two phones (one in dark mode), plus the one-click unsubscribe page.\n\nBuilt from: Work-J (admin chrome, cards, status words), Nav-Header-Final (signed-in header with My LCA), Tourn-List-Final (title strip, legend, date tiles, footer), News-Final (dated rows, club colour dots, the State Championship and club facts), Home-Final-Phones (phone bezels), and the kit's k-* classes. Replaces: Nothing yet: first round.\n\nK's feedback applied: the media manager, the president and LCA admins write it together on the site. Writing is turn-taking: \"President is editing\" locks that piece for the others, and every piece has history. It goes out on the 1st at 8:00 AM Central unless someone changes this month's date or time. All 243 member addresses get it, new members are added when they join, and leaving it stops this list only. No postal address in any email, as K decided. Open for K: (1) the send rule: B sends only once someone marks the issue ready, with a reminder on the day before, and otherwise waits; (2) turn-taking or everyone typing at once; (3) the 1st at 8:00 AM Central; (4) each issue readable on the site; (5) whether it replaces News-Final's weekly News by email or both run; (6) opens and clicks are not tracked.",
    "w": 760,
-   "x": 3680,
+   "x": 8240,
    "y": 3410
   },
   "s_Newsletter-C": {
@@ -3454,7 +3478,7 @@
    "page": "newsletter",
    "text": "What: The issue builds itself from what the site already holds, and the leaders only add their words on top. The Newsletter page (Admin / Newsletter) is a short checklist of six blocks. Coming up comes from the calendar, Results from finished events, From the clubs from club pages and News you may have missed from News. Each card shows what the site has put in it, and there is a box at the top for a note. A calm green banner says the December issue \"will go out as it stands on Tue, Dec 1, 2026 at 8:00 AM Central, in 8 days. You do not have to do anything.\" The email reads like the site's own lists: a navy band, the note, then dated rows under navy rules, each block ending with a link to its page. This option is the least work and can never go out late or empty, but it has the least voice of the four.\n\nBuilt from: Nav-Header-Final (signed-in header), Work-J (admin chrome, cards, status words), Work-H-2 (a composer in the kit), News-Final (dated rows, date tiles, club colour dots, the issue's facts), Tourn-List-Final (title strip, footer, December Meet), Home-Final-Phones (phone bezels).\n\nK's feedback applied: hosted on the site and edited together by LCA admins, the president and the media manager, taking turns and keeping history. It goes out \"automatically on the same date and time (unless edited)\": Hold stops one month only, and a month with nothing in it is not sent and the three editors are told. It goes to every member email, and new members are added. Unsubscribing stops this list only. No postal address in any email, as K decided. Open for K: (1) the send rule, which here is \"goes out by itself\"; (2) turn-taking or everyone typing at once; (3) the 1st at 8:00 AM Central; (4) each issue readable on the site, drawn as yes; (5) whether weekly \"News by email\" is replaced or both run; (6) opens and clicks are not tracked, as drawn.",
    "w": 760,
-   "x": 6720,
+   "x": 11280,
    "y": 3410
   },
   "s_Newsletter-D": {
@@ -3462,14 +3486,14 @@
    "page": "newsletter",
    "text": "What: The newsletter as a front page with a masthead (\"Louisiana Chess Bulletin\", Vol. 1 · No. 2). It has a lead story, Dates to know, shorter pieces, a Position of the month to solve (Morphy at the opera, Paris, 1858) and an item of Louisiana chess history. It is made on that front page: click a place and write it in the side panel. The left list shows how far each place has got. Of the four options, it has the strongest identity and asks the most preparation. A queue of positions and archive items, prepared months ahead, spreads that work out. Part 2 shows the December issue as a member gets it: on a computer, on a phone, on a phone in dark mode, and the unsubscribe page.\n\nBuilt from: Nav-Header-Final (signed-in header), Work-J (admin chrome, cards, status words), Work-H-2 (a composer in the kit), News-Final (date tiles, club colour dots, the issue's facts), Tourn-List-Final (title strip, December Meet), Scan-H (the board), Home-Final-Phones (phone bezels).\n\nK's feedback applied: LCA admins, the president and the media manager write it together on the site, one person in a place at a time, with history. It goes out on the same date and time unless changed. It goes to every member email, and new members are added. Unsubscribing stops this list only. No postal address in any email, as K decided. Open for K: (1) the send rule: someone marks it ready, a reminder goes out the day before, and nothing is sent otherwise; (2) turn-taking, or everyone typing at once; (3) the 1st at 8:00 AM Central; (4) each issue readable on the site; (5) whether it replaces the weekly \"News by email\" or both run; (6) opens and clicks not tracked; (7) the name: \"Louisiana Chess Bulletin\" or \"LCA Newsletter\".",
    "w": 760,
-   "x": 9760,
+   "x": 14320,
    "y": 3410
   },
   "t_newsletter": {
    "kind": "title1",
    "maxW": 8000,
    "page": "newsletter",
-   "text": "Newsletter · 4 options: how it is made, and how it arrives",
+   "text": "Newsletter · your picks, the simple version for now, then four fuller directions for later",
    "w": 240,
    "x": 640,
    "y": -320
@@ -3480,7 +3504,23 @@
    "w": 560,
    "x": 0,
    "y": 0,
-   "text": "Round 1 (Tue, Nov 10, 2026), from K's request: designs for the page where LCA's leaders create and manage the monthly newsletter, and for how it looks when a member receives it. Four directions, two boards each: how it is made, then how it arrives. A is a monthly letter. B is an issue with a cover. C builds the month from what the site already holds. D is a bulletin with chess in it.\n\nThey differ on purpose on the send rule: A, B and D go out once someone marks the issue ready; C goes out by itself unless someone holds it.\n\nAlready decided and drawn on all four: LCA admins, the president and the media manager write and send it; every member gets it unless they unsubscribe; unsubscribing stops this list only; no postal address in any email.\n\nPick one, or parts of several."
+   "text": "Start with \"Your picks\", the first board. K picked the recommended answer on picks 1 to 7 on Tue, Nov 10, 2026; to change one, reply with its number and letter.\n\nRound 2 (Tue, Nov 10, 2026): Newsletter-E is the simple version, from K's words \"much easier to use for now\". Write it like an email, paste your links (a tournament's King Registration link included), send yourself a test, then send it. Nothing on it reads from the rest of the site.\n\nK's rule for it: simple by default, with choice kept. The extras (a photo, an event form, sending later, the plain top) are options that wait in menus and are off until someone wants them.\n\nRound 1's four fuller directions, A to D, are further right. They are ideas for later, once the site holds tournaments and results.\n\nDecided already: LCA admins, the president and the media manager write and send it; every member gets it unless they unsubscribe; unsubscribing stops this list only; no postal address in any email."
+  },
+  "s_Newsletter-Picks": {
+   "fill": "gray",
+   "page": "newsletter",
+   "text": "This board records K's picks of Tue, Nov 10, 2026 (the recommended answer on 1 to 7, with pick 8 left for later) and shows where each extra now lives: Add, the arrow on the Send button, and More options. To change a pick, K replies with its number and letter, like \"2B\".",
+   "w": 760,
+   "x": 640,
+   "y": 2910
+  },
+  "s_Newsletter-E": {
+   "fill": "gray",
+   "page": "newsletter",
+   "text": "What: The easiest page for the monthly newsletter, revised after K's picks. You write it like an email, paste your links, send yourself a test, then send it to the members. The page opens with three steps. The extras wait behind three closed controls: Add (a photo, an event line, a dividing line), the arrow on Send (send later, send the test to someone else) and More options (top of the email, who gets it, inbox preview line, replies go to). Frame B opens each one in turn. Part 2 shows the December 2026 issue as a member receives it.\n\nBuilt from: today's Group email page, Nav-Header-Final, Work-J, Newsletter-A and A-2, Tourn-List-Final, Home-Final-Phones.\n\nK's feedback applied: K asked for it \"much easier to use for now\", with leaders \"mannually linking kingregistration tournaments\". So tournaments are typed in with a pasted link, and nothing is filled in from the site. K then asked for \"allowing for choice\", for a photo as \"an option but not default\", and said \"it doesnt necessarily all need to be shown all at teh same time\". So a photo, an event form, a plain top and send later are now options that stay off until someone chooses them. Open for K: Picks 1 to 7 are decided (see Your picks). Pick 8, how it grows later, waits.",
+   "w": 760,
+   "x": 2160,
+   "y": 3960
   }
  },
  "order": [
@@ -3694,7 +3734,10 @@
   "Newsletter-C.dc.html",
   "Newsletter-C-2.dc.html",
   "Newsletter-D.dc.html",
-  "Newsletter-D-2.dc.html"
+  "Newsletter-D-2.dc.html",
+  "Newsletter-Picks.dc.html",
+  "Newsletter-E.dc.html",
+  "Newsletter-E-2.dc.html"
  ],
  "pages": [
   {
