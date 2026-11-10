@@ -1,0 +1,474 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Newsletter · E · The simple one, for now</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/6107adb451dbab26ee5d89f4189b81f8">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&amp;display=swap">
+<style>
+body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1a2744}
+.nx-root{width:1440px;margin:0 auto;box-sizing:border-box;padding:14px 40px 10px;background:#ecebe6;color:#1a2744;font-family:Geist,system-ui,sans-serif}
+.nx-root *{box-sizing:border-box}
+.nx-doc{background:#fbfaf6;border:1px solid #d9d8d1;border-radius:14px;padding:20px 24px 20px}
+.nx-doc-top{display:flex;justify-content:space-between;align-items:flex-start;gap:24px}
+.nx-title{font-size:32px;line-height:1.15;font-weight:700;letter-spacing:-.015em;margin:6px 0 0}
+.nx-meta{font-size:14.5px;line-height:1.5;color:#3d4556;margin:2px 0 0;max-width:1120px}
+.nx-meta b{color:#1a2744;font-weight:600}
+.nx-quote{margin:10px 0 0;padding:10px 14px;border-left:3px solid #866a1e;background:#ffffff;border-radius:0 8px 8px 0;font-size:13.5px;line-height:1.5;color:#3d4556;max-width:1180px}
+.nx-quote p{margin:0}
+.nx-quote b{color:#1a2744}
+.nx-legend{display:grid;grid-template-columns:minmax(0,1fr) 540px;gap:18px;margin-top:14px;align-items:start}
+.nx-lbox{background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:14px 16px}
+.nx-notes{list-style:none;margin:10px 0 0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px 20px}
+.nx-notes li{display:flex;gap:9px;align-items:flex-start;font-size:13px;line-height:1.42}
+.nx-notes b{font-weight:600}
+.nx-grey{background:#f1f0eb;border:1px solid #dddcd4;border-radius:12px;padding:14px 18px;font-size:12.5px;line-height:1.45;color:#3d4556}
+.nx-grey p{margin:0 0 6px}
+.nx-grey p:last-child{margin:0}
+.nx-grey b{color:#1a2744;font-weight:600}
+.nx-key{display:flex;flex-wrap:nowrap;align-items:center;gap:8px 12px;margin-top:10px;padding-top:9px;border-top:1px solid #ecebe4;font-size:13px;color:#3d4556}
+
+.nx-sec{margin-top:14px}
+.nx-flab{display:flex;align-items:center;gap:8px 12px;flex-wrap:wrap;margin:0 0 10px}
+.nx-flab h2{margin:0;font-size:20px;line-height:1.2;font-weight:600;letter-spacing:-.01em}
+.nx-code{display:inline-flex;align-items:center;justify-content:center;min-width:28px;height:28px;padding:0 9px;border-radius:7px;background:#c8a94a;color:#1a2744;font-weight:700;font-size:13px}
+.nx-browser{width:100%;box-shadow:0 14px 34px rgba(16,24,43,.10)}
+.nx-browser .k-browser-url{max-width:760px}
+.nx-view{position:relative;background:#f5f5f2;overflow:hidden}
+.nx-b{position:relative;z-index:2;box-shadow:0 0 0 3px #ffffff}
+.nx-bs{width:24px;height:24px;font-size:12px}
+.nx-pick{display:inline-flex;align-items:center;gap:5px;height:24px;padding:0 10px;border-radius:999px;background:#fbf5e3;border:1.5px solid #866a1e;color:#866a1e;font-size:12px;font-weight:700;line-height:1;white-space:nowrap;flex:none;font-family:Geist,system-ui,sans-serif}
+.nx-pick svg{width:12px;height:12px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+
+/* header (decided, signed in) */
+.nx-hd .k-brand{margin-right:16px}
+.nx-rook{width:30px;height:30px;fill:#ffffff;flex:none}
+.nx-rook-sm{width:24px;height:24px}
+.nx-nav{gap:0}
+.nx-nav a{padding:0 10px;white-space:nowrap}
+.nx-navbtn{display:inline-flex;align-items:center;gap:4px;min-height:44px;padding:0 10px;border:0;background:transparent;color:#ffffff;font:inherit;font-size:15px;font-weight:500}
+.nx-sbtn{display:inline-flex;align-items:center;gap:8px;width:220px;height:44px;padding:0 8px 0 12px;margin-right:16px;border-radius:8px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.45);color:#ffffff;text-decoration:none;font-size:14.5px;font-weight:500;flex:none}
+.nx-kbd{margin-left:auto;font-family:"Geist Mono",ui-monospace,monospace;font-size:12px;color:#e8ecf4;border:1px solid rgba(255,255,255,.4);border-radius:5px;padding:2px 6px;line-height:1.2}
+.nx-util{gap:12px}
+.nx-my{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 8px;border:0;border-radius:8px;background:transparent;color:#ffffff;font:inherit;font-size:14px;font-weight:500}
+.nx-foot-in{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px;padding-top:20px;padding-bottom:22px}
+.nx-foot .k-meta{color:rgba(255,255,255,.78)}
+.nx-foot nav a{font-size:14px}
+
+/* crumb + page head */
+.nx-crumbbar{background:#ffffff;border-bottom:1px solid #e3e2dc}
+.nx-crumbin{display:flex;justify-content:space-between;align-items:center;gap:16px;min-height:46px}
+.nx-crumb{display:flex;align-items:center;gap:8px;margin:0;font-size:14px;color:#555c6b}
+.nx-crumb a{color:#1a2744;font-weight:500;text-decoration:underline;text-decoration-color:#9aa1b0;text-underline-offset:3px}
+.nx-crumb span[aria-current]{color:#1a2744;font-weight:600}
+.nx-sep{color:#858b99}
+.nx-phead{background:#ffffff;border-bottom:1px solid #e3e2dc}
+.nx-phead-in{display:flex;align-items:baseline;gap:18px;padding-top:16px;padding-bottom:18px}
+.nx-phead h1{margin:0;font-size:32px;line-height:1.15;font-weight:700;letter-spacing:-.015em}
+.nx-quiet{font-size:15px;color:#555c6b}
+.nx-quiet b{color:#1a2744;font-weight:600}
+
+/* the desk */
+.nx-desk{background:#f1eee4;padding:18px 0 18px}
+.nx-cols{display:grid;grid-template-columns:800px 320px;gap:36px;justify-content:center;align-items:start}
+.nx-main{display:flex;flex-direction:column;gap:16px}
+.nx-step{position:relative;background:#ffffff;border:1px solid #dcd7c6;border-radius:12px;padding:18px 24px 20px;box-shadow:0 1px 0 #e6e1d1}
+.nx-sh{display:flex;align-items:center;gap:14px;margin:0 0 12px}
+.nx-sn{display:inline-flex;align-items:center;justify-content:center;width:46px;height:46px;border-radius:11px;border:2px solid #1a2744;color:#1a2744;font-size:28px;font-weight:700;line-height:1;flex:none}
+.nx-sh h2{margin:0;font-size:24px;line-height:1.2;font-weight:700;letter-spacing:-.01em}
+.nx-sh .nx-shr{margin-left:auto;display:flex;align-items:center;gap:10px}
+.nx-flbl{display:block;font-size:14px;font-weight:600;color:#1a2744;margin:0 0 6px}
+.nx-inp{display:flex;align-items:center;min-height:44px;padding:0 12px;border:1px solid #858b99;border-radius:8px;background:#ffffff;color:#1a2744;font-size:16px}
+.nx-hint{margin:6px 0 0;font-size:13px;line-height:1.45;color:#555c6b}
+.nx-box{position:relative;margin-top:12px;border:1px solid #858b99;border-radius:8px;background:#ffffff}
+.nx-bar{display:flex;align-items:center;gap:2px;height:46px;padding:0 8px;background:#fbfaf6;border-bottom:1px solid #dddcd4;border-radius:8px 8px 0 0}
+.nx-tool{display:inline-flex;align-items:center;gap:6px;height:34px;padding:0 9px;white-space:nowrap;border:0;border-radius:7px;background:transparent;color:#1a2744;font:inherit;font-size:13.5px;font-weight:600}
+.nx-tool-on{background:#e3e7f0;box-shadow:inset 0 0 0 1px #b9c1d3}
+.nx-text{padding:14px 14px 14px;font-size:13.5px;line-height:1.48;color:#1f2a40}
+.nx-text p{margin:0 0 5px}
+.nx-text h3{margin:12px 0 4px;font-size:16px;line-height:1.3;font-weight:700;color:#1a2744}
+.nx-text h3:first-child{margin-top:0}
+.nx-text a{color:#1a2744;text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:1px}
+.nx-sel{background:#cfdcf5;box-shadow:0 0 0 2px #cfdcf5;border-radius:2px}
+.nx-starter{color:#6b7180}
+.nx-ev{position:relative}
+.nx-lbx{position:absolute;z-index:4;width:318px;background:#ffffff;border:1px solid #9aa1b0;border-radius:10px;padding:12px 14px 14px;box-shadow:0 12px 28px rgba(16,24,43,.18);font-size:14px;line-height:1.4}
+.nx-lbx label{display:block;font-size:13.5px;font-weight:600;color:#1a2744;margin-bottom:6px}
+.nx-lbx .nx-inp{font-size:14.5px;min-height:40px}
+.nx-lbx-row{display:flex;align-items:center;gap:8px;margin-top:10px}
+.nx-under{margin:10px 0 0;font-size:13.5px;line-height:1.5;color:#555c6b}
+.nx-p{margin:0;font-size:15.5px;line-height:1.5;color:#3d4556}
+.nx-p b{color:#1a2744}
+.nx-act{display:flex;flex-wrap:wrap;align-items:center;gap:10px 16px;margin-top:12px}
+.nx-act .nx-g{font-size:13.5px;color:#555c6b}
+.nx-done{display:flex;align-items:center;gap:8px;margin:12px 0 0;font-size:14px;color:#145b3a;font-weight:600}
+.nx-plain{font-size:15px;font-weight:600;color:#1a2744;text-decoration:underline;text-underline-offset:4px;text-decoration-color:#9aa1b0}
+.nx-send{min-height:50px;padding:0 24px;font-size:16px}
+
+.nx-side{display:flex;flex-direction:column;gap:10px}
+.nx-card{background:#ffffff;border:1px solid #e0ddd2;border-radius:12px;padding:11px 16px 11px}
+.nx-card h2{margin:0;font-size:15px;font-weight:700}
+.nx-ct{margin:6px 0 0;font-size:13.5px;line-height:1.5;color:#3d4556}
+.nx-ct b{color:#1a2744}
+.nx-ppl{list-style:none;margin:8px 0 0;padding:0}
+.nx-ppl li{display:grid;grid-template-columns:30px minmax(0,1fr);gap:10px;align-items:center;padding:4px 0}
+.nx-ppl b{display:block;font-size:14px;line-height:1.3}
+.nx-ppl small{display:block;font-size:12.5px;color:#555c6b;line-height:1.35}
+.nx-ini{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:50%;font-size:11.5px;font-weight:700;flex:none}
+.nx-ini-mm{background:#1a2744;color:#ffffff}
+.nx-ini-pr{background:#f4ecd4;color:#664c0c;border:1px solid #d9c27c}
+.nx-clinks{display:flex;flex-direction:column;gap:4px;margin-top:6px;font-size:13.5px}
+.nx-clinks a{font-weight:600;color:#1a2744;text-underline-offset:3px}
+
+/* frame B */
+.nx-bgrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px 18px;align-items:start}
+.nx-bcol{display:flex;flex-direction:column;gap:16px;min-width:0}
+.nx-panel{position:relative;background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:16px 18px 18px;display:flex;flex-direction:column;gap:10px}
+.nx-ptop{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.nx-ptag{font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#555c6b;margin:0}
+.nx-pnote{margin:0;font-size:13px;line-height:1.5;color:#555c6b}
+.nx-dim{background:#d9dbe0;border-radius:10px;padding:22px 18px}
+.nx-dlg{background:#ffffff;border-radius:12px;padding:18px 18px 16px;box-shadow:0 16px 36px rgba(16,24,43,.25)}
+.nx-dlg h3{margin:0;font-size:17px;line-height:1.3;font-weight:700}
+.nx-dlg p{margin:6px 0 0;font-size:14px;color:#3d4556}
+.nx-ministep{border:1px solid #dcd7c6;border-radius:10px;padding:14px 14px 14px}
+.nx-msh{display:flex;align-items:center;gap:10px;margin:0 0 10px}
+.nx-msh .nx-sn{width:34px;height:34px;font-size:20px;border-radius:8px}
+.nx-msh h3{margin:0;font-size:17px;font-weight:700}
+.nx-two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.nx-two .nx-inp{font-size:13px;min-height:38px;padding:0 9px;white-space:nowrap}
+.nx-wait{display:flex;align-items:flex-start;gap:8px;padding:10px 12px;border-radius:8px;background:#fbf5e3;border:1px solid #ece0b9;font-size:13.5px;line-height:1.45;color:#3d3420}
+.nx-wait a{color:#1a2744;font-weight:600}
+.nx-mwin{border:1px solid #cfcec6;border-radius:10px;overflow:hidden}
+.nx-mwin-top{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 10px;background:#eeede8;border-bottom:1px solid #d9d8d1}
+.nx-mwin-top .k-seg button{min-height:32px;padding:0 12px;font-size:13px}
+.nx-mwin-top a{font-size:13.5px;font-weight:600;color:#1a2744}
+.nx-mbody{background:#f3f1ea;padding:12px 18px}
+.nx-mem{background:#ffffff;border:1px solid #e3e0d4;font-family:"Source Serif 4",Georgia,serif;font-size:11.5px;line-height:1.5;color:#1f2a40}
+.nx-mem-band{display:flex;align-items:center;gap:8px;padding:10px 12px;background:#1a2744;color:#ffffff;font-family:Geist,Arial,sans-serif}
+.nx-mem-band svg{width:20px;height:20px;fill:#ffffff;flex:none}
+.nx-mem-band small{display:block;font-size:8.5px;letter-spacing:.14em;font-weight:700;color:#e6cf86}
+.nx-mem-band b{display:block;font-size:16px;line-height:1.1}
+.nx-mem-in{padding:10px 12px 12px}
+.nx-mem-in p{margin:0 0 6px}
+.nx-mem-in h4{margin:8px 0 3px;font-family:Geist,Arial,sans-serif;font-size:12.5px;font-weight:700;color:#1a2744}
+.nx-mem-in a{color:#1a2744;text-decoration:underline}
+.nx-status{display:flex;flex-wrap:wrap;align-items:center;gap:8px;font-size:14px;color:#3d4556}
+.nx-status b{color:#1a2744}
+.nx-fold{padding:10px 12px;border-radius:8px;background:#f5f5f2;border:1px solid #e3e2dc;font-size:14px;color:#3d4556}
+.nx-figs{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}
+.nx-fig{border:1px solid #dddcd4;border-radius:10px;padding:8px 10px}
+.nx-fig b{display:block;font-size:24px;line-height:1.1}
+.nx-fig span{display:block;font-size:12.5px;font-weight:600;color:#3d4556;margin-top:2px}
+.nx-notrack{display:flex;gap:8px;align-items:flex-start;padding:9px 12px;border-radius:8px;background:#f5f5f2;font-size:13px;line-height:1.45}
+.nx-radios{display:flex;flex-direction:column;gap:8px}
+.nx-radio{display:grid;grid-template-columns:22px minmax(0,1fr);gap:10px;align-items:start;padding:12px 14px;border:1px solid #c9c8c0;border-radius:10px;background:#ffffff}
+.nx-radio i{display:block;width:20px;height:20px;border-radius:50%;border:2px solid #858b99;margin-top:1px}
+.nx-radio b{display:flex;align-items:center;gap:8px;font-size:15px;line-height:1.3}
+.nx-radio small{display:block;font-size:13px;line-height:1.4;color:#555c6b;margin-top:2px}
+.nx-radio-on{border:2px solid #1a2744;padding:11px 13px;background:#f7f8fb}
+.nx-radio-on i{border:6px solid #1a2744}
+.nx-later{border:1.5px dashed #9aa1b0;background:#fbfbf8}
+.nx-fgrid{display:grid;grid-template-columns:1fr 1fr;gap:6px 10px}
+.nx-fgrid label{display:block;font-size:12.5px;font-weight:600;margin-bottom:4px}
+.nx-fgrid .nx-inp{min-height:36px;font-size:13.5px;padding:0 10px}
+.nx-writes{padding:9px 12px;border-radius:8px;background:#ffffff;border:1px solid #dddcd4;font-size:13.5px;line-height:1.45;color:#1f2a40}
+.nx-writes a{color:#1a2744}
+.nx-banner{display:flex;align-items:flex-start;gap:8px;padding:10px 12px;border-radius:8px;background:#eceef3;border:1px solid #c9cfdc;font-size:13.5px;line-height:1.4;color:#1a2744}
+.nx-banner b{font-weight:700}
+.nx-grbox{border:1px solid #c9c8c0;border-radius:8px;background:#f4f4f1}
+.nx-grbox .nx-bar{background:#efefec;color:#8a8f9b}
+.nx-grbox .nx-tool{color:#8a8f9b}
+.nx-grtext{padding:12px 18px 14px;font-size:14px;line-height:1.5;color:#6b7180}
+.nx-grtext h3{margin:0 0 4px;font-size:15px;color:#6b7180}
+.nx-grtext p{margin:0 0 6px}
+
+/* closed controls, menus and chips (revision after K's picks) */
+.nx-opt{display:inline-flex;align-items:center;height:22px;padding:0 9px;border-radius:999px;background:#eceef2;border:1px solid #c9cfdc;color:#3d4555;font-size:11.5px;font-weight:600;line-height:1;white-space:nowrap;flex:none;font-family:Geist,system-ui,sans-serif}
+.nx-tsep{display:block;width:1px;height:22px;background:#dddcd4;margin:0 6px;flex:none}
+.nx-addbtn{border:1px solid #c9c8c0;background:#ffffff;padding:0 8px 0 10px}
+.nx-addbtn-on{border-color:#1a2744;box-shadow:inset 0 0 0 1px #1a2744;background:#f1f3f8}
+.nx-split{display:inline-flex;align-items:stretch}
+.nx-split .nx-send{border-radius:8px 0 0 8px}
+.nx-arrow{display:inline-flex;align-items:center;justify-content:center;width:44px;min-height:50px;padding:0;border:1px solid #c8a94a;border-left:1px solid #8f7a35;border-radius:0 8px 8px 0;background:#c8a94a;color:#1a2744}
+.nx-arrow-on{background:#b39540;border-color:#b39540;border-left-color:#8f7a35}
+.nx-split-sm .nx-send{min-height:40px;padding:0 14px;font-size:14px}
+.nx-split-sm .nx-arrow{min-height:40px;width:38px}
+.nx-more{position:relative;display:flex;align-items:center;gap:14px;width:100%;min-height:48px;padding:0 20px;border:1px solid #dcd7c6;border-radius:12px;background:#fbfaf6;color:#1a2744;font:inherit;text-align:left}
+.nx-more b{display:inline-flex;align-items:center;gap:6px;font-size:15px;font-weight:600;white-space:nowrap}
+.nx-more span{font-size:13.5px;color:#555c6b}
+.nx-menu{position:relative;z-index:3;background:#ffffff;border:1px solid #cfcec6;border-radius:12px;box-shadow:0 18px 40px rgba(16,24,43,.18);padding:6px;display:flex;flex-direction:column;gap:2px}
+.nx-mi{display:grid;grid-template-columns:18px minmax(0,1fr);gap:8px;align-items:start;padding:8px 10px;border-radius:8px}
+.nx-mi b{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:14px;line-height:1.3;font-weight:600;color:#1a2744}
+.nx-mi small{display:block;font-size:12.5px;line-height:1.38;color:#555c6b;margin-top:2px}
+.nx-mi .k-i{margin-top:1px;color:#1a2744}
+.nx-mi-hi{background:#f1f3f8}
+.nx-mi-sep{height:1px;background:#ecebe4;margin:2px 6px}
+.nx-select{display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:40px;padding:0 10px 0 12px;border:1px solid #858b99;border-radius:8px;background:#ffffff;color:#1a2744;font-size:14px;font-weight:500}
+.nx-select-open{border:2px solid #1a2744;padding:0 9px 0 11px}
+.nx-arrowdn{display:flex;justify-content:flex-start;margin:-2px 0 -4px 14px;color:#9aa1b0}
+.nx-step-lbl{margin:0;font-size:12.5px;font-weight:600;color:#555c6b}
+.nx-minibar{display:flex;align-items:center;gap:2px;height:40px;padding:0 6px;border:1px solid #858b99;border-radius:8px;background:#fbfaf6}
+.nx-minibar .nx-tool{height:30px;padding:0 7px;font-size:12.5px}
+.nx-orows{display:flex;flex-direction:column;border:1px solid #dcd7c6;border-radius:12px;background:#ffffff;overflow:hidden}
+.nx-orow{display:grid;grid-template-columns:132px minmax(0,1fr);gap:12px;align-items:center;padding:9px 14px;border-top:1px solid #ecebe4}
+.nx-orow:first-child{border-top:0}
+.nx-orow>b{font-size:14px;font-weight:600;color:#1a2744}
+.nx-ocell{display:flex;align-items:center;flex-wrap:wrap;gap:6px 12px;font-size:13.5px;color:#3d4556}
+.nx-ocell a{color:#1a2744;font-weight:600;text-underline-offset:3px}
+.nx-ogrey{font-size:12.5px;color:#555c6b;display:inline-flex;align-items:center;gap:6px;flex-wrap:wrap}
+.nx-emptyf{display:flex;align-items:center;min-height:38px;width:100%;padding:0 12px;border:1px solid #858b99;border-radius:8px;background:#ffffff;color:#6b7180;font-size:13px}
+.nx-req{font-size:12px;font-weight:600;color:#7a3d00}
+.nx-howto{padding:9px 14px 10px;background:#f6f7fa;border-bottom:1px solid #e3e5ec;font-size:13px;line-height:1.5;color:#3d4556}
+.nx-howto p{margin:0}
+.nx-howto p+p{margin-top:3px}
+.nx-howto b{color:#1a2744;font-weight:600}
+.nx-lbar{position:relative;margin:7px 0 8px 0;padding:8px 10px;background:#ffffff;border:1px solid #9aa1b0;border-radius:10px;box-shadow:0 8px 20px rgba(16,24,43,.14)}
+.nx-lbar:before{content:"";position:absolute;top:-7px;right:150px;width:12px;height:12px;background:#ffffff;border-left:1px solid #9aa1b0;border-top:1px solid #9aa1b0;transform:rotate(45deg)}
+.nx-lbar label{font-size:13.5px;font-weight:600;color:#1a2744;white-space:nowrap}
+.nx-lbar-row{display:flex;align-items:center;gap:8px}
+.nx-lbar .nx-inp{flex:1;min-height:38px;font-size:14px;color:#3d4556}
+.nx-sw{display:inline-flex;align-items:center;gap:5px;height:22px;padding:0 8px;border-radius:5px;font-size:10.5px;font-weight:700;white-space:nowrap}
+.nx-sw svg{width:11px;height:11px}
+.nx-sw-navy{background:#1a2744;color:#ffffff}
+.nx-sw-navy svg{fill:#ffffff}
+.nx-sw-plain{background:#ffffff;color:#1a2744;border:1px solid #c9c8c0;border-bottom:2px solid #c8a94a}
+.nx-sw-plain svg{fill:#1a2744}
+.nx-thumb{width:72px;height:48px;object-fit:cover;border-radius:6px;display:block;flex:none}
+</style>
+</helmet>
+<div class="nx-root" style="width:1440px;height:3900px">
+
+<section class="nx-doc" aria-label="About this board">
+<div class="nx-doc-top"><div><p class="k-kicker">18 · Newsletter · Option E · For now</p>
+<h1 class="nx-title">Newsletter-E · The simple one, for now</h1>
+<p class="nx-meta" style="margin-top:8px"><b>Built from:</b> today's Group email page (subject, text box, Send a test, confirm step, send history) · Nav-Header-Final (signed-in header) · Work-J (admin chrome) · Newsletter-A (the letter, the report, the unsubscribe page) · Tourn-List-Final (title strip, December Meet) · Home-Final-Phones (phones, part 2)</p>
+<p class="nx-meta"><b>Replaces:</b> Nothing: round 1's A to D stay on the page as directions for later · <b>Part 2</b> (Newsletter-E-2) shows the December issue as a member receives it. · <b>Revised</b> Tue, Nov 10, 2026, after K's picks.</p></div>
+<div style="display:flex;flex-direction:column;align-items:flex-end;gap:7px;flex:none;font-size:12.5px;color:#3d4556"><span class="k-sample" style="white-space:nowrap">Sample data · badged in each frame</span><span style="display:flex;align-items:center;gap:8px;white-space:nowrap"><span class="nx-pick">Your pick N</span>the answer K picked, drawn</span><span style="display:flex;align-items:center;gap:8px;white-space:nowrap"><span class="nx-opt">Optional</span>an extra, off until chosen</span></div></div>
+
+<div class="nx-legend"><div class="nx-lbox"><p class="k-label">Notes on this board</p><ol class="nx-notes">
+<li><span class="k-num-badge">1</span><span><b>Simple first, more when you ask.</b> The page opens with three steps. The extras wait behind three closed controls: Add, the arrow on Send, and More options.</span></li>
+<li><span class="k-num-badge">2</span><span><b>Tournaments are typed.</b> Type the line and link it to King Registration, as in an email today. Nothing is read from the site's calendar.</span></li>
+<li><span class="k-num-badge">3</span><span><b>A person sends it.</b> After a test and one confirm step (B1), or later from the arrow on Send (B2). Nothing goes out by itself.</span></li>
+<li><span class="k-num-badge">4</span><span><b>One person writes at a time.</b> The others can read; it opens for them when the writer closes it (B8).</span></li>
+<li><span class="k-num-badge">5</span><span><b>Photos and the event form are options.</b> Both wait under Add, off until someone chooses them (B6, B6a, B6b).</span></li>
+<li><span class="k-num-badge">6</span><span><b>A report without tracking.</b> Five plain figures; nobody's opens or clicks are tracked (B4).</span></li>
+</ol>
+</div>
+<aside class="nx-grey" aria-label="Note for the canvas"><p class="k-label">Note for the canvas</p>
+<p><b>What:</b> The easiest page for the monthly newsletter: write it like an email, paste your links, send yourself a test, then send it to the members. Nothing is read from the rest of the site.</p>
+<p><b>K's feedback applied:</b> K asked for it "much easier to use for now", with leaders "mannually linking kingregistration tournaments", so tournaments are typed with a pasted link, and round 1's event picker, site-filled blocks, cover, chess position, locks and panels are gone. Then K asked for "allowing for choice", a photo as "an option but not default", and said "it doesnt necessarily all need to be shown all at teh same time": so the extras wait closed behind Add, the arrow on Send and More options.</p>
+<p><b>Open for K:</b> Picks 1 to 7 are decided (see Your picks). Pick 8, how it grows later, waits.</p></aside></div>
+</section>
+
+
+<section class="nx-sec" aria-labelledby="nx-fa">
+<div class="nx-flab"><span class="nx-code">A</span><h2 id="nx-fa">Creating and sending · the December 2026 issue, Mon, Nov 23, 2026, 2:15 PM, signed in as the media manager</h2><span class="nx-pick">Your pick 1</span><span class="k-sample">Sample data · the letter's wording, pasted address, test time, 2 unsubscribed</span><span class="k-meta">Drawn part way through: a new month opens with the six headings (B5); every word under them here was typed by a person.</span></div>
+<div class="k-browser nx-browser"><div class="k-browser-bar"><i></i><i></i><i></i><div class="k-browser-url">louisianachess.org/admin/newsletter</div></div>
+<div class="nx-view">
+<header class="k-header nx-hd"><div class="k-wrap-wide k-header-in"><a class="k-brand" href="#" aria-label="Louisiana Chess Association, home"><svg class="nx-rook" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span class="k-brand-name" aria-hidden="true"><b>Louisiana Chess</b><span>Association</span></span></a>
+<nav class="k-navlinks nx-nav" aria-label="Main"><a href="#">Tournaments</a><a href="#">Clubs</a><a href="#">Scholastic</a><a href="#">News</a><a href="#">Membership</a><button class="nx-navbtn" type="button" aria-haspopup="true" aria-expanded="false">About<svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></button></nav><a class="nx-sbtn" href="#"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg><span>Search</span><kbd class="nx-kbd" aria-hidden="true">&#8984;K</kbd></a>
+<div class="k-utility nx-util"><a class="k-ulink" href="#">Donate</a><button class="nx-my" type="button" aria-haspopup="menu" aria-expanded="false" aria-label="My LCA, nothing to do"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4.5 21c1-4 4-6 7.5-6s6.5 2 7.5 6"></path></svg><span>My LCA</span><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></button></div></div></header>
+<div class="nx-crumbbar"><div class="k-wrap-wide nx-crumbin"><nav aria-label="Breadcrumb"><p class="nx-crumb"><a href="#">Admin</a><span class="nx-sep" aria-hidden="true">/</span><span aria-current="page">Newsletter</span></p></nav><button class="k-btn k-btn-soft k-btn-sm" type="button"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"></path></svg>Admin sections</button></div></div>
+<div class="nx-phead"><div class="k-wrap-wide"><div class="nx-phead-in"><h1>Newsletter</h1><span class="nx-quiet"><b>December 2026</b> · Draft · Saved automatically at 2:15 PM</span></div></div></div>
+<div class="nx-desk"><div class="nx-cols">
+
+<div class="nx-main">
+<section class="nx-step" aria-labelledby="nx-s1"><span class="k-num-badge nx-b" style="position:absolute;top:-12px;left:-12px">1</span>
+<div class="nx-sh"><span class="nx-sn" aria-hidden="true">1</span><h2 id="nx-s1">Write it</h2></div>
+<label class="nx-flbl" for="nx-subj">Subject <span style="font-weight:400;color:#555c6b;font-size:13px">· the site writes the month for you; you can change it</span></label>
+<div class="nx-inp" id="nx-subj">LCA Newsletter · December 2026</div>
+<div class="nx-box">
+<div class="nx-bar" role="toolbar" aria-label="Writing tools">
+<button class="nx-tool" type="button"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5h6a3.5 3.5 0 0 1 0 7H7zM7 12h7a3.5 3.5 0 0 1 0 7H7z"></path></svg>Bold</button>
+<button class="nx-tool" type="button"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 5h8M6 19h8M14 5l-4 14"></path></svg>Italic</button>
+<button class="nx-tool" type="button"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 5v14M18 5v14M6 12h12"></path></svg>Heading</button>
+<button class="nx-tool" type="button"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6h11M9 12h11M9 18h11M4.5 6h.01M4.5 12h.01M4.5 18h.01"></path></svg>List</button>
+<button class="nx-tool nx-tool-on" type="button" aria-pressed="true"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"></path></svg>Link</button>
+<button class="nx-tool" type="button"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 14L4 9l5-5M4 9h10a6 6 0 0 1 0 12h-3"></path></svg>Undo</button>
+<span class="nx-tsep" aria-hidden="true"></span>
+<button class="nx-tool nx-addbtn" type="button" aria-haspopup="menu" aria-expanded="false"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>Add a photo, event or line<svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></button>
+<span class="k-num-badge nx-b nx-bs" style="margin-left:10px">5</span>
+</div>
+<div class="nx-howto"><p><b>A link:</b> mark the words, press Link, paste the web address you copied. Link reminds you if no words are marked.</p>
+<p><b>A tournament:</b> type the day, name and city, then the words to click (Register on King Registration) and link them.</p>
+<p>Commas between the parts are fine, and the site adds the ↗. Or use Add, then An event line.</p></div>
+<div class="nx-text">
+<h3>A note from the president</h3>
+<p>Dear members,</p>
+<p>Thank you to every volunteer who ran the State Championship weekend in Sulphur.</p>
+<p>The new year starts busy: the Ken Ferguson Memorial in January, a youth meet every month to May.</p>
+<p>One ask: please <a href="#">renew your membership</a>, and bring one new player to a club night.</p>
+<p>See you over the board,<br>LCA President</p>
+<h3 style="display:flex;align-items:center;gap:10px">Coming up</h3>
+<div class="nx-ev"><span class="nx-pick" style="position:absolute;left:-128px;top:0">Your pick 4</span>
+<p>Sat, Dec 5, 2026 · New Orleans Youth Chess December Meet · New Orleans · <span class="nx-sel">Register on King Registration</span> ↗</p>
+<div class="nx-lbar" role="dialog" aria-label="Make a link"><span class="k-num-badge nx-b nx-bs" style="position:absolute;top:-12px;right:-12px">2</span>
+<div class="nx-lbar-row"><label for="nx-addr">Paste the web address you copied</label><div class="nx-inp" id="nx-addr">https://www.kingregistration.com/…</div><button class="k-btn k-btn-navy k-btn-sm" type="button">Add link</button><button class="k-btn k-btn-line k-btn-sm" type="button">Cancel</button></div></div>
+<p>Sat to Mon, Jan 16 to 18, 2027 · Ken Ferguson Memorial · New Orleans · run by Downriver Chess · <a href="#">Registers on the organizer's site ↗</a></p>
+<p>Sat, May 8, 2027 · New Orleans Youth Chess Grand Prix Final · New Orleans · <a href="#">Details on King Registration ↗</a></p></div>
+<h3>Results</h3>
+<p><b>Marcus Landry wins the 2026 Louisiana State Championship</b> with 4½ of 5 in Sulphur, Sat to Mon, Sep 5 to 7, 2026, among 64 players. Section winners: Open Marcus Landry 4½ · U1800 Devin Batiste 4½ · U1400 Sam Nguyen and Leo Robichaux 4, tied · U1000 Theo Guidry 4½. <a href="#">Full results ↗</a></p>
+<h3>From the clubs</h3>
+<p>Picayune Chess Club: quick-rated nights on first Mondays, next Mon, Dec 7, 2026 at 6:00 PM. <a href="#">Club page</a></p>
+<p>Bunkie Chess Club: Tuesdays, 4:00 PM to 6:00 PM, Bunkie Library. Ages 8 to 108, free to join. <a href="#">Club page</a></p>
+<p>Baton Rouge Chess Club: casual nights on Wednesdays at Boba ParTea. <a href="#">Club page</a></p>
+<h3>Scholastic</h3>
+<p>For parents: the New Orleans Youth Chess season began Sat, Nov 14, 2026, one Saturday a month to May.<br>Players need a US Chess membership. <a href="#">Scholastic page</a></p>
+<h3>Board business</h3>
+<p class="nx-starter" style="margin-bottom:0">Write here, or delete this heading.</p>
+</div></div>
+<p class="nx-under">Saved automatically at 2:15 PM. You can leave this page and come back to it.</p>
+</section>
+
+<section class="nx-step" aria-labelledby="nx-s2">
+<div class="nx-sh"><span class="nx-sn" aria-hidden="true">2</span><h2 id="nx-s2">Check it</h2></div>
+<p class="nx-p">Send yourself a copy and read it on your phone before the members get it.</p>
+<div class="nx-act"><button class="k-btn k-btn-navy" type="button"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="M3.5 6.5L12 13l8.5-6.5"></path></svg>Send a test to me</button><span class="nx-g">Goes only to the address you sign in with, marked Test.</span></div>
+<div class="nx-act" style="margin-top:10px;justify-content:space-between;align-items:flex-start;flex-wrap:nowrap"><div><p class="nx-done" style="margin:0"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7"></path></svg>Test sent Mon, Nov 23, 2026 at 2:09 PM.</p><p class="nx-hint" style="margin:2px 0 0 24px">You have changed the letter since this test. Send another if you like.</p></div><button class="k-btn k-btn-line k-btn-sm" type="button"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 12s3.5-6.5 9.5-6.5 9.5 6.5 9.5 6.5-3.5 6.5-9.5 6.5S2.5 12 2.5 12z"></path><circle cx="12" cy="12" r="2.6"></circle></svg>See it as members will</button></div>
+</section>
+
+<section class="nx-step" aria-labelledby="nx-s3"><span class="k-num-badge nx-b" style="position:absolute;top:-12px;left:-12px">3</span>
+<div class="nx-sh"><span class="nx-sn" aria-hidden="true">3</span><h2 id="nx-s3">Send it</h2><span class="nx-shr"><span class="nx-pick">Your pick 2</span></span></div>
+<p class="nx-p"><b>243 members will get it:</b> every LCA member with an email address.</p>
+<p class="nx-p" style="margin-top:6px;font-size:14px"><span class="k-sample" style="margin-right:8px">Sample data</span>2 others asked not to get it, so they are not counted.</p>
+<div class="nx-act" style="margin-top:16px;gap:10px 20px"><div class="nx-split" role="group" aria-label="Send"><button class="k-btn k-btn-gold nx-send" type="button"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 3L10 14M21 3l-7 18-4-7-7-4z"></path></svg>Send to 243 members</button><button class="nx-arrow" type="button" aria-haspopup="menu" aria-expanded="false" aria-label="Other ways to send"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></button></div></div>
+<p class="nx-hint" style="margin-top:12px;font-size:13.5px">You will be asked once to confirm. A sent newsletter cannot be taken back. <b style="color:#1a2744;font-weight:600">To send it later, use the arrow.</b></p>
+</section>
+
+<div style="position:relative"><span class="k-num-badge nx-b nx-bs" style="position:absolute;top:-10px;left:-12px;z-index:3">1</span><button class="nx-more" type="button" aria-expanded="false"><b>More options<svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></b><span>Top of the email · Who gets it · Words shown in the inbox · Where replies go</span></button></div>
+</div>
+
+<aside class="nx-side" aria-label="Around this issue">
+<section class="nx-card" aria-labelledby="nx-c1" style="position:relative"><span class="k-num-badge nx-b nx-bs" style="position:absolute;top:-10px;right:-10px">4</span><h2 id="nx-c1">Who is here</h2>
+<ul class="nx-ppl">
+<li><span class="nx-ini nx-ini-mm">MM</span><span><b>You, the media manager</b><small>Writing</small></span></li>
+<li><span class="nx-ini nx-ini-pr">PR</span><span><b>President</b><small>Has it open to read; cannot change it</small></span></li>
+</ul>
+<p class="nx-ct" style="font-size:13px">One person writes at a time. The others can read. This box shows only while someone else has the page open.</p></section>
+<section class="nx-card" aria-labelledby="nx-c2"><h2 id="nx-c2">Past newsletters</h2>
+<p class="nx-ct"><b>November 2026</b> · Sent Mon, Nov 16, 2026 · 243 members</p>
+<div class="nx-clinks" style="flex-direction:row;flex-wrap:wrap;gap:4px 14px"><a href="#">See November's report</a></div></section>
+<section class="nx-card" aria-labelledby="nx-c3"><h2 id="nx-c3">Stuck?</h2>
+<p class="nx-ct">Write to <b>LouisianaChess@gmail.com</b></p></section>
+</aside>
+</div></div>
+<footer class="k-footer nx-foot"><div class="k-wrap-wide nx-foot-in"><div class="k-row-sm" style="gap:10px"><svg class="nx-rook nx-rook-sm" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><b style="font-size:15px">Louisiana Chess Association</b></div><span class="k-meta">US Chess state affiliate · Louisiana's chess community since 1915</span><nav class="k-row" aria-label="Footer" style="gap:18px"><a href="#">Contact</a><a href="#">Website help</a><a href="#">Bylaws &amp; rules</a><a href="#">Donate</a></nav></div></footer>
+
+</div></div>
+</section>
+
+
+<section class="nx-sec" aria-labelledby="nx-fb">
+<div class="nx-flab"><span class="nx-code">B</span><h2 id="nx-fb">The same page's other moments</h2><span class="k-meta">Each panel is only the part of the page that changes. One closed control is opened at a time.</span><span class="k-sample">Sample data · report figures, photo description</span></div>
+<div class="nx-bgrid">
+<div class="nx-bcol">
+<div class="nx-panel"><div class="nx-ptop"><p class="nx-ptag">B1 · After pressing Send</p><span class="nx-pick">Your pick 2</span></div>
+<div class="nx-dim"><div class="nx-dlg" role="dialog" aria-label="Confirm sending"><h3>Send the December 2026 newsletter to 243 members now?</h3><p>This cannot be taken back.</p>
+<div class="k-row" style="margin-top:14px;gap:10px"><button class="k-btn k-btn-gold k-btn-sm" type="button">Send now</button><button class="k-btn k-btn-line k-btn-sm" type="button">Not yet</button></div></div></div>
+<p class="nx-pnote">The one confirm step. "Not yet" closes it and nothing is sent.</p></div>
+
+<div class="nx-panel"><div class="nx-ptop"><p class="nx-ptag">B2 · The arrow on Send, opened</p><span class="nx-opt">Optional</span></div>
+<div class="nx-split nx-split-sm" role="group" aria-label="Send"><button class="k-btn k-btn-gold nx-send" type="button">Send to 243 members</button><button class="nx-arrow nx-arrow-on" type="button" aria-haspopup="menu" aria-expanded="true" aria-label="Other ways to send"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 15l6-6 6 6"></path></svg></button></div>
+<div class="nx-menu" role="menu" aria-label="Other ways to send" style="margin-top:-4px">
+<div class="nx-mi nx-mi-hi" role="menuitem"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"></circle><path d="M12 7.5V12l3 2"></path></svg><span><b>Send later <span class="nx-opt">Optional</span></b><small>Pick a day and time; it asks once to confirm.</small></span></div>
+<div class="nx-mi" role="menuitem"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="M3.5 6.5L12 13l8.5-6.5"></path></svg><span><b>Send the test to someone else</b><small>A second reader before it goes out.</small></span></div>
+</div>
+<div class="nx-ministep" style="padding:10px 12px">
+<div class="nx-two"><div><label class="nx-flbl" style="font-size:13px">Day</label><div class="nx-inp">Tue, Dec 1, 2026</div></div><div><label class="nx-flbl" style="font-size:13px">Time</label><div class="nx-inp">8:00 AM Central</div></div></div>
+<button class="k-btn k-btn-gold k-btn-sm" type="button" style="margin-top:10px;width:100%;padding:0 8px;font-size:13.5px">Send on Tue, Dec 1, 2026 at 8:00 AM</button></div>
+<div class="nx-wait"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true" style="margin-top:2px"><circle cx="12" cy="12" r="8.5"></circle><path d="M12 7.5V12l3 2"></path></svg><span><b>Waiting to go out</b> Tue, Dec 1, 2026 at 8:00 AM Central · <a href="#">Change</a> · <a href="#">Cancel</a><br>You can still change the letter until then.</span></div></div>
+</div>
+
+<div class="nx-bcol">
+<div class="nx-panel"><div class="nx-ptop"><p class="nx-ptag">B3 · See it as members will</p></div>
+<div class="nx-mwin"><div class="nx-mwin-top"><div class="k-seg" role="group" aria-label="Show it on"><button class="k-seg-on" type="button" aria-pressed="true">Computer</button><button type="button" aria-pressed="false">Phone</button></div><a href="#">Close</a></div>
+<div class="nx-mbody"><div class="nx-mem"><div class="nx-mem-band"><svg viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span><small>LCA NEWSLETTER</small><b>December 2026</b></span></div>
+<div class="nx-mem-in"><p style="font-family:Geist,Arial,sans-serif;font-weight:700;font-size:12.5px;margin-bottom:3px">A note from the president</p><p>Dear members,</p><p>Thank you to every volunteer who ran the State Championship weekend in Sulphur.</p><h4>Coming up</h4><p style="margin:0">Sat, Dec 5, 2026 · New Orleans Youth Chess December Meet · New Orleans · <a href="#">Register on King Registration ↗</a></p></div></div></div></div>
+<p class="nx-pnote">The full email is part 2, frame C1. To change how its top looks: More options (B7).</p></div>
+
+<div class="nx-panel"><div class="nx-ptop"><p class="nx-ptag">B5 · Starting a new month</p><span class="nx-pick">Your pick 3</span></div>
+<div><label class="nx-flbl" style="font-size:14.5px">Start January's issue from</label>
+<div class="nx-select nx-select-open" role="combobox" aria-expanded="true">The usual six headings<svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 15l6-6 6 6"></path></svg></div></div>
+<div class="nx-menu" role="listbox" aria-label="Start January's issue from" style="margin-top:-4px">
+<div class="nx-mi nx-mi-hi" role="option"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7"></path></svg><span><b>The usual six headings <span class="k-tag k-tag-open">Your usual start</span></b><small>Ready to fill in or delete.</small></span></div>
+<div class="nx-mi" role="option"><span aria-hidden="true"></span><span><b>A copy of December's issue</b><small>All of December's words.</small></span></div>
+<div class="nx-mi" role="option"><span aria-hidden="true"></span><span><b>A blank page</b><small>Nothing written yet.</small></span></div>
+</div>
+<div><button class="k-btn k-btn-navy k-btn-sm" type="button">Start writing</button></div></div>
+</div>
+
+<div class="nx-bcol">
+<div class="nx-panel"><span class="k-num-badge nx-b" style="position:absolute;top:-12px;right:-12px">5</span><div class="nx-ptop"><p class="nx-ptag">B6 · Add, opened</p></div>
+<div class="nx-minibar" aria-label="Writing tools, the end of the row"><span class="nx-tool" style="color:#6b7180;padding:0 4px">…</span><span class="nx-tsep" aria-hidden="true"></span><button class="nx-tool nx-addbtn nx-addbtn-on" type="button" aria-haspopup="menu" aria-expanded="true" style="height:30px"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>Add a photo, event or line<svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 15l6-6 6 6"></path></svg></button></div>
+<div class="nx-menu" role="menu" aria-label="Add" style="margin-top:-4px">
+<div class="nx-mi nx-mi-hi" role="menuitem"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"></rect><circle cx="9" cy="10" r="1.8"></circle><path d="M21 16l-5-5-9 8"></path></svg><span><b>A photo</b><small>Optional. Most issues need none.</small></span></div>
+<div class="nx-mi" role="menuitem"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2"></rect><path d="M4 10h16M9 3v4M15 3v4"></path></svg><span><b>An event line</b><small>Fill in the day, name, city and link; it writes the tournament line for you.</small></span></div>
+<div class="nx-mi" role="menuitem"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h16"></path></svg><span><b>A dividing line</b><small>A thin line between two parts.</small></span></div>
+</div>
+<p class="nx-pnote">Closed when the page opens. Each item adds one thing where you last clicked in the letter.</p></div>
+
+<div class="nx-panel"><div class="nx-ptop"><p class="nx-ptag">B6b · Add, then An event line</p><span class="nx-opt">Optional</span></div>
+<p style="margin:0;font-size:16px;font-weight:700">An event line</p>
+<div class="nx-fgrid">
+<div style="grid-column:1 / span 2"><label>Event</label><div class="nx-inp">New Orleans Youth Chess December Meet</div></div>
+<div><label>Day or days</label><div class="nx-inp">Sat, Dec 5, 2026</div></div>
+<div><label>City</label><div class="nx-inp">New Orleans</div></div>
+<div style="grid-column:1 / span 2"><label style="display:flex;justify-content:space-between;align-items:center">Link <span class="k-sample" style="padding:1px 8px;font-size:11px">Sample data</span></label><div class="nx-inp">https://www.kingregistration.com/…</div></div>
+</div>
+<div class="nx-writes"><span style="display:block;font-size:12px;font-weight:600;color:#555c6b">It writes this line:</span>Sat, Dec 5, 2026 · New Orleans Youth Chess December Meet · New Orleans · <a href="#">Register on King Registration ↗</a></div>
+<div class="k-row" style="gap:8px"><button class="k-btn k-btn-navy k-btn-sm" type="button">Add this line</button><button class="k-btn k-btn-line k-btn-sm" type="button">Cancel</button></div>
+<p class="nx-pnote">Days can be a range, such as Sat to Mon, Jan 16 to 18, 2027. A link to another site writes "Registers on the organizer's site".</p></div>
+</div>
+
+<div class="nx-bcol">
+<div class="nx-panel"><div class="nx-ptop"><p class="nx-ptag">B6a · Add, then A photo</p><span class="nx-opt">Optional</span></div>
+<p style="margin:0;font-size:16px;font-weight:700">A photo</p>
+<div style="display:flex;align-items:center;gap:12px"><button class="k-btn k-btn-line k-btn-sm" type="button">Choose a photo</button><img class="nx-thumb" src="/_blob/31327c563c905dc86de6c8fa4018ecd0" alt="The chosen photo: the tournament hall."></div>
+<div><label class="nx-flbl" style="font-size:13px;margin-bottom:4px">Describe this photo for people who cannot see it <span class="nx-req">· required</span></label><div class="nx-inp" style="min-height:auto;padding:8px 10px;font-size:13.5px;line-height:1.4">Rows of players at their boards during a round in the tournament hall.</div></div>
+<div><label class="nx-flbl" style="font-size:13px;margin-bottom:4px">Caption <span style="font-weight:400;color:#555c6b">· shows under the photo; leave empty if you like</span></label><div class="nx-emptyf"></div></div>
+<div><button class="k-btn k-btn-navy k-btn-sm" type="button">Add photo</button></div>
+<p class="nx-pnote">The photo goes where you last clicked in the letter. Most issues need none, and one is plenty.</p></div>
+
+<div class="nx-panel"><span class="k-num-badge nx-b" style="position:absolute;top:-12px;right:-12px">4</span><div class="nx-ptop"><p class="nx-ptag">B8 · Someone else is writing</p></div>
+<div class="nx-banner"><span class="nx-ini nx-ini-pr" style="width:28px;height:28px;font-size:11px">PR</span><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V8a4 4 0 0 1 8 0v3"></path></svg><span><b>President is writing this issue.</b> You can read it. It opens for you when they close it. If this lasts more than an hour, write to LouisianaChess@gmail.com.</span></div>
+<div class="nx-grbox" aria-disabled="true"><div class="nx-bar" style="height:36px;gap:0;padding:0 4px;font-size:12px"><span class="nx-tool" style="padding:0 5px;font-size:12px">Bold</span><span class="nx-tool" style="padding:0 5px;font-size:12px">Italic</span><span class="nx-tool" style="padding:0 5px;font-size:12px">Heading</span><span class="nx-tool" style="padding:0 5px;font-size:12px">List</span><span class="nx-tool" style="padding:0 5px;font-size:12px">Link</span><span class="nx-tool" style="padding:0 5px;font-size:12px">Undo</span></div>
+<div class="nx-grtext"><h3>A note from the president</h3><p style="margin:0">Dear members, thank you to every volunteer who ran the State Championship weekend in Sulphur.</p></div></div>
+<p class="nx-pnote">Read only: the message box and Send are greyed for everyone but the writer.</p></div>
+</div>
+
+<div class="nx-panel" style="grid-column:1 / span 2"><span class="k-num-badge nx-b" style="position:absolute;top:-12px;right:-12px">6</span><div class="nx-ptop"><p class="nx-ptag">B4 · After it is sent</p><span class="k-sample">Sample data · report figures</span></div>
+<p class="nx-status"><b>Newsletter</b> · <b>December 2026</b> · Sent Tue, Dec 1, 2026 at 8:00 AM to 243 members</p>
+<div class="nx-fold">This issue has gone out and can no longer be changed.</div>
+<p class="nx-ptag" style="margin-top:4px">Report on December 2026</p>
+<div class="nx-figs"><div class="nx-fig"><b>243</b><span>Sent to</span></div><div class="nx-fig"><b>240</b><span>Delivered</span></div><div class="nx-fig"><b>3</b><span>Bounced</span></div><div class="nx-fig"><b>2</b><span>Unsubscribed</span></div><div class="nx-fig"><b>0</b><span>Spam reports</span></div></div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><p class="nx-pnote" style="align-self:center;font-size:13.5px;color:#3d4556">Bounced means the address no longer works.</p>
+<div class="nx-notrack"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l7.5 3v5.5c0 4.6-3.2 8.2-7.5 9.5-4.3-1.3-7.5-4.9-7.5-9.5V6L12 3z"></path></svg><span>LCA does not track who opens an email or what they click.</span></div></div>
+<div><button class="k-btn k-btn-navy k-btn-sm" type="button">Start January's issue</button></div></div>
+
+<div class="nx-panel" style="grid-column:span 2"><span class="k-num-badge nx-b" style="position:absolute;top:-12px;right:-12px">1</span><div class="nx-ptop"><p class="nx-ptag">B7 · More options, opened</p><span class="k-sample">Sample data · 2 unsubscribed</span></div>
+<button class="nx-more" type="button" aria-expanded="true" style="border-radius:12px 12px 0 0;border-bottom:0;min-height:46px"><b>More options<svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 15l6-6 6 6"></path></svg></b><span>Your choices are saved. The list closes again next time.</span></button>
+<div class="nx-orows" style="margin-top:-10px;border-radius:0 0 12px 12px">
+<div class="nx-orow"><b>Top of the email</b><div class="nx-ocell"><div class="nx-select" role="combobox" aria-expanded="false" style="min-width:230px">Dark blue top with the month<svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></div><span class="nx-ogrey"><span class="nx-sw nx-sw-navy"><svg viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg>December 2026</span> Dark blue <span class="nx-sw nx-sw-plain" style="margin-left:6px"><svg viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg>LCA Newsletter</span> Plain <span class="nx-opt">Optional</span></span></div></div>
+<div class="nx-orow"><b>Who gets it</b><div class="nx-ocell"><span>All LCA members with an email address (243)</span><a href="#">See who has unsubscribed (2)</a></div></div>
+<div class="nx-orow"><b>Words shown in the inbox</b><div class="nx-ocell"><div class="nx-emptyf">Optional. Leave it empty and mail apps show the first words of your note.</div></div></div>
+<div class="nx-orow"><b>Where replies go</b><div class="nx-ocell"><span style="color:#1a2744;font-weight:600">LouisianaChess@gmail.com</span><a href="#">Change</a></div></div>
+</div></div>
+
+</div>
+</section>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":3900}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>
