@@ -83,3 +83,7 @@ K's words: "on the sample tournamnet registration thing, the registration is ope
 K's words: "in the the page things, change the bottom buttom to have its text larger and have it jiggle a little bit when first  opening so it draws attemntion so they dont get lost. change the text to be simpler and more understandable: Pick template to Start from (or soemthing or the sort, what is there now is too wordy and ocndusing)."
 
 Asked whether the jiggle runs only while the letter is still empty (recommended) or every time the page opens, K answered at about 6:00 PM UTC: "agreed, 1".
+
+## Wednesday, November 11, 2026, about 8:25 PM UTC: the top of the page, three options
+
+K's words: "on the page thing, the \"1 write it\" thing takes up space unneccsaraily where it is and maybe the 1 should be placed where they pick a tempklate to make the flow consistnet. also, the from and subject boxes seem to take up unneessarily wide horizontal space. maybe the more options or something of the sort can be put there on the right. lets get 3 options with these kinds of things taken into mind for me to pick from so we try out more so we make this the best experience it can be for our admins and reps etc."

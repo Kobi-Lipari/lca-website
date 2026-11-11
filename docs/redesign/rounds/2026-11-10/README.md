@@ -195,3 +195,15 @@ On `Newsletter-Page-4` the button at the left of the bar at the foot reads "Pick
 K asked that the button jiggle a little when the page first opens, so nobody is lost. A board is a still picture, so one small picture, "When the page opens on an empty letter", shows the button mid-wiggle with motion marks. K chose that it wiggles only while the letter is still empty. For the build: once, about a second, a few pixels, never repeated while the page stays open, and for a device that asks for reduced motion no wiggle but a gold ring for a moment.
 
 The board is 5500 tall (5350 before), so the two rows under it on canvas page 19 moved down by 150. The president's two page pictures were made again.
+
+## Round 12: three ways to lay out the top of the page, for K to pick (Wednesday, November 11, 2026)
+
+K's note after round 11 (K's words are in `feedback.md`): "1 Write it" takes space where it is and the 1 belongs on the button that picks a template; From and Subject are needlessly wide, and More options or the like could sit at their right; three options to pick from. `newsletter3-specs.json` carries it as `revision12`; `results/newsletter12-results.json` holds the run. Canvas version 33: the three boards sit on page 19 right after `Newsletter-Page-4`, under the title "Three ways to lay out the top of the page · K picks one". `Newsletter-Page-4` itself is not changed in this round.
+
+In all three the bar at the foot reads 1 Pick a template to start from, 2 Send a test to me, 3 Send to 167 people, with nothing else in it; "Write it" is off the toolbar and Undo has its word back; and More options has moved up beside From and Subject.
+
+- `Newsletter-Page-4-Top-A`, One row: From, Subject and More options share one row. The letter shows 684px (630px on the page as it is). The sender's name is cut short with an ellipsis to fit.
+- `Newsletter-Page-4-Top-B`, Fields left, options right: From and Subject stay stacked at about three fifths of the width, with More options and Make bigger as two buttons at their right. The letter shows 638px.
+- `Newsletter-Page-4-Top-C`, The letter's own header: From and Subject are two slim lines at the top of the letter's frame, each as wide as its words, with More options at the right of the From line. The letter shows 650px. The designers recommend this one; its open point is that unboxed lines may not read at once as things to press.
+
+K's pick is applied to `Newsletter-Page-4` (every picture) and to the president's page pictures in the round that follows.
