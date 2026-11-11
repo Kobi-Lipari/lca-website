@@ -1,7 +1,9 @@
 // functions/utils/admin/campaigns.ts
 import { DEFAULT_FROM, DEFAULT_REPLY_TO } from '../email'
 import { renderEmail } from '../emailLayout'
+import { openLoopGate, type MailGate } from '../mail/gate'
 import { classifyToday } from '../mail/outcome'
+import { engineRulesOn } from '../mail/rules'
 import { deliver } from '../mail/send'
 import { resolveSiteUrl, type SiteEnv } from '../site'
 
@@ -168,13 +170,15 @@ type SendOutcome =
  * email has always sent, and reads the answer as this sender always has:
  * whether a failure is worth another try is classifyToday's rule in
  * ../mail/outcome, and the error keeps the words the recipients' error
- * column and the history show.
+ * column and the history show. A batch passes the gate it read for all its
+ * recipients.
  */
 async function sendOne(
   env: CampaignEnv,
   to: string,
   subject: string,
   html: string,
+  gate?: MailGate,
 ): Promise<SendOutcome> {
   // reply_to matters: the From address has no mailbox behind it, so
   // without it every reply to a group email was lost.
@@ -185,10 +189,15 @@ async function sendOne(
     subject,
     html,
     shape: 'campaign',
-  })
+  }, gate)
   if (result.ok) return { ok: true }
   // A thrown fetch is a network problem, not a verdict on the address.
   if (result.noAnswer) return { ok: false, retryable: true, error: result.error }
+  // Under the mail engine's rules a message can also reach no service, and then carries the seam's own words: the
+  // gate's refusal is never tried again, while a gate that could not be read or a call the runtime refused waits for
+  // another run.
+  if (result.refused) return { ok: false, retryable: false, error: result.error }
+  if (result.gateUnread || result.limitRefused) return { ok: false, retryable: true, error: result.error }
   return {
     ok: false,
     retryable: classifyToday(result) === 'later',
@@ -286,6 +295,9 @@ export async function processCampaign(
 
   const html = wrapBrandedEmail(env, campaign.subject, campaign.body_html)
   const claimed = await claimRecipients(db, campaignId, limit)
+  // Under the mail engine's rules the batch's addresses are read into the do-not-send gate at once, one query for
+  // each 90, rather than one query a message.
+  const gate = engineRulesOn() ? await openLoopGate(db, claimed.map((r) => r.email)) : undefined
 
   let sent = 0
   let failed = 0
@@ -295,7 +307,7 @@ export async function processCampaign(
     // one-recipient batch is pure latency.
     if (index > 0) await new Promise((r) => setTimeout(r, SEND_INTERVAL_MS))
 
-    const result = await sendOne(env, recipient.email, campaign.subject, html)
+    const result = await sendOne(env, recipient.email, campaign.subject, html, gate)
 
     if (result.ok) {
       sent++

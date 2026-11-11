@@ -409,6 +409,10 @@ export const emailCampaigns = sqliteTable('email_campaigns', {
   createdBy: text('created_by').references(() => members.id),
   createdAt: text('created_at').default(sql`(datetime('now'))`).notNull(),
   completedAt: text('completed_at'),
+  /** The list a list campaign goes out on (mail_lists.id, with no foreign key); null for Group email's other audiences. */
+  listId: text('list_id'),
+  /** Recipients left out at send time because they turned the list off or their address stopped receiving mail after the send was made. */
+  skippedCount: integer('skipped_count').default(0).notNull(),
 },
 (table) => [
   index('idx_campaigns_status').on(table.status),
@@ -534,6 +538,10 @@ export const emailCampaignRecipients = sqliteTable('email_campaign_recipients', 
   sentAt: text('sent_at'),
   claimedAt: text('claimed_at'),
   attempts: integer().default(0).notNull(),
+  /** The list recipient's contact (mail_contacts.id, with no foreign key); null for today's audiences. */
+  contactId: text('contact_id'),
+  /** Written just before the message is handed to the mail service; the engine's rules never send a row with it set a second time. */
+  sendingAt: text('sending_at'),
 },
 (table) => [
   index('idx_campaign_recipients_pending').on(table.campaignId, table.status),
@@ -601,3 +609,70 @@ export const seatRegions = sqliteTable('seat_regions', {
   primaryKey({ columns: [table.seatId, table.region], name: 'seat_regions_seat_id_region_pk' }),
 ])
 
+
+// WS16's mail tables (migration 0060). The values of kind, choice, source
+// and reason are named in domain/mail/lists.ts and held there by a unit
+// test; no CHECK writes them into the database.
+
+/** A list people can be on: LCA's own lists now, a club's in part two. */
+export const mailLists = sqliteTable('mail_lists', {
+  /** A stable id: 'lca-newsletter' and 'lca-tournaments' now; a club list's id is chosen in part two. */
+  id: text().primaryKey(),
+  /** 'newsletter', 'tournaments' or 'club'. */
+  kind: text().notNull(),
+  /** What a person reads: 'LCA newsletter'. */
+  name: text().notNull(),
+  /** 1 for one of LCA's main mailers, which a spam report made on other mail does not stop (D35). */
+  mainMailer: integer('main_mailer').default(0).notNull(),
+  /** The club whose list it is; null for LCA's own lists. No cascade, so a later rebuild of clubs never reaches the choices made on a club's list. */
+  clubId: text('club_id').references(() => clubs.id),
+  /** When the list was made. */
+  createdAt: text('created_at').default(sql`(datetime('now'))`).notNull(),
+})
+
+/** One row per address, a member's or not, so an address with no account can hold a choice, and a family's one address is one choice. */
+export const mailContacts = sqliteTable('mail_contacts', {
+  /** 32 hex characters, random; not a secret, since a link's signature is what cannot be guessed. */
+  id: text().primaryKey(),
+  /** The address, trimmed and lowercased. */
+  address: text().notNull(),
+  /** Set only by the person's own choice, "Stop all optional email from LCA". */
+  optionalOffAt: text('optional_off_at'),
+  /** Set by a spam report while COMPLAINT_STOPS_OTHER_SENDERS holds; it stops the lists that are not main mailers and is never the person's own choice. */
+  complainedAt: text('complained_at'),
+  /** When the address was first written here. */
+  createdAt: text('created_at').default(sql`(datetime('now'))`).notNull(),
+},
+(table) => [
+  uniqueIndex('mail_contacts_address_unique').on(table.address),
+])
+
+/** Each person's choice on each list they have made one on. */
+export const mailListChoices = sqliteTable('mail_list_choices', {
+  /** Whose choice it is. */
+  contactId: text('contact_id').notNull().references(() => mailContacts.id, { onDelete: 'cascade' }),
+  /** The list it is on. */
+  listId: text('list_id').notNull().references(() => mailLists.id, { onDelete: 'cascade' }),
+  /** 'in' or 'out'. */
+  choice: text().notNull(),
+  /** Where it came from: 'link', 'preferences', 'complaint', 'admin' or 'signup'. */
+  source: text().notNull(),
+  /** When it was last made. */
+  updatedAt: text('updated_at').default(sql`(datetime('now'))`).notNull(),
+},
+(table) => [
+  index('mail_list_choices_list').on(table.listId, table.choice),
+  primaryKey({ columns: [table.contactId, table.listId], name: 'mail_list_choices_contact_id_list_id_pk' }),
+])
+
+/** The do-not-send list: dead addresses only, to which all mail stops. */
+export const mailDoNotSend = sqliteTable('mail_do_not_send', {
+  /** The address, trimmed and lowercased. */
+  address: text().primaryKey(),
+  /** 'bounce', or 'admin' for an address an LCA admin adds by hand in part two. */
+  reason: text().notNull(),
+  /** The bounce's kind as Amazon names it, such as General, NoEmail, Suppressed or OnAccountSuppressionList, and nothing else of the notification. */
+  detail: text(),
+  /** When the address was put on the list. */
+  createdAt: text('created_at').default(sql`(datetime('now'))`).notNull(),
+})

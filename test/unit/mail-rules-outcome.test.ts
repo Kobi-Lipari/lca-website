@@ -9,13 +9,15 @@
 // holds today's three values and nothing more until the address map is
 // decided. The suite mocks functions/utils/mail/switches over the real
 // module and sets both constants in every case, so a value the code ships
-// with decides none.
+// with decides none. WS16 step 2 adds the rule under the engine's rules,
+// classifyOnce, with configFault and classify, which picks between the
+// two rules at each call.
 import { readFileSync } from 'node:fs'
 import { join, resolve } from 'node:path'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import * as addresses from '../../domain/mail/addresses'
 import { DEFAULT_FROM, DEFAULT_REPLY_TO } from '../../functions/utils/email'
-import { classifyToday } from '../../functions/utils/mail/outcome'
+import { classify, classifyOnce, classifyToday, configFault } from '../../functions/utils/mail/outcome'
 import { engineRulesOn, senderNow } from '../../functions/utils/mail/rules'
 import { SENDER_NAME, deliver } from '../../functions/utils/mail/send'
 import type { SendResult } from '../../functions/utils/mail/send'
@@ -99,6 +101,72 @@ describe('outcome: classifyToday is the retry rule Group email has always used',
   it('a refusal with no status is never tried again, as an answer with no status was', () => {
     expect(classifyToday(refused(undefined))).toBe('never')
     expect(classifyToday({ ok: false, code: 'rejected', error: 'words' })).toBe('never')
+  })
+})
+
+describe('outcome: classifyOnce tries a message again only when the answer proves it was not taken', () => {
+  const answer = (over: Partial<Extract<SendResult, { ok: false }>>): SendResult => ({ ok: false, error: 'words', ...over })
+
+  it('an accepted message is sent, with or without an id from the service', () => {
+    expect(classifyOnce({ ok: true })).toBe('sent')
+    expect(classifyOnce({ ok: true, providerId: 'msg-1' })).toBe('sent')
+  })
+
+  it('the gate\'s three refusals are never tried again, whatever else the answer carries', () => {
+    for (const refusal of ['not_sendable', 'do_not_send', 'opted_out'] as const) {
+      expect(classifyOnce(answer({ refused: refusal })), refusal).toBe('never')
+      expect(classifyOnce(answer({ refused: refusal, status: 503 })), refusal).toBe('never')
+    }
+  })
+
+  it('list mail held back by a gate that could not be read, and a call the runtime refused, are tried again later', () => {
+    expect(classifyOnce(answer({ gateUnread: true }))).toBe('later')
+    expect(classifyOnce(answer({ limitRefused: true }))).toBe('later')
+  })
+
+  it('429 and 503 are tried again later; every other status, each other 5xx among them, never', () => {
+    for (const status of [429, 503]) expect(classifyOnce(answer({ status })), String(status)).toBe('later')
+    for (const status of [400, 404, 408, 409, 422, 428, 430, 500, 501, 502, 504, 599]) expect(classifyOnce(answer({ status })), String(status)).toBe('never')
+  })
+
+  it('Amazon\'s codes for a throttle, a pause or a suspended account are tried again later, and any other code never', () => {
+    for (const code of ['TooManyRequestsException', 'ThrottlingException', 'Throttling', 'SendingPausedException', 'AccountSuspendedException']) {
+      expect(classifyOnce(answer({ code, status: 400 })), code).toBe('later')
+    }
+    for (const code of ['MessageRejected', 'MailFromDomainNotVerifiedException', 'throttling', 'BadRequestException']) {
+      expect(classifyOnce(answer({ code, status: 400 })), code).toBe('never')
+    }
+  })
+
+  it('a key or permission fault is tried again later, and configFault names it and nothing else', () => {
+    for (const status of [401, 403]) {
+      expect(configFault(answer({ status })), String(status)).toBe(true)
+      expect(classifyOnce(answer({ status })), String(status)).toBe('later')
+    }
+    for (const result of [answer({ status: 400 }), answer({ status: 429 }), answer({ status: 500 }), answer({}), { ok: true } as const]) {
+      expect(configFault(result), JSON.stringify(result)).toBe(false)
+    }
+  })
+
+  it('a request with no answer is never tried again, since it may have reached the service, and neither is a refusal with no status', () => {
+    expect(classifyOnce(answer({ noAnswer: true }))).toBe('never')
+    expect(classifyOnce(answer({}))).toBe('never')
+    expect(classifyOnce({ ok: false, error: 'No transport for no-such-service' })).toBe('never')
+  })
+})
+
+describe('outcome: classify picks the rule that holds, at each call', () => {
+  it('reads today\'s rule while the engine\'s rules are off, and classifyOnce once either constant turns them on', () => {
+    const noAnswer: SendResult = { ok: false, noAnswer: true, error: 'fetch failed' }
+    const fiveHundred: SendResult = { ok: false, status: 500, error: 'oops' }
+    expect([classify(noAnswer), classify(fiveHundred)]).toEqual(['later', 'later'])
+    flags.listsOn = true
+    expect([classify(noAnswer), classify(fiveHundred)]).toEqual(['never', 'never'])
+    flags.listsOn = false
+    flags.sender = 'ses'
+    expect([classify(noAnswer), classify(fiveHundred)]).toEqual(['never', 'never'])
+    flags.sender = 'resend'
+    expect([classify(noAnswer), classify(fiveHundred)]).toEqual(['later', 'later'])
   })
 })
 

@@ -44,12 +44,24 @@ export const stripeSessions: CreatedStripeSession[] = []
  * that specific address which it must not retry. failFor narrows the outage
  * to particular recipients, so a test can have one bad address in an
  * otherwise healthy batch.
+ *
+ * loseAnswer is a count of sends whose answer is lost: each of the next
+ * that many messages goes into the outbox, as the service took it, and then
+ * the request throws, as a lost answer looks from the site. limitAfter is a
+ * count of outside calls, of any host, after which every call throws the
+ * Workers runtime's words for an invocation that has used its outside
+ * calls, as production does past the plan's limit.
  */
 export const emailBehavior: {
   succeed: boolean
   status: number
   failFor: string[] | null
-} = { succeed: true, status: 500, failFor: null }
+  loseAnswer: number | null
+  limitAfter: number | null
+} = { succeed: true, status: 500, failFor: null, loseAnswer: null, limitAfter: null }
+
+/** The outside calls the interceptor has answered since the last resetHarness, of every host. */
+export let fetchCount = 0
 
 /**
  * Set succeed=false to simulate Stripe being down (createCheckoutSession
@@ -147,6 +159,9 @@ export function resetHarness(): void {
   emailBehavior.succeed = true
   emailBehavior.status = 500
   emailBehavior.failFor = null
+  emailBehavior.loseAnswer = null
+  emailBehavior.limitAfter = null
+  fetchCount = 0
   stripeBehavior.succeed = true
   stripeBehavior.sessionPaymentStatus = 'paid'
   stripeBehavior.sessionStatus = 'complete'
@@ -211,6 +226,14 @@ export function installFetchInterceptor(): void {
     input: RequestInfo | URL,
     init?: RequestInit,
   ): Promise<Response> => {
+    // Past the limit a call is refused before it is made, so it is not counted. The words are the seam's one copy,
+    // imported here at the call rather than at the top: the setup file loads this harness before a test file's
+    // mocks of the mail modules are in place, and a static import would load the real ones first.
+    if (emailBehavior.limitAfter !== null && fetchCount >= emailBehavior.limitAfter) {
+      const { TOO_MANY_OUTSIDE_CALLS } = await import('../../functions/utils/mail/send')
+      throw new Error(TOO_MANY_OUTSIDE_CALLS)
+    }
+    fetchCount++
     const request = new Request(input as RequestInfo, init)
     const url = new URL(request.url)
 
@@ -346,6 +369,11 @@ export function installFetchInterceptor(): void {
         text: body.text,
         from: body.from,
       })
+      if (emailBehavior.loseAnswer !== null && emailBehavior.loseAnswer > 0) {
+        // The service has the message; the site never hears so.
+        emailBehavior.loseAnswer--
+        throw new Error('harness: the connection was lost before the answer came')
+      }
       return Response.json({ id: `email_${emailOutbox.length}` })
     }
 
@@ -421,6 +449,12 @@ export interface InvokeOptions {
   headers?: Record<string, string>
   /** raw body string overrides `body` — used for webhook signature tests */
   rawBody?: string
+  /**
+   * Bindings laid over the pool's own for this call, such as a database
+   * wrapped to count its statements. fetch is not a binding, so the
+   * interceptor's knobs above still answer every outside call.
+   */
+  env?: Partial<Env>
 }
 
 export async function invoke(
@@ -440,6 +474,7 @@ export async function invoke(
     path = '/api/test',
     headers = {},
     rawBody,
+    env: envOverride,
   } = options
 
   const requestHeaders = new Headers(headers)
@@ -463,7 +498,7 @@ export async function invoke(
 
   const context = {
     request,
-    env: env as unknown as Env,
+    env: (envOverride ? { ...(env as unknown as Env), ...envOverride } : env) as unknown as Env,
     params,
     data: {},
     functionPath: path,

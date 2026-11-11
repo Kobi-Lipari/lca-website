@@ -11,8 +11,12 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
 
   const campaignId = context.params.id as string
 
+  // The columns named one by one, in table order, so the answer keeps its shape when a migration adds a column
+  // (0060's list_id and skipped_count are not shown here yet).
   const campaign = await context.env.DB.prepare(
-    `SELECT * FROM email_campaigns WHERE id = ?`,
+    `SELECT id, subject, body_html, filter_json, total_recipients, sent_count, failed_count, status, created_by,
+            created_at, completed_at
+       FROM email_campaigns WHERE id = ?`,
   )
     .bind(campaignId)
     .first()

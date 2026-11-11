@@ -17,14 +17,47 @@
 //  - Each phase is isolated: a D1 error in one phase logs and moves on
 //    rather than killing the remaining phases.
 // The queries themselves are ported unchanged.
+//
+// Under the mail engine's rules (engineRulesOn() in
+// functions/utils/mail/rules.ts, off until the newsletter is switched on)
+// the daily run changes in three ways. Its reminder phases run before the
+// rating lookups, so on the free plan the invocation's 50 outside calls go
+// to mail first. Each phase reads one do-not-send gate over all its rows
+// before its loop, and claims each row before its send with today's mark
+// made conditional, sending only when the claim took: two runs over the
+// same rows send each reminder once, and a run cut between a send and its
+// mark can never send that reminder again. And on the free plan the run
+// claims at most 25 reminder rows and gives the rating lookups what is
+// left of 45 outside calls (dailyBudget in functions/utils/mail/plan.ts).
+// A claim is given back only when the send's outcome is 'later', which also
+// ends that phase; a 'never' (an address on the do-not-send list, a walk-in
+// placeholder, an answer that may have come after the service took the
+// message) keeps its mark and is not tried again.
+//
+// Only the registration-open query reads a row again on a later day. The
+// week-before query names the day a week ahead and the attendee query the
+// day each reminder falls on, so a row of theirs that the cap leaves
+// unclaimed, or that a 'later' gives back, is not read again after its
+// day; that holds with the rules off too, for a send that failed. So under
+// the rules the attendee reminders and the week-before reminder run first
+// and the registration-open reminders last, and the cap falls first on the
+// rows that can wait. A day with more than 25 of the others, or a 'later'
+// among them, still leaves the rest of those unsent: a follow-up for WS16
+// step 4 in REDESIGN_STATUS.md. With the rules off the run is today's, in
+// today's order, marked only after a send that worked.
 
 import {
   trySendEmail,
+  sendEmailOutcome,
   registrationOpenReminderEmail,
   weekBeforeReminderEmail,
   attendeeReminderEmail,
+  type EmailMessage,
 } from '../../../functions/utils/email'
 import { sweepPendingCampaigns } from '../../../functions/utils/admin/campaigns'
+import { openLoopGate } from '../../../functions/utils/mail/gate'
+import { dailyBudget } from '../../../functions/utils/mail/plan'
+import { engineRulesOn } from '../../../functions/utils/mail/rules'
 import { resolveSiteUrl } from '../../../functions/utils/site'
 import { expireLapsedMemberships } from '../../../functions/utils/membership/membershipExpiry'
 import { snapshotMemberRatings } from '../../../functions/utils/membership/ratingSnapshots'
@@ -63,6 +96,209 @@ async function sweepCampaigns(env: Env): Promise<void> {
   if (result.campaignsTouched > 0) {
     console.log(
       `campaign sweep: ${result.sent} sent, ${result.failed} failed across ${result.campaignsTouched} campaign(s)`,
+    )
+  }
+}
+
+/**
+ * One reminder a phase found due: its address, its email, and its row's three statements. Today's mark is written
+ * after a send that worked; under the rules the claim, the same mark made conditional, is written before the send,
+ * and the release gives the claim back.
+ */
+interface DueReminder {
+  to: string
+  message: () => Omit<EmailMessage, 'to'>
+  mark: () => D1PreparedStatement
+  claim: () => D1PreparedStatement
+  release: () => D1PreparedStatement
+}
+
+interface ReminderTournament {
+  tournament_id: string; name: string; date: string; end_date: string | null
+  location: string; venue: string | null
+}
+
+const eventOf = (siteUrl: string, row: ReminderTournament) => ({
+  name: row.name,
+  date: row.date,
+  endDate: row.end_date,
+  location: row.location,
+  venue: row.venue,
+  url: `${siteUrl}/tournaments/${row.tournament_id}`,
+})
+
+// 2. The registration-open reminders due: subscribers to an event whose registration is now open.
+async function dueRegistrationOpen(env: Env, siteUrl: string): Promise<DueReminder[]> {
+  const newlyOpenedReminders = await env.DB.prepare(
+    `SELECT tr.id, tr.email, tr.member_id,
+            t.id as tournament_id, t.name, t.date, t.end_date, t.location, t.venue,
+            m.full_name
+     FROM tournament_reminders tr
+     JOIN tournaments t ON tr.tournament_id = t.id
+     JOIN members m ON tr.member_id = m.id
+     WHERE t.registration_status = 'open'
+       AND tr.sent_registration_open = 0
+       AND tr.registration_opened_notified_at IS NULL`,
+  ).all<ReminderTournament & { id: string; email: string; member_id: string; full_name: string }>()
+
+  return newlyOpenedReminders.results.map((row) => ({
+    to: row.email,
+    message: () => registrationOpenReminderEmail({ siteUrl, memberName: row.full_name, tournament: eventOf(siteUrl, row) }),
+    mark: () => env.DB.prepare('UPDATE tournament_reminders SET sent_registration_open = 1 WHERE id = ?').bind(row.id),
+    // Both marks, as the notice sent when registration opens writes them, so neither sends it again.
+    claim: () => env.DB.prepare(
+      `UPDATE tournament_reminders SET sent_registration_open = 1, registration_opened_notified_at = datetime('now')
+        WHERE id = ? AND sent_registration_open = 0`,
+    ).bind(row.id),
+    release: () => env.DB.prepare(
+      'UPDATE tournament_reminders SET sent_registration_open = 0, registration_opened_notified_at = NULL WHERE id = ?',
+    ).bind(row.id),
+  }))
+}
+
+// 3. The week-before opt-in reminders due (7 days away, not yet registered).
+async function dueWeekBefore(env: Env, siteUrl: string, today: Date): Promise<DueReminder[]> {
+  const sevenDaysFromNow = new Date(today)
+  sevenDaysFromNow.setDate(sevenDaysFromNow.getDate() + 7)
+  const sevenDaysStr = sevenDaysFromNow.toISOString().split('T')[0]
+
+  const weekBeforeReminders = await env.DB.prepare(
+    `SELECT tr.id, tr.email, tr.member_id,
+            t.id as tournament_id, t.name, t.date, t.end_date, t.location, t.venue,
+            m.full_name
+     FROM tournament_reminders tr
+     JOIN tournaments t ON tr.tournament_id = t.id
+     JOIN members m ON tr.member_id = m.id
+     WHERE date(t.date) = ?
+       AND tr.sent_week_before = 0
+       AND NOT EXISTS (
+         SELECT 1 FROM registrations r
+         WHERE r.tournament_id = t.id AND r.member_id = tr.member_id
+       )`,
+  ).bind(sevenDaysStr).all<ReminderTournament & { id: string; email: string; member_id: string; full_name: string }>()
+
+  return weekBeforeReminders.results.map((row) => ({
+    to: row.email,
+    message: () => weekBeforeReminderEmail({ siteUrl, memberName: row.full_name, tournament: eventOf(siteUrl, row) }),
+    mark: () => env.DB.prepare('UPDATE tournament_reminders SET sent_week_before = 1 WHERE id = ?').bind(row.id),
+    claim: () => env.DB.prepare('UPDATE tournament_reminders SET sent_week_before = 1 WHERE id = ? AND sent_week_before = 0').bind(row.id),
+    release: () => env.DB.prepare('UPDATE tournament_reminders SET sent_week_before = 0 WHERE id = ?').bind(row.id),
+  }))
+}
+
+// 4 & 5. The attendee reminders due (reminder 1 and 2).
+async function dueAttendee(env: Env, siteUrl: string, todayStr: string, reminderNum: 1 | 2): Promise<DueReminder[]> {
+  const daysCol = `reminder_${reminderNum}_days_before`
+  const enabledCol = `reminder_${reminderNum}_enabled`
+
+  const attendees = await env.DB.prepare(
+    `SELECT r.member_id, r.tournament_id, r.section,
+            t.name, t.date, t.end_date, t.location, t.venue,
+            t.${daysCol} as days_before,
+            m.email, m.full_name
+     FROM registrations r
+     JOIN tournaments t ON r.tournament_id = t.id
+     JOIN members m ON r.member_id = m.id
+     WHERE t.${enabledCol} = 1
+       AND r.withdrawn_at IS NULL
+       AND r.payment_status = 'paid'
+       AND m.email NOT LIKE '%@walkin.lca.invalid'
+       AND date(t.date, '-' || t.${daysCol} || ' days') = ?
+       AND NOT EXISTS (
+         SELECT 1 FROM tournament_attendee_reminders tar
+         WHERE tar.tournament_id = r.tournament_id
+           AND tar.member_id = r.member_id
+           AND tar.reminder_number = ?
+       )`,
+  ).bind(todayStr, reminderNum).all<ReminderTournament & {
+    member_id: string; section: string; days_before: number; email: string; full_name: string
+  }>()
+
+  return attendees.results.map((row) => {
+    const remId = `ar-${row.tournament_id}-${row.member_id}-${reminderNum}`
+    // INSERT OR IGNORE, as today: the row's existence is the mark, so the insert is its own claim.
+    const insert = () => env.DB.prepare(
+      `INSERT OR IGNORE INTO tournament_attendee_reminders
+       (id, tournament_id, member_id, reminder_number)
+       VALUES (?, ?, ?, ?)`,
+    ).bind(remId, row.tournament_id, row.member_id, reminderNum)
+    return {
+      to: row.email,
+      message: () => attendeeReminderEmail({
+        siteUrl,
+        memberName: row.full_name,
+        section: row.section,
+        daysUntil: row.days_before,
+        tournament: eventOf(siteUrl, row),
+      }),
+      mark: insert,
+      claim: insert,
+      release: () => env.DB.prepare('DELETE FROM tournament_attendee_reminders WHERE id = ?').bind(remId),
+    }
+  })
+}
+
+/** Today's loop: each reminder sent, and marked only after a send that worked. */
+async function sendAsToday(env: Env, due: DueReminder[]): Promise<void> {
+  for (const reminder of due) {
+    const ok = await trySendEmail(env, { ...reminder.message(), to: reminder.to })
+    if (!ok) continue // retry on the next run; don't burn the flag
+    await reminder.mark().run()
+  }
+}
+
+/**
+ * The daily run's reminders under the rules: the rows it may still claim on this plan, and the outside calls it has
+ * used, which the rating lookups take what is left of.
+ */
+class ReminderBudget {
+  private readonly cap = dailyBudget()
+  private claimed = 0
+
+  /** True once the run has claimed every row it may; of the rows past it, only registration-open rows wait. */
+  get spent(): boolean {
+    return this.cap.reminders !== null && this.claimed >= this.cap.reminders
+  }
+
+  /** Counts one claim, and so at most one send, which is one outside call. */
+  take(): void {
+    this.claimed++
+  }
+
+  /** The rating lookups' limit: what is left of the run's outside calls, or none on a plan with no cap. */
+  ratingLimit(): number | undefined {
+    return this.cap.outsideCalls === null ? undefined : Math.max(0, this.cap.outsideCalls - this.claimed)
+  }
+}
+
+/** One phase's loop under the rules: one gate over all its rows, each row claimed before its send. */
+async function sendClaimed(env: Env, due: DueReminder[], budget: ReminderBudget): Promise<void> {
+  if (due.length === 0) return
+  const gate = await openLoopGate(env.DB, due.map((reminder) => reminder.to))
+  for (const reminder of due) {
+    if (budget.spent) return
+    budget.take()
+    const claim = await reminder.claim().run()
+    // Another run has the row: it sends the reminder, so this one does not.
+    if (claim.meta.changes !== 1) continue
+    const outcome = await sendEmailOutcome(env, { ...reminder.message(), to: reminder.to }, gate)
+    if (outcome === 'later') {
+      // Proved not taken: the claim goes back and the phase stops here. A later run reads a registration-open row
+      // again; the rows of the other phases are read again only by another run on the same day (see the header).
+      await reminder.release().run()
+      return
+    }
+  }
+}
+
+/** Records each member's US Chess rating, at most `limit` lookups when one is given. */
+async function ratingSnapshots(env: Env, limit?: number): Promise<void> {
+  const { checked, changed, unreachable } = await snapshotMemberRatings(env.DB, limit === undefined ? {} : { limit })
+  // Quiet on a normal night: ratings move a few times a year each.
+  if (changed > 0 || unreachable > 0) {
+    console.log(
+      `rating snapshots: ${changed} change(s) across ${checked} member(s)` +
+      (unreachable > 0 ? `, ${unreachable} unreachable` : ''),
     )
   }
 }
@@ -115,6 +351,25 @@ export default {
       if (lapsed > 0) console.log(`membership expiry: ${lapsed} membership(s) lapsed`)
     })
 
+    if (engineRulesOn()) {
+      // Under the rules: the reminders first, within the plan's budget, then the rating lookups with what is left.
+      // The reminders whose queries name one day go first and the registration-open reminders, whose rows a later run
+      // reads again, last, so the cap falls first on the rows that can wait (see the header).
+      const budget = new ReminderBudget()
+      const remind = (name: string, due: () => Promise<DueReminder[]>) =>
+        phase(name, async () => {
+          if (budget.spent) return
+          await sendClaimed(env, await due(), budget)
+        })
+      for (const reminderNum of [1, 2] as const) {
+        await remind(`attendee reminder ${reminderNum}`, () => dueAttendee(env, SITE_URL, todayStr, reminderNum))
+      }
+      await remind('week-before reminders', () => dueWeekBefore(env, SITE_URL, today))
+      await remind('registration-open reminders', () => dueRegistrationOpen(env, SITE_URL))
+      await phase('rating snapshots', () => ratingSnapshots(env, budget.ratingLimit()))
+      return
+    }
+
     // 1d. Record each member's US Chess rating.
     //
     // Last of the bookkeeping phases on purpose: it makes one outbound call
@@ -122,158 +377,22 @@ export default {
     // likely to be interrupted. Nothing below depends on it, and a partial
     // pass is fine — the next night picks up where it left off, because
     // members are ordered by how long it has been since they were checked.
-    await phase('rating snapshots', async () => {
-      const { checked, changed, unreachable } = await snapshotMemberRatings(env.DB)
-      // Quiet on a normal night: ratings move a few times a year each.
-      if (changed > 0 || unreachable > 0) {
-        console.log(
-          `rating snapshots: ${changed} change(s) across ${checked} member(s)` +
-          (unreachable > 0 ? `, ${unreachable} unreachable` : ''),
-        )
-      }
-    })
+    await phase('rating snapshots', () => ratingSnapshots(env))
 
     // 2. Send registration-open reminders
     await phase('registration-open reminders', async () => {
-      const newlyOpenedReminders = await env.DB.prepare(
-        `SELECT tr.id, tr.email, tr.member_id,
-                t.id as tournament_id, t.name, t.date, t.end_date, t.location, t.venue,
-                m.full_name
-         FROM tournament_reminders tr
-         JOIN tournaments t ON tr.tournament_id = t.id
-         JOIN members m ON tr.member_id = m.id
-         WHERE t.registration_status = 'open'
-           AND tr.sent_registration_open = 0
-           AND tr.registration_opened_notified_at IS NULL`,
-      ).all<{
-        id: string; email: string; member_id: string
-        tournament_id: string; name: string; date: string; end_date: string | null
-        location: string; venue: string | null; full_name: string
-      }>()
-
-      for (const row of newlyOpenedReminders.results) {
-        const template = registrationOpenReminderEmail({
-          siteUrl: SITE_URL,
-          memberName: row.full_name,
-          tournament: {
-            name: row.name,
-            date: row.date,
-            endDate: row.end_date,
-            location: row.location,
-            venue: row.venue,
-            url: `${SITE_URL}/tournaments/${row.tournament_id}`,
-          },
-        })
-        const ok = await trySendEmail(env, { ...template, to: row.email })
-        if (!ok) continue // retry on the next run; don't burn the flag
-        await env.DB.prepare(
-          'UPDATE tournament_reminders SET sent_registration_open = 1 WHERE id = ?',
-        ).bind(row.id).run()
-      }
+      await sendAsToday(env, await dueRegistrationOpen(env, SITE_URL))
     })
 
     // 3. Send week-before opt-in reminders (7 days away, not yet registered)
     await phase('week-before reminders', async () => {
-      const sevenDaysFromNow = new Date(today)
-      sevenDaysFromNow.setDate(sevenDaysFromNow.getDate() + 7)
-      const sevenDaysStr = sevenDaysFromNow.toISOString().split('T')[0]
-
-      const weekBeforeReminders = await env.DB.prepare(
-        `SELECT tr.id, tr.email, tr.member_id,
-                t.id as tournament_id, t.name, t.date, t.end_date, t.location, t.venue,
-                m.full_name
-         FROM tournament_reminders tr
-         JOIN tournaments t ON tr.tournament_id = t.id
-         JOIN members m ON tr.member_id = m.id
-         WHERE date(t.date) = ?
-           AND tr.sent_week_before = 0
-           AND NOT EXISTS (
-             SELECT 1 FROM registrations r
-             WHERE r.tournament_id = t.id AND r.member_id = tr.member_id
-           )`,
-      ).bind(sevenDaysStr).all<{
-        id: string; email: string; member_id: string
-        tournament_id: string; name: string; date: string; end_date: string | null
-        location: string; venue: string | null; full_name: string
-      }>()
-
-      for (const row of weekBeforeReminders.results) {
-        const template = weekBeforeReminderEmail({
-          siteUrl: SITE_URL,
-          memberName: row.full_name,
-          tournament: {
-            name: row.name,
-            date: row.date,
-            endDate: row.end_date,
-            location: row.location,
-            venue: row.venue,
-            url: `${SITE_URL}/tournaments/${row.tournament_id}`,
-          },
-        })
-        const ok = await trySendEmail(env, { ...template, to: row.email })
-        if (!ok) continue
-        await env.DB.prepare(
-          'UPDATE tournament_reminders SET sent_week_before = 1 WHERE id = ?',
-        ).bind(row.id).run()
-      }
+      await sendAsToday(env, await dueWeekBefore(env, SITE_URL, today))
     })
 
     // 4 & 5. Send attendee reminders (reminder 1 and 2)
     for (const reminderNum of [1, 2] as const) {
       await phase(`attendee reminder ${reminderNum}`, async () => {
-        const daysCol = `reminder_${reminderNum}_days_before`
-        const enabledCol = `reminder_${reminderNum}_enabled`
-
-        const attendees = await env.DB.prepare(
-          `SELECT r.member_id, r.tournament_id, r.section,
-                  t.name, t.date, t.end_date, t.location, t.venue,
-                  t.${daysCol} as days_before,
-                  m.email, m.full_name
-           FROM registrations r
-           JOIN tournaments t ON r.tournament_id = t.id
-           JOIN members m ON r.member_id = m.id
-           WHERE t.${enabledCol} = 1
-             AND r.withdrawn_at IS NULL
-             AND r.payment_status = 'paid'
-             AND m.email NOT LIKE '%@walkin.lca.invalid'
-             AND date(t.date, '-' || t.${daysCol} || ' days') = ?
-             AND NOT EXISTS (
-               SELECT 1 FROM tournament_attendee_reminders tar
-               WHERE tar.tournament_id = r.tournament_id
-                 AND tar.member_id = r.member_id
-                 AND tar.reminder_number = ?
-             )`,
-        ).bind(todayStr, reminderNum).all<{
-          member_id: string; tournament_id: string; section: string
-          name: string; date: string; end_date: string | null; location: string; venue: string | null
-          days_before: number; email: string; full_name: string
-        }>()
-
-        for (const row of attendees.results) {
-          const template = attendeeReminderEmail({
-            siteUrl: SITE_URL,
-            memberName: row.full_name,
-            section: row.section,
-            daysUntil: row.days_before,
-            tournament: {
-              name: row.name,
-              date: row.date,
-              endDate: row.end_date,
-              location: row.location,
-              venue: row.venue,
-              url: `${SITE_URL}/tournaments/${row.tournament_id}`,
-            },
-          })
-          const ok = await trySendEmail(env, { ...template, to: row.email })
-          if (!ok) continue
-
-          const remId = `ar-${row.tournament_id}-${row.member_id}-${reminderNum}`
-          await env.DB.prepare(
-            `INSERT OR IGNORE INTO tournament_attendee_reminders
-             (id, tournament_id, member_id, reminder_number)
-             VALUES (?, ?, ?, ?)`,
-          ).bind(remId, row.tournament_id, row.member_id, reminderNum).run()
-        }
+        await sendAsToday(env, await dueAttendee(env, SITE_URL, todayStr, reminderNum))
       })
     }
   },

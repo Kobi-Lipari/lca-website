@@ -117,7 +117,7 @@ describe('migrations never silently delete rows through cascades', () => {
       { file: '0033_lca_auditor_role.sql', parent: 'members', lost: [...lost, 'board_seat_assignments'] },
       { file: '0040_lca_observer_role.sql', parent: 'members', lost: [...lost, 'board_seat_assignments'] },
     ])
-    expect(links()).toHaveLength(17)
+    expect(links()).toHaveLength(19)
   })
 
   it('lists the sections and schedules tables of 0052 as cascade children', () => {

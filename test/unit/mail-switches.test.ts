@@ -17,11 +17,18 @@
 // changes only in a pull request of its own. It is held here as written
 // once, in its one line, and assigned in no other file of the server or
 // the workers.
+//
+// The two settings of WS16 step 2 follow no switch either: WORKERS_PLAN,
+// the hosting plan the mail engine's budgets are sized for, and
+// COMPLAINT_STOPS_OTHER_SENDERS, what a spam report stops besides its own
+// list. Each is held as written once, with either of its values, so the
+// change that follows K's word on Workers Paid and a change of the setting
+// each leave this file green, and assigned in no other file.
 import { readdirSync, readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
 import { FEATURES } from '@/lib/features'
-import { MAIL_LISTS_ON, MAIL_SENDER } from '../../functions/utils/mail/switches'
+import { COMPLAINT_STOPS_OTHER_SENDERS, MAIL_LISTS_ON, MAIL_SENDER, WORKERS_PLAN } from '../../functions/utils/mail/switches'
 
 const ROOT = join(__dirname, '../..')
 const read = (path: string) => readFileSync(join(ROOT, path), 'utf8')
@@ -100,5 +107,67 @@ describe('MAIL_SENDER, the one service that sends', () => {
     for (const line of ["return MAIL_LISTS_ON || (MAIL_SENDER as string) === 'ses'", 'if (MAIL_SENDER !== x) return', 'return MAIL_SENDER', "const f = () => MAIL_SENDER"]) {
       expect(ASSIGNS.test(line), line).toBe(false)
     }
+  })
+})
+
+/** A line that gives the named constant a value: a declaration or an assignment, never a comparison. */
+const assigns = (name: string) => new RegExp(`\\b${name}\\b(?:\\s*:\\s*[\\w|' ]+?)?\\s*=(?![=>])`)
+
+/** The comment block right above a constant's line in the file. */
+function commentAbove(name: string): string {
+  const text = read(FILE)
+  const at = text.indexOf(`export const ${name}`)
+  expect(at, name).toBeGreaterThan(0)
+  const start = text.lastIndexOf('/**', at)
+  const comment = text.slice(start, at)
+  expect(comment.trimEnd().endsWith('*/'), `${name}: the comment ends right above it`).toBe(true)
+  return comment
+}
+
+describe('WORKERS_PLAN, the hosting plan the budgets are sized for', () => {
+  it('is written once, as \'free\' or \'paid\', and the module answers what the file writes', () => {
+    const found = [...read(FILE).matchAll(/^export const WORKERS_PLAN: WorkersPlan = '(free|paid)'$/gm)]
+    expect(found, 'WORKERS_PLAN is set once').toHaveLength(1)
+    expect(WORKERS_PLAN).toBe(found[0][1])
+    expect(read(FILE).split('\n').filter((line) => assigns('WORKERS_PLAN').test(line))).toHaveLength(1)
+  })
+
+  it('names the two plans and no other in its type', () => {
+    expect(read(FILE)).toMatch(/^export type WorkersPlan = 'free' \| 'paid'$/m)
+  })
+
+  it('says what it sizes and what waits for \'paid\' in a comment of its own', () => {
+    const comment = commentAbove('WORKERS_PLAN')
+    for (const piece of ['./plan', 'Workers Paid', 'Amazon SES', 'test/unit/mail-switches.test.ts']) expect(comment, piece).toContain(piece)
+  })
+})
+
+describe('COMPLAINT_STOPS_OTHER_SENDERS, the setting for a spam report', () => {
+  it('is written once, as true or false, and the module answers what the file writes', () => {
+    expect(typeof COMPLAINT_STOPS_OTHER_SENDERS).toBe('boolean')
+    expect(constantWritten(FILE, 'COMPLAINT_STOPS_OTHER_SENDERS')).toBe(COMPLAINT_STOPS_OTHER_SENDERS)
+    expect(read(FILE).split('\n').filter((line) => assigns('COMPLAINT_STOPS_OTHER_SENDERS').test(line))).toHaveLength(1)
+  })
+
+  it('says what a report stops in a comment of its own', () => {
+    const comment = commentAbove('COMPLAINT_STOPS_OTHER_SENDERS')
+    for (const piece of ['spam report', 'main mailers', 'A setting', 'test/unit/mail-switches.test.ts']) expect(comment, piece).toContain(piece)
+  })
+})
+
+describe('the two settings in the rest of the code', () => {
+  it('are given a value by no other file of the server or the workers', () => {
+    const files = ['functions', 'workers'].flatMap(codeUnder).filter((file) => file !== FILE)
+    expect(files).toContain('functions/utils/mail/plan.ts')
+    for (const name of ['WORKERS_PLAN', 'COMPLAINT_STOPS_OTHER_SENDERS']) {
+      expect(files.filter((file) => read(file).split('\n').some((line) => assigns(name).test(line))), name).toEqual([])
+    }
+  })
+
+  it('are told from a comparison by the same search, so it finds what it looks for', () => {
+    expect(assigns('WORKERS_PLAN').test("export const WORKERS_PLAN: WorkersPlan = 'paid'")).toBe(true)
+    expect(assigns('COMPLAINT_STOPS_OTHER_SENDERS').test('export const COMPLAINT_STOPS_OTHER_SENDERS = false')).toBe(true)
+    expect(assigns('WORKERS_PLAN').test("if (WORKERS_PLAN === 'paid') return")).toBe(false)
+    expect(assigns('COMPLAINT_STOPS_OTHER_SENDERS').test('if (contact.complained && COMPLAINT_STOPS_OTHER_SENDERS && !mainMailer) return')).toBe(false)
   })
 })

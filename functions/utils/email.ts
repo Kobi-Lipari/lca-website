@@ -10,7 +10,9 @@ import {
   ticketRef,
   p,
 } from './emailLayout'
-import { deliver } from './mail/send'
+import type { MailGate } from './mail/gate'
+import { classify, type OutcomeKind } from './mail/outcome'
+import { deliver, type SendResult } from './mail/send'
 
 export { escapeHtml, formatEventDate, ticketRef } from './emailLayout'
 
@@ -35,8 +37,11 @@ export interface EmailMessage {
  * The minimal environment the email transport needs. Both the Pages
  * Functions Env and the daily-emails Worker Env satisfy it structurally,
  * so this module can be shared by both without importing either Env type.
+ * DB is the database the mail seam's do-not-send gate reads, once the
+ * engine's rules are on.
  */
 export interface EmailEnv {
+  DB: D1Database
   RESEND_API_KEY: string
   FROM_EMAIL?: string
   REPLY_TO_EMAIL?: string
@@ -50,18 +55,12 @@ export interface EmailEnv {
  */
 export { DEFAULT_FROM, DEFAULT_REPLY_TO } from '../../domain/mail/addresses'
 
-/**
- * Send one email through the mail seam, deliver() in ./mail/send, which
- * hands it to the one service MAIL_SENDER names. THROWS on failure (no
- * answer, or a refusal), unlike the old MailChannels version which
- * silently console.warn'd. Callers that treat email as best-effort should
- * use trySendEmail instead.
- */
-export async function sendEmail(env: EmailEnv, message: EmailMessage): Promise<void> {
+/** Hands one message to the mail seam in sendEmail's request shape, with its From and its reply-to chosen as always. */
+function deliverEmail(env: EmailEnv, message: EmailMessage, gate?: MailGate): Promise<SendResult> {
   const from = env.FROM_EMAIL ?? DEFAULT_FROM
   const replyTo = message.replyTo ?? env.REPLY_TO_EMAIL ?? DEFAULT_REPLY_TO
 
-  const result = await deliver(env, {
+  return deliver(env, {
     from,
     to: message.to,
     replyTo,
@@ -69,13 +68,30 @@ export async function sendEmail(env: EmailEnv, message: EmailMessage): Promise<v
     html: message.html,
     text: message.text,
     shape: 'single',
-  })
+  }, gate)
+}
 
-  if (!result.ok) {
-    // A request that threw carries the words it threw with, as before.
-    if (result.noAnswer) throw new Error(result.error)
-    throw new Error(`Email send failed (${result.status}): ${result.error}`)
-  }
+/**
+ * The words a failed send is reported with: a request that threw carries the words it threw with, and a message that
+ * reached no service (the gate's refusal, or a limit of the runtime) the seam's own plain words, which name no
+ * address; a refusal by the service, its status and its words, as before.
+ */
+function failureWords(result: Exclude<SendResult, { ok: true }>): string {
+  if (result.noAnswer || result.refused || result.gateUnread || result.limitRefused) return result.error
+  return `Email send failed (${result.status}): ${result.error}`
+}
+
+/**
+ * Send one email through the mail seam, deliver() in ./mail/send, which
+ * hands it to the one service MAIL_SENDER names. THROWS on failure (no
+ * answer, or a refusal), unlike the old MailChannels version which
+ * silently console.warn'd. Callers that treat email as best-effort should
+ * use trySendEmail instead. A loop passes the gate it read for all its
+ * addresses, so the seam asks it rather than reading its own.
+ */
+export async function sendEmail(env: EmailEnv, message: EmailMessage, gate?: MailGate): Promise<void> {
+  const result = await deliverEmail(env, message, gate)
+  if (!result.ok) throw new Error(failureWords(result))
 }
 
 /**
@@ -83,14 +99,25 @@ export async function sendEmail(env: EmailEnv, message: EmailMessage): Promise<v
  * Use for emails that must not fail the surrounding operation
  * (registration confirmations, contact acknowledgments, cron sends).
  */
-export async function trySendEmail(env: EmailEnv, message: EmailMessage): Promise<boolean> {
+export async function trySendEmail(env: EmailEnv, message: EmailMessage, gate?: MailGate): Promise<boolean> {
   try {
-    await sendEmail(env, message)
+    await sendEmail(env, message, gate)
     return true
   } catch (err) {
     console.warn(err instanceof Error ? err.message : String(err))
     return false
   }
+}
+
+/**
+ * Sends one email and says what came of it as a loop that marks its rows needs it: sent, worth another try later, or
+ * never, by classify in ./mail/outcome. Never throws. A failure is logged as trySendEmail logs it; a message the gate
+ * refused is logged with its refusal's words alone, never with the address.
+ */
+export async function sendEmailOutcome(env: EmailEnv, message: EmailMessage, gate?: MailGate): Promise<OutcomeKind> {
+  const result = await deliverEmail(env, message, gate)
+  if (!result.ok) console.warn(failureWords(result))
+  return classify(result)
 }
 
 // ── Email templates ──────────────────────────────────────────────

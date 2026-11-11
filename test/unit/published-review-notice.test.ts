@@ -38,6 +38,13 @@
 // on the mocked module, set for every case but the one that unsets it.
 // setTimeout is faked: it moves on at once, but for the cases on the pace,
 // which move the clock by hand.
+// The suite holds today's mail path whatever the shipped mail constants
+// say: functions/utils/mail/switches is mocked over the real module with
+// MAIL_LISTS_ON false and MAIL_SENDER 'resend'. Under the mail engine's
+// rules the seam would read the do-not-send gate, a statement the stand-in
+// database records as unexpected, and the admins' addresses here are under
+// the reserved .test name the gate refuses; WS16 step 12 moves the suite to
+// the rules.
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { eventDays, sendPublishedReviewNotice } from '../../functions/utils/events/publishedReview'
 
@@ -48,6 +55,18 @@ vi.mock('../../functions/utils/events/creation', async (importOriginal) => {
     ...real,
     get CREATION_ROLES_ON() {
       return flags.rolesOn
+    },
+  }
+})
+vi.mock('../../functions/utils/mail/switches', async (importOriginal) => {
+  const real = await importOriginal<typeof import('../../functions/utils/mail/switches')>()
+  return {
+    ...real,
+    get MAIL_LISTS_ON() {
+      return false
+    },
+    get MAIL_SENDER() {
+      return 'resend'
     },
   }
 })
