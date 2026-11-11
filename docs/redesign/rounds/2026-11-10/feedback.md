@@ -59,3 +59,13 @@ all recommended, except 3 which is b (because there is no audit for a, if they g
 for mail map: all recommended, but make sure to have them be able to set the thing in 5 easy without having to scrounge for where it is set at; maybe at least a link to where it is managed (i dont want them not being able to figure it out and crying to me). 6. would it be best to start going to another more official email, and how would we do that? in amazon ses? or what?
 
 for the emailer choices, lets go with option 4 for the page, but make sure the spacing is used well, like below the phone view looks oddly empty, etc (dont add things just to add them though, be intentional), also i though the way that option 5 had the from and subjust thing visual made it much more clear that it was a email cuz it looked like gmail thing did. also, its unclear how to edit the subject at first on 4. also, be sure that it is obvious that you can click inside the main thing to edit cuz it looks like a finished page rigth now, etc.  For the email i like the fonts and stylings of 1 but i like how 5 has it structured with the in this issue thing at the top with their gyperlinks seeming like i can just click to skip to the section i want to see, etc (but i dont like the size of the top of 5 i like it better in one how the logo is properly on the left of them). for the newsletter. also, lets keep option 4 as it is for the resident to be able to pick as an option too. for the club send out, same feedback as the other newsletter thing.
+
+On the example words:
+
+change the top of the example newsletter to not address the running of the championship as to presume to know these things, it may freak him out as it is not correct. just make a very generic end of year celebration and outlook thing. please replace all info with clearly faux info (because alot of these results did happen but this uses the wrong names etc). [K's last sentence, on how the examples must not look to the president, is left out of this copy.]
+
+On the explaining words on the page:
+
+in the newsletter remove the generic text of: "Click anywhere on the letter and type. It saves by itself" and "Who members see as the sender" and "The line people see in their inbox. Click to change it." and "It changes as you type." These kinds of things are only useful at the first glace and then take up space unnecessarily. Maybe we include these things and a type of walkthrough button portal thing on a help questino mark thing? without htat in the regular one we may be able to respace things to save space above the top of the editor.
+
+i like your recommended for 1
