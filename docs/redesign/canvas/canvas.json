@@ -1801,7 +1801,7 @@
    "y": 0
   },
   "Newsletter-Page-4.dc.html": {
-   "h": 5050,
+   "h": 5350,
    "page": "newsletter-options",
    "title": "Newsletter · the page · The letter on the desk · K's choice, revised to K's notes",
    "w": 1440,
@@ -1822,7 +1822,7 @@
    "title": "Newsletter · the email · option 1 · The navy band · not kept",
    "w": 1440,
    "x": 4160,
-   "y": 5490
+   "y": 5790
   },
   "Newsletter-Email-2.dc.html": {
    "h": 2250,
@@ -1830,7 +1830,7 @@
    "title": "Newsletter · the email · option 2 · The plain letter · not kept",
    "w": 1440,
    "x": 7200,
-   "y": 5490
+   "y": 5790
   },
   "Newsletter-Email-3.dc.html": {
    "h": 2400,
@@ -1838,15 +1838,15 @@
    "title": "Newsletter · the email · option 3 · The card · not kept",
    "w": 1440,
    "x": 8720,
-   "y": 5490
+   "y": 5790
   },
   "Newsletter-Email-4.dc.html": {
-   "h": 2500,
+   "h": 2400,
    "page": "newsletter-options",
    "title": "Newsletter · the email · option 4 · The bulletin · kept as it is",
    "w": 1440,
    "x": 2160,
-   "y": 5490
+   "y": 5790
   },
   "Newsletter-Email-5.dc.html": {
    "h": 2500,
@@ -1854,14 +1854,14 @@
    "title": "Newsletter · the email · option 5 · The big month · not kept",
    "w": 1440,
    "x": 5680,
-   "y": 5490
+   "y": 5790
   },
   "Newsletter-Tournament-1.dc.html": {
    "page": "newsletter-options",
    "w": 1440,
    "h": 2200,
    "x": 4160,
-   "y": 8580,
+   "y": 8880,
    "title": "Newsletter · a club's tournament send-out · in the look of email option 1 · The navy band · not kept"
   },
   "Newsletter-Tournament-4.dc.html": {
@@ -1869,7 +1869,7 @@
    "w": 1440,
    "h": 2350,
    "x": 2160,
-   "y": 8580,
+   "y": 8880,
    "title": "Newsletter · a club's tournament send-out · in the look of The bulletin · kept as it is"
   },
   "Newsletter-Tournament-5.dc.html": {
@@ -1877,7 +1877,7 @@
    "w": 1440,
    "h": 2400,
    "x": 5680,
-   "y": 8580,
+   "y": 8880,
    "title": "Newsletter · a club's tournament send-out · in the look of email option 5 · The big month · not kept"
   },
   "Newsletter-Email-6.dc.html": {
@@ -1885,7 +1885,7 @@
    "w": 1440,
    "h": 2650,
    "x": 640,
-   "y": 5490,
+   "y": 5790,
    "title": "Newsletter · the email · The navy band, with In this issue · new, from K's notes"
   },
   "Newsletter-Tournament-6.dc.html": {
@@ -1893,7 +1893,7 @@
    "w": 1440,
    "h": 2450,
    "x": 640,
-   "y": 8580,
+   "y": 8880,
    "title": "Newsletter · a club's tournament send-out · The navy band, with At a glance · new, from K's notes"
   }
  },
@@ -3658,7 +3658,7 @@
    "text": "The email members receive · the president picks one of these two",
    "w": 240,
    "x": 640,
-   "y": 5170
+   "y": 5470
   },
   "b_newsletter_options": {
    "fill": "teal",
@@ -3666,7 +3666,7 @@
    "w": 560,
    "x": 0,
    "y": 0,
-   "text": "For the LCA president (Wed, Nov 11, 2026).\n\nTop row, the page where the newsletter is written and sent: K chose \"The letter on the desk\". From and Subject sit at the top like a mail program, the letter is typed on directly, and the side shows what members will get and who gets it.\n\nMiddle row, the email members receive. The president picks one of two looks: the navy band with a short \"In this issue\" list whose lines jump to each part, or The bulletin.\n\nBottom row, a club's tournament send-out in each of those two looks, so clubs can announce their tournaments to LCA's members.\n\nThe counts and the tournament are examples. No sender address is shown.\n\nThe options not kept are further right in each row."
+   "text": "For the LCA president (Wed, Nov 11, 2026).\n\nTop row, the page where the newsletter is written and sent: K chose \"The letter on the desk\". From and Subject sit at the top like a mail program, the letter is typed on directly, and the side shows what members will get and who gets it.\n\nMiddle row, the email members receive. The president picks one of two looks: the navy band with a short \"In this issue\" list whose lines jump to each part, or The bulletin.\n\nBottom row, a club's tournament send-out in each of those two looks, so clubs can announce their tournaments to LCA's members.\n\nEvery name, date, club, tournament and result shown is made up, to show the layout. No sender address is shown.\n\nThe options not kept are further right in each row."
   },
   "t_newsletter_options_page_no": {
    "kind": "title1",
@@ -3684,7 +3684,7 @@
    "text": "Email looks not kept",
    "w": 240,
    "x": 4160,
-   "y": 5170
+   "y": 5470
   },
   "t_newsletter_options_tournament": {
    "kind": "title1",
@@ -3693,7 +3693,7 @@
    "text": "A club's tournament send-out · in each of the two looks",
    "w": 240,
    "x": 640,
-   "y": 8260
+   "y": 8560
   },
   "t_newsletter_options_tournament_no": {
    "kind": "title1",
@@ -3702,7 +3702,7 @@
    "text": "Send-outs not kept",
    "w": 240,
    "x": 4160,
-   "y": 8260
+   "y": 8560
   }
  },
  "order": [
