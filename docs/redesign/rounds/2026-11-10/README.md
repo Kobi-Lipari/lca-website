@@ -207,3 +207,11 @@ In all three the bar at the foot reads 1 Pick a template to start from, 2 Send a
 - `Newsletter-Page-4-Top-C`, The letter's own header: From and Subject are two slim lines at the top of the letter's frame, each as wide as its words, with More options at the right of the From line. The letter shows 650px. The designers recommend this one; its open point is that unboxed lines may not read at once as things to press.
 
 K's pick is applied to `Newsletter-Page-4` (every picture) and to the president's page pictures in the round that follows.
+
+## Round 13: the three options as a true desktop screen (Wednesday, November 11, 2026)
+
+K asked to see round 12's three options as they would really appear on a normal desktop (K's words are in `feedback.md`). `newsletter3-specs.json` carries it as `revision13`; `results/newsletter13-results.json` holds the run. No board changed: each option was drawn once more as one whole 1920 by 1080 screen, a plain browser window at 100% zoom (a 41px tab strip, a 46px toolbar, a 1920 by 945 viewport and a 48px system bar), built from one shared page so the three differ only in the writing column. The pictures are not kept in the repository.
+
+What the true size shows: a real window is shorter than a board's frame, so the letter's sheet shows 531px in option A (684px on its board), 485px in B (638px) and 497px in C (650px): twelve, eleven and eleven of the example letter's sixteen lines. The preview phone at the right shrinks to fit. The page sits in a centred column 1200px wide, the kit's page frame, with 360px of margin on each side.
+
+A point for the build of this page: the kit's frame is 1200px with 24px gutters, and the site's built header and Group email use a 1152px box with 1104px of content, which cannot hold the board's 1150px desk. The page's build takes the kit's frame or the desk is redrawn narrower.

@@ -87,3 +87,7 @@ Asked whether the jiggle runs only while the letter is still empty (recommended)
 ## Wednesday, November 11, 2026, about 8:25 PM UTC: the top of the page, three options
 
 K's words: "on the page thing, the \"1 write it\" thing takes up space unneccsaraily where it is and maybe the 1 should be placed where they pick a tempklate to make the flow consistnet. also, the from and subject boxes seem to take up unneessarily wide horizontal space. maybe the more options or something of the sort can be put there on the right. lets get 3 options with these kinds of things taken into mind for me to pick from so we try out more so we make this the best experience it can be for our admins and reps etc."
+
+## Wednesday, November 11, 2026, about 9:20 PM UTC: the three options at a real desktop size
+
+K's words: "show me those three page options but with a picture that precisly mimicks how each would appear in a normal desktop view (resolution, zoom, etc)"
