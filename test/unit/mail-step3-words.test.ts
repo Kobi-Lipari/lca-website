@@ -5,8 +5,9 @@
 // initials for US Chess, no name of a tool or an assistant, in code, copy or
 // tests; no postal address in the words an email carries; and the links' key
 // named only where it is read or bound, never in a setting file a deploy
-// reads, in the worker's folder or in a file that holds a value for it other
-// than the integration harness's own made-up string. Nothing here makes a
+// reads, in the worker's folder but its Env type (since WS16 step 4, whose
+// sweep sends list mail) or in a file that holds a value for it other than
+// the integration harness's own made-up string. Nothing here makes a
 // request or reads an environment.
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs'
 import { join, relative, resolve } from 'node:path'
@@ -76,10 +77,18 @@ function walk(dir: string, out: string[] = []): string[] {
 }
 
 describe('the links\' key', () => {
-  it('is named in no setting file a deploy reads, nothing in the worker\'s folder and no environment file', () => {
+  it('is named in no setting file a deploy reads and no environment file, and in the worker\'s folder only by its Env type, as two optional secrets', () => {
     const settings = ['wrangler.toml', 'workers/daily-emails/wrangler.toml', '.dev.vars', '.dev.vars.example', '.dev.vars.a11y', '.env', '.env.example', '.env.local']
     for (const file of settings.filter((f) => existsSync(join(ROOT, f)))) expect(read(file), file).not.toMatch(/MAIL_LINK_SECRET/)
-    for (const file of walk('workers').filter((f) => /\.(?:ts|toml|json|md|js)$/.test(f))) expect(read(file), file).not.toMatch(/MAIL_LINK_SECRET/)
+    // Since WS16 step 4 the sweep sends list mail, so the worker's Env type names the two keys K sets on it as secrets;
+    // no other file of the worker's folder names either.
+    const naming = walk('workers').filter((f) => /\.(?:ts|toml|json|md|js)$/.test(f)).filter((f) => /MAIL_LINK_SECRET/.test(read(f)))
+    expect(naming).toEqual(['workers/daily-emails/src/index.ts'])
+    const worker = read('workers/daily-emails/src/index.ts')
+    expect(worker.split('\n').filter((line) => /MAIL_LINK_SECRET/.test(line) && !/^\s*(?:\/\/|\/\*\*|\*)/.test(line)).map((line) => line.trim())).toEqual([
+      'MAIL_LINK_SECRET?: string',
+      'MAIL_LINK_SECRET_PREVIOUS?: string',
+    ])
   })
 
   it('is given a value in one file only, the integration config\'s made-up string, and the browser tests bind both names empty', () => {
@@ -96,11 +105,14 @@ describe('the links\' key', () => {
     expect(empty).toContain("'MAIL_LINK_SECRET_PREVIOUS'")
   })
 
-  it('is named only by the link signer, the footer, the endpoints\' shared answers, the unsubscribe answer and the Env type, which says both names are optional production secrets', () => {
+  it('is named only by the link signer, the footer, the endpoints\' shared answers, the unsubscribe answer, the list path, the newsletter\'s send and test, and the Env type, which says both names are optional production secrets', () => {
     const readers = walk('functions').filter((f) => /MAIL_LINK_SECRET/.test(read(f))).map((f) => relative('', f)).sort()
+    // WS16 step 4 adds the list path in the campaign sender, which checks the key a list campaign was made with, and the
+    // newsletter's send and test send, which refuse to start without it.
     expect(readers).toEqual([
-      'functions/api/mail/unsubscribe/[token].ts', 'functions/types.ts', 'functions/utils/mail/footer.ts', 'functions/utils/mail/linkAnswers.ts',
-      'functions/utils/mail/links.ts',
+      'functions/api/admin/mail/newsletter.ts', 'functions/api/admin/mail/newsletter/test.ts',
+      'functions/api/mail/unsubscribe/[token].ts', 'functions/types.ts', 'functions/utils/admin/campaigns.ts', 'functions/utils/mail/footer.ts',
+      'functions/utils/mail/linkAnswers.ts', 'functions/utils/mail/links.ts',
     ])
     const types = read('functions/types.ts')
     expect(types).toMatch(/MAIL_LINK_SECRET\?: string/)

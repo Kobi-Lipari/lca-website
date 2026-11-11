@@ -2,8 +2,12 @@
 //
 // Who the LCA newsletter is for, written once, in SQL, so the email
 // preferences endpoint (functions/api/mail/preferences/[token].ts) and the
-// newsletter's send (WS16 step 4) read the same rule. The lists' ids are in
-// domain/mail/lists.ts.
+// newsletter's send read the same rule. The lists' ids are in
+// domain/mail/lists.ts. The newsletter's own reads and writes are here too
+// (WS16 step 4): its counts and recent sends, the one batch that makes a
+// send, and the stop. Every statement uses the audience clause at most
+// once, in a subquery of its own, and binds a few values whatever the
+// list's size.
 //
 // The newsletter's audience is K's rule (decision 28 of the WS16 plan, D38
 // and Q40): every address on an account with an active membership, once.
@@ -21,6 +25,7 @@
 // someone outside the audience counts for nothing.
 
 import { EXAMPLE_DOMAINS, RESERVED_TOP_LEVEL_NAMES, SITE_DOMAIN } from '../../../domain/mail/address'
+import { NEWSLETTER_LIST_ID, type Choice } from '../../../domain/mail/lists'
 
 /**
  * The code points JavaScript's trim() takes off each end, which normalizeAddress trims and isSendableAddress's \s
@@ -102,4 +107,223 @@ export function inNewsletterAudienceSql(address: string): string {
 export async function inNewsletterAudience(db: D1Database, address: string): Promise<boolean> {
   const row = await db.prepare(`SELECT ${inNewsletterAudienceSql('?1')} AS yes`).bind(address).first<{ yes: number }>()
   return row?.yes === 1
+}
+
+// ── The newsletter's send ────────────────────────────────────────────────────
+
+/** The choice that keeps a person off a list, typed by domain/mail/lists.ts, since no CHECK holds it in the table. */
+const OUT: Choice = 'out'
+
+/** Each list's audience, as a query of one column, address. The newsletter's alone in part one. */
+const AUDIENCES: Readonly<Record<string, string>> = { [NEWSLETTER_LIST_ID]: NEWSLETTER_AUDIENCE_SQL }
+
+function audienceOf(listId: string): string {
+  const audience = AUDIENCES[listId]
+  if (audience === undefined) throw new Error('No audience is written for this list.')
+  return audience
+}
+
+/** The words an untried row of a stopped newsletter is failed with, which the history shows. */
+export const STOPPED_WORDS = 'Not sent: the send was stopped.'
+
+/**
+ * The newsletter's audience counted: every address in it, those whose person turned the newsletter off, those who
+ * stopped all optional mail, those on the do-not-send list, and those who will get the next send, which is what is
+ * left of the audience after the other three. One address can be in more than one of the three, so they need not add
+ * up.
+ */
+export interface NewsletterCounts {
+  addresses: number
+  turnedOff: number
+  stoppedAll: number
+  doNotSend: number
+  willGet: number
+}
+
+/** The newsletter's counts now. One query. */
+export async function newsletterCounts(db: D1Database): Promise<NewsletterCounts> {
+  const row = await db
+    .prepare(
+      `WITH audience(address) AS (${NEWSLETTER_AUDIENCE_SQL}),
+            marks AS (
+              SELECT EXISTS (SELECT 1 FROM mail_contacts c JOIN mail_list_choices ch ON ch.contact_id = c.id
+                              WHERE c.address = a.address AND ch.list_id = ?1 AND ch.choice = ?2) AS turned_off,
+                     EXISTS (SELECT 1 FROM mail_contacts c WHERE c.address = a.address AND c.optional_off_at IS NOT NULL) AS stopped_all,
+                     EXISTS (SELECT 1 FROM mail_do_not_send d WHERE d.address = a.address) AS dead
+                FROM audience a)
+       SELECT COUNT(*) AS addresses,
+              COALESCE(SUM(turned_off), 0) AS turned_off,
+              COALESCE(SUM(stopped_all), 0) AS stopped_all,
+              COALESCE(SUM(dead), 0) AS dead,
+              COALESCE(SUM(turned_off = 0 AND stopped_all = 0 AND dead = 0), 0) AS will_get
+         FROM marks`,
+    )
+    .bind(NEWSLETTER_LIST_ID, OUT)
+    .first<{ addresses: number; turned_off: number; stopped_all: number; dead: number; will_get: number }>()
+  return {
+    addresses: row?.addresses ?? 0,
+    turnedOff: row?.turned_off ?? 0,
+    stoppedAll: row?.stopped_all ?? 0,
+    doNotSend: row?.dead ?? 0,
+    willGet: row?.will_get ?? 0,
+  }
+}
+
+/** One newsletter send in the newsletter's own history. Its status is one of the three migration 0021's CHECK allows. */
+export interface NewsletterSend {
+  id: string
+  subject: string
+  totalRecipients: number
+  sentCount: number
+  failedCount: number
+  skippedCount: number
+  status: 'sending' | 'completed' | 'failed'
+  createdAt: string
+  completedAt: string | null
+}
+
+/**
+ * What the newsletter tab shows: the counts, and the last 10 newsletter sends, newest first. This is the newsletter's
+ * own history for everyone who may send it, since Group email's history (GET /api/admin/campaigns) keeps
+ * requireMailer. Two queries.
+ */
+export async function newsletterSummary(db: D1Database): Promise<NewsletterCounts & { recent: NewsletterSend[] }> {
+  const counts = await newsletterCounts(db)
+  const { results } = await db
+    .prepare(
+      `SELECT id, subject, total_recipients, sent_count, failed_count, skipped_count, status, created_at, completed_at
+         FROM email_campaigns WHERE list_id = ?1
+        ORDER BY created_at DESC, rowid DESC LIMIT 10`,
+    )
+    .bind(NEWSLETTER_LIST_ID)
+    .all<{
+      id: string; subject: string; total_recipients: number; sent_count: number; failed_count: number; skipped_count: number
+      status: NewsletterSend['status']; created_at: string; completed_at: string | null
+    }>()
+  return {
+    ...counts,
+    recent: (results ?? []).map((row) => ({
+      id: row.id,
+      subject: row.subject,
+      totalRecipients: row.total_recipients,
+      sentCount: row.sent_count,
+      failedCount: row.failed_count,
+      skippedCount: row.skipped_count,
+      status: row.status,
+      createdAt: row.created_at,
+      completedAt: row.completed_at,
+    })),
+  }
+}
+
+/**
+ * Makes one send on a list, in one db.batch, which D1 runs as one transaction and counts as one query:
+ * - the campaign row, inserted only while no other send on the list is sending, so two presses at the same moment make
+ *   one: id `campaign-${Date.now().toString(36)}` as Group email's, status 'sending', the list's id, and in filter_json
+ *   the list and the 16 characters of the link key it was made with (linkKeyCheck in ./links);
+ * - a contact for every address of the audience that has none yet, which puts the address on no list;
+ * - a recipient row for each contact whose address is in the audience, has no 'out' on the list, has not stopped all
+ *   optional mail and is not on the do-not-send list, in the order of the addresses. The recipients are the audience
+ *   alone: a choice never adds an address to the newsletter (K's rule, decision 28), and a spam report's mark does not
+ *   keep anyone off it, since both of LCA's lists are main mailers and a report made on the newsletter wrote an 'out';
+ * - the campaign's total, counted from its rows.
+ * Each statement after the first writes only when the first made the campaign. Answers null when it did not.
+ */
+export async function createListCampaign(
+  db: D1Database,
+  args: { listId: string; subject: string; bodyHtml: string; createdBy: string; linkCheck: string },
+): Promise<{ campaignId: string; totalRecipients: number } | null> {
+  const audience = audienceOf(args.listId)
+  const campaignId = `campaign-${Date.now().toString(36)}`
+  const made = 'EXISTS (SELECT 1 FROM email_campaigns WHERE id = ?1 AND list_id = ?2)'
+  const results = await db.batch([
+    db
+      .prepare(
+        `INSERT INTO email_campaigns (id, subject, body_html, filter_json, total_recipients, created_by, status, list_id)
+         SELECT ?1, ?3, ?4, ?5, 0, ?6, 'sending', ?2
+          WHERE NOT EXISTS (SELECT 1 FROM email_campaigns WHERE list_id = ?2 AND status = 'sending')`,
+      )
+      .bind(campaignId, args.listId, args.subject, args.bodyHtml, JSON.stringify({ list: args.listId, linkCheck: args.linkCheck }), args.createdBy),
+    db
+      .prepare(
+        `INSERT OR IGNORE INTO mail_contacts (id, address)
+         SELECT lower(hex(randomblob(16))), a.address FROM (${audience}) a WHERE ${made}`,
+      )
+      .bind(campaignId, args.listId),
+    // OR IGNORE: a second press in the same millisecond carries the same campaign id and finds the rows already there.
+    db
+      .prepare(
+        `INSERT OR IGNORE INTO email_campaign_recipients (id, campaign_id, member_id, email, contact_id)
+         SELECT 'rcpt-' || ?1 || '-' || c.id, ?1, NULL, c.address, c.id
+           FROM mail_contacts c
+          WHERE ${made}
+            AND c.address IN (${audience})
+            AND NOT EXISTS (SELECT 1 FROM mail_list_choices ch WHERE ch.contact_id = c.id AND ch.list_id = ?2 AND ch.choice = ?3)
+            AND c.optional_off_at IS NULL
+            AND NOT EXISTS (SELECT 1 FROM mail_do_not_send d WHERE d.address = c.address)
+          ORDER BY c.address`,
+      )
+      .bind(campaignId, args.listId, OUT),
+    db
+      .prepare(`UPDATE email_campaigns SET total_recipients = (SELECT COUNT(*) FROM email_campaign_recipients WHERE campaign_id = ?1) WHERE id = ?1 AND list_id = ?2`)
+      .bind(campaignId, args.listId),
+  ])
+  if (!results[0]?.meta.changes) return null
+  return { campaignId, totalRecipients: results[2]?.meta.changes ?? 0 }
+}
+
+/** The send on a list that is sending now, if any: its id and its subject. One query. */
+export async function sendingListCampaign(db: D1Database, listId: string): Promise<{ id: string; subject: string } | null> {
+  return db
+    .prepare(`SELECT id, subject FROM email_campaigns WHERE list_id = ?1 AND status = 'sending' ORDER BY created_at, rowid LIMIT 1`)
+    .bind(listId)
+    .first<{ id: string; subject: string }>()
+}
+
+/**
+ * Stops the send on a list that is sending, in one db.batch: its untried rows (pending, and not marked sending) are
+ * failed with STOPPED_WORDS and counted in failed_count, and the send is closed as the campaign sender closes one,
+ * 'completed', or 'failed' when nothing went, so the sweep and the next send pass over it. A row already marked sending
+ * is left to its run, which sends it; a run that holds rows it has not marked finds them failed and sends none of
+ * them. Answers the number of rows stopped, or null when nothing on the list was sending.
+ */
+export async function stopListCampaign(db: D1Database, listId: string): Promise<number | null> {
+  const results = await db.batch([
+    db
+      .prepare(
+        `UPDATE email_campaigns
+            SET failed_count = failed_count + (SELECT COUNT(*) FROM email_campaign_recipients r
+                                                WHERE r.campaign_id = email_campaigns.id AND r.status = 'pending' AND r.sending_at IS NULL)
+          WHERE list_id = ?1 AND status = 'sending'`,
+      )
+      .bind(listId),
+    db
+      .prepare(
+        `UPDATE email_campaign_recipients SET status = 'failed', error = ?2
+          WHERE status = 'pending' AND sending_at IS NULL
+            AND campaign_id IN (SELECT id FROM email_campaigns WHERE list_id = ?1 AND status = 'sending')`,
+      )
+      .bind(listId, STOPPED_WORDS),
+    db
+      .prepare(
+        `UPDATE email_campaigns
+            SET status = CASE WHEN sent_count = 0 AND failed_count > 0 THEN 'failed' ELSE 'completed' END,
+                completed_at = datetime('now')
+          WHERE list_id = ?1 AND status = 'sending'`,
+      )
+      .bind(listId),
+  ])
+  if (!results[2]?.meta.changes) return null
+  return results[1]?.meta.changes ?? 0
+}
+
+/**
+ * The contact for one address, made when it has none, which puts the address on no list: a test send carries the real
+ * links for the address it goes to. Two queries.
+ */
+export async function contactFor(db: D1Database, address: string): Promise<string> {
+  await db.prepare('INSERT OR IGNORE INTO mail_contacts (id, address) VALUES (lower(hex(randomblob(16))), ?1)').bind(address).run()
+  const row = await db.prepare('SELECT id FROM mail_contacts WHERE address = ?1').bind(address).first<{ id: string }>()
+  if (!row) throw new Error('The contact could not be made.')
+  return row.id
 }

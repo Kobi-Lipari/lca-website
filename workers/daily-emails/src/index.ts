@@ -68,6 +68,13 @@ interface Env {
   RESEND_API_KEY: string
   FROM_EMAIL?: string
   SITE_URL?: string
+  /**
+   * The key the links in list mail are signed with, the same as the site's, and only while it is being changed the key
+   * before it: secrets K sets on this worker before the newsletter is switched on. Without the key the sweep sends no
+   * list campaign and its history says the key is missing (functions/utils/admin/campaigns.ts).
+   */
+  MAIL_LINK_SECRET?: string
+  MAIL_LINK_SECRET_PREVIOUS?: string
 }
 
 async function phase(name: string, fn: () => Promise<void>): Promise<void> {

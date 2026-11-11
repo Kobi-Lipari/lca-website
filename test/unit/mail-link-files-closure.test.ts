@@ -1,15 +1,19 @@
 // test/unit/mail-link-files-closure.test.ts
 //
-// What WS16 step 3 keeps out of the daily-emails worker. The step adds the
-// signed links, the footer, the newsletter's audience and the two endpoints'
-// shared answers, and none of them may reach the worker's bundle: the worker
-// only checks the headers a message already carries (functions/utils/mail/send.ts)
-// and never builds them, so its upload does not grow by a line of them.
-// test/unit/mail-worker-closure.test.ts holds what the bundle may reach; this
-// holds what it may not, by the same walk from the worker's entry, and that
-// the footer's import of the site's address helper, which sits outside
-// functions/utils/mail and domain/mail, is therefore harmless. It also holds
-// that no code the worker reaches names the key the links are signed with.
+// What the daily-emails worker reaches of the files that sign links and
+// build the footer, and what it still never reaches. WS16 step 3 kept all of
+// them out, since the worker only checked the headers a message carries.
+// Since WS16 step 4 the five-minute sweep sends list campaigns through
+// functions/utils/admin/campaigns.ts, which signs each person's links and
+// builds their footer, so the worker's bundle takes the link signer, the
+// footer and the footer's words, and names the link key where it is read.
+// It still takes no package and nothing under functions/api or
+// domain/contracts, and it still never reaches the newsletter's audience
+// and its writes (functions/utils/mail/lists.ts), what the two link
+// endpoints share, what the newsletter's three admin endpoints share, or
+// any of those endpoints. test/unit/mail-worker-closure.test.ts holds the
+// seam's own files and the six files the earlier closure tests keep out;
+// this holds the rest, by the same walk from the worker's entry.
 import { existsSync, readFileSync, statSync } from 'node:fs'
 import { dirname, join, relative, resolve } from 'node:path'
 import ts from 'typescript'
@@ -28,65 +32,86 @@ function resolveImport(from: string, specifier: string): string | null {
   return null
 }
 
-function closure(entry: string): Set<string> {
+function closure(entry: string): { files: Set<string>; packages: string[] } {
   const files = new Set<string>()
+  const packages: string[] = []
   const queue = [entry]
   while (queue.length > 0) {
     const file = queue.shift()!
     if (files.has(file)) continue
     files.add(file)
     for (const specifier of specifiersOf(file)) {
-      if (!specifier.startsWith('.')) continue
+      if (!specifier.startsWith('.')) {
+        packages.push(`${file}: ${specifier}`)
+        continue
+      }
       const found = resolveImport(file, specifier)
       if (found) queue.push(found)
     }
   }
-  return files
+  return { files, packages }
 }
 
-/** The step's own files, none of which the worker may reach. */
+/** Code with its comments taken out, so a file is held to what it runs. */
+const codeOf = (file: string) => readFileSync(join(ROOT, file), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '')
+
+/** The list path's files, which the worker reaches since WS16 step 4: the link signer, the footer and the footer's words. */
+const LIST_PATH = ['functions/utils/mail/links.ts', 'functions/utils/mail/footer.ts', 'domain/mail/footer.ts']
+
+/** The files the worker still never reaches: the newsletter's audience and writes, the endpoints and what they share. */
 const KEPT_OUT = [
-  'functions/utils/mail/links.ts',
-  'functions/utils/mail/footer.ts',
   'functions/utils/mail/lists.ts',
   'functions/utils/mail/linkAnswers.ts',
-  'domain/mail/footer.ts',
+  'functions/utils/mail/newsletterAnswers.ts',
   'functions/api/mail/unsubscribe/[token].ts',
   'functions/api/mail/preferences/[token].ts',
+  'functions/api/admin/mail/newsletter.ts',
+  'functions/api/admin/mail/newsletter/test.ts',
+  'functions/api/admin/mail/newsletter/stop.ts',
   'domain/contracts/mail.ts',
 ]
 
-describe('the daily-emails worker and the files of the signed links', () => {
-  const files = closure(ENTRY)
+/** The seam's files and the gate, which check the headers a message carries and never build them. */
+const SEAM = ['send', 'resend', 'switches', 'rules', 'outcome', 'gate'].map((name) => `functions/utils/mail/${name}.ts`)
 
-  it('reaches none of the files that sign links, build the footer, read the newsletter\'s audience or answer the two endpoints', () => {
+describe('the daily-emails worker and the files of the signed links', () => {
+  const { files, packages } = closure(ENTRY)
+
+  it('reaches the list path\'s files through the campaign sender, and still no package and nothing under functions/api or domain/contracts', () => {
+    for (const file of [...LIST_PATH, 'functions/utils/admin/campaigns.ts', ...SEAM]) {
+      expect(existsSync(join(ROOT, file)), file).toBe(true)
+      expect([...files], file).toContain(file)
+    }
+    expect(packages).toEqual([])
+    expect([...files].filter((file) => file.startsWith('functions/api/') || file.startsWith('domain/contracts/'))).toEqual([])
+  })
+
+  it('never reaches the newsletter\'s audience and writes, what the endpoints share, or the endpoints', () => {
     for (const file of KEPT_OUT) {
       expect(existsSync(join(ROOT, file)), file).toBe(true)
       expect([...files], file).not.toContain(file)
     }
   })
 
-  it('still reaches the seam\'s five files and the gate, so the walk is not blind', () => {
-    for (const name of ['send', 'resend', 'switches', 'rules', 'outcome', 'gate']) expect([...files], name).toContain(`functions/utils/mail/${name}.ts`)
+  it('names the links\' key only where the list path reads it and in the worker\'s own Env, and builds links only in the list path\'s files', () => {
+    const naming = [...files].filter((file) => /MAIL_LINK_SECRET/.test(codeOf(file))).sort()
+    expect(naming).toEqual(['functions/utils/admin/campaigns.ts', 'functions/utils/mail/footer.ts', 'workers/daily-emails/src/index.ts'])
+    const building = [...files].filter((file) => /\bsignLink\b|\blistMailParts\b|\blinkKeyCheck\b/.test(codeOf(file))).sort()
+    expect(building).toEqual(['functions/utils/admin/campaigns.ts', 'functions/utils/mail/footer.ts', 'functions/utils/mail/links.ts'])
+    // The seam and the gate only check the headers a message carries.
+    for (const file of SEAM) expect(codeOf(file), file).not.toMatch(/MAIL_LINK_SECRET|\bsignLink\b|\blistMailParts\b|\blinkKeyCheck\b/)
   })
 
-  it('names the links\' key in no file it reaches, and no seam file builds a header it only checks', () => {
-    for (const file of files) {
-      const text = readFileSync(join(ROOT, file), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '')
-      expect(text, file).not.toMatch(/MAIL_LINK_SECRET/)
-      expect(text, file).not.toMatch(/\bsignLink\b|\blistMailParts\b|\blinkKeyCheck\b/)
-    }
-  })
-
-  it('has only the footer and the endpoints\' shared answers import outside functions/utils/mail and domain/mail, the footer for the site\'s address, and both stay out', () => {
+  it('has the list path\'s files import, outside functions/utils/mail and domain/mail, only the site\'s address helper and the layout, which the worker bundled before', () => {
     const outside: string[] = []
-    for (const file of KEPT_OUT.filter((f) => f.startsWith('functions/utils/mail/') || f.startsWith('domain/mail/'))) {
+    for (const file of LIST_PATH) {
       for (const specifier of specifiersOf(file)) {
         const found = specifier.startsWith('.') ? resolveImport(file, specifier) : specifier
         if (found && !/^(?:functions\/utils\/mail|domain\/mail)\//.test(found)) outside.push(`${file}: ${found}`)
       }
     }
-    for (const line of outside) expect(line, 'a file outside the two folders that the worker could reach').toMatch(/^functions\/utils\/mail\/(?:footer|linkAnswers)\.ts: /)
-    expect(outside.some((line) => line.endsWith('functions/utils/site.ts'))).toBe(true)
+    expect(outside.sort()).toEqual(['functions/utils/mail/footer.ts: functions/utils/emailLayout.ts', 'functions/utils/mail/footer.ts: functions/utils/site.ts'])
+    // The worker reached both before WS16 step 4, through the campaign sender.
+    for (const file of ['functions/utils/emailLayout.ts', 'functions/utils/site.ts']) expect([...files], file).toContain(file)
   })
 })

@@ -145,6 +145,14 @@ export async function requireAdmin(
   const authed = await requireRole(request, env, 'lca_admin')
   if (isResponse(authed)) return authed
 
+  return secondFactorMissing(request) ?? authed
+}
+
+/**
+ * The 403 an LCA admin gets when the session carries no second factor, or
+ * null when it does. Read only after the session has been verified.
+ */
+function secondFactorMissing(request: Request): Response | null {
   const token = bearerToken(request)
   if (!token || readTokenAal(token) !== 'aal2') {
     return jsonResponse(
@@ -156,8 +164,7 @@ export async function requireAdmin(
       403,
     )
   }
-
-  return authed
+  return null
 }
 
 // ── LCA Observer and LCA Officer ─────────────────────────────────
@@ -201,6 +208,29 @@ export async function requireMailer(
     return errorResponse('Group email is limited to admins and the LCA Observer', 403)
   }
   return authed
+}
+
+/**
+ * The people who may send the LCA newsletter (WS16's endpoints under
+ * /api/admin/mail): today's mailers, an LCA admin with a second factor and
+ * the president (lca_observer), with the session verified once, where
+ * requireMailer verifies an admin's twice. Every refusal is requireMailer's
+ * own answer: 401 signed out, 'Forbidden' for a role that is neither, the
+ * mailing tools' words for an officer, and the second factor's 403 for an
+ * admin without one. WS16 step 6 adds the media manager.
+ */
+export async function requireListMailer(
+  request: Request,
+  env: Env,
+): Promise<AuthedMember | Response> {
+  const authed = await requireAuthedMember(request, env)
+  if (isResponse(authed)) return authed
+  if (authed.member.role === 'lca_observer') return authed
+  if (authed.member.role === 'lca_officer') {
+    return errorResponse('Group email is limited to admins and the LCA Observer', 403)
+  }
+  if (authed.member.role !== 'lca_admin') return errorResponse('Forbidden', 403)
+  return secondFactorMissing(request) ?? authed
 }
 
 /**

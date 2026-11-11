@@ -1,10 +1,32 @@
 // functions/utils/admin/campaigns.ts
+//
+// Group email's sender, and the LCA newsletter's (WS16). Today's path sends
+// a campaign as it always has. Under the mail engine's rules
+// (engineRulesOn() in ../mail/rules) every campaign takes the rules path
+// instead, and a campaign that names a list (email_campaigns.list_id) takes
+// it whatever the constants say: the row decides, so a revert of the change
+// that switches the newsletter on, or a worker running this file whose
+// deploy lags the site's, can never send the rest of a newsletter the old
+// way, without its footer, its headers and its gate. A worker still on the
+// code from before WS16 step 4 takes a campaign's rows by their status
+// alone, so the newsletter is switched on only once the worker runs this
+// file. Under the rules no message is sent twice: a row is marked just
+// before its send and never claimed again once marked; an answer that does
+// not prove the service refused the message is never tried again; and an
+// answer that proves it (a throttle, an account on hold, a key fault) ends
+// the run and puts the untried rows back. The sizes are ../mail/plan's, by
+// the hosting plan.
+import { LIST_SENDERS } from '../../../domain/mail/addresses'
+import { listFooterWords } from '../../../domain/mail/footer'
 import { DEFAULT_FROM, DEFAULT_REPLY_TO } from '../email'
 import { renderEmail } from '../emailLayout'
-import { openLoopGate, type MailGate } from '../mail/gate'
-import { classifyToday } from '../mail/outcome'
+import { listMailParts } from '../mail/footer'
+import { GATE_UNREAD_LOG, GateUnread, openGate, openLoopGate, type MailGate } from '../mail/gate'
+import { linkKeyCheck, MailLinkKeyMissing } from '../mail/links'
+import { classifyOnce, classifyToday, configFault, type OutcomeKind } from '../mail/outcome'
+import { sizes } from '../mail/plan'
 import { engineRulesOn } from '../mail/rules'
-import { deliver } from '../mail/send'
+import { deliver, GATE_UNREAD_WORDS, type MailHeader, type OutgoingMail, type SendResult } from '../mail/send'
 import { resolveSiteUrl, type SiteEnv } from '../site'
 
 /**
@@ -13,12 +35,16 @@ import { resolveSiteUrl, type SiteEnv } from '../site'
  * Same trick as EmailEnv in ./email: both the Pages Functions Env and the
  * cron Worker Env satisfy this structurally, so the sweep can live here and
  * be called from either side without the two learning about each other.
+ * The two link keys are read for list mail only: the key its links are
+ * signed with, and while it is being changed, the one before it.
  */
 export interface CampaignEnv extends SiteEnv {
   DB: D1Database
   RESEND_API_KEY: string
   FROM_EMAIL?: string
   REPLY_TO_EMAIL?: string
+  MAIL_LINK_SECRET?: string
+  MAIL_LINK_SECRET_PREVIOUS?: string
 }
 
 export interface CampaignFilter {
@@ -118,11 +144,14 @@ export function wrapBrandedEmail(
   env: SiteEnv,
   subject: string,
   bodyHtml: string,
+  /** One person's footer on a list (listMailParts in ../mail/footer); without it the page is today's, byte for byte. */
+  listFooter?: string,
 ): string {
   return renderEmail({
     siteUrl: resolveSiteUrl(env),
     heading: subject,
     body: bodyHtml,
+    ...(listFooter === undefined ? {} : { listFooter }),
   })
 }
 
@@ -156,7 +185,7 @@ const CLAIM_TIMEOUT = '-15 minutes'
 const MAX_ATTEMPTS = 3
 
 /** Pacing between sends — stays comfortably under Resend's rate limit. */
-const SEND_INTERVAL_MS = 400
+export const SEND_INTERVAL_MS = 400
 
 type SendOutcome =
   | { ok: true }
@@ -170,15 +199,13 @@ type SendOutcome =
  * email has always sent, and reads the answer as this sender always has:
  * whether a failure is worth another try is classifyToday's rule in
  * ../mail/outcome, and the error keeps the words the recipients' error
- * column and the history show. A batch passes the gate it read for all its
- * recipients.
+ * column and the history show.
  */
 async function sendOne(
   env: CampaignEnv,
   to: string,
   subject: string,
   html: string,
-  gate?: MailGate,
 ): Promise<SendOutcome> {
   // reply_to matters: the From address has no mailbox behind it, so
   // without it every reply to a group email was lost.
@@ -189,7 +216,7 @@ async function sendOne(
     subject,
     html,
     shape: 'campaign',
-  }, gate)
+  })
   if (result.ok) return { ok: true }
   // A thrown fetch is a network problem, not a verdict on the address.
   if (result.noAnswer) return { ok: false, retryable: true, error: result.error }
@@ -235,6 +262,8 @@ interface ClaimedRecipient {
   id: string
   email: string
   attempts: number
+  /** The recipient's mail contact, which a list campaign's links are signed for; null on Group email's rows. */
+  contact_id: string | null
 }
 
 /**
@@ -245,6 +274,9 @@ interface ClaimedRecipient {
  * already claimed — two runs can never come away holding the same recipient
  * and mail somebody twice. Rows whose claim has gone stale are fair game
  * again, which is what lets a killed run's batch be finished by someone else.
+ * A row marked sending (sending_at, written under the engine's rules just
+ * before its send) is never claimed again, by any run on either path:
+ * today's path never marks a row, so it claims exactly what it always did.
  */
 async function claimRecipients(
   db: D1Database,
@@ -259,15 +291,33 @@ async function claimRecipients(
           SELECT id FROM email_campaign_recipients
            WHERE campaign_id = ?1
              AND status = 'pending'
+             AND sending_at IS NULL
              AND (claimed_at IS NULL OR claimed_at <= datetime('now', ?2))
            ORDER BY rowid
            LIMIT ?3
         )
-        RETURNING id, email, attempts`,
+        RETURNING id, email, attempts, contact_id`,
     )
     .bind(campaignId, CLAIM_TIMEOUT, limit)
     .all<ClaimedRecipient>()
   return results ?? []
+}
+
+/** A campaign as a run reads it: what it says, and the list it goes out on, with the link key's check, for a list campaign. */
+interface CampaignRow {
+  subject: string
+  body_html: string
+  list_id: string | null
+  filter_json: string | null
+}
+
+/** One run of a campaign as the sweep and the request path read it: CampaignRunResult, and whether the whole run must end. */
+interface CampaignRun extends CampaignRunResult {
+  /**
+   * No more sends in this invocation: an answer that proves the service refused for now and that every send would meet
+   * (a throttle, an account on hold, a key fault, the limit of outside calls), or the request path's deadline.
+   */
+  endRun: boolean
 }
 
 /**
@@ -278,26 +328,44 @@ async function claimRecipients(
  * decides whether to come back. Safe to call concurrently with itself — see
  * claimRecipients — and safe to call on a campaign with nothing outstanding,
  * which is what makes the cron sweep harmless when there is no work to do.
+ * The batch is `limit` rows, or by default today's 40, and under the
+ * engine's rules the request path's size of ../mail/plan.
  */
 export async function processCampaign(
   env: CampaignEnv,
   campaignId: string,
-  limit: number = REQUEST_PATH_BATCH,
+  limit?: number,
 ): Promise<CampaignRunResult> {
+  const { sent, failed, remaining, done } = await runCampaign(env, campaignId, limit)
+  return { sent, failed, remaining, done }
+}
+
+/**
+ * One batch of a campaign, on the path its row and the rules decide: a campaign that names a list, or any campaign
+ * under the engine's rules, takes the rules path below; any other takes today's, statement for statement as before.
+ */
+async function runCampaign(
+  env: CampaignEnv,
+  campaignId: string,
+  limit?: number,
+  deadline?: number,
+): Promise<CampaignRun> {
   const db = env.DB
 
   const campaign = await db
-    .prepare(`SELECT subject, body_html FROM email_campaigns WHERE id = ?`)
+    .prepare(`SELECT subject, body_html, list_id, filter_json FROM email_campaigns WHERE id = ?`)
     .bind(campaignId)
-    .first<{ subject: string; body_html: string }>()
+    .first<CampaignRow>()
 
-  if (!campaign) return { sent: 0, failed: 0, remaining: 0, done: true }
+  if (!campaign) return { sent: 0, failed: 0, remaining: 0, done: true, endRun: false }
+
+  // The row decides: a list campaign is sent only under the rules, whatever MAIL_LISTS_ON says.
+  if (campaign.list_id != null || engineRulesOn()) {
+    return runUnderRules(env, campaignId, campaign, limit ?? sizes().requestBatch, deadline)
+  }
 
   const html = wrapBrandedEmail(env, campaign.subject, campaign.body_html)
-  const claimed = await claimRecipients(db, campaignId, limit)
-  // Under the mail engine's rules the batch's addresses are read into the do-not-send gate at once, one query for
-  // each 90, rather than one query a message.
-  const gate = engineRulesOn() ? await openLoopGate(db, claimed.map((r) => r.email)) : undefined
+  const claimed = await claimRecipients(db, campaignId, limit ?? REQUEST_PATH_BATCH)
 
   let sent = 0
   let failed = 0
@@ -307,7 +375,7 @@ export async function processCampaign(
     // one-recipient batch is pure latency.
     if (index > 0) await new Promise((r) => setTimeout(r, SEND_INTERVAL_MS))
 
-    const result = await sendOne(env, recipient.email, campaign.subject, html, gate)
+    const result = await sendOne(env, recipient.email, campaign.subject, html)
 
     if (result.ok) {
       sent++
@@ -343,6 +411,12 @@ export async function processCampaign(
     ])
   }
 
+  const remaining = await remainingAfterRun(db, campaignId)
+  return { sent, failed, remaining, done: remaining === 0, endRun: false }
+}
+
+/** What a campaign has left after a run, and its close once nothing is: two statements, one when something is left. */
+async function remainingAfterRun(db: D1Database, campaignId: string): Promise<number> {
   const remainingRow = await db
     .prepare(`SELECT COUNT(*) as count FROM email_campaign_recipients WHERE campaign_id = ? AND status = 'pending'`)
     .bind(campaignId)
@@ -368,7 +442,345 @@ export async function processCampaign(
       .run()
   }
 
-  return { sent, failed, remaining, done: remaining === 0 }
+  return remaining
+}
+
+// ── Under the engine's rules ─────────────────────────────────────────────────
+//
+// The words below go into a recipient's error column, which Group email's
+// history shows. None of them names an address.
+
+/** A row written off because its run died between its mark and its outcome: the service may have the message. */
+export const WRITTEN_OFF_WORDS = 'Not sent again: the mail service may have taken it, and a second try could send it twice.'
+
+/** A row whose request had no answer, which is never tried again. */
+export const NO_CLEAR_ANSWER_WORDS = 'No clear answer from the mail service; not sent again so it cannot arrive twice.'
+
+/** On the next row of a list campaign whose deployment holds another link key than the one the campaign was made with. */
+export const LINK_KEY_DIFFERS_WORDS = 'Not sent yet: the link key on this deployment is not the one this email was made with.'
+
+/** On the next row of a list campaign on a deployment with no link key, and on a row the service refused for its key. */
+export const MAIL_KEY_MISSING_WORDS = 'Not sent yet: the mail key is missing on this deployment.'
+
+/** On the next row of a list campaign whose list this deployment holds no sender or no footer words for. */
+export const NO_LIST_SENDER_WORDS = 'Not sent yet: this deployment has no sender for this list.'
+
+/** A list row with no contact to sign its links for, which the list's own send never writes. */
+export const NO_LINK_WORDS = 'Not sent: no unsubscribe link could be made for this address.'
+
+/**
+ * The words a failure is recorded with under the rules. An answer that reached no service carries the seam's own words
+ * (a refusal's, list mail held back while Resend sends or while the gate cannot be read, a call the runtime would not
+ * make); a request with no answer, NO_CLEAR_ANSWER_WORDS; a refusal of the key, MAIL_KEY_MISSING_WORDS; and a refusal
+ * by the service, its status and its words, as today's "Resend <status>: <body>".
+ */
+export function wordsUnderRules(result: Exclude<SendResult, { ok: true }>): string {
+  if (result.refused || result.gateUnread || result.waitForSes || result.limitRefused) return result.error
+  if (result.noAnswer) return NO_CLEAR_ANSWER_WORDS
+  if (configFault(result)) return MAIL_KEY_MISSING_WORDS
+  return result.status === undefined ? result.error : `Resend ${result.status}: ${result.error}`
+}
+
+/** The parts of one email on an LCA list for one person, as the seam takes them. */
+export interface ListMessage {
+  /** The list's own From address and display name, from LIST_SENDERS in domain/mail/addresses.ts. */
+  from: string
+  fromName: string
+  /** Where replies go, as for Group email: REPLY_TO_EMAIL or DEFAULT_REPLY_TO. */
+  replyTo: string
+  /** List-Unsubscribe, then List-Unsubscribe-Post. */
+  headers: MailHeader[]
+  /** The page, with the person's own footer under the message. */
+  html: string
+}
+
+/**
+ * One person's email on an LCA list: the list's sender, the page with the person's footer, and the two one-click
+ * headers (listMailParts in ../mail/footer), which sign the person's two links. Throws MailLinkKeyMissing without the
+ * link key, and an Error for a list with no sender or no footer words, or a contact no link can name.
+ */
+export async function listMessage(
+  env: CampaignEnv,
+  args: { listId: string; contactId: string; subject: string; bodyHtml: string },
+): Promise<ListMessage> {
+  const sender = LIST_SENDERS[args.listId]
+  if (!sender) throw new Error('No sender is written for this list.')
+  const parts = await listMailParts(env, { contactId: args.contactId, listId: args.listId })
+  return {
+    from: sender.from,
+    fromName: sender.name,
+    replyTo: env.REPLY_TO_EMAIL ?? DEFAULT_REPLY_TO,
+    headers: parts.headers,
+    html: wrapBrandedEmail(env, args.subject, args.bodyHtml, parts.footerHtml),
+  }
+}
+
+/** The link key's check a list campaign was made with (filter_json's linkCheck), or null when it holds none. */
+function linkCheckOf(filterJson: string | null): string | null {
+  try {
+    const filter = JSON.parse(filterJson ?? 'null') as { linkCheck?: unknown } | null
+    return typeof filter?.linkCheck === 'string' ? filter.linkCheck : null
+  } catch {
+    return null
+  }
+}
+
+/**
+ * Why this deployment cannot send a list campaign, in the words its history shows, or null when it can: the list needs
+ * its sender and its footer words here, and this deployment's link key, or the key before it while the key is being
+ * changed, must be the one the campaign was made with. A worker whose only key was typed differently from the site's
+ * sends nothing. The match on the key before is safe only when a key change sets the site's two keys first and the
+ * worker's after: every link is signed under this deployment's MAIL_LINK_SECRET (listMailParts in ../mail/footer),
+ * never under the key before, so the site must already read that key. A worker given the new key first, or a new key
+ * typed differently beside the right key before, would sign links that do not open for a campaign made under the old
+ * key.
+ */
+async function listFault(env: CampaignEnv, listId: string, filterJson: string | null): Promise<string | null> {
+  if (!LIST_SENDERS[listId] || !listFooterWords(listId)) return NO_LIST_SENDER_WORDS
+  let current: string
+  try {
+    current = await linkKeyCheck(env.MAIL_LINK_SECRET)
+  } catch (err) {
+    if (err instanceof MailLinkKeyMissing) return MAIL_KEY_MISSING_WORDS
+    throw err
+  }
+  const made = linkCheckOf(filterJson)
+  if (made !== null && made === current) return null
+  if (made !== null && env.MAIL_LINK_SECRET_PREVIOUS && made === (await linkKeyCheck(env.MAIL_LINK_SECRET_PREVIOUS))) return null
+  return LINK_KEY_DIFFERS_WORDS
+}
+
+/**
+ * The two statements that write off a campaign's rows that are marked sending and whose claim has expired: their run
+ * died between the mark and the outcome, so the service may have taken the message, and a second try could send it
+ * twice. Each is failed with WRITTEN_OFF_WORDS and counted in failed_count.
+ */
+function writeOff(db: D1Database, campaignId: string): D1PreparedStatement[] {
+  const stale = `campaign_id = ?1 AND status = 'pending' AND sending_at IS NOT NULL AND (claimed_at IS NULL OR claimed_at <= datetime('now', ?2))`
+  return [
+    db
+      .prepare(
+        `UPDATE email_campaigns SET failed_count = failed_count + (SELECT COUNT(*) FROM email_campaign_recipients WHERE ${stale})
+          WHERE id = ?1 AND EXISTS (SELECT 1 FROM email_campaign_recipients WHERE ${stale})`,
+      )
+      .bind(campaignId, CLAIM_TIMEOUT),
+    db.prepare(`UPDATE email_campaign_recipients SET status = 'failed', error = ?3 WHERE ${stale}`).bind(campaignId, CLAIM_TIMEOUT, WRITTEN_OFF_WORDS),
+  ]
+}
+
+/** The two statements that take the rows the gate refused out of a list campaign, counted in skipped_count and out of the total. */
+function skipRefused(db: D1Database, campaignId: string, rows: ClaimedRecipient[]): D1PreparedStatement[] {
+  const ids = JSON.stringify(rows.map((r) => r.id))
+  const counted = `(SELECT COUNT(*) FROM email_campaign_recipients WHERE id IN (SELECT value FROM json_each(?2)) AND status = 'pending')`
+  return [
+    db
+      .prepare(`UPDATE email_campaigns SET skipped_count = skipped_count + ${counted}, total_recipients = total_recipients - ${counted} WHERE id = ?1`)
+      .bind(campaignId, ids),
+    db.prepare(`DELETE FROM email_campaign_recipients WHERE id IN (SELECT value FROM json_each(?1)) AND status = 'pending'`).bind(ids),
+  ]
+}
+
+/** A row's mark, just before its send. Only a row still pending and not marked takes it, so a row a stop failed meanwhile is never sent. */
+function markSending(db: D1Database, id: string): D1PreparedStatement {
+  return db
+    .prepare(`UPDATE email_campaign_recipients SET sending_at = datetime('now') WHERE id = ? AND status = 'pending' AND sending_at IS NULL`)
+    .bind(id)
+}
+
+/**
+ * One statement that puts claimed rows back in the pool, unclaimed and unmarked, each with the attempt the claim counted
+ * given back, but for `kept`, the row a service answered later; the words go on `noted`, so the history says why the
+ * campaign waits. A row that is no longer pending, such as one a stop failed, is left as it is.
+ */
+function putBack(db: D1Database, rows: ClaimedRecipient[], opts: { kept?: string; noted?: string; words?: string } = {}): D1PreparedStatement {
+  return db
+    .prepare(
+      `UPDATE email_campaign_recipients
+          SET claimed_at = NULL, sending_at = NULL,
+              attempts = CASE WHEN id = ?2 THEN attempts ELSE attempts - 1 END,
+              error = CASE WHEN id = ?3 THEN ?4 ELSE error END
+        WHERE id IN (SELECT value FROM json_each(?1)) AND status = 'pending'`,
+    )
+    .bind(JSON.stringify(rows.map((r) => r.id)), opts.kept ?? null, opts.noted ?? null, opts.words ?? null)
+}
+
+/** The words on the next row a run would send, written without claiming it: how a list campaign that cannot go from here says why. */
+function noteOnNext(db: D1Database, campaignId: string, words: string): D1PreparedStatement {
+  return db
+    .prepare(
+      `UPDATE email_campaign_recipients SET error = ?2
+        WHERE id = (SELECT id FROM email_campaign_recipients WHERE campaign_id = ?1 AND status = 'pending' AND sending_at IS NULL ORDER BY rowid LIMIT 1)`,
+    )
+    .bind(campaignId, words)
+}
+
+/** What came of one send under the rules. */
+interface RuledOutcome {
+  kind: OutcomeKind
+  /** For a row failed or put back: the words its error keeps. */
+  words: string
+  /** For 'later': an answer every later send would meet too (a throttle, an account on hold, a key fault, the limit), so the run ends. */
+  endRun: boolean
+  /** For 'later': no service took this row's request as a try (the key's fault, or the message reached none), so its attempt is given back. */
+  untried: boolean
+}
+
+/** One send under the rules: Group email's message as today's, or a list's with the person's footer, headers and the list's sender. */
+async function sendRuled(
+  env: CampaignEnv,
+  campaign: CampaignRow,
+  recipient: ClaimedRecipient,
+  html: string,
+  gate: MailGate,
+): Promise<RuledOutcome> {
+  const listId = campaign.list_id
+  let mail: OutgoingMail
+  if (listId == null) {
+    mail = { from: env.FROM_EMAIL ?? DEFAULT_FROM, to: recipient.email, replyTo: env.REPLY_TO_EMAIL ?? DEFAULT_REPLY_TO, subject: campaign.subject, html, shape: 'campaign' }
+  } else {
+    try {
+      if (recipient.contact_id === null) throw new Error('A list row names its contact.')
+      const message = await listMessage(env, { listId, contactId: recipient.contact_id, subject: campaign.subject, bodyHtml: campaign.body_html })
+      mail = { kind: 'optional', listId, headers: message.headers, from: message.from, fromName: message.fromName, to: recipient.email, replyTo: message.replyTo, subject: campaign.subject, html: message.html, shape: 'campaign' }
+    } catch (err) {
+      if (err instanceof MailLinkKeyMissing) return { kind: 'later', words: MAIL_KEY_MISSING_WORDS, endRun: false, untried: true }
+      return { kind: 'never', words: NO_LINK_WORDS, endRun: false, untried: false }
+    }
+  }
+  const result = await deliver(env, mail, gate)
+  if (result.ok) return { kind: 'sent', words: '', endRun: false, untried: false }
+  const kind = classifyOnce(result)
+  const reachedNone = !!(result.waitForSes || result.gateUnread || result.limitRefused)
+  return {
+    kind,
+    words: wordsUnderRules(result),
+    // List mail held back, while Resend sends or while its gate cannot be read, waits on this campaign alone.
+    endRun: kind === 'later' && !result.waitForSes && !result.gateUnread,
+    untried: kind === 'later' && (reachedNone || configFault(result)),
+  }
+}
+
+/** What a run under the rules comes to, with what the campaign has left. */
+async function finishRun(db: D1Database, campaignId: string, sent: number, failed: number, endRun: boolean): Promise<CampaignRun> {
+  const remaining = await remainingAfterRun(db, campaignId)
+  return { sent, failed, remaining, done: remaining === 0, endRun }
+}
+
+/**
+ * One batch under the engine's rules, for Group email's campaigns and, whatever the constants say, every list campaign:
+ * a. the campaign's rows marked sending by a run that died are written off, never sent again;
+ * b. a list campaign is checked before anything is claimed: its list's sender and footer words, and the link key it was
+ *    made with (listFault); a fault sends nothing, claims nothing and puts its words on the next row;
+ * c. the claim takes no row marked sending, and on the request path's deadline no more rows than fit in the time left;
+ * d. the gate is read once for the batch: for a list, openGate on that list, and a gate that cannot be read puts every
+ *    claimed row back untried, while the rows it refuses are taken out of the campaign as skipped, never sent; for
+ *    Group email, openLoopGate, and a refused row is failed in the seam's words;
+ * e. each row is marked just before its send, the first in a statement of its own and each later one in the batch that
+ *    records the row before it, and a row that does not take its mark (a stop failed it) ends the batch;
+ * f. each answer is read by classifyOnce: sent; never, failed with its words (a request with no answer among them); or
+ *    later, which puts this row and every claimed row not yet tried back in one statement and ends the batch, and the
+ *    whole run for an answer every send would meet; the deadline, checked before each send, puts back what it leaves.
+ */
+async function runUnderRules(
+  env: CampaignEnv,
+  campaignId: string,
+  campaign: CampaignRow,
+  limit: number,
+  deadline?: number,
+): Promise<CampaignRun> {
+  const db = env.DB
+  const listId = campaign.list_id
+  let sent = 0
+  // The rows written off are given up on during this run, so they count in its failed.
+  let failed = (await db.batch(writeOff(db, campaignId)))[1]?.meta.changes ?? 0
+
+  if (listId != null) {
+    const fault = await listFault(env, listId, campaign.filter_json)
+    if (fault !== null) {
+      await noteOnNext(db, campaignId, fault).run()
+      return finishRun(db, campaignId, sent, failed, false)
+    }
+  }
+
+  const room = deadline === undefined ? limit : Math.min(limit, Math.ceil((deadline - Date.now()) / SEND_INTERVAL_MS))
+  const claimed = room > 0 ? await claimRecipients(db, campaignId, room) : []
+  if (claimed.length === 0) return finishRun(db, campaignId, sent, failed, false)
+
+  let gate: MailGate
+  let rows = claimed
+  if (listId != null) {
+    try {
+      gate = await openGate(db, claimed.map((r) => r.email), listId)
+    } catch (err) {
+      if (!(err instanceof GateUnread)) throw err
+      // The list waits, untried: no list mail goes while the do-not-send list cannot be read.
+      console.warn(GATE_UNREAD_LOG)
+      await putBack(db, claimed, { noted: claimed[0].id, words: GATE_UNREAD_WORDS }).run()
+      return finishRun(db, campaignId, sent, failed, false)
+    }
+    const listGate = gate
+    const refused = claimed.filter((r) => {
+      const why = listGate.refusal(r.email, 'optional', listId)
+      return why !== null && why !== undefined
+    })
+    if (refused.length > 0) {
+      await db.batch(skipRefused(db, campaignId, refused))
+      rows = claimed.filter((r) => !refused.includes(r))
+    }
+  } else {
+    gate = await openLoopGate(db, claimed.map((r) => r.email))
+  }
+  if (rows.length === 0) return finishRun(db, campaignId, sent, failed, false)
+
+  // Group email's page is the same for everyone; a list's carries each person's own footer.
+  const html = listId == null ? wrapBrandedEmail(env, campaign.subject, campaign.body_html) : ''
+
+  if (!(await markSending(db, rows[0].id).run()).meta.changes) {
+    await putBack(db, rows).run()
+    return finishRun(db, campaignId, sent, failed, false)
+  }
+
+  for (const [index, recipient] of rows.entries()) {
+    if (index > 0) await new Promise((r) => setTimeout(r, SEND_INTERVAL_MS))
+    if (deadline !== undefined && Date.now() >= deadline) {
+      // Not reached before the deadline: this row, marked but not sent, and the rest go back, each attempt given back.
+      await putBack(db, rows.slice(index)).run()
+      return finishRun(db, campaignId, sent, failed, true)
+    }
+
+    const outcome = await sendRuled(env, campaign, recipient, html, gate)
+
+    if (outcome.kind === 'later') {
+      await putBack(db, rows.slice(index), { kept: outcome.untried ? undefined : recipient.id, noted: recipient.id, words: outcome.words }).run()
+      return finishRun(db, campaignId, sent, failed, outcome.endRun)
+    }
+
+    const next = rows[index + 1]
+    const statements =
+      outcome.kind === 'sent'
+        ? [
+            db
+              .prepare(`UPDATE email_campaign_recipients SET status = 'sent', sent_at = datetime('now'), error = NULL WHERE id = ?`)
+              .bind(recipient.id),
+            db.prepare(`UPDATE email_campaigns SET sent_count = sent_count + 1 WHERE id = ?`).bind(campaignId),
+          ]
+        : [
+            db.prepare(`UPDATE email_campaign_recipients SET status = 'failed', error = ? WHERE id = ?`).bind(outcome.words, recipient.id),
+            db.prepare(`UPDATE email_campaigns SET failed_count = failed_count + 1 WHERE id = ?`).bind(campaignId),
+          ]
+    if (next) statements.push(markSending(db, next.id))
+    const results = await db.batch(statements)
+    if (outcome.kind === 'sent') sent++
+    else failed++
+
+    if (next && !results[2]?.meta.changes) {
+      // The next row did not take its mark, so a stop failed it: none of the rows after this one is sent.
+      await putBack(db, rows.slice(index + 1)).run()
+      return finishRun(db, campaignId, sent, failed, false)
+    }
+  }
+
+  return finishRun(db, campaignId, sent, failed, false)
 }
 
 /**
@@ -386,6 +798,7 @@ const REQUEST_DRAIN_MS = 60_000
  * recipient is ever the responsibility of this run alone.
  */
 export async function drainCampaign(env: CampaignEnv, campaignId: string): Promise<void> {
+  if (engineRulesOn()) return drainUnderRules(env, campaignId)
   const deadline = Date.now() + REQUEST_DRAIN_MS
   while (Date.now() < deadline) {
     const run = await processCampaign(env, campaignId)
@@ -393,6 +806,28 @@ export async function drainCampaign(env: CampaignEnv, campaignId: string): Promi
     // Nothing claimed: either another run holds every pending row, or the
     // remainder is waiting out a retry backoff. Either way, not ours.
     if (run.sent + run.failed === 0) return
+  }
+}
+
+/**
+ * The request path under the engine's rules, by the plan's sizes (../mail/plan): on the free plan one batch, and the
+ * rest is the sweep's; on Workers Paid, batches until the deadline, each checking it before every send and claiming no
+ * more rows than fit in the time left, with the pause between two sends kept between two batches as well, so the
+ * work ends well inside the 30 seconds waitUntil lasts after the answer. REQUEST_DRAIN_MS is not read here. Only the
+ * two POSTs that start a campaign call this, and the newsletter's answers 404 unless MAIL_LISTS_ON, which turns the
+ * rules on, so a list campaign is always drained here.
+ */
+async function drainUnderRules(env: CampaignEnv, campaignId: string): Promise<void> {
+  const { requestBatch, requestDeadlineMs } = sizes()
+  if (requestDeadlineMs === null) {
+    await runCampaign(env, campaignId, requestBatch)
+    return
+  }
+  const deadline = Date.now() + requestDeadlineMs
+  while (Date.now() < deadline) {
+    const run = await runCampaign(env, campaignId, requestBatch, deadline)
+    if (run.done || run.endRun || run.sent + run.failed === 0) return
+    await new Promise((r) => setTimeout(r, SEND_INTERVAL_MS))
   }
 }
 
@@ -409,8 +844,9 @@ export async function drainCampaign(env: CampaignEnv, campaignId: string): Promi
  */
 export async function sweepPendingCampaigns(
   env: CampaignEnv,
-  budget: number = SWEEP_BATCH,
+  budget?: number,
 ): Promise<{ campaignsTouched: number; sent: number; failed: number }> {
+  if (engineRulesOn()) return sweepUnderRules(env, budget)
   const { results } = await env.DB.prepare(
     `SELECT id FROM email_campaigns WHERE status = 'sending' ORDER BY created_at ASC LIMIT 20`,
   ).all<{ id: string }>()
@@ -418,7 +854,7 @@ export async function sweepPendingCampaigns(
   let campaignsTouched = 0
   let sent = 0
   let failed = 0
-  let left = budget
+  let left = budget ?? SWEEP_BATCH
 
   for (const { id } of results ?? []) {
     if (left <= 0) break
@@ -430,6 +866,41 @@ export async function sweepPendingCampaigns(
     sent += run.sent
     failed += run.failed
     left -= run.sent + run.failed
+  }
+
+  return { campaignsTouched, sent, failed }
+}
+
+/**
+ * The sweep under the engine's rules, by the plan's sizes (../mail/plan): on the free plan 20 sends from the oldest
+ * campaign that is sending, one campaign a run; on Workers Paid up to 300 across up to 20 campaigns, oldest first. An
+ * answer every send would meet (a throttle, an account on hold, a key fault, the limit) ends the run, and the untried rows
+ * wait in the pool for the next one.
+ */
+async function sweepUnderRules(
+  env: CampaignEnv,
+  budget?: number,
+): Promise<{ campaignsTouched: number; sent: number; failed: number }> {
+  const { sweepBatch, sweepCampaigns } = sizes()
+  const { results } = await env.DB.prepare(
+    `SELECT id FROM email_campaigns WHERE status = 'sending' ORDER BY created_at ASC LIMIT ?`,
+  ).bind(sweepCampaigns).all<{ id: string }>()
+
+  let campaignsTouched = 0
+  let sent = 0
+  let failed = 0
+  let left = budget ?? sweepBatch
+
+  for (const { id } of results ?? []) {
+    if (left <= 0) break
+    const run = await runCampaign(env, id, left)
+    if (run.sent > 0 || run.failed > 0) {
+      campaignsTouched++
+      sent += run.sent
+      failed += run.failed
+      left -= run.sent + run.failed
+    }
+    if (run.endRun) break
   }
 
   return { campaignsTouched, sent, failed }

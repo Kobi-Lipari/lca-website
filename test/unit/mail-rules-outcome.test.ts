@@ -6,8 +6,10 @@
 // for an answer (functions/utils/mail/outcome.ts), the seam's answer for a
 // sender it holds no transport for (functions/utils/mail/send.ts), and the
 // one module that holds every address (domain/mail/addresses.ts), which
-// holds today's three values and nothing more until the address map is
-// decided. The suite mocks functions/utils/mail/switches over the real
+// holds today's three values and, since WS16 step 4, each LCA list's
+// sender in the form K decided from the address map on Wednesday,
+// November 11, 2026, the newsletter's alone so far, and nothing more. The
+// suite mocks functions/utils/mail/switches over the real
 // module and sets both constants in every case, so a value the code ships
 // with decides none. WS16 step 2 adds the rule under the engine's rules,
 // classifyOnce, with configFault and classify, which picks between the
@@ -16,6 +18,7 @@ import { readFileSync } from 'node:fs'
 import { join, resolve } from 'node:path'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import * as addresses from '../../domain/mail/addresses'
+import { NEWSLETTER_LIST_ID } from '../../domain/mail/lists'
 import { DEFAULT_FROM, DEFAULT_REPLY_TO } from '../../functions/utils/email'
 import { classify, classifyOnce, classifyToday, configFault } from '../../functions/utils/mail/outcome'
 import { engineRulesOn, senderNow } from '../../functions/utils/mail/rules'
@@ -198,12 +201,14 @@ describe('the seam: a sender it holds no transport for', () => {
   })
 })
 
-describe('addresses: today\'s three values in one place, and nothing more', () => {
-  it('holds exactly the sender of record, the reply-to address and the display name, word for word', () => {
-    expect(Object.keys(addresses).sort()).toEqual(['DEFAULT_FROM', 'DEFAULT_REPLY_TO', 'SENDER_NAME'])
+describe('addresses: today\'s three values and each list\'s sender in one place, and nothing more', () => {
+  it('holds exactly the sender of record, the reply-to address, the display name and the newsletter\'s sender, word for word', () => {
+    expect(Object.keys(addresses).sort()).toEqual(['DEFAULT_FROM', 'DEFAULT_REPLY_TO', 'LIST_SENDERS', 'SENDER_NAME'])
     expect(addresses.DEFAULT_FROM).toBe('noreply@louisianachess.org')
     expect(addresses.DEFAULT_REPLY_TO).toBe('LouisianaChess@gmail.com')
     expect(addresses.SENDER_NAME).toBe('Louisiana Chess Association')
+    // The newsletter's sender as K decided it on Wednesday, November 11, 2026, keyed by the list's own id.
+    expect(addresses.LIST_SENDERS).toEqual({ [NEWSLETTER_LIST_ID]: { from: 'newsletter@news.louisianachess.org', name: 'Louisiana Chess Association' } })
   })
 
   it('is read through email.ts and the seam as the same values, so every old import still finds them', () => {
@@ -212,14 +217,14 @@ describe('addresses: today\'s three values in one place, and nothing more', () =
     expect(SENDER_NAME).toBe(addresses.SENDER_NAME)
   })
 
-  it('writes exactly the two addresses it has always held as addresses, no other address and no postal address', () => {
+  it('writes exactly the two addresses it has always held and the newsletter\'s, no other address and no postal address', () => {
     const code = read('domain/mail/addresses.ts')
       .split('\n')
       .filter((line) => !/^\s*(?:\/\/|\/\*\*|\*)/.test(line))
       .join('\n')
-    expect(code.match(/[\w.+-]+@[\w-]+(?:\.[\w-]+)+/g)).toEqual(['noreply@louisianachess.org', 'LouisianaChess@gmail.com'])
+    expect(code.match(/[\w.+-]+@[\w-]+(?:\.[\w-]+)+/g)).toEqual(['noreply@louisianachess.org', 'LouisianaChess@gmail.com', 'newsletter@news.louisianachess.org'])
     expect(code).not.toMatch(/postal|street|P\.?O\.? box|zip/i)
-    expect(code.match(/^export const /gm)).toHaveLength(3)
+    expect(code.match(/^export const /gm)).toHaveLength(4)
     expect(read('domain/mail/addresses.ts')).not.toMatch(/^\s*import\b/m)
   })
 })

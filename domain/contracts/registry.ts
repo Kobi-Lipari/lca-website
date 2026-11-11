@@ -25,7 +25,18 @@ import {
   tournamentsListResponseSchema,
   updateTournamentRequestSchema,
 } from './events'
-import { emailChoicesRequestSchema, emailChoicesResponseSchema, unsubscribeLinkResponseSchema, unsubscribeResponseSchema } from './mail'
+import {
+  emailChoicesRequestSchema,
+  emailChoicesResponseSchema,
+  newsletterRequestSchema,
+  newsletterResponseSchema,
+  newsletterStopResponseSchema,
+  newsletterSummaryResponseSchema,
+  newsletterTestRequestSchema,
+  newsletterTestResponseSchema,
+  unsubscribeLinkResponseSchema,
+  unsubscribeResponseSchema,
+} from './mail'
 import { payoutRequestRequestSchema, payoutRequestResponseSchema, tournamentCreationResponseSchema } from './me'
 import {
   batchRegistrationRequestSchema,
@@ -58,6 +69,16 @@ export type RouteContracts = Partial<Record<ContractMethod, MethodContract>>
 export const contracts = {
   tournaments: {
     GET: { response: tournamentsListResponseSchema },
+  },
+  'admin/mail/newsletter': {
+    GET: { response: newsletterSummaryResponseSchema },
+    POST: { request: newsletterRequestSchema, response: newsletterResponseSchema },
+  },
+  'admin/mail/newsletter/stop': {
+    POST: { response: newsletterStopResponseSchema },
+  },
+  'admin/mail/newsletter/test': {
+    POST: { request: newsletterTestRequestSchema, response: newsletterTestResponseSchema },
   },
   'admin/tournaments': {
     POST: { request: createTournamentRequestSchema, response: adminTournamentResponseSchema },

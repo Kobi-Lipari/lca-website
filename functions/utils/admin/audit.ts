@@ -36,6 +36,9 @@ export type AdminAction =
   | 'officer_add'
   | 'officer_remove'
   | 'group_email_sent'
+  // A newsletter stopped before it had all gone (WS16); the audit page gives
+  // it a label with the newsletter's tab.
+  | 'group_email_stopped'
   | 'ticket_reply'
   // Board seats: logged so the officer history can always be rebuilt.
   | 'seat_assign'
