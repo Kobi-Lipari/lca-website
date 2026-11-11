@@ -73,3 +73,7 @@ i like your recommended for 1
 ## Wednesday, November 11, 2026, about 4:50 PM UTC: the page picture, and pictures for a phone
 
 K's words: "looking at the LCA newslett picture you made to show the pres, I thing we can be more efficient with space if we put the \"Start with template or past...\" thing at the bottom with those other buttons (be sure they can start from blank too), and then put the make bigger button that was next to it somewhere else too. Also, I believe he will be reviewing this on phone so lets split each of the news email things examples (both styles) into their own images to opmiize for his visibility."
+
+## Wednesday, November 11, 2026, about 5:20 PM UTC: the send-out's registration box
+
+K's words: "on the sample tournamnet registration thing, the registration is open text is a little too small and the if button doesnt work text is too big (flip their visual demand to be seen) and be sure to have the registration is open thing on the navy band one too"

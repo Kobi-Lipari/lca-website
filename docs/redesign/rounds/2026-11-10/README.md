@@ -177,3 +177,11 @@ One note from K on the page picture made for the president (K's decision 45; K's
 **The president's pictures are one to a file**, since the president will look on a phone: each email look alone (newsletter A and B, send-out A and B), cut to the email itself without the mail program's window, 660 wide with a short heading; the page on a computer; and the page on a phone beside the email it shows. The side-by-side sheets of round 7 are kept for a computer. The pictures are not kept in the repository.
 
 **Left as it is:** two bare patches a little over the 120px guide on the board (under the people picture and under the Subject picture), and the people picture 40px narrower so the chooser can hold the blank row without lone words.
+
+## Round 10: "Registration is open" leads the send-out's registration box (Wednesday, November 11, 2026)
+
+One note from K on the two tournament send-out pictures (K's decision 46; K's words are in `feedback.md`). `newsletter3-specs.json` carries it as `revision10`; `results/newsletter10-results.json` holds the run. Canvas version 31.
+
+On `Newsletter-Tournament-6` (the navy band) and `Newsletter-Tournament-4` (the bulletin), the registration box now reads, top to bottom: "Registration is open", the button, and the fallback line. The open line is the box's heading: 20px bold navy on the navy band, which had no such line before, and 18.5px bold navy capitals on the bulletin, where it was a 12.5px label. "If the button does not show, use this link:" and its link are 12px to 12.5px in muted grey, where they were 15px to 16px; the link is still underlined on a 24px line, and the contrast is 6 to 1 or more. The dark phone pictures show the same, in their own inks, each moved a little so the new line clears the bar above it. Nothing else on either board changed, and both heights are as they were.
+
+The president's two send-out pictures were made again from these boards, one look to a picture.
