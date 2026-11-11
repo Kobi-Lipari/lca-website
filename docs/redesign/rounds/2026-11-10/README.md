@@ -1,4 +1,4 @@
-# The newsletter, rounds 1 to 5 (Tuesday, November 10, 2026)
+# The newsletter, rounds 1 to 6 (Tuesday, November 10 and Wednesday, November 11, 2026)
 
 Three rounds on one day for LCA's monthly newsletter. Rounds 1 and 2 are on canvas page "18 · Newsletter"; round 3, ten options for the president, is on page "19 · Newsletter options for the president" (canvas version 25). Round 1 drew four fuller directions (canvas version 23). Round 2 drew the simple version K then asked for, with a board of K's picks (canvas version 24). K picked on Tue, Nov 10, 2026: the simple version first; the page reads left to right as Your picks, Newsletter-E and its part 2, then round 1's A to D as ideas for later.
 
@@ -134,3 +134,26 @@ No address is shown for any sender: the address forms are the address map's choi
 For K to decide, with the lead's recommendation first: a club's tournament send-out goes to every member who gets LCA tournament email, on behalf of the club (or only to that club's own list); and for now LCA admins, the president and the media manager send on behalf of any club (a club's own representative later, for their club only).
 
 Page option 5's one sentence was changed by the lead: it no longer says the page fits one screen with no scrolling, since the writing area is now at least 520 px tall.
+
+## Round 6: K's choices (Wednesday, November 11, 2026)
+
+K chose (K's decisions 36 to 38 in `docs/redesign/ws16-k-decisions.md`; K's words are in `feedback.md`). `newsletter3-specs.json` carries the round as `revision6`, and the page's second pass as `revision6b`; `results/newsletter6-results.json` and `results/newsletter6b-page-results.json` hold the runs. Canvas version 28: on page 19 each row now starts with what is kept, and the rest is marked "not kept".
+
+**The page is option 4, The letter on the desk** (`Newsletter-Page-4`, revised in place), with K's four notes:
+
+- From and Subject are a stacked pair of boxed fields at the top, each with its label in a grey cell, like the head of a mail program, as option 5 drew them. The Subject row inside the letter is gone.
+- The Subject is plainly a field to type in: a white field with a pencil mark and the words "The line people see in their inbox. Click to change it." A small picture shows it in focus with the count "30 of 60 letters".
+- The letter is plainly typed on: the line beside "Write it" reads "Click anywhere on the letter and type. It saves by itself."; the paragraph being written sits in an outlined box with the caret and an "Editing" tag; a hovered part shows a dashed outline and "Click to edit"; the month in the band carries the same chip; the letter's end has a dashed empty part, "Click here to write the next part"; and a small picture shows the letter before anything is written, as three dashed prompts.
+- The space is used on purpose. The right column holds what goes out and to whom: the preview with a Phone and Computer switch, then "167 people will get it" with "Add or review people". The bar at the foot keeps the saved line, More options, Send a test to me and Send to 167 people. The main picture is drawn in a 1140px window with the letter at its top, and the visible sheet is 525px tall and about two thirds of the row.
+
+The lead's second pass on the page (`revision6b`): the first pass drew the main picture at 962px with the letter scrolled past its navy band and a sheet of about 350px, which lost the look K chose and the big writing area K asked for earlier, so the frame was made taller and the letter shown from its top. The letter sheet now shows the "In this issue" strip under the band, with the grey words "Made from your headings. Updates by itself.", so the sheet matches what members get. The line "These people asked to get email from LCA." is gone from "Add or review people" (decision 36: people added by hand need no tick). The opened From list ends with a link, "Manage senders and where replies go", and the club template's picture has "Club not in the list, or its reply address missing? Manage senders" (decision 37: nobody should have to hunt for where a sender is set).
+
+**The email the president chooses between is two looks.** `Newsletter-Email-6`, new: option 1's navy band at option 1's height with the rook on the left, option 1's type and styling, and one addition from option 5, an "In this issue" strip under the band on a light ground whose six links jump to each part. A third phone picture shows the email after pressing "Results". `Newsletter-Email-4`, The bulletin, is kept as it is.
+
+**A club's tournament send-out follows the same.** `Newsletter-Tournament-6`, new: send-out 1's band and styling, then an "At a glance" strip with the four facts (rounds, sections, entry, closes) and one row of links that jump to The details, Register, Good to know and Who runs it. `Newsletter-Tournament-4` is kept as it is.
+
+Not kept, and further right in each row: page options 2, 5, 1 and 3; email options 1, 5, 2 and 3; send-outs 1 and 5.
+
+**For the build, from the reviews and from a check of mail apps' behaviour on Wednesday, November 11, 2026.** A jump link inside an email works in Gmail on the web and on Android, Apple Mail on a Mac and on an iPhone (iOS 15 and later), classic Outlook, Outlook.com and the Outlook phone apps. The Gmail app on an iPhone is not known: its last public test, from August 2019, says a tap does nothing. So the list must read well as a plain contents list where a tap does nothing; each target is built as an empty named anchor just before its part, since a target with only an id fails in Gmail and classic Outlook; the email stays under about 102 KB so Gmail does not cut it; the phone's two-column list drops to one column under about 340px; and the first test send is tapped on a real iPhone. The strip is made from the letter's headings by the page and is not typed.
+
+**What goes to the president:** the page (the main picture, and the whole board), the two email looks side by side, and the two send-outs side by side. The pictures are not kept in the repository.

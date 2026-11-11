@@ -51,3 +51,11 @@ Lets keep and iterate with these ntoes, on newletter page 2,4, 5 and the email 1
 On tournament send-outs and the sender:
 
 we should also create template trouanment registration send outs that my president can see to solve the problem of helping clubs advertise their tournamnets. we should also look at how we can select which email handle to use for the send (like selecting which club it is being sent on behalf of) making sure this is selected when using a club oriented template etc.
+
+On Wednesday, November 11, 2026 (UTC), K's choices:
+
+all recommended, except 3 which is b (because there is no audit for a, if they gave us their email they bought a  lca membership at some point anyway)
+
+for mail map: all recommended, but make sure to have them be able to set the thing in 5 easy without having to scrounge for where it is set at; maybe at least a link to where it is managed (i dont want them not being able to figure it out and crying to me). 6. would it be best to start going to another more official email, and how would we do that? in amazon ses? or what?
+
+for the emailer choices, lets go with option 4 for the page, but make sure the spacing is used well, like below the phone view looks oddly empty, etc (dont add things just to add them though, be intentional), also i though the way that option 5 had the from and subjust thing visual made it much more clear that it was a email cuz it looked like gmail thing did. also, its unclear how to edit the subject at first on 4. also, be sure that it is obvious that you can click inside the main thing to edit cuz it looks like a finished page rigth now, etc.  For the email i like the fonts and stylings of 1 but i like how 5 has it structured with the in this issue thing at the top with their gyperlinks seeming like i can just click to skip to the section i want to see, etc (but i dont like the size of the top of 5 i like it better in one how the logo is properly on the left of them). for the newsletter. also, lets keep option 4 as it is for the resident to be able to pick as an option too. for the club send out, same feedback as the other newsletter thing.
