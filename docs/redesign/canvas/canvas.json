@@ -1781,7 +1781,7 @@
    "page": "newsletter-options",
    "title": "Newsletter · the page · option 1 · Steps down the page · not kept",
    "w": 1440,
-   "x": 5680,
+   "x": 10240,
    "y": 0
   },
   "Newsletter-Page-2.dc.html": {
@@ -1789,7 +1789,7 @@
    "page": "newsletter-options",
    "title": "Newsletter · the page · option 2 · Write beside the email · not kept",
    "w": 1440,
-   "x": 2640,
+   "x": 7200,
    "y": 0
   },
   "Newsletter-Page-3.dc.html": {
@@ -1797,7 +1797,7 @@
    "page": "newsletter-options",
    "title": "Newsletter · the page · option 3 · One step at a time · not kept",
    "w": 1440,
-   "x": 7200,
+   "x": 11760,
    "y": 0
   },
   "Newsletter-Page-4.dc.html": {
@@ -1813,7 +1813,7 @@
    "page": "newsletter-options",
    "title": "Newsletter · the page · option 5 · Everything on one screen · not kept",
    "w": 1440,
-   "x": 4160,
+   "x": 8720,
    "y": 0
   },
   "Newsletter-Email-1.dc.html": {
@@ -1895,6 +1895,30 @@
    "x": 640,
    "y": 9030,
    "title": "Newsletter · a club's tournament send-out · The navy band, with At a glance · new, from K's notes"
+  },
+  "Newsletter-Page-4-Top-A.dc.html": {
+   "page": "newsletter-options",
+   "w": 1440,
+   "h": 2350,
+   "x": 2160,
+   "y": 0,
+   "title": "Newsletter · the page · the top · option A · One row · K picks one"
+  },
+  "Newsletter-Page-4-Top-B.dc.html": {
+   "page": "newsletter-options",
+   "w": 1440,
+   "h": 2350,
+   "x": 3680,
+   "y": 0,
+   "title": "Newsletter · the page · the top · option B · Fields left, options right · K picks one"
+  },
+  "Newsletter-Page-4-Top-C.dc.html": {
+   "page": "newsletter-options",
+   "w": 1440,
+   "h": 2350,
+   "x": 5200,
+   "y": 0,
+   "title": "Newsletter · the page · the top · option C · The letter's own header · K picks one"
   }
  },
  "createdOnFiles": {
@@ -3674,7 +3698,7 @@
    "page": "newsletter-options",
    "text": "Page options not kept",
    "w": 240,
-   "x": 2640,
+   "x": 7200,
    "y": -320
   },
   "t_newsletter_options_email_no": {
@@ -3703,6 +3727,15 @@
    "w": 240,
    "x": 4160,
    "y": 8710
+  },
+  "t_newsletter_options_page_tops": {
+   "kind": "title1",
+   "maxW": 4480,
+   "page": "newsletter-options",
+   "text": "Three ways to lay out the top of the page · K picks one",
+   "w": 240,
+   "x": 2160,
+   "y": -320
   }
  },
  "order": [
@@ -3934,7 +3967,10 @@
   "Newsletter-Tournament-4.dc.html",
   "Newsletter-Tournament-5.dc.html",
   "Newsletter-Email-6.dc.html",
-  "Newsletter-Tournament-6.dc.html"
+  "Newsletter-Tournament-6.dc.html",
+  "Newsletter-Page-4-Top-A.dc.html",
+  "Newsletter-Page-4-Top-B.dc.html",
+  "Newsletter-Page-4-Top-C.dc.html"
  ],
  "pages": [
   {
