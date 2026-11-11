@@ -129,7 +129,7 @@ describe('the committed map', () => {
     for (const name of ['ApiTournamentCreation', 'ApiPayoutRequest']) expect(JOINED[name], name).toBe('membership')
     expect(importsOf(moduleOf('membership')).filter((i) => i.specifier.startsWith('@domain/'))).toEqual([{ specifier: '@domain/contracts', typeOnly: true, reexport: false }])
     const membership = read(moduleOf('membership'))
-    expect(membership).toContain("import type { PayoutRequestResponse, TournamentCreationResponse } from '@domain/contracts'")
+    expect(membership).toContain("import type { EmailChoicesResponse, PayoutRequestResponse, TournamentCreationResponse, UnsubscribeLinkResponse, UnsubscribeResponse } from '@domain/contracts'")
     expect(membership).toMatch(/export type ApiTournamentCreation = TournamentCreationResponse\b/)
     expect(membership).toMatch(/export type ApiPayoutRequest = PayoutRequestResponse\b/)
     for (const file of MODULES.filter((f) => f !== moduleOf('events') && f !== moduleOf('membership'))) {
@@ -332,7 +332,10 @@ describe('calls through the barrel send what they sent before', () => {
 
   it('asks what the member may create and sends a payout request, signed in, to the two paths added since the split', async () => {
     const { getTournamentCreation, requestPayoutAccount, ApiError } = await import('@/lib/api')
-    expect([...ADDED.paths].sort()).toEqual(['/api/me/payout-request', '/api/me/tournament-creation'])
+    expect([...ADDED.paths].sort()).toEqual([
+      '/api/admin/mail/newsletter', '/api/admin/mail/newsletter/stop', '/api/admin/mail/newsletter/test', '/api/mail/preferences/*', '/api/mail/unsubscribe/*',
+      '/api/me/payout-request', '/api/me/tournament-creation',
+    ])
     session.token = 'tok-5'
     const grant = { grant: 'standing_director', canCreate: true, canChargeFees: true, clubId: null }
     answer(grant)

@@ -41,10 +41,18 @@
 // day; that holds with the rules off too, for a send that failed. So under
 // the rules the attendee reminders and the week-before reminder run first
 // and the registration-open reminders last, and the cap falls first on the
-// rows that can wait. A day with more than 25 of the others, or a 'later'
-// among them, still leaves the rest of those unsent: a follow-up for WS16
-// step 4 in REDESIGN_STATUS.md. With the rules off the run is today's, in
-// today's order, marked only after a send that worked.
+// rows that can wait. A 'later' among the attendee and week-before
+// reminders is sent again in the same run, with the claim held, three
+// sends at most, one second and then two seconds after the send before it,
+// and from the run's first such 'later' each claim waits half a second;
+// the second and third sends come out of the outside calls the rating
+// lookups would have had. What a run still leaves of those rows is not
+// sent, and the run logs how many rows of each such phase it left, naming
+// no address: on the free plan a day with more than 25 of them together
+// sends 25, and a reminder still answered later after its three sends ends
+// its phase with the rows after it, as REDESIGN_STATUS.md records. With the
+// rules off the run is today's, in today's order, marked only after a send
+// that worked.
 
 import {
   trySendEmail,
@@ -254,53 +262,104 @@ async function sendAsToday(env: Env, due: DueReminder[]): Promise<void> {
   }
 }
 
+/** Under the rules, the most sends one reminder row of a phase that names one day takes in a run: the first and two more. */
+const LATER_TRIES = 3
+
+/** The wait before such a row's next send after a 'later', times the sends made for it: one second, then two. */
+const LATER_WAIT_MS = 1000
+
+/** The wait before each claim once a send of the run has been answered 'later', so the run sends more slowly. */
+const SLOWED_GAP_MS = 500
+
+/** A real wait; the tests take its time out through a spy on setTimeout. */
+const wait = (ms: number) => new Promise<void>((resolve) => setTimeout(resolve, ms))
+
 /**
- * The daily run's reminders under the rules: the rows it may still claim on this plan, and the outside calls it has
- * used, which the rating lookups take what is left of.
+ * The daily run's reminders under the rules: the rows it may still claim on this plan, the sends it has tried, first
+ * and repeated, each one outside call, which the rating lookups take what is left of, and whether a send of the run has
+ * been answered 'later'.
  */
 class ReminderBudget {
   private readonly cap = dailyBudget()
   private claimed = 0
+  private tried = 0
+  /** Set by the run's first 'later' that a row is sent again for: from then on each claim waits SLOWED_GAP_MS. */
+  slowed = false
 
-  /** True once the run has claimed every row it may; of the rows past it, only registration-open rows wait. */
+  /** True once the run has claimed every row it may or tried every send it may; of the rows past it, only registration-open rows wait. */
   get spent(): boolean {
-    return this.cap.reminders !== null && this.claimed >= this.cap.reminders
+    return (this.cap.reminders !== null && this.claimed >= this.cap.reminders)
+      || (this.cap.outsideCalls !== null && this.tried >= this.cap.outsideCalls)
   }
 
-  /** Counts one claim, and so at most one send, which is one outside call. */
+  /** Counts one claim and its first send, which is one outside call. */
   take(): void {
     this.claimed++
+    this.tried++
   }
 
-  /** The rating lookups' limit: what is left of the run's outside calls, or none on a plan with no cap. */
+  /** Counts one more send for the row in hand, or answers false when the plan has no outside call left for it. */
+  again(): boolean {
+    if (this.cap.outsideCalls !== null && this.tried >= this.cap.outsideCalls) return false
+    this.tried++
+    return true
+  }
+
+  /** The rating lookups' limit: what is left of the run's outside calls after its sends, or none on a plan with no cap. */
   ratingLimit(): number | undefined {
-    return this.cap.outsideCalls === null ? undefined : Math.max(0, this.cap.outsideCalls - this.claimed)
+    return this.cap.outsideCalls === null ? undefined : Math.max(0, this.cap.outsideCalls - this.tried)
   }
 }
 
-/** One phase's loop under the rules: one gate over all its rows, each row claimed before its send. */
-async function sendClaimed(env: Env, due: DueReminder[], budget: ReminderBudget): Promise<void> {
-  if (due.length === 0) return
-  const gate = await openLoopGate(env.DB, due.map((reminder) => reminder.to))
-  for (const reminder of due) {
-    if (budget.spent) return
-    budget.take()
-    const claim = await reminder.claim().run()
-    // Another run has the row: it sends the reminder, so this one does not.
-    if (claim.meta.changes !== 1) continue
-    const outcome = await sendEmailOutcome(env, { ...reminder.message(), to: reminder.to }, gate)
-    if (outcome === 'later') {
-      // Proved not taken: the claim goes back and the phase stops here. A later run reads a registration-open row
-      // again; the rows of the other phases are read again only by another run on the same day (see the header).
-      await reminder.release().run()
-      return
+/**
+ * One phase's loop under the rules: one gate over all its rows, each row claimed before its send. In a phase whose
+ * query names one day (`oneDay`: the attendee reminders and the week-before reminder), a 'later' is sent again with the
+ * claim held, three sends at most, since no later day reads the row; still 'later' after that, the claim goes back and
+ * the phase ends, as in the registration-open phase at its first 'later'. Such a phase runs even when the budget is
+ * spent, reading no gate and making no claim, so that the rows it leaves are counted in the log, which names no address.
+ */
+async function sendClaimed(env: Env, name: string, due: DueReminder[], budget: ReminderBudget, oneDay: boolean): Promise<void> {
+  let left = due.length
+  try {
+    if (due.length === 0 || budget.spent) return
+    const gate = await openLoopGate(env.DB, due.map((reminder) => reminder.to))
+    for (const reminder of due) {
+      if (budget.spent) return
+      // Before the claim, so that no claim is held across the gap.
+      if (budget.slowed) await wait(SLOWED_GAP_MS)
+      budget.take()
+      const claim = await reminder.claim().run()
+      // Another run has the row: it sends the reminder, so this one does not.
+      if (claim.meta.changes !== 1) {
+        left--
+        continue
+      }
+      const message = { ...reminder.message(), to: reminder.to }
+      let outcome = await sendEmailOutcome(env, message, gate)
+      for (let sends = 1; oneDay && outcome === 'later' && sends < LATER_TRIES && budget.again(); sends++) {
+        budget.slowed = true
+        await wait(LATER_WAIT_MS * sends)
+        outcome = await sendEmailOutcome(env, message, gate)
+      }
+      if (outcome === 'later') {
+        // Proved not taken: the claim goes back and the phase stops here. A later run reads a registration-open row
+        // again; the rows of the other phases are read again only by another run on the same day (see the header).
+        await reminder.release().run()
+        return
+      }
+      left--
     }
+  } finally {
+    if (oneDay && left > 0) console.warn(`daily-emails: ${left} row(s) of "${name}" not sent today`)
   }
 }
 
-/** Records each member's US Chess rating, at most `limit` lookups when one is given. */
-async function ratingSnapshots(env: Env, limit?: number): Promise<void> {
-  const { checked, changed, unreachable } = await snapshotMemberRatings(env.DB, limit === undefined ? {} : { limit })
+/**
+ * Records each member's US Chess rating: at most `limit` lookups when one is given, and with `stampUnanswered` a
+ * checked time for an ID whose lookup finds nothing, which the run asks for under the rules.
+ */
+async function ratingSnapshots(env: Env, opts: { limit?: number; stampUnanswered?: boolean } = {}): Promise<void> {
+  const { checked, changed, unreachable } = await snapshotMemberRatings(env.DB, opts)
   // Quiet on a normal night: ratings move a few times a year each.
   if (changed > 0 || unreachable > 0) {
     console.log(
@@ -363,17 +422,22 @@ export default {
       // The reminders whose queries name one day go first and the registration-open reminders, whose rows a later run
       // reads again, last, so the cap falls first on the rows that can wait (see the header).
       const budget = new ReminderBudget()
-      const remind = (name: string, due: () => Promise<DueReminder[]>) =>
+      // A phase whose query names one day reads its rows even once the budget is spent, so the rows it leaves are
+      // counted in the log; the registration-open phase, whose rows a later run reads again, does not.
+      const remind = (name: string, due: () => Promise<DueReminder[]>, oneDay: boolean) =>
         phase(name, async () => {
-          if (budget.spent) return
-          await sendClaimed(env, await due(), budget)
+          if (budget.spent && !oneDay) return
+          await sendClaimed(env, name, await due(), budget, oneDay)
         })
       for (const reminderNum of [1, 2] as const) {
-        await remind(`attendee reminder ${reminderNum}`, () => dueAttendee(env, SITE_URL, todayStr, reminderNum))
+        await remind(`attendee reminder ${reminderNum}`, () => dueAttendee(env, SITE_URL, todayStr, reminderNum), true)
       }
-      await remind('week-before reminders', () => dueWeekBefore(env, SITE_URL, today))
-      await remind('registration-open reminders', () => dueRegistrationOpen(env, SITE_URL))
-      await phase('rating snapshots', () => ratingSnapshots(env, budget.ratingLimit()))
+      await remind('week-before reminders', () => dueWeekBefore(env, SITE_URL, today), true)
+      await remind('registration-open reminders', () => dueRegistrationOpen(env, SITE_URL), false)
+      await phase('rating snapshots', () => {
+        const limit = budget.ratingLimit()
+        return ratingSnapshots(env, { ...(limit === undefined ? {} : { limit }), stampUnanswered: true })
+      })
       return
     }
 

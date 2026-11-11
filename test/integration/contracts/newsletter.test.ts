@@ -4,7 +4,8 @@
 // contracts in domain/contracts/mail.ts, on the database every integration
 // test runs on:
 // - GET /api/admin/mail/newsletter, the list, its From line, the service
-//   that sends now and the summary with its recent sends;
+//   that sends now and the summary with its recent sends, and since WS16
+//   step 5 why the newsletter that is sending waits;
 // - POST /api/admin/mail/newsletter, the send, its body read through its
 //   request contract, and its 201;
 // - POST /api/admin/mail/newsletter/test, the test send;
@@ -79,6 +80,19 @@ describe('GET /api/admin/mail/newsletter', () => {
     expect(body.from).toBe('Louisiana Chess Association <newsletter@news.louisianachess.org>')
     expect(body.sendsThrough).toBe('resend')
     expect(body.summary.recent[0]).toMatchObject({ id: made!.campaignId, subject: SAMPLE.subject, status: 'sending', skippedCount: 0, completedAt: null })
+    expect(body.summary.waits).toBeNull()
+  })
+
+  it('answers to its contract with the words a sending newsletter waits for, as a string (WS16 step 5)', async () => {
+    const admin = await seedAdmin()
+    await seedMember({ email: 'contract.reader@newsletter.test.lca', fullName: 'Player One' })
+    const made = await createListCampaign(env.DB, { listId: NEWSLETTER_LIST_ID, ...SAMPLE, createdBy: admin, linkCheck: await linkKeyCheck(key()) })
+    const words = 'Not sent yet: list mail goes out through Amazon SES only.'
+    await env.DB.prepare('UPDATE email_campaign_recipients SET error = ? WHERE campaign_id = ?').bind(words, made!.campaignId).run()
+    const res = await invoke(newsletterGet, { as: admin })
+    const body = await expectContract(res, summary.response)
+    expect(body.summary.waits).toBe(words)
+    expect(summary.response.safeParse({ ...body, summary: { ...body.summary, waits: 3 } }).success).toBe(false)
   })
 
   it('answers 404 with the error body while MAIL_LISTS_ON is unset', async () => {

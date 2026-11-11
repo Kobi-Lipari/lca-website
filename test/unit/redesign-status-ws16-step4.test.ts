@@ -460,7 +460,8 @@ describe('REDESIGN_STATUS.md, WS16 step 4: the map', () => {
 describe('REDESIGN_STATUS.md, WS16 step 4: the close of three follow-ups', () => {
   it('closes the reminders WS16 step 2 handed on with the choice word for word, at its end, its earlier words as that step wrote them', () => {
     const entry = followUp(REMINDERS)
-    expect(entry.endsWith(` ${REMINDERS_CLOSE}`)).toBe(true)
+    // The step that builds the choice closes the entry after it with its own sentence, "Done in WS16 step 5: ...".
+    expect(entry.split(/ Done in WS16 step (?:[5-9]|1[0-2]):/)[0].endsWith(` ${REMINDERS_CLOSE}`)).toBe(true)
     expect(entry.split(CLOSE)).toHaveLength(2)
     const before = beforeClose(REMINDERS)
     expect(before.startsWith(`- **${REMINDERS}** Under the engine's rules a daily run on the free plan claims 25 reminder rows at most, and an outcome of later ends its phase.`)).toBe(true)

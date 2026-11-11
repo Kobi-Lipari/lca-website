@@ -4,9 +4,13 @@
 // test/integration/mail-gate.test.ts and test/integration/mail-gate-edges.test.ts:
 // the daily run, the held clock, the statement-counting database, the host
 // log, the reminder seeds and the one-message seam helper, with the
-// one-click headers list mail carries since WS16 step 3. It depends on no
-// mock: each suite keeps its own vi.mock of functions/utils/mail/switches
-// and its flags, and sets them before every case.
+// one-click headers list mail carries since WS16 step 3. Since WS16 step 5
+// it also holds what test/integration/mail-reminders-left.test.ts adds: a
+// mail service that answers chosen calls with a 429, the waits the run asks
+// for taken out of a case's time, and one event with its paid entrants. It
+// depends on no mock: each suite keeps its own vi.mock of
+// functions/utils/mail/switches and its flags, and sets them before every
+// case.
 import { env } from 'cloudflare:test'
 import { vi } from 'vitest'
 import { DEFAULT_FROM, DEFAULT_REPLY_TO } from '../../domain/mail/addresses'
@@ -76,9 +80,9 @@ export const reminderRow = (id: string) =>
  * away that the member has entered.
  */
 export async function dueToday(addresses: string[]) {
-  const open = await seedTournament({ name: `Bayou Open ${nextSeq()}`, date: dayFromToday(30), registrationStatus: 'open' })
-  const soon = await seedTournament({ name: `Delta Quads ${nextSeq()}`, date: dayFromToday(7), registrationStatus: 'closed' })
-  const entered = await seedTournament({ name: `Crescent Swiss ${nextSeq()}`, date: dayFromToday(3), registrationStatus: 'closed' })
+  const open = await seedTournament({ name: `Sample Winter Open ${nextSeq()}`, date: dayFromToday(30), registrationStatus: 'open' })
+  const soon = await seedTournament({ name: `Sample Autumn Quads ${nextSeq()}`, date: dayFromToday(7), registrationStatus: 'closed' })
+  const entered = await seedTournament({ name: `Sample Spring Swiss ${nextSeq()}`, date: dayFromToday(3), registrationStatus: 'closed' })
   await env.DB.prepare('UPDATE tournaments SET reminder_1_enabled = 1, reminder_1_days_before = 3, reminder_2_enabled = 0 WHERE id = ?').bind(entered).run()
   const rows: Record<string, { open: string; soon: string; member: string }> = {}
   for (const address of addresses) {
@@ -95,13 +99,16 @@ export interface Ran { sql: string; binds: number }
  * A database over the test's D1 that keeps every statement it runs, a batch counting as one query as D1 counts it;
  * refuses every statement that names `refuse`, as a database without that table would; and calls `afterAll` with the
  * statement's text once a read of rows has answered, so a test can play another run's write between a read and a claim.
+ * With `log`, each statement's text also goes into that list as it runs, so a case can hold its order against the
+ * waits noWaits(log) puts in the same list.
  */
-export function countingDb(opts: { refuse?: string; afterAll?: (sql: string) => Promise<void> } = {}) {
+export function countingDb(opts: { refuse?: string; afterAll?: (sql: string) => Promise<void>; log?: string[] } = {}) {
   const ran: Ran[] = []
   const real = new WeakMap<object, D1PreparedStatement>()
   const wrap = (statement: D1PreparedStatement, sql: string, binds: number): D1PreparedStatement => {
     const run = <T>(work: () => Promise<T>): Promise<T> => {
       ran.push({ sql, binds })
+      opts.log?.push(sql)
       if (opts.refuse && sql.includes(opts.refuse)) return Promise.reject(new Error(`D1_ERROR: no such table: ${opts.refuse}: SQLITE_ERROR`))
       return work()
     }
@@ -140,6 +147,69 @@ export function recordHosts(): { hosts: string[]; stop: () => void } {
     return underneath(input, init)
   }) as typeof fetch
   return { hosts, stop: () => { globalThis.fetch = underneath } }
+}
+
+/** The mail service's host, as the harness catches it. */
+export const MAIL_HOST = 'api.resend.com'
+
+/** One outside call the code made, in order: its host, and whether throttleMail answered it with a 429. */
+export interface OutsideCall { host: string; throttled: boolean }
+
+/**
+ * A fetch over the harness's own that answers the calls to the mail service it chooses with a 429, as a throttle would,
+ * each once: `chosen` is asked about each call to the mail service by its number among them, from 1. A call it answers
+ * goes no further, so the message is not in the outbox and the harness's fetchCount does not count it; every call, of
+ * every host, is kept in `calls`, so a case counts the outside calls a run made there.
+ */
+export function throttleMail(chosen: (call: number) => boolean): { calls: OutsideCall[]; mail: () => OutsideCall[]; stop: () => void } {
+  const underneath = globalThis.fetch
+  const calls: OutsideCall[] = []
+  let mailCalls = 0
+  globalThis.fetch = (async (input: RequestInfo | URL, init?: RequestInit) => {
+    const host = new URL(input instanceof Request ? input.url : String(input)).hostname
+    if (host === MAIL_HOST && chosen(++mailCalls)) {
+      calls.push({ host, throttled: true })
+      return Response.json({ message: 'harness: too many requests' }, { status: 429 })
+    }
+    calls.push({ host, throttled: false })
+    return underneath(input, init)
+  }) as typeof fetch
+  return { calls, mail: () => calls.filter((c) => c.host === MAIL_HOST), stop: () => { globalThis.fetch = underneath } }
+}
+
+/**
+ * Takes the time out of every wait the code under test asks for, as test/integration/published-review-edges.test.ts
+ * does: setTimeout calls back on the next microtask. The waits asked for are kept, in milliseconds, in order. The
+ * spy goes with vi.restoreAllMocks(), which both gate suites and test/integration/mail-reminders-left.test.ts call
+ * after every case. With `log`, each wait also goes into that list as it is asked for, written "wait <ms>".
+ */
+export function noWaits(log?: string[]): number[] {
+  const asked: number[] = []
+  vi.spyOn(globalThis, 'setTimeout').mockImplementation(((callback: () => void, ms?: number) => {
+    asked.push(ms ?? 0)
+    log?.push(`wait ${ms ?? 0}`)
+    queueMicrotask(callback)
+    return 0
+  }) as unknown as typeof setTimeout)
+  return asked
+}
+
+/**
+ * One event three days away whose first attendee reminder is due today, entered and paid for by this many members,
+ * each at an address of their own, plainly made up; its second reminder is off. Answers the event and the addresses,
+ * in the order the entrants were seeded.
+ */
+export async function paidEntrants(count: number): Promise<{ tournamentId: string; addresses: string[] }> {
+  const n = nextSeq()
+  const tournamentId = await seedTournament({ name: `Sample Autumn Swiss ${n}`, date: dayFromToday(3), registrationStatus: 'closed' })
+  await env.DB.prepare('UPDATE tournaments SET reminder_1_enabled = 1, reminder_1_days_before = 3, reminder_2_enabled = 0 WHERE id = ?').bind(tournamentId).run()
+  const addresses: string[] = []
+  for (let i = 0; i < count; i++) {
+    const address = `entrant${n}-${i}@example.org`
+    await seedRegistration({ tournamentId, memberId: await seedMember({ email: address, fullName: `Player ${i + 1}` }), paymentStatus: 'paid' })
+    addresses.push(address)
+  }
+  return { tournamentId, addresses }
 }
 
 /** A US Chess member record as the ratings service answers it. */

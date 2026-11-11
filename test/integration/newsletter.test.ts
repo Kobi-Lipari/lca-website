@@ -38,6 +38,9 @@
 //   and the next send passing over a stopped newsletter;
 // - (m) a list campaign made under another link key sends nothing and says
 //   so, and (n) one whose gate cannot be read waits;
+// - (o) since WS16 step 5, the summary's words on why the newsletter that
+//   is sending waits, the error of its next untried row, and (p) whose
+//   words those are: the newsletter's alone, shown to those the guard lets in;
 // - and the send's refusals past the first, in their order, each before
 //   anything is written.
 import { env } from 'cloudflare:test'
@@ -45,7 +48,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { isListAddress, normalizeAddress } from '../../domain/mail/address'
 import { DEFAULT_FROM, SENDER_NAME } from '../../domain/mail/addresses'
 import { EVENT_MAIL_STILL_COMES, LIST_FOOTER_WORDS, PREFERENCES_LABEL } from '../../domain/mail/footer'
-import { NEWSLETTER_LIST_ID } from '../../domain/mail/lists'
+import { NEWSLETTER_LIST_ID, TOURNAMENTS_LIST_ID } from '../../domain/mail/lists'
 import { onRequestGet as campaignsGet } from '../../functions/api/admin/campaigns'
 import { onRequestGet as newsletterGet, onRequestPost as newsletterPost } from '../../functions/api/admin/mail/newsletter'
 import { onRequestPost as stopPost } from '../../functions/api/admin/mail/newsletter/stop'
@@ -535,6 +538,74 @@ describe('(n) a gate that cannot be read', () => {
     expect(warn.mock.calls.filter(([words]) => words === GATE_UNREAD_LOG)).toHaveLength(1)
     expect(JSON.stringify(warn.mock.calls)).not.toContain('@')
     expect(emailOutbox).toEqual([])
+  })
+})
+
+describe('(o) why a sending newsletter waits, in the summary (WS16 step 5)', () => {
+  it('answers the words on the next untried row of the newsletter that is sending, and null when none is sending, that row holds none or a run has it', async () => {
+    const admin = await seedAdmin()
+    const read = async () => (await (await invoke(newsletterGet, { as: admin })).json<{ summary: { waits: string | null } }>()).summary.waits
+    expect(await read()).toBeNull()
+    for (let i = 0; i < 3; i += 1) await member(address('reader'))
+    const made = await makeSend(admin, await linkKeyCheck(OTHER_KEY))
+    const id = made!.campaignId
+    // Made and not tried yet: its rows hold no words.
+    expect(await read()).toBeNull()
+
+    // A deployment whose key differs claims nothing and writes why on the next row.
+    await processCampaign(bindings, id)
+    expect(await read()).toBe(LINK_KEY_DIFFERS_WORDS)
+    expect((await newsletterSummary(env.DB)).waits).toBe(LINK_KEY_DIFFERS_WORDS)
+    // Under the key before, it may go, and waits for Amazon SES while Resend sends.
+    await processCampaign({ ...bindings, MAIL_LINK_SECRET_PREVIOUS: OTHER_KEY } as never, id)
+    expect(await read()).toBe(WAIT_FOR_SES_WORDS)
+
+    // A row a run has marked sending is not the next untried row: the one after it, which holds no words, is.
+    const [first] = await rowsOf(id)
+    expect(first.error).toBe(WAIT_FOR_SES_WORDS)
+    await env.DB.prepare(`UPDATE email_campaign_recipients SET claimed_at = datetime('now'), sending_at = datetime('now') WHERE id = ?`).bind(first.id).run()
+    expect(await read()).toBeNull()
+
+    // Once stopped, no newsletter is sending, whatever its rows hold.
+    expect((await invoke(stopPost, { as: admin, method: 'POST' })).status).toBe(200)
+    expect(await read()).toBeNull()
+    expect(emailOutbox).toEqual([])
+  })
+})
+
+describe('(p) the waiting words belong to the newsletter and to those who may read it (WS16 step 5)', () => {
+  it('reads no words from another list\'s campaign or from Group email\'s, whichever is sending', async () => {
+    const admin = await seedAdmin()
+    const read = async () => (await (await invoke(newsletterGet, { as: admin })).json<{ summary: { waits: string | null } }>()).summary.waits
+    const words = 'Not sent yet: sample words for another send.'
+    for (const listId of [null, TOURNAMENTS_LIST_ID]) {
+      const id = await stageCampaign({ listId, recipients: [{ email: address('reader') }] })
+      await env.DB.prepare('UPDATE email_campaign_recipients SET error = ? WHERE campaign_id = ?').bind(words, id).run()
+      expect(await read(), String(listId)).toBeNull()
+    }
+  })
+
+  it('shows the words to no one the guard refuses, and to no one at all while MAIL_LISTS_ON is unset', async () => {
+    const admin = await seedAdmin()
+    const plain = await member(address('plain'))
+    const officer = await member(address('officer'), { role: 'lca_officer' })
+    await member(address('reader'))
+    const made = await makeSend(admin, await linkKeyCheck(OTHER_KEY))
+    await processCampaign(bindings, made!.campaignId)
+    expect((await invoke(newsletterGet, { as: admin })).status).toBe(200)
+    for (const res of [
+      await invoke(newsletterGet),
+      await invoke(newsletterGet, { as: plain }),
+      await invoke(newsletterGet, { as: officer }),
+      await invoke(newsletterGet, { as: admin, aal: 'aal1' }),
+    ]) {
+      expect([401, 403]).toContain(res.status)
+      expect(JSON.stringify(await res.json())).not.toContain(LINK_KEY_DIFFERS_WORDS)
+    }
+    flags.listsOn = false
+    const off = await invoke(newsletterGet, { as: admin })
+    expect(off.status).toBe(404)
+    expect(await off.json()).toEqual({ error: 'Not found' })
   })
 })
 

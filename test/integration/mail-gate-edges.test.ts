@@ -51,8 +51,8 @@ import { deliver, REFUSAL_WORDS, TOO_MANY_OUTSIDE_CALLS, WAIT_FOR_SES_WORDS } fr
 import { seedAdmin, seedClub, seedMember, seedRegistration, seedTournament } from './factories'
 import { emailBehavior, emailOutbox, fetchCount, flushWaitUntil, invoke, resetHarness, uscfBehavior } from './harness'
 import {
-  bell, bindings, countingDb, dayFromToday, dueToday, holdClock, mailTo, message, nextSeq, noLongerReceives, ONE_CLICK_HEADERS, rated, recordHosts, reminderRow,
-  runDaily,
+  bell, bindings, countingDb, dayFromToday, dueToday, holdClock, mailTo, message, nextSeq, noLongerReceives, noWaits, ONE_CLICK_HEADERS, rated, recordHosts,
+  reminderRow, runDaily,
 } from './mailRuns'
 
 const flags = vi.hoisted(() => ({ listsOn: false, sender: 'resend', plan: 'free', complaintStops: true }))
@@ -503,6 +503,8 @@ describe('the daily run, run twice at once', () => {
 describe('the daily run, a claim given back and a claim kept', () => {
   it('every phase gives its claim back when the runtime refuses the call, and a second run on the same day sends all three', async () => {
     flags.listsOn = true
+    // Since WS16 step 5 the attendee and week-before rows are sent again after a later, with a wait before each send.
+    noWaits()
     const { entered, rows } = await dueToday(['limited@example.org'])
     const row = rows['limited@example.org']
     emailBehavior.limitAfter = 0
@@ -615,7 +617,7 @@ describe('the daily run\'s budget on the free plan, across its phases and its lo
     await runDaily()
     expect(subjects()).toEqual({ open: 20, week: 0, attendee: 0 })
     // The 15 week-before rows past the first day's cap were never claimed, and the week-before query no longer reads
-    // them: the follow-up for WS16 step 4 in REDESIGN_STATUS.md.
+    // them: the loss REDESIGN_STATUS.md records, which WS16 step 5 keeps.
     expect(await weekBeforeLeft()).toBe(15)
     resetHarness()
     clock.nextDay()
@@ -709,7 +711,7 @@ describe('role safety with the engine\'s rules on', () => {
   })
 
   it('the director\'s announce turns away no sign-in with 401, a member and an officer with 403, reads no gate and sends nothing', async () => {
-    const tournamentId = await seedTournament({ name: 'Bayou Open' })
+    const tournamentId = await seedTournament({ name: 'Sample Winter Open' })
     await seedRegistration({ tournamentId, memberId: await seedMember({ email: 'entrant@example.org' }) })
     const body = { subject: 'Parking', body: 'Use the north lot.' }
     const { db, ran } = countingDb()
@@ -728,7 +730,7 @@ describe('role safety with the engine\'s rules on', () => {
   })
 
   it('the registration status change turns away no sign-in with 401 and a member with 403, and starts no notice loop', async () => {
-    const tournamentId = await seedTournament({ name: 'Bayou Open', registrationStatus: 'draft' })
+    const tournamentId = await seedTournament({ name: 'Sample Winter Open', registrationStatus: 'draft' })
     const row = await bell(tournamentId, await seedMember({ email: 'subscriber@example.org' }), 'subscriber@example.org')
     const { db, ran } = countingDb()
     for (const [as, status] of [[undefined, 401], [await seedMember({ email: 'plain.member@example.org' }), 403]] as const) {
@@ -756,7 +758,7 @@ describe('the director\'s announce and Group email\'s batch under the rules', ()
   })
 
   it('counts every entrant in failed when all are dead, answers 200, and calls no service', async () => {
-    const tournamentId = await seedTournament({ name: 'Bayou Open' })
+    const tournamentId = await seedTournament({ name: 'Sample Winter Open' })
     for (const address of ['gone1@example.org', 'gone2@example.org']) {
       await noLongerReceives(address)
       await seedRegistration({ tournamentId, memberId: await seedMember({ email: address }) })
@@ -776,7 +778,7 @@ describe('the director\'s announce and Group email\'s batch under the rules', ()
 
   it('mails every entrant when its gate cannot be read, with one log line that names no address', async () => {
     const warn = vi.spyOn(console, 'warn')
-    const tournamentId = await seedTournament({ name: 'Bayou Open' })
+    const tournamentId = await seedTournament({ name: 'Sample Winter Open' })
     for (const address of ['one@example.org', 'two@example.org']) await seedRegistration({ tournamentId, memberId: await seedMember({ email: address }) })
     const { db } = countingDb({ refuse: 'mail_do_not_send' })
     const res = await invoke(announcePost, { method: 'POST', as: await seedAdmin(), params: { id: tournamentId }, body: { subject: 'Parking', body: 'Use the north lot.' }, env: { DB: db } })
@@ -912,7 +914,7 @@ describe('the harness\'s knobs', () => {
   })
 
   it('invoke lays the bindings it is given over the pool\'s and leaves the rest, so a handler reads the wrapped database', async () => {
-    const tournamentId = await seedTournament({ name: 'Bayou Open' })
+    const tournamentId = await seedTournament({ name: 'Sample Winter Open' })
     const { db, ran } = countingDb()
     const res = await invoke(announcePost, { method: 'POST', as: await seedAdmin(), params: { id: tournamentId }, body: { subject: 'Parking', body: 'Use the north lot.' }, env: { DB: db } })
     expect(res.status).toBe(400)

@@ -29,10 +29,14 @@ const AREAS = ['events', 'registration', 'households', 'live', 'membership', 'cl
 const ADDED_FILE = 'test/unit/fixtures/api-added-since-split.json'
 const ADDED = json(ADDED_FILE) as { paths: string[]; exports: Record<string, string> }
 
-/** The paths a file fetches, as the route audit reads them: the first argument of each fetch, a string or a template up to its first `${`. */
+/**
+ * The paths a file fetches, as the route audit reads them: the first argument of each fetch, a string or a template up
+ * to its query, each `${...}` in it read as `*`, as the route audit reads a token in a path (WS16 step 5's two link
+ * calls are the first added paths that carry one).
+ */
 function fetchedPaths(file: string): string[] {
   const text = read(file)
-  return [...text.matchAll(/fetch\(\s*(['"`])(\/api\/[^'"`$?]*)/g)].map((m) => m[2].replace(/\/$/, ''))
+  return [...text.matchAll(/fetch\(\s*(['"`])(\/api\/[^'"`?]*)/g)].map((m) => m[2].replace(/\$\{[^}]*\}/g, '*').replace(/\/$/, ''))
 }
 /** The names a module declares for export, its own declarations only. */
 function declared(file: string): string[] {
@@ -67,7 +71,7 @@ describe('the fixture of what the area modules have gained since the split', () 
     expect(Object.keys(json(ADDED_FILE) as object)).toEqual(['paths', 'exports'])
     expect(ADDED.paths).toEqual([...new Set(ADDED.paths)].sort())
     expect(Object.keys(ADDED.exports)).toEqual(Object.keys(ADDED.exports).sort())
-    for (const path of ADDED.paths) expect(path, path).toMatch(/^\/api\/[a-z0-9/-]+$/)
+    for (const path of ADDED.paths) expect(path, path).toMatch(/^\/api\/[a-z0-9/*-]+$/)
   })
 
   it('gives each name to one of the eight areas, a module that declares it, and no other module declares it', () => {

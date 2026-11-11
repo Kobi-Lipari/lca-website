@@ -28,6 +28,8 @@ const ContactPage = lazy(() => import('@/pages/ContactPage').then(m => ({ defaul
 const DashboardPage = lazy(() => import('@/pages/DashboardPage').then(m => ({ default: m.DashboardPage })))
 const AccountSecurityPage = lazy(() => import('@/pages/AccountSecurityPage').then(m => ({ default: m.AccountSecurityPage })))
 const DonationSuccessPage = lazy(() => import('@/pages/DonationSuccessPage').then(m => ({ default: m.DonationSuccessPage })))
+const EmailPreferencesPage = lazy(() => import('@/pages/EmailPreferencesPage').then(m => ({ default: m.EmailPreferencesPage })))
+const EmailUnsubscribePage = lazy(() => import('@/pages/EmailUnsubscribePage').then(m => ({ default: m.EmailUnsubscribePage })))
 const ForgotPasswordPage = lazy(() => import('@/pages/ForgotPasswordPage').then(m => ({ default: m.ForgotPasswordPage })))
 const LoginPage = lazy(() => import('@/pages/LoginPage').then(m => ({ default: m.LoginPage })))
 const ManageClubPage = lazy(() => import('@/pages/ManageClubPage').then(m => ({ default: m.ManageClubPage })))
@@ -205,6 +207,12 @@ function App() {
             <Route path="/forgot-password" element={<ForgotPasswordPage />} />
             <Route path="/reset-password" element={<ResetPasswordPage />} />
             <Route path="/donate/success" element={<DonationSuccessPage />} />
+            {/* The two pages a link in optional email opens (WS16), routed whatever the switches say, so a link in
+                mail already sent keeps opening its page. Each draws nothing in the main area, as an unknown path
+                does, unless the server says its link works; its own null fallback keeps the main area empty while
+                its code arrives too. */}
+            <Route path="/email/unsubscribe/:token" element={<Suspense fallback={null}><EmailUnsubscribePage /></Suspense>} />
+            <Route path="/email/preferences/:token" element={<Suspense fallback={null}><EmailPreferencesPage /></Suspense>} />
             {/* ── Governance ── */}
             {FEATURES.themeHeritage ? <Route element={<HeritageLayout />}>{HERITAGE_PAGES}</Route> : HERITAGE_PAGES}
             {/* The old governance landing page is retired: the navbar opens on

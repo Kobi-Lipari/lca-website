@@ -68,11 +68,12 @@ describe('the new components are drawn on the fixture page only', () => {
     expect(drawnIn(/<StatusBadge\b[^>]*\bstatus=/)).toEqual([FIXTURE])
   })
 
-  it('only the fixture page, the new header, the Menu sheet, the new footer and the fee notice draw the gold Button', () => {
+  it('only the fixture page, the new header, the Menu sheet, the new footer, the fee notice and the two email choice pages draw the gold Button', () => {
     // WS02 step 5's header draws Join LCA and Renew as the gold Button, its first place off the fixture page, WS02 step 6's sheet does the same,
     // and so does WS02 step 8's new footer, in its brand block, and WS08 step 10's fee notice, for G1's ask for a payout account.
+    // WS16 step 5's two pages a member's link opens draw their one action, Unsubscribe and Save my choices, as the gold Button too.
     expect(drawnIn(/\bvariant=(?:"gold"|'gold'|\{\s*['"]gold['"]\s*\})/)).toEqual(
-      ['src/areas/admin/components/FeeNotice.tsx', 'src/components/layout/MobileMenu.tsx', 'src/components/layout/SiteFooter.tsx', 'src/components/layout/SiteHeader.tsx', FIXTURE].sort(),
+      ['src/areas/admin/components/FeeNotice.tsx', 'src/components/layout/MobileMenu.tsx', 'src/components/layout/SiteFooter.tsx', 'src/components/layout/SiteHeader.tsx', 'src/pages/EmailPreferencesPage.tsx', 'src/pages/EmailUnsubscribePage.tsx', FIXTURE].sort(),
     )
   })
 

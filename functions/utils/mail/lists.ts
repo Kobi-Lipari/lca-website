@@ -183,11 +183,16 @@ export interface NewsletterSend {
 }
 
 /**
- * What the newsletter tab shows: the counts, and the last 10 newsletter sends, newest first. This is the newsletter's
- * own history for everyone who may send it, since Group email's history (GET /api/admin/campaigns) keeps
- * requireMailer. Two queries.
+ * What the newsletter tab shows: the counts, the last 10 newsletter sends, newest first, and why the newsletter that is
+ * sending waits, when it does. This is the newsletter's own history for everyone who may send it, since Group email's
+ * history (GET /api/admin/campaigns) keeps requireMailer. Three queries.
+ *
+ * `waits` is the error words of the next untried row of the newsletter that is sending, the row a run would send next:
+ * a list campaign that cannot go from a deployment, for its link key, its sender or a gate it cannot read, or that
+ * waits for Amazon SES, writes its reason there (functions/utils/admin/campaigns.ts), and no other answer carries it.
+ * Null when no newsletter is sending or that row holds no words.
  */
-export async function newsletterSummary(db: D1Database): Promise<NewsletterCounts & { recent: NewsletterSend[] }> {
+export async function newsletterSummary(db: D1Database): Promise<NewsletterCounts & { recent: NewsletterSend[]; waits: string | null }> {
   const counts = await newsletterCounts(db)
   const { results } = await db
     .prepare(
@@ -200,8 +205,20 @@ export async function newsletterSummary(db: D1Database): Promise<NewsletterCount
       id: string; subject: string; total_recipients: number; sent_count: number; failed_count: number; skipped_count: number
       status: NewsletterSend['status']; created_at: string; completed_at: string | null
     }>()
+  // The sending newsletter as sendingListCampaign reads it, and its next untried row as the campaign sender picks it.
+  const next = await db
+    .prepare(
+      `SELECT r.error AS error
+         FROM email_campaign_recipients r
+        WHERE r.campaign_id = (SELECT id FROM email_campaigns WHERE list_id = ?1 AND status = 'sending' ORDER BY created_at, rowid LIMIT 1)
+          AND r.status = 'pending' AND r.sending_at IS NULL
+        ORDER BY r.rowid LIMIT 1`,
+    )
+    .bind(NEWSLETTER_LIST_ID)
+    .first<{ error: string | null }>()
   return {
     ...counts,
+    waits: next?.error ?? null,
     recent: (results ?? []).map((row) => ({
       id: row.id,
       subject: row.subject,

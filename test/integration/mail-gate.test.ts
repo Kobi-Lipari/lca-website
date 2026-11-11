@@ -30,8 +30,8 @@
 //   outside calls and 50 queries. It takes the reminders whose queries name
 //   one day before the registration-open reminders, so the next day's run
 //   sends the registration-open rows the cap left, and the week-before rows
-//   past the cap, whose day has gone, are not read again (a follow-up for
-//   WS16 step 4 in REDESIGN_STATUS.md).
+//   past the cap, whose day has gone, are not read again (the loss
+//   REDESIGN_STATUS.md records, which WS16 step 5 keeps).
 // - (h) A call the runtime refuses for the limit gives its claim back, ends
 //   the phase, and the next day's run sends that registration-open reminder.
 // - (i) Two notice loops over the same rows, or a loop and the daily run,
@@ -184,7 +184,7 @@ describe('(b) with the rules on, an address on the do-not-send list', () => {
   })
 
   it('gets no announce email and is counted in failed, with no call to the mail service for it', async () => {
-    const tournamentId = await seedTournament({ name: 'Bayou Open' })
+    const tournamentId = await seedTournament({ name: 'Sample Winter Open' })
     for (const address of ['gone@example.org', 'here@example.org']) await seedRegistration({ tournamentId, memberId: await seedMember({ email: address }) })
     const admin = await seedAdmin()
     const hosts = recordHosts()
@@ -200,7 +200,7 @@ describe('(b) with the rules on, an address on the do-not-send list', () => {
   })
 
   it('gets no registration-open notice, and its row is marked so the morning run does not try it either', async () => {
-    const tournamentId = await seedTournament({ name: 'Bayou Open', registrationStatus: 'draft' })
+    const tournamentId = await seedTournament({ name: 'Sample Winter Open', registrationStatus: 'draft' })
     const goneRow = await bell(tournamentId, await seedMember({ email: 'gone@example.org' }), 'gone@example.org')
     const hereRow = await bell(tournamentId, await seedMember({ email: 'here@example.org' }), 'here@example.org')
     const res = await invoke(registrationStatusPatch, { method: 'PATCH', as: await seedAdmin(), params: { id: tournamentId }, body: { registration_status: 'open' } })
@@ -225,7 +225,7 @@ describe('(b) with the rules on, an address on the do-not-send list', () => {
     expect(subjectsTo('here@example.org')).toEqual([
       `One week to go: ${await name(soon)}`,
       `Registration is open: ${await name(open)}`,
-      expect.stringMatching(/^See you .* at Crescent Swiss/),
+      expect.stringMatching(/^See you .* at Sample Spring Swiss/),
     ])
     const gone = rows['gone@example.org']
     expect(await reminderRow(gone.open)).toMatchObject({ sent_registration_open: 1 })
@@ -375,7 +375,7 @@ describe('(e) one query for each 90 addresses', () => {
 
   it('the director\'s announce reads its gate once for all its entrants, counted on the database invoke is given', async () => {
     flags.listsOn = true
-    const tournamentId = await seedTournament({ name: 'Bayou Open' })
+    const tournamentId = await seedTournament({ name: 'Sample Winter Open' })
     for (let i = 0; i < 3; i++) await seedRegistration({ tournamentId, memberId: await seedMember({ email: `entrant${i}@example.org` }) })
     const { db, ran } = countingDb()
     const res = await invoke(announcePost, { method: 'POST', as: await seedAdmin(), params: { id: tournamentId }, body: { subject: 'Parking', body: 'Use the north lot.' }, env: { DB: db } })
@@ -484,8 +484,8 @@ describe('(g) the daily run on the free plan\'s budget', () => {
   it('takes the reminders whose queries name one day first: with 30 week-before reminders due it sends 25 of them and no registration-open reminder, and the next day sends the registration-open reminders and not the 5 week-before rows past the cap, whose day has gone', async () => {
     flags.listsOn = true
     const clock = holdClock()
-    const open = await seedTournament({ name: 'Bayou Open', registrationStatus: 'open', date: dayFromToday(30) })
-    const soon = await seedTournament({ name: 'Delta Quads', registrationStatus: 'closed', date: dayFromToday(7) })
+    const open = await seedTournament({ name: 'Sample Winter Open', registrationStatus: 'open', date: dayFromToday(30) })
+    const soon = await seedTournament({ name: 'Sample Autumn Quads', registrationStatus: 'closed', date: dayFromToday(7) })
     for (let i = 0; i < 30; i++) {
       const address = `week${i}@example.org`
       await bell(soon, await seedMember({ email: address }), address, { registrationOpen: 1 })
@@ -495,8 +495,8 @@ describe('(g) the daily run on the free plan\'s budget', () => {
       await bell(open, await seedMember({ email: address }), address)
     }
     const sent = () => ({
-      week: emailOutbox.filter((e) => e.subject === 'One week to go: Delta Quads').length,
-      open: emailOutbox.filter((e) => e.subject === 'Registration is open: Bayou Open').length,
+      week: emailOutbox.filter((e) => e.subject === 'One week to go: Sample Autumn Quads').length,
+      open: emailOutbox.filter((e) => e.subject === 'Registration is open: Sample Winter Open').length,
     })
     const weekBeforeLeft = () =>
       env.DB.prepare('SELECT COUNT(*) AS n FROM tournament_reminders WHERE tournament_id = ? AND sent_week_before = 0').bind(soon).first<{ n: number }>().then((r) => r?.n)
@@ -510,7 +510,7 @@ describe('(g) the daily run on the free plan\'s budget', () => {
     await runDaily()
     expect(sent()).toEqual({ week: 0, open: 10 })
     // The 5 rows past the first day's cap were never claimed, and the week-before query, which names the day a week
-    // ahead, no longer reads them: the follow-up for WS16 step 4 in REDESIGN_STATUS.md.
+    // ahead, no longer reads them: the loss REDESIGN_STATUS.md records, which WS16 step 5 keeps.
     expect(await weekBeforeLeft()).toBe(5)
   })
 
@@ -553,19 +553,19 @@ describe('(h) a call the runtime refuses for the limit', () => {
 describe('(i) two loops over the same rows', () => {
   it('two notice loops started together send each notice once, and so do a notice loop and the daily run', async () => {
     flags.listsOn = true
-    const twice = await seedTournament({ name: 'Bayou Open', registrationStatus: 'open' })
-    const met = await seedTournament({ name: 'Delta Quads', registrationStatus: 'open', date: dayFromToday(30) })
+    const twice = await seedTournament({ name: 'Sample Winter Open', registrationStatus: 'open' })
+    const met = await seedTournament({ name: 'Sample Autumn Quads', registrationStatus: 'open', date: dayFromToday(30) })
     for (let i = 0; i < 5; i++) {
       const address = `subscriber${i}@example.org`
       const memberId = await seedMember({ email: address })
       await bell(twice, memberId, address)
       await bell(met, memberId, address)
     }
-    await Promise.all([notifyRegistrationOpen(bindings as never, twice, 'Bayou Open'), notifyRegistrationOpen(bindings as never, twice, 'Bayou Open')])
-    expect(emailOutbox.filter((e) => e.subject === 'Registration is open: Bayou Open').map((e) => e.to).sort()).toEqual([0, 1, 2, 3, 4].map((i) => `subscriber${i}@example.org`))
+    await Promise.all([notifyRegistrationOpen(bindings as never, twice, 'Sample Winter Open'), notifyRegistrationOpen(bindings as never, twice, 'Sample Winter Open')])
+    expect(emailOutbox.filter((e) => e.subject === 'Registration is open: Sample Winter Open').map((e) => e.to).sort()).toEqual([0, 1, 2, 3, 4].map((i) => `subscriber${i}@example.org`))
 
-    await Promise.all([notifyRegistrationOpen(bindings as never, met, 'Delta Quads'), runDaily()])
-    expect(emailOutbox.filter((e) => e.subject === 'Registration is open: Delta Quads').map((e) => e.to).sort()).toEqual([0, 1, 2, 3, 4].map((i) => `subscriber${i}@example.org`))
+    await Promise.all([notifyRegistrationOpen(bindings as never, met, 'Sample Autumn Quads'), runDaily()])
+    expect(emailOutbox.filter((e) => e.subject === 'Registration is open: Sample Autumn Quads').map((e) => e.to).sort()).toEqual([0, 1, 2, 3, 4].map((i) => `subscriber${i}@example.org`))
   })
 })
 

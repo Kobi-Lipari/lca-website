@@ -1,12 +1,31 @@
 {
   "paths": [
+    "/api/admin/mail/newsletter",
+    "/api/admin/mail/newsletter/stop",
+    "/api/admin/mail/newsletter/test",
+    "/api/mail/preferences/*",
+    "/api/mail/unsubscribe/*",
     "/api/me/payout-request",
     "/api/me/tournament-creation"
   ],
   "exports": {
+    "ApiEmailChoices": "membership",
+    "ApiNewsletter": "admin",
+    "ApiNewsletterSent": "admin",
+    "ApiNewsletterStopped": "admin",
     "ApiPayoutRequest": "membership",
     "ApiTournamentCreation": "membership",
+    "ApiUnsubscribeLink": "membership",
+    "ApiUnsubscribed": "membership",
+    "getEmailChoices": "membership",
+    "getNewsletter": "admin",
     "getTournamentCreation": "membership",
-    "requestPayoutAccount": "membership"
+    "requestPayoutAccount": "membership",
+    "saveEmailChoices": "membership",
+    "sendNewsletter": "admin",
+    "sendNewsletterTest": "admin",
+    "stopNewsletter": "admin",
+    "unsubscribeByLink": "membership",
+    "unsubscribeLinkStatus": "membership"
   }
 }

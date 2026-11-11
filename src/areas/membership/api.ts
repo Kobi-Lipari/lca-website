@@ -10,12 +10,13 @@
 // so pages and components may keep importing from '@/lib/api'. A type
 // another area owns is imported from that area's api.ts, never from
 // '@/lib/api', which re-exports this file. The calls added since the split,
-// getTournamentCreation and requestPayoutAccount, are listed with their
-// types in test/unit/fixtures/api-added-since-split.json.
+// getTournamentCreation and requestPayoutAccount, and the four a link in
+// optional email opens its page with, are listed with their types in
+// test/unit/fixtures/api-added-since-split.json.
 
 // Types only: a runtime import of the contracts would bring zod into the site
 // bundle, which npm run check:bundle refuses.
-import type { PayoutRequestResponse, TournamentCreationResponse } from '@domain/contracts'
+import type { EmailChoicesResponse, PayoutRequestResponse, TournamentCreationResponse, UnsubscribeLinkResponse, UnsubscribeResponse } from '@domain/contracts'
 import { authHeaders, handleResponse } from '@/lib/http'
 import type { ApiRegistration } from '@/areas/registration/api'
 import type { ApiChild } from '@/areas/households/api'
@@ -310,4 +311,56 @@ export async function adminExportEmailList(o: MemberExportOptions): Promise<stri
   const response = await fetch(`/api/admin/members/export?${exportQuery({ ...o, type: 'emails' }, '&format=list')}`, { headers: await authHeaders() })
   if (!response.ok) await handleResponse(response)
   return (await response.text()).split('\n').filter(Boolean)
+}
+
+// ── A member's email choices, from a link in optional email (WS16 step 5) ──
+// The unsubscribe page and the email preferences page call these. Both
+// endpoints are public and signed: the person and the list come from the
+// token alone, so no call here sends a sign-in header, even for a person who
+// is signed in, and the token goes to these two endpoints and nowhere else.
+// A link that does not open answers 404 "This link isn't working.".
+
+/** What GET /api/mail/unsubscribe/:token answers a request that asks for JSON: the list's name (unsubscribeLinkResponseSchema). */
+export type ApiUnsubscribeLink = UnsubscribeLinkResponse
+
+/** What POST /api/mail/unsubscribe/:token answers: done, the list's name and a preferences token to link on with (unsubscribeResponseSchema). */
+export type ApiUnsubscribed = UnsubscribeResponse
+
+/** What GET and PATCH /api/mail/preferences/:token answer: the masked address, each list on or off, and the stop-all (emailChoicesResponseSchema). */
+export type ApiEmailChoices = EmailChoicesResponse
+
+/** The list an unsubscribe link leaves, read with the GET that asks for JSON, which changes nothing. */
+export async function unsubscribeLinkStatus(token: string): Promise<ApiUnsubscribeLink> {
+  const response = await fetch(`/api/mail/unsubscribe/${encodeURIComponent(token)}`, {
+    headers: { Accept: 'application/json' },
+  })
+  return handleResponse(response)
+}
+
+/** The unsubscribe page's one press: the one-click unsubscribe, sent with an empty JSON body. */
+export async function unsubscribeByLink(token: string): Promise<ApiUnsubscribed> {
+  const response = await fetch(`/api/mail/unsubscribe/${encodeURIComponent(token)}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+    body: '{}',
+  })
+  return handleResponse(response)
+}
+
+/** The person's email choices, as the preferences page shows them. */
+export async function getEmailChoices(token: string): Promise<ApiEmailChoices> {
+  const response = await fetch(`/api/mail/preferences/${encodeURIComponent(token)}`, {
+    headers: { Accept: 'application/json' },
+  })
+  return handleResponse(response)
+}
+
+/** Saves a change to the person's choices: lists turned on or off by id, and the stop-all. Answers the choices as saved. */
+export async function saveEmailChoices(token: string, change: { lists?: Record<string, boolean>; optionalOff?: boolean }): Promise<ApiEmailChoices> {
+  const response = await fetch(`/api/mail/preferences/${encodeURIComponent(token)}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+    body: JSON.stringify(change),
+  })
+  return handleResponse(response)
 }
