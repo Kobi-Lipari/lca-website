@@ -215,3 +215,13 @@ K asked to see round 12's three options as they would really appear on a normal 
 What the true size shows: a real window is shorter than a board's frame, so the letter's sheet shows 531px in option A (684px on its board), 485px in B (638px) and 497px in C (650px): twelve, eleven and eleven of the example letter's sixteen lines. The preview phone at the right shrinks to fit. The page sits in a centred column 1200px wide, the kit's page frame, with 360px of margin on each side.
 
 A point for the build of this page: the kit's frame is 1200px with 24px gutters, and the site's built header and Group email use a 1152px box with 1104px of content, which cannot hold the board's 1150px desk. The page's build takes the kit's frame or the desk is redrawn narrower.
+
+## Round 14: K picked option A, with More options at the foot (Wednesday, November 11, 2026)
+
+K's pick among round 12's three options (K's decision 48; K's words are in `feedback.md`): option A, From and Subject on one row, with More options moved to a quiet place at the bottom and the bar at the foot respaced, since K saw a wide gap between steps 1 and 2. `newsletter3-specs.json` carries it as `revision14`; `results/newsletter14-results.json` holds the run. Canvas version 34.
+
+On `Newsletter-Page-4`: From and Subject share one 46px row above the letter's tools, both values whole (From 428px, Subject 370px), so the sender's name is no longer cut short as it was on option A's own board. The toolbar has no "1 Write it" and Undo has its word back. The bar at the foot reads "More options" as a plain words button at the far left, then the three numbered steps as one group at the right, 26px apart: 1 Pick a template to start from, 2 Send a test to me, 3 Send to 167 people. The letter shows 684px in the board's frame (630px before), and 531px in a real 1920 by 1080 window. Make bigger stays under the letter. The Help picture, the wiggle picture (the mark 1 tilts with its button), and the tablet's and phones' words follow; on a phone More options sits at the end of the page, under the letter. The tablet, the Make bigger picture and the club tournament picture keep From and Subject stacked, since one row does not fit their widths.
+
+The three option boards stay on canvas page 19 beside the page, titled as picked or not kept. The president's two page pictures were made again, and one true-size desktop picture of the page as picked.
+
+What "More options" holds, for the build: the top of the email, the words shown in the inbox, and where replies go. "Who gets it", which it held on the simple-version board, has its own card on this page. No picture on `Newsletter-Page-4` shows it opened yet.

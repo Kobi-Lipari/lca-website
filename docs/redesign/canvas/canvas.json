@@ -1902,7 +1902,7 @@
    "h": 2350,
    "x": 2160,
    "y": 0,
-   "title": "Newsletter · the page · the top · option A · One row · K picks one"
+   "title": "Newsletter · the page · the top · option A · One row · K's pick, applied to the page with More options moved to the foot"
   },
   "Newsletter-Page-4-Top-B.dc.html": {
    "page": "newsletter-options",
@@ -1910,7 +1910,7 @@
    "h": 2350,
    "x": 3680,
    "y": 0,
-   "title": "Newsletter · the page · the top · option B · Fields left, options right · K picks one"
+   "title": "Newsletter · the page · the top · option B · Fields left, options right · not kept"
   },
   "Newsletter-Page-4-Top-C.dc.html": {
    "page": "newsletter-options",
@@ -1918,7 +1918,7 @@
    "h": 2350,
    "x": 5200,
    "y": 0,
-   "title": "Newsletter · the page · the top · option C · The letter's own header · K picks one"
+   "title": "Newsletter · the page · the top · option C · The letter's own header · not kept"
   }
  },
  "createdOnFiles": {
@@ -3670,7 +3670,7 @@
    "kind": "title1",
    "maxW": 1440,
    "page": "newsletter-options",
-   "text": "The page where the newsletter is written and sent · K's choice",
+   "text": "The page where the newsletter is written and sent · K's choice, with From and Subject on one row",
    "w": 240,
    "x": 640,
    "y": -320
@@ -3732,7 +3732,7 @@
    "kind": "title1",
    "maxW": 4480,
    "page": "newsletter-options",
-   "text": "Three ways to lay out the top of the page · K picks one",
+   "text": "Three ways to lay out the top of the page · K picked A, with changes (now on the page at the left)",
    "w": 240,
    "x": 2160,
    "y": -320

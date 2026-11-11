@@ -91,3 +91,7 @@ K's words: "on the page thing, the \"1 write it\" thing takes up space unneccsar
 ## Wednesday, November 11, 2026, about 9:20 PM UTC: the three options at a real desktop size
 
 K's words: "show me those three page options but with a picture that precisly mimicks how each would appear in a normal desktop view (resolution, zoom, etc)"
+
+## Wednesday, November 11, 2026, about 10:05 PM UTC: K's pick for the top of the page
+
+K first asked "what does the more options button do?" and then picked: "lets do option A but move the more options button else where , like maybe a non prominent spot on the bottom and respace the boittom (i see there is a big gap between 1 and 2)."
