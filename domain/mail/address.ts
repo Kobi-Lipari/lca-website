@@ -17,14 +17,18 @@
 // bounce on a sample member; event mail keeps today's reach, example.org
 // included, which the integration suites send to.
 
-/** The site's own domain. No mailbox exists at it or under it, so no address there is ever on an LCA list. */
-const SITE_DOMAIN = 'louisianachess.org'
+/**
+ * The site's own domain. No mailbox exists at it or under it, so no address there is ever on an LCA list. Exported with
+ * the two lists below so that the newsletter's audience (functions/utils/mail/lists.ts) writes these rules in SQL from
+ * the same names.
+ */
+export const SITE_DOMAIN = 'louisianachess.org'
 
 /** The top-level names RFC 2606 section 2 reserves. No mail sent under them reaches anyone. */
-const RESERVED_TOP_LEVEL_NAMES = ['invalid', 'test', 'example', 'localhost']
+export const RESERVED_TOP_LEVEL_NAMES: readonly string[] = ['invalid', 'test', 'example', 'localhost']
 
 /** The names RFC 2606 section 3 reserves for documentation. */
-const EXAMPLE_DOMAINS = ['example.com', 'example.net', 'example.org']
+export const EXAMPLE_DOMAINS: readonly string[] = ['example.com', 'example.net', 'example.org']
 
 /** An address as the mail tables keep it: trimmed and lowercased, so a family's one address is one row whatever was typed. */
 export function normalizeAddress(raw: string): string {

@@ -34,6 +34,10 @@
 //   address, a person with no member account holding a choice, a family's
 //   one address holding one, and the foreign keys.
 // - The harness's knobs: reset by resetHarness and counted as documented.
+//
+// Since WS16 step 3 every list message here carries the one-click headers
+// list mail must carry, and list mail the gate lets through waits for
+// Amazon SES while Resend sends.
 import { env } from 'cloudflare:test'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { DEFAULT_FROM } from '../../domain/mail/addresses'
@@ -43,11 +47,12 @@ import { onRequestPatch as registrationStatusPatch } from '../../functions/api/a
 import { processCampaign } from '../../functions/utils/admin/campaigns'
 import { sendEmailOutcome } from '../../functions/utils/email'
 import { emptyGate, GATE_QUERY_SIZE, GATE_UNREAD_LOG, GateUnread, openGate, openLoopGate, type MailGate } from '../../functions/utils/mail/gate'
-import { deliver, REFUSAL_WORDS, TOO_MANY_OUTSIDE_CALLS } from '../../functions/utils/mail/send'
+import { deliver, REFUSAL_WORDS, TOO_MANY_OUTSIDE_CALLS, WAIT_FOR_SES_WORDS } from '../../functions/utils/mail/send'
 import { seedAdmin, seedClub, seedMember, seedRegistration, seedTournament } from './factories'
 import { emailBehavior, emailOutbox, fetchCount, flushWaitUntil, invoke, resetHarness, uscfBehavior } from './harness'
 import {
-  bell, bindings, countingDb, dayFromToday, dueToday, holdClock, mailTo, message, nextSeq, noLongerReceives, rated, recordHosts, reminderRow, runDaily,
+  bell, bindings, countingDb, dayFromToday, dueToday, holdClock, mailTo, message, nextSeq, noLongerReceives, ONE_CLICK_HEADERS, rated, recordHosts, reminderRow,
+  runDaily,
 } from './mailRuns'
 
 const flags = vi.hoisted(() => ({ listsOn: false, sender: 'resend', plan: 'free', complaintStops: true }))
@@ -70,7 +75,7 @@ vi.mock('../../functions/utils/mail/switches', async (importOriginal) => {
   }
 })
 
-const CLUB_LIST = 'club-kenner'
+const CLUB_LIST = 'club-example'
 
 const hex32 = (n: number) => n.toString(16).padStart(32, '0')
 const reader = (i: number) => `reader${i}@chess.test.lca`
@@ -109,7 +114,7 @@ beforeEach(async () => {
     await env.DB.prepare(`DELETE FROM ${table}`).run()
   }
   await env.DB.prepare(`DELETE FROM mail_lists WHERE id NOT IN ('lca-newsletter', 'lca-tournaments')`).run()
-  await env.DB.prepare(`INSERT INTO mail_lists (id, kind, name, main_mailer) VALUES (?, 'club', 'Kenner Chess Club news', 0)`).bind(CLUB_LIST).run()
+  await env.DB.prepare(`INSERT INTO mail_lists (id, kind, name, main_mailer) VALUES (?, 'club', 'Example Chess Club news', 0)`).bind(CLUB_LIST).run()
   await env.DB.prepare(`UPDATE tournaments SET reminder_1_enabled = 0, reminder_2_enabled = 0, registration_status = 'closed'`).run()
   // Only the members a case seeds are looked up for their ratings, so a case's counts are its own.
   await env.DB.prepare('UPDATE members SET uscf_id = NULL WHERE uscf_id IS NOT NULL').run()
@@ -346,14 +351,16 @@ describe('the seam and a gate it is given', () => {
   it('asks the gate it was given and reads no table of its own when that gate answers, either way', async () => {
     const may = countingDb()
     expect(await deliver({ ...bindings, DB: may.db } as never, message(reader(1)), fake(null))).toEqual({ ok: true })
-    expect(await deliver({ ...bindings, DB: may.db } as never, message(reader(2), { kind: 'optional', listId: NEWSLETTER_LIST_ID }), fake(null))).toEqual({ ok: true })
+    // List mail the gate lets through waits for Amazon SES while Resend sends (WS16 step 3), with no read of its own either.
+    expect(await deliver({ ...bindings, DB: may.db } as never, message(reader(2), { kind: 'optional', listId: NEWSLETTER_LIST_ID, headers: ONE_CLICK_HEADERS }), fake(null)))
+      .toEqual({ ok: false, waitForSes: true, error: WAIT_FOR_SES_WORDS })
     expect(may.ran).toEqual([])
     const may2 = countingDb()
     const before = fetchCount
     expect(await deliver({ ...bindings, DB: may2.db } as never, message(reader(3)), fake('do_not_send'))).toEqual({ ok: false, refused: 'do_not_send', error: REFUSAL_WORDS.do_not_send })
     expect(may2.ran).toEqual([])
     expect(fetchCount).toBe(before)
-    expect(emailOutbox.map((e) => e.to)).toEqual([reader(1), reader(2)])
+    expect(emailOutbox.map((e) => e.to)).toEqual([reader(1)])
   })
 
   it('reads its own gate for exactly the one address when the gate it was given did not read it, or was read for another list', async () => {
@@ -363,7 +370,7 @@ describe('the seam and a gate it is given', () => {
     await noLongerReceives(reader(2))
     const other = countingDb()
     const forTournaments = await openGate(env.DB, [reader(2)], TOURNAMENTS_LIST_ID)
-    const result = await deliver({ ...bindings, DB: other.db } as never, message(reader(2), { kind: 'optional', listId: NEWSLETTER_LIST_ID }), forTournaments)
+    const result = await deliver({ ...bindings, DB: other.db } as never, message(reader(2), { kind: 'optional', listId: NEWSLETTER_LIST_ID, headers: ONE_CLICK_HEADERS }), forTournaments)
     expect(result).toEqual({ ok: false, refused: 'do_not_send', error: REFUSAL_WORDS.do_not_send })
     expect(other.mailReads().map((r) => r.binds)).toEqual([2])
   })
@@ -856,7 +863,7 @@ describe('the tables on D1', () => {
     const stranger = 'stranger@chess.test.lca'
     expect(await env.DB.prepare('SELECT COUNT(*) AS n FROM members WHERE email = ?').bind(stranger).first()).toEqual({ n: 0 })
     await contact(stranger, { choices: { [NEWSLETTER_LIST_ID]: { choice: 'out' } } })
-    expect(await deliver(bindings as never, message(stranger, { kind: 'optional', listId: NEWSLETTER_LIST_ID }))).toMatchObject({ ok: false, refused: 'opted_out' })
+    expect(await deliver(bindings as never, message(stranger, { kind: 'optional', listId: NEWSLETTER_LIST_ID, headers: ONE_CLICK_HEADERS }))).toMatchObject({ ok: false, refused: 'opted_out' })
     expect(await deliver(bindings as never, message(stranger))).toEqual({ ok: true })
   })
 
@@ -881,8 +888,8 @@ describe('the tables on D1', () => {
     await env.DB.prepare('DELETE FROM mail_contacts WHERE id = ?').bind(id).run()
     expect(await choices()).toBe(0)
 
-    const clubId = await seedClub({ name: 'Kenner Knights' })
-    await env.DB.prepare(`INSERT INTO mail_lists (id, kind, name, main_mailer, club_id) VALUES ('club-knights', 'club', 'Kenner Knights news', 0, ?)`).bind(clubId).run()
+    const clubId = await seedClub({ name: 'Example Knights' })
+    await env.DB.prepare(`INSERT INTO mail_lists (id, kind, name, main_mailer, club_id) VALUES ('club-knights', 'club', 'Example Knights news', 0, ?)`).bind(clubId).run()
     await expect(env.DB.prepare('DELETE FROM clubs WHERE id = ?').bind(clubId).run()).rejects.toThrow()
     expect(await env.DB.prepare('SELECT COUNT(*) AS n FROM clubs WHERE id = ?').bind(clubId).first()).toEqual({ n: 1 })
   })

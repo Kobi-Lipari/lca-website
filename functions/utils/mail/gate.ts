@@ -74,6 +74,25 @@ interface Contact {
   backIn: boolean
 }
 
+/**
+ * Whether a spam report's mark stops a list for a person: while COMPLAINT_STOPS_OTHER_SENDERS holds, on a list that is
+ * not one of LCA's main mailers, unless the person turned the list back on after the report. The gate's refusal and
+ * the email preferences endpoint (functions/api/mail/preferences/[token].ts) both read this one rule.
+ */
+export function complaintStops(complained: boolean, mainMailer: boolean, backIn: boolean): boolean {
+  return complained && COMPLAINT_STOPS_OTHER_SENDERS && !mainMailer && !backIn
+}
+
+/**
+ * The SQL that reads whether a person turned a list back on after a spam report: an 'in' choice written after the
+ * report's mark, 1 or 0, compared with julianday() so the two ways a time can be written compare correctly. `choice`
+ * and `contact` are the aliases of the mail_list_choices row and the mail_contacts row in the query that reads it.
+ */
+export function backInSql(choice: string, contact: string): string {
+  return `CASE WHEN ${choice}.choice = 'in' AND ${contact}.complained_at IS NOT NULL
+                        AND julianday(${choice}.updated_at) > julianday(${contact}.complained_at) THEN 1 ELSE 0 END`
+}
+
 /** The refusal that needs no query: an address mail cannot reach, or, for list mail and test sends, one no list sends to. */
 function unreachable(address: string, kind: MailKind): Refusal | null {
   if (!isSendableAddress(address)) return 'not_sendable'
@@ -96,8 +115,7 @@ function chunkQuery(db: D1Database, chunk: string[], listId?: string): D1Prepare
               c.optional_off_at AS optional_off_at,
               c.complained_at AS complained_at,
               ch.choice AS choice,
-              CASE WHEN ch.choice = 'in' AND c.complained_at IS NOT NULL
-                        AND julianday(ch.updated_at) > julianday(c.complained_at) THEN 1 ELSE 0 END AS back_in,
+              ${backInSql('ch', 'c')} AS back_in,
               (SELECT l.main_mailer FROM mail_lists l WHERE l.id = ${list}) AS main_mailer
          FROM wanted w
          LEFT JOIN mail_contacts c ON c.address = w.address
@@ -158,7 +176,7 @@ export async function openGate(db: D1Database, addresses: string[], listId?: str
       const contact = contacts.get(value)
       if (!contact) return null
       if (contact.choice === 'out' || contact.optionalOff) return 'opted_out'
-      if (contact.complained && COMPLAINT_STOPS_OTHER_SENDERS && !mainMailer && !contact.backIn) return 'opted_out'
+      if (complaintStops(contact.complained, mainMailer, contact.backIn)) return 'opted_out'
       return null
     },
   }

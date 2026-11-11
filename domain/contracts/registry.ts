@@ -25,6 +25,7 @@ import {
   tournamentsListResponseSchema,
   updateTournamentRequestSchema,
 } from './events'
+import { emailChoicesRequestSchema, emailChoicesResponseSchema, unsubscribeLinkResponseSchema, unsubscribeResponseSchema } from './mail'
 import { payoutRequestRequestSchema, payoutRequestResponseSchema, tournamentCreationResponseSchema } from './me'
 import {
   batchRegistrationRequestSchema,
@@ -84,6 +85,14 @@ export const contracts = {
   },
   'clubs/[id]': {
     GET: { response: clubDetailResponseSchema },
+  },
+  'mail/preferences/[token]': {
+    GET: { response: emailChoicesResponseSchema },
+    PATCH: { request: emailChoicesRequestSchema, response: emailChoicesResponseSchema },
+  },
+  'mail/unsubscribe/[token]': {
+    GET: { response: unsubscribeLinkResponseSchema },
+    POST: { response: unsubscribeResponseSchema },
   },
   'me/payout-request': {
     POST: { request: payoutRequestRequestSchema, response: payoutRequestResponseSchema },

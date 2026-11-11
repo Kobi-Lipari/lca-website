@@ -40,6 +40,11 @@
 //   line that names no address, and holds list mail back.
 // - (k) With the rules off the daily run keeps today's order and today's
 //   marks.
+//
+// Since WS16 step 3 every list message here carries the one-click headers
+// list mail must carry, and list mail the gate lets through waits for
+// Amazon SES while Resend sends, so where these cases once saw it sent they
+// see it wait, and the outbox stays empty of it.
 import { env } from 'cloudflare:test'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { DEFAULT_FROM } from '../../domain/mail/addresses'
@@ -56,14 +61,15 @@ import { onRequestPost as webhookPost } from '../../functions/api/stripe/webhook
 import { onRequestPost as supportPost } from '../../functions/api/support'
 import { processCampaign } from '../../functions/utils/admin/campaigns'
 import { GATE_UNREAD_LOG } from '../../functions/utils/mail/gate'
-import { deliver, GATE_UNREAD_WORDS, REFUSAL_WORDS, TOO_MANY_OUTSIDE_CALLS } from '../../functions/utils/mail/send'
+import { deliver, GATE_UNREAD_WORDS, REFUSAL_WORDS, TOO_MANY_OUTSIDE_CALLS, WAIT_FOR_SES_WORDS } from '../../functions/utils/mail/send'
 import { notifyRegistrationOpen } from '../../functions/utils/registration/registrationOpenNotify'
 import { seedAdmin, seedMember, seedRegistration, seedTournament } from './factories'
 import {
   emailBehavior, emailOutbox, fetchCount, flushWaitUntil, invoke, resetHarness, signStripePayload, stripeSessions, uscfBehavior,
 } from './harness'
 import {
-  bell, bindings, countingDb, dayFromToday, dueToday, holdClock, mailTo, message, nextSeq, noLongerReceives, rated, recordHosts, reminderRow, runDaily,
+  bell, bindings, countingDb, dayFromToday, dueToday, holdClock, mailTo, message, nextSeq, noLongerReceives, ONE_CLICK_HEADERS, rated, recordHosts, reminderRow,
+  runDaily,
 } from './mailRuns'
 
 const flags = vi.hoisted(() => ({ listsOn: false, sender: 'resend', plan: 'free', complaintStops: true }))
@@ -309,22 +315,23 @@ describe('(d) a person\'s choices', () => {
     await contact('out@test.lca', { newsletter: 'out' })
     await contact('stopped@test.lca', { optionalOff: true })
     await noLongerReceives('dead@test.lca')
-    const list = (to: string) => message(to, { kind: 'optional', listId: NEWSLETTER_LIST_ID })
+    const list = (to: string) => message(to, { kind: 'optional', listId: NEWSLETTER_LIST_ID, headers: ONE_CLICK_HEADERS })
     for (const listsOn of [false, true]) {
       flags.listsOn = listsOn
       expect(await deliver(bindings as never, list('out@test.lca'))).toEqual({ ok: false, refused: 'opted_out', error: REFUSAL_WORDS.opted_out })
       expect(await deliver(bindings as never, list('stopped@test.lca'))).toEqual({ ok: false, refused: 'opted_out', error: REFUSAL_WORDS.opted_out })
       expect(await deliver(bindings as never, list('dead@test.lca'))).toEqual({ ok: false, refused: 'do_not_send', error: REFUSAL_WORDS.do_not_send })
-      expect(await deliver(bindings as never, list('reader@test.lca'))).toEqual({ ok: true })
+      // What the gate lets through waits for Amazon SES while Resend sends (WS16 step 3), so nothing reaches the outbox.
+      expect(await deliver(bindings as never, list('reader@test.lca'))).toEqual({ ok: false, waitForSes: true, error: WAIT_FOR_SES_WORDS })
     }
-    expect(emailOutbox.map((e) => e.to)).toEqual(['reader@test.lca', 'reader@test.lca'])
+    expect(emailOutbox).toEqual([])
   })
 
   it('hold list mail and test sends to the names no list sends to, while event mail still reaches them', async () => {
     flags.listsOn = true
     for (const to of ['pat.member@example.org', DEFAULT_FROM, 'walk-in@walkin.lca.invalid']) {
       for (const kind of ['optional', 'test'] as const) {
-        const result = await deliver(bindings as never, message(to, kind === 'optional' ? { kind, listId: NEWSLETTER_LIST_ID } : { kind }))
+        const result = await deliver(bindings as never, message(to, kind === 'optional' ? { kind, listId: NEWSLETTER_LIST_ID, headers: ONE_CLICK_HEADERS } : { kind }))
         expect(result, `${kind} to ${to}`).toEqual({ ok: false, refused: 'not_sendable', error: REFUSAL_WORDS.not_sendable })
       }
     }
@@ -334,18 +341,20 @@ describe('(d) a person\'s choices', () => {
 
   it('let a spam report stop only the lists that are not main mailers, while the setting holds and until the person turns the list back on', async () => {
     flags.listsOn = true
-    await env.DB.prepare(`INSERT INTO mail_lists (id, kind, name, main_mailer) VALUES ('club-kenner', 'club', 'Kenner Chess Club news', 0)`).run()
+    await env.DB.prepare(`INSERT INTO mail_lists (id, kind, name, main_mailer) VALUES ('club-example', 'club', 'Example Chess Club news', 0)`).run()
     const reporter = await contact('reporter@test.lca', { complained: true })
-    const club = message('reporter@test.lca', { kind: 'optional', listId: 'club-kenner' })
-    const newsletter = message('reporter@test.lca', { kind: 'optional', listId: NEWSLETTER_LIST_ID })
+    const club = message('reporter@test.lca', { kind: 'optional', listId: 'club-example', headers: ONE_CLICK_HEADERS })
+    const newsletter = message('reporter@test.lca', { kind: 'optional', listId: NEWSLETTER_LIST_ID, headers: ONE_CLICK_HEADERS })
+    // Since WS16 step 3 what the gate lets through waits for Amazon SES while Resend sends, so a pass reads waitForSes.
+    const passed = { ok: false, waitForSes: true, error: WAIT_FOR_SES_WORDS }
     expect(await deliver(bindings as never, club)).toMatchObject({ ok: false, refused: 'opted_out' })
-    expect(await deliver(bindings as never, newsletter)).toEqual({ ok: true })
+    expect(await deliver(bindings as never, newsletter)).toEqual(passed)
     flags.complaintStops = false
-    expect(await deliver(bindings as never, club)).toEqual({ ok: true })
+    expect(await deliver(bindings as never, club)).toEqual(passed)
     flags.complaintStops = true
-    await env.DB.prepare(`INSERT INTO mail_list_choices (contact_id, list_id, choice, source) VALUES (?, 'club-kenner', 'in', 'preferences')`).bind(reporter).run()
-    expect(await deliver(bindings as never, club)).toEqual({ ok: true })
-    expect(emailOutbox).toHaveLength(3)
+    await env.DB.prepare(`INSERT INTO mail_list_choices (contact_id, list_id, choice, source) VALUES (?, 'club-example', 'in', 'preferences')`).bind(reporter).run()
+    expect(await deliver(bindings as never, club)).toEqual(passed)
+    expect(emailOutbox).toEqual([])
   })
 })
 
@@ -591,7 +600,7 @@ describe('(j) a gate that cannot be read', () => {
 
   it('holds list mail back, to be tried later, and sends nothing', async () => {
     const { db } = countingDb({ refuse: 'mail_do_not_send' })
-    const result = await deliver({ ...bindings, DB: db } as never, message('reader@test.lca', { kind: 'optional', listId: NEWSLETTER_LIST_ID }))
+    const result = await deliver({ ...bindings, DB: db } as never, message('reader@test.lca', { kind: 'optional', listId: NEWSLETTER_LIST_ID, headers: ONE_CLICK_HEADERS }))
     expect(result).toEqual({ ok: false, gateUnread: true, error: GATE_UNREAD_WORDS })
     expect(emailOutbox).toEqual([])
   })

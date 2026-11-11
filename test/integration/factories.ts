@@ -125,6 +125,34 @@ export async function seedRegistration(opts: {
   return id
 }
 
+export interface SeedMailContactOptions {
+  /** The address, as mail_contacts keeps it: trimmed and lowercased. */
+  address: string
+  /** When the person stopped all optional mail; not stopped by default. */
+  optionalOffAt?: string | null
+  /** When a spam report marked the address; never by default. */
+  complainedAt?: string | null
+  /** The person's choices by list id, each from the source given ('link' by default), written at the time given or now. */
+  choices?: Record<string, { choice: 'in' | 'out'; source?: string; at?: string }>
+}
+
+/**
+ * A mail contact as WS16's tables hold one (migration 0060): one row per address, a member's or not, with its id of
+ * 32 random hex characters, its marks and its choices.
+ */
+export async function seedMailContact(opts: SeedMailContactOptions): Promise<string> {
+  const id = Array.from(crypto.getRandomValues(new Uint8Array(16)), (b) => b.toString(16).padStart(2, '0')).join('')
+  await env.DB.prepare(
+    `INSERT INTO mail_contacts (id, address, optional_off_at, complained_at) VALUES (?, ?, ?, ?)`,
+  ).bind(id, opts.address, opts.optionalOffAt ?? null, opts.complainedAt ?? null).run()
+  for (const [listId, c] of Object.entries(opts.choices ?? {})) {
+    await env.DB.prepare(
+      `INSERT INTO mail_list_choices (contact_id, list_id, choice, source, updated_at) VALUES (?, ?, ?, ?, COALESCE(?, datetime('now')))`,
+    ).bind(id, listId, c.choice, c.source ?? 'link', c.at ?? null).run()
+  }
+  return id
+}
+
 export async function seedTournamentDirector(
   tournamentId: string,
   memberId: string,

@@ -18,3 +18,14 @@ export function senderNow(): MailSender {
 export function engineRulesOn(): boolean {
   return MAIL_LISTS_ON || (MAIL_SENDER as string) === 'ses'
 }
+
+/**
+ * Whether the links in optional email open: once MAIL_LISTS_ON is set, or once a list email is on record, whatever the
+ * constant says then, so a revert of the switch can never break a link in mail already sent; the FTC's CAN-SPAM guide
+ * asks that an unsubscribe link keep working for at least 30 days after the email. One query, and none while the
+ * constant is set.
+ */
+export async function listLinksLive(db: D1Database): Promise<boolean> {
+  if (MAIL_LISTS_ON) return true
+  return (await db.prepare('SELECT 1 FROM email_campaigns WHERE list_id IS NOT NULL LIMIT 1').first()) !== null
+}

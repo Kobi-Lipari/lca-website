@@ -3,13 +3,14 @@
 // One copy of the daily-run helpers the two do-not-send gate suites share,
 // test/integration/mail-gate.test.ts and test/integration/mail-gate-edges.test.ts:
 // the daily run, the held clock, the statement-counting database, the host
-// log, the reminder seeds and the one-message seam helper. It depends on
-// no mock: each suite keeps its own vi.mock of functions/utils/mail/switches
+// log, the reminder seeds and the one-message seam helper, with the
+// one-click headers list mail carries since WS16 step 3. It depends on no
+// mock: each suite keeps its own vi.mock of functions/utils/mail/switches
 // and its flags, and sets them before every case.
 import { env } from 'cloudflare:test'
 import { vi } from 'vitest'
 import { DEFAULT_FROM, DEFAULT_REPLY_TO } from '../../domain/mail/addresses'
-import { type OutgoingMail } from '../../functions/utils/mail/send'
+import { type MailHeader, type OutgoingMail } from '../../functions/utils/mail/send'
 import worker from '../../workers/daily-emails/src/index'
 import { seedMember, seedRegistration, seedTournament } from './factories'
 import { emailOutbox } from './harness'
@@ -147,3 +148,13 @@ export const rated = (rating: number) => ({ ratings: [{ ratingSystem: 'R', ratin
 /** One message through the seam, as a sender would hand it over. */
 export const message = (to: string, extra: Partial<OutgoingMail> = {}) =>
   ({ from: DEFAULT_FROM, to, replyTo: DEFAULT_REPLY_TO, subject: 'Fall news', html: '<p>Hi</p>', shape: 'single', ...extra }) as OutgoingMail
+
+/**
+ * The two one-click headers list mail must carry since WS16 step 3, in the form the seam checks: List-Unsubscribe with
+ * one HTTPS address, here a made-up one, then List-Unsubscribe-Post with the one-click value. The seam checks their
+ * form and not where they lead, so a case about the gate gives them to every list message it sends.
+ */
+export const ONE_CLICK_HEADERS: MailHeader[] = [
+  { name: 'List-Unsubscribe', value: '<https://links.test.lca/api/mail/unsubscribe/sample-link>' },
+  { name: 'List-Unsubscribe-Post', value: 'List-Unsubscribe=One-Click' },
+]

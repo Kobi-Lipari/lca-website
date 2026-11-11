@@ -25,6 +25,14 @@ export interface Env {
    * failing at the model call.
    */
   ANTHROPIC_API_KEY?: string
+  /**
+   * The key the links in optional email are signed with (functions/utils/mail/links.ts), and, only while it is being
+   * changed, the key before it, so links signed under the old key keep opening. Secrets of the production environment
+   * alone, set by K; never on the Preview environment, where no link is signed and every link answers that it isn't
+   * working.
+   */
+  MAIL_LINK_SECRET?: string
+  MAIL_LINK_SECRET_PREVIOUS?: string
 }
 
 export interface MemberRow {

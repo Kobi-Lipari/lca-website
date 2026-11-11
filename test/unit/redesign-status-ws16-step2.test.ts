@@ -188,9 +188,11 @@ describe('REDESIGN_STATUS.md, WS16 step 2: the block', () => {
     const at = [STEP_ONE, STEP, LISTS[0]].map((h) => ws16.indexOf(`\n${h}\n`))
     for (const i of at) expect(i).toBeGreaterThan(-1)
     expect([...at].sort((a, b) => a - b)).toEqual(at)
-    // Nothing between the two blocks but step 1's own, and nothing between this block and the decisions but itself.
+    // Nothing between the two blocks but step 1's own, and nothing between this block and the decisions but itself and what a
+    // later step adds there: its own block, "### WS16 step N: ...", or a checkpoint's section, as WS16 step 1's test allows them.
+    const later = (l: string) => /^### WS16 step (?:[3-9]|1[0-2]): \S/.test(l) || /^### Checkpoint [MNO]: WS16 (?:steps \d+ to \d+|step \d+)$/.test(l)
     expect(ws16.slice(at[0], at[1]).split('\n').filter((l) => l.startsWith('### '))).toEqual([STEP_ONE])
-    expect(ws16.slice(at[1], at[2]).split('\n').filter((l) => l.startsWith('### '))).toEqual([STEP])
+    expect(ws16.slice(at[1], at[2]).split('\n').filter((l) => l.startsWith('### ') && !later(l))).toEqual([STEP])
   })
 
   it('has every part, in order, each a bullet of its own', () => {

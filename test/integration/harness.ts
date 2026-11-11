@@ -11,6 +11,8 @@ export interface SentEmail {
   html: string
   text?: string
   from: string
+  /** Resend's headers object as the request carried it: only a message with headers of its own has one, such as a test send's one-click pair. */
+  headers?: Record<string, string>
 }
 
 export interface CreatedStripeSession {
@@ -351,6 +353,7 @@ export function installFetchInterceptor(): void {
         subject: string
         html: string
         text?: string
+        headers?: Record<string, string>
       }
       const recipient = Array.isArray(body.to) ? body.to[0] : body.to
 
@@ -368,6 +371,8 @@ export function installFetchInterceptor(): void {
         html: body.html,
         text: body.text,
         from: body.from,
+        // Kept only when the request carried it, so every entry without one is as before.
+        ...(body.headers ? { headers: body.headers } : {}),
       })
       if (emailBehavior.loseAnswer !== null && emailBehavior.loseAnswer > 0) {
         // The service has the message; the site never hears so.

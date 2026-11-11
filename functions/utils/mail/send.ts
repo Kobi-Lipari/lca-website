@@ -11,6 +11,15 @@
 // about the message once the engine's rules are on (engineRulesOn() in
 // ./rules), and for list mail always, whatever the constants say. With the
 // rules off, event mail reads no table and goes as it always has.
+//
+// List mail, kind 'optional', has two rules more, whatever the constants
+// say. It must carry its list and its two one-click headers, as
+// listMailParts in ./footer writes them, or it is refused before the gate
+// is read, so no optional email can leave without them. And it is never
+// handed to Resend: while Resend sends, list mail waits, untried, for
+// Amazon SES, which classifyOnce in ./outcome reads as later. This file
+// only checks the headers a message carries; it never builds them, so the
+// daily-emails worker bundles nothing of the links or the footer.
 
 import type { MailKind } from '../../../domain/mail/lists'
 import { GATE_UNREAD_LOG, emptyGate, openGate, type MailGate, type Refusal } from './gate'
@@ -27,6 +36,12 @@ export { SENDER_NAME } from '../../../domain/mail/addresses'
  * the distinction with Resend.
  */
 export type MailShape = 'single' | 'campaign'
+
+/** A header a message carries beside the ones its transport writes: list mail's two one-click headers. */
+export interface MailHeader {
+  name: string
+  value: string
+}
 
 /** What every message carries, whatever its kind. */
 interface MailParts {
@@ -46,9 +61,17 @@ interface MailParts {
 
 /**
  * One message, as every sender hands it to the seam. Its kind is 'event' when it is not given: event and account
- * mail, which is never refused for a choice. List mail, kind 'optional', always names the list it goes out on.
+ * mail, which is never refused for a choice and carries no list headers. List mail, kind 'optional', always names the
+ * list it goes out on and must carry the two one-click headers, in order, as listMailParts in ./footer writes them:
+ * List-Unsubscribe with one HTTPS address, then List-Unsubscribe-Post with 'List-Unsubscribe=One-Click'. A test send
+ * may carry them too, so the links in it can be tried.
  */
-export type OutgoingMail = MailParts & ({ kind?: Exclude<MailKind, 'optional'>; listId?: undefined } | { kind: 'optional'; listId: string })
+export type OutgoingMail = MailParts &
+  (
+    | { kind?: 'event'; listId?: undefined; headers?: undefined }
+    | { kind: 'test'; listId?: undefined; headers?: MailHeader[] }
+    | { kind: 'optional'; listId: string; headers?: MailHeader[] }
+  )
 
 /** The bindings the seam needs. The site's and the daily-emails worker's both carry them. */
 export interface MailEnv {
@@ -57,24 +80,76 @@ export interface MailEnv {
 }
 
 /**
+ * Why the seam refuses a message: the gate's three refusals, and its own one, not_list_mail, for list mail that does
+ * not carry its list and its one-click headers, which the seam answers before the gate is read.
+ */
+export type SendRefusal = Refusal | 'not_list_mail'
+
+/**
  * What a send came to. A refusal carries the service's status and words; noAnswer marks a request that threw before
- * any answer came, so the message may or may not have reached the service. Three failures reach no service at all:
- * refused, the gate's refusal; gateUnread, list mail held back because the gate could not be read; and limitRefused,
- * a request the runtime would not make because the invocation had used its outside calls.
+ * any answer came, so the message may or may not have reached the service. Four failures reach no service at all:
+ * refused, the seam's or the gate's refusal; gateUnread, list mail held back because the gate could not be read;
+ * waitForSes, list mail held back while Resend sends; and limitRefused, a request the runtime would not make because
+ * the invocation had used its outside calls.
  */
 export type SendResult =
   | { ok: true; providerId?: string }
-  | { ok: false; status?: number; code?: string; noAnswer?: true; refused?: Refusal; gateUnread?: true; limitRefused?: true; error: string }
+  | {
+      ok: false
+      status?: number
+      code?: string
+      noAnswer?: true
+      refused?: SendRefusal
+      gateUnread?: true
+      waitForSes?: true
+      limitRefused?: true
+      error: string
+    }
 
 /** The plain words for each refusal, which the logs and Group email's history show. None of them names the address. */
-export const REFUSAL_WORDS: Record<Refusal, string> = {
+export const REFUSAL_WORDS: Record<SendRefusal, string> = {
   do_not_send: 'Not sent: this address no longer receives mail.',
   not_sendable: 'Not sent: not a real address.',
   opted_out: 'Not sent: this person turned this email off.',
+  not_list_mail: 'Not sent: an optional email must carry its unsubscribe headers.',
 }
 
 /** The words for list mail held back because the gate could not be read. */
 export const GATE_UNREAD_WORDS = 'Not sent yet: the do-not-send list could not be read.'
+
+/**
+ * The words for list mail held back while Resend sends (Q41 of the WS16 section, settled by K): Resend's terms ask bulk
+ * mail for a postal address, which no LCA email carries (D41), and for recipients who opted in, and Resend suppresses
+ * an address that reports spam for every email of the account, receipts included. So list mail waits, untried, for
+ * Amazon SES.
+ */
+export const WAIT_FOR_SES_WORDS = 'Not sent yet: list mail goes out through Amazon SES only.'
+
+/** The two one-click headers of RFC 8058, by name, and the value of the second, word for word. */
+export const LIST_UNSUBSCRIBE = 'List-Unsubscribe'
+export const LIST_UNSUBSCRIBE_POST = 'List-Unsubscribe-Post'
+export const ONE_CLICK = 'List-Unsubscribe=One-Click'
+
+/** List-Unsubscribe as list mail carries it: one HTTPS address in angle brackets, and no mailto. */
+const ONE_HTTPS_ADDRESS = /^<https:\/\/[^\s<>,]+>$/
+
+/**
+ * True when list mail carries what it must: the list it goes out on, and exactly the two one-click headers, in order,
+ * List-Unsubscribe with one HTTPS address and List-Unsubscribe-Post with the one-click value.
+ */
+function carriesListParts(mail: OutgoingMail): boolean {
+  if (typeof mail.listId !== 'string' || mail.listId === '') return false
+  const headers = mail.headers
+  if (!Array.isArray(headers) || headers.length !== 2) return false
+  const [unsubscribe, post] = headers
+  return (
+    unsubscribe?.name === LIST_UNSUBSCRIBE &&
+    typeof unsubscribe.value === 'string' &&
+    ONE_HTTPS_ADDRESS.test(unsubscribe.value) &&
+    post?.name === LIST_UNSUBSCRIBE_POST &&
+    post.value === ONE_CLICK
+  )
+}
 
 /**
  * The words the Workers runtime throws from fetch() once an invocation has used its outside calls, as reports of the
@@ -109,24 +184,31 @@ async function gateAnswer(env: MailEnv, mail: OutgoingMail, kind: MailKind, gate
       refusal = emptyGate().refusal(mail.to, kind)
     }
   }
-  // Only list mail that names no list is still unanswered here; with no list to read its choices from, it waits.
+  // deliver() refuses list mail that names no list before it asks the gate, so nothing reaches here unanswered; were
+  // something to, it would wait, as for a gate that could not be read.
   if (refusal === undefined) return { ok: false, gateUnread: true, error: GATE_UNREAD_WORDS }
   return refusal === null ? null : { ok: false, refused: refusal, error: REFUSAL_WORDS[refusal] }
 }
 
 /** Sends one message through the one service MAIL_SENDER names now, and says what came of it. Never throws. */
 export async function deliver(env: MailEnv, mail: OutgoingMail, gate?: MailGate): Promise<SendResult> {
+  const kind = mail.kind ?? 'event'
+  // List mail without its list and its one-click headers never leaves, whatever the constants say: refused here, before
+  // the gate is read and before any service is called, and never tried again.
+  if (kind === 'optional' && !carriesListParts(mail)) return { ok: false, refused: 'not_list_mail', error: REFUSAL_WORDS.not_list_mail }
   const sender = senderNow()
   const transport = TRANSPORTS[sender]
   // A sender with no transport here can only come from a mocked module. The message was handed to no service, so it is
   // answered as a refusal, without noAnswer, the mark of a message that may have gone.
   if (!transport) return { ok: false, error: `No transport for ${String(sender)}` }
-  const kind = mail.kind ?? 'event'
   const ruled = engineRulesOn() || kind === 'optional'
   if (ruled) {
     const refused = await gateAnswer(env, mail, kind, gate)
     if (refused) return refused
   }
+  // List mail goes out through Amazon SES only. While Resend sends, a message the gate let through waits, untried, so
+  // the gate's refusals stay final and only mail that may go is put back for later.
+  if (kind === 'optional' && sender === 'resend') return { ok: false, waitForSes: true, error: WAIT_FOR_SES_WORDS }
   try {
     return await transport(env, mail)
   } catch (err) {

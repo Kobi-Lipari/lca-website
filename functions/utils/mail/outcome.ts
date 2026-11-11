@@ -44,14 +44,15 @@ export function configFault(result: SendResult): boolean {
 /**
  * The rule under the engine's rules: sent; later only for an answer that proves the service did not take the message
  * (a 429 or a 503, one of Amazon's codes for a throttle or a pause, a key or permission fault, list mail held back
- * because the gate could not be read, or a request the runtime would not make); never for everything else, the
- * gate's refusals, a request with no answer and every other 5xx among them, since each may come after the service
- * took the message. Resend's answers fall into the same rule by their status.
+ * because the gate could not be read or because Resend sends, or a request the runtime would not make); never for
+ * everything else, the seam's and the gate's refusals, a request with no answer and every other 5xx among them, since
+ * each may come after the service took the message. Resend's answers fall into the same rule by their status. List
+ * mail is always under the rules, so classifyToday is never asked about it.
  */
 export function classifyOnce(result: SendResult): OutcomeKind {
   if (result.ok) return 'sent'
   if (result.refused) return 'never'
-  if (result.gateUnread || result.limitRefused) return 'later'
+  if (result.gateUnread || result.waitForSes || result.limitRefused) return 'later'
   if (result.status !== undefined && NOT_TAKEN_STATUSES.has(result.status)) return 'later'
   if (result.code !== undefined && NOT_TAKEN_CODES.has(result.code)) return 'later'
   if (configFault(result)) return 'later'

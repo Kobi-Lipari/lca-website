@@ -124,6 +124,13 @@ describe('outcome: classifyOnce tries a message again only when the answer prove
     expect(classifyOnce(answer({ limitRefused: true }))).toBe('later')
   })
 
+  it('the seam\'s two answers for list mail of WS16 step 3: refused without its headers, never; held back while Resend sends, later', () => {
+    expect(classifyOnce(answer({ refused: 'not_list_mail' }))).toBe('never')
+    expect(classifyOnce(answer({ refused: 'not_list_mail', status: 503 }))).toBe('never')
+    expect(classifyOnce(answer({ waitForSes: true }))).toBe('later')
+    expect(classifyOnce(answer({ waitForSes: true, status: 400 }))).toBe('later')
+  })
+
   it('429 and 503 are tried again later; every other status, each other 5xx among them, never', () => {
     for (const status of [429, 503]) expect(classifyOnce(answer({ status })), String(status)).toBe('later')
     for (const status of [400, 404, 408, 409, 422, 428, 430, 500, 501, 502, 504, 599]) expect(classifyOnce(answer({ status })), String(status)).toBe('never')

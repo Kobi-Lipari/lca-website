@@ -23,6 +23,8 @@ export default defineConfig({
           CONTACT_EMAIL: 'contact@louisianachess.org',
           SUPPORT_EMAIL: 'support@louisianachess.org',
           ANTHROPIC_API_KEY: 'sk-ant-test-harness',
+          // A made-up key for the links in optional email, used nowhere else: a test signs with env.MAIL_LINK_SECRET.
+          MAIL_LINK_SECRET: 'harness-made-up-mail-link-key-0042',
         },
       },
     }),
