@@ -77,3 +77,9 @@ K's words: "looking at the LCA newslett picture you made to show the pres, I thi
 ## Wednesday, November 11, 2026, about 5:20 PM UTC: the send-out's registration box
 
 K's words: "on the sample tournamnet registration thing, the registration is open text is a little too small and the if button doesnt work text is too big (flip their visual demand to be seen) and be sure to have the registration is open thing on the navy band one too"
+
+## Wednesday, November 11, 2026, about 5:45 PM UTC: the page's bottom button
+
+K's words: "in the the page things, change the bottom buttom to have its text larger and have it jiggle a little bit when first  opening so it draws attemntion so they dont get lost. change the text to be simpler and more understandable: Pick template to Start from (or soemthing or the sort, what is there now is too wordy and ocndusing)."
+
+Asked whether the jiggle runs only while the letter is still empty (recommended) or every time the page opens, K answered at about 6:00 PM UTC: "agreed, 1".

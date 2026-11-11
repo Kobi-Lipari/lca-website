@@ -185,3 +185,13 @@ One note from K on the two tournament send-out pictures (K's decision 46; K's wo
 On `Newsletter-Tournament-6` (the navy band) and `Newsletter-Tournament-4` (the bulletin), the registration box now reads, top to bottom: "Registration is open", the button, and the fallback line. The open line is the box's heading: 20px bold navy on the navy band, which had no such line before, and 18.5px bold navy capitals on the bulletin, where it was a 12.5px label. "If the button does not show, use this link:" and its link are 12px to 12.5px in muted grey, where they were 15px to 16px; the link is still underlined on a 24px line, and the contrast is 6 to 1 or more. The dark phone pictures show the same, in their own inks, each moved a little so the new line clears the bar above it. Nothing else on either board changed, and both heights are as they were.
 
 The president's two send-out pictures were made again from these boards, one look to a picture.
+
+## Round 11: "Pick a template to start from", larger, with a wiggle on an empty letter (Wednesday, November 11, 2026)
+
+One more note from K on the page picture (K's decision 47; K's words are in `feedback.md`). `newsletter3-specs.json` carries it as `revision11`; `results/newsletter11-results.json` holds the run. Canvas version 32.
+
+On `Newsletter-Page-4` the button at the left of the bar at the foot reads "Pick a template to start from", where round 9 had "Start from a template, a past newsletter or blank", which K found wordy and confusing. Its words are 17.5px at weight 600 and the button is 52px tall with a navy border, so it reads as the place to start and stays quieter than the gold Send. The narrower bars and the phone read "Pick a template". A blank letter is still the chooser's first row. The Help picture's first step, the chooser's heading and caption, and the tablet's and phones' words follow.
+
+K asked that the button jiggle a little when the page first opens, so nobody is lost. A board is a still picture, so one small picture, "When the page opens on an empty letter", shows the button mid-wiggle with motion marks. K chose that it wiggles only while the letter is still empty. For the build: once, about a second, a few pixels, never repeated while the page stays open, and for a device that asks for reduced motion no wiggle but a gold ring for a moment.
+
+The board is 5500 tall (5350 before), so the two rows under it on canvas page 19 moved down by 150. The president's two page pictures were made again.
