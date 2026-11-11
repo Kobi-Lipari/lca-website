@@ -223,6 +223,11 @@ const SWITCHES = {
 
   /** The new scoresheet scanner for active LCA members, with private drafts, My games and the printed kit. */
   scanner2: false,
+
+  // Redesign, mail. Off until it is checked on a preview.
+
+  /** The LCA newsletter list in Group email, with the unsubscribe link, the email preferences page and the footer every optional email carries. */
+  mailLists: false,
 } as const
 
 /** The name of one switch. */

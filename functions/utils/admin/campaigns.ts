@@ -1,6 +1,8 @@
 // functions/utils/admin/campaigns.ts
 import { DEFAULT_FROM, DEFAULT_REPLY_TO } from '../email'
 import { renderEmail } from '../emailLayout'
+import { classifyToday } from '../mail/outcome'
+import { deliver } from '../mail/send'
 import { resolveSiteUrl, type SiteEnv } from '../site'
 
 /**
@@ -161,45 +163,36 @@ type SendOutcome =
   /** Will never succeed: malformed or rejected address, bad payload. */
   | { ok: false; retryable: false; error: string }
 
-async function sendViaResend(
+/**
+ * Sends one campaign email through the mail seam, in the request shape Group
+ * email has always sent, and reads the answer as this sender always has:
+ * whether a failure is worth another try is classifyToday's rule in
+ * ../mail/outcome, and the error keeps the words the recipients' error
+ * column and the history show.
+ */
+async function sendOne(
   env: CampaignEnv,
   to: string,
   subject: string,
   html: string,
 ): Promise<SendOutcome> {
-  try {
-    const res = await fetch('https://api.resend.com/emails', {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${env.RESEND_API_KEY}`,
-        'Content-Type': 'application/json',
-      },
-      // reply_to matters: the From address has no mailbox behind it, so
-      // without it every reply to a group email was lost.
-      body: JSON.stringify({
-        from: `Louisiana Chess Association <${env.FROM_EMAIL ?? DEFAULT_FROM}>`,
-        reply_to: [env.REPLY_TO_EMAIL ?? DEFAULT_REPLY_TO],
-        to,
-        subject,
-        html,
-      }),
-    })
-    if (res.ok) return { ok: true }
-
-    const error = `Resend ${res.status}: ${await res.text()}`
-    // 429 is us sending too fast and 5xx is Resend having a bad moment —
-    // both are worth retrying. Anything else is a rejection of this specific
-    // message (bad address, blocked domain) and will fail identically next
-    // time, so retrying it only delays the campaign.
-    const retryable = res.status === 429 || res.status >= 500
-    return { ok: false, retryable, error }
-  } catch (err) {
-    // A thrown fetch is a network problem, not a verdict on the address.
-    return {
-      ok: false,
-      retryable: true,
-      error: err instanceof Error ? err.message : 'Unknown send error',
-    }
+  // reply_to matters: the From address has no mailbox behind it, so
+  // without it every reply to a group email was lost.
+  const result = await deliver(env, {
+    from: env.FROM_EMAIL ?? DEFAULT_FROM,
+    to,
+    replyTo: env.REPLY_TO_EMAIL ?? DEFAULT_REPLY_TO,
+    subject,
+    html,
+    shape: 'campaign',
+  })
+  if (result.ok) return { ok: true }
+  // A thrown fetch is a network problem, not a verdict on the address.
+  if (result.noAnswer) return { ok: false, retryable: true, error: result.error }
+  return {
+    ok: false,
+    retryable: classifyToday(result) === 'later',
+    error: `Resend ${result.status}: ${result.error}`,
   }
 }
 
@@ -214,7 +207,7 @@ export async function sendTestEmail(
   bodyHtml: string,
 ): Promise<{ ok: true } | { ok: false; error: string }> {
   const html = wrapBrandedEmail(env, subject, bodyHtml)
-  const result = await sendViaResend(env, to, subject, html)
+  const result = await sendOne(env, to, subject, html)
   return result.ok ? { ok: true } : { ok: false, error: result.error }
 }
 
@@ -302,7 +295,7 @@ export async function processCampaign(
     // one-recipient batch is pure latency.
     if (index > 0) await new Promise((r) => setTimeout(r, SEND_INTERVAL_MS))
 
-    const result = await sendViaResend(env, recipient.email, campaign.subject, html)
+    const result = await sendOne(env, recipient.email, campaign.subject, html)
 
     if (result.ok) {
       sent++

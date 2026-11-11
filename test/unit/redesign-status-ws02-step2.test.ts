@@ -11,7 +11,7 @@
 // each with its tag; the map left as WS02 step 1 wrote it; the plain-language
 // rules over what the step wrote; and, checked against the files they
 // describe, the record's claims: the model's entries and labels, the
-// addresses the five early switches open, the 42 switches and the eighteen
+// addresses the five early switches open, the 43 switches and the eighteen
 // comments WS02 step 1 wrote, the a11y-on build's seven switches in
 // test/a11y/global-setup.ts and test/a11y/builds.spec.ts, the twelve people
 // of the persona list, the two signed-in specs' tests and the helper's wait,
@@ -314,11 +314,11 @@ describe('REDESIGN_STATUS.md, WS02 step 2: its claims against the files', () => 
     expect(switches).toContain('`myLcaRail` needs `/workspace/lookup`')
   })
 
-  it('holds 42 switches, and the eighteen comments WS02 step 1 wrote as it wrote them', () => {
+  it('holds 43 switches, and the eighteen comments WS02 step 1 wrote as it wrote them', () => {
     const file = read('src/lib/features.ts').split('\n')
     const declared = file.filter((l) => /^ {2}[a-zA-Z][a-zA-Z0-9]*: (?:true|false),$/.test(l))
-    expect(declared).toHaveLength(42)
-    expect(Object.keys(FEATURES)).toHaveLength(42)
+    expect(declared).toHaveLength(43)
+    expect(Object.keys(FEATURES)).toHaveLength(43)
     const COMMENTS: Record<string, string> = {
       clubEmailHidden: 'Today\'s club page offers "Contact this club through LCA" in place of the club\'s email.',
       rosterShortNames: 'Today\'s event page lists entrants under 18 by first name and last initial to anyone not running it.',

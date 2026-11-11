@@ -1,0 +1,181 @@
+// test/unit/mail-rules-outcome.test.ts
+//
+// The small files of the mail seam that the byte tests reach only through
+// the senders (WS16 step 1): what the two constants mean together
+// (functions/utils/mail/rules.ts, read at each call), today's retry rule
+// for an answer (functions/utils/mail/outcome.ts), the seam's answer for a
+// sender it holds no transport for (functions/utils/mail/send.ts), and the
+// one module that holds every address (domain/mail/addresses.ts), which
+// holds today's three values and nothing more until the address map is
+// decided. The suite mocks functions/utils/mail/switches over the real
+// module and sets both constants in every case, so a value the code ships
+// with decides none.
+import { readFileSync } from 'node:fs'
+import { join, resolve } from 'node:path'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import * as addresses from '../../domain/mail/addresses'
+import { DEFAULT_FROM, DEFAULT_REPLY_TO } from '../../functions/utils/email'
+import { classifyToday } from '../../functions/utils/mail/outcome'
+import { engineRulesOn, senderNow } from '../../functions/utils/mail/rules'
+import { SENDER_NAME, deliver } from '../../functions/utils/mail/send'
+import type { SendResult } from '../../functions/utils/mail/send'
+
+const flags = vi.hoisted(() => ({ listsOn: false, sender: 'resend' }))
+vi.mock('../../functions/utils/mail/switches', async (importOriginal) => {
+  const real = await importOriginal<typeof import('../../functions/utils/mail/switches')>()
+  return {
+    ...real,
+    get MAIL_LISTS_ON() {
+      return flags.listsOn
+    },
+    get MAIL_SENDER() {
+      return flags.sender
+    },
+  }
+})
+
+const ROOT = resolve(__dirname, '../..')
+const read = (path: string) => readFileSync(join(ROOT, path), 'utf8')
+
+beforeEach(() => {
+  flags.listsOn = false
+  flags.sender = 'resend'
+})
+
+describe('rules: what the constants mean together, read at each call', () => {
+  it('senderNow answers MAIL_SENDER as it is at the call, so a getter on the mocked module decides it', () => {
+    flags.sender = 'resend'
+    expect(senderNow()).toBe('resend')
+    flags.sender = 'ses'
+    expect(senderNow()).toBe('ses')
+    flags.sender = 'resend'
+    expect(senderNow()).toBe('resend')
+  })
+
+  it('engineRulesOn is true when MAIL_LISTS_ON is set or Amazon SES sends, and false otherwise, in every pairing', () => {
+    const cases: Array<[boolean, string, boolean]> = [
+      [false, 'resend', false],
+      [true, 'resend', true],
+      [false, 'ses', true],
+      [true, 'ses', true],
+    ]
+    for (const [listsOn, sender, expected] of cases) {
+      flags.listsOn = listsOn
+      flags.sender = sender
+      expect(engineRulesOn(), `MAIL_LISTS_ON ${listsOn}, MAIL_SENDER ${sender}`).toBe(expected)
+    }
+  })
+
+  it('engineRulesOn follows a constant that changes between two calls: nothing is kept from the first', () => {
+    expect(engineRulesOn()).toBe(false)
+    flags.listsOn = true
+    expect(engineRulesOn()).toBe(true)
+    flags.listsOn = false
+    expect(engineRulesOn()).toBe(false)
+  })
+})
+
+describe('outcome: classifyToday is the retry rule Group email has always used', () => {
+  const refused = (status?: number): SendResult => ({ ok: false, status, error: 'words' })
+
+  it('an accepted message is sent, with or without an id from the service', () => {
+    expect(classifyToday({ ok: true })).toBe('sent')
+    expect(classifyToday({ ok: true, providerId: 'msg-1' })).toBe('sent')
+  })
+
+  it('a request that threw is tried again later, whatever else the answer carries', () => {
+    expect(classifyToday({ ok: false, noAnswer: true, error: 'fetch failed' })).toBe('later')
+    expect(classifyToday({ ok: false, noAnswer: true, status: 400, error: 'fetch failed' })).toBe('later')
+  })
+
+  it('429 and every status from 500 up are tried again later, at both edges', () => {
+    for (const status of [429, 500, 501, 503, 504, 599, 600]) expect(classifyToday(refused(status)), String(status)).toBe('later')
+  })
+
+  it('every other refusal is never tried again, at both edges of the range that is', () => {
+    for (const status of [400, 401, 403, 404, 408, 409, 422, 428, 430, 499]) expect(classifyToday(refused(status)), String(status)).toBe('never')
+  })
+
+  it('a refusal with no status is never tried again, as an answer with no status was', () => {
+    expect(classifyToday(refused(undefined))).toBe('never')
+    expect(classifyToday({ ok: false, code: 'rejected', error: 'words' })).toBe('never')
+  })
+})
+
+describe('the seam: a sender it holds no transport for', () => {
+  afterEach(() => {
+    vi.unstubAllGlobals()
+  })
+
+  it('makes no request and answers a refusal without the no-answer mark, which is never tried again', async () => {
+    flags.listsOn = false
+    flags.sender = 'no-such-service'
+    const requests = vi.fn(async () => new Response('{"id":"sent"}', { status: 200 }))
+    vi.stubGlobal('fetch', requests)
+    const result = await deliver(
+      { RESEND_API_KEY: 're_test_no_transport' },
+      { from: DEFAULT_FROM, to: 'pat.member@example.org', replyTo: DEFAULT_REPLY_TO, subject: 'Fall news', html: '<p>Hi</p>', shape: 'single' },
+    )
+    expect(requests).not.toHaveBeenCalled()
+    expect(result).toStrictEqual({ ok: false, error: 'No transport for no-such-service' })
+    expect(Object.keys(result)).not.toContain('noAnswer')
+    expect(classifyToday(result)).toBe('never')
+  })
+})
+
+describe('addresses: today\'s three values in one place, and nothing more', () => {
+  it('holds exactly the sender of record, the reply-to address and the display name, word for word', () => {
+    expect(Object.keys(addresses).sort()).toEqual(['DEFAULT_FROM', 'DEFAULT_REPLY_TO', 'SENDER_NAME'])
+    expect(addresses.DEFAULT_FROM).toBe('noreply@louisianachess.org')
+    expect(addresses.DEFAULT_REPLY_TO).toBe('LouisianaChess@gmail.com')
+    expect(addresses.SENDER_NAME).toBe('Louisiana Chess Association')
+  })
+
+  it('is read through email.ts and the seam as the same values, so every old import still finds them', () => {
+    expect(DEFAULT_FROM).toBe(addresses.DEFAULT_FROM)
+    expect(DEFAULT_REPLY_TO).toBe(addresses.DEFAULT_REPLY_TO)
+    expect(SENDER_NAME).toBe(addresses.SENDER_NAME)
+  })
+
+  it('writes exactly the two addresses it has always held as addresses, no other address and no postal address', () => {
+    const code = read('domain/mail/addresses.ts')
+      .split('\n')
+      .filter((line) => !/^\s*(?:\/\/|\/\*\*|\*)/.test(line))
+      .join('\n')
+    expect(code.match(/[\w.+-]+@[\w-]+(?:\.[\w-]+)+/g)).toEqual(['noreply@louisianachess.org', 'LouisianaChess@gmail.com'])
+    expect(code).not.toMatch(/postal|street|P\.?O\.? box|zip/i)
+    expect(code.match(/^export const /gm)).toHaveLength(3)
+    expect(read('domain/mail/addresses.ts')).not.toMatch(/^\s*import\b/m)
+  })
+})
+
+describe('the seam\'s new files follow the plain-language rules', () => {
+  const FILES = [
+    'domain/mail/addresses.ts',
+    'functions/utils/mail/switches.ts',
+    'functions/utils/mail/rules.ts',
+    'functions/utils/mail/send.ts',
+    'functions/utils/mail/resend.ts',
+    'functions/utils/mail/outcome.ts',
+  ]
+  const DASHES = new RegExp(`[${String.fromCharCode(0x2013, 0x2014)}]`)
+  const OLD_INITIALS = new RegExp(`\\b${'US' + 'CF'}\\b`)
+  const TOOLS = new RegExp(`\\b(${['cla' + 'ude', 'anthr' + 'opic', 'chat' + 'gpt', 'open' + 'ai', 'copi' + 'lot', 'gem' + 'ini', 'A' + 'I-generated', 'generated ' + 'with', 'co-' + 'authored'].join('|')})\\b|\\b${'A' + 'I'}\\b`, 'i')
+
+  it('holds no em or en dash, no old initials for US Chess and no mention of a tool', () => {
+    for (const file of FILES) {
+      const text = read(file)
+      expect(text, `${file}: a dash`).not.toMatch(DASHES)
+      expect(text, `${file}: old initials`).not.toMatch(OLD_INITIALS)
+      expect(text, `${file}: a tool`).not.toMatch(TOOLS)
+    }
+  })
+
+  it('the seam, its rules and its outcome read no setting of the environment and import no package', () => {
+    for (const file of ['functions/utils/mail/switches.ts', 'functions/utils/mail/rules.ts', 'functions/utils/mail/outcome.ts', 'domain/mail/addresses.ts']) {
+      const text = read(file)
+      expect(text, file).not.toMatch(/process\.|import\.meta/)
+      expect(text, file).not.toMatch(/from '(?!\.)/)
+    }
+  })
+})

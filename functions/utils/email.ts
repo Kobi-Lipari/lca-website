@@ -1,5 +1,6 @@
 // functions/utils/email.ts
 
+import { DEFAULT_FROM, DEFAULT_REPLY_TO } from '../../domain/mail/addresses'
 import {
   escapeHtml,
   renderEmail,
@@ -9,6 +10,7 @@ import {
   ticketRef,
   p,
 } from './emailLayout'
+import { deliver } from './mail/send'
 
 export { escapeHtml, formatEventDate, ticketRef } from './emailLayout'
 
@@ -40,41 +42,39 @@ export interface EmailEnv {
   REPLY_TO_EMAIL?: string
 }
 
-/** Sender of record. Every transport falls back to this when FROM_EMAIL
- *  is unset, which is the normal case for the cron Worker. */
-export const DEFAULT_FROM = 'noreply@louisianachess.org'
-
-/** The association's only working mailbox. */
-export const DEFAULT_REPLY_TO = 'LouisianaChess@gmail.com'
+/**
+ * The sender of record and the association's only working mailbox. Both
+ * live with every other address in domain/mail/addresses.ts and are
+ * re-exported here, so the files that read them from this one need no
+ * change.
+ */
+export { DEFAULT_FROM, DEFAULT_REPLY_TO } from '../../domain/mail/addresses'
 
 /**
- * Send via Resend REST API. THROWS on failure (network error or non-2xx),
- * unlike the old MailChannels version which silently console.warn'd.
- * Callers that treat email as best-effort should use trySendEmail instead.
+ * Send one email through the mail seam, deliver() in ./mail/send, which
+ * hands it to the one service MAIL_SENDER names. THROWS on failure (no
+ * answer, or a refusal), unlike the old MailChannels version which
+ * silently console.warn'd. Callers that treat email as best-effort should
+ * use trySendEmail instead.
  */
 export async function sendEmail(env: EmailEnv, message: EmailMessage): Promise<void> {
   const from = env.FROM_EMAIL ?? DEFAULT_FROM
   const replyTo = message.replyTo ?? env.REPLY_TO_EMAIL ?? DEFAULT_REPLY_TO
 
-  const response = await fetch('https://api.resend.com/emails', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${env.RESEND_API_KEY}`,
-    },
-    body: JSON.stringify({
-      from: `Louisiana Chess Association <${from}>`,
-      to: [message.to],
-      reply_to: [replyTo],
-      subject: message.subject,
-      html: message.html,
-      ...(message.text ? { text: message.text } : {}),
-    }),
+  const result = await deliver(env, {
+    from,
+    to: message.to,
+    replyTo,
+    subject: message.subject,
+    html: message.html,
+    text: message.text,
+    shape: 'single',
   })
 
-  if (!response.ok) {
-    const error = await response.text()
-    throw new Error(`Email send failed (${response.status}): ${error}`)
+  if (!result.ok) {
+    // A request that threw carries the words it threw with, as before.
+    if (result.noAnswer) throw new Error(result.error)
+    throw new Error(`Email send failed (${result.status}): ${result.error}`)
   }
 }
 
