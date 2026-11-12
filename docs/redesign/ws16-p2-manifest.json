@@ -804,5 +804,26 @@
   "Open and not blocking, asked with its board in checkpoint R: whether each issue's page on the site is open to everyone or to signed-in members; and how long a letter's pictures are kept.",
   "Open with the five-spot fix, not this half: what an officer who holds the Media manager seat reads in place of the \"View only\" badge on the plain tab (recommended: \"View only, except the newsletter\").",
   "A follow-up put to K by step 1, outside this half: whether the News posts' cleaner lets through what the letter's cleaner now removes; if it does, mending it is one small change of its own."
- ]
+ ],
+ "k_answers": {
+  "given": "Thursday, November 12, 2026 (decision 56)",
+  "words": "all recommended. on 3 (make sure that everyone with access to the newsletter can see and edit the actively shceduled one so we dont have multiple copiies going out). 4, do not force a test everytime, they will eventually know and trust it works how they want. 7 B (no need to restrict this feature).",
+  "answers": [
+   "1 (a): start now, on the page's own branch",
+   "2 (a): checkpoints P and Q ahead of WS09; the December board meeting's date is not given and blocks nothing",
+   "3 (a): one writer at a time, on one letter that everyone who may send sees and edits, a scheduled one included; no second letter can be started or scheduled while one is scheduled or sending",
+   "4 (c): no test is forced; the three numbers are a guide; Send keeps its one confirm",
+   "5 (a): a line and Add an event in checkpoint P; the photo and the plain top in step 12 after their boards",
+   "6 (a): today's footer words and links with the LCA on Facebook line",
+   "7 (b): sending later is switched on as soon as checkpoint Q has merged",
+   "8 (a): a late scheduled newsletter tries for 6 hours, then goes back to a draft and says so"
+  ],
+  "how_to_read": "A step's scout composes its brief from the step's entry as amended here; where an entry and an amendment differ, the amendment holds, and the step's record names it as a deviation from the entry.",
+  "amendments": {
+   "ws16-p2-03-the-letters-storage-and-saving": "newsletter_issues holds no mark of a test (no tested_at column or the like) and no save touches one: answer 4 asks for none, and nothing else would read it (collect only what is needed).",
+   "ws16-p2-06-test-and-send-from-the-page-and-the-ways-in": "The send requires the letter open, unsent and at the version the page read; it does not require a test, and a test changes nothing on the letter. No 'Send a test of this letter first' words and no inactive Send for lack of a test.",
+   "ws16-p2-07-sending-later-the-engine-side": "Setting a time and sending now need no test. While a letter is scheduled or sending, starting a new letter and scheduling another are refused in words that name the scheduled letter, who scheduled it and for when (answer 3).",
+   "ws16-p2-08-sending-later-on-the-page": "No 'Changed since the last test' state. Everyone who may send sees the one scheduled letter on opening the page and may write on it, change its time, send it now or choose 'Do not send it'; the chooser cannot replace it while it is scheduled (answer 3). The switch-on change for mailLater is prepared with checkpoint Q and merged on K's word as soon as Q has merged (answer 7)."
+  }
+ }
 }
