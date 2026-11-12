@@ -1781,7 +1781,7 @@
    "page": "newsletter-options",
    "title": "Newsletter · the page · option 1 · Steps down the page · not kept",
    "w": 1440,
-   "x": 10240,
+   "x": 11760,
    "y": 0
   },
   "Newsletter-Page-2.dc.html": {
@@ -1789,7 +1789,7 @@
    "page": "newsletter-options",
    "title": "Newsletter · the page · option 2 · Write beside the email · not kept",
    "w": 1440,
-   "x": 7200,
+   "x": 8720,
    "y": 0
   },
   "Newsletter-Page-3.dc.html": {
@@ -1797,13 +1797,13 @@
    "page": "newsletter-options",
    "title": "Newsletter · the page · option 3 · One step at a time · not kept",
    "w": 1440,
-   "x": 11760,
+   "x": 13280,
    "y": 0
   },
   "Newsletter-Page-4.dc.html": {
    "h": 5500,
    "page": "newsletter-options",
-   "title": "Newsletter · the page · The letter on the desk · K's choice, revised to K's notes",
+   "title": "Newsletter · the page · The letter on the desk · K's choice, approved",
    "w": 1440,
    "x": 640,
    "y": 0
@@ -1813,7 +1813,7 @@
    "page": "newsletter-options",
    "title": "Newsletter · the page · option 5 · Everything on one screen · not kept",
    "w": 1440,
-   "x": 8720,
+   "x": 10240,
    "y": 0
   },
   "Newsletter-Email-1.dc.html": {
@@ -1900,7 +1900,7 @@
    "page": "newsletter-options",
    "w": 1440,
    "h": 2350,
-   "x": 2160,
+   "x": 3680,
    "y": 0,
    "title": "Newsletter · the page · the top · option A · One row · K's pick, applied to the page with More options moved to the foot"
   },
@@ -1908,7 +1908,7 @@
    "page": "newsletter-options",
    "w": 1440,
    "h": 2350,
-   "x": 3680,
+   "x": 5200,
    "y": 0,
    "title": "Newsletter · the page · the top · option B · Fields left, options right · not kept"
   },
@@ -1916,9 +1916,17 @@
    "page": "newsletter-options",
    "w": 1440,
    "h": 2350,
-   "x": 5200,
+   "x": 6720,
    "y": 0,
    "title": "Newsletter · the page · the top · option C · The letter's own header · not kept"
+  },
+  "Newsletter-Page-4-Schedule.dc.html": {
+   "page": "newsletter-options",
+   "w": 1440,
+   "h": 4200,
+   "x": 2160,
+   "y": 0,
+   "title": "Newsletter · the page · sending later · pick a day, change it, stop it"
   }
  },
  "createdOnFiles": {
@@ -3668,9 +3676,9 @@
   },
   "t_newsletter_options_page": {
    "kind": "title1",
-   "maxW": 1440,
+   "maxW": 2960,
    "page": "newsletter-options",
-   "text": "The page where the newsletter is written and sent · K's choice, with From and Subject on one row",
+   "text": "The page where the newsletter is written and sent · K's choice, approved · with sending later beside it",
    "w": 240,
    "x": 640,
    "y": -320
@@ -3698,7 +3706,7 @@
    "page": "newsletter-options",
    "text": "Page options not kept",
    "w": 240,
-   "x": 7200,
+   "x": 8720,
    "y": -320
   },
   "t_newsletter_options_email_no": {
@@ -3734,7 +3742,7 @@
    "page": "newsletter-options",
    "text": "Three ways to lay out the top of the page · K picked A, with changes (now on the page at the left)",
    "w": 240,
-   "x": 2160,
+   "x": 3680,
    "y": -320
   }
  },
@@ -3970,7 +3978,8 @@
   "Newsletter-Tournament-6.dc.html",
   "Newsletter-Page-4-Top-A.dc.html",
   "Newsletter-Page-4-Top-B.dc.html",
-  "Newsletter-Page-4-Top-C.dc.html"
+  "Newsletter-Page-4-Top-C.dc.html",
+  "Newsletter-Page-4-Schedule.dc.html"
  ],
  "pages": [
   {

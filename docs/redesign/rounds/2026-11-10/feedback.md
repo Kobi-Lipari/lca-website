@@ -99,3 +99,7 @@ K first asked "what does the more options button do?" and then picked: "lets do 
 ## Thursday, November 12, 2026, about 1:00 AM UTC: K's notes on the bar at the foot of the page
 
 "on the newsletter page, the more options thing is too small and might not even be seeen how you have it lets hedge. also, the 1, 2, 3 number things seem a little too small and the buttons at the bottom seem a little too close with too much unsured space on the left"
+
+## Thursday, November 12, 2026, about 2:05 AM UTC: K approves the page and asks for scheduling
+
+"i really like how the page is looking now, lets go with it (be sure that they can schedule things to be sent out at certain days and change it later etc)"
