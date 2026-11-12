@@ -1,4 +1,5 @@
 // test/integration/harness.ts
+import { createHash, createHmac } from 'node:crypto'
 import { env } from 'cloudflare:test'
 import { prettifyError, type output, type ZodType } from 'zod'
 import type { Env } from '../../functions/types'
@@ -11,8 +12,16 @@ export interface SentEmail {
   html: string
   text?: string
   from: string
-  /** Resend's headers object as the request carried it: only a message with headers of its own has one, such as a test send's one-click pair. */
+  /**
+   * The message's own headers, keyed by name, as the request carried them: Resend's headers object, or Amazon SES's
+   * list of headers read into the same form. Only a message with headers of its own has them, such as a test send's
+   * one-click pair.
+   */
   headers?: Record<string, string>
+  /** Amazon SES's tags on the message, keyed by name: its kind and, for list mail and a test of it, its list. */
+  tags?: Record<string, string>
+  /** The catch point that took the message: Resend's or Amazon SES's. */
+  via?: 'resend' | 'ses'
 }
 
 export interface CreatedStripeSession {
@@ -32,8 +41,11 @@ export interface CreatedStripeSession {
   cancelUrl: string | null
 }
 
-/** Every email "sent" via Resend during the current test file. */
+/** Every email "sent" via Resend or Amazon SES during the current test file, each marked with the catch point that took it. */
 export const emailOutbox: SentEmail[] = []
+
+/** The signature of every request Amazon SES's catch point took as signed, so a case can look for one where it must not be. */
+export const sesSignatures: string[] = []
 
 /** Every Stripe Checkout Session "created" during the current test file. */
 export const stripeSessions: CreatedStripeSession[] = []
@@ -53,6 +65,13 @@ export const stripeSessions: CreatedStripeSession[] = []
  * count of outside calls, of any host, after which every call throws the
  * Workers runtime's words for an invocation that has used its outside
  * calls, as production does past the plan's limit.
+ *
+ * Amazon SES's catch point reads the same knobs, answering a refusal with
+ * Amazon's code for its status (AMAZON_CODES below) in the x-amzn-errortype
+ * header and the body, and two of its own: code, the code a refusal is
+ * answered with in place of that one, and noAnswer, a count of requests
+ * that get no answer at all: each of the next that many throws before the
+ * message is taken.
  */
 export const emailBehavior: {
   succeed: boolean
@@ -60,7 +79,23 @@ export const emailBehavior: {
   failFor: string[] | null
   loseAnswer: number | null
   limitAfter: number | null
-} = { succeed: true, status: 500, failFor: null, loseAnswer: null, limitAfter: null }
+  code: string | null
+  noAnswer: number | null
+} = { succeed: true, status: 500, failFor: null, loseAnswer: null, limitAfter: null, code: null, noAnswer: null }
+
+/** Amazon's code for each status its catch point is asked to answer; a status with none, a 502 or a 504, comes as a gateway's page. */
+export const AMAZON_CODES: Record<number, string> = {
+  400: 'MessageRejected',
+  401: 'NotAuthorized',
+  403: 'AccessDeniedException',
+  404: 'NotFoundException',
+  408: 'RequestTimeoutException',
+  413: 'RequestEntityTooLargeException',
+  422: 'MessageRejected',
+  429: 'TooManyRequestsException',
+  500: 'InternalFailure',
+  503: 'ServiceUnavailable',
+}
 
 /** The outside calls the interceptor has answered since the last resetHarness, of every host. */
 export let fetchCount = 0
@@ -157,12 +192,15 @@ export async function flushWaitUntil(): Promise<void> {
 export function resetHarness(): void {
   backgroundWork.length = 0
   emailOutbox.length = 0
+  sesSignatures.length = 0
   stripeSessions.length = 0
   emailBehavior.succeed = true
   emailBehavior.status = 500
   emailBehavior.failFor = null
   emailBehavior.loseAnswer = null
   emailBehavior.limitAfter = null
+  emailBehavior.code = null
+  emailBehavior.noAnswer = null
   fetchCount = 0
   stripeBehavior.succeed = true
   stripeBehavior.sessionPaymentStatus = 'paid'
@@ -218,6 +256,76 @@ function memberIdFromToken(token: string): string | null {
   } catch {
     return null
   }
+}
+
+// ── Amazon SES ───────────────────────────────────────────────────
+// The catch point's own check of Signature Version 4, written apart from
+// functions/utils/mail/sigv4.ts. The pool binds AKIDEXAMPLE, the example key
+// id of AWS's own documentation, which opens nothing, with a made-up secret
+// (vitest.integration.config.ts).
+
+const SES_HOST = 'email.us-east-1.amazonaws.com'
+const SES_PATH = '/v2/email/outbound-emails'
+const SES_SCOPE = 'us-east-1/ses/aws4_request'
+
+/** What SES's v2 SendEmail carries, as far as the catch point reads it. */
+interface SesRequestBody {
+  FromEmailAddress: string
+  Destination: { ToAddresses: string[] }
+  Content: {
+    Simple: {
+      Subject: { Data: string }
+      Body: { Html: { Data: string }; Text?: { Data: string } }
+      Headers?: Array<{ Name: string; Value: string }>
+    }
+  }
+  EmailTags: Array<{ Name: string; Value: string }>
+}
+
+/** A refusal as Amazon writes one: its code in the x-amzn-errortype header and in the body, or, with no code, a gateway's page. */
+function amazonRefusal(status: number, code: string | null, message: string): Response {
+  if (code === null) return new Response(`<html><body><h1>${status}</h1><p>${message}</p></body></html>`, { status, headers: { 'Content-Type': 'text/html' } })
+  return Response.json(
+    { __type: `com.amazon.coral.service#${code}`, message },
+    { status, headers: { 'x-amzn-errortype': `${code}:http://internal.amazon.com/coral/com.amazon.coral.service/` } },
+  )
+}
+
+/**
+ * Why Amazon would refuse this request's signature, or null when it would take it: the Authorization header in its
+ * form, with AKIDEXAMPLE, today's date, us-east-1, ses and aws4_request, the three signed headers and a signature of 64
+ * hex characters, the request carrying exactly those headers, and a time within the five minutes AWS allows, else 400
+ * IncompleteSignature or 403 SignatureDoesNotMatch; and the signature itself, worked out again from the method, the
+ * path, the headers as sent and the hash of the body's own bytes, else 403 SignatureDoesNotMatch.
+ */
+function sesSignatureRefusal(request: Request, url: URL, bytes: Uint8Array): Response | null {
+  const now = new Date()
+  const today = now.toISOString().slice(0, 10).replace(/-/g, '')
+  const form = new RegExp(`^AWS4-HMAC-SHA256 Credential=AKIDEXAMPLE/${today}/${SES_SCOPE}, SignedHeaders=content-type;host;x-amz-date, Signature=([0-9a-f]{64})$`)
+  const signature = form.exec(request.headers.get('authorization') ?? '')?.[1]
+  const time = request.headers.get('x-amz-date') ?? ''
+  const names = [...request.headers.keys()].sort().join(';')
+  if (!signature || !/^\d{8}T\d{6}Z$/.test(time) || !time.startsWith(today) || names !== 'authorization;content-type;x-amz-date') {
+    return amazonRefusal(400, 'IncompleteSignature', 'The request signature does not conform to AWS standards.')
+  }
+  const at = Date.UTC(+time.slice(0, 4), +time.slice(4, 6) - 1, +time.slice(6, 8), +time.slice(9, 11), +time.slice(11, 13), +time.slice(13, 15))
+  if (Math.abs(now.getTime() - at) > 5 * 60 * 1000) return amazonRefusal(403, 'SignatureDoesNotMatch', 'Signature expired.')
+  const canonical = [
+    request.method,
+    url.pathname,
+    '',
+    `content-type:${request.headers.get('content-type')}\nhost:${url.host}\nx-amz-date:${time}\n`,
+    'content-type;host;x-amz-date',
+    createHash('sha256').update(bytes).digest('hex'),
+  ].join('\n')
+  const toSign = ['AWS4-HMAC-SHA256', time, `${today}/${SES_SCOPE}`, createHash('sha256').update(canonical).digest('hex')].join('\n')
+  let key: Buffer = createHmac('sha256', `AWS4${(env as unknown as Env).SES_SECRET_ACCESS_KEY ?? ''}`).update(today).digest()
+  for (const part of ['us-east-1', 'ses', 'aws4_request']) key = createHmac('sha256', key).update(part).digest()
+  if (createHmac('sha256', key).update(toSign).digest('hex') !== signature) {
+    return amazonRefusal(403, 'SignatureDoesNotMatch', 'The request signature we calculated does not match the signature you provided.')
+  }
+  sesSignatures.push(signature)
+  return null
 }
 
 export function installFetchInterceptor(): void {
@@ -373,6 +481,7 @@ export function installFetchInterceptor(): void {
         from: body.from,
         // Kept only when the request carried it, so every entry without one is as before.
         ...(body.headers ? { headers: body.headers } : {}),
+        via: 'resend',
       })
       if (emailBehavior.loseAnswer !== null && emailBehavior.loseAnswer > 0) {
         // The service has the message; the site never hears so.
@@ -380,6 +489,44 @@ export function installFetchInterceptor(): void {
         throw new Error('harness: the connection was lost before the answer came')
       }
       return Response.json({ id: `email_${emailOutbox.length}` })
+    }
+
+    // Amazon SES: SES's v2 SendEmail, in the site's region. Every request's Signature Version 4 header is held to its
+    // form, and its signature worked out again from the request as it came, with node:crypto and the secret the pool
+    // binds, apart from the signer under test, so a request signed for one body and sent with another is refused, as
+    // Amazon would refuse it. The outbox entry is read into the form Resend's catch point writes, so every outbox suite
+    // reads the same entry through either service.
+    if (url.hostname === SES_HOST && url.pathname === SES_PATH) {
+      if (emailBehavior.noAnswer !== null && emailBehavior.noAnswer > 0) {
+        // No answer at all: from the site, the message may or may not have been taken.
+        emailBehavior.noAnswer--
+        throw new Error('harness: no answer came from Amazon SES')
+      }
+      const bytes = new Uint8Array(await request.arrayBuffer())
+      const unsigned = sesSignatureRefusal(request, url, bytes)
+      if (unsigned) return unsigned
+      const body = JSON.parse(new TextDecoder().decode(bytes)) as SesRequestBody
+      const recipient = body.Destination.ToAddresses[0]
+      const targeted = emailBehavior.failFor === null || emailBehavior.failFor.includes(recipient)
+      if (!emailBehavior.succeed && targeted) {
+        return amazonRefusal(emailBehavior.status, emailBehavior.code ?? AMAZON_CODES[emailBehavior.status] ?? null, 'harness: simulated Amazon SES outage')
+      }
+      const simple = body.Content.Simple
+      emailOutbox.push({
+        to: recipient,
+        subject: simple.Subject.Data,
+        html: simple.Body.Html.Data,
+        text: simple.Body.Text?.Data,
+        from: body.FromEmailAddress,
+        ...(simple.Headers ? { headers: Object.fromEntries(simple.Headers.map(({ Name, Value }) => [Name, Value])) } : {}),
+        tags: Object.fromEntries(body.EmailTags.map(({ Name, Value }) => [Name, Value])),
+        via: 'ses',
+      })
+      if (emailBehavior.loseAnswer !== null && emailBehavior.loseAnswer > 0) {
+        emailBehavior.loseAnswer--
+        throw new Error('harness: the connection was lost before the answer came')
+      }
+      return Response.json({ MessageId: `ses-${emailOutbox.length}` })
     }
 
     // Anthropic: the scanner's vision model.

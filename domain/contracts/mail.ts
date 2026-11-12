@@ -109,7 +109,11 @@ export const newsletterResponseSchema = z.strictObject({
   status: z.literal('sending'),
 })
 
-/** POST /api/admin/mail/newsletter/test's body: the one address the test goes to, and the newsletter as written. */
+/**
+ * POST /api/admin/mail/newsletter/test's body: the one address the test goes to, the newsletter as written, and, since
+ * WS16 step 7, service: 'ses' for a test through Amazon SES whatever service sends now, which an LCA admin alone may ask
+ * for; the endpoint reads the role from the session, never from the body.
+ */
 export const newsletterTestRequestSchema = z.looseObject({
   to: z
     .string({ error: 'Add the address the test goes to.' })
@@ -117,6 +121,7 @@ export const newsletterTestRequestSchema = z.looseObject({
     .regex(/^[^\s@]+@[^\s@]+\.[^\s@]+$/, 'Add the address the test goes to.'),
   subject: subjectSchema,
   bodyHtml: bodyHtmlSchema,
+  service: z.literal('ses', { error: 'Ask for Amazon SES, or leave the service out.' }).optional(),
 })
 
 /** POST /api/admin/mail/newsletter/test's answer: the test went to the mail service. */

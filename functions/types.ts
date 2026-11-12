@@ -33,6 +33,13 @@ export interface Env {
    */
   MAIL_LINK_SECRET?: string
   MAIL_LINK_SECRET_PREVIOUS?: string
+  /**
+   * Amazon SES's sending key, its id and its secret (functions/utils/mail/ses.ts), for K's own AWS account. Secrets of
+   * the production environment and of the daily-emails worker alone, set by K; never on the Preview environment, where
+   * a message handed to Amazon SES makes no request and is answered as a missing key.
+   */
+  SES_ACCESS_KEY_ID?: string
+  SES_SECRET_ACCESS_KEY?: string
 }
 
 export interface MemberRow {

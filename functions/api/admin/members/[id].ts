@@ -1,8 +1,12 @@
 // functions/api/admin/members/[id].ts
 import type { Env } from '../../../types'
 import { isResponse, requireAdmin } from '../../../utils/auth'
+import { leaveSendingNewsletter } from '../../../utils/mail/lists'
 import { errorResponse, handleOptions, jsonResponse } from '../../../utils/response'
 import { deleteSupabaseUser } from '../../../utils/supabase'
+
+/** The one log line for a newsletter's rows the delete could not read; it names no address and no member. */
+export const NEWSLETTER_ROWS_UNREAD_LOG = 'member delete: the newsletter that is sending could not be read; its rows are left as they were'
 
 export const onRequestOptions: PagesFunction<Env> = async () => handleOptions()
 
@@ -35,6 +39,15 @@ export const onRequestDelete: PagesFunction<Env> = async (context) => {
   // and simply stop having a parent attached; an admin can reattach them.
   await context.env.DB.prepare('UPDATE members SET guardian_id = NULL WHERE guardian_id = ?').bind(memberId).run()
   await context.env.DB.prepare('DELETE FROM members WHERE id = ?').bind(memberId).run()
+
+  // A newsletter's rows name no member, so the delete above leaves them: once the member is gone, the newsletter that is
+  // sending drops their address's untried row unless another account in its audience still holds the address, as a
+  // family's does (WS16 step 7). A newsletter that cannot be read leaves the delete as it was, with one log line.
+  try {
+    await context.env.DB.batch(leaveSendingNewsletter(context.env.DB, (existing as { email?: string | null }).email ?? null))
+  } catch {
+    console.warn(NEWSLETTER_ROWS_UNREAD_LOG)
+  }
 
   // The auth user last, so a failure here leaves an orphaned login rather than
   // a member row pointing at nothing. Reported so the admin can see it rather

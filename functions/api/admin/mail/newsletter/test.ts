@@ -22,6 +22,19 @@
 // <status>: <body>", a refusal of the key among them; a refusal by the
 // seam or the gate, a request with no answer and a message held back keep
 // the words of the rules.
+//
+// Since WS16 step 7 the body may also ask for service: 'ses', which an LCA
+// admin's page sends while Resend sends: the test then goes through Amazon
+// SES whatever MAIL_SENDER says, from the newsletter's own From address and
+// display name, carrying the newsletter's list tag, so the stored key, its
+// policy, the sending domain and the configuration set are proved from the
+// deployed site before the cutover. It is for an LCA admin alone, read from
+// the verified session and never from the body: anyone else who asks for
+// it, after the guard and the 404, gets 403 with SES_TEST_ADMINS_ONLY's
+// words, with nothing written and nothing sent. Without Amazon SES's keys
+// on the deployment the test answers 502 with the words for a missing key,
+// makes no request and is never handed to Resend instead. An answer from
+// Amazon SES keeps Amazon's own words, which name it.
 import type { Env } from '../../../../types'
 import { normalizeAddress } from '../../../../../domain/mail/address'
 import { NEWSLETTER_LIST_ID } from '../../../../../domain/mail/lists'
@@ -29,7 +42,7 @@ import { newsletterTestRequestSchema, type NewsletterTestResponse } from '../../
 import { listMessage, wordsUnderRules } from '../../../../utils/admin/campaigns'
 import { isResponse, requireListMailer } from '../../../../utils/auth'
 import { contactFor } from '../../../../utils/mail/lists'
-import { LINK_KEY_MISSING, newsletterNotFound } from '../../../../utils/mail/newsletterAnswers'
+import { LINK_KEY_MISSING, SES_TEST_ADMINS_ONLY, newsletterNotFound } from '../../../../utils/mail/newsletterAnswers'
 import { deliver, type SendResult } from '../../../../utils/mail/send'
 import { MAIL_LISTS_ON } from '../../../../utils/mail/switches'
 import { errorResponse, handleOptions, jsonResponse, parseBody } from '../../../../utils/response'
@@ -43,6 +56,9 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
 
   const test = await parseBody(context.request, newsletterTestRequestSchema)
   if (test instanceof Response) return test
+  // A test through Amazon SES is an LCA admin's alone, by the role of the session the guard verified.
+  const throughSes = test.service === 'ses'
+  if (throughSes && authed.member.role !== 'lca_admin') return errorResponse(SES_TEST_ADMINS_ONLY, 403)
   if (!context.env.MAIL_LINK_SECRET) return errorResponse(LINK_KEY_MISSING, 503)
 
   const to = normalizeAddress(test.to)
@@ -52,6 +68,8 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
 
   const result = await deliver(context.env, {
     kind: 'test',
+    listId: NEWSLETTER_LIST_ID,
+    ...(throughSes ? { through: 'ses' as const } : {}),
     headers: message.headers,
     from: message.from,
     fromName: message.fromName,
@@ -68,11 +86,13 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
 }
 
 /**
- * Why a test was not sent. An answer from the mail service keeps its status and its words, in the form Group email's
- * test send gives them (sendTestEmail in functions/utils/admin/campaigns.ts), so a 401 or a 403 says what the service
- * said rather than that the key is missing; every other failure keeps the words of the rules.
+ * Why a test was not sent. An answer from Resend keeps its status and its words, in the form Group email's test send
+ * gives them (sendTestEmail in functions/utils/admin/campaigns.ts), so a 401 or a 403 says what the service said rather
+ * than that the key is missing; an answer from Amazon SES keeps Amazon's own words, which name it, its status and its
+ * code; every other failure, a missing Amazon SES key among them, keeps the words of the rules.
  */
 function testWords(result: Exclude<SendResult, { ok: true }>): string {
+  if (result.fromSes) return result.error
   const answered = result.status !== undefined && !result.refused && !result.gateUnread && !result.waitForSes && !result.limitRefused && !result.noAnswer
   return answered ? `Resend ${result.status}: ${result.error}` : wordsUnderRules(result)
 }

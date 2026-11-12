@@ -53,6 +53,16 @@ import type { Env } from '../../functions/types'
 import { seedClub, seedMember, seedPresident, seedTournament, seedTournamentDirector } from './factories'
 import { emailBehavior, emailOutbox, invoke, resetHarness } from './harness'
 
+/**
+ * Resend sends here whatever the tree ships with, since the case on the transport reads the requests made to Resend's
+ * address: the cutover's one line, MAIL_SENDER 'ses', leaves this file green, and WS16 step 12 moves that case to
+ * Amazon SES's request. Mocked over the real module, so every other constant is the tree's own.
+ */
+vi.mock('../../functions/utils/mail/switches', async (importOriginal) => {
+  const real = await importOriginal<typeof import('../../functions/utils/mail/switches')>()
+  return { ...real, MAIL_SENDER: 'resend' as const }
+})
+
 const flags = vi.hoisted(() => ({ rolesOn: false }))
 vi.mock('../../functions/utils/events/creation', async (importOriginal) => {
   const real = await importOriginal<typeof import('../../functions/utils/events/creation')>()

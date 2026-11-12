@@ -682,11 +682,13 @@ describe('list mail at the seam', () => {
       expect(refused).toEqual({ ok: false, refused: 'opted_out', error: REFUSAL_WORDS.opted_out })
       expect(fetchCount).toBe(calls)
     }
-    // A sender with no transport here, as Amazon SES until WS16 step 7, sends nothing either, and nothing reaches Resend.
+    expect(emailOutbox).toEqual([])
+    // Since WS16 step 7 Amazon SES has its transport: while it sends, the message goes to Amazon SES's catch point, and
+    // still nothing reaches Resend's.
     flags.sender = 'ses'
     expect(await deliver(bindings as never, message('reader@test.lca', { kind: 'optional', listId: NEWSLETTER_LIST_ID, headers: await listHeaders(reader) })))
-      .toEqual({ ok: false, error: 'No transport for ses' })
-    expect(emailOutbox).toEqual([])
+      .toMatchObject({ ok: true })
+    expect(emailOutbox.map((e) => [e.to, e.via])).toEqual([['reader@test.lca', 'ses']])
   })
 
   it('sends a test through Resend with its one-click headers and its footer, from noreply@louisianachess.org whatever From it was given', async () => {
@@ -713,6 +715,8 @@ describe('list mail at the seam', () => {
   it('sends event mail with no headers object at all, so its request is the same as before', async () => {
     expect(await deliver(bindings as never, message('player.one@test.lca'))).toEqual({ ok: true })
     expect(await deliver(bindings as never, message('player.one@test.lca', { shape: 'campaign' }))).toEqual({ ok: true })
-    for (const sent of emailOutbox) expect(Object.keys(sent).sort()).toEqual(['from', 'html', 'subject', 'text', 'to'])
+    // No headers object, and since WS16 step 7 the mark of the catch point that took the message, Resend's.
+    for (const sent of emailOutbox) expect(Object.keys(sent).sort()).toEqual(['from', 'html', 'subject', 'text', 'to', 'via'])
+    for (const sent of emailOutbox) expect(sent.via).toBe('resend')
   })
 })

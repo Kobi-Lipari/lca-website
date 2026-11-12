@@ -25,6 +25,10 @@ export default defineConfig({
           ANTHROPIC_API_KEY: 'sk-ant-test-harness',
           // A made-up key for the links in optional email, used nowhere else: a test signs with env.MAIL_LINK_SECRET.
           MAIL_LINK_SECRET: 'harness-made-up-mail-link-key-0042',
+          // Amazon SES's key for the harness: AKIDEXAMPLE is the example key id of AWS's own documentation, which
+          // opens nothing, and the secret is made up; the harness's catch point checks each request's signature with it.
+          SES_ACCESS_KEY_ID: 'AKIDEXAMPLE',
+          SES_SECRET_ACCESS_KEY: 'harness-made-up-ses-secret-0042',
         },
       },
     }),

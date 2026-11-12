@@ -107,6 +107,8 @@ export const A11Y_EMPTY_SECRETS = [
   // answers that it isn't working.
   'MAIL_LINK_SECRET',
   'MAIL_LINK_SECRET_PREVIOUS',
+  'SES_ACCESS_KEY_ID',
+  'SES_SECRET_ACCESS_KEY',
 ] as const
 
 /**

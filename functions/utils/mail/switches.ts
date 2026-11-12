@@ -15,8 +15,8 @@
 // test/integration/public-answer-trim.test.ts does for the trim's
 // constants. Nothing here reads a setting of the environment.
 
-/** The services that can send the site's mail. */
-export type MailSender = 'resend'
+/** The services that can send the site's mail: Resend, and from WS16 step 7 Amazon SES, each with its transport. */
+export type MailSender = 'resend' | 'ses'
 
 /** The Cloudflare Workers plans the account can be on. */
 export type WorkersPlan = 'free' | 'paid'
@@ -32,7 +32,8 @@ export const MAIL_LISTS_ON = false
 
 /**
  * Which service sends every email: 'resend' today. It changes only in a pull request of its own (the cutover, whose
- * fallback is the same line back), never by a setting, so one deploy and one service send each message.
+ * fallback is the same line back), never by a setting, so one deploy and one service send each message. 'ses' only
+ * with WORKERS_PLAN 'paid': the cutover waits for Workers Paid, which test/unit/mail-switches.test.ts holds.
  */
 export const MAIL_SENDER: MailSender = 'resend'
 

@@ -83,6 +83,13 @@ interface Env {
    */
   MAIL_LINK_SECRET?: string
   MAIL_LINK_SECRET_PREVIOUS?: string
+  /**
+   * Amazon SES's sending key, the same as the site's production keys: secrets K sets on this worker before the cutover
+   * to Amazon SES. Without them a message handed to Amazon SES makes no request and is answered as a missing key, which
+   * ends a campaign's run with its rows back untried.
+   */
+  SES_ACCESS_KEY_ID?: string
+  SES_SECRET_ACCESS_KEY?: string
 }
 
 async function phase(name: string, fn: () => Promise<void>): Promise<void> {

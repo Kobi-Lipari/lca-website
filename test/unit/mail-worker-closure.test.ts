@@ -13,7 +13,10 @@
 // under functions/api or domain/contracts and none of the six files the two
 // earlier closure tests keep out of the worker. Those two tests,
 // test/unit/search-worker-closure.test.ts and
-// test/unit/published-review-closure.test.ts, are not changed.
+// test/unit/published-review-closure.test.ts, are not changed. Since WS16
+// step 7 the seam holds Amazon SES's transport, functions/utils/mail/ses.ts,
+// and its signer, functions/utils/mail/sigv4.ts, Web Crypto alone, so the
+// worker's closure holds both, still with no package.
 import { existsSync, readFileSync, statSync } from 'node:fs'
 import { dirname, join, relative, resolve } from 'node:path'
 import ts from 'typescript'
@@ -57,8 +60,8 @@ function closure(entry: string): { files: Set<string>; packages: string[]; missi
   return { files, packages, missing }
 }
 
-/** The seam: deliver(), Resend's transport, the switches, the rules that read them and the answer's kinds. */
-const SEAM = ['send', 'resend', 'switches', 'rules', 'outcome'].map((name) => `functions/utils/mail/${name}.ts`)
+/** The seam: deliver(), the two transports and Amazon SES's signer, the switches, the rules that read them and the answer's kinds. */
+const SEAM = ['send', 'resend', 'ses', 'sigv4', 'switches', 'rules', 'outcome'].map((name) => `functions/utils/mail/${name}.ts`)
 const ADDRESSES = 'domain/mail/addresses.ts'
 /** The files the two earlier closure tests keep out of the worker: the sign-in client and what reaches it, the answer helpers, the audit log, the tickets and the creation rules. */
 const KEPT_OUT = [
@@ -74,7 +77,7 @@ describe('the daily-emails worker\'s imports, with the seam', () => {
     for (const file of [ENTRY, 'functions/utils/email.ts', 'functions/utils/admin/campaigns.ts', 'functions/utils/emailLayout.ts']) expect([...files], file).toContain(file)
   })
 
-  it('hold the seam\'s five files and the addresses, each a file of the tree', () => {
+  it('hold the seam\'s seven files and the addresses, each a file of the tree', () => {
     for (const file of [...SEAM, ADDRESSES]) {
       expect(existsSync(join(ROOT, file)), file).toBe(true)
       expect([...files], file).toContain(file)
@@ -106,6 +109,8 @@ describe('the seam\'s own files', () => {
       }
     }
     expect(specifiersOf(ADDRESSES)).toEqual([])
+    // The signer is Web Crypto alone: it imports nothing at all.
+    expect(specifiersOf('functions/utils/mail/sigv4.ts')).toEqual([])
   })
 
   it('the walk that says so does find a package where one is named', () => {

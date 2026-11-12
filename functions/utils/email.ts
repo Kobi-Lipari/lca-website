@@ -38,13 +38,16 @@ export interface EmailMessage {
  * Functions Env and the daily-emails Worker Env satisfy it structurally,
  * so this module can be shared by both without importing either Env type.
  * DB is the database the mail seam's do-not-send gate reads, once the
- * engine's rules are on.
+ * engine's rules are on. The two keys of Amazon SES are read by its
+ * transport, once it sends.
  */
 export interface EmailEnv {
   DB: D1Database
   RESEND_API_KEY: string
   FROM_EMAIL?: string
   REPLY_TO_EMAIL?: string
+  SES_ACCESS_KEY_ID?: string
+  SES_SECRET_ACCESS_KEY?: string
 }
 
 /**
@@ -73,11 +76,13 @@ function deliverEmail(env: EmailEnv, message: EmailMessage, gate?: MailGate): Pr
 
 /**
  * The words a failed send is reported with: a request that threw carries the words it threw with, and a message that
- * reached no service (the gate's refusal, or a limit of the runtime) the seam's own plain words, which name no
- * address; a refusal by the service, its status and its words, as before.
+ * reached no service (the gate's refusal, a limit of the runtime, or Amazon SES's keys missing on this deployment) the
+ * seam's own plain words, which name no address; a refusal by Amazon SES, Amazon's own words, which name the service,
+ * its status and its code; and a refusal by Resend, its status and its words, as before.
  */
 function failureWords(result: Exclude<SendResult, { ok: true }>): string {
-  if (result.noAnswer || result.refused || result.gateUnread || result.limitRefused) return result.error
+  if (result.noAnswer || result.refused || result.gateUnread || result.limitRefused || result.keyMissing) return result.error
+  if (result.fromSes) return `Email send failed: ${result.error}`
   return `Email send failed (${result.status}): ${result.error}`
 }
 

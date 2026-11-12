@@ -20,11 +20,20 @@
 // Amazon SES, which classifyOnce in ./outcome reads as later. This file
 // only checks the headers a message carries; it never builds them, so the
 // daily-emails worker bundles nothing of the links or the footer.
+//
+// Since WS16 step 7 the two services each have their transport, Resend's
+// in ./resend and Amazon SES's in ./ses. A message goes to the one
+// MAIL_SENDER names, with one override, used nowhere else: the
+// newsletter's test send that an LCA admin asks to go through Amazon SES
+// (functions/api/admin/mail/newsletter/test.ts), so the stored key can be
+// proved from the site before the cutover. A message handed to Amazon SES
+// is always under the engine's rules.
 
 import type { MailKind } from '../../../domain/mail/lists'
 import { GATE_UNREAD_LOG, emptyGate, openGate, type MailGate, type Refusal } from './gate'
 import { sendThroughResend } from './resend'
 import { engineRulesOn, senderNow } from './rules'
+import { sendThroughSes } from './ses'
 import type { MailSender } from './switches'
 
 /** The display name a message carries when it names none, kept with every other address in domain/mail/addresses.ts. */
@@ -64,19 +73,26 @@ interface MailParts {
  * mail, which is never refused for a choice and carries no list headers. List mail, kind 'optional', always names the
  * list it goes out on and must carry the two one-click headers, in order, as listMailParts in ./footer writes them:
  * List-Unsubscribe with one HTTPS address, then List-Unsubscribe-Post with 'List-Unsubscribe=One-Click'. A test send
- * may carry them too, so the links in it can be tried.
+ * may carry them too, so the links in it can be tried, and may name the list it tries, which Amazon SES's transport
+ * tags it with and no gate reads; and the newsletter's test alone asks, with `through: 'ses'`, to go through Amazon
+ * SES whatever MAIL_SENDER says.
  */
 export type OutgoingMail = MailParts &
   (
     | { kind?: 'event'; listId?: undefined; headers?: undefined }
-    | { kind: 'test'; listId?: undefined; headers?: MailHeader[] }
+    | { kind: 'test'; listId?: string; headers?: MailHeader[]; through?: 'ses' }
     | { kind: 'optional'; listId: string; headers?: MailHeader[] }
   )
 
-/** The bindings the seam needs. The site's and the daily-emails worker's both carry them. */
+/**
+ * The bindings the seam needs. The site's and the daily-emails worker's both carry them. The two keys of Amazon SES
+ * are secrets of the production Pages project and of the worker alone, never of the Preview environment.
+ */
 export interface MailEnv {
   DB: D1Database
   RESEND_API_KEY: string
+  SES_ACCESS_KEY_ID?: string
+  SES_SECRET_ACCESS_KEY?: string
 }
 
 /**
@@ -86,11 +102,13 @@ export interface MailEnv {
 export type SendRefusal = Refusal | 'not_list_mail'
 
 /**
- * What a send came to. A refusal carries the service's status and words; noAnswer marks a request that threw before
- * any answer came, so the message may or may not have reached the service. Four failures reach no service at all:
- * refused, the seam's or the gate's refusal; gateUnread, list mail held back because the gate could not be read;
- * waitForSes, list mail held back while Resend sends; and limitRefused, a request the runtime would not make because
- * the invocation had used its outside calls.
+ * What a send came to. A refusal carries the service's status and words, and Amazon SES's its code too, with fromSes
+ * marking an answer from Amazon SES, so the words of a failed send can name the service that answered; Resend's
+ * answers carry no mark, as before. noAnswer marks a request that threw before any answer came, so the message may or
+ * may not have reached the service. Five failures reach no service at all: refused, the seam's or the gate's refusal;
+ * gateUnread, list mail held back because the gate could not be read; waitForSes, list mail held back while Resend
+ * sends; limitRefused, a request the runtime would not make because the invocation had used its outside calls; and
+ * keyMissing, a message for Amazon SES on a deployment without its two keys.
  */
 export type SendResult =
   | { ok: true; providerId?: string }
@@ -103,6 +121,8 @@ export type SendResult =
       gateUnread?: true
       waitForSes?: true
       limitRefused?: true
+      keyMissing?: true
+      fromSes?: true
       error: string
     }
 
@@ -163,6 +183,15 @@ const LIMIT_REFUSED = /\btoo many subrequests\b/i
 /** The transport for each service MAIL_SENDER can name. */
 const TRANSPORTS: Record<MailSender, (env: MailEnv, mail: OutgoingMail) => Promise<SendResult>> = {
   resend: sendThroughResend,
+  ses: sendThroughSes,
+}
+
+/**
+ * The one service a message goes to: the one MAIL_SENDER names now, but for the newsletter's test that asks for Amazon
+ * SES, the one override, which nothing else can ask for, since only a test send's type carries it.
+ */
+function senderFor(mail: OutgoingMail): MailSender {
+  return mail.kind === 'test' && mail.through === 'ses' ? 'ses' : senderNow()
 }
 
 /**
@@ -190,18 +219,22 @@ async function gateAnswer(env: MailEnv, mail: OutgoingMail, kind: MailKind, gate
   return refusal === null ? null : { ok: false, refused: refusal, error: REFUSAL_WORDS[refusal] }
 }
 
-/** Sends one message through the one service MAIL_SENDER names now, and says what came of it. Never throws. */
+/**
+ * Sends one message through the one service MAIL_SENDER names now, or Amazon SES for the newsletter's test that asks
+ * for it, and says what came of it. Never throws, and never hands a message to a second service.
+ */
 export async function deliver(env: MailEnv, mail: OutgoingMail, gate?: MailGate): Promise<SendResult> {
   const kind = mail.kind ?? 'event'
   // List mail without its list and its one-click headers never leaves, whatever the constants say: refused here, before
   // the gate is read and before any service is called, and never tried again.
   if (kind === 'optional' && !carriesListParts(mail)) return { ok: false, refused: 'not_list_mail', error: REFUSAL_WORDS.not_list_mail }
-  const sender = senderNow()
+  const sender = senderFor(mail)
   const transport = TRANSPORTS[sender]
   // A sender with no transport here can only come from a mocked module. The message was handed to no service, so it is
   // answered as a refusal, without noAnswer, the mark of a message that may have gone.
   if (!transport) return { ok: false, error: `No transport for ${String(sender)}` }
-  const ruled = engineRulesOn() || kind === 'optional'
+  // Whatever goes to Amazon SES is under the rules: MAIL_SENDER 'ses' turns them on, and so does the test's override.
+  const ruled = engineRulesOn() || kind === 'optional' || sender === 'ses'
   if (ruled) {
     const refused = await gateAnswer(env, mail, kind, gate)
     if (refused) return refused

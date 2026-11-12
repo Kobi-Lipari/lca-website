@@ -143,9 +143,20 @@ describe('outcome: classifyOnce tries a message again only when the answer prove
     for (const code of ['TooManyRequestsException', 'ThrottlingException', 'Throttling', 'SendingPausedException', 'AccountSuspendedException']) {
       expect(classifyOnce(answer({ code, status: 400 })), code).toBe('later')
     }
-    for (const code of ['MessageRejected', 'MailFromDomainNotVerifiedException', 'throttling', 'BadRequestException']) {
+    // Since WS16 step 7 MailFromDomainNotVerifiedException is a fault of the account's own setup, tried again later.
+    for (const code of ['MessageRejected', 'throttling', 'BadRequestException']) {
       expect(classifyOnce(answer({ code, status: 400 })), code).toBe('never')
     }
+  })
+
+  it('the faults of the key and of the account\'s setup of WS16 step 7 are later, and configFault names them, a missing key among them', () => {
+    for (const code of ['NotFoundException', 'MailFromDomainNotVerifiedException', 'AccessDeniedException', 'SignatureDoesNotMatch', 'NotAuthorized']) {
+      expect(classifyOnce(answer({ code, status: 400 })), code).toBe('later')
+      expect(configFault(answer({ code, status: 400 })), code).toBe(true)
+    }
+    expect(classifyOnce(answer({ keyMissing: true }))).toBe('later')
+    expect(configFault(answer({ keyMissing: true }))).toBe(true)
+    for (const code of ['TooManyRequestsException', 'SendingPausedException', 'MessageRejected']) expect(configFault(answer({ code, status: 400 })), code).toBe(false)
   })
 
   it('a key or permission fault is tried again later, and configFault names it and nothing else', () => {

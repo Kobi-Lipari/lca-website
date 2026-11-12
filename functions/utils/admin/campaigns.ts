@@ -36,7 +36,8 @@ import { resolveSiteUrl, type SiteEnv } from '../site'
  * cron Worker Env satisfy this structurally, so the sweep can live here and
  * be called from either side without the two learning about each other.
  * The two link keys are read for list mail only: the key its links are
- * signed with, and while it is being changed, the one before it.
+ * signed with, and while it is being changed, the one before it. The two
+ * keys of Amazon SES are read by its transport, once it sends.
  */
 export interface CampaignEnv extends SiteEnv {
   DB: D1Database
@@ -45,6 +46,8 @@ export interface CampaignEnv extends SiteEnv {
   REPLY_TO_EMAIL?: string
   MAIL_LINK_SECRET?: string
   MAIL_LINK_SECRET_PREVIOUS?: string
+  SES_ACCESS_KEY_ID?: string
+  SES_SECRET_ACCESS_KEY?: string
 }
 
 export interface CampaignFilter {
@@ -225,6 +228,9 @@ async function sendOne(
   // another run.
   if (result.refused) return { ok: false, retryable: false, error: result.error }
   if (result.gateUnread || result.limitRefused) return { ok: false, retryable: true, error: result.error }
+  // Amazon SES's answers, and a message for it on a deployment without its keys, carry their own words, which name the
+  // service; only Resend's answers take today's form, word for word.
+  if (result.fromSes || result.keyMissing) return { ok: false, retryable: classifyToday(result) === 'later', error: result.error }
   return {
     ok: false,
     retryable: classifyToday(result) === 'later',
@@ -469,14 +475,25 @@ export const NO_LIST_SENDER_WORDS = 'Not sent yet: this deployment has no sender
 export const NO_LINK_WORDS = 'Not sent: no unsubscribe link could be made for this address.'
 
 /**
+ * The words of a stopped newsletter's row that was not sent, counted in failed_count: each untried row the stop fails
+ * (stopListCampaign in ../mail/lists, which gives the words under the same name), and, since WS16 step 7, a row a run
+ * puts back on a send the stop has closed. They live here, since the daily-emails worker runs this file and never
+ * reaches that one.
+ */
+export const STOPPED_WORDS = 'Not sent: the send was stopped.'
+
+/**
  * The words a failure is recorded with under the rules. An answer that reached no service carries the seam's own words
  * (a refusal's, list mail held back while Resend sends or while the gate cannot be read, a call the runtime would not
- * make); a request with no answer, NO_CLEAR_ANSWER_WORDS; a refusal of the key, MAIL_KEY_MISSING_WORDS; and a refusal
- * by the service, its status and its words, as today's "Resend <status>: <body>".
+ * make, a message for Amazon SES on a deployment without its keys); a request with no answer, NO_CLEAR_ANSWER_WORDS;
+ * an answer from Amazon SES, its own words, which name the service, its status and its code; for Resend, a refusal of
+ * the key, MAIL_KEY_MISSING_WORDS; and any other refusal by Resend, its status and its words, as today's
+ * "Resend <status>: <body>".
  */
 export function wordsUnderRules(result: Exclude<SendResult, { ok: true }>): string {
-  if (result.refused || result.gateUnread || result.waitForSes || result.limitRefused) return result.error
+  if (result.refused || result.gateUnread || result.waitForSes || result.limitRefused || result.keyMissing) return result.error
   if (result.noAnswer) return NO_CLEAR_ANSWER_WORDS
+  if (result.fromSes) return result.error
   if (configFault(result)) return MAIL_KEY_MISSING_WORDS
   return result.status === undefined ? result.error : `Resend ${result.status}: ${result.error}`
 }
@@ -604,6 +621,67 @@ function putBack(db: D1Database, rows: ClaimedRecipient[], opts: { kept?: string
     .bind(JSON.stringify(rows.map((r) => r.id)), opts.kept ?? null, opts.noted ?? null, opts.words ?? null)
 }
 
+/**
+ * The two statements that fail, with STOPPED_WORDS and counted in failed_count, the rows given that are still pending
+ * on a campaign whose send a stop has closed: a stopped newsletter's rows a run put back, so the send keeps no pending
+ * row and its counts add up. On a campaign that is sending they change nothing.
+ */
+function failStopped(db: D1Database, campaignId: string, rows: ClaimedRecipient[]): D1PreparedStatement[] {
+  const ids = JSON.stringify(rows.map((r) => r.id))
+  const pending = `id IN (SELECT value FROM json_each(?2)) AND status = 'pending'`
+  return [
+    db
+      .prepare(`UPDATE email_campaigns SET failed_count = failed_count + (SELECT COUNT(*) FROM email_campaign_recipients WHERE ${pending}) WHERE id = ?1 AND status <> 'sending'`)
+      .bind(campaignId, ids),
+    db
+      .prepare(`UPDATE email_campaign_recipients SET status = 'failed', error = ?3 WHERE ${pending} AND EXISTS (SELECT 1 FROM email_campaigns WHERE id = ?1 AND status <> 'sending')`)
+      .bind(campaignId, ids, STOPPED_WORDS),
+  ]
+}
+
+/**
+ * Puts claimed rows back, as putBack does: for Group email's campaigns in its one statement, as before; for a list
+ * campaign in one batch with failStopped, so a row put back on a newsletter a stop has closed meanwhile is failed with
+ * the stop's words rather than left pending for good, since no run reads a closed send again.
+ */
+async function putBackRows(
+  db: D1Database,
+  campaignId: string,
+  listId: string | null,
+  rows: ClaimedRecipient[],
+  opts: { kept?: string; noted?: string; words?: string } = {},
+): Promise<void> {
+  if (listId == null) {
+    await putBack(db, rows, opts).run()
+    return
+  }
+  await db.batch([putBack(db, rows, opts), ...failStopped(db, campaignId, rows)])
+}
+
+/**
+ * The two statements that write off, with WRITTEN_OFF_WORDS and counted in failed_count, the rows of every list
+ * campaign a stop has closed that are still marked sending once their claim has expired: the stop leaves a marked row
+ * to its run, and when that run dies between the mark and the outcome no run reads the closed send again, so the sweep
+ * does, as the write-off of a sending campaign does in runUnderRules. A row still under a live claim is left to its run.
+ */
+function writeOffClosed(db: D1Database): D1PreparedStatement[] {
+  const stale = (row: string) =>
+    `${row}status = 'pending' AND ${row}sending_at IS NOT NULL AND (${row}claimed_at IS NULL OR ${row}claimed_at <= datetime('now', ?1))`
+  const closed = `list_id IS NOT NULL AND status <> 'sending'`
+  return [
+    db
+      .prepare(
+        `UPDATE email_campaigns
+            SET failed_count = failed_count + (SELECT COUNT(*) FROM email_campaign_recipients r WHERE r.campaign_id = email_campaigns.id AND ${stale('r.')})
+          WHERE ${closed} AND EXISTS (SELECT 1 FROM email_campaign_recipients r WHERE r.campaign_id = email_campaigns.id AND ${stale('r.')})`,
+      )
+      .bind(CLAIM_TIMEOUT),
+    db
+      .prepare(`UPDATE email_campaign_recipients SET status = 'failed', error = ?2 WHERE ${stale('')} AND campaign_id IN (SELECT id FROM email_campaigns WHERE ${closed})`)
+      .bind(CLAIM_TIMEOUT, WRITTEN_OFF_WORDS),
+  ]
+}
+
 /** The words on the next row a run would send, written without claiming it: how a list campaign that cannot go from here says why. */
 function noteOnNext(db: D1Database, campaignId: string, words: string): D1PreparedStatement {
   return db
@@ -715,7 +793,7 @@ async function runUnderRules(
       if (!(err instanceof GateUnread)) throw err
       // The list waits, untried: no list mail goes while the do-not-send list cannot be read.
       console.warn(GATE_UNREAD_LOG)
-      await putBack(db, claimed, { noted: claimed[0].id, words: GATE_UNREAD_WORDS }).run()
+      await putBackRows(db, campaignId, listId, claimed, { noted: claimed[0].id, words: GATE_UNREAD_WORDS })
       return finishRun(db, campaignId, sent, failed, false)
     }
     const listGate = gate
@@ -736,7 +814,7 @@ async function runUnderRules(
   const html = listId == null ? wrapBrandedEmail(env, campaign.subject, campaign.body_html) : ''
 
   if (!(await markSending(db, rows[0].id).run()).meta.changes) {
-    await putBack(db, rows).run()
+    await putBackRows(db, campaignId, listId, rows)
     return finishRun(db, campaignId, sent, failed, false)
   }
 
@@ -744,14 +822,14 @@ async function runUnderRules(
     if (index > 0) await new Promise((r) => setTimeout(r, SEND_INTERVAL_MS))
     if (deadline !== undefined && Date.now() >= deadline) {
       // Not reached before the deadline: this row, marked but not sent, and the rest go back, each attempt given back.
-      await putBack(db, rows.slice(index)).run()
+      await putBackRows(db, campaignId, listId, rows.slice(index))
       return finishRun(db, campaignId, sent, failed, true)
     }
 
     const outcome = await sendRuled(env, campaign, recipient, html, gate)
 
     if (outcome.kind === 'later') {
-      await putBack(db, rows.slice(index), { kept: outcome.untried ? undefined : recipient.id, noted: recipient.id, words: outcome.words }).run()
+      await putBackRows(db, campaignId, listId, rows.slice(index), { kept: outcome.untried ? undefined : recipient.id, noted: recipient.id, words: outcome.words })
       return finishRun(db, campaignId, sent, failed, outcome.endRun)
     }
 
@@ -774,8 +852,9 @@ async function runUnderRules(
     else failed++
 
     if (next && !results[2]?.meta.changes) {
-      // The next row did not take its mark, so a stop failed it: none of the rows after this one is sent.
-      await putBack(db, rows.slice(index + 1)).run()
+      // The next row did not take its mark, so a stop failed it or the member delete took it out: none of the rows after
+      // this one is sent.
+      await putBackRows(db, campaignId, listId, rows.slice(index + 1))
       return finishRun(db, campaignId, sent, failed, false)
     }
   }
@@ -875,23 +954,26 @@ export async function sweepPendingCampaigns(
  * The sweep under the engine's rules, by the plan's sizes (../mail/plan): on the free plan 20 sends from the oldest
  * campaign that is sending, one campaign a run; on Workers Paid up to 300 across up to 20 campaigns, oldest first. An
  * answer every send would meet (a throttle, an account on hold, a key fault, the limit) ends the run, and the untried rows
- * wait in the pool for the next one.
+ * wait in the pool for the next one. Its first query, one batch, also writes off a stopped newsletter's rows whose run
+ * died after their mark (writeOffClosed), which count in the run's failed.
  */
 async function sweepUnderRules(
   env: CampaignEnv,
   budget?: number,
 ): Promise<{ campaignsTouched: number; sent: number; failed: number }> {
   const { sweepBatch, sweepCampaigns } = sizes()
-  const { results } = await env.DB.prepare(
-    `SELECT id FROM email_campaigns WHERE status = 'sending' ORDER BY created_at ASC LIMIT ?`,
-  ).bind(sweepCampaigns).all<{ id: string }>()
+  const [closedCampaigns, closedRows, sending] = await env.DB.batch([
+    ...writeOffClosed(env.DB),
+    env.DB.prepare(`SELECT id FROM email_campaigns WHERE status = 'sending' ORDER BY created_at ASC LIMIT ?`).bind(sweepCampaigns),
+  ])
+  const results = (sending?.results ?? []) as Array<{ id: string }>
 
-  let campaignsTouched = 0
+  let campaignsTouched = closedCampaigns?.meta.changes ?? 0
   let sent = 0
-  let failed = 0
+  let failed = closedRows?.meta.changes ?? 0
   let left = budget ?? sweepBatch
 
-  for (const { id } of results ?? []) {
+  for (const { id } of results) {
     if (left <= 0) break
     const run = await runCampaign(env, id, left)
     if (run.sent > 0 || run.failed > 0) {

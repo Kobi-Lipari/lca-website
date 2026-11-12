@@ -26,6 +26,7 @@
 
 import { EXAMPLE_DOMAINS, RESERVED_TOP_LEVEL_NAMES, SITE_DOMAIN } from '../../../domain/mail/address'
 import { NEWSLETTER_LIST_ID, type Choice } from '../../../domain/mail/lists'
+import { STOPPED_WORDS } from '../admin/campaigns'
 
 /**
  * The code points JavaScript's trim() takes off each end, which normalizeAddress trims and isSendableAddress's \s
@@ -123,8 +124,12 @@ function audienceOf(listId: string): string {
   return audience
 }
 
-/** The words an untried row of a stopped newsletter is failed with, which the history shows. */
-export const STOPPED_WORDS = 'Not sent: the send was stopped.'
+/**
+ * The words an untried row of a stopped newsletter is failed with, which the history shows. Since WS16 step 7 they are
+ * written in functions/utils/admin/campaigns.ts, which fails a row put back on a stopped send with them too and which
+ * the daily-emails worker runs, and given here under the same name.
+ */
+export { STOPPED_WORDS }
 
 /**
  * The newsletter's audience counted: every address in it, those whose person turned the newsletter off, those who
@@ -332,6 +337,40 @@ export async function stopListCampaign(db: D1Database, listId: string): Promise<
   ])
   if (!results[2]?.meta.changes) return null
   return results[1]?.meta.changes ?? 0
+}
+
+/**
+ * The three statements the member delete (functions/api/admin/members/[id].ts) runs in one batch once the member's row
+ * is gone, so a person whose account an LCA admin deletes is not sent the newsletter that is sending: that send's rows
+ * for the deleted account's address that are pending and not marked sending, when no account in the newsletter's
+ * audience holds the address any more, by the audience clause above, are counted into skipped_count and taken out, and
+ * the send's total is counted again from its rows, as a list campaign's total always is. A family's address stays
+ * while another account on it holds an active membership, and a row a run has marked is left to that run. With no
+ * newsletter sending, or no row for the address, they change nothing. Each statement uses the audience clause at most
+ * once.
+ */
+export function leaveSendingNewsletter(db: D1Database, email: string | null): D1PreparedStatement[] {
+  const sending = (list: string) => `list_id = ${list} AND status = 'sending'`
+  const leaving = (row: string) =>
+    `${row}status = 'pending' AND ${row}sending_at IS NULL AND ${row}email = lower(trim(?1, ${SPACES})) AND NOT ${inNewsletterAudienceSql(`${row}email`)}`
+  return [
+    db
+      .prepare(
+        `UPDATE email_campaigns
+            SET skipped_count = skipped_count + (SELECT COUNT(*) FROM email_campaign_recipients r WHERE r.campaign_id = email_campaigns.id AND ${leaving('r.')})
+          WHERE ${sending('?2')}`,
+      )
+      .bind(email, NEWSLETTER_LIST_ID),
+    db
+      .prepare(
+        `DELETE FROM email_campaign_recipients
+          WHERE ${leaving('email_campaign_recipients.')} AND campaign_id IN (SELECT id FROM email_campaigns WHERE ${sending('?2')})`,
+      )
+      .bind(email, NEWSLETTER_LIST_ID),
+    db
+      .prepare(`UPDATE email_campaigns SET total_recipients = (SELECT COUNT(*) FROM email_campaign_recipients r WHERE r.campaign_id = email_campaigns.id) WHERE ${sending('?1')}`)
+      .bind(NEWSLETTER_LIST_ID),
+  ]
 }
 
 /**

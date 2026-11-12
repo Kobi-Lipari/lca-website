@@ -13,6 +13,8 @@ export const LINK_KEY_MISSING = 'Not sent: the mail link key is missing on this 
 export const NOBODY_ON_THE_LIST = 'Nobody is on the newsletter list right now.'
 export const ALREADY_SENDING = 'The newsletter is already sending. Wait for it to finish.'
 export const NOTHING_SENDING = 'No newsletter is sending.'
+/** The test send's refusal of a test through Amazon SES asked by anyone but an LCA admin (WS16 step 7). */
+export const SES_TEST_ADMINS_ONLY = 'Only an LCA admin can send a test through Amazon SES.'
 
 /**
  * Every newsletter method's answer while MAIL_LISTS_ON is unset, given only after the guard, so a signed-out caller and

@@ -16,7 +16,11 @@
 // MAIL_SENDER, the service that sends every email, follows no switch: it
 // changes only in a pull request of its own. It is held here as written
 // once, in its one line, and assigned in no other file of the server or
-// the workers.
+// the workers. Since WS16 step 7 that line may name either service, so the
+// cutover's change, the same line with 'ses', leaves this file green; and
+// 'ses' only with WORKERS_PLAN 'paid', since the cutover waits for Workers
+// Paid (Q42, settled by K): on the shipped tree, whose plan is 'free', the
+// sender can only be 'resend'.
 //
 // The two settings of WS16 step 2 follow no switch either: WORKERS_PLAN,
 // the hosting plan the mail engine's budgets are sized for, and
@@ -87,11 +91,42 @@ describe('MAIL_LISTS_ON follows mailLists', () => {
   })
 })
 
+/** The values a file of the switches writes for the sender and the plan, each from its one line. */
+function written(text: string): { sender: string | undefined; plan: string | undefined } {
+  return {
+    sender: /^export const MAIL_SENDER: MailSender = '(resend|ses)'$/m.exec(text)?.[1],
+    plan: /^export const WORKERS_PLAN: WorkersPlan = '(free|paid)'$/m.exec(text)?.[1],
+  }
+}
+
+/** What is wrong with a sender and a plan written together: Amazon SES sends only on Workers Paid. */
+function cutoverFault({ sender, plan }: { sender: string | undefined; plan: string | undefined }): string | null {
+  if (sender === undefined || plan === undefined) return 'the sender and the plan are each written once'
+  return sender === 'ses' && plan !== 'paid' ? 'MAIL_SENDER is \'ses\' while WORKERS_PLAN is not \'paid\'' : null
+}
+
 describe('MAIL_SENDER, the one service that sends', () => {
-  it('is written once, in the one line a cutover changes, and the module answers it', () => {
+  it('is written once, in the one line a cutover changes, with either service, and the module answers what the file writes', () => {
     const lines = read(FILE).split('\n').filter((line) => /\bMAIL_SENDER\b/.test(line) && ASSIGNS.test(line))
-    expect(lines).toEqual(["export const MAIL_SENDER: MailSender = 'resend'"])
-    expect(MAIL_SENDER).toBe('resend')
+    expect(lines).toHaveLength(1)
+    expect(lines[0]).toMatch(/^export const MAIL_SENDER: MailSender = '(resend|ses)'$/)
+    expect(MAIL_SENDER).toBe(written(read(FILE)).sender)
+    expect(read(FILE)).toMatch(/^export type MailSender = 'resend' \| 'ses'$/m)
+  })
+
+  it('is \'ses\' only with WORKERS_PLAN \'paid\': the cutover waits for Workers Paid, so on the free plan Resend sends', () => {
+    expect(cutoverFault(written(read(FILE)))).toBeNull()
+    expect(cutoverFault({ sender: MAIL_SENDER, plan: WORKERS_PLAN })).toBeNull()
+    if (WORKERS_PLAN === 'free') expect(MAIL_SENDER).toBe('resend')
+    // The same file with the cutover's line on the free plan's sizes is refused; with Workers Paid it passes.
+    const at = (sender: string, plan: string) =>
+      read(FILE)
+        .replace(/^export const MAIL_SENDER: MailSender = '(?:resend|ses)'$/m, `export const MAIL_SENDER: MailSender = '${sender}'`)
+        .replace(/^export const WORKERS_PLAN: WorkersPlan = '(?:free|paid)'$/m, `export const WORKERS_PLAN: WorkersPlan = '${plan}'`)
+    expect(cutoverFault(written(at('ses', 'free')))).toBe('MAIL_SENDER is \'ses\' while WORKERS_PLAN is not \'paid\'')
+    expect(cutoverFault(written(at('ses', 'paid')))).toBeNull()
+    expect(cutoverFault(written(at('resend', 'free')))).toBeNull()
+    expect(cutoverFault(written(at('resend', 'paid')))).toBeNull()
   })
 
   it('is given a value by no other file of the server or the workers', () => {
@@ -104,7 +139,7 @@ describe('MAIL_SENDER, the one service that sends', () => {
 
   it('tells a value given from a comparison, so the search finds what it looks for', () => {
     for (const line of ["export const MAIL_SENDER: MailSender = 'ses'", "let MAIL_SENDER = 'ses'", "MAIL_SENDER = 'resend'"]) expect(ASSIGNS.test(line), line).toBe(true)
-    for (const line of ["return MAIL_LISTS_ON || (MAIL_SENDER as string) === 'ses'", 'if (MAIL_SENDER !== x) return', 'return MAIL_SENDER', "const f = () => MAIL_SENDER"]) {
+    for (const line of ["return MAIL_LISTS_ON || (MAIL_SENDER as string) === 'ses'", "return MAIL_LISTS_ON || MAIL_SENDER === 'ses'", 'if (MAIL_SENDER !== x) return', 'return MAIL_SENDER', "const f = () => MAIL_SENDER"]) {
       expect(ASSIGNS.test(line), line).toBe(false)
     }
   })
