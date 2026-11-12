@@ -236,6 +236,115 @@ export interface ApiCampaignRecipient {
   full_name: string
 }
 
+// The LCA newsletter in Group email (WS16 step 5): its four methods under /api/admin/mail/newsletter, behind
+// requireListMailer, each answering 404 while the newsletter is switched off on the server. Their answers are the
+// contracts in domain/contracts/mail.ts, written here by hand, as ApiCampaign is, since no area module but events' and
+// membership's imports from @domain (test/unit/api-split-modules.test.ts). A refusal throws ApiError with the server's
+// own words, which the page shows as they are.
+
+/** What GET /api/admin/mail/newsletter answers (newsletterSummaryResponseSchema). */
+export interface ApiNewsletter {
+  list: { id: string; name: string }
+  /** The newsletter's From line, as the server gives it. */
+  from: string
+  /** The service that sends now: 'resend' while the newsletter waits for Amazon SES. */
+  sendsThrough: string
+  summary: {
+    /** Every address in the audience; the three after it may overlap. */
+    addresses: number
+    turnedOff: number
+    stoppedAll: number
+    doNotSend: number
+    /** The addresses the next send goes to. */
+    willGet: number
+    /** The last 10 newsletter sends, newest first. */
+    recent: Array<{
+      id: string
+      subject: string
+      totalRecipients: number
+      sentCount: number
+      failedCount: number
+      skippedCount: number
+      status: 'sending' | 'completed' | 'failed'
+      createdAt: string
+      completedAt: string | null
+    }>
+    /** Why the newsletter that is sending waits, in the server's words, or null. */
+    waits: string | null
+  }
+}
+
+/** What POST /api/admin/mail/newsletter answers once it has made a send (newsletterResponseSchema). */
+export interface ApiNewsletterSent {
+  campaignId: string
+  totalRecipients: number
+  status: 'sending'
+}
+
+/** What POST /api/admin/mail/newsletter/stop answers (newsletterStopResponseSchema): the addresses the stop kept it from. */
+export interface ApiNewsletterStopped {
+  stopped: number
+}
+
+export async function getNewsletter(): Promise<ApiNewsletter> {
+  const response = await fetch('/api/admin/mail/newsletter', {
+    headers: await authHeaders(),
+  })
+  return handleResponse(response)
+}
+
+/** Sends the newsletter to its list. Refused with 409 while Resend sends and while one is sending. */
+export async function sendNewsletter(payload: { subject: string; bodyHtml: string }): Promise<ApiNewsletterSent> {
+  const response = await fetch('/api/admin/mail/newsletter', {
+    method: 'POST',
+    headers: await authHeaders(),
+    body: JSON.stringify(payload),
+  })
+  return handleResponse(response)
+}
+
+/**
+ * Sends one test of the newsletter as written to one address, with the real footer and links for it. `service` asks
+ * for the test through Amazon SES, which the server allows an LCA admin alone. For the media manager the server takes
+ * only their own account's address.
+ */
+export async function sendNewsletterTest(payload: { to: string; subject: string; bodyHtml: string; service?: 'ses' }): Promise<{ sent: true }> {
+  const response = await fetch('/api/admin/mail/newsletter/test', {
+    method: 'POST',
+    headers: await authHeaders(),
+    body: JSON.stringify(payload),
+  })
+  return handleResponse(response)
+}
+
+/** Stops the newsletter that is sending: the addresses not yet reached do not get it. */
+export async function stopNewsletter(): Promise<ApiNewsletterStopped> {
+  const response = await fetch('/api/admin/mail/newsletter/stop', {
+    method: 'POST',
+    headers: await authHeaders(),
+  })
+  return handleResponse(response)
+}
+
+// The media manager (WS16 step 6): whether the signed-in member sends the newsletter as the media manager, which only
+// Admin's pages and the account menu ask, through src/areas/admin/useMediaManager.ts, once a session.
+
+/** What GET /api/me/media-manager answers (mediaManagerResponseSchema), about the person signed in and no one else. */
+export interface ApiMediaManager {
+  /** True for anyone but an LCA admin and the president who holds the Media manager seat now, an officer among them; false while the newsletter is off. */
+  mediaManager: boolean
+  /** Whether the session carries a second factor, which sending asks of the media manager. */
+  secondFactor: boolean
+}
+
+/** Asks whether the person signed in is the media manager. The answer draws the page; the newsletter's guard is the grant. */
+export async function getMediaManager(): Promise<ApiMediaManager> {
+  const response = await fetch('/api/me/media-manager', {
+    headers: await authHeaders(),
+  })
+  return handleResponse(response)
+}
+
 export type AnnouncementTone = 'gold' | 'navy' | 'urgent' | 'info'
 
 export type AnnouncementSize = 'default' | 'compact'

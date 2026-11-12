@@ -1,0 +1,626 @@
+// test/unit/fixtures/admin-email-today.tsx
+//
+// Today's Group email, src/pages/AdminEmailPage.tsx as it stood at commit
+// 4b9d780, before WS16 step 5, kept word for word but for this comment, its
+// export's name, AdminEmailPageToday, and its dashes: the two in its
+// comments each written as a comma, and the six in the words it draws as
+// the escape \u2014, so this file holds no dash character and draws the same
+// text. test/unit/admin-email-newsletter.test.tsx draws it beside the live
+// page with mailLists off and holds the two the same, state by state.
+import { useEffect, useMemo, useState } from 'react'
+import {
+  Mail, Send, Users, CheckCircle2, XCircle, Clock,
+  Eye, EyeOff, FlaskConical, X, UserPlus, Search,
+} from 'lucide-react'
+import { PageHero } from '@/components/PageHero'
+import { RichTextEditor } from '@/areas/governance/components/RichTextEditor'
+import { MultiSelectDropdown } from '@/components/MultiSelectDropdown'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { cn } from '@/lib/utils'
+import { usePageTitle } from '@/hooks/usePageTitle'
+import { ADMIN_SCROLL, LCA, GOLD_BUTTON as GOLD } from '@/lib/brand'
+import {
+  getClubs,
+  getCampaigns,
+  createCampaign,
+  previewCampaignCount,
+  sendTestCampaignEmail,
+  adminGetMembers,
+  type ApiClubListItem,
+  type ApiCampaign,
+  type ApiCampaignRecipient,
+  type ApiAdminMember,
+} from '@/lib/api'
+
+const ROLE_OPTIONS = [
+  { value: 'member', label: 'Members' },
+  { value: 'club_rep', label: 'Club reps' },
+  { value: 'tournament_director', label: 'Tournament directors' },
+  { value: 'lca_admin', label: 'Admins' },
+]
+const STATUS_OPTIONS = [
+  { value: 'active', label: 'Active' },
+  { value: 'none', label: 'No membership' },
+  { value: 'expired', label: 'Expired' },
+]
+
+// Relative: the preview is served from the same origin as the logo, so this
+// is correct wherever the site is deployed, including the dev server, where
+// an absolute production URL was the one asset that had to reach the
+// internet to render.
+const LOGO_URL = '/lca-logo.jpg'
+
+// The footer shows what RECIPIENTS will see, which is the server's SITE_URL,
+// not whatever host an admin happens to be previewing from. Falls back to the
+// same default functions/utils/site.ts uses.
+const SITE_URL_DISPLAY = (
+  import.meta.env.VITE_SITE_URL ?? 'https://www.louisianachess.org'
+).replace(/^https?:\/\//, '')
+
+/** Visual mirror of functions/utils/admin/campaigns.ts → wrapBrandedEmail().
+ *  Preview only, the actual email HTML is generated server-side. If you
+ *  change the backend template's colors/spacing, update this one too. */
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
+function BrandedEmailPreview({ subject, bodyHtml }: { subject: string; bodyHtml: string }) {
+  return (
+    <div className="overflow-hidden rounded-xl border shadow-sm" style={{ background: LCA.cream }}>
+      <div style={{ maxWidth: 480, margin: '0 auto', background: '#fff', borderRadius: 12, overflow: 'hidden', border: '1px solid #e0ddd5' }}>
+        {/* Header */}
+        <div style={{ background: LCA.navy, padding: '24px 28px', textAlign: 'center' }}>
+          <img src={LOGO_URL} alt="Louisiana Chess Association" width={120} style={{ display: 'block', margin: '0 auto', borderRadius: 8 }} />
+        </div>
+        {/* Gold bar */}
+        <div style={{ background: LCA.gold, height: 4, fontSize: 0, lineHeight: 0 }}>&nbsp;</div>
+        {/* Body */}
+        <div style={{ padding: '24px 28px 20px' }}>
+          <h1 style={{ margin: '0 0 12px', fontSize: 18, color: LCA.navy, fontFamily: 'Georgia, serif' }}>
+            {subject || 'Your subject line will appear here'}
+          </h1>
+          <div
+            className="prose prose-sm max-w-none"
+            style={{ color: '#444', fontSize: 13, lineHeight: 1.6, minHeight: 60 }}
+            dangerouslySetInnerHTML={{
+              __html: bodyHtml || '<p style="color:#aaa;font-style:italic">Your message will appear here as you type.</p>',
+            }}
+          />
+        </div>
+        {/* Footer */}
+        <div style={{ background: LCA.cream, borderTop: '1px solid #e0ddd5', padding: '16px 28px', textAlign: 'center' }}>
+          <p style={{ margin: '0 0 4px', fontSize: 12, color: '#3a3f4b' }}>Questions? Just reply to this email and it will reach us.</p>
+          <p style={{ margin: 0, fontSize: 11, color: '#999' }}>
+            Louisiana Chess Association · <span style={{ color: LCA.navy }}>{SITE_URL_DISPLAY}</span>
+          </p>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+const STATUS_META: Record<string, { label: string; icon: typeof Clock; className: string }> = {
+  sending: { label: 'Sending…', icon: Clock, className: 'bg-lca-gold/15 text-gold-ink-badge' },
+  completed: { label: 'Completed', icon: CheckCircle2, className: 'bg-ok-100 text-ok' },
+  failed: { label: 'Failed', icon: XCircle, className: 'bg-bad-100 text-bad-700' },
+}
+
+function CampaignRow({ c }: { c: ApiCampaign }) {
+  const meta = STATUS_META[c.status] ?? STATUS_META.sending
+  const Icon = meta.icon
+  const pct = c.total_recipients > 0
+    ? Math.round(((c.sent_count + c.failed_count) / c.total_recipients) * 100)
+    : 0
+
+  return (
+    <div className="rounded-xl border bg-card p-4 shadow-sm">
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <p className="truncate font-medium text-ink">{c.subject}</p>
+          <p className="mt-0.5 text-xs text-muted-foreground">
+            {new Date(c.created_at).toLocaleString()} · {c.total_recipients} recipients
+          </p>
+        </div>
+        <span className={cn('flex flex-shrink-0 items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-medium', meta.className)}>
+          <Icon className="size-3" /> {meta.label}
+        </span>
+      </div>
+      <div className="mt-3">
+        <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
+          <div className="h-full rounded-full bg-lca-gold transition-all" style={{ width: `${pct}%` }} />
+        </div>
+        <p className="mt-1 text-[11px] text-muted-foreground">
+          {c.sent_count} sent
+          {c.failed_count > 0 && <span className="text-bad"> · {c.failed_count} failed</span>}
+          {' '}· {pct}%
+        </p>
+      </div>
+    </div>
+  )
+}
+
+/**
+ * `embedded` renders it as a section of the admin panel: no page hero or
+ * outer page padding, and the panel sets the tab title.
+ */
+export function AdminEmailPageToday({ embedded = false }: { embedded?: boolean } = {}) {
+  usePageTitle(embedded ? 'Admin · Group email' : 'Group Email')
+
+  const [clubs, setClubs] = useState<ApiClubListItem[]>([])
+  const [campaigns, setCampaigns] = useState<ApiCampaign[]>([])
+  const [loadingHistory, setLoadingHistory] = useState(true)
+  const [memberPool, setMemberPool] = useState<ApiAdminMember[]>([])
+
+  const [subject, setSubject] = useState('')
+  const [body, setBody] = useState('')
+  const [roles, setRoles] = useState<string[]>([])
+  const [clubIds, setClubIds] = useState<string[]>([])
+  const [statuses, setStatuses] = useState<string[]>([])
+
+  const [confirming, setConfirming] = useState(false)
+  const [previewing, setPreviewing] = useState(false)
+  const [resolvedRecipients, setResolvedRecipients] = useState<ApiCampaignRecipient[]>([])
+  const [excludedIds, setExcludedIds] = useState<Set<string>>(new Set())
+  const [manuallyAdded, setManuallyAdded] = useState<ApiCampaignRecipient[]>([])
+  // 'groups' = pick by role/club/status (empty = everyone), then trim.
+  // 'people' = start from nobody and add names or typed-in addresses.
+  const [mode, setMode] = useState<'groups' | 'people'>('groups')
+  // Addresses with no account behind them.
+  const [extraEmails, setExtraEmails] = useState<string[]>([])
+  const [addSearch, setAddSearch] = useState('')
+
+  const [sending, setSending] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [showPreview, setShowPreview] = useState(false)
+
+  const [testEmail, setTestEmail] = useState('')
+  const [testSending, setTestSending] = useState(false)
+  const [testResult, setTestResult] = useState<{ ok: boolean; message: string } | null>(null)
+
+  function currentFilter() {
+    return { roles, clubIds, membershipStatuses: statuses }
+  }
+
+  async function loadHistory() {
+    try {
+      setCampaigns(await getCampaigns())
+    } catch { /* keep prior list on transient failure */ }
+  }
+
+  useEffect(() => {
+    let cancelled = false
+    getClubs().then((c) => { if (!cancelled) setClubs(c) }).catch(() => {})
+    adminGetMembers().then((m) => { if (!cancelled) setMemberPool(m) }).catch(() => {})
+    getCampaigns()
+      .then((c) => { if (!cancelled) setCampaigns(c) })
+      .catch(() => { /* keep prior list on transient failure */ })
+      .finally(() => { if (!cancelled) setLoadingHistory(false) })
+    return () => { cancelled = true }
+  }, [])
+
+  // Poll while any campaign is still sending.
+  useEffect(() => {
+    if (!campaigns.some((c) => c.status === 'sending')) return
+    const timer = setInterval(loadHistory, 3000)
+    return () => clearInterval(timer)
+  }, [campaigns])
+
+  // Final send list = whatever the filter resolved to, minus anyone X'd
+  // off, plus anyone hand-picked from the individual-member search.
+  const finalList = useMemo(() => {
+    const kept = mode === 'people' ? [] : resolvedRecipients.filter((r) => !excludedIds.has(r.id))
+    const members = [...kept, ...manuallyAdded]
+    const onList = new Set(members.map((r) => r.email.toLowerCase()))
+    const typed = extraEmails
+      .filter((e) => !onList.has(e))
+      .map((e) => ({ id: `ext:${e}`, email: e, full_name: e }))
+    return [...members, ...typed]
+  }, [mode, resolvedRecipients, excludedIds, manuallyAdded, extraEmails])
+
+  async function handlePreview() {
+    if (mode === 'people') {
+      setResolvedRecipients([])
+      setExcludedIds(new Set())
+      setConfirming(true)
+      return
+    }
+    setPreviewing(true)
+    setError(null)
+    try {
+      const { recipients } = await previewCampaignCount(currentFilter())
+      setResolvedRecipients(recipients)
+      setExcludedIds(new Set())
+      setAddSearch('')
+      setConfirming(true)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Could not resolve recipients')
+    } finally {
+      setPreviewing(false)
+    }
+  }
+
+  function excludeFromResolved(id: string) {
+    setExcludedIds((prev) => new Set(prev).add(id))
+  }
+  function removeManual(id: string) {
+    setManuallyAdded((prev) => prev.filter((p) => p.id !== id))
+  }
+  function removeExtra(email: string) {
+    setExtraEmails((prev) => prev.filter((e) => e !== email))
+  }
+  function addExtra(raw: string) {
+    // Accepts one address or several pasted at once (commas, spaces, lines).
+    const found = raw.split(/[\s,;]+/).map((e) => e.trim().toLowerCase()).filter((e) => EMAIL_RE.test(e))
+    if (found.length === 0) return
+    // Someone typed a member's address: add the member instead.
+    const byEmail = new Map(memberPool.map((m) => [m.email.toLowerCase(), m]))
+    const members = found.map((e) => byEmail.get(e)).filter((m): m is ApiAdminMember => !!m)
+    if (members.length) {
+      setManuallyAdded((prev) => [
+        ...prev,
+        ...members.filter((m) => !prev.some((p) => p.id === m.id)).map((m) => ({ id: m.id, email: m.email, full_name: m.full_name })),
+      ])
+    }
+    const outsiders = found.filter((e) => !byEmail.has(e))
+    setExtraEmails((prev) => [...new Set([...prev, ...outsiders])])
+    setAddSearch('')
+  }
+  /** Empties the list in one click, so a few people can be added back. */
+  function removeAll() {
+    setExcludedIds(new Set(resolvedRecipients.map((r) => r.id)))
+    setManuallyAdded([])
+    setExtraEmails([])
+  }
+  function removeFromList(r: ApiCampaignRecipient) {
+    if (r.id.startsWith('ext:')) removeExtra(r.email)
+    else if (manuallyAdded.some((m) => m.id === r.id)) removeManual(r.id)
+    else excludeFromResolved(r.id)
+  }
+  function addManual(m: ApiAdminMember) {
+    setManuallyAdded((prev) => [...prev, { id: m.id, email: m.email, full_name: m.full_name }])
+    setAddSearch('')
+  }
+
+  async function handleSend() {
+    setSending(true)
+    setError(null)
+    try {
+      await createCampaign({
+        subject: subject.trim(),
+        bodyHtml: body,
+        filter: currentFilter(),
+        excludeMemberIds: mode === 'people' ? [] : [...excludedIds],
+        includeMemberIds: manuallyAdded.map((m) => m.id),
+        onlySelected: mode === 'people',
+        extraEmails,
+      })
+      setSubject('')
+      setBody('')
+      setConfirming(false)
+      setResolvedRecipients([])
+      setExcludedIds(new Set())
+      setManuallyAdded([])
+      setExtraEmails([])
+      await loadHistory()
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to start campaign')
+    } finally {
+      setSending(false)
+    }
+  }
+
+  async function handleSendTest() {
+    setTestSending(true)
+    setTestResult(null)
+    try {
+      await sendTestCampaignEmail({ email: testEmail.trim(), subject: subject.trim(), bodyHtml: body })
+      setTestResult({ ok: true, message: `Test email sent to ${testEmail.trim()}.` })
+    } catch (err) {
+      setTestResult({ ok: false, message: err instanceof Error ? err.message : 'Failed to send test email' })
+    } finally {
+      setTestSending(false)
+    }
+  }
+
+  const canPreview = subject.trim().length > 0 && body.trim().length > 0
+  const canTest = canPreview && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(testEmail.trim())
+
+  const addQuery = addSearch.trim().toLowerCase()
+  const finalIds = useMemo(() => new Set(finalList.map((r) => r.id)), [finalList])
+  const typedAddresses = addSearch.split(/[\s,;]+/).filter((e) => EMAIL_RE.test(e.trim()))
+  const addMatches = addQuery.length >= 2
+    ? memberPool
+        .filter((m) => !finalIds.has(m.id))
+        .filter((m) => m.full_name.toLowerCase().includes(addQuery) || m.email.toLowerCase().includes(addQuery))
+        .slice(0, 6)
+    : []
+
+  return (
+    <div>
+      {embedded ? (
+        <div className="mb-5">
+          <h2 className="text-xl font-bold text-ink">Group email</h2>
+          <p className="mt-0.5 text-sm text-muted-foreground">
+            Send an email to members {'\u2014'} everyone, or a targeted group by role, club, or membership status.
+          </p>
+        </div>
+      ) : (
+        <PageHero
+          title="Group email"
+          subtitle={'Send an email to members \u2014 everyone, or a targeted group by role, club, or membership status.'}
+        />
+      )}
+
+      <section className={embedded ? '' : 'mx-auto max-w-6xl px-6 py-10'}>
+        <div className={cn('grid gap-10', embedded ? 'xl:grid-cols-[1.3fr_1fr]' : 'lg:grid-cols-[1.3fr_1fr]')}>
+
+          {/* ── Compose ── */}
+          <div>
+            <div className="mb-4 flex items-center gap-2">
+              <Mail className="size-5 text-gold-ink" />
+              <h2 className="text-xl font-bold text-ink">Compose</h2>
+            </div>
+
+            <div className="space-y-4 rounded-xl border bg-card p-5 shadow-sm">
+              <div>
+                <Label className="text-xs">Recipients</Label>
+                <div role="tablist" className="mb-2 mt-1.5 inline-flex rounded-lg border p-0.5 text-xs font-medium">
+                  {([['groups', 'Groups of members'], ['people', 'Specific people']] as const).map(([value, label]) => (
+                    <button key={value} type="button" role="tab" aria-selected={mode === value}
+                      onClick={() => { setMode(value); setConfirming(false) }}
+                      className={cn('rounded-md px-3 py-1 transition-colors',
+                        mode === value ? 'bg-brand-navy text-white' : 'text-muted-foreground hover:text-foreground')}>
+                      {label}
+                    </button>
+                  ))}
+                </div>
+                {mode === 'people' ? (
+                  <p className="text-[11px] text-muted-foreground">
+                    Start from nobody: search members by name, or type any email address, including people without an account.
+                  </p>
+                ) : (
+                <>
+                <p className="mb-2 mt-0.5 text-[11px] text-muted-foreground">
+                  Leave all three at their defaults to reach everyone.
+                </p>
+                <div className="flex flex-wrap items-center gap-2">
+                  <MultiSelectDropdown defaultLabel="All roles" options={ROLE_OPTIONS} selected={roles} onChange={setRoles} />
+                  <MultiSelectDropdown
+                    defaultLabel="All clubs"
+                    options={clubs.map((c) => ({ value: c.id, label: c.name }))}
+                    selected={clubIds}
+                    onChange={setClubIds}
+                  />
+                  <MultiSelectDropdown defaultLabel="Any status" options={STATUS_OPTIONS} selected={statuses} onChange={setStatuses} />
+                </div>
+                </>
+                )}
+              </div>
+
+              <div>
+                <Label className="text-xs">Subject</Label>
+                <Input className="mt-1" value={subject} onChange={(e) => setSubject(e.target.value)} placeholder="e.g. Fall tournament registration is open" />
+              </div>
+
+              <div>
+                <div className="flex items-center justify-between">
+                  <Label className="text-xs">Message</Label>
+                  <button type="button" onClick={() => setShowPreview((p) => !p)} className="flex items-center gap-1 text-[11px] font-medium text-ink hover:underline">
+                    {showPreview ? <EyeOff className="size-3" /> : <Eye className="size-3" />}
+                    {showPreview ? 'Hide preview' : 'Preview email'}
+                  </button>
+                </div>
+                <div className="mt-1">
+                  <RichTextEditor content={body} onChange={setBody} />
+                </div>
+                {showPreview && (
+                  <div className="mt-3">
+                    <p className="mb-1.5 text-[11px] text-muted-foreground">This is how it will look in the recipient's inbox:</p>
+                    <BrandedEmailPreview subject={subject} bodyHtml={body} />
+                  </div>
+                )}
+              </div>
+
+              {/* ── Test send ── */}
+              <div className="rounded-lg border border-dashed p-3">
+                <p className="mb-2 flex items-center gap-1.5 text-[11px] font-medium text-muted-foreground">
+                  <FlaskConical className="size-3.5 text-gold-ink" />
+                  Send yourself a test before the real thing
+                </p>
+                <div className="flex gap-2">
+                  <Input
+                    className="h-8 text-sm"
+                    value={testEmail}
+                    onChange={(e) => { setTestEmail(e.target.value); setTestResult(null) }}
+                    placeholder="you@example.com"
+                  />
+                  <Button type="button" variant="outline" size="sm" className="flex-shrink-0" disabled={!canTest || testSending} onClick={handleSendTest}>
+                    {testSending ? 'Sending…' : 'Send test'}
+                  </Button>
+                </div>
+                {testResult && (
+                  <p className={cn('mt-2 text-xs', testResult.ok ? 'text-ok-700' : 'text-destructive')}>{testResult.message}</p>
+                )}
+                <p className="mt-1.5 text-[10px] text-muted-foreground">
+                  Test emails are marked [TEST] in the subject and don't count toward {'\u2014'} or appear in {'\u2014'} send history.
+                </p>
+              </div>
+
+              {error && <p className="text-sm text-destructive">{error}</p>}
+
+              {!confirming ? (
+                <div className="space-y-1.5">
+                  <Button
+                    type="button"
+                    className={cn('w-full', GOLD)}
+                    disabled={previewing}
+                    onClick={handlePreview}
+                  >
+                    {previewing ? 'Resolving recipients…' : mode === 'people' ? 'Choose people' : 'Review recipients'}
+                  </Button>
+                  <p className="text-[10px] text-muted-foreground">
+                    {mode === 'people'
+                      ? 'Pick who gets it on the next step. Nothing is sent until you confirm.'
+                      : 'Shows exactly who the filters match, so you can remove anyone before sending. Nothing is sent from this step.'}
+                  </p>
+                </div>
+              ) : (
+                <div className="rounded-lg border border-lca-gold/50 bg-lca-gold/8 p-4">
+                  <p className="flex items-center gap-2 text-sm font-medium text-ink">
+                    <Users className="size-4 text-gold-ink" />
+                    This will email <span className="font-bold">{finalList.length}</span> {finalList.length === 1 ? 'person' : 'people'}.
+                  </p>
+                  {mode === 'groups' && (
+                    <div className="mt-1.5 flex flex-wrap gap-3 text-[11px]">
+                      {finalList.length > 0 && (
+                        <button type="button" onClick={removeAll} className="font-medium text-ink hover:underline">
+                          Remove all
+                        </button>
+                      )}
+                      {excludedIds.size > 0 && (
+                        <button type="button" onClick={() => setExcludedIds(new Set())} className="font-medium text-ink hover:underline">
+                          Restore {excludedIds.size} removed
+                        </button>
+                      )}
+                    </div>
+                  )}
+
+                  {/* ── Reviewable list ── */}
+                  <div className="mt-3 max-h-64 overflow-y-auto rounded-lg border bg-card">
+                    {finalList.length === 0 ? (
+                      <p className="px-3 py-4 text-center text-xs text-muted-foreground">
+                        {mode === 'people'
+                          ? 'Nobody yet \u2014 search for a member or type an email address below.'
+                          : 'Nobody left to send to \u2014 add someone below or adjust the filters.'}
+                      </p>
+                    ) : (
+                      finalList.map((r) => {
+                        const isTyped = r.id.startsWith('ext:')
+                        const isManual = isTyped || (mode === 'groups' && manuallyAdded.some((m) => m.id === r.id))
+                        return (
+                          <div key={r.id} className="flex items-center justify-between gap-2 border-b border-border px-3 py-2 last:border-0">
+                            <div className="min-w-0">
+                              <p className="truncate text-xs font-medium text-foreground">
+                                {r.full_name}
+                                {isManual && (
+                                  <span className="ml-1.5 rounded-full bg-lca-gold/15 px-1.5 py-0.5 text-[9px] font-medium text-gold-ink-badge">
+                                    {isTyped ? 'No account' : 'Added'}
+                                  </span>
+                                )}
+                              </p>
+                              {!isTyped && <p className="truncate text-[11px] text-muted-foreground">{r.email}</p>}
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => removeFromList(r)}
+                              className="flex-shrink-0 text-muted-foreground hover:text-destructive"
+                              aria-label={`Remove ${r.full_name}`}
+                            >
+                              <X className="size-3.5" />
+                            </button>
+                          </div>
+                        )
+                      })
+                    )}
+                  </div>
+
+                  {/* ── Add specific people ── */}
+                  <div className="relative mt-3">
+                    <div className="relative">
+                      <Search className="pointer-events-none absolute left-2.5 top-1/2 size-3.5 -translate-y-1/2 text-muted-foreground" />
+                      <Input
+                        className="h-8 pl-8 text-xs"
+                        value={addSearch}
+                        onChange={(e) => setAddSearch(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' && typedAddresses.length > 0) { e.preventDefault(); addExtra(addSearch) }
+                        }}
+                        onPaste={(e) => {
+                          const text = e.clipboardData.getData('text')
+                          if (/[\s,;]/.test(text.trim()) && EMAIL_RE.test(text.split(/[\s,;]+/)[0] ?? '')) {
+                            e.preventDefault()
+                            addExtra(text)
+                          }
+                        }}
+                        placeholder="Add a member by name, or type / paste email addresses…"
+                      />
+                    </div>
+                    {typedAddresses.length > 0 && (
+                      <button type="button" onClick={() => addExtra(addSearch)}
+                        className="mt-1.5 flex w-full items-center justify-between gap-2 rounded-lg border px-3 py-2 text-left hover:bg-muted/50">
+                        <span className="min-w-0 truncate text-xs">
+                          Add <span className="font-medium">{typedAddresses.join(', ')}</span>
+                          {typedAddresses.every((e) => !memberPool.some((m) => m.email.toLowerCase() === e.trim().toLowerCase())) && (
+                            <span className="text-muted-foreground"> (no account)</span>
+                          )}
+                        </span>
+                        <UserPlus className="size-3.5 flex-shrink-0 text-gold-ink" />
+                      </button>
+                    )}
+                    {addQuery.length >= 2 && typedAddresses.length === 0 && (
+                      addMatches.length > 0 ? (
+                        <div className="mt-1.5 overflow-hidden rounded-lg border">
+                          {addMatches.map((m) => (
+                            <button
+                              key={m.id}
+                              type="button"
+                              onClick={() => addManual(m)}
+                              className="flex w-full items-center justify-between gap-2 border-b border-border px-3 py-2 text-left last:border-0 hover:bg-muted/50"
+                            >
+                              <div className="min-w-0">
+                                <p className="truncate text-xs font-medium">{m.full_name}</p>
+                                <p className="truncate text-[11px] text-muted-foreground">{m.email}</p>
+                              </div>
+                              <UserPlus className="size-3.5 flex-shrink-0 text-gold-ink" />
+                            </button>
+                          ))}
+                        </div>
+                      ) : (
+                        <p className="mt-1.5 text-[11px] text-muted-foreground">No members match "{addSearch.trim()}".</p>
+                      )
+                    )}
+                  </div>
+
+                  <div className="mt-4 flex gap-2">
+                    <Button
+                      type="button"
+                      className={GOLD}
+                      onClick={handleSend}
+                      disabled={sending || finalList.length === 0 || !canPreview}
+                    >
+                      <Send className="mr-1.5 size-3.5" /> {sending ? 'Sending…' : 'Confirm & send'}
+                    </Button>
+                    <Button type="button" variant="outline" onClick={() => setConfirming(false)} disabled={sending}>
+                      Back to edit
+                    </Button>
+                  </div>
+                  {!canPreview && (
+                    <p className="mt-2 text-[11px] text-muted-foreground">
+                      Add {!subject.trim() && !body.trim() ? 'a subject and a message' : !subject.trim() ? 'a subject' : 'a message'} before sending.
+                    </p>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* ── History ── */}
+          <div>
+            <h2 className="mb-4 text-xl font-bold text-ink">Send history</h2>
+            {loadingHistory ? (
+              <p className="text-sm text-muted-foreground">Loading…</p>
+            ) : campaigns.length === 0 ? (
+              <div className="rounded-xl border border-dashed px-6 py-10 text-center">
+                <p className="text-sm text-muted-foreground">No campaigns sent yet.</p>
+              </div>
+            ) : (
+              <div className={`${ADMIN_SCROLL} space-y-3 pr-1`}>
+                {campaigns.map((c) => <CampaignRow key={c.id} c={c} />)}
+              </div>
+            )}
+          </div>
+        </div>
+      </section>
+    </div>
+  )
+}

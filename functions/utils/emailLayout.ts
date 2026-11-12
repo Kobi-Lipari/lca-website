@@ -22,6 +22,11 @@ export interface EmailLayout {
   ctaNote?: string
   /** Replaces the default footer line. Already-safe HTML. */
   footerNote?: string
+  /**
+   * The footer every optional email carries (listMailParts in ./mail/footer): already-safe HTML, drawn in the footer
+   * above the association's line only when it is given, so every other email is byte for byte as before.
+   */
+  listFooter?: string
 }
 
 const NAVY = '#1a2744'
@@ -127,6 +132,19 @@ function siteLabel(url: string): string {
   return url.replace(/^https?:\/\//, '')
 }
 
+/**
+ * An optional email's footer lines, in the footer's own style: the reason in the footer's ink at 13 pixels, then the
+ * links on one line, joined by a middle dot as the association's line is, in the same ink at 12 pixels, each
+ * underlined in navy, which reads at well over 4.5 to 1 on the footer's ground. Plain text in, escaped here.
+ */
+export function emailListFooter(reason: string, links: Array<{ label: string; url: string }>): string {
+  const anchors = links.map(
+    (link) => `<a href="${escapeHtml(link.url)}" style="color:${NAVY};text-decoration:underline;">${escapeHtml(link.label)}</a>`,
+  )
+  return `<p style="margin:0 0 6px;font-size:13px;color:${INK};">${escapeHtml(reason)}</p>
+              <p style="margin:0 0 10px;font-size:12px;color:${INK};">${anchors.join(' &nbsp;·&nbsp; ')}</p>`
+}
+
 export function renderEmail(layout: EmailLayout): string {
   const siteUrl = layout.siteUrl.replace(/\/+$/, '')
   const heading = escapeHtml(layout.heading)
@@ -139,6 +157,8 @@ export function renderEmail(layout: EmailLayout): string {
       }`
     : ''
   const footerNote = layout.footerNote ?? 'Questions? Just reply to this email and it will reach us.'
+  // Nothing at all without a list footer, not even the line break, so every other email keeps its bytes.
+  const listFooter = layout.listFooter ? `${layout.listFooter}\n              ` : ''
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -179,7 +199,7 @@ export function renderEmail(layout: EmailLayout): string {
           <tr>
             <td class="lca-pad" style="background-color:#f4f4f0;border-top:1px solid #e0ddd5;padding:20px 40px;text-align:center;font-family:${SANS};">
               <p style="margin:0 0 6px;font-size:13px;color:${INK};">${footerNote}</p>
-              <p style="margin:0;font-size:12px;color:#999;">
+              ${listFooter}<p style="margin:0;font-size:12px;color:#999;">
                 Louisiana Chess Association &nbsp;·&nbsp;
                 <a href="${siteUrl}" style="color:${NAVY};text-decoration:none;">${siteLabel(siteUrl)}</a>
               </p>

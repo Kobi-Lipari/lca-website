@@ -10,7 +10,8 @@
 // relationName pairs each side with its partner. The sections and schedules
 // relations (0052) were written by hand; an entry's row is
 // registrations.sectionRow and scheduleRow, because registrations.section is
-// already the name column.
+// already the name column. The mail lists' relations (0060) were written by
+// hand too: a club's lists, and each choice's contact and list.
 import { relations } from 'drizzle-orm/relations'
 import {
   adminAuditLog,
@@ -22,6 +23,9 @@ import {
   emailCampaignRecipients,
   emailCampaigns,
   lcaPosts,
+  mailContacts,
+  mailListChoices,
+  mailLists,
   members,
   payments,
   registrations,
@@ -141,6 +145,7 @@ export const clubsRelations = relations(clubs, ({ many }) => ({
   clubOfficers: many(clubOfficers),
   clubNews: many(clubNews),
   members: many(members),
+  mailLists: many(mailLists),
 }))
 
 export const registrationsRelations = relations(registrations, ({ one }) => ({
@@ -355,3 +360,26 @@ export const seatRegionsRelations = relations(seatRegions, ({ one }) => ({
     references: [boardMembers.id],
   }),
 }));
+
+export const mailListsRelations = relations(mailLists, ({ one, many }) => ({
+  club: one(clubs, {
+    fields: [mailLists.clubId],
+    references: [clubs.id],
+  }),
+  mailListChoices: many(mailListChoices),
+}))
+
+export const mailContactsRelations = relations(mailContacts, ({ many }) => ({
+  mailListChoices: many(mailListChoices),
+}))
+
+export const mailListChoicesRelations = relations(mailListChoices, ({ one }) => ({
+  contact: one(mailContacts, {
+    fields: [mailListChoices.contactId],
+    references: [mailContacts.id],
+  }),
+  list: one(mailLists, {
+    fields: [mailListChoices.listId],
+    references: [mailLists.id],
+  }),
+}))

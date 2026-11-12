@@ -8,6 +8,8 @@ import {
   parseJsonBody,
 } from '../../../../utils/response'
 import { sendEmail, tournamentAnnouncementEmail } from '../../../../utils/email'
+import { openLoopGate } from '../../../../utils/mail/gate'
+import { engineRulesOn } from '../../../../utils/mail/rules'
 import { resolveSiteUrl } from '../../../../utils/site'
 import { recordAdminAction } from '../../../../utils/admin/audit'
 
@@ -69,11 +71,15 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
 
   // Individual sends, not one BCC blast: per-recipient failure isolation,
   // no address leakage. At LCA field sizes the loop cost is nothing.
+  // Under the mail engine's rules the do-not-send gate is read once for
+  // every entrant first, and an entrant it refuses is counted as failed,
+  // with no call to the mail service.
+  const gate = engineRulesOn() ? await openLoopGate(context.env.DB, list.map((r) => r.email)) : undefined
   let sent = 0
   const failures: string[] = []
   for (const r of list) {
     try {
-      await sendEmail(context.env, { ...email, to: r.email })
+      await sendEmail(context.env, { ...email, to: r.email }, gate)
       sent++
     } catch {
       failures.push(r.email)

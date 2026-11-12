@@ -5,6 +5,7 @@
 export * from './clubs'
 export * from './common'
 export * from './events'
+export * from './mail'
 export * from './me'
 export * from './registration'
 export * from './registry'

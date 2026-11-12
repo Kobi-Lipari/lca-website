@@ -49,10 +49,18 @@ interface LastReading {
  * Upstream being unreachable is counted, never recorded: a gap in the data is
  * honest, whereas a null written into the history would be indistinguishable
  * later from a real unrating.
+ *
+ * With stampUnanswered, a lookup that answered and found nothing (a not-found
+ * answer, an answer with no id, or an ID in the wrong form, which costs no
+ * outside call) writes the checked time alone, in the same batch, so that
+ * member goes to the back of the queue rather than holding a place at its
+ * head on every run; the rating and the expiry on file are not written. The
+ * daily run asks for it under the mail engine's rules, when the run's outside
+ * calls are shared with its reminders. An unreachable service stamps no one.
  */
 export async function snapshotMemberRatings(
   db: D1Database,
-  opts: { limit?: number } = {},
+  opts: { limit?: number; stampUnanswered?: boolean } = {},
 ): Promise<SnapshotResult> {
   const { results: members } = await db
     .prepare(
@@ -100,7 +108,10 @@ export async function snapshotMemberRatings(
       result.unreachable++
       continue
     }
-    if (!detail) continue
+    if (!detail) {
+      if (opts.stampUnanswered) writes.push(db.prepare('UPDATE members SET uscf_rating_updated_at = ? WHERE id = ?').bind(now, member.id))
+      continue
+    }
 
     for (const reading of detail.ratings) {
       if (!TRACKED_SYSTEMS.has(reading.system)) continue

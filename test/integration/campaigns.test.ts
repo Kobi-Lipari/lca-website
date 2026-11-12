@@ -5,13 +5,36 @@
 // The thing worth protecting here is that no member is ever mailed twice.
 // Everything else about a stalled campaign is recoverable; a duplicate send
 // to 194 people is not. So the claim mechanism gets the most attention.
+//
+// The suite holds today's path, whatever the shipped constants say:
+// functions/utils/mail/switches is mocked over the real module with
+// MAIL_LISTS_ON false and MAIL_SENDER 'resend', so the change that switches
+// the newsletter on cannot turn its today-path cases red (a 500 tried again,
+// the batch of 40). Their twins under the mail engine's rules come with
+// test/integration/campaigns-once.test.ts (WS16 step 4), and WS16 step 12
+// removes this path. The recipients are seeded under campaign.test.lca, a
+// name of the harness's own kind that the do-not-send gate lets through.
 import { env } from 'cloudflare:test'
-import { beforeEach, describe, expect, it } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { emailBehavior, emailOutbox, flushWaitUntil, invoke, resetHarness } from './harness'
 import { seedAdmin, seedClub, seedMember } from './factories'
 
 import { onRequestPost as campaignsPost } from '../../functions/api/admin/campaigns'
+import { onRequestGet as campaignGet } from '../../functions/api/admin/campaigns/[id]'
 import { processCampaign, sweepPendingCampaigns } from '../../functions/utils/admin/campaigns'
+
+vi.mock('../../functions/utils/mail/switches', async (importOriginal) => {
+  const real = await importOriginal<typeof import('../../functions/utils/mail/switches')>()
+  return {
+    ...real,
+    get MAIL_LISTS_ON() {
+      return false
+    },
+    get MAIL_SENDER() {
+      return 'resend'
+    },
+  }
+})
 
 beforeEach(resetHarness)
 
@@ -28,7 +51,7 @@ async function seedRecipients(
 ): Promise<string[]> {
   const ids: string[] = []
   for (let i = 0; i < count; i++) {
-    ids.push(await seedMember({ email: `${prefix}${i}@campaign.lca.invalid`, clubId }))
+    ids.push(await seedMember({ email: `${prefix}${i}@campaign.test.lca`, clubId }))
   }
   return ids
 }
@@ -118,6 +141,37 @@ describe('campaigns: access', () => {
     // good place to pin the 2FA requirement down.
     expect(status).toBe(403)
     expect((await json()).mfaRequired).toBe(true)
+  })
+})
+
+describe('campaigns: one campaign read back', () => {
+  beforeEach(clearCampaigns)
+
+  it('answers the eleven keys a campaign has always had, in table order, and no column a later migration added', async () => {
+    const adminId = await seedAdmin()
+    const memberIds = await seedRecipients(1, 'readback')
+    const id = await stageCampaign(memberIds, 'campaign-readback')
+
+    const { status, json } = await invoke(campaignGet, { as: adminId, params: { id } })
+    expect(status).toBe(200)
+    const body = await json()
+
+    // The table has gained columns since (migration 0060's list_id and skipped_count); this answer names its own.
+    expect(Object.keys(body.campaign)).toEqual([
+      'id', 'subject', 'body_html', 'filter_json', 'total_recipients', 'sent_count', 'failed_count', 'status',
+      'created_by', 'created_at', 'completed_at',
+    ])
+    expect(body.campaign).toMatchObject({ id, subject: 'Test subject', total_recipients: 1, sent_count: 0, failed_count: 0 })
+    expect(body.failedRecipients).toEqual([])
+
+    const columns = await env.DB.prepare(`SELECT name FROM pragma_table_info('email_campaigns')`).all<{ name: string }>()
+    expect(columns.results.map((c) => c.name)).toEqual(expect.arrayContaining(['list_id', 'skipped_count']))
+  })
+
+  it('answers 404 for a campaign that does not exist', async () => {
+    const adminId = await seedAdmin()
+    const { status } = await invoke(campaignGet, { as: adminId, params: { id: 'no-such-campaign' } })
+    expect(status).toBe(404)
   })
 })
 
@@ -441,7 +495,7 @@ describe('emailing a few specific people', () => {
         subject: 'Hi', bodyHtml: '<p>Hello</p>', filter: {}, onlySelected: true,
         includeMemberIds: [member],
         // One brand-new address (twice, in different case) and the member's own address typed in.
-        extraEmails: ['Parent@Example.org', 'parent@example.org', 'typed-member-0@campaign.lca.invalid'],
+        extraEmails: ['Parent@Example.org', 'parent@example.org', 'typed-member-0@campaign.test.lca'],
       },
     })
     expect(res.status).toBe(201)
@@ -453,7 +507,7 @@ describe('emailing a few specific people', () => {
     ).bind(campaignId).all<{ member_id: string | null; email: string }>()
     expect(results).toEqual([
       { member_id: null, email: 'parent@example.org' },
-      { member_id: member, email: 'typed-member-0@campaign.lca.invalid' },
+      { member_id: member, email: 'typed-member-0@campaign.test.lca' },
     ])
 
     await flushWaitUntil()

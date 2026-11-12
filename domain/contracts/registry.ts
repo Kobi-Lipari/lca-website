@@ -25,7 +25,20 @@ import {
   tournamentsListResponseSchema,
   updateTournamentRequestSchema,
 } from './events'
-import { payoutRequestRequestSchema, payoutRequestResponseSchema, tournamentCreationResponseSchema } from './me'
+import {
+  emailChoicesRequestSchema,
+  emailChoicesResponseSchema,
+  newsletterRequestSchema,
+  newsletterResponseSchema,
+  newsletterStopResponseSchema,
+  newsletterSummaryResponseSchema,
+  newsletterTestRequestSchema,
+  newsletterTestResponseSchema,
+  sesEventsResponseSchema,
+  unsubscribeLinkResponseSchema,
+  unsubscribeResponseSchema,
+} from './mail'
+import { mediaManagerResponseSchema, payoutRequestRequestSchema, payoutRequestResponseSchema, tournamentCreationResponseSchema } from './me'
 import {
   batchRegistrationRequestSchema,
   batchRegistrationResponseSchema,
@@ -58,6 +71,16 @@ export const contracts = {
   tournaments: {
     GET: { response: tournamentsListResponseSchema },
   },
+  'admin/mail/newsletter': {
+    GET: { response: newsletterSummaryResponseSchema },
+    POST: { request: newsletterRequestSchema, response: newsletterResponseSchema },
+  },
+  'admin/mail/newsletter/stop': {
+    POST: { response: newsletterStopResponseSchema },
+  },
+  'admin/mail/newsletter/test': {
+    POST: { request: newsletterTestRequestSchema, response: newsletterTestResponseSchema },
+  },
   'admin/tournaments': {
     POST: { request: createTournamentRequestSchema, response: adminTournamentResponseSchema },
   },
@@ -84,6 +107,20 @@ export const contracts = {
   },
   'clubs/[id]': {
     GET: { response: clubDetailResponseSchema },
+  },
+  'mail/preferences/[token]': {
+    GET: { response: emailChoicesResponseSchema },
+    PATCH: { request: emailChoicesRequestSchema, response: emailChoicesResponseSchema },
+  },
+  'mail/ses-events': {
+    POST: { response: sesEventsResponseSchema },
+  },
+  'mail/unsubscribe/[token]': {
+    GET: { response: unsubscribeLinkResponseSchema },
+    POST: { response: unsubscribeResponseSchema },
+  },
+  'me/media-manager': {
+    GET: { response: mediaManagerResponseSchema },
   },
   'me/payout-request': {
     POST: { request: payoutRequestRequestSchema, response: payoutRequestResponseSchema },

@@ -174,7 +174,7 @@ describe('smol-toml dependency', () => {
 
 describe('REDESIGN_STATUS.md', () => {
   const status = read('REDESIGN_STATUS.md')
-  const workstreams = Array.from({ length: 15 }, (_, i) => `WS${String(i + 1).padStart(2, '0')}`)
+  const workstreams = Array.from({ length: 16 }, (_, i) => `WS${String(i + 1).padStart(2, '0')}`)
 
   /** The text of one "## " section. */
   const section = (heading: RegExp) => {
@@ -193,7 +193,7 @@ describe('REDESIGN_STATUS.md', () => {
     expect(rules).toMatch(/not after the merge/i)
   })
 
-  it('has one block per workstream, WS01 to WS15, in order', () => {
+  it('has one block per workstream, WS01 to WS16, in order', () => {
     const headings = [...status.matchAll(/^## (WS\d\d):/gm)].map((m) => m[1])
     expect(headings).toEqual(workstreams)
   })

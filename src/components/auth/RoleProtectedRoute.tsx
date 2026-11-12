@@ -2,7 +2,10 @@ import type { ReactNode } from 'react'
 import { Navigate, useLocation, useParams } from 'react-router-dom'
 
 import { useAuth } from '@/contexts/auth-context'
+import { MediaManagerAnswerContext } from '@/areas/admin/mediaManagerAnswer'
 import { canManageClub, isViewOnlyAdmin, toolsHomeFor, type MemberRole } from '@/areas/admin/roles'
+import { useMediaManager } from '@/areas/admin/useMediaManager'
+import { FEATURES } from '@/lib/features'
 
 interface RoleProtectedRouteProps {
   children: ReactNode
@@ -16,6 +19,26 @@ interface RoleProtectedRouteProps {
   fallbackToToolsHome?: boolean
   /** Also let in anyone assigned to direct at least one event. */
   allowDirectors?: boolean
+  /**
+   * With mailLists on, also let in the media manager (WS16 step 6), a member
+   * whose role the roles list does not hold, when the server says they hold
+   * the Media manager seat, and hand the page inside the answer it was let in
+   * on. While that answer is on the way the route shows its loading line, as
+   * while a session loads. An LCA officer who holds a seat, whom the roles
+   * list lets in, is asked too (checkpoint M's review) and handed the answer
+   * when it comes, never waiting on it. With mailLists off this changes
+   * nothing and nothing is asked.
+   */
+  allowMediaManager?: boolean
+}
+
+/** What the route shows while a session, or the media manager's answer, is on the way. */
+function StillLoading() {
+  return (
+    <div className="mx-auto flex max-w-6xl items-center justify-center px-6 py-24">
+      <p className="text-muted-foreground">Loading...</p>
+    </div>
+  )
 }
 
 function canAccessTournament(
@@ -37,6 +60,7 @@ export function RoleProtectedRoute({
   requireTournamentAccess,
   fallbackToToolsHome,
   allowDirectors,
+  allowMediaManager,
 }: RoleProtectedRouteProps) {
   const {
     user,
@@ -50,13 +74,12 @@ export function RoleProtectedRoute({
   } = useAuth()
   const location = useLocation()
   const { id } = useParams<{ id: string }>()
+  // Asked only with mailLists on, for a route that lets the media manager in, and for a signed-in member whose role
+  // Admin does not let in or an LCA officer who holds a seat; called ahead of every return below, so on every draw.
+  const mediaManager = useMediaManager(!!allowMediaManager)
 
   if (loading || memberLoading) {
-    return (
-      <div className="mx-auto flex max-w-6xl items-center justify-center px-6 py-24">
-        <p className="text-muted-foreground">Loading...</p>
-      </div>
-    )
+    return <StillLoading />
   }
 
   if (!user) {
@@ -78,7 +101,12 @@ export function RoleProtectedRoute({
 
   const isDirector = directedTournamentIds.length > 0
   if (roles && !roles.includes(role) && !(allowDirectors && isDirector)) {
-    return <Navigate to={fallbackToToolsHome ? toolsHomeFor(role) : '/dashboard'} replace />
+    // The media manager is let in by the server's answer, never by a guess: until it comes, nothing of the page is drawn
+    // and nobody is sent away, and anyone it does not name is sent where today's rule sends them.
+    if (allowMediaManager && FEATURES.mailLists && mediaManager.asking) return <StillLoading />
+    if (!(allowMediaManager && FEATURES.mailLists && mediaManager.mediaManager)) {
+      return <Navigate to={fallbackToToolsHome ? toolsHomeFor(role) : '/dashboard'} replace />
+    }
   }
 
   // Admin endpoints refuse a password-only session, so send them to set up
@@ -87,5 +115,6 @@ export function RoleProtectedRoute({
     return <Navigate to="/account/security" replace />
   }
 
-  return children
+  if (!allowMediaManager || !FEATURES.mailLists) return children
+  return <MediaManagerAnswerContext.Provider value={mediaManager}>{children}</MediaManagerAnswerContext.Provider>
 }

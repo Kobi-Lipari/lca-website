@@ -256,7 +256,7 @@ describe('.dev.vars.a11y holds fake values only', () => {
   })
 
   it('leaves out the keys that could charge a card, send mail or read a page', () => {
-    for (const name of ['STRIPE_SECRET_KEY', 'RESEND_API_KEY', 'FACEBOOK_PAGE_TOKEN', 'ANTHROPIC_API_KEY'])
+    for (const name of ['STRIPE_SECRET_KEY', 'RESEND_API_KEY', 'FACEBOOK_PAGE_TOKEN', 'ANTHROPIC_API_KEY', 'SES_ACCESS_KEY_ID', 'SES_SECRET_ACCESS_KEY'])
       expect(values[name], name).toBeUndefined()
     expect(Object.keys(values).filter((n) => /STRIPE|RESEND|FACEBOOK|TOKEN/.test(n) && !/WEBHOOK/.test(n))).toEqual([])
   })

@@ -3,7 +3,9 @@ import { createClient } from '@supabase/supabase-js'
 import type { User } from '@supabase/supabase-js'
 
 import type { Env, MemberRow } from '../types'
+import { holdsMediaManagerSeat } from './admin/mediaManager'
 import { getMemberById, upsertMemberFromAuth } from './admin/members'
+import { MAIL_LISTS_ON } from './mail/switches'
 import { errorResponse, jsonResponse } from './response'
 import { isMemberRole, type MemberRole } from './admin/permissions'
 
@@ -145,8 +147,15 @@ export async function requireAdmin(
   const authed = await requireRole(request, env, 'lca_admin')
   if (isResponse(authed)) return authed
 
-  const token = bearerToken(request)
-  if (!token || readTokenAal(token) !== 'aal2') {
+  return secondFactorMissing(request) ?? authed
+}
+
+/**
+ * The 403 an LCA admin gets when the session carries no second factor, or
+ * null when it does. Read only after the session has been verified.
+ */
+function secondFactorMissing(request: Request): Response | null {
+  if (!hasSecondFactor(request)) {
     return jsonResponse(
       {
         error:
@@ -156,8 +165,18 @@ export async function requireAdmin(
       403,
     )
   }
+  return null
+}
 
-  return authed
+/**
+ * Whether the session carries a second factor: the token's aal claim is
+ * exactly 'aal2', as requireAdmin reads it. A missing claim, any other value
+ * and a token that is not one all read as no. Read only after the session
+ * has been verified, so the claim is the sign-in service's own.
+ */
+export function hasSecondFactor(request: Request): boolean {
+  const token = bearerToken(request)
+  return token !== null && readTokenAal(token) === 'aal2'
 }
 
 // ── LCA Observer and LCA Officer ─────────────────────────────────
@@ -201,6 +220,69 @@ export async function requireMailer(
     return errorResponse('Group email is limited to admins and the LCA Observer', 403)
   }
   return authed
+}
+
+/**
+ * The people who may send the LCA newsletter (WS16's endpoints under
+ * /api/admin/mail), with the session verified once, where requireMailer
+ * verifies an admin's twice: today's mailers, an LCA admin with a second
+ * factor and the president (lca_observer), and, while MAIL_LISTS_ON is set,
+ * the media manager (WS16 step 6, sendsAsMediaManager below), an LCA officer
+ * among them since checkpoint M's review, signed in with a second factor.
+ *
+ * With MAIL_LISTS_ON unset every answer is requireMailer's own and no seat
+ * is read: 401 signed out, 'Forbidden' for a role that is neither, the
+ * mailing tools' words for an officer, and the second factor's 403 for an
+ * admin without one. With it set, an admin and the president are answered
+ * as before; the media manager without a second factor gets the 403 with
+ * mfaRequired that requireAdmin gives, in words of its own; and anyone else,
+ * an officer without the seat among them, gets LIST_MAILERS_ONLY.
+ * requireMailer, the guard of today's five campaign endpoints, is unchanged,
+ * so the media manager, an officer who holds the seat included, reaches only
+ * WS16's own endpoints and never today's typed-in addresses or hand-picked
+ * members; the newsletter's test goes to their own account's address alone.
+ */
+export async function requireListMailer(
+  request: Request,
+  env: Env,
+): Promise<AuthedMember | Response> {
+  const authed = await requireAuthedMember(request, env)
+  if (isResponse(authed)) return authed
+  if (authed.member.role === 'lca_observer') return authed
+  if (authed.member.role === 'lca_admin') return secondFactorMissing(request) ?? authed
+  if (!MAIL_LISTS_ON) {
+    if (authed.member.role === 'lca_officer') {
+      return errorResponse('Group email is limited to admins and the LCA Observer', 403)
+    }
+    return errorResponse('Forbidden', 403)
+  }
+  if (await sendsAsMediaManager(env.DB, authed.member)) {
+    if (hasSecondFactor(request)) return authed
+    return jsonResponse({ error: MEDIA_MANAGER_SECOND_FACTOR, mfaRequired: true }, 403)
+  }
+  return errorResponse(LIST_MAILERS_ONLY, 403)
+}
+
+/** The 403 for anyone requireListMailer refuses while MAIL_LISTS_ON is set, but the second factor's. */
+export const LIST_MAILERS_ONLY = 'Group email is limited to LCA admins, the president and the media manager.'
+
+/** The 403 the media manager gets, with mfaRequired, when the session carries no second factor. */
+export const MEDIA_MANAGER_SECOND_FACTOR = 'Two-factor sign-in is required to send group email. Set it up in your account security settings.'
+
+/**
+ * Whether the member sends as the media manager: they hold the Media manager
+ * seat now (holdsMediaManagerSeat, read at each request), whatever their
+ * role, each keeping their own role's rights. The seat is what counts (K's
+ * decision 52, of Thursday, November 12, 2026, which settled decision 49):
+ * an LCA officer, whom Admin lets in to read only, sends as the media
+ * manager while they hold it. An LCA admin and the president send as
+ * themselves, so the rule answers no for them before the seat is read. The
+ * second factor is not read here: the guard asks for it, and GET
+ * /api/me/media-manager answers it apart.
+ */
+export async function sendsAsMediaManager(db: D1Database, member: { id: string; role: string }): Promise<boolean> {
+  if (member.role === 'lca_admin' || member.role === 'lca_observer') return false
+  return holdsMediaManagerSeat(db, member.id)
 }
 
 /**

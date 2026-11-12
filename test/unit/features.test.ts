@@ -7,7 +7,10 @@
 // WS08's switch, standingDirectors, is held off the same way in WS08 below;
 // it is turned on with CREATION_ROLES_ON in functions/utils/events/creation.ts,
 // in the same change that takes its name out of WS08
-// (test/unit/creation-switch.test.ts holds the two equal).
+// (test/unit/creation-switch.test.ts holds the two equal). WS16's switch,
+// mailLists, is held off in WS16 below; it is turned on with MAIL_LISTS_ON
+// in functions/utils/mail/switches.ts, in the same change that takes its
+// name out of WS16 (test/unit/mail-switches.test.ts holds the two equal).
 import { describe, expect, it } from 'vitest'
 import { FEATURES } from '@/lib/features'
 
@@ -36,6 +39,9 @@ const EARLIER = ['clubTournaments', 'tournamentQuickFilters', 'externalTags'] as
 /** The first part of WS08, tournament creation: its switch, held off until that part is done. */
 const WS08 = ['standingDirectors'] as const
 
+/** WS16, the mail engine and the LCA newsletter: its switch, held off until the newsletter is switched on. */
+const WS16 = ['mailLists'] as const
+
 describe('feature switches', () => {
   it.each(PHASE_0)('%s exists, is a boolean and is off', (key) => {
     expect(Object.hasOwn(FEATURES, key)).toBe(true)
@@ -49,6 +55,12 @@ describe('feature switches', () => {
     expect(FEATURES[key]).toBe(false)
   })
 
+  it.each(WS16)('%s exists, is a boolean and is off', (key) => {
+    expect(Object.hasOwn(FEATURES, key)).toBe(true)
+    expect(typeof FEATURES[key]).toBe('boolean')
+    expect(FEATURES[key]).toBe(false)
+  })
+
   // Only that they exist: these switches are turned on outside the redesign.
   it.each(EARLIER)('%s is still there and is a boolean', (key) => {
     expect(Object.hasOwn(FEATURES, key)).toBe(true)
@@ -56,8 +68,8 @@ describe('feature switches', () => {
   })
 
   // A subset check, not an exact one: later work adds its own switches here.
-  it('holds every earlier switch, every Phase 0 switch and WS08\'s', () => {
-    expect(Object.keys(FEATURES)).toEqual(expect.arrayContaining([...EARLIER, ...PHASE_0, ...WS08]))
+  it('holds every earlier switch, every Phase 0 switch, WS08\'s and WS16\'s', () => {
+    expect(Object.keys(FEATURES)).toEqual(expect.arrayContaining([...EARLIER, ...PHASE_0, ...WS08, ...WS16]))
   })
 
   it('runs in node, the default test environment', () => {

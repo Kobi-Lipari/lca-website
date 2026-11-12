@@ -25,6 +25,28 @@ export interface Env {
    * failing at the model call.
    */
   ANTHROPIC_API_KEY?: string
+  /**
+   * The key the links in optional email are signed with (functions/utils/mail/links.ts), and, only while it is being
+   * changed, the key before it, so links signed under the old key keep opening. Secrets of the production environment
+   * alone, set by K; never on the Preview environment, where no link is signed and every link answers that it isn't
+   * working.
+   */
+  MAIL_LINK_SECRET?: string
+  MAIL_LINK_SECRET_PREVIOUS?: string
+  /**
+   * Amazon SES's sending key, its id and its secret (functions/utils/mail/ses.ts), for K's own AWS account. Secrets of
+   * the production environment and of the daily-emails worker alone, set by K; never on the Preview environment, where
+   * a message handed to Amazon SES makes no request and is answered as a missing key.
+   */
+  SES_ACCESS_KEY_ID?: string
+  SES_SECRET_ACCESS_KEY?: string
+  /**
+   * The name of the Amazon SNS topic K made for Amazon SES's bounces and spam reports, the one topic whose messages the
+   * receiver (functions/api/mail/ses-events.ts) takes. A secret of the production environment of the Pages project
+   * alone, set by K, since the name holds K's AWS account number, which stays out of the repository; never on the
+   * Preview environment or the daily-emails worker. Without it the receiver answers 404 to everything.
+   */
+  SES_SNS_TOPIC_ARN?: string
 }
 
 export interface MemberRow {

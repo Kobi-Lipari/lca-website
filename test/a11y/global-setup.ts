@@ -103,6 +103,13 @@ export const A11Y_EMPTY_SECRETS = [
   'FACEBOOK_PAGE_TOKEN',
   'FACEBOOK_PAGE_ID',
   'ANTHROPIC_API_KEY',
+  // The keys of the links in optional email: with none, as on the Preview environment, no link is signed and every link
+  // answers that it isn't working.
+  'MAIL_LINK_SECRET',
+  'MAIL_LINK_SECRET_PREVIOUS',
+  'SES_ACCESS_KEY_ID',
+  'SES_SECRET_ACCESS_KEY',
+  'SES_SNS_TOPIC_ARN',
 ] as const
 
 /**

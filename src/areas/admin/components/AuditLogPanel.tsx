@@ -20,7 +20,7 @@ const FILTERS: { value: string; label: string }[] = [
   { value: 'seat_assign,seat_end,seat_regions', label: 'Board seats' },
   { value: 'members_export', label: 'Member exports' },
   { value: 'document_add,document_edit,document_remove', label: 'Bylaws & minutes' },
-  { value: 'group_email_sent', label: 'Group email' },
+  { value: 'group_email_sent,group_email_stopped', label: 'Group email' },
   { value: 'ticket_delete', label: 'Deleted tickets' },
 ]
 
@@ -74,6 +74,7 @@ const ACTION_META: Record<
   officer_add: { label: 'Added officer', icon: UserPlus, className: 'bg-info-100 text-info-800' },
   officer_remove: { label: 'Removed officer', icon: UserMinus, className: 'bg-muted text-muted-foreground' },
   group_email_sent: { label: 'Sent group email', icon: Mail, className: 'bg-info-100 text-info-800' },
+  group_email_stopped: { label: 'Stopped a newsletter', icon: Mail, className: 'bg-muted text-muted-foreground' },
   seat_assign: { label: 'Board seat filled', icon: UserPlus, className: 'bg-info-100 text-info-800' },
   members_export: { label: 'Exported members', icon: Download, className: 'bg-lca-gold/20 text-gold-ink-badge' },
   seat_end: { label: 'Board seat ended', icon: UserMinus, className: 'bg-muted text-muted-foreground' },

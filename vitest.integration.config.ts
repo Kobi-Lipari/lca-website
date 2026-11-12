@@ -23,6 +23,15 @@ export default defineConfig({
           CONTACT_EMAIL: 'contact@louisianachess.org',
           SUPPORT_EMAIL: 'support@louisianachess.org',
           ANTHROPIC_API_KEY: 'sk-ant-test-harness',
+          // A made-up key for the links in optional email, used nowhere else: a test signs with env.MAIL_LINK_SECRET.
+          MAIL_LINK_SECRET: 'harness-made-up-mail-link-key-0042',
+          // Amazon SES's key for the harness: AKIDEXAMPLE is the example key id of AWS's own documentation, which
+          // opens nothing, and the secret is made up; the harness's catch point checks each request's signature with it.
+          SES_ACCESS_KEY_ID: 'AKIDEXAMPLE',
+          SES_SECRET_ACCESS_KEY: 'harness-made-up-ses-secret-0042',
+          // A made-up topic for the receiver of Amazon's reports, in the account of twelve zeros, which is no one's; the
+          // harness's helper signs each message the tests post with a key and a certificate of its own.
+          SES_SNS_TOPIC_ARN: 'arn:aws:sns:us-east-1:000000000000:lca-mail-events',
         },
       },
     }),

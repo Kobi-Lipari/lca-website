@@ -125,6 +125,34 @@ export async function seedRegistration(opts: {
   return id
 }
 
+export interface SeedMailContactOptions {
+  /** The address, as mail_contacts keeps it: trimmed and lowercased. */
+  address: string
+  /** When the person stopped all optional mail; not stopped by default. */
+  optionalOffAt?: string | null
+  /** When a spam report marked the address; never by default. */
+  complainedAt?: string | null
+  /** The person's choices by list id, each from the source given ('link' by default), written at the time given or now. */
+  choices?: Record<string, { choice: 'in' | 'out'; source?: string; at?: string }>
+}
+
+/**
+ * A mail contact as WS16's tables hold one (migration 0060): one row per address, a member's or not, with its id of
+ * 32 random hex characters, its marks and its choices.
+ */
+export async function seedMailContact(opts: SeedMailContactOptions): Promise<string> {
+  const id = Array.from(crypto.getRandomValues(new Uint8Array(16)), (b) => b.toString(16).padStart(2, '0')).join('')
+  await env.DB.prepare(
+    `INSERT INTO mail_contacts (id, address, optional_off_at, complained_at) VALUES (?, ?, ?, ?)`,
+  ).bind(id, opts.address, opts.optionalOffAt ?? null, opts.complainedAt ?? null).run()
+  for (const [listId, c] of Object.entries(opts.choices ?? {})) {
+    await env.DB.prepare(
+      `INSERT INTO mail_list_choices (contact_id, list_id, choice, source, updated_at) VALUES (?, ?, ?, ?, COALESCE(?, datetime('now')))`,
+    ).bind(id, listId, c.choice, c.source ?? 'link', c.at ?? null).run()
+  }
+  return id
+}
+
 export async function seedTournamentDirector(
   tournamentId: string,
   memberId: string,
@@ -155,4 +183,35 @@ export async function seedPresident(memberId: string): Promise<void> {
   await env.DB.prepare(
     `INSERT INTO board_seat_assignments (id, seat_id, member_id, started_at) VALUES (?, ?, ?, datetime('now'))`,
   ).bind(nextId('term'), seat.id, memberId).run()
+}
+
+export interface SeedSeatOptions {
+  /** The seat's link name, unique among seats (idx_board_members_slug), written exactly as given. */
+  slug: string
+  /** The seat's title, as the public Board page shows it; a plainly made-up one by default. */
+  role?: string
+  /** Whether the seat is active; it is by default. */
+  isActive?: boolean
+}
+
+/**
+ * A board seat with the link name given, and a current term on it for each
+ * member given, started now with no end: the columns
+ * test/integration/nav-personas.test.ts writes, as the seat screens add a
+ * seat (functions/api/governance/board.ts) and start a term
+ * (functions/api/admin/board-seats.ts). A term is ended as those screens end
+ * one, UPDATE board_seat_assignments SET ended_at = datetime('now'). Answers
+ * the seat's id.
+ */
+export async function seedSeat(opts: SeedSeatOptions, holders: string[] = []): Promise<string> {
+  const id = nextId('seat')
+  await env.DB.prepare(
+    `INSERT INTO board_members (id, role, name, sort_order, slug, category, is_active, is_shared) VALUES (?, ?, ?, ?, ?, 'officer', ?, 0)`,
+  ).bind(id, opts.role ?? 'Sample seat', 'Player One', 900, opts.slug, opts.isActive === false ? 0 : 1).run()
+  for (const memberId of holders) {
+    await env.DB.prepare(
+      `INSERT INTO board_seat_assignments (id, seat_id, member_id, started_at) VALUES (?, ?, ?, datetime('now'))`,
+    ).bind(nextId('term'), id, memberId).run()
+  }
+  return id
 }

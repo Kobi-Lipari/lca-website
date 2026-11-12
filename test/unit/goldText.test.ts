@@ -816,9 +816,9 @@ describe('the gold guard on the tree', () => {
       `src/components/layout/MobileMenu.tsx:${sheet} <AppearanceControl> on=light -> light`,
       `src/components/layout/SiteFooter.tsx:${newFooter} <AppearanceControl> on=navy (its default) -> navy`,
       'src/pages/AboutPage.tsx:47 <ThickThinRule> on=light (its default) -> light',
-      'src/pages/AdminEmailPage.tsx:379 <MultiSelectDropdown> on=light (its default) -> light',
-      'src/pages/AdminEmailPage.tsx:380 <MultiSelectDropdown> on=light (its default) -> light',
-      'src/pages/AdminEmailPage.tsx:386 <MultiSelectDropdown> on=light (its default) -> light',
+      'src/pages/AdminEmailPage.tsx:717 <MultiSelectDropdown> on=light (its default) -> light',
+      'src/pages/AdminEmailPage.tsx:718 <MultiSelectDropdown> on=light (its default) -> light',
+      'src/pages/AdminEmailPage.tsx:724 <MultiSelectDropdown> on=light (its default) -> light',
       'src/pages/AnnualMeetingPage.tsx:135 <ThickThinRule> on=light (its default) -> light',
       'src/pages/BoardPage.tsx:334 <ThickThinRule> on=light (its default) -> light',
       'src/pages/BoardPage.tsx:390 <ThickThinRule> on=light (its default) -> light',
@@ -1243,7 +1243,7 @@ describe('the gold guard on the tree without its allowlist, and on a copy of the
     [
       'the audit log\'s rows, which read six listed badges, moved onto navy',
       { file: 'src/areas/admin/components/AuditLogPanel.tsx', from: 'rounded-xl border bg-card`}>', to: 'rounded-xl border bg-brand-navy`}>' },
-      'src/areas/admin/components/AuditLogPanel.tsx:271 ',
+      'src/areas/admin/components/AuditLogPanel.tsx:272 ',
       'reads text-gold-ink-badge through meta.className on a navy ground',
     ],
   ])('fails on %s', (_, change, where, message) => {
