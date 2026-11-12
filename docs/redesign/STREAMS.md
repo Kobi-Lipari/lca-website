@@ -5,7 +5,7 @@ Decided by K on Thursday, November 12, 2026 (decision 58 in `ws16-k-decisions.md
 ## The streams
 
 - **The mail stream** (the first session, the redesign's lead since the start). WS16: K's switch-on day and the cutover; checkpoint N (steps 9 to 11) and checkpoint O (step 12); the newsletter's own page, checkpoints P and Q, on `redesign/ws16-page`, and later R. Its documents: `HANDOFF.md`, every `ws16-*` file, the roadmap page, K's checklist, the address map and the design canvas.
-- **The clubs stream** (the second session, opened on Thursday, November 12, 2026). WS09, clubs as living listings: its plan first, then its build on `redesign/ws09-clubs`, cut from `main` when the build starts. Its documents: `HANDOFF-ws09.md` and every `ws09-*` file.
+- **The clubs stream** (the second session, "LCA website: WS09 clubs (second stream)", `session_017anKV5HapmWPwfjiGCLc7c`, opened on Thursday, November 12, 2026 at 10:41 PM UTC; the first session is `session_017M4TWw4V9pP7JmpbcTUmSi`). WS09, clubs as living listings: its plan first, then its build on `redesign/ws09-clubs`, cut from `main` when the build starts. Its documents: `HANDOFF-ws09.md` and every `ws09-*` file.
 
 ## What cannot be done side by side
 
