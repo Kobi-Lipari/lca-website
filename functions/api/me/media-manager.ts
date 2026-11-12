@@ -5,8 +5,11 @@
 // carries a second factor, about themselves alone. Its contract is
 // mediaManagerResponseSchema in domain/contracts/me.ts. With mailLists on,
 // the site asks it once a session, only for a signed-in member whose role
-// Admin does not let in (src/areas/admin/useMediaManager.ts), to draw Admin
-// with Group email alone and the account menu's Group email link.
+// Admin does not let in, or for an LCA officer who holds a seat
+// (src/areas/admin/useMediaManager.ts), to draw Admin with Group email, alone
+// or beside an officer's read-only sections, and the account menu's Group
+// email link. Since checkpoint M's review it reads true for an officer who
+// holds the Media manager seat, by the guard's own rule.
 //
 // It is never the grant: requireListMailer reads the seat again at each
 // request, so a page told true by an answer that has gone stale is still

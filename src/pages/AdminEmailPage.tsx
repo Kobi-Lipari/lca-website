@@ -1,5 +1,5 @@
 // src/pages/AdminEmailPage.tsx
-import { useEffect, useId, useMemo, useState } from 'react'
+import { useEffect, useId, useMemo, useState, type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import {
   Mail, Send, Users, CheckCircle2, XCircle, Clock,
@@ -19,6 +19,7 @@ import { formatDate, formatTime } from '@/lib/format'
 import { ADMIN_SCROLL, LCA, GOLD_BUTTON as GOLD } from '@/lib/brand'
 import { LIST_FOOTER_WORDS, PREFERENCES_LABEL, type ListFooterWords } from '@domain/mail/footer'
 import { NEWSLETTER_LIST_ID } from '@domain/mail/lists'
+import { ALREADY_SENDING, WAITS_FOR_SES } from '@domain/mail/newsletterWords'
 import {
   getClubs,
   getCampaigns,
@@ -75,8 +76,8 @@ const GUARDRAILS = "Name the newsletter in the subject, put member news first, a
 const BOTH_LINKS = 'Each email carries an unsubscribe link and an email preferences link.'
 /** What Specific people is for while the newsletter is on (Q45), behind Help. */
 const SPECIFIC_PEOPLE_LINE = "For a note about a person's own membership, entry or request. News goes to the LCA newsletter list, which honors each person's choices."
-/** Beside the send button, drawn off, while Resend still sends: the newsletter goes out through Amazon SES alone (Q41). */
-const WAITS_FOR_SES_LINE = 'The newsletter goes out through Amazon SES, which this site does not send through yet. You can write it and send yourself a test now.'
+// Beside the send button, drawn off, while Resend still sends: the newsletter goes out through Amazon SES alone (Q41).
+// The words are the server's own, WAITS_FOR_SES, read from the one copy both write (checkpoint M's review).
 
 /** The one key this page keeps in the browser, with mailLists on: that the newsletter tab's Help has opened by itself once. */
 const HELP_SHOWN_KEY = 'lca-newsletter-help'
@@ -98,8 +99,11 @@ function rememberHelpShown(): void {
   }
 }
 
-/** A button that opens and closes the part it names, with a visible ring and room for a finger. */
-const OPENER = 'inline-flex min-h-6 min-w-6 items-center gap-1 rounded-md px-1.5 text-xs font-medium text-ink outline-none hover:underline focus-visible:ring-3 focus-visible:ring-focus'
+/** A button that opens and closes the part it names, with a visible ring and room for a finger: 44px tall, words of 14px. */
+const OPENER = 'inline-flex min-h-11 min-w-6 items-center gap-1 rounded-md px-1.5 text-sm font-medium text-ink outline-none hover:underline focus-visible:ring-3 focus-visible:ring-focus'
+
+/** A control of the newsletter's tab on a phone: at least 44px tall, so a finger finds it (checkpoint M's review). */
+const PHONE_TALL = 'max-sm:min-h-11'
 
 // Relative: the preview is served from the same origin as the logo, so this
 // is correct wherever the site is deployed — including the dev server, where
@@ -181,7 +185,11 @@ function sentAt(createdAt: string): string {
   return `${formatDate(createdAt, { stored: 'utc', year: true })} · ${formatTime(createdAt, { stored: 'utc' })}`
 }
 
-function CampaignRow({ c }: { c: ApiCampaign }) {
+/**
+ * One send in the history's style. With mailLists on its count keeps its number with its noun, and a newsletter's row
+ * can carry `extra`, why it waits, beside its own counts, and `large` draws its words at 14px; with the switch off it is today's row.
+ */
+function CampaignRow({ c, extra, large }: { c: ApiCampaign; extra?: ReactNode; large?: boolean }) {
   const meta = STATUS_META[c.status] ?? STATUS_META.sending
   const Icon = meta.icon
   const pct = c.total_recipients > 0
@@ -193,11 +201,11 @@ function CampaignRow({ c }: { c: ApiCampaign }) {
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <p className="truncate font-medium text-ink">{c.subject}</p>
-          <p className="mt-0.5 text-xs text-muted-foreground">
-            {sentAt(c.created_at)} · {c.total_recipients} recipients
+          <p className={cn('mt-0.5', large ? 'text-sm' : 'text-xs', 'text-muted-foreground')}>
+            {sentAt(c.created_at)} · {FEATURES.mailLists ? <span className="whitespace-nowrap">{c.total_recipients} recipients</span> : <>{c.total_recipients} recipients</>}
           </p>
         </div>
-        <span className={cn('flex flex-shrink-0 items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-medium', meta.className)}>
+        <span className={cn('flex flex-shrink-0 items-center gap-1 rounded-full px-2 py-0.5', large ? 'text-sm' : 'text-[11px]', 'font-medium', meta.className)}>
           <Icon className="size-3" /> {meta.label}
         </span>
       </div>
@@ -205,11 +213,12 @@ function CampaignRow({ c }: { c: ApiCampaign }) {
         <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
           <div className="h-full rounded-full bg-lca-gold transition-all" style={{ width: `${pct}%` }} />
         </div>
-        <p className="mt-1 text-[11px] text-muted-foreground">
+        <p className={cn('mt-1', large ? 'text-sm' : 'text-[11px]', 'text-muted-foreground')}>
           {c.sent_count} sent
           {c.failed_count > 0 && <span className="text-bad"> · {c.failed_count} failed</span>}
           {' '}· {pct}%
         </p>
+        {extra}
       </div>
     </div>
   )
@@ -237,7 +246,7 @@ function SesTestChoice({ checked, onChange }: { checked: boolean; onChange: (on:
   const { role } = useAuth()
   if (role !== 'lca_admin') return null
   return (
-    <label className="mt-2 flex min-h-6 items-center gap-2 text-xs text-ink">
+    <label className="mt-2 flex min-h-6 items-center gap-2 text-sm text-ink">
       <input type="checkbox" className="size-4 accent-ink" checked={checked} onChange={(e) => onChange(e.target.checked)} />
       Send the test through Amazon SES
     </label>
@@ -259,6 +268,10 @@ export function AdminEmailPage({ embedded = false, mediaManager }: { embedded?: 
   usePageTitle(embedded ? 'Admin · Group email' : 'Group Email')
   const forMediaManager = FEATURES.mailLists && mediaManager !== undefined
   const canSend = !forMediaManager || mediaManager?.secondFactor === true
+  // The media manager's test goes to their own account's address alone, which the page shows whole, as the dashboard
+  // and the support page show a person their own address (checkpoint M's review).
+  const { member, user } = useAuth()
+  const ownEmail = member?.email || user?.email || ''
 
   const [clubs, setClubs] = useState<ApiClubListItem[]>([])
   const [campaigns, setCampaigns] = useState<ApiCampaign[]>([])
@@ -503,17 +516,18 @@ export function AdminEmailPage({ embedded = false, mediaManager }: { embedded?: 
   }
 
   async function handleSendTest() {
+    const testTo = forMediaManager ? ownEmail : testEmail.trim()
     setTestSending(true)
     setTestResult(null)
     try {
       if (mode === 'newsletter') {
         // The newsletter's own test, with the real footer and links for this address, through Amazon SES when asked.
         const service = sesTest && newsletter?.sendsThrough === 'resend' ? { service: 'ses' as const } : {}
-        await sendNewsletterTest({ to: testEmail.trim(), subject: subject.trim(), bodyHtml: body, ...service })
+        await sendNewsletterTest({ to: testTo, subject: subject.trim(), bodyHtml: body, ...service })
       } else {
-        await sendTestCampaignEmail({ email: testEmail.trim(), subject: subject.trim(), bodyHtml: body })
+        await sendTestCampaignEmail({ email: testTo, subject: subject.trim(), bodyHtml: body })
       }
-      setTestResult({ ok: true, message: `Test email sent to ${testEmail.trim()}.` })
+      setTestResult({ ok: true, message: `Test email sent to ${testTo}.` })
     } catch (err) {
       setTestResult({ ok: false, message: err instanceof Error ? err.message : 'Failed to send test email' })
     } finally {
@@ -522,7 +536,7 @@ export function AdminEmailPage({ embedded = false, mediaManager }: { embedded?: 
   }
 
   const canPreview = subject.trim().length > 0 && body.trim().length > 0
-  const canTest = canPreview && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(testEmail.trim())
+  const canTest = canPreview && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(forMediaManager ? ownEmail : testEmail.trim())
 
   const addQuery = addSearch.trim().toLowerCase()
   const finalIds = useMemo(() => new Set(finalList.map((r) => r.id)), [finalList])
@@ -538,17 +552,23 @@ export function AdminEmailPage({ embedded = false, mediaManager }: { embedded?: 
   const tabs = forMediaManager ? MEDIA_MANAGER_TABS : FEATURES.mailLists ? NEWSLETTER_TABS : TODAY_TABS
   const subtitle = forMediaManager ? MEDIA_MANAGER_SUBTITLE : NEWSLETTER_SUBTITLE
   const waitsForSes = newsletter?.sendsThrough === 'resend'
+  // The newsletter tab's own words are 14px or more, its openers and its controls on a phone 44px tall (checkpoint M's
+  // review); every other tab, and the page with mailLists off, keeps today's sizes.
+  const nl = mode === 'newsletter'
+  // Why the sending newsletter waits, in the server's words, named by its subject: beside its own counts, and beside the
+  // Send button it holds back.
+  const sendingNow = newsletter?.summary.recent.find((s) => s.status === 'sending')
+  const waitingLine = sendingNow && newsletter?.summary.waits ? `\u201c${sendingNow.subject}\u201d is waiting: ${newsletter.summary.waits}` : null
 
   // The newsletter's own recent sends, with the status region and the stop: in the history column for everyone who may
   // send it, and under its tab on the media manager's page, which draws no Send history column.
   const newsletterSends = (
     <div className="space-y-3">
       <div role="status" className="space-y-1 text-sm text-ink">
-        {newsletterSending && newsletter?.summary.waits && <p>{newsletter.summary.waits}</p>}
         {stopped && <p>{stopped}</p>}
       </div>
       {newsletterSending && (
-        <Button type="button" variant="outline" disabled={stopping} onClick={handleStop}>
+        <Button type="button" variant="outline" className={PHONE_TALL} disabled={stopping} onClick={handleStop}>
           Stop sending
         </Button>
       )}
@@ -559,7 +579,13 @@ export function AdminEmailPage({ embedded = false, mediaManager }: { embedded?: 
           <p className="text-sm text-muted-foreground">No campaigns sent yet.</p>
         </div>
       ) : (
-        newsletter.summary.recent.map((send) => <CampaignRow key={send.id} c={asCampaign(send)} />)
+        newsletter.summary.recent.map((send) => (
+          <CampaignRow
+            key={send.id}
+            c={asCampaign(send)} large
+            extra={send.status === 'sending' ? <p role="status" className="mt-2 text-sm text-ink">{waitingLine}</p> : undefined}
+          />
+        ))
       )}
     </div>
   )
@@ -601,7 +627,7 @@ export function AdminEmailPage({ embedded = false, mediaManager }: { embedded?: 
               <div>
                 {FEATURES.mailLists ? (
                   <div className="flex items-center justify-between gap-2">
-                    <Label className="text-xs">Recipients</Label>
+                    <Label className={nl ? 'text-sm' : 'text-xs'}>Recipients</Label>
                     <button type="button" aria-expanded={helpOpen} aria-controls={helpId} onClick={() => setHelpOpen((open) => !open)} className={OPENER}>
                       <CircleHelp className="size-3.5" aria-hidden="true" /> Help
                     </button>
@@ -609,7 +635,7 @@ export function AdminEmailPage({ embedded = false, mediaManager }: { embedded?: 
                 ) : (
                   <Label className="text-xs">Recipients</Label>
                 )}
-                <div role="tablist" className="mb-2 mt-1.5 inline-flex rounded-lg border p-0.5 text-xs font-medium">
+                <div role="tablist" className={cn('mb-2 mt-1.5 inline-flex rounded-lg border p-0.5', FEATURES.mailLists ? 'text-sm' : 'text-xs', 'font-medium')}>
                   {tabs.map(([value, label]) => (
                     <button key={value} type="button" role="tab" aria-selected={mode === value}
                       onClick={() => {
@@ -622,13 +648,13 @@ export function AdminEmailPage({ embedded = false, mediaManager }: { embedded?: 
                         }
                       }}
                       className={cn('rounded-md px-3 py-1 transition-colors',
-                        mode === value ? 'bg-brand-navy text-white' : 'text-muted-foreground hover:text-foreground')}>
+                        mode === value ? 'bg-brand-navy text-white' : 'text-muted-foreground hover:text-foreground', FEATURES.mailLists && PHONE_TALL)}>
                       {label}
                     </button>
                   ))}
                 </div>
                 {FEATURES.mailLists && (
-                  <section id={helpId} hidden={!helpOpen} aria-labelledby={`${helpId}-heading`} className="mb-2 rounded-lg border bg-muted/40 p-3 text-xs text-ink">
+                  <section id={helpId} hidden={!helpOpen} aria-labelledby={`${helpId}-heading`} className="mb-2 rounded-lg border bg-muted/40 p-3 text-sm text-ink">
                     <h3 id={`${helpId}-heading`} className="mb-1 font-semibold">Help</h3>
                     {mode === 'newsletter' ? (
                       <>
@@ -645,7 +671,7 @@ export function AdminEmailPage({ embedded = false, mediaManager }: { embedded?: 
                     Start from nobody: search members by name, or type any email address, including people without an account.
                   </p>
                 ) : mode === 'newsletter' ? (
-                  <div className="space-y-1 text-xs text-ink">
+                  <div className="space-y-1 text-sm text-ink">
                     {newsletter && (
                       <>
                         <p>{newsletter.summary.willGet} addresses will get it.</p>
@@ -679,14 +705,14 @@ export function AdminEmailPage({ embedded = false, mediaManager }: { embedded?: 
               </div>
 
               <div>
-                <Label className="text-xs">Subject</Label>
+                <Label className={nl ? 'text-sm' : 'text-xs'}>Subject</Label>
                 <Input className="mt-1" value={subject} onChange={(e) => setSubject(e.target.value)} placeholder="e.g. Fall tournament registration is open" />
               </div>
 
               <div>
                 <div className="flex items-center justify-between">
-                  <Label className="text-xs">Message</Label>
-                  <button type="button" onClick={() => setShowPreview((p) => !p)} className="flex items-center gap-1 text-[11px] font-medium text-ink hover:underline">
+                  <Label className={nl ? 'text-sm' : 'text-xs'}>Message</Label>
+                  <button type="button" onClick={() => setShowPreview((p) => !p)} className={cn('flex items-center gap-1', nl ? cn('text-sm', PHONE_TALL) : 'text-[11px]', 'font-medium text-ink hover:underline')}>
                     {showPreview ? <EyeOff className="size-3" /> : <Eye className="size-3" />}
                     {showPreview ? 'Hide preview' : 'Preview email'}
                   </button>
@@ -696,7 +722,7 @@ export function AdminEmailPage({ embedded = false, mediaManager }: { embedded?: 
                 </div>
                 {showPreview && (
                   <div className="mt-3">
-                    <p className="mb-1.5 text-[11px] text-muted-foreground">This is how it will look in the recipient's inbox:</p>
+                    <p className={cn('mb-1.5', nl ? 'text-sm' : 'text-[11px]', 'text-muted-foreground')}>This is how it will look in the recipient's inbox:</p>
                     <BrandedEmailPreview subject={subject} bodyHtml={body} listFooter={mode === 'newsletter' ? LIST_FOOTER_WORDS[NEWSLETTER_LIST_ID] : undefined} />
                   </div>
                 )}
@@ -705,28 +731,33 @@ export function AdminEmailPage({ embedded = false, mediaManager }: { embedded?: 
               {/* ── Test send ── */}
               {canSend && (
               <div className="rounded-lg border border-dashed p-3">
-                <p className="mb-2 flex items-center gap-1.5 text-[11px] font-medium text-muted-foreground">
+                <p className={cn('mb-2 flex items-center gap-1.5', nl ? 'text-sm' : 'text-[11px]', 'font-medium text-muted-foreground')}>
                   <FlaskConical className="size-3.5 text-gold-ink" />
                   Send yourself a test before the real thing
                 </p>
-                <div className="flex gap-2">
-                  <Input
-                    className="h-8 text-sm"
-                    value={testEmail}
-                    onChange={(e) => { setTestEmail(e.target.value); setTestResult(null) }}
-                    placeholder="you@example.com"
-                  />
-                  <Button type="button" variant="outline" size="sm" className="flex-shrink-0" disabled={!canTest || testSending} onClick={handleSendTest}>
+                <div className={cn('flex gap-2', forMediaManager && 'items-center justify-between')}>
+                  {forMediaManager ? (
+                    // The media manager's test goes to their own address, shown whole; there is no box to type another in.
+                    <p className="min-w-0 truncate text-sm text-ink">{ownEmail}</p>
+                  ) : (
+                    <Input
+                      className="h-8 text-sm"
+                      value={testEmail}
+                      onChange={(e) => { setTestEmail(e.target.value); setTestResult(null) }}
+                      placeholder="you@example.com"
+                    />
+                  )}
+                  <Button type="button" variant="outline" size="sm" className={cn('flex-shrink-0', nl && cn('text-sm', PHONE_TALL))} disabled={!canTest || testSending} onClick={handleSendTest}>
                     {testSending ? 'Sending…' : 'Send test'}
                   </Button>
                 </div>
                 {mode === 'newsletter' && waitsForSes && <SesTestChoice checked={sesTest} onChange={setSesTest} />}
                 {FEATURES.mailLists ? (
-                  <p role="status" className={cn('text-xs', testResult && 'mt-2', testResult?.ok ? 'text-ok-700' : 'text-destructive')}>{testResult?.message}</p>
+                  <p role="status" className={cn(nl ? 'text-sm' : 'text-xs', testResult && 'mt-2', testResult?.ok ? 'text-ok-700' : 'text-destructive')}>{testResult?.message}</p>
                 ) : testResult && (
                   <p className={cn('mt-2 text-xs', testResult.ok ? 'text-ok-700' : 'text-destructive')}>{testResult.message}</p>
                 )}
-                <p className="mt-1.5 text-[10px] text-muted-foreground">
+                <p className={cn('mt-1.5', nl ? 'text-sm' : 'text-[10px]', 'text-muted-foreground')}>
                   Test emails are marked [TEST] in the subject and don't count toward — or appear in — send history.
                 </p>
               </div>
@@ -746,19 +777,22 @@ export function AdminEmailPage({ embedded = false, mediaManager }: { embedded?: 
                 </p>
               ) : mode === 'newsletter' ? (
                 <div className="space-y-1.5">
-                  {/* Off while Resend still sends, with the reason beside it; the one confirm step asks with the count. */}
+                  {/* Off while Resend still sends, and while a newsletter is sending, with the reason beside it; the one confirm
+                      step asks with the count. */}
                   <Button
                     type="button"
-                    className={cn('w-full', GOLD)}
-                    disabled={sending || waitsForSes || newsletter === null || !canPreview}
+                    className={cn('w-full', GOLD, PHONE_TALL)}
+                    disabled={sending || waitsForSes || newsletterSending || newsletter === null || !canPreview}
                     onClick={handleSendNewsletter}
                   >
                     <Send className="mr-1.5 size-3.5" /> {sending ? 'Sending…' : 'Send to the LCA newsletter list'}
                   </Button>
                   {waitsForSes ? (
-                    <p className="text-[11px] text-muted-foreground">{WAITS_FOR_SES_LINE}</p>
+                    <p className="text-sm text-muted-foreground">{WAITS_FOR_SES}</p>
+                  ) : newsletterSending ? (
+                    <p className="text-sm text-muted-foreground">{waitingLine ?? ALREADY_SENDING}</p>
                   ) : !canPreview && (
-                    <p className="text-[11px] text-muted-foreground">
+                    <p className="text-sm text-muted-foreground">
                       Add {!subject.trim() && !body.trim() ? 'a subject and a message' : !subject.trim() ? 'a subject' : 'a message'} before sending.
                     </p>
                   )}

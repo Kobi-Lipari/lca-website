@@ -5,8 +5,9 @@
 // integration test runs on: what the signed-in person is, about themselves
 // alone. With MAIL_LISTS_ON set, the holder of the Media manager seat whose
 // role Admin does not let in reads true, with or without a second factor,
-// which secondFactor says; a plain member, an LCA admin and an officer who
-// hold the seat, and anyone with no seat, read false. With it unset everyone
+// which secondFactor says, and since checkpoint M's review so does an LCA
+// officer who holds it; an LCA admin and the president who hold the seat,
+// and anyone with no seat, read false. With it unset everyone
 // reads false and no seat is read. Signed out, 401 in the shared error body.
 // Every answer carries no-store, and nothing is written. MAIL_LISTS_ON is
 // read through a getter on the mocked switches module, set before every
@@ -77,19 +78,34 @@ describe('GET /api/me/media-manager, to its contract', () => {
     expect(await rows()).toEqual(before)
   })
 
-  it('answers everyone else false with the constant set: no seat, another seat, and an LCA admin and an officer who hold the seat', async () => {
+  it('answers everyone else false with the constant set: no seat, another seat, and an LCA admin and the president who hold the seat', async () => {
     const plain = await seedMember({ fullName: 'Player Two' })
     const otherSeat = await seedMember({ fullName: 'Player Three' })
     await seedSeat({ slug: 'sample-seat-one', role: 'Sample seat one' }, [otherSeat])
     const admin = await seedAdmin()
-    const officer = await seedMember({ role: 'lca_officer', fullName: 'Player Four' })
+    const officerElsewhere = await seedMember({ role: 'lca_officer', fullName: 'Player Four' })
+    await seedSeat({ slug: 'sample-seat-two', role: 'Sample seat two' }, [officerElsewhere])
     const president = await seedMember({ role: 'lca_observer', fullName: 'Player Five' })
-    await seedSeat({ slug: MEDIA_MANAGER_SEAT, role: 'Media manager' }, [admin, officer, president])
-    for (const who of [plain, otherSeat, admin, officer, president]) {
+    await seedSeat({ slug: MEDIA_MANAGER_SEAT, role: 'Media manager' }, [admin, president])
+    for (const who of [plain, otherSeat, admin, officerElsewhere, president]) {
       const res = await ask(who)
       expect(res.status, who).toBe(200)
       expect(await expectContract(res, answer.response), who).toEqual({ mediaManager: false, secondFactor: true })
     }
+  })
+
+  it('answers an LCA officer who holds the seat true, by the guard\'s own rule, and false once the constant is unset (checkpoint M\'s review)', async () => {
+    const officer = await seedMember({ role: 'lca_officer', fullName: 'Player Four' })
+    await seedSeat({ slug: MEDIA_MANAGER_SEAT, role: 'Media manager' }, [officer])
+    const before = await rows()
+    for (const aal of ['aal2', 'aal1'] as const) {
+      const res = await ask(officer, { aal })
+      expect(res.status, aal).toBe(200)
+      expect(await expectContract(res, answer.response), aal).toEqual({ mediaManager: true, secondFactor: aal === 'aal2' })
+    }
+    flags.listsOn = false
+    expect(await expectContract(await ask(officer), answer.response)).toEqual({ mediaManager: false, secondFactor: true })
+    expect(await rows()).toEqual(before)
   })
 
   it('answers everyone false while the constant is unset, the seat holder among them, and reads no seat', async () => {

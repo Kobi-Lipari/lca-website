@@ -18,12 +18,15 @@
 import { env } from 'cloudflare:test'
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 import { NEWSLETTER_LIST_ID, TOURNAMENTS_LIST_ID } from '../../domain/mail/lists'
+import { onRequestGet as preferencesGet, onRequestPatch as preferencesPatch } from '../../functions/api/mail/preferences/[token]'
 import * as receiver from '../../functions/api/mail/ses-events'
 import { RECEIVER_LOG, onRequestPost } from '../../functions/api/mail/ses-events'
 import { openGate } from '../../functions/utils/mail/gate'
+import { signLink } from '../../functions/utils/mail/links'
 import { MOST_ADDRESSES } from '../../functions/utils/mail/sesEvents'
 import type { SnsMessage } from '../../functions/utils/mail/sns'
-import { seedMailContact } from './factories'
+import type { Env } from '../../functions/types'
+import { seedMailContact, seedMember } from './factories'
 import { fetchCount, invoke, resetHarness, snsBehavior, snsConfirmations } from './harness'
 import { makeSigner, reportedTags, sesBounce, sesComplaint, snsRequest, type MessageParts, type SnsSigner } from './helpers/sns'
 import { countingDb } from './mailRuns'
@@ -389,5 +392,96 @@ describe('an unsubscribe confirmation that is not the topic\'s', () => {
     expect(snsConfirmations).toEqual([])
     // The one fetch made is the certificate's, from SNS's own host.
     expect(fetchCount).toBe(1)
+  })
+})
+
+describe('a list turned back on after a spam report, and a later copy of that report (checkpoint M\'s review)', () => {
+  const key = () => (env as unknown as Env).MAIL_LINK_SECRET as string
+  const patch = async (contactId: string, body: unknown) => {
+    const token = await signLink(key(), contactId, 'preferences')
+    return invoke(preferencesPatch, { method: 'PATCH', params: { token }, path: `/api/mail/preferences/${token}`, body })
+  }
+  const shown = async (contactId: string) => {
+    const token = await signLink(key(), contactId, 'preferences')
+    return (await invoke(preferencesGet, { params: { token }, path: `/api/mail/preferences/${token}` })).json<{ lists: Array<{ id: string; on: boolean }> }>()
+  }
+
+  it('writes the person\'s own \'in\' in place of the report\'s \'out\', so a second copy of that report delivered later changes nothing', async () => {
+    const person = listAddress('member')
+    await seedMember({ email: person, fullName: 'Player One' })
+    const report = await notify(sesComplaint([person], { tags: reportedTags({ kind: 'optional', list: NEWSLETTER_LIST_ID }) }))
+    expect((await post(report)).status).toBe(200)
+    expect(await choicesOf(person)).toEqual([{ list_id: NEWSLETTER_LIST_ID, choice: 'out', source: 'complaint' }])
+    const contact = (await contactOf(person))!.id
+
+    expect((await patch(contact, { lists: { [NEWSLETTER_LIST_ID]: true } })).status).toBe(200)
+    expect(await choicesOf(person)).toEqual([{ list_id: NEWSLETTER_LIST_ID, choice: 'in', source: 'preferences' }])
+    const before = await tables()
+
+    // Amazon delivers a second copy of the same report, inside the receiver's three hours.
+    expect((await post(report)).status).toBe(200)
+    expect(await tables()).toEqual(before)
+    expect((await shown(contact)).lists).toEqual([expect.objectContaining({ id: NEWSLETTER_LIST_ID, on: true })])
+    expect(await gateSays(person, 'optional', NEWSLETTER_LIST_ID)).toBeNull()
+  })
+
+  it('still takes away an \'out\' the person made themselves, from a link or the page, leaving no choice, as before', async () => {
+    for (const source of ['link', 'preferences']) {
+      const person = listAddress('member')
+      await seedMember({ email: person, fullName: 'Player One' })
+      const contact = await seedMailContact({ address: person, choices: { [NEWSLETTER_LIST_ID]: { choice: 'out', source } } })
+      expect((await patch(contact, { lists: { [NEWSLETTER_LIST_ID]: true } })).status).toBe(200)
+      expect(await choicesOf(person), source).toEqual([])
+    }
+  })
+
+  it('lets a new report made after the turn-on stop the list again, and a replay of the turn-on change nothing', async () => {
+    const person = listAddress('member')
+    await seedMember({ email: person, fullName: 'Player One' })
+    const tags = reportedTags({ kind: 'optional', list: NEWSLETTER_LIST_ID })
+    expect((await post(await notify(sesComplaint([person], { tags })))).status).toBe(200)
+    const contact = (await contactOf(person))!.id
+    expect((await patch(contact, { lists: { [NEWSLETTER_LIST_ID]: true } })).status).toBe(200)
+    // Asked again with the same choice, the page changes nothing: the person's 'in' is already there.
+    const turnedOn = await tables()
+    expect((await patch(contact, { lists: { [NEWSLETTER_LIST_ID]: true } })).status).toBe(200)
+    expect(await tables()).toEqual(turnedOn)
+    expect(await choicesOf(person)).toEqual([{ list_id: NEWSLETTER_LIST_ID, choice: 'in', source: 'preferences' }])
+
+    // An hour on, the person presses the report again: that report is newer than their 'in', so it stops the list.
+    await env.DB.prepare(`UPDATE mail_list_choices SET updated_at = datetime('now', '-1 hour') WHERE contact_id = ?`).bind(contact).run()
+    expect((await post(await notify(sesComplaint([person], { tags })))).status).toBe(200)
+    expect(await choicesOf(person)).toEqual([{ list_id: NEWSLETTER_LIST_ID, choice: 'out', source: 'complaint' }])
+    expect(await gateSays(person, 'optional', NEWSLETTER_LIST_ID)).toBe('opted_out')
+  })
+
+  it('writes the person\'s \'in\' for a report\'s \'out\' on a list that is not a main mailer too, and a second copy of that report leaves it', async () => {
+    const person = listAddress('member')
+    await seedMember({ email: person, fullName: 'Player One' })
+    await env.DB.prepare(`INSERT INTO mail_lists (id, kind, name, main_mailer) VALUES (?, 'club', 'Example Chess Club news', 0)`).bind(CLUB_LIST).run()
+    const report = await notify(sesComplaint([person], { tags: reportedTags({ kind: 'optional', list: CLUB_LIST }) }))
+    expect((await post(report)).status).toBe(200)
+    const contact = (await contactOf(person))!.id
+    expect((await patch(contact, { lists: { [CLUB_LIST]: true } })).status).toBe(200)
+    expect(await choicesOf(person)).toEqual([{ list_id: CLUB_LIST, choice: 'in', source: 'preferences' }])
+    const before = await tables()
+    expect((await post(report)).status).toBe(200)
+    expect(await tables()).toEqual(before)
+  })
+
+  it('answers 404 and changes nothing while MAIL_LISTS_ON is unset and no list email is on record, a report\'s \'out\' included, as before', async () => {
+    const person = listAddress('member')
+    await seedMember({ email: person, fullName: 'Player One' })
+    expect((await post(await notify(sesComplaint([person], { tags: reportedTags({ kind: 'optional', list: NEWSLETTER_LIST_ID }) })))).status).toBe(200)
+    const contact = (await contactOf(person))!.id
+    await env.DB.prepare('DELETE FROM email_campaign_recipients').run()
+    await env.DB.prepare('DELETE FROM email_campaigns').run()
+    flags.listsOn = false
+    const before = await tables()
+    const res = await patch(contact, { lists: { [NEWSLETTER_LIST_ID]: true } })
+    expect(res.status).toBe(404)
+    expect(await res.json()).toEqual({ error: "This link isn't working." })
+    expect(await tables()).toEqual(before)
+    expect(await choicesOf(person)).toEqual([{ list_id: NEWSLETTER_LIST_ID, choice: 'out', source: 'complaint' }])
   })
 })

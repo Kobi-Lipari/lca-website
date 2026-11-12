@@ -81,12 +81,13 @@ function isLinkActive(pathname: string, link: NavLink): boolean {
  * everyone and an admin's bar is no wider than a player's.
  */
 function useAccountLinks(): NavLink[] {
-  const { user, loading, role, isBoardMember, directedTournamentIds, managedClubs } = useAuth()
+  const { user, loading, role, isBoardMember, seats, directedTournamentIds, managedClubs } = useAuth()
   // With mailLists on, a seat holder whose role Admin does not let in may be the
-  // media manager (WS16 step 6), whose Admin is Group email alone; the server is
-  // asked once a session, and only for them. With the switch off nothing is asked.
-  const seatOutsideAdmin = FEATURES.mailLists && isBoardMember && !canAccessAdmin(role)
-  const mediaManager = useMediaManager(seatOutsideAdmin)
+  // media manager (WS16 step 6), whose Admin is Group email alone, and so may an
+  // LCA officer who holds a seat (checkpoint M's review); the server is asked
+  // once a session, and only for them. With the switch off nothing is asked.
+  const mayBeMediaManager = FEATURES.mailLists && isBoardMember && (!canAccessAdmin(role) || (role === 'lca_officer' && seats.length > 0))
+  const mediaManager = useMediaManager(mayBeMediaManager)
   if (loading || !user) return []
 
   const links: NavLink[] = []
@@ -102,7 +103,7 @@ function useAccountLinks(): NavLink[] {
   if (isBoardMember) {
     links.push({ label: 'Board inbox', href: '/board/inbox' })
   }
-  if (seatOutsideAdmin && mediaManager.mediaManager) {
+  if (mayBeMediaManager && mediaManager.mediaManager) {
     links.push({ label: 'Group email', href: '/admin/email' })
   }
   // Regional representatives manage their region's clubs from the dashboard.

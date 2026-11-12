@@ -34,11 +34,17 @@
 //   lets in by role, a holder of the seat among them, with mailLists off and
 //   on, and for a member's role who holds the seat, off and on, while the
 //   route hands down no answer of yes.
+// - Since checkpoint M's review, a question that failed is asked again the
+//   next time a page needs the answer, with the loading line shown meanwhile
+//   and nobody sent away, and never in a loop; nobody is asked before their
+//   own record has arrived; and an officer who types Group email's address
+//   keeps it while the answer is on the way, and goes to Admin once it says
+//   no, with no wait for an officer who holds no seat.
 // Every name, address, subject and seat title here is made up but the seat's
 // own, "Media manager", whose link name the code keys on.
 import { act, cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import type { ComponentType } from 'react'
-import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom'
+import { MemoryRouter, Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { MemberRole } from '@/areas/admin/roles'
 import type { AuthContextValue } from '@/contexts/AuthContext'
@@ -112,6 +118,8 @@ function newsletter(recent: Send[] = [SENT]): ApiNewsletter {
 interface Answer { status: number; body: unknown }
 let calls: Array<{ url: string; method: string }> = []
 let answers: Record<string, Answer | Promise<Answer>> = {}
+/** How many more times a call fails as a request that got no answer, by method and address, before it is answered. */
+let failures: Record<string, number> = {}
 const on = (method: string, url: string, answer: Answer | Promise<Answer>) => {
   answers[`${method} ${url}`] = answer
 }
@@ -193,10 +201,15 @@ beforeEach(() => {
   flags.mailLists = false
   calls = []
   answers = {}
+  failures = {}
   window.localStorage.clear()
   vi.stubGlobal('fetch', vi.fn(async (url: string, init?: RequestInit) => {
     const method = init?.method ?? 'GET'
     calls.push({ url, method })
+    if ((failures[`${method} ${url}`] ?? 0) > 0) {
+      failures[`${method} ${url}`]--
+      throw new TypeError('Failed to fetch')
+    }
     const answer = await (answers[`${method} ${url}`] ?? { status: 404, body: { error: 'Not found' } })
     return new Response(JSON.stringify(answer.body), { status: answer.status })
   }))
@@ -340,7 +353,7 @@ describe('the media manager, with mailLists on', () => {
     expect(asks()).toHaveLength(1)
   }, 30_000)
 
-  it('asks nothing for a member who holds no seat while they browse, nor for anyone Admin lets in by role, who keep today\'s Admin', async () => {
+  it('asks nothing for a member who holds no seat while they browse, nor for an LCA admin or the president, who keep today\'s Admin', async () => {
     flags.mailLists = true
     on('GET', ASK_URL, { status: 200, body: { mediaManager: true, secondFactor: true } })
     await site('/sample/no-such-page', person())
@@ -348,7 +361,8 @@ describe('the media manager, with mailLists on', () => {
     expect(asks()).toEqual([])
     cleanup()
 
-    for (const role of ['lca_admin', 'lca_observer', 'lca_officer'] as const) {
+    // An LCA officer who holds a seat is asked since checkpoint M's review, in its own cases below.
+    for (const role of ['lca_admin', 'lca_observer'] as const) {
       calls = []
       await site('/admin/members', person({ role, seats: [MEDIA_MANAGER] }))
       await screen.findByRole('heading', { level: 2, name: 'Members' }, { timeout: 10_000 })
@@ -472,4 +486,225 @@ describe('Admin\'s page, drawn beside a copy of it as it stood at 5e7a23c', () =
       }
     }
   }, 120_000)
+})
+
+describe('an LCA officer who holds the Media manager seat (checkpoint M\'s review, K\'s decision 52)', () => {
+  beforeEach(() => {
+    on('GET', '/api/admin/members', { status: 200, body: { members: [{ id: 'member-list-1', email: 'player.two@example.org', full_name: 'Player Two', uscf_id: null, membership_status: 'active', membership_expiry: null, role: 'member', club_id: null, created_at: '2026-11-02 15:00:00' }] } })
+    on('GET', '/api/clubs', { status: 200, body: { clubs: [] } })
+    on('GET', '/api/admin/board-seats', { status: 200, body: { seats: [], holders: [], history: [] } })
+  })
+
+  it('keeps every read-only section, gains Group email in the media manager\'s form, and finds it in the account menu, with mailLists on', async () => {
+    flags.mailLists = true
+    on('GET', ASK_URL, { status: 200, body: { mediaManager: true, secondFactor: true } })
+    await site('/admin/email', person({ role: 'lca_officer', seats: [MEDIA_MANAGER] }))
+    await groupEmail()
+    expect(where()).toBe('/admin/email')
+    const sections = within(screen.getByRole('navigation', { name: 'Admin sections' })).getAllByRole('link').map((l) => l.textContent?.trim())
+    for (const section of ['Members', 'Board seats', 'Tournaments', 'Clubs', 'News posts', 'Group email', 'Site banners', 'Support tickets', 'Admin activity']) {
+      expect(sections, section).toContain(section)
+    }
+    expect(screen.getByText('View only')).toBeTruthy()
+    // The media manager's form: the newsletter's tab alone, no Specific people, no Send history, and no box to type an address in.
+    await screen.findByText('9 addresses will get it.')
+    expect(screen.getAllByRole('tab').map((t) => t.textContent)).toEqual(['The LCA newsletter list'])
+    expect(screen.queryByText('Specific people')).toBeNull()
+    expect(screen.queryByRole('heading', { name: 'Send history' })).toBeNull()
+    expect(screen.queryByPlaceholderText('you@example.com')).toBeNull()
+    expect(accountMenu()).toContain('Group email')
+    expect(asks()).toHaveLength(1)
+  }, 30_000)
+
+  it('draws the line about two-factor sign-in in place of the send buttons when the session has no second factor', async () => {
+    flags.mailLists = true
+    on('GET', ASK_URL, { status: 200, body: { mediaManager: true, secondFactor: false } })
+    await site('/admin/email', person({ role: 'lca_officer', seats: [MEDIA_MANAGER], aal: 'aal1' }))
+    expect(await screen.findByRole('link', { name: SECOND_FACTOR_LINE }, { timeout: 10_000 })).toBeTruthy()
+    expect(screen.queryByRole('button', { name: 'Send test' })).toBeNull()
+  }, 30_000)
+
+  it('draws today\'s Admin, without Group email, while the answer is on the way, and never waits on it', async () => {
+    flags.mailLists = true
+    const later = held({ status: 200, body: { mediaManager: true, secondFactor: true } })
+    on('GET', ASK_URL, later.answer)
+    await site('/admin/members', person({ role: 'lca_officer', seats: [MEDIA_MANAGER] }))
+    await screen.findByRole('heading', { level: 2, name: 'Members' }, { timeout: 10_000 })
+    expect(screen.queryByText('Loading...')).toBeNull()
+    const before = within(screen.getByRole('navigation', { name: 'Admin sections' })).getAllByRole('link').map((l) => l.textContent?.trim())
+    expect(before).not.toContain('Group email')
+    await later.release()
+    await settle()
+    expect(within(screen.getByRole('navigation', { name: 'Admin sections' })).getAllByRole('link').map((l) => l.textContent?.trim())).toContain('Group email')
+  }, 30_000)
+
+  it('asks nothing for an officer who holds no seat, whose Admin and account menu stay today\'s', async () => {
+    flags.mailLists = true
+    on('GET', ASK_URL, { status: 200, body: { mediaManager: true, secondFactor: true } })
+    await site('/admin/members', person({ role: 'lca_officer' }))
+    await screen.findByRole('heading', { level: 2, name: 'Members' }, { timeout: 10_000 })
+    expect(asks()).toEqual([])
+    expect(accountMenu()).not.toContain('Group email')
+  }, 30_000)
+
+  it('is today\'s Admin with mailLists off, drawn beside the copy of it as it stood at 5e7a23c, even with an answer of yes handed down', async () => {
+    flags.mailLists = false
+    on('GET', '/api/admin/campaigns', { status: 200, body: { campaigns: [] } })
+    const who = person({ role: 'lca_officer', seats: [MEDIA_MANAGER] })
+    for (const path of ['/admin', '/admin/members', '/admin/email']) {
+      const today = await drawnAdmin(AdminPageToday, path, who, { mediaManager: true, secondFactor: true })
+      const now = await drawnAdmin(AdminPage, path, who, { mediaManager: true, secondFactor: true })
+      expect(now, path).toEqual(today)
+    }
+  }, 60_000)
+})
+
+describe('a question that failed, asked again the next time a page needs the answer (checkpoint M\'s review, K\'s decision 52, A5)', () => {
+  /** The site at an address for a person, with a button that moves within the site, as a link does, without a new load. */
+  async function siteWithGo(path: string, who: AuthContextValue): Promise<(to: string) => Promise<void>> {
+    let to = '/'
+    function Go() {
+      const navigate = useNavigate()
+      return <button type="button" onClick={() => navigate(to)}>Go on</button>
+    }
+    await act(async () => {
+      render(
+        <AuthContext.Provider value={who}>
+          <MemoryRouter initialEntries={[path]}>
+            <App />
+            <Go />
+            <Where />
+          </MemoryRouter>
+        </AuthContext.Provider>,
+      )
+    })
+    await settle()
+    return async (next) => {
+      to = next
+      await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: 'Go on' }))
+      })
+    }
+  }
+
+  beforeEach(() => {
+    flags.mailLists = true
+    on('GET', '/api/admin/members', { status: 200, body: { members: [{ id: 'member-list-1', email: 'player.two@example.org', full_name: 'Player Two', uscf_id: null, membership_status: 'active', membership_expiry: null, role: 'member', club_id: null, created_at: '2026-11-02 15:00:00' }] } })
+    on('GET', '/api/clubs', { status: 200, body: { clubs: [] } })
+    on('GET', '/api/admin/board-seats', { status: 200, body: { seats: [], holders: [], history: [] } })
+  })
+
+  it('answers no for the draw that met the failure, once and with no loop, then asks again when the member comes back, with the loading line and no bounce', async () => {
+    failures[`GET ${ASK_URL}`] = 1
+    const go = await siteWithGo('/admin/email', person({ seats: [MEDIA_MANAGER] }))
+    // The draw that met the failure answers no, so nothing waits on it: today's rule sends a member to their dashboard.
+    await waitFor(() => expect(where()).toBe('/dashboard'))
+    expect(await screen.findByText('Dashboard stand-in')).toBeTruthy()
+    await settle()
+    await settle()
+    expect(asks()).toHaveLength(1)
+
+    // The next time a page needs the answer it is asked again: the route says so in its loading line and sends nobody away.
+    const later = held({ status: 200, body: { mediaManager: true, secondFactor: true } })
+    on('GET', ASK_URL, later.answer)
+    await go('/admin/email')
+    expect(within(document.querySelector('main')!).getByText('Loading...')).toBeTruthy()
+    expect(where()).toBe('/admin/email')
+    expect(asks()).toHaveLength(2)
+    await later.release()
+    await groupEmail()
+    expect(where()).toBe('/admin/email')
+    await settle()
+    expect(asks()).toHaveLength(2)
+  }, 30_000)
+
+  it('keeps an officer\'s Admin as today\'s after a failure, asks no more in a loop, and shows the loading line in Group email\'s section, not a bounce, when they come back to it', async () => {
+    failures[`GET ${ASK_URL}`] = 1
+    const go = await siteWithGo('/admin/members', person({ role: 'lca_officer', seats: [MEDIA_MANAGER] }))
+    await screen.findByRole('heading', { level: 2, name: 'Members' }, { timeout: 10_000 })
+    await settle()
+    await settle()
+    expect(asks()).toHaveLength(1)
+    expect(within(screen.getByRole('navigation', { name: 'Admin sections' })).getAllByRole('link').map((l) => l.textContent?.trim())).not.toContain('Group email')
+
+    // Away from Admin and back, as a person does: the question is asked again, and the address is kept while it is on the way.
+    await go('/sample/no-such-page')
+    await settle()
+    const later = held({ status: 200, body: { mediaManager: true, secondFactor: true } })
+    on('GET', ASK_URL, later.answer)
+    await go('/admin/email')
+    expect(within(document.querySelector('main')!).getByText('Loading...')).toBeTruthy()
+    expect(where()).toBe('/admin/email')
+    expect(asks()).toHaveLength(2)
+    await later.release()
+    await groupEmail()
+    expect(where()).toBe('/admin/email')
+    expect(asks()).toHaveLength(2)
+  }, 30_000)
+
+  it('asks nobody before their own record has arrived: a person Admin lets in by role is never asked, however long the record takes', async () => {
+    on('GET', ASK_URL, { status: 200, body: { mediaManager: true, secondFactor: true } })
+    const loaded = person({ role: 'lca_admin', seats: [MEDIA_MANAGER] })
+    // Before the record comes the role is read from the sign-in service's own word, a member's, which Admin does not let in.
+    const waiting = { ...loaded, member: null, memberLoading: true, role: 'member' } as unknown as AuthContextValue
+    let view: ReturnType<typeof render> | undefined
+    const at = (who: AuthContextValue) => (
+      <AuthContext.Provider value={who}>
+        <MemoryRouter initialEntries={['/admin/members']}>
+          <App />
+          <Where />
+        </MemoryRouter>
+      </AuthContext.Provider>
+    )
+    await act(async () => {
+      view = render(at(waiting))
+    })
+    await settle()
+    expect(asks()).toEqual([])
+    await act(async () => view!.rerender(at(loaded)))
+    await screen.findByRole('heading', { level: 2, name: 'Members' }, { timeout: 10_000 })
+    await settle()
+    expect(asks()).toEqual([])
+    expect(where()).toBe('/admin/members')
+  }, 30_000)
+})
+
+describe('an LCA officer who types Group email\'s address (checkpoint M\'s review, K\'s decision 52, A3)', () => {
+  beforeEach(() => {
+    flags.mailLists = true
+    on('GET', '/api/admin/members', { status: 200, body: { members: [{ id: 'member-list-1', email: 'player.two@example.org', full_name: 'Player Two', uscf_id: null, membership_status: 'active', membership_expiry: null, role: 'member', club_id: null, created_at: '2026-11-02 15:00:00' }] } })
+    on('GET', '/api/clubs', { status: 200, body: { clubs: [] } })
+    on('GET', '/api/admin/board-seats', { status: 200, body: { seats: [], holders: [], history: [] } })
+  })
+
+  it('goes to Admin at once, with no loading line and no question, for an officer who holds no seat, as before', async () => {
+    on('GET', ASK_URL, { status: 200, body: { mediaManager: true, secondFactor: true } })
+    await site('/admin/email', person({ role: 'lca_officer' }))
+    await screen.findByRole('heading', { level: 2, name: 'Members' }, { timeout: 10_000 })
+    expect(where()).toBe('/admin')
+    expect(screen.queryByText('Loading...')).toBeNull()
+    expect(asks()).toEqual([])
+  }, 30_000)
+
+  it('keeps the address while the answer is on the way and goes to Admin once the answer says they are not the media manager', async () => {
+    const later = held({ status: 200, body: { mediaManager: false, secondFactor: true } })
+    on('GET', ASK_URL, later.answer)
+    await site('/admin/email', person({ role: 'lca_officer', seats: [MEDIA_MANAGER] }))
+    expect(within(document.querySelector('main')!).getByText('Loading...')).toBeTruthy()
+    expect(where()).toBe('/admin/email')
+    expect(screen.queryByRole('heading', { level: 2, name: 'Group email' })).toBeNull()
+    await later.release()
+    await waitFor(() => expect(where()).toBe('/admin'))
+    await screen.findByRole('heading', { level: 2, name: 'Members' }, { timeout: 10_000 })
+    expect(within(screen.getByRole('navigation', { name: 'Admin sections' })).getAllByRole('link').map((l) => l.textContent?.trim())).not.toContain('Group email')
+  }, 30_000)
+
+  it('draws every other section at once for an officer whose answer is on the way: only Group email\'s own address waits', async () => {
+    const later = held({ status: 200, body: { mediaManager: true, secondFactor: true } })
+    on('GET', ASK_URL, later.answer)
+    await site('/admin/activity', person({ role: 'lca_officer', seats: [MEDIA_MANAGER] }))
+    expect(screen.queryByText('Loading...')).toBeNull()
+    expect(where()).toBe('/admin/activity')
+    await later.release()
+  }, 30_000)
 })

@@ -227,8 +227,8 @@ export async function requireMailer(
  * /api/admin/mail), with the session verified once, where requireMailer
  * verifies an admin's twice: today's mailers, an LCA admin with a second
  * factor and the president (lca_observer), and, while MAIL_LISTS_ON is set,
- * the media manager (WS16 step 6, sendsAsMediaManager below) signed in with
- * a second factor.
+ * the media manager (WS16 step 6, sendsAsMediaManager below), an LCA officer
+ * among them since checkpoint M's review, signed in with a second factor.
  *
  * With MAIL_LISTS_ON unset every answer is requireMailer's own and no seat
  * is read: 401 signed out, 'Forbidden' for a role that is neither, the
@@ -236,10 +236,11 @@ export async function requireMailer(
  * admin without one. With it set, an admin and the president are answered
  * as before; the media manager without a second factor gets the 403 with
  * mfaRequired that requireAdmin gives, in words of its own; and anyone else,
- * an officer among them, gets LIST_MAILERS_ONLY. requireMailer, the guard of
- * today's five campaign endpoints, is unchanged, so the media manager
- * reaches only WS16's own endpoints and never today's typed-in addresses or
- * hand-picked members.
+ * an officer without the seat among them, gets LIST_MAILERS_ONLY.
+ * requireMailer, the guard of today's five campaign endpoints, is unchanged,
+ * so the media manager, an officer who holds the seat included, reaches only
+ * WS16's own endpoints and never today's typed-in addresses or hand-picked
+ * members; the newsletter's test goes to their own account's address alone.
  */
 export async function requireListMailer(
   request: Request,
@@ -270,16 +271,17 @@ export const MEDIA_MANAGER_SECOND_FACTOR = 'Two-factor sign-in is required to se
 
 /**
  * Whether the member sends as the media manager: they hold the Media manager
- * seat now (holdsMediaManagerSeat, read at each request), and their role is
- * one Admin does not let in, so a member, a club rep, a director or an
- * auditor, each keeping their own role's rights. An LCA admin and the
- * president send as themselves, and an officer, whom Admin lets in to read
- * only, is refused whatever seat they hold, before the seat is read, as
- * officers are refused today. The second factor is not read here: the guard
- * asks for it, and GET /api/me/media-manager answers it apart.
+ * seat now (holdsMediaManagerSeat, read at each request), whatever their
+ * role, each keeping their own role's rights. The seat is what counts (K's
+ * decision 52, of Thursday, November 12, 2026, which settled decision 49):
+ * an LCA officer, whom Admin lets in to read only, sends as the media
+ * manager while they hold it. An LCA admin and the president send as
+ * themselves, so the rule answers no for them before the seat is read. The
+ * second factor is not read here: the guard asks for it, and GET
+ * /api/me/media-manager answers it apart.
  */
 export async function sendsAsMediaManager(db: D1Database, member: { id: string; role: string }): Promise<boolean> {
-  if (member.role === 'lca_admin' || isObserver(member)) return false
+  if (member.role === 'lca_admin' || member.role === 'lca_observer') return false
   return holdsMediaManagerSeat(db, member.id)
 }
 

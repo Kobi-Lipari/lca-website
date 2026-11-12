@@ -77,13 +77,17 @@ function walk(dir: string, out: string[] = []): string[] {
 }
 
 describe('the links\' key', () => {
-  it('is named in no setting file a deploy reads and no environment file, and in the worker\'s folder only by its Env type, as two optional secrets', () => {
-    const settings = ['wrangler.toml', 'workers/daily-emails/wrangler.toml', '.dev.vars', '.dev.vars.example', '.dev.vars.a11y', '.env', '.env.example', '.env.local']
+  it('is named in no setting file a deploy reads and no environment file but the worker\'s comment, and in the worker\'s code only by its Env type, as two optional secrets', () => {
+    const settings = ['wrangler.toml', '.dev.vars', '.dev.vars.example', '.dev.vars.a11y', '.env', '.env.example', '.env.local']
     for (const file of settings.filter((f) => existsSync(join(ROOT, f)))) expect(read(file), file).not.toMatch(/MAIL_LINK_SECRET/)
     // Since WS16 step 4 the sweep sends list mail, so the worker's Env type names the two keys K sets on it as secrets;
-    // no other file of the worker's folder names either.
+    // since checkpoint M's review the worker's settings name the key once more, in their comment's secret put line, and
+    // give it no value; no other file of the worker's folder names either.
     const naming = walk('workers').filter((f) => /\.(?:ts|toml|json|md|js)$/.test(f)).filter((f) => /MAIL_LINK_SECRET/.test(read(f)))
-    expect(naming).toEqual(['workers/daily-emails/src/index.ts'])
+    expect(naming).toEqual(['workers/daily-emails/src/index.ts', 'workers/daily-emails/wrangler.toml'])
+    expect(read('workers/daily-emails/wrangler.toml').split('\n').filter((line) => /MAIL_LINK_SECRET/.test(line))).toEqual([
+      '#   npx wrangler secret put MAIL_LINK_SECRET --config workers/daily-emails/wrangler.toml',
+    ])
     const worker = read('workers/daily-emails/src/index.ts')
     expect(worker.split('\n').filter((line) => /MAIL_LINK_SECRET/.test(line) && !/^\s*(?:\/\/|\/\*\*|\*)/.test(line)).map((line) => line.trim())).toEqual([
       'MAIL_LINK_SECRET?: string',

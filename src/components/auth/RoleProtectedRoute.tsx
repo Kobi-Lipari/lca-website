@@ -24,8 +24,10 @@ interface RoleProtectedRouteProps {
    * whose role the roles list does not hold, when the server says they hold
    * the Media manager seat, and hand the page inside the answer it was let in
    * on. While that answer is on the way the route shows its loading line, as
-   * while a session loads. With mailLists off this changes nothing and
-   * nothing is asked.
+   * while a session loads. An LCA officer who holds a seat, whom the roles
+   * list lets in, is asked too (checkpoint M's review) and handed the answer
+   * when it comes, never waiting on it. With mailLists off this changes
+   * nothing and nothing is asked.
    */
   allowMediaManager?: boolean
 }
@@ -73,7 +75,7 @@ export function RoleProtectedRoute({
   const location = useLocation()
   const { id } = useParams<{ id: string }>()
   // Asked only with mailLists on, for a route that lets the media manager in, and for a signed-in member whose role
-  // Admin does not let in; called ahead of every return below, so it is called on every draw.
+  // Admin does not let in or an LCA officer who holds a seat; called ahead of every return below, so on every draw.
   const mediaManager = useMediaManager(!!allowMediaManager)
 
   if (loading || memberLoading) {

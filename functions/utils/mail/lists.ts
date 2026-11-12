@@ -374,6 +374,26 @@ export function leaveSendingNewsletter(db: D1Database, email: string | null): D1
 }
 
 /**
+ * The statement the member delete runs in the same batch, after leaveSendingNewsletter's three (checkpoint M's review):
+ * the contact of the deleted account's address is removed when no member's account holds the address any more and the
+ * contact holds nothing, no choice on any list, no stop-all and no spam report's mark, since a contact that holds
+ * nothing serves no purpose once nobody holds the address. A contact that holds any of them stays: a choice and a
+ * stop-all are the person's own word, and a report's mark must outlive the account. With no contact for the address,
+ * which is always while MAIL_LISTS_ON is unset and no list email or test was ever sent, it changes nothing.
+ */
+export function forgetEmptyContact(db: D1Database, email: string | null): D1PreparedStatement {
+  return db
+    .prepare(
+      `DELETE FROM mail_contacts
+        WHERE address = lower(trim(?1, ${SPACES}))
+          AND optional_off_at IS NULL AND complained_at IS NULL
+          AND NOT EXISTS (SELECT 1 FROM mail_list_choices c WHERE c.contact_id = mail_contacts.id)
+          AND NOT EXISTS (SELECT 1 FROM members m WHERE ${MEMBER_ADDRESS} = mail_contacts.address)`,
+    )
+    .bind(email)
+}
+
+/**
  * The statement that makes the contact for one address when it has none, which puts the address on no list: its id 32
  * random hex characters. contactFor runs it on its own, and the receiver of Amazon's reports in the batch of a spam
  * report (./sesEvents, WS16 step 8), so every contact is made the one way.

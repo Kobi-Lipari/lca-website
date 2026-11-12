@@ -12,7 +12,12 @@
 //   different person and a session stepped up to a second factor each ask once;
 // - while the first answer is on the way it says so, and a stepped-up session
 //   keeps the answer it had meanwhile;
-// - a question that fails reads as no, and is not asked again in a loop.
+// - a question that fails reads as no, and is not asked again in a loop;
+// - since checkpoint M's review, it asks for an LCA officer who holds a seat
+//   and never for one without; it asks nobody before their own record has
+//   arrived; and a question that failed answers no for the draw that met it
+//   and is asked again the next time a page needs the answer, which waits
+//   for it meanwhile.
 // The answer only draws a page, so none of this is the grant; the server's
 // guard is. Every person here is made up, each case's own, since the answer is
 // kept for the session.
@@ -48,16 +53,20 @@ const part = (value: unknown) => btoa(JSON.stringify(value)).replace(/\+/g, '-')
 const token = (sub: string, sessionId: string, aal: string, extra = '') =>
   `${part({ alg: 'HS256', typ: 'JWT' })}.${part({ sub, session_id: sessionId, aal, role: 'authenticated' })}.sample-signature${extra}`
 
-interface Who { id: string; role: string; loading: boolean; signedIn: boolean; access: string | undefined }
+interface Who { id: string; role: string; loading: boolean; signedIn: boolean; access: string | undefined; seats?: string[]; recordLoading?: boolean }
 /** A person of this case's own, signed in, in a session of their own, at aal2. */
-function newPerson(role = 'member'): Who {
+function newPerson(role = 'member', seats: string[] = []): Who {
   const id = `member-sample-${++seq}`
-  return { id, role, loading: false, signedIn: true, access: token(id, `session-sample-${seq}`, 'aal2') }
+  return { id, role, loading: false, signedIn: true, access: token(id, `session-sample-${seq}`, 'aal2'), seats }
 }
+// The person's own record and seats, as the auth context gives them once the record has arrived (checkpoint M's review).
 const valueOf = (who: Who): AuthContextValue =>
   ({
     user: who.signedIn ? { id: who.id } : null,
     session: who.access ? { access_token: who.access } : null,
+    member: who.signedIn && !who.recordLoading ? { id: who.id, role: who.role } : null,
+    memberLoading: who.recordLoading ?? false,
+    seats: (who.seats ?? []).map((slug) => ({ id: `seat-${slug}`, slug })),
     role: who.role,
     loading: who.loading,
   }) as unknown as AuthContextValue
@@ -116,11 +125,35 @@ describe('useMediaManager, whether it asks', () => {
     expect(view.result.current).toEqual({ asking: false, mediaManager: true, secondFactor: true })
   })
 
-  it.each(['lca_admin', 'lca_observer', 'lca_officer'])('asks nothing for %s, whom Admin lets in by role', async (role) => {
+  it.each(['lca_admin', 'lca_observer', 'lca_officer'])('asks nothing for %s, whom Admin lets in by role, holding no seat', async (role) => {
     const { view } = draw(newPerson(role))
     await settle()
     expect(getMediaManager).not.toHaveBeenCalled()
     expect(view.result.current).toEqual({ asking: false, mediaManager: false, secondFactor: false })
+  })
+
+  it.each(['lca_admin', 'lca_observer'])('asks nothing for %s even with a seat: an LCA admin and the president send as themselves', async (role) => {
+    draw(newPerson(role, ['media-manager']))
+    await settle()
+    expect(getMediaManager).not.toHaveBeenCalled()
+  })
+
+  it('asks for an LCA officer who holds a seat, once, and gives the answer (checkpoint M\'s review)', async () => {
+    const { view } = draw(newPerson('lca_officer', ['media-manager']))
+    await settle()
+    expect(getMediaManager).toHaveBeenCalledTimes(1)
+    expect(view.result.current).toEqual({ asking: false, mediaManager: true, secondFactor: true })
+  })
+
+  it('asks nobody before their own record has arrived, and asks once it has (checkpoint M\'s review)', async () => {
+    const who = newPerson()
+    const { view, change } = draw({ ...who, recordLoading: true })
+    await settle()
+    expect(getMediaManager).not.toHaveBeenCalled()
+    expect(view.result.current).toEqual({ asking: false, mediaManager: false, secondFactor: false })
+    change(who)
+    await settle()
+    expect(getMediaManager).toHaveBeenCalledTimes(1)
   })
 
   it.each(['member', 'club_rep', 'tournament_director', 'lca_auditor', 'guest'])('asks for %s, whom Admin does not let in', async (role) => {
@@ -206,6 +239,23 @@ describe('useMediaManager, when the question fails', () => {
     change({ ...who, access: token(who.id, `session-sample-${seq}`, 'aal2') })
     await settle()
     expect(view.result.current).toEqual({ asking: false, mediaManager: true, secondFactor: true })
+  })
+
+  it('asks again the next time a page needs the answer, saying it is asking meanwhile, and gives that answer (checkpoint M\'s review)', async () => {
+    const who = newPerson()
+    getMediaManager.mockRejectedValueOnce(new Error('Sample network failure'))
+    const first = draw(who)
+    await settle()
+    expect(first.view.result.current).toEqual({ asking: false, mediaManager: false, secondFactor: false })
+    expect(getMediaManager).toHaveBeenCalledTimes(1)
+    let release!: (answer: ApiMediaManager) => void
+    getMediaManager.mockReturnValueOnce(new Promise<ApiMediaManager>((resolve) => { release = resolve }))
+    first.view.unmount()
+    const next = draw(who)
+    expect(next.view.result.current).toEqual({ asking: true, mediaManager: false, secondFactor: false })
+    expect(getMediaManager).toHaveBeenCalledTimes(2)
+    await act(async () => release({ mediaManager: true, secondFactor: true }))
+    expect(next.view.result.current).toEqual({ asking: false, mediaManager: true, secondFactor: true })
   })
 
   it('reads a token it cannot read as a session of no id, and still asks once', async () => {

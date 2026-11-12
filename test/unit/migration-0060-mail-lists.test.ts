@@ -49,7 +49,7 @@ const one = <T = Row>(db: DatabaseSync, sql: string, ...args: Array<string | num
 
 /** The rows each kind of campaign leaves, as the deployed code writes them before 0060. */
 function insertRows(db: DatabaseSync): void {
-  db.exec(`INSERT INTO clubs (id, name, city) VALUES ('club-a', 'Acadiana Knights', 'Lafayette')`)
+  db.exec(`INSERT INTO clubs (id, name, city) VALUES ('club-a', 'Example Knights', 'Example City')`)
   const member = db.prepare('INSERT INTO members (id, email, full_name, role, club_id) VALUES (?, ?, ?, ?, ?)')
   member.run('m-admin', 'avery.admin@example.org', 'Avery Admin', 'lca_admin', null)
   member.run('m-pat', 'pat.player@example.org', 'Pat Player', 'member', 'club-a')
@@ -287,7 +287,7 @@ describe('0060\'s two list rows and the mail tables\' rules', () => {
   })
 
   it('takes a choice away with its contact or its list, and keeps a club with a list from being deleted from under it', () => {
-    db.exec(`INSERT INTO mail_lists (id, kind, name, club_id) VALUES ('club-a-news', 'club', 'Acadiana Knights news', 'club-a')`)
+    db.exec(`INSERT INTO mail_lists (id, kind, name, club_id) VALUES ('club-a-news', 'club', 'Example Knights news', 'club-a')`)
     db.exec(`INSERT INTO mail_contacts (id, address) VALUES ('${'d'.repeat(32)}', 'pat.player@example.org'), ('${'e'.repeat(32)}', 'kim.parent@example.org')`)
     const choose = db.prepare(`INSERT INTO mail_list_choices (contact_id, list_id, choice, source) VALUES (?, ?, 'in', 'signup')`)
     choose.run('d'.repeat(32), 'club-a-news')

@@ -140,12 +140,17 @@ const AMAZON_RESOURCE_WORDS = 'an Amazon resource'
 /** What stands in Amazon's words for twelve digits standing alone, the form of an AWS account number. */
 const ACCOUNT_NUMBER_WORDS = 'an account number'
 
+/** What stands in Amazon's words for anything shaped like an email address, which can be a person's (checkpoint M's review). */
+export const ADDRESS_WORDS = 'an address'
+
 /**
  * Amazon's own words for a refusal: the body's message or Message, or, for a body that is not JSON at all, its text; on
  * one line, with the secret and the signed header taken out, every Amazon resource name (from 'arn:aws' to the next
- * space, comma, quote or the end) and every account number taken out, and cut to AMAZON_WORDS_MAX characters. The
- * words reach the newsletter's waiting line, which officers who are not LCA admins are shown, and an account number or
- * the key's user name is nothing a sender needs.
+ * space, comma, quote or the end), every account number and everything shaped like an email address (anything with an
+ * @ between two runs of characters that are not a space, an angle bracket, a quote, a comma, a semicolon or a colon,
+ * less a full stop at its end) taken out, and cut to AMAZON_WORDS_MAX characters. The words reach a log line, the
+ * recipient row's error and the newsletter's waiting line, which the media manager and officers who are not LCA admins
+ * are shown; an account number, the key's user name or a person's address is nothing a sender needs.
  */
 export function amazonWords(text: string, body: Record<string, unknown> | null, hide: readonly string[]): string {
   const message = typeof body?.message === 'string' ? body.message : typeof body?.Message === 'string' ? body.Message : body === null ? text : ''
@@ -154,6 +159,7 @@ export function amazonWords(text: string, body: Record<string, unknown> | null, 
   words = words
     .replace(/arn:aws[^\s,"']*/g, AMAZON_RESOURCE_WORDS)
     .replace(/\b[0-9]{12}\b/g, ACCOUNT_NUMBER_WORDS)
+    .replace(/[^\s<>"',;:]+@[^\s<>"',;:]+/g, (found) => `${ADDRESS_WORDS}${/\.*$/.exec(found)?.[0] ?? ''}`)
     .replace(/\s+/g, ' ')
     .trim()
   return words.length > AMAZON_WORDS_MAX ? `${words.slice(0, AMAZON_WORDS_MAX).trimEnd()}...` : words

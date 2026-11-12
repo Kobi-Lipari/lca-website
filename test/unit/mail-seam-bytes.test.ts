@@ -298,20 +298,20 @@ describe('(g) the display name', () => {
 
   it('is the message\'s own when it names one, in both shapes, and nothing else in the request moves', async () => {
     for (const shape of ['single', 'campaign'] as const) {
-      await deliver(ENV, { from: 'noreply@louisianachess.org', fromName: 'Kenner Chess Club', to: MESSAGE.to, replyTo: 'kenner.club@example.org', subject: 'Club night', html: '<p>Thursday</p>', shape })
+      await deliver(ENV, { from: 'noreply@louisianachess.org', fromName: 'Example Chess Club', to: MESSAGE.to, replyTo: 'sample.club@example.org', subject: 'Sample club note', html: '<p>Example words for a sample club note.</p>', shape })
     }
     expect(recorded).toEqual([
       {
         url: URL_,
         method: 'POST',
         headers: SINGLE_HEADERS,
-        body: '{"from":"Kenner Chess Club <noreply@louisianachess.org>","to":["pat.member@example.org"],"reply_to":["kenner.club@example.org"],"subject":"Club night","html":"<p>Thursday</p>"}',
+        body: '{"from":"Example Chess Club <noreply@louisianachess.org>","to":["pat.member@example.org"],"reply_to":["sample.club@example.org"],"subject":"Sample club note","html":"<p>Example words for a sample club note.</p>"}',
       },
       {
         url: URL_,
         method: 'POST',
         headers: CAMPAIGN_HEADERS,
-        body: '{"from":"Kenner Chess Club <noreply@louisianachess.org>","reply_to":["kenner.club@example.org"],"to":"pat.member@example.org","subject":"Club night","html":"<p>Thursday</p>"}',
+        body: '{"from":"Example Chess Club <noreply@louisianachess.org>","reply_to":["sample.club@example.org"],"to":"pat.member@example.org","subject":"Sample club note","html":"<p>Example words for a sample club note.</p>"}',
       },
     ])
   })

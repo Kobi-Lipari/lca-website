@@ -19,8 +19,11 @@
 // newsletter's test send, through Amazon SES only for an LCA admin who ticks
 // the box; and the preview's footer from domain/mail/footer.ts with no
 // postal address. And the calls the page makes, and the audit log's label
-// for a stopped newsletter. Every name, subject, club and address here is
-// made up.
+// for a stopped newsletter. Since checkpoint M's review the tab's sizes are
+// read from the classes it wears, compiled by Tailwind with the site's tokens
+// (test/unit/helpers/tailwindPx.ts): the words at 14px, the openers 44px tall,
+// and the buttons 44px tall under 40rem. Every name, subject, club and address
+// here is made up.
 import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import type { ReactElement } from 'react'
 import { MemoryRouter } from 'react-router-dom'
@@ -32,6 +35,7 @@ import type { ApiAuditEntry, ApiCampaign, ApiClubListItem, ApiNewsletter } from 
 import { ApiError } from '@/lib/http'
 import { EVENT_MAIL_STILL_COMES, LIST_FOOTER_WORDS, PREFERENCES_LABEL } from '@domain/mail/footer'
 import { NEWSLETTER_LIST_ID } from '@domain/mail/lists'
+import { builder, setBy, sizeClassOf } from './helpers/tailwindPx'
 
 const flags = vi.hoisted(() => ({ mailLists: false }))
 vi.mock('@/lib/features', async (importOriginal) => {
@@ -84,7 +88,8 @@ const WORDS = {
   guardrails: "Name the newsletter in the subject, put member news first, and paste links by hand, a tournament's King Registration link included. A renewal reminder is a separate email.",
   bothLinks: 'Each email carries an unsubscribe link and an email preferences link.',
   specificPeople: "For a note about a person's own membership, entry or request. News goes to the LCA newsletter list, which honors each person's choices.",
-  waitsForSes: 'The newsletter goes out through Amazon SES, which this site does not send through yet. You can write it and send yourself a test now.',
+  // Since checkpoint M's review the server's own words, WAITS_FOR_SES, with no "now" of the page's own.
+  waitsForSes: 'The newsletter goes out through Amazon SES, which this site does not send through yet. You can write it and send yourself a test.',
   send: 'Send to the LCA newsletter list',
   sesBox: 'Send the test through Amazon SES',
 }
@@ -443,9 +448,11 @@ describe('Group email with mailLists on: the send, the stop and the recent sends
     const waits = 'Not sent yet: list mail goes out through Amazon SES only.'
     api.getNewsletter.mockResolvedValue(newsletter({ recent: [SENDING, SENT], waits }))
     draw(<AdminEmailPage embedded />)
-    const words = await screen.findByText(waits)
-    expect(words.closest('[role="status"]')).toBeTruthy()
+    // Since checkpoint M's review the words sit in the sending newsletter's own row, named by its subject.
+    await screen.findByText('153 addresses will get it.')
     const history = screen.getByRole('heading', { name: 'Send history' }).parentElement!
+    const words = await within(history).findByText(`\u201c${SENDING.subject}\u201d is waiting: ${waits}`)
+    expect(words.closest('[role="status"]')).toBeTruthy()
     expect(history.contains(words)).toBe(true)
     for (const subject of [SENDING.subject, SENT.subject]) expect(within(history).getByText(subject)).toBeTruthy()
     expect(within(history).getByText(/Sending/)).toBeTruthy()
@@ -453,15 +460,17 @@ describe('Group email with mailLists on: the send, the stop and the recent sends
     // Group email's own history comes back with the Specific people tab.
     fireEvent.click(screen.getByRole('tab', { name: 'Specific people' }))
     expect(within(history).getByText('Sample group message')).toBeTruthy()
-    expect(within(history).queryByText(waits)).toBeNull()
+    expect(within(history).queryByText(new RegExp(waits))).toBeNull()
   })
 
   it('gives each row the time of its send as the site writes a stored time, in the recent sends and in the history alike, and today\'s words with the switch off', async () => {
     draw(<AdminEmailPage embedded />)
     // 3:00 PM in UTC, as the database wrote it, is 9:00 AM in Louisiana, the clocks having gone back on Sunday, November 1, 2026.
-    expect(await screen.findByText('Tue, Nov 3, 2026 · 9:00 AM · 9 recipients')).toBeTruthy()
+    // Since checkpoint M's review the count is in a span of its own, so the line is read whole.
+    const line = (words: string) => (_: string, el: Element | null) => el?.tagName === 'P' && el.textContent === words
+    expect(await screen.findByText(line('Tue, Nov 3, 2026 · 9:00 AM · 9 recipients'))).toBeTruthy()
     fireEvent.click(screen.getByRole('tab', { name: 'Specific people' }))
-    expect(await screen.findByText('Mon, Nov 2, 2026 · 9:00 AM · 2 recipients')).toBeTruthy()
+    expect(await screen.findByText(line('Mon, Nov 2, 2026 · 9:00 AM · 2 recipients'))).toBeTruthy()
     cleanup()
 
     flags.mailLists = false
@@ -589,5 +598,188 @@ describe('the audit log\'s label for a stopped newsletter', () => {
     expect(await screen.findByText('Stopped a newsletter')).toBeTruthy()
     fireEvent.click(screen.getByRole('button', { name: 'Group email' }))
     await waitFor(() => expect(api.adminGetAuditLog).toHaveBeenLastCalledWith({ action: 'group_email_sent,group_email_stopped', limit: 200 }))
+  })
+})
+
+describe('Group email with mailLists on: checkpoint M\'s review (K\'s decision 52, part B, and the media manager\'s test)', () => {
+  beforeEach(() => {
+    flags.mailLists = true
+  })
+
+  /** The class an element and every element around it carry, read up to the page. */
+  const classesUp = (el: Element | null): string => (el ? `${el.getAttribute('class') ?? ''} ${classesUp(el.parentElement)}` : '')
+  const SMALL = /(?:^|\s)text-(?:xs|\[(?:9|10|11|12|13)px\])(?:\s|$)/
+
+  it('draws the tab\'s words at 14px: the Help body, the count line, the sender, the notes under the form and the reason Send is off', async () => {
+    draw(<AdminEmailPage embedded />)
+    await screen.findByText('153 addresses will get it.')
+    fireEvent.click(screen.getByRole('button', { name: 'Preview email' }))
+    for (const words of [
+      WORDS.guardrails, WORDS.bothLinks, ' addresses will get it.', 'It goes from ', WORDS.waitsForSes,
+      'Send yourself a test before the real thing', 'Test emails are marked [TEST]', "This is how it will look in the recipient's inbox:", WORDS.sesBox,
+    ]) {
+      const [holder] = holders(words)
+      expect(holder, words).toBeTruthy()
+      const own = holder.getAttribute('class') ?? ''
+      const nearest = own.match(/text-(?:sm|xs|base|\[\d+px\])/) ? own : classesUp(holder)
+      expect(nearest, words).toMatch(/(?:^|\s)text-sm(?:\s|$)/)
+      expect(own, words).not.toMatch(SMALL)
+    }
+  })
+
+  it('makes the Help and Who gets it openers 44px tall, and on a phone the tab\'s buttons, Preview email, Send test and Send', async () => {
+    api.getNewsletter.mockResolvedValue(newsletter({ recent: [SENDING, SENT] }))
+    draw(<AdminEmailPage embedded />)
+    await screen.findByText('153 addresses will get it.')
+    for (const name of ['Help', 'Who gets it']) expect(screen.getByRole('button', { name }).getAttribute('class'), name).toMatch(/(?:^|\s)min-h-11(?:\s|$)/)
+    const tall = [...screen.getAllByRole('tab'), ...['Preview email', 'Send test', WORDS.send, 'Stop sending'].map((name) => screen.getByRole('button', { name }))]
+    for (const control of tall) expect(control.getAttribute('class'), control.textContent ?? '').toMatch(/(?:^|\s)max-sm:min-h-11(?:\s|$)/)
+  })
+
+  it('names the newsletter that waits by its subject beside its own counts, and gives the same words beside the Send button it holds back', async () => {
+    const waits = 'Not sent yet: the mail key is missing on this deployment.'
+    api.getNewsletter.mockResolvedValue(newsletter({ sendsThrough: 'ses', recent: [SENDING, SENT], waits }))
+    draw(<AdminEmailPage embedded />)
+    const line = `\u201c${SENDING.subject}\u201d is waiting: ${waits}`
+    const both = await screen.findAllByText(line)
+    expect(both).toHaveLength(2)
+    const row = screen.getByText(SENDING.subject).closest('.rounded-xl')!
+    expect(row.contains(both[1]) || row.contains(both[0])).toBe(true)
+    const send = screen.getByRole('button', { name: WORDS.send }) as HTMLButtonElement
+    expect(send.disabled).toBe(true)
+    expect(both.some((el) => send.parentElement!.contains(el))).toBe(true)
+  })
+
+  it('says beside Send, off, that a newsletter is sending while it waits for no reason of its own, in the server\'s words', async () => {
+    api.getNewsletter.mockResolvedValue(newsletter({ sendsThrough: 'ses', recent: [SENDING] }))
+    const { ALREADY_SENDING } = await import('../../functions/utils/mail/newsletterAnswers')
+    draw(<AdminEmailPage embedded />)
+    await screen.findByText('153 addresses will get it.')
+    const send = screen.getByRole('button', { name: WORDS.send }) as HTMLButtonElement
+    expect(send.disabled).toBe(true)
+    expect(within(send.parentElement!).getByText(ALREADY_SENDING)).toBeTruthy()
+  })
+
+  it('keeps a recent send\'s count with its noun, the number and "recipients" in one span that does not break', async () => {
+    draw(<AdminEmailPage embedded />)
+    const count = await screen.findByText('9 recipients')
+    expect(count.tagName).toBe('SPAN')
+    expect(count.getAttribute('class')).toBe('whitespace-nowrap')
+  })
+
+  it('writes the reason beside Send from the one copy the server answers with, with no word of the page\'s own', async () => {
+    const server = await import('../../functions/utils/mail/newsletterAnswers')
+    const words = await import('@domain/mail/newsletterWords')
+    expect(words.WAITS_FOR_SES).toBe(server.WAITS_FOR_SES)
+    expect(words.ALREADY_SENDING).toBe(server.ALREADY_SENDING)
+    draw(<AdminEmailPage embedded />)
+    await screen.findByText('153 addresses will get it.')
+    expect(holders(server.WAITS_FOR_SES)).toHaveLength(1)
+    expect(document.body.textContent).not.toContain('send yourself a test now')
+  })
+
+  it('draws the media manager\'s test with no address box: it goes to their own address, shown whole, with the page\'s words on its button', async () => {
+    api.sendNewsletterTest.mockResolvedValue({ sent: true })
+    const who = { role: 'member', member: { id: 'member-sample-mm', email: 'player.one@example.org' }, user: { id: 'member-sample-mm', email: 'player.one@example.org' } }
+    render(
+      <MemoryRouter>
+        <AuthContext.Provider value={who as unknown as AuthContextValue}><AdminEmailPage embedded mediaManager={{ secondFactor: true }} /></AuthContext.Provider>
+      </MemoryRouter>,
+    )
+    await screen.findByText('153 addresses will get it.')
+    expect(screen.queryByPlaceholderText('you@example.com')).toBeNull()
+    expect(screen.getByText('player.one@example.org')).toBeTruthy()
+    fireEvent.change(screen.getByPlaceholderText('e.g. Fall tournament registration is open'), { target: { value: 'Sample newsletter three' } })
+    fireEvent.change(screen.getByLabelText('Message'), { target: { value: '<p>Example words.</p>' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Send test' }))
+    await waitFor(() => expect(api.sendNewsletterTest).toHaveBeenCalledWith({ to: 'player.one@example.org', subject: 'Sample newsletter three', bodyHtml: '<p>Example words.</p>' }))
+    expect(await screen.findByText('Test email sent to player.one@example.org.')).toBeTruthy()
+  })
+})
+
+describe('the newsletter tab\'s sizes, read from the classes it wears and compiled by Tailwind (checkpoint M\'s review, K\'s decision 52, B3)', () => {
+  beforeEach(() => {
+    flags.mailLists = true
+  })
+
+  /** The pixels an element's words are drawn at: the size class it wears, or the nearest around it, as Tailwind compiles it. */
+  async function fontPx(el: Element): Promise<number> {
+    const token = sizeClassOf(el)
+    // Words that wear no size class are drawn at the page's own size, the browser's default 16px.
+    if (token === null) return 16
+    const set = setBy((await builder())([token]), token, 'font-size')
+    expect(set, token).not.toBeNull()
+    return set!.px
+  }
+
+  /** Every element that holds words of its own, the email preview's own look and the page's titles apart. */
+  function wordsOnTheTab(root: ParentNode = document.body): Element[] {
+    const preview = screen.queryByText("This is how it will look in the recipient's inbox:")?.nextElementSibling
+    return [...root.querySelectorAll('*')].filter(
+      (el) =>
+        !/^H[1-3]$/.test(el.tagName) &&
+        !preview?.contains(el) &&
+        [...el.childNodes].some((n) => n.nodeType === 3 && (n.textContent ?? '').trim() !== ''),
+    )
+  }
+
+  it('is 14px for the Help body, the count line, the sender line, the notes under the form and the reasons Send is off', async () => {
+    api.getNewsletter.mockResolvedValue(newsletter({ sendsThrough: 'ses', recent: [SENDING], waits: 'Not sent yet: the mail key is missing on this deployment.' }))
+    draw(<AdminEmailPage embedded />)
+    await screen.findByText('153 addresses will get it.')
+    fireEvent.click(screen.getByRole('button', { name: 'Preview email' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Who gets it' }))
+    for (const words of [WORDS.guardrails, WORDS.bothLinks, ' addresses will get it.', 'It goes from ', 'Every address on an account', 'Send yourself a test before the real thing', 'Test emails are marked [TEST]', "This is how it will look in the recipient's inbox:", 'is waiting: Not sent yet']) {
+      const [holder] = holders(words)
+      expect(holder, words).toBeTruthy()
+      expect(await fontPx(holder!), words).toBeGreaterThanOrEqual(14)
+    }
+    expect(await fontPx(holders('Add a subject and a message before sending.')[0]), 'the reason Send is off with nothing written').toBeGreaterThanOrEqual(14)
+  })
+
+  it('draws no word of the form under 14px, its buttons among them, but for the email preview, which is the email\'s own look', async () => {
+    api.getNewsletter.mockResolvedValue(newsletter({ recent: [] }))
+    draw(<AdminEmailPage embedded />)
+    await screen.findByText('153 addresses will get it.')
+    fireEvent.click(screen.getByRole('button', { name: 'Preview email' }))
+    const small: string[] = []
+    for (const el of wordsOnTheTab()) {
+      const px = await fontPx(el)
+      if (px < 14) small.push(`${px}px <${el.tagName.toLowerCase()}> ${(el.textContent ?? '').trim().slice(0, 40)}`)
+    }
+    expect(small).toEqual([])
+  })
+
+  it('draws the newsletter\'s recent sends at 14px or more: the time and count line, the status and the counts a person reads', async () => {
+    api.getNewsletter.mockResolvedValue(newsletter({ sendsThrough: 'ses', recent: [SENDING, SENT], waits: 'Not sent yet: the mail key is missing on this deployment.' }))
+    draw(<AdminEmailPage embedded />)
+    await screen.findByText('153 addresses will get it.')
+    const history = screen.getByRole('heading', { name: 'Send history' }).parentElement!
+    const small: string[] = []
+    for (const el of wordsOnTheTab(history)) {
+      const px = await fontPx(el)
+      if (px < 14) small.push(`${px}px <${el.tagName.toLowerCase()}> ${(el.textContent ?? '').trim().slice(0, 40)}`)
+    }
+    expect(small).toEqual([])
+  })
+
+  it('makes the Help and Who gets it openers 44px tall at every width', async () => {
+    draw(<AdminEmailPage embedded />)
+    await screen.findByText('153 addresses will get it.')
+    const css = (await builder())(['min-h-11'])
+    expect(setBy(css, 'min-h-11', 'min-height')).toEqual({ px: 44, media: null })
+    for (const name of ['Help', 'Who gets it']) {
+      expect(screen.getByRole('button', { name }).getAttribute('class')?.split(/\s+/), name).toContain('min-h-11')
+    }
+  })
+
+  it('makes the tab\'s buttons, Preview email, Send test, Send and Stop sending 44px tall under 40rem, the width a phone has', async () => {
+    api.getNewsletter.mockResolvedValue(newsletter({ recent: [SENDING, SENT] }))
+    draw(<AdminEmailPage embedded />)
+    await screen.findByText('153 addresses will get it.')
+    const css = (await builder())(['max-sm:min-h-11'])
+    expect(setBy(css, 'max-sm:min-h-11', 'min-height')).toEqual({ px: 44, media: 'width < 40rem' })
+    const controls = [...screen.getAllByRole('tab'), ...['Preview email', 'Send test', WORDS.send, 'Stop sending'].map((name) => screen.getByRole('button', { name }))]
+    for (const control of controls) expect(control.getAttribute('class')?.split(/\s+/), control.textContent ?? '').toContain('max-sm:min-h-11')
   })
 })

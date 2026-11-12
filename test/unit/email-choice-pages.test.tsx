@@ -222,13 +222,14 @@ describe('the edges of the two pages', () => {
   it('says the network words, not the not-working words, for a load that got no answer or a server error, with no POST and no button', async () => {
     on('GET', UNSUBSCRIBE_URL, 'no answer')
     open(`/email/unsubscribe/${UNSUBSCRIBE_TOKEN}`)
-    await waitFor(() => expect(screen.getByTestId('main').textContent).toBe(NO_ANSWER))
+    // Since checkpoint M's review the page's heading stands above the sentence, which is word for word as before.
+    await waitFor(() => expect(screen.getByTestId('main').textContent).toBe(`Unsubscribe${NO_ANSWER}`))
     expect(screen.queryByRole('button')).toBeNull()
     cleanup()
 
     on('GET', UNSUBSCRIBE_URL, { status: 500, body: { error: 'Something broke.' } })
     open(`/email/unsubscribe/${UNSUBSCRIBE_TOKEN}`)
-    await waitFor(() => expect(screen.getByTestId('main').textContent).toBe(NO_ANSWER))
+    await waitFor(() => expect(screen.getByTestId('main').textContent).toBe(`Unsubscribe${NO_ANSWER}`))
     expect(calls.every((c) => c.method === 'GET')).toBe(true)
   })
 
@@ -382,5 +383,67 @@ describe('the email preferences page', () => {
     await screen.findByRole('heading', { level: 1, name: 'Your email choices' })
     fireEvent.click(screen.getByRole('button', { name: 'Save my choices' }))
     await waitFor(() => expect(screen.getByRole('status').textContent).toBe('Saved.'))
+  })
+})
+
+describe('checkpoint M\'s review (K\'s decision 52, part B)', () => {
+  it('gives a link that does not open a heading above its sentence on both pages, the sentence and its Contact link word for word', async () => {
+    for (const [path, url, heading] of [
+      [`/email/unsubscribe/${UNSUBSCRIBE_TOKEN}`, UNSUBSCRIBE_URL, 'Unsubscribe'],
+      [`/email/preferences/${PREFERENCES_TOKEN}`, PREFERENCES_URL, 'Your email choices'],
+    ] as const) {
+      on('GET', url, notFound)
+      open(path)
+      const contact = await screen.findByRole('link', { name: 'Contact page' })
+      const title = screen.getByRole('heading', { level: 1, name: heading })
+      expect(title.getAttribute('class'), heading).toBe('text-2xl font-bold text-ink')
+      expect(contact.parentElement!.textContent, heading).toBe(NOT_WORKING)
+      expect(title.compareDocumentPosition(contact.parentElement!) & Node.DOCUMENT_POSITION_FOLLOWING, heading).toBeTruthy()
+      cleanup()
+    }
+  })
+
+  it('draws "Saved." with a check mark in a bordered, tinted box with padding, its words unchanged, and the region\'s ring at full strength when it takes the focus', async () => {
+    on('GET', PREFERENCES_URL, choices())
+    on('PATCH', PREFERENCES_URL, choices())
+    open(`/email/preferences/${PREFERENCES_TOKEN}`)
+    await screen.findByRole('heading', { level: 1, name: 'Your email choices' })
+    const status = screen.getByRole('status')
+    expect(status.getAttribute('class')).toMatch(/(?:^|\s)focus:ring-3 focus:ring-ring(?:\s|$)/)
+    fireEvent.click(screen.getByRole('button', { name: 'Save my choices' }))
+    await waitFor(() => expect(status.textContent).toBe('Saved.'))
+    expect(document.activeElement).toBe(status)
+    const drawnBox = status.firstElementChild!
+    expect(drawnBox.getAttribute('class')).toMatch(/(?=.*\bborder\b)(?=.*\bbg-ok-50\b)(?=.*\bp-3\b)/)
+    expect(drawnBox.querySelector('svg')!.getAttribute('aria-hidden')).toBe('true')
+  })
+
+  it('draws "Done." and its sentence in the same box on the unsubscribe page, the words and the link unchanged', async () => {
+    on('GET', UNSUBSCRIBE_URL, { status: 200, body: { list: 'LCA newsletter' } })
+    on('POST', UNSUBSCRIBE_URL, { status: 200, body: { unsubscribed: true, list: 'LCA newsletter', preferencesToken: PREFERENCES_TOKEN } })
+    open(`/email/unsubscribe/${UNSUBSCRIBE_TOKEN}`)
+    fireEvent.click(await screen.findByRole('button', { name: 'Unsubscribe' }))
+    const status = screen.getByRole('status')
+    await waitFor(() => expect(status.textContent).toBe("Done. The LCA newsletter won't come to this address any more. Change your email choices"))
+    const drawnBox = status.firstElementChild!
+    expect(drawnBox.getAttribute('class')).toMatch(/(?=.*\bborder\b)(?=.*\bbg-ok-50\b)(?=.*\bp-3\b)/)
+    expect(drawnBox.querySelector('svg')!.getAttribute('aria-hidden')).toBe('true')
+  })
+
+  it('reads the newsletter\'s row as off while every optional email is stopped: its label muted as its box is, and its status in words', async () => {
+    const box = (name: string) => screen.getByRole('checkbox', { name }) as HTMLInputElement
+    on('GET', PREFERENCES_URL, choices())
+    open(`/email/preferences/${PREFERENCES_TOKEN}`)
+    await screen.findByRole('heading', { level: 1, name: 'Your email choices' })
+    const newsletterBox = box('LCA newsletter')
+    const label = newsletterBox.closest('label')!
+    expect(label.getAttribute('class')).toContain('text-ink')
+    expect(screen.queryByText('Off while all optional email is stopped.')).toBeNull()
+    fireEvent.click(box('Stop all optional email from LCA'))
+    expect(label.getAttribute('class')).toContain('text-muted-foreground')
+    expect(label.getAttribute('class')).not.toContain('text-ink')
+    const ids = (newsletterBox.getAttribute('aria-describedby') ?? '').split(' ')
+    expect(ids.map((id) => document.getElementById(id)?.textContent)).toEqual(['News from the Louisiana Chess Association.', 'Off while all optional email is stopped.'])
+    expect(newsletterBox.disabled).toBe(true)
   })
 })

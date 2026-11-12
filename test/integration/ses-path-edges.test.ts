@@ -293,6 +293,55 @@ describe('the test through Amazon SES, asked in ways the page never asks', () =>
     expect(everything).not.toMatch(/\b\d{12}\b/)
   })
 
+  it('keeps no address Amazon names in its refusal in the test\'s answer, a newsletter row, the waiting line or a log line (checkpoint M\'s review)', async () => {
+    // Amazon's words for an identity that failed its check name the address the message was for, as a sandbox account's do.
+    const underneath = globalThis.fetch
+    globalThis.fetch = (async (input: RequestInfo | URL, init?: RequestInit) => {
+      const request = new Request(input as RequestInfo, init)
+      if (new URL(request.url).hostname !== SES) return await underneath(input as RequestInfo, init)
+      const to = ((await request.clone().json()) as { Destination: { ToAddresses: string[] } }).Destination.ToAddresses.join(', ')
+      return Response.json(
+        { __type: 'com.amazonaws.email.v2#MessageRejected', message: `Email address is not verified. The following identities failed the check in region US-EAST-1: ${to}` },
+        { status: 400, headers: { 'x-amzn-errortype': 'MessageRejected:http://internal.amazon.com/coral/com.amazon.coral.service/' } },
+      )
+    }) as typeof fetch
+    unwrap.push(() => {
+      globalThis.fetch = underneath
+    })
+    const logged: string[] = []
+    for (const level of ['log', 'info', 'warn', 'error'] as const) {
+      vi.spyOn(console, level).mockImplementation((...parts: unknown[]) => {
+        logged.push(parts.map(String).join(' '))
+      })
+    }
+    const words = 'Amazon SES 400 MessageRejected: Email address is not verified. The following identities failed the check in region US-EAST-1: an address'
+
+    flags.sender = 'resend'
+    const admin = await seedAdmin()
+    const tester = address('tester')
+    const res = await invoke(testPost, { as: admin, method: 'POST', body: { to: tester, ...SAMPLE, service: 'ses' } })
+    expect(res.status).toBe(502)
+    const answer = await res.json<{ error: string }>()
+    expect(answer).toEqual({ error: `Failed to send test email: ${words}` })
+
+    flags.sender = 'ses'
+    const readers = [address('reader'), address('reader')]
+    for (const reader of readers) await member(reader)
+    const made = await createListCampaign(env.DB, { listId: NEWSLETTER_LIST_ID, ...SAMPLE, createdBy: admin, linkCheck: await linkKeyCheck(key()) })
+    const id = made!.campaignId
+    await processCampaign(bindings, id)
+    const rows = await rowsOf(id)
+    expect(rows.filter((r) => readers.includes(r.email)).map((r) => [r.status, r.error])).toEqual([['failed', words], ['failed', words]])
+    const president = await member(address('president'), { role: 'lca_observer' })
+    const shown = await invoke(newsletterGet, { as: president, aal: 'aal2' })
+    const summary = await shown.json<{ summary: { waits: string | null } }>()
+
+    // A row holds its own address in its email column, as every recipient row does; its error holds none.
+    const everything = JSON.stringify({ answer, errors: rows.map((r) => r.error), campaign: await campaignOf(id), summary, logged })
+    for (const named of [tester, ...readers]) expect(everything, named).not.toContain(named)
+    expect(everything).not.toContain('@ses-edges.test.lca')
+  })
+
   it('with MAIL_SENDER already \'ses\', a test without the box goes through Amazon SES too, from the same newsletter line, and never reaches Resend', async () => {
     flags.sender = 'ses'
     const admin = await seedAdmin()

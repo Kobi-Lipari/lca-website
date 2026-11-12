@@ -24,8 +24,11 @@
 // takes the list's 'out' away; for a list that is not a main mailer, a
 // person with a spam report's mark gets an 'in' too, so their own newer
 // choice lifts the mark for that list, unless the gate already reads an
-// 'in' of theirs as newer than the mark; no 'in' is ever written on one of
-// LCA's main mailers, whose audience alone decides who gets them. Off
+// 'in' of theirs as newer than the mark. On one of LCA's main mailers,
+// whose audience alone decides who gets them, an 'in' is written only in
+// place of an 'out' a spam report wrote (since checkpoint M's review), so a
+// later copy of that report, which Amazon may deliver up to the receiver's
+// three hours after, finds the person's newer choice and leaves it. Off
 // writes 'out'. optionalOff true marks the stop-all and false clears it,
 // leaving the list choices as they are. The writes go in one batch, and
 // the answer is the GET's.
@@ -46,6 +49,8 @@ import { emailChoicesRequestSchema, type EmailChoicesResponse } from '../../../.
 const IN: Choice = 'in'
 const OUT: Choice = 'out'
 const FROM_PAGE: ChoiceSource = 'preferences'
+/** The source of a choice a spam report wrote (functions/utils/mail/sesEvents.ts). */
+const FROM_REPORT: ChoiceSource = 'complaint'
 
 /** One list the person is on, as the query reads it. */
 interface ListRow {
@@ -53,6 +58,8 @@ interface ListRow {
   name: string
   main_mailer: number
   choice: string | null
+  /** Who wrote the choice: the person, from a link or this page, or a spam report ('complaint'). */
+  source: string | null
   back_in: number
 }
 
@@ -60,7 +67,7 @@ interface ListRow {
 async function listsShown(db: D1Database, contactId: string): Promise<ListRow[]> {
   const { results } = await db
     .prepare(
-      `SELECT l.id AS id, l.name AS name, l.main_mailer AS main_mailer, ch.choice AS choice,
+      `SELECT l.id AS id, l.name AS name, l.main_mailer AS main_mailer, ch.choice AS choice, ch.source AS source,
               ${backInSql('ch', 'c')} AS back_in
          FROM mail_contacts c
          CROSS JOIN mail_lists l
@@ -94,23 +101,31 @@ async function contactNow(db: D1Database, id: string): Promise<LinkContact | nul
   return db.prepare('SELECT id, address, optional_off_at, complained_at FROM mail_contacts WHERE id = ?').bind(id).first<LinkContact>()
 }
 
+/** The statement that writes the person's own 'in' on one list, now, over any choice on record. */
+function writeIn(db: D1Database, contact: LinkContact, row: ListRow): D1PreparedStatement {
+  return db
+    .prepare(
+      `INSERT INTO mail_list_choices (contact_id, list_id, choice, source) VALUES (?1, ?2, ?3, ?4)
+       ON CONFLICT (contact_id, list_id) DO UPDATE SET choice = ?3, source = ?4, updated_at = datetime('now')`,
+    )
+    .bind(contact.id, row.id, IN, FROM_PAGE)
+}
+
 /**
  * The statement that turns one list on for the person, or null when there is nothing to write. For a list that is not
  * a main mailer, a person with a spam report's mark gets an 'in' of their own, newer than the mark, which lifts it for
  * this list; when the gate already reads an 'in' of theirs as newer than the mark (back_in, from backInSql in
- * functions/utils/mail/gate.ts), it is left as it is, so the rule is the gate's alone. Anyone else has the list's
- * 'out' taken away.
+ * functions/utils/mail/gate.ts), it is left as it is, so the rule is the gate's alone. Where the 'out' being turned
+ * back on was written by a spam report (its source 'complaint'), the person's 'in' is written in its place, at this
+ * moment, so a later copy of the same report finds a newer choice and leaves it (checkpoint M's review). Anyone else
+ * has the list's 'out' taken away, as before.
  */
 function turnOn(db: D1Database, contact: LinkContact, row: ListRow): D1PreparedStatement | null {
   if (row.main_mailer !== 1 && contact.complained_at !== null) {
     if (row.back_in === 1) return null
-    return db
-      .prepare(
-        `INSERT INTO mail_list_choices (contact_id, list_id, choice, source) VALUES (?1, ?2, ?3, ?4)
-         ON CONFLICT (contact_id, list_id) DO UPDATE SET choice = ?3, source = ?4, updated_at = datetime('now')`,
-      )
-      .bind(contact.id, row.id, IN, FROM_PAGE)
+    return writeIn(db, contact, row)
   }
+  if (row.choice === OUT && row.source === FROM_REPORT) return writeIn(db, contact, row)
   return db.prepare('DELETE FROM mail_list_choices WHERE contact_id = ? AND list_id = ? AND choice = ?').bind(contact.id, row.id, OUT)
 }
 

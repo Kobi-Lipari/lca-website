@@ -184,6 +184,13 @@ const SWEEP_BATCH = 150
 /** A claim older than this is assumed to belong to a run that died. */
 const CLAIM_TIMEOUT = '-15 minutes'
 
+/**
+ * Under the engine's rules, how long a run keeps sending on one claim: two thirds of CLAIM_TIMEOUT's 15 minutes, so a
+ * run ends itself, its unmarked rows put back, before another run may take its claim, with 5 minutes left for the one
+ * send in flight, hundreds of times a normal send's time, while a run that is only slow keeps most of its claim's life.
+ */
+const CLAIM_HELD_MS = 10 * 60_000
+
 /** Transient failures are retried by later sweeps, but not forever. */
 const MAX_ATTEMPTS = 3
 
@@ -570,7 +577,9 @@ async function listFault(env: CampaignEnv, listId: string, filterJson: string | 
 /**
  * The two statements that write off a campaign's rows that are marked sending and whose claim has expired: their run
  * died between the mark and the outcome, so the service may have taken the message, and a second try could send it
- * twice. Each is failed with WRITTEN_OFF_WORDS and counted in failed_count.
+ * twice. Each is failed with WRITTEN_OFF_WORDS and counted in failed_count. A run still alive whose one send outlived
+ * its claim records that row only while it is still pending (recordOutcome), so whichever of the two writes lands
+ * first decides the row, and the counts follow it: a row is counted once.
  */
 function writeOff(db: D1Database, campaignId: string): D1PreparedStatement[] {
   const stale = `campaign_id = ?1 AND status = 'pending' AND sending_at IS NOT NULL AND (claimed_at IS NULL OR claimed_at <= datetime('now', ?2))`
@@ -604,31 +613,43 @@ function markSending(db: D1Database, id: string): D1PreparedStatement {
     .bind(id)
 }
 
+/** What a put-back is told: the row a service answered later, the row and words the history shows, and this run's own mark. */
+interface PutBackOpts {
+  kept?: string
+  noted?: string
+  words?: string
+  /** The one row this run marked and has not recorded, whose mark it clears; every other row's mark is another run's. */
+  own?: string
+}
+
 /**
  * One statement that puts claimed rows back in the pool, unclaimed and unmarked, each with the attempt the claim counted
  * given back, but for `kept`, the row a service answered later; the words go on `noted`, so the history says why the
- * campaign waits. A row that is no longer pending, such as one a stop failed, is left as it is.
+ * campaign waits. A row that is no longer pending, such as one a stop failed, is left as it is, and so is a row marked
+ * by another run (checkpoint M's review): a run clears only its own mark, `own`, so a run that lost the race to mark a
+ * row leaves it to the run that marked it.
  */
-function putBack(db: D1Database, rows: ClaimedRecipient[], opts: { kept?: string; noted?: string; words?: string } = {}): D1PreparedStatement {
+function putBack(db: D1Database, rows: ClaimedRecipient[], opts: PutBackOpts = {}): D1PreparedStatement {
   return db
     .prepare(
       `UPDATE email_campaign_recipients
           SET claimed_at = NULL, sending_at = NULL,
               attempts = CASE WHEN id = ?2 THEN attempts ELSE attempts - 1 END,
               error = CASE WHEN id = ?3 THEN ?4 ELSE error END
-        WHERE id IN (SELECT value FROM json_each(?1)) AND status = 'pending'`,
+        WHERE id IN (SELECT value FROM json_each(?1)) AND status = 'pending' AND (sending_at IS NULL OR id = ?5)`,
     )
-    .bind(JSON.stringify(rows.map((r) => r.id)), opts.kept ?? null, opts.noted ?? null, opts.words ?? null)
+    .bind(JSON.stringify(rows.map((r) => r.id)), opts.kept ?? null, opts.noted ?? null, opts.words ?? null, opts.own ?? null)
 }
 
 /**
  * The two statements that fail, with STOPPED_WORDS and counted in failed_count, the rows given that are still pending
- * on a campaign whose send a stop has closed: a stopped newsletter's rows a run put back, so the send keeps no pending
- * row and its counts add up. On a campaign that is sending they change nothing.
+ * and unmarked on a campaign whose send a stop has closed: a stopped newsletter's rows a run put back, so the send keeps
+ * no pending row and its counts add up, while a row another run has marked is left to that run, as the stop leaves it.
+ * On a campaign that is sending they change nothing.
  */
 function failStopped(db: D1Database, campaignId: string, rows: ClaimedRecipient[]): D1PreparedStatement[] {
   const ids = JSON.stringify(rows.map((r) => r.id))
-  const pending = `id IN (SELECT value FROM json_each(?2)) AND status = 'pending'`
+  const pending = `id IN (SELECT value FROM json_each(?2)) AND status = 'pending' AND sending_at IS NULL`
   return [
     db
       .prepare(`UPDATE email_campaigns SET failed_count = failed_count + (SELECT COUNT(*) FROM email_campaign_recipients WHERE ${pending}) WHERE id = ?1 AND status <> 'sending'`)
@@ -649,7 +670,7 @@ async function putBackRows(
   campaignId: string,
   listId: string | null,
   rows: ClaimedRecipient[],
-  opts: { kept?: string; noted?: string; words?: string } = {},
+  opts: PutBackOpts = {},
 ): Promise<void> {
   if (listId == null) {
     await putBack(db, rows, opts).run()
@@ -738,6 +759,28 @@ async function sendRuled(
   }
 }
 
+/**
+ * The two statements that record one row's outcome under the rules, sent or failed with its words, each written only
+ * while the row is still pending: the campaign's count first, then the row. A row the sweep wrote off while its run's
+ * one send outlived the claim keeps that outcome and is not counted a second time, and the write-off skips a row
+ * already recorded, so the counts follow the row's final state, whichever write lands first (checkpoint M's review).
+ */
+function recordOutcome(db: D1Database, campaignId: string, rowId: string, outcome: RuledOutcome): D1PreparedStatement[] {
+  const pending = `EXISTS (SELECT 1 FROM email_campaign_recipients WHERE id = ?2 AND status = 'pending')`
+  if (outcome.kind === 'sent') {
+    return [
+      db.prepare(`UPDATE email_campaigns SET sent_count = sent_count + 1 WHERE id = ?1 AND ${pending}`).bind(campaignId, rowId),
+      db
+        .prepare(`UPDATE email_campaign_recipients SET status = 'sent', sent_at = datetime('now'), error = NULL WHERE id = ? AND status = 'pending'`)
+        .bind(rowId),
+    ]
+  }
+  return [
+    db.prepare(`UPDATE email_campaigns SET failed_count = failed_count + 1 WHERE id = ?1 AND ${pending}`).bind(campaignId, rowId),
+    db.prepare(`UPDATE email_campaign_recipients SET status = 'failed', error = ? WHERE id = ? AND status = 'pending'`).bind(outcome.words, rowId),
+  ]
+}
+
 /** What a run under the rules comes to, with what the campaign has left. */
 async function finishRun(db: D1Database, campaignId: string, sent: number, failed: number, endRun: boolean): Promise<CampaignRun> {
   const remaining = await remainingAfterRun(db, campaignId)
@@ -757,7 +800,13 @@ async function finishRun(db: D1Database, campaignId: string, sent: number, faile
  *    records the row before it, and a row that does not take its mark (a stop failed it) ends the batch;
  * f. each answer is read by classifyOnce: sent; never, failed with its words (a request with no answer among them); or
  *    later, which puts this row and every claimed row not yet tried back in one statement and ends the batch, and the
- *    whole run for an answer every send would meet; the deadline, checked before each send, puts back what it leaves.
+ *    whole run for an answer every send would meet; the deadline, checked before each send, puts back what it leaves;
+ * g. since checkpoint M's review: before each send the run also reads how long it has held its claim, and past
+ *    CLAIM_HELD_MS it puts back what it leaves and ends, so no other run can take its claim while it works; a put-back
+ *    clears only this run's own mark, never a mark another run wrote; and an outcome is recorded, and counted, only on
+ *    a row still pending, so a row the sweep wrote off is never also counted sent. No time limit is set on a send: a
+ *    call cut short is a request with no answer, never tried again, so a limit would fail a slow send that would have
+ *    arrived, while a send that hangs past its claim is still sent at most once, its row marked, and counted once.
  */
 async function runUnderRules(
   env: CampaignEnv,
@@ -781,6 +830,8 @@ async function runUnderRules(
   }
 
   const room = deadline === undefined ? limit : Math.min(limit, Math.ceil((deadline - Date.now()) / SEND_INTERVAL_MS))
+  // Read before the claim is written, so the time the run counts it held is never shorter than the database's.
+  const claimedAt = Date.now()
   const claimed = room > 0 ? await claimRecipients(db, campaignId, room) : []
   if (claimed.length === 0) return finishRun(db, campaignId, sent, failed, false)
 
@@ -820,36 +871,29 @@ async function runUnderRules(
 
   for (const [index, recipient] of rows.entries()) {
     if (index > 0) await new Promise((r) => setTimeout(r, SEND_INTERVAL_MS))
-    if (deadline !== undefined && Date.now() >= deadline) {
-      // Not reached before the deadline: this row, marked but not sent, and the rest go back, each attempt given back.
-      await putBackRows(db, campaignId, listId, rows.slice(index))
+    // Not reached before the deadline, or the claim has been held so long that another run could soon take it: this row,
+    // marked by this run but not sent, and the rest go back, each attempt given back, and the run ends.
+    if ((deadline !== undefined && Date.now() >= deadline) || Date.now() - claimedAt >= CLAIM_HELD_MS) {
+      await putBackRows(db, campaignId, listId, rows.slice(index), { own: recipient.id })
       return finishRun(db, campaignId, sent, failed, true)
     }
 
     const outcome = await sendRuled(env, campaign, recipient, html, gate)
 
     if (outcome.kind === 'later') {
-      await putBackRows(db, campaignId, listId, rows.slice(index), { kept: outcome.untried ? undefined : recipient.id, noted: recipient.id, words: outcome.words })
+      await putBackRows(db, campaignId, listId, rows.slice(index), { kept: outcome.untried ? undefined : recipient.id, noted: recipient.id, words: outcome.words, own: recipient.id })
       return finishRun(db, campaignId, sent, failed, outcome.endRun)
     }
 
     const next = rows[index + 1]
-    const statements =
-      outcome.kind === 'sent'
-        ? [
-            db
-              .prepare(`UPDATE email_campaign_recipients SET status = 'sent', sent_at = datetime('now'), error = NULL WHERE id = ?`)
-              .bind(recipient.id),
-            db.prepare(`UPDATE email_campaigns SET sent_count = sent_count + 1 WHERE id = ?`).bind(campaignId),
-          ]
-        : [
-            db.prepare(`UPDATE email_campaign_recipients SET status = 'failed', error = ? WHERE id = ?`).bind(outcome.words, recipient.id),
-            db.prepare(`UPDATE email_campaigns SET failed_count = failed_count + 1 WHERE id = ?`).bind(campaignId),
-          ]
+    const statements = recordOutcome(db, campaignId, recipient.id, outcome)
     if (next) statements.push(markSending(db, next.id))
     const results = await db.batch(statements)
-    if (outcome.kind === 'sent') sent++
-    else failed++
+    // Counted only when this run's write recorded the row, so a row the sweep wrote off meanwhile is not counted twice.
+    if (results[1]?.meta.changes) {
+      if (outcome.kind === 'sent') sent++
+      else failed++
+    }
 
     if (next && !results[2]?.meta.changes) {
       // The next row did not take its mark, so a stop failed it or the member delete took it out: none of the rows after

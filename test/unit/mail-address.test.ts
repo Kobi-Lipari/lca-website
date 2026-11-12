@@ -88,7 +88,7 @@ describe('maskAddress', () => {
     expect(maskAddress('kim.parent@example.org')).toBe('k...@example.org')
     expect(maskAddress(' Kim.Parent@Example.org ')).toBe('k...@example.org')
     expect(maskAddress('k@example.org')).toBe('k...@example.org')
-    expect(maskAddress('pat@mail.lsu.edu')).toBe('p...@mail.lsu.edu')
+    expect(maskAddress('pat@mail.example.org')).toBe('p...@mail.example.org')
   })
 
   it('keeps only the first character of something with no @ before its domain', () => {

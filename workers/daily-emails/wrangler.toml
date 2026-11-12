@@ -36,6 +36,9 @@ SITE_URL = "https://www.louisianachess.org"
 #   npx wrangler secret put RESEND_API_KEY --config workers/daily-emails/wrangler.toml
 # Note: plain `wrangler secret put`, NOT `wrangler pages secret put` — this is
 # a standalone Worker, not a Pages project.
+# The mail link key, set by K before the newsletter is switched on, with the
+# value the site's production environment holds:
+#   npx wrangler secret put MAIL_LINK_SECRET --config workers/daily-emails/wrangler.toml
 # Amazon SES's sending key, the same two values as the site's production
 # environment, set by K before the cutover to Amazon SES:
 #   npx wrangler secret put SES_ACCESS_KEY_ID --config workers/daily-emails/wrangler.toml

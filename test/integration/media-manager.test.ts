@@ -35,7 +35,9 @@
 //   manage, each refused in today's words with nothing written or sent;
 // - (f) a club rep and a director who hold the seat keep their own rights;
 // - (g) with the constant set, who else is refused and in what words, an
-//   officer who holds the seat among them;
+//   officer without the seat among them (an officer who holds it sends as
+//   the media manager since checkpoint M's review, in
+//   test/integration/media-manager-officer.test.ts);
 // - (h) the answer GET /api/me/media-manager gives is never the grant.
 // A test through Amazon SES, asked by the box only an LCA admin is shown, is
 // read from WS16 step 7, so it has no case here yet. Every name, address,
@@ -242,7 +244,8 @@ describe('(b) with MAIL_LISTS_ON set, the media manager signed in with a second 
     expect(send.status).toBe(409)
     expect(await send.json()).toEqual({ error: WAITS_FOR_SES })
 
-    const to = address('tester')
+    // The test goes to the media manager's own account's address (checkpoint M's review).
+    const to = (await env.DB.prepare('SELECT email FROM members WHERE id = ?').bind(seated.id).first<{ email: string }>())!.email
     const test = await invoke(testPost, { as: seated.id, method: 'POST', body: { to, ...SAMPLE } })
     expect(test.status).toBe(200)
     expect(await test.json()).toEqual({ sent: true })
@@ -442,14 +445,13 @@ describe('(f) the seat holder keeps their own role\'s rights', () => {
 })
 
 describe('(g) with MAIL_LISTS_ON set, everyone else', () => {
-  it('refuses a plain member, a club rep, a director, an auditor and an officer without the seat, and an officer who holds it, in one plain sentence, and a signed-out caller with 401', async () => {
+  it('refuses a plain member, a club rep, a director, an auditor and an officer without the seat in one plain sentence, and a signed-out caller with 401', async () => {
     const people = {
       'a plain member': await member(),
       'a club rep without the seat': await member({ role: 'club_rep', clubId: await seedClub({ name: 'Example Chess Club', city: 'Sample City' }) }),
       'a director without the seat': await member({ role: 'tournament_director' }),
       'an auditor without the seat': await member({ role: 'lca_auditor' }),
       'an officer without the seat': await member({ role: 'lca_officer' }),
-      'an officer who holds the seat': (await holder({ role: 'lca_officer' })).id,
     }
     const before = await traces()
     for (const [name, call] of NEWSLETTER) {

@@ -117,11 +117,18 @@ export function AdminPage() {
   // this page asks nothing itself.
   const mediaManager = useMediaManagerAnswer()
   const asMediaManager = FEATURES.mailLists && !canAccessAdmin(role) && mediaManager.mediaManager
+  // An LCA officer who holds the Media manager seat (K's decision 52, checkpoint M's review), with mailLists on, keeps
+  // every read-only section and gains Group email in the media manager's form; while the answer is on the way their
+  // Admin is today's, without Group email.
+  const officerMediaManager = FEATURES.mailLists && role === 'lca_officer' && mediaManager.mediaManager
+  // An officer who opened Group email's own address while the answer is on the way keeps the address, its section
+  // showing the loading line until the answer says whether it is theirs; every other section draws at once.
+  const officerWaitsOnEmail = FEATURES.mailLists && role === 'lca_officer' && mediaManager.asking && rawSection === 'email'
   // LCA Officers get everything an Observer does except the mailing tools.
   const mailing = canUseMailing(role)
   const groups = asMediaManager
     ? MEDIA_MANAGER_GROUPS
-    : mailing
+    : mailing || officerMediaManager
       ? GROUPS
       : GROUPS.map((g) => ({ ...g, items: g.items.filter((i) => i.id !== 'email') }))
   const section = (LEGACY[rawSection ?? ''] ?? rawSection ?? 'members') as AdminSection
@@ -130,7 +137,7 @@ export function AdminPage() {
 
   // Any other Admin address, typed by hand or followed from an old link, goes to Group email before anything is drawn.
   if (asMediaManager && rawSection !== 'email') return <Navigate to="/admin/email" replace />
-  if (!current) return <Navigate to="/admin" replace />
+  if (!current && !officerWaitsOnEmail) return <Navigate to="/admin" replace />
   if (rawSection && LEGACY[rawSection]) return <Navigate to={`/admin/${section}`} replace />
 
   return (
@@ -142,7 +149,9 @@ export function AdminPage() {
           : viewOnly
             ? mailing
               ? 'See everything across the LCA. You can send group email, email entrants, answer support tickets and manage the bylaws and minutes; other changes are made by admins.'
-              : 'See everything across the LCA. You can answer support tickets and manage the bylaws and minutes; other changes are made by admins.'
+              : officerMediaManager
+                ? 'See everything across the LCA. You can send the LCA newsletter, answer support tickets and manage the bylaws and minutes; other changes are made by admins.'
+                : 'See everything across the LCA. You can answer support tickets and manage the bylaws and minutes; other changes are made by admins.'
             : 'Manage members, clubs, tournaments and communications across the LCA.'}
         badges={viewOnly ? <span className="rounded-full border border-white/25 px-2.5 py-0.5 text-xs text-white/85">View only</span> : undefined}
         size="compact"
@@ -195,7 +204,11 @@ export function AdminPage() {
         </nav>
 
         <main className="min-w-0">
-          <AdminSectionView section={section} mediaManager={asMediaManager ? { secondFactor: mediaManager.secondFactor } : undefined} />
+          {officerWaitsOnEmail ? (
+            <p className="text-muted-foreground">Loading...</p>
+          ) : (
+            <AdminSectionView section={section} mediaManager={asMediaManager || officerMediaManager ? { secondFactor: mediaManager.secondFactor } : undefined} />
+          )}
         </main>
       </div>
     </div>

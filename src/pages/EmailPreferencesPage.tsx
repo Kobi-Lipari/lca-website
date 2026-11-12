@@ -15,12 +15,16 @@
 // token, the endpoints and the stop-all.
 import { useEffect, useId, useRef, useState, type FormEvent } from 'react'
 import { useParams } from 'react-router-dom'
-import { LinkNotWorking, NoAnswer, PageTitle } from '@/areas/membership/components/EmailChoiceParts'
+import { DoneBox, LinkFailedPage, LinkNotWorking, NoAnswer, PageTitle } from '@/areas/membership/components/EmailChoiceParts'
 import { Button } from '@/components/ui/button'
 import { FEATURES } from '@/lib/features'
 import { ApiError, getEmailChoices, saveEmailChoices, type ApiEmailChoices } from '@/lib/api'
 import { EVENT_MAIL_STILL_COMES } from '@domain/mail/footer'
 import { NEWSLETTER_LIST_ID } from '@domain/mail/lists'
+import { cn } from '@/lib/utils'
+
+/** A list's status while "Stop all optional email from LCA" is ticked: off, in words, beside the muted box. */
+const STOPPED_WITH_ALL = 'Off while all optional email is stopped.'
 
 /** What the page draws: nothing yet, nothing at all, the choices, or one of the two answers for a link that does not open. */
 type View = { kind: 'waiting' | 'nothing' | 'not-working' | 'no-answer' } | { kind: 'page'; choices: ApiEmailChoices }
@@ -80,14 +84,7 @@ export function EmailPreferencesPage() {
 
   if (view.kind === 'waiting' || view.kind === 'nothing') return null
 
-  if (view.kind !== 'page') {
-    return (
-      <div className="mx-auto max-w-lg px-6 py-16">
-        <PageTitle title="Email choices" />
-        <p className="text-ink">{view.kind === 'not-working' ? <LinkNotWorking /> : <NoAnswer />}</p>
-      </div>
-    )
-  }
+  if (view.kind !== 'page') return <LinkFailedPage title="Email choices" heading="Your email choices" notWorking={view.kind === 'not-working'} />
 
   const { choices } = view
   const hasNewsletter = choices.lists.some((list) => list.id === NEWSLETTER_LIST_ID)
@@ -100,21 +97,25 @@ export function EmailPreferencesPage() {
         {choices.lists.map((list) => {
           const box = `${ids}-${list.id}`
           const about = list.id === NEWSLETTER_LIST_ID ? `${box}-about` : undefined
+          // While every optional email is stopped the row reads as off: its label muted as its box is, and its status in words.
+          const offNote = optionalOff ? `${box}-off` : undefined
+          const describedBy = [about, offNote].filter(Boolean).join(' ') || undefined
           return (
             <div key={list.id}>
-              <label htmlFor={box} className="flex min-h-6 items-center gap-2 font-medium text-ink">
+              <label htmlFor={box} className={cn('flex min-h-6 items-center gap-2 font-medium', optionalOff ? 'text-muted-foreground' : 'text-ink')}>
                 <input
                   id={box}
                   type="checkbox"
                   className="size-4 accent-ink"
                   checked={!optionalOff && (lists[list.id] ?? false)}
                   disabled={optionalOff}
-                  aria-describedby={about}
+                  aria-describedby={describedBy}
                   onChange={(e) => setLists((now) => ({ ...now, [list.id]: e.target.checked }))}
                 />
                 {list.name}
               </label>
               {about && <p id={about} className="ml-6 text-sm text-muted-foreground">News from the Louisiana Chess Association.</p>}
+              {offNote && <p id={offNote} className="ml-6 text-sm text-muted-foreground">{STOPPED_WITH_ALL}</p>}
             </div>
           )
         })}
@@ -138,8 +139,8 @@ export function EmailPreferencesPage() {
         </Button>
       </form>
       {/* In the page before its words arrive; it takes the focus when it says "Saved.". */}
-      <div ref={status} role="status" tabIndex={-1} className="mt-4 rounded-md text-ink outline-none focus-visible:ring-3 focus-visible:ring-focus">
-        {saved?.kind === 'saved' && <p>Saved.</p>}
+      <div ref={status} role="status" tabIndex={-1} className="mt-4 rounded-md text-ink outline-none focus:ring-3 focus:ring-ring">
+        {saved?.kind === 'saved' && <DoneBox>Saved.</DoneBox>}
         {saved?.kind === 'refused' && <p>{saved.words}</p>}
         {saved?.kind === 'not-working' && <p><LinkNotWorking /></p>}
         {saved?.kind === 'no-answer' && <p><NoAnswer /></p>}

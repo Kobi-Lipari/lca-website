@@ -305,7 +305,8 @@ export async function sendNewsletter(payload: { subject: string; bodyHtml: strin
 
 /**
  * Sends one test of the newsletter as written to one address, with the real footer and links for it. `service` asks
- * for the test through Amazon SES; the server takes the key and does not read it until WS16 step 7.
+ * for the test through Amazon SES, which the server allows an LCA admin alone. For the media manager the server takes
+ * only their own account's address.
  */
 export async function sendNewsletterTest(payload: { to: string; subject: string; bodyHtml: string; service?: 'ses' }): Promise<{ sent: true }> {
   const response = await fetch('/api/admin/mail/newsletter/test', {
@@ -330,7 +331,7 @@ export async function stopNewsletter(): Promise<ApiNewsletterStopped> {
 
 /** What GET /api/me/media-manager answers (mediaManagerResponseSchema), about the person signed in and no one else. */
 export interface ApiMediaManager {
-  /** True for a member whose role Admin does not let in who holds the Media manager seat now; false while the newsletter is off. */
+  /** True for anyone but an LCA admin and the president who holds the Media manager seat now, an officer among them; false while the newsletter is off. */
   mediaManager: boolean
   /** Whether the session carries a second factor, which sending asks of the media manager. */
   secondFactor: boolean

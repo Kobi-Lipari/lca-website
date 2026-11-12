@@ -486,8 +486,10 @@ describe('the test through Amazon SES, an LCA admin\'s alone', () => {
       expect(res.status, who).toBe(403)
       expect(await res.json(), who).toEqual({ error: SES_TEST_ADMINS_ONLY })
       expect([await contacts(), calls.length], who).toEqual([before, sent])
-      // Without the box, each may send a test, through Resend as before.
-      expect((await invoke(testPost, { as: who, aal, method: 'POST', body: { to: address('tester'), ...SAMPLE } })).status, who).toBe(200)
+      // Without the box, each may send a test, through Resend as before; the media manager's goes to their own address.
+      const own = (await env.DB.prepare('SELECT email FROM members WHERE id = ?').bind(who).first<{ email: string }>())!.email
+      const to = who === holder ? own : address('tester')
+      expect((await invoke(testPost, { as: who, aal, method: 'POST', body: { to, ...SAMPLE } })).status, who).toBe(200)
       expect(calls.at(-1)?.via, who).toBe('resend')
     }
     expect(calls.filter((c) => c.via === 'ses')).toEqual([])

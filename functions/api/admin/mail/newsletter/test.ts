@@ -35,14 +35,27 @@
 // on the deployment the test answers 502 with the words for a missing key,
 // makes no request and is never handed to Resend instead. An answer from
 // Amazon SES keeps Amazon's own words, which name it.
+//
+// Since checkpoint M's review, a test asked by anyone the Media manager seat
+// admits, an LCA officer who holds it among them, goes only to their own
+// account's address: a `to` that is not that address, compared as the gate
+// compares addresses (normalizeAddress), and an account with no usable
+// address, get 403 with TEST_TO_OWN_ADDRESS's words, after the guard, the
+// 404 and the refusal of a test through Amazon SES, with nothing written and
+// nothing sent. An LCA admin and the president keep the address they type,
+// as today's Group email test gives it to them
+// (functions/api/admin/campaigns/test.ts), and an LCA admin's test to
+// another person's address carries the footer's words as a member reads
+// them, as today's test carries the page's. No activity row is written for
+// a test, as today's Group email test writes none.
 import type { Env } from '../../../../types'
-import { normalizeAddress } from '../../../../../domain/mail/address'
+import { isSendableAddress, normalizeAddress } from '../../../../../domain/mail/address'
 import { NEWSLETTER_LIST_ID } from '../../../../../domain/mail/lists'
 import { newsletterTestRequestSchema, type NewsletterTestResponse } from '../../../../../domain/contracts/mail'
 import { listMessage, wordsUnderRules } from '../../../../utils/admin/campaigns'
 import { isResponse, requireListMailer } from '../../../../utils/auth'
 import { contactFor } from '../../../../utils/mail/lists'
-import { LINK_KEY_MISSING, SES_TEST_ADMINS_ONLY, newsletterNotFound } from '../../../../utils/mail/newsletterAnswers'
+import { LINK_KEY_MISSING, SES_TEST_ADMINS_ONLY, TEST_TO_OWN_ADDRESS, newsletterNotFound } from '../../../../utils/mail/newsletterAnswers'
 import { deliver, type SendResult } from '../../../../utils/mail/send'
 import { MAIL_LISTS_ON } from '../../../../utils/mail/switches'
 import { errorResponse, handleOptions, jsonResponse, parseBody } from '../../../../utils/response'
@@ -59,6 +72,10 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
   // A test through Amazon SES is an LCA admin's alone, by the role of the session the guard verified.
   const throughSes = test.service === 'ses'
   if (throughSes && authed.member.role !== 'lca_admin') return errorResponse(SES_TEST_ADMINS_ONLY, 403)
+  // The media manager's test goes to their own account's address alone; an LCA admin and the president type theirs.
+  if (authed.member.role !== 'lca_admin' && authed.member.role !== 'lca_observer' && !isOwnAddress(test.to, authed.member.email)) {
+    return errorResponse(TEST_TO_OWN_ADDRESS, 403)
+  }
   if (!context.env.MAIL_LINK_SECRET) return errorResponse(LINK_KEY_MISSING, 503)
 
   const to = normalizeAddress(test.to)
@@ -83,6 +100,12 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
 
   const body: NewsletterTestResponse = { sent: true }
   return jsonResponse(body)
+}
+
+/** Whether the address typed is the account's own, compared as the gate compares addresses, and one mail can reach. */
+function isOwnAddress(typed: string, own: string | null | undefined): boolean {
+  const mine = normalizeAddress(own ?? '')
+  return mine !== '' && isSendableAddress(mine) && normalizeAddress(typed) === mine
 }
 
 /**

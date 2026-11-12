@@ -14,7 +14,7 @@
 // the endpoints and the one button.
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { LinkNotWorking, NoAnswer, PageTitle } from '@/areas/membership/components/EmailChoiceParts'
+import { DoneBox, LinkFailedPage, LinkNotWorking, NoAnswer, PageTitle } from '@/areas/membership/components/EmailChoiceParts'
 import { Button } from '@/components/ui/button'
 import { FEATURES } from '@/lib/features'
 import { ApiError, unsubscribeByLink, unsubscribeLinkStatus } from '@/lib/api'
@@ -63,14 +63,7 @@ export function EmailUnsubscribePage() {
 
   if (view.kind === 'waiting' || view.kind === 'nothing') return null
 
-  if (view.kind !== 'page') {
-    return (
-      <div className="mx-auto max-w-lg px-6 py-16">
-        <PageTitle title="Unsubscribe" />
-        <p className="text-ink">{view.kind === 'not-working' ? <LinkNotWorking /> : <NoAnswer />}</p>
-      </div>
-    )
-  }
+  if (view.kind !== 'page') return <LinkFailedPage title="Unsubscribe" heading="Unsubscribe" notWorking={view.kind === 'not-working'} />
 
   const done = pressed?.kind === 'done' ? pressed : null
   return (
@@ -87,12 +80,12 @@ export function EmailUnsubscribePage() {
       {/* In the page before its words arrive, so a screen reader hears each result. */}
       <div role="status" className="mt-4 text-ink">
         {done && (
-          <p>
+          <DoneBox>
             Done. {theList(view.list, true)} won't come to this address any more.{' '}
             <Link to={`/email/preferences/${encodeURIComponent(done.preferencesToken)}`} className="font-medium underline">
               Change your email choices
             </Link>
-          </p>
+          </DoneBox>
         )}
         {pressed?.kind === 'not-working' && <p><LinkNotWorking /></p>}
         {pressed?.kind === 'no-answer' && <p><NoAnswer /></p>}

@@ -29,7 +29,7 @@ import { sendThroughResend } from '../../functions/utils/mail/resend'
 import type { MailGate } from '../../functions/utils/mail/gate'
 import { deliver, type OutgoingMail, type SendResult } from '../../functions/utils/mail/send'
 import {
-  AMAZON_WORDS_MAX, SES_CONFIGURATION_SET, SES_KEY_MISSING, SES_REGION, amazonCode, amazonWords, sendThroughSes, sesBody,
+  ADDRESS_WORDS, AMAZON_WORDS_MAX, SES_CONFIGURATION_SET, SES_KEY_MISSING, SES_REGION, amazonCode, amazonWords, sendThroughSes, sesBody,
 } from '../../functions/utils/mail/ses'
 
 const flags = vi.hoisted(() => ({ listsOn: false, sender: 'ses' }))
@@ -418,6 +418,43 @@ describe('Amazon\'s code and words', () => {
     expect(late).not.toMatch(/arn:|\d{4}/)
   })
 
+  it('takes every address out of Amazon\'s words for an identity that failed its check, one or several, before the cut (checkpoint M\'s review)', async () => {
+    // Amazon's words for a sandbox account sending to an address it has not verified, the addresses plainly made up.
+    const one = 'Email address is not verified. The following identities failed the check in region US-EAST-1: player.two@example.org'
+    answerWith(() => refusal(400, 'MessageRejected', { message: one }))
+    const result = await sendThroughSes(KEYS, LIST)
+    expect(result).toEqual({
+      ok: false, status: 400, code: 'MessageRejected', fromSes: true,
+      error: 'Amazon SES 400 MessageRejected: Email address is not verified. The following identities failed the check in region US-EAST-1: an address',
+    })
+    expect(JSON.stringify(result)).not.toContain('@')
+    const several = 'The following identities failed the check in region US-EAST-1: newsletter@news.example.org, Player Two <player.two@example.org>; "parent.one@example.net".'
+    expect(amazonWords('', { message: several }, [])).toBe(
+      `The following identities failed the check in region US-EAST-1: ${ADDRESS_WORDS}, Player Two <${ADDRESS_WORDS}>; "${ADDRESS_WORDS}".`,
+    )
+    expect(amazonWords('', { Message: 'Rejected for player.two@example.org.' }, [])).toBe('Rejected for an address.')
+    // An address that would be cut in half at the end of the 200 characters is taken out first, whole.
+    const late = amazonWords('', { message: `${'x'.repeat(AMAZON_WORDS_MAX - 6)} player.two@example.org more words` }, [])
+    expect(late).toBe(`${'x'.repeat(AMAZON_WORDS_MAX - 6)} an ad...`)
+    expect(late).not.toMatch(/@|player/)
+  })
+
+  it('takes out an address however it is written, capitals, plus tags, brackets and a full stop after it, and leaves words with no address as they were (checkpoint M\'s review)', () => {
+    const words = (message: string) => amazonWords('', { message }, [])
+    expect(words('Rejected: Player.Two+News@Example.ORG')).toBe(`Rejected: ${ADDRESS_WORDS}`)
+    expect(words('Rejected (player.two@example.org) and [parent.one@example.net].')).toBe(`Rejected ${ADDRESS_WORDS} and ${ADDRESS_WORDS}.`)
+    expect(words('Rejected player.two@example.org?')).toMatch(/^Rejected an address\??$/)
+    expect(words('Rejected player.two@example.org...')).toBe(`Rejected ${ADDRESS_WORDS}...`)
+    expect(words('Rejected\nplayer.two@example.org\tand\nparent.one@example.net')).toBe(`Rejected ${ADDRESS_WORDS} and ${ADDRESS_WORDS}`)
+    // A page that is not JSON, and the key's own value, which is taken out whatever it is next to.
+    expect(amazonWords('<p>Denied for player.two@example.org</p>', null, [])).toBe(`<p>Denied for ${ADDRESS_WORDS}</p>`)
+    expect(amazonWords('', { message: 'Key sample-secret-value refused for player.two@example.org' }, ['sample-secret-value'])).not.toMatch(/sample-secret-value|@/)
+    // Words with no address, and an at sign that is not one, are as Amazon wrote them.
+    for (const plain of ['Email address is not verified.', 'Reached the daily limit @ 200 messages.', 'Mention @LCA or write @ us.', 'Sending is paused for this account.']) {
+      expect(words(plain)).toBe(plain)
+    }
+  })
+
   it('reads the words from message or Message, a page that is not JSON as its text, each on one line and cut to the length named', () => {
     expect(amazonWords('', { message: 'Email address is not verified.' }, [])).toBe('Email address is not verified.')
     expect(amazonWords('', { Message: 'Account is paused.' }, [])).toBe('Account is paused.')
@@ -519,12 +556,14 @@ describe('Amazon SES\'s two keys live only as Cloudflare secrets K sets (D33)', 
   const read = (path: string) => readFileSync(join(ROOT, path), 'utf8')
   const NAMES = /SES_ACCESS_KEY_ID|SES_SECRET_ACCESS_KEY/
 
-  it('are given no value by a setting file a deploy reads, the worker\'s naming them only in its comment\'s two secret put lines', () => {
+  it('are given no value by a setting file a deploy reads, the worker\'s naming them only in its comment\'s secret put lines, after the link key\'s', () => {
     for (const file of ['wrangler.toml', '.dev.vars', '.dev.vars.example', '.dev.vars.a11y', '.env', '.env.example', '.env.local'].filter((f) => existsSync(join(ROOT, f)))) {
       expect(read(file), file).not.toMatch(NAMES)
     }
-    const naming = read('workers/daily-emails/wrangler.toml').split('\n').filter((line) => NAMES.test(line))
+    // Since checkpoint M's review the comment names the link key first, set before the switch-on, then Amazon SES's two.
+    const naming = read('workers/daily-emails/wrangler.toml').split('\n').filter((line) => NAMES.test(line) || /MAIL_LINK_SECRET/.test(line))
     expect(naming).toEqual([
+      '#   npx wrangler secret put MAIL_LINK_SECRET --config workers/daily-emails/wrangler.toml',
       '#   npx wrangler secret put SES_ACCESS_KEY_ID --config workers/daily-emails/wrangler.toml',
       '#   npx wrangler secret put SES_SECRET_ACCESS_KEY --config workers/daily-emails/wrangler.toml',
     ])
