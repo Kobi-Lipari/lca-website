@@ -213,7 +213,8 @@ describe('REDESIGN_STATUS.md, WS16 step 8: the Status line', () => {
     expect(statusLine.startsWith(STATUS_PREFIX)).toBe(true)
     const tail = statusLine.slice(STATUS_PREFIX.length)
     expect(latestStep).toBeGreaterThanOrEqual(8)
-    if (latestStep === 8) expect(tail).toBe(TAIL)
+    // Once checkpoint M merged, the tail says so as well, while this step is still the latest.
+    if (latestStep === 8) expect([TAIL, 'steps 1 to 8 are built and merged, switched off.']).toContain(tail)
     expect(tail).toMatch(/\bbuilt\b/)
     expect(tail.endsWith('.')).toBe(true)
   })
@@ -558,8 +559,10 @@ describe('REDESIGN_STATUS.md, WS16 step 8: checkpoint M\'s section', () => {
     expect(checkpoint).not.toContain('is pending')
     for (const piece of [
       'Checkpoint M is the first of WS16\'s three checkpoints', 'waits for `mailLists`, which stays off', 'waits for `MAIL_LISTS_ON`, which stays unset, or for `MAIL_SENDER`, which stays `\'resend\'`',
-      'by two later changes of their own', 'The merge waits for K\'s word and for nothing else.',
+      'by two later changes of their own',
     ]) expect(opening, piece).toContain(piece)
+    // Once the merge is recorded, the sentence on K's word is in the past.
+    expect(['The merge waits for K\'s word and for nothing else.', 'The merge waited for K\'s word and for nothing else.'].some((s) => opening.includes(s))).toBe(true)
   })
 
   it('has a bullet for each of its eight steps and each part, once each and in order, leaving room for the line a later change writes', () => {

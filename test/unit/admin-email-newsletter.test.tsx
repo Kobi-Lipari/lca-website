@@ -22,8 +22,13 @@
 // for a stopped newsletter. Since checkpoint M's review the tab's sizes are
 // read from the classes it wears, compiled by Tailwind with the site's tokens
 // (test/unit/helpers/tailwindPx.ts): the words at 14px, the openers 44px tall,
-// and the buttons 44px tall under 40rem. Every name, subject, club and address
-// here is made up.
+// and the buttons 44px tall under 40rem. Before the switch-on, the tab's last
+// rough spots: a large row's two lines as whole pieces in a wrapping row whose
+// separators never start or end a line (F1); the subject box, the editor's
+// toolbar and the Amazon SES tick 44px tall on a phone, through choices the
+// tab alone passes (F2); and the opened "Who gets it" as plain words (F4),
+// each with mailLists off held beside today's page. Every name, subject, club
+// and address here is made up.
 import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import type { ReactElement } from 'react'
 import { MemoryRouter } from 'react-router-dom'
@@ -35,7 +40,7 @@ import type { ApiAuditEntry, ApiCampaign, ApiClubListItem, ApiNewsletter } from 
 import { ApiError } from '@/lib/http'
 import { EVENT_MAIL_STILL_COMES, LIST_FOOTER_WORDS, PREFERENCES_LABEL } from '@domain/mail/footer'
 import { NEWSLETTER_LIST_ID } from '@domain/mail/lists'
-import { builder, setBy, sizeClassOf } from './helpers/tailwindPx'
+import { builder, setBy, sizeClassOf, spaceBelowChildren } from './helpers/tailwindPx'
 
 const flags = vi.hoisted(() => ({ mailLists: false }))
 vi.mock('@/lib/features', async (importOriginal) => {
@@ -68,12 +73,16 @@ const api = vi.hoisted(() => ({
   adminGetAuditLog: vi.fn(),
 }))
 vi.mock('@/lib/api', async (importOriginal) => ({ ...(await importOriginal<typeof import('@/lib/api')>()), ...api }))
-// The real editor needs a browser's layout; a text box stands in for it on both pages alike.
+// The real editor needs a browser's layout; a text box stands in for it on both pages alike. It shows the one choice the
+// newsletter tab passes, tallOnPhone, as an attribute only when it is set, so a page that passes none draws as before.
 vi.mock('@/areas/governance/components/RichTextEditor', async () => {
   const { createElement } = await import('react')
   return {
-    RichTextEditor: ({ content, onChange }: { content: string; onChange: (html: string) => void }) =>
-      createElement('textarea', { 'aria-label': 'Message', value: content, onChange: (e: { target: { value: string } }) => onChange(e.target.value) }),
+    RichTextEditor: ({ content, onChange, tallOnPhone }: { content: string; onChange: (html: string) => void; tallOnPhone?: boolean }) =>
+      createElement('textarea', {
+        'aria-label': 'Message', value: content, onChange: (e: { target: { value: string } }) => onChange(e.target.value),
+        'data-tall-on-phone': tallOnPhone ? 'true' : undefined,
+      }),
   }
 })
 
@@ -161,6 +170,8 @@ async function statesOf(Page: typeof AdminEmailPage, embedded: boolean): Promise
 
 /** Every element whose own text holds these words. */
 const holders = (words: string) => [...document.querySelectorAll('*')].filter((el) => [...el.childNodes].some((n) => n.nodeType === 3 && (n.textContent ?? '').includes(words)))
+/** A span whose words, read whole with what sits in it, are these: a piece of a row's line, its separator in a span of its own. */
+const piece = (words: string) => (_: string, el: Element | null) => el?.tagName === 'SPAN' && el.textContent === words
 
 beforeEach(() => {
   for (const mock of Object.values(api)) mock.mockReset()
@@ -663,10 +674,11 @@ describe('Group email with mailLists on: checkpoint M\'s review (K\'s decision 5
 
   it('keeps a recent send\'s count with its noun, the number and "recipients" in one span that does not break', async () => {
     draw(<AdminEmailPage embedded />)
-    // Since checkpoint M's pictures (P1) the separator before the count travels with it.
-    const count = await screen.findByText('· 9 recipients')
+    // Since checkpoint M's pictures (P1) the separator before the count travels with it; since the fix before the switch-on
+    // (F1) the count is a piece of the row's line, which does not break either.
+    const count = await screen.findByText(piece('· 9 recipients'))
     expect(count.tagName).toBe('SPAN')
-    expect(count.getAttribute('class')).toBe('whitespace-nowrap')
+    expect(count.getAttribute('class')?.split(/\s+/)).toContain('whitespace-nowrap')
   })
 
   it('writes the reason beside Send from the one copy the server answers with, with no word of the page\'s own', async () => {
@@ -814,19 +826,22 @@ describe('Group email after the pictures of the real pages (checkpoint M, P1, P2
         const dots = textsIn(row).filter(({ text }) => text.includes('·'))
         expect(dots.length, subject).toBeGreaterThanOrEqual(3)
         for (const { text, parent } of dots) {
-          // The dot is the first thing in its span, the words after it are in the same span, and the span does not break.
-          expect(text.startsWith('· '), `${subject}: "${text}"`).toBe(true)
-          expect(parent.getAttribute('class'), `${subject}: "${text}"`).toBe('whitespace-nowrap')
-          expect(parent.firstChild?.textContent, `${subject}: "${text}"`).toBe(text)
-          expect(parent.textContent!.trim().length, `${subject}: "${parent.textContent}"`).toBeGreaterThan(2)
+          // Since the fix before the switch-on (F1) the dot is the first thing in the piece of words after it, in a span of
+          // its own, and the piece does not break.
+          const piece = parent.parentElement!
+          expect(text, `${subject}: "${text}"`).toBe('·')
+          expect(piece.firstChild, `${subject}: "${piece.textContent}"`).toBe(parent)
+          expect(piece.textContent!.startsWith('· '), `${subject}: "${piece.textContent}"`).toBe(true)
+          expect(piece.getAttribute('class')?.split(/\s+/), `${subject}: "${piece.textContent}"`).toContain('whitespace-nowrap')
+          expect(piece.textContent!.trim().length, `${subject}: "${piece.textContent}"`).toBeGreaterThan(2)
         }
       }
       // The words read as before: the time line whole, and the counts with their separators.
       const line = (words: string) => (_: string, el: Element | null) => el?.tagName === 'P' && el.textContent === words
       expect(screen.getAllByText(line('Tue, Nov 3, 2026 · 9:00 AM · 9 recipients'))).toHaveLength(2)
       expect(within(rowOf(FAILED.subject)).getByText(line('7 sent · 2 failed · 100%'))).toBeTruthy()
-      expect(within(rowOf(FAILED.subject)).getByText('· 2 failed').closest('.text-bad')).toBeTruthy()
-      expect(within(rowOf(FAILED.subject)).getByText('· 9 recipients')).toBeTruthy()
+      expect(within(rowOf(FAILED.subject)).getByText(piece('· 2 failed')).closest('.text-bad')).toBeTruthy()
+      expect(within(rowOf(FAILED.subject)).getByText(piece('· 9 recipients'))).toBeTruthy()
     })
 
     it('P1: leaves the history\'s own rows on the Specific people tab as they were with the switch on', async () => {
@@ -961,6 +976,172 @@ describe('Group email after the pictures of the real pages (checkpoint M, P1, P2
         return html
       }
       expect(await drawn(AdminEmailPage)).toBe(await drawn(AdminEmailPageToday))
+    })
+  })
+})
+
+describe('Group email before the switch-on: the newsletter tab\'s last rough spots (F1, F2 and F4)', () => {
+  const FAILED: Send = { ...SENT, id: 'campaign-newsletter-0', subject: 'Sample newsletter zero', sentCount: 7, failedCount: 2 }
+  const rowOf = (subject: string) => screen.getByText(subject).closest('.rounded-xl') as HTMLElement
+  /** The two lines of a large row a person reads, the time and count line and the counts line. */
+  const linesOf = (row: HTMLElement) => [...row.querySelectorAll('p')].filter((p) => (p.textContent ?? '').includes('·'))
+  /** The words of each piece of a line, without its separator. */
+  const piecesOf = (line: Element) => [...line.firstElementChild!.children].map((piece) =>
+    [...piece.childNodes].filter((n) => !(n instanceof Element && n.getAttribute('aria-hidden') === 'true')).map((n) => n.textContent).join('').trim())
+  const classes = (el: Element | null | undefined) => (el?.getAttribute('class') ?? '').split(/\s+/)
+
+  describe('with mailLists on', () => {
+    beforeEach(() => {
+      flags.mailLists = true
+    })
+
+    it('F1: draws both lines of a large row as whole pieces in a wrapping row, each separator in the gap before its piece, clipped where a piece starts a line, and hidden from a screen reader', async () => {
+      api.getNewsletter.mockResolvedValue(newsletter({ recent: [SENDING, FAILED] }))
+      draw(<AdminEmailPage embedded />)
+      await screen.findByText(FAILED.subject)
+      // The gap, the separator's width and how far the row starts left of the line are one length, as Tailwind compiles them.
+      const css = (await builder())(['ml-2.5', '-ml-2.5', 'w-2.5'])
+      expect(setBy(css, 'ml-2.5', 'margin-left')).toEqual({ px: 10, media: null })
+      expect(setBy(css, '-ml-2.5', 'margin-left')).toEqual({ px: -10, media: null })
+      expect(setBy(css, 'w-2.5', 'width')).toEqual({ px: 10, media: null })
+      for (const subject of [SENDING.subject, FAILED.subject]) {
+        const lines = linesOf(rowOf(subject))
+        expect(lines, subject).toHaveLength(2)
+        for (const line of lines) {
+          // The line clips what falls before its left edge; inside it, one wrapping row starting one gap to its left.
+          expect(classes(line), line.textContent!).toContain('overflow-hidden')
+          expect(line.children).toHaveLength(1)
+          const row = line.firstElementChild!
+          expect(row.getAttribute('class')).toBe('-ml-2.5 flex flex-wrap')
+          const pieces = [...row.children]
+          pieces.forEach((part, i) => {
+            expect(classes(part), part.textContent!).toEqual(expect.arrayContaining(['ml-2.5', 'whitespace-nowrap']))
+            const marks = part.querySelectorAll('[aria-hidden="true"]')
+            if (i === 0) {
+              expect(marks, part.textContent!).toHaveLength(0)
+              expect(part.textContent).not.toContain('·')
+              return
+            }
+            // Each piece after the first carries its separator before it, drawn in the gap to its left and never read.
+            expect(classes(part)).toContain('relative')
+            expect(marks).toHaveLength(1)
+            expect(part.firstElementChild).toBe(marks[0])
+            expect(marks[0].textContent).toBe('·')
+            expect(marks[0].getAttribute('class')).toBe('absolute right-full w-2.5 text-center')
+          })
+          // No dot sits anywhere but in a hidden separator.
+          const walker = document.createTreeWalker(line, NodeFilter.SHOW_TEXT)
+          for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+            if (node.textContent!.includes('·')) expect(node.parentElement!.getAttribute('aria-hidden')).toBe('true')
+          }
+        }
+      }
+      // The words and their order as they were, each piece whole, and the lines read as before.
+      const [time, counts] = linesOf(rowOf(FAILED.subject))
+      expect(piecesOf(time)).toEqual(['Tue, Nov 3, 2026', '9:00 AM', '9 recipients'])
+      expect(piecesOf(counts)).toEqual(['7 sent', '2 failed', '100%'])
+      expect(time.textContent).toBe('Tue, Nov 3, 2026 · 9:00 AM · 9 recipients')
+      expect(counts.textContent).toBe('7 sent · 2 failed · 100%')
+      expect(classes(within(rowOf(FAILED.subject)).getByText(piece('· 2 failed')))).toContain('text-bad')
+      expect(piecesOf(linesOf(rowOf(SENDING.subject))[1])).toEqual(['3 sent', '33%'])
+    })
+
+    it('F1: draws the rows under the media manager\'s form the same way', async () => {
+      const who = { role: 'member', member: { id: 'member-sample-mm', email: 'player.one@example.org' }, user: { id: 'member-sample-mm', email: 'player.one@example.org' } }
+      render(
+        <MemoryRouter>
+          <AuthContext.Provider value={who as unknown as AuthContextValue}><AdminEmailPage embedded mediaManager={{ secondFactor: true }} /></AuthContext.Provider>
+        </MemoryRouter>,
+      )
+      await screen.findByText(SENT.subject)
+      const [time, counts] = linesOf(rowOf(SENT.subject))
+      for (const line of [time, counts]) {
+        expect(classes(line)).toContain('overflow-hidden')
+        expect(line.firstElementChild!.getAttribute('class')).toBe('-ml-2.5 flex flex-wrap')
+      }
+      expect(piecesOf(time)).toEqual(['Tue, Nov 3, 2026', '9:00 AM', '9 recipients'])
+    })
+
+    it('F1: leaves the Specific people rows as they were with the switch on, with no piece and no hidden separator', async () => {
+      draw(<AdminEmailPage embedded />)
+      await screen.findByText('153 addresses will get it.')
+      fireEvent.click(screen.getByRole('tab', { name: 'Specific people' }))
+      const row = rowOf(await screen.findByText('Sample group message').then((el) => el.textContent!))
+      expect(row.querySelectorAll('p [aria-hidden="true"]')).toHaveLength(0)
+      expect(row.querySelectorAll('p.overflow-hidden, p .flex-wrap')).toHaveLength(0)
+      expect(row.querySelectorAll('p')[1].outerHTML).toBe('<p class="mt-0.5 text-xs text-muted-foreground">Mon, Nov 2, 2026 · 9:00 AM · <span class="whitespace-nowrap">2 recipients</span></p>')
+    })
+
+    it('F2: makes the subject box, each toolbar button of the editor and the Amazon SES tick\'s row 44px tall on a phone, on the newsletter tab alone', async () => {
+      draw(<AdminEmailPage embedded />)
+      await screen.findByText('153 addresses will get it.')
+      const css = (await builder())(['max-sm:min-h-11'])
+      expect(setBy(css, 'max-sm:min-h-11', 'min-height')).toEqual({ px: 44, media: 'width < 40rem' })
+      const subject = () => screen.getByPlaceholderText('e.g. Fall tournament registration is open')
+      expect(classes(subject())).toContain('max-sm:min-h-11')
+      // The editor takes the size through its one choice, which only this tab passes.
+      expect(screen.getByLabelText('Message').getAttribute('data-tall-on-phone')).toBe('true')
+      const tick = screen.getByRole('checkbox', { name: WORDS.sesBox }).closest('label')
+      expect(classes(tick)).toContain('max-sm:min-h-11')
+      fireEvent.click(screen.getByRole('tab', { name: 'Specific people' }))
+      expect(classes(subject())).not.toContain('max-sm:min-h-11')
+      expect(subject().getAttribute('class')).toContain(' mt-1')
+      expect(screen.getByLabelText('Message').hasAttribute('data-tall-on-phone')).toBe(false)
+    })
+
+    it('F4: draws the opened "Who gets it" as plain words under the opener, with no border and no fill, 14px in the page\'s ink, the space above them the test note has, the words unchanged', async () => {
+      draw(<AdminEmailPage embedded />)
+      await screen.findByText('153 addresses will get it.')
+      fireEvent.click(screen.getByRole('button', { name: 'Who gets it' }))
+      const words = 'Every address on an account with an active membership, once. Left out: 3 who turned the newsletter off and 1 that no longer receive mail.'
+      const who = screen.getByText(words)
+      expect(who.tagName).toBe('P')
+      expect(who.hidden).toBe(false)
+      expect(who.getAttribute('class')).toBe('mt-0.5 text-sm text-ink')
+      for (const look of [/^border/, /^rounded/, /^bg-/, /^p-/, /^text-muted/]) expect(classes(who).filter((c) => look.test(c)), String(look)).toEqual([])
+      const css = (await builder())(['text-sm', 'mt-0.5', 'mt-1.5', 'space-y-1'])
+      expect(setBy(css, 'text-sm', 'font-size')).toEqual({ px: 14, media: null })
+      // The space above the words is 6px, the test note's under the test box. The opener sits in the group's
+      // space-y-1, which puts 4px under it; it is drawn inline-flex, so that margin stays in its line and adds to
+      // the words' own 2px rather than folding into it.
+      const opener = screen.getByRole('button', { name: 'Who gets it' })
+      expect(opener.nextElementSibling).toBe(who)
+      expect(classes(opener)).toContain('inline-flex')
+      expect(classes(opener.parentElement!)).toContain('space-y-1')
+      expect(spaceBelowChildren(css, 'space-y-1')).toBe(4)
+      expect(setBy(css, 'mt-0.5', 'margin-top')).toEqual({ px: 2, media: null })
+      // The note's 6px is its own mt-1.5, under the status line that is empty and wears no margin until a test answers.
+      const note = holders('Test emails are marked [TEST]')[0]
+      expect(classes(note)).toContain('mt-1.5')
+      const status = note.previousElementSibling!
+      expect(status.getAttribute('role')).toBe('status')
+      expect(status.textContent).toBe('')
+      expect(classes(status).filter((c) => /^m[tby]?-/.test(c))).toEqual([])
+      expect(setBy(css, 'mt-1.5', 'margin-top')).toEqual({ px: 6, media: null })
+      expect(spaceBelowChildren(css, 'space-y-1')! + setBy(css, 'mt-0.5', 'margin-top')!.px).toBe(setBy(css, 'mt-1.5', 'margin-top')!.px)
+      expect(opener.getAttribute('aria-controls')).toBe(who.id)
+    })
+  })
+
+  describe('with mailLists off, beside today\'s page as stored (test/unit/fixtures/admin-email-today.tsx)', () => {
+    it('keeps the history\'s rows, the subject box and the editor byte for byte (F1, F2), with no piece of a large row anywhere', async () => {
+      api.getCampaigns.mockResolvedValue([{ ...CAMPAIGNS[0], failed_count: 1 }, CAMPAIGNS[0]])
+      const parts = async (Page: typeof AdminEmailPage) => {
+        const { container } = draw(<Page embedded />)
+        await screen.findAllByText('Sample group message')
+        const rows = screen.getAllByText('Sample group message').map((el) => el.closest('.rounded-xl')!.outerHTML)
+        const subject = screen.getByPlaceholderText('e.g. Fall tournament registration is open').outerHTML
+        const editor = screen.getByLabelText('Message').outerHTML
+        const html = normalised(container.innerHTML)
+        cleanup()
+        return { rows, subject, editor, html }
+      }
+      const today = await parts(AdminEmailPageToday)
+      const now = await parts(AdminEmailPage)
+      expect(now).toEqual(today)
+      expect(now.subject).not.toContain('max-sm:min-h-11')
+      expect(now.editor).not.toContain('data-tall-on-phone')
+      for (const look of ['-ml-2.5', 'right-full', 'mt-0.5 text-sm text-ink']) expect(now.html, look).not.toContain(look)
     })
   })
 })
