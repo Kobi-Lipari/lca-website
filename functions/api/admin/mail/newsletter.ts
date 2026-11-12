@@ -1,9 +1,10 @@
 // functions/api/admin/mail/newsletter.ts
 //
 // GET and POST /api/admin/mail/newsletter: the LCA newsletter list in Group
-// email (WS16), for today's mailers, an LCA admin with a second factor and
-// the president, through requireListMailer, which verifies the session
-// once. Its contracts are in domain/contracts/mail.ts. The guard answers
+// email (WS16), for the people requireListMailer admits, which verifies the
+// session once: an LCA admin with a second factor and the president, and,
+// while MAIL_LISTS_ON is set, the media manager with a second factor (WS16
+// step 6). Its contracts are in domain/contracts/mail.ts. The guard answers
 // first, so a signed-out caller and anyone who may not send get the
 // guard's answer and learn nothing of whether the newsletter is switched
 // on; then, while MAIL_LISTS_ON is unset, 404 { error: 'Not found' }, with

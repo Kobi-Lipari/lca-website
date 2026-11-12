@@ -184,3 +184,34 @@ export async function seedPresident(memberId: string): Promise<void> {
     `INSERT INTO board_seat_assignments (id, seat_id, member_id, started_at) VALUES (?, ?, ?, datetime('now'))`,
   ).bind(nextId('term'), seat.id, memberId).run()
 }
+
+export interface SeedSeatOptions {
+  /** The seat's link name, unique among seats (idx_board_members_slug), written exactly as given. */
+  slug: string
+  /** The seat's title, as the public Board page shows it; a plainly made-up one by default. */
+  role?: string
+  /** Whether the seat is active; it is by default. */
+  isActive?: boolean
+}
+
+/**
+ * A board seat with the link name given, and a current term on it for each
+ * member given, started now with no end: the columns
+ * test/integration/nav-personas.test.ts writes, as the seat screens add a
+ * seat (functions/api/governance/board.ts) and start a term
+ * (functions/api/admin/board-seats.ts). A term is ended as those screens end
+ * one, UPDATE board_seat_assignments SET ended_at = datetime('now'). Answers
+ * the seat's id.
+ */
+export async function seedSeat(opts: SeedSeatOptions, holders: string[] = []): Promise<string> {
+  const id = nextId('seat')
+  await env.DB.prepare(
+    `INSERT INTO board_members (id, role, name, sort_order, slug, category, is_active, is_shared) VALUES (?, ?, ?, ?, ?, 'officer', ?, 0)`,
+  ).bind(id, opts.role ?? 'Sample seat', 'Player One', 900, opts.slug, opts.isActive === false ? 0 : 1).run()
+  for (const memberId of holders) {
+    await env.DB.prepare(
+      `INSERT INTO board_seat_assignments (id, seat_id, member_id, started_at) VALUES (?, ?, ?, datetime('now'))`,
+    ).bind(nextId('term'), id, memberId).run()
+  }
+  return id
+}

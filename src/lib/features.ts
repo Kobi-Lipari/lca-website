@@ -226,7 +226,7 @@ const SWITCHES = {
 
   // Redesign, mail. Off until it is checked on a preview.
 
-  /** The LCA newsletter list in Group email, with the unsubscribe link, the email preferences page and the footer every optional email carries. */
+  /** The LCA newsletter list in Group email, with the unsubscribe link, the email preferences page and the footer every optional email carries, and the media manager's way in to it: Admin with Group email alone and a Group email link in the account menu. */
   mailLists: false,
 } as const
 

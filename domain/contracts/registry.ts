@@ -37,7 +37,7 @@ import {
   unsubscribeLinkResponseSchema,
   unsubscribeResponseSchema,
 } from './mail'
-import { payoutRequestRequestSchema, payoutRequestResponseSchema, tournamentCreationResponseSchema } from './me'
+import { mediaManagerResponseSchema, payoutRequestRequestSchema, payoutRequestResponseSchema, tournamentCreationResponseSchema } from './me'
 import {
   batchRegistrationRequestSchema,
   batchRegistrationResponseSchema,
@@ -114,6 +114,9 @@ export const contracts = {
   'mail/unsubscribe/[token]': {
     GET: { response: unsubscribeLinkResponseSchema },
     POST: { response: unsubscribeResponseSchema },
+  },
+  'me/media-manager': {
+    GET: { response: mediaManagerResponseSchema },
   },
   'me/payout-request': {
     POST: { request: payoutRequestRequestSchema, response: payoutRequestResponseSchema },

@@ -1,5 +1,6 @@
 // src/pages/AdminEmailPage.tsx
 import { useEffect, useId, useMemo, useState } from 'react'
+import { Link } from 'react-router-dom'
 import {
   Mail, Send, Users, CheckCircle2, XCircle, Clock,
   Eye, EyeOff, FlaskConical, X, UserPlus, Search, CircleHelp, ChevronDown,
@@ -62,8 +63,13 @@ type Mode = 'groups' | 'people' | 'newsletter'
 
 const TODAY_TABS: ReadonlyArray<readonly [Mode, string]> = [['groups', 'Groups of members'], ['people', 'Specific people']]
 const NEWSLETTER_TABS: ReadonlyArray<readonly [Mode, string]> = [['newsletter', 'The LCA newsletter list'], ['people', 'Specific people']]
+/** The media manager's one tab (WS16 step 6): Specific people is not theirs, and Groups of members waits for WS16 step 11. */
+const MEDIA_MANAGER_TABS: ReadonlyArray<readonly [Mode, string]> = [['newsletter', 'The LCA newsletter list']]
 
 const NEWSLETTER_SUBTITLE = 'Send the LCA newsletter, or a note to specific people.'
+const MEDIA_MANAGER_SUBTITLE = 'Send the LCA newsletter.'
+/** In place of the send buttons for the media manager signed in without a second factor, linked to where it is set up. */
+const SECOND_FACTOR_LINE = 'Set up two-factor sign-in to send group email.'
 /** K's guardrails for an issue (decision 23) and the simple way of writing one (decision 24), behind Help. */
 const GUARDRAILS = "Name the newsletter in the subject, put member news first, and paste links by hand, a tournament's King Registration link included. A renewal reminder is a separate email."
 const BOTH_LINKS = 'Each email carries an unsubscribe link and an email preferences link.'
@@ -240,10 +246,19 @@ function SesTestChoice({ checked, onChange }: { checked: boolean; onChange: (on:
 
 /**
  * `embedded` renders it as a section of the admin panel: no page hero or
- * outer page padding, and the panel sets the tab title.
+ * outer page padding, and the panel sets the tab title. `mediaManager`, which
+ * the admin panel gives with mailLists on for the media manager alone (WS16
+ * step 6), draws their form of the page: the newsletter's tab alone, with no
+ * Specific people and no Send history column; no call but the newsletter's
+ * own, so nothing of today's history, members or clubs is asked for; and,
+ * while the session carries no second factor, one line linked to where it is
+ * set up in place of the send buttons, the newsletter's calls being refused
+ * until then.
  */
-export function AdminEmailPage({ embedded = false }: { embedded?: boolean } = {}) {
+export function AdminEmailPage({ embedded = false, mediaManager }: { embedded?: boolean; mediaManager?: { secondFactor: boolean } } = {}) {
   usePageTitle(embedded ? 'Admin · Group email' : 'Group Email')
+  const forMediaManager = FEATURES.mailLists && mediaManager !== undefined
+  const canSend = !forMediaManager || mediaManager?.secondFactor === true
 
   const [clubs, setClubs] = useState<ApiClubListItem[]>([])
   const [campaigns, setCampaigns] = useState<ApiCampaign[]>([])
@@ -307,6 +322,8 @@ export function AdminEmailPage({ embedded = false }: { embedded?: boolean } = {}
   }
 
   useEffect(() => {
+    // The media manager's page asks for none of Group email's own lists: no clubs, no members and no history.
+    if (forMediaManager) return
     let cancelled = false
     getClubs().then((c) => { if (!cancelled) setClubs(c) }).catch(() => {})
     adminGetMembers().then((m) => { if (!cancelled) setMemberPool(m) }).catch(() => {})
@@ -315,14 +332,16 @@ export function AdminEmailPage({ embedded = false }: { embedded?: boolean } = {}
       .catch(() => { /* keep prior list on transient failure */ })
       .finally(() => { if (!cancelled) setLoadingHistory(false) })
     return () => { cancelled = true }
-  }, [])
+  }, [forMediaManager])
 
   // With mailLists on the page opens on the newsletter tab: its answer is read, and Help, open by itself, is remembered
-  // as shown. With the switch off nothing here runs, so no key is read or written.
+  // as shown. With the switch off nothing here runs, so no key is read or written. The media manager without a second
+  // factor is refused the newsletter's calls, so the page asks it nothing, as it opens or on a click of its tab.
   useEffect(() => {
     if (!FEATURES.mailLists) return
     let cancelled = false
     rememberHelpShown()
+    if (!canSend) return
     getNewsletter()
       .then((n) => { if (!cancelled) setNewsletter(n) })
       .catch((err: unknown) => {
@@ -331,18 +350,19 @@ export function AdminEmailPage({ embedded = false }: { embedded?: boolean } = {}
         if (err instanceof Error) setError(err.message)
       })
     return () => { cancelled = true }
-  }, [])
+  }, [canSend])
 
-  // Poll while any campaign is still sending, and with mailLists on while a newsletter is.
+  // Poll while any campaign is still sending, and with mailLists on while a newsletter is; the media manager's page
+  // reads the newsletter alone.
   const newsletterSending = newsletter?.summary.recent.some((s) => s.status === 'sending') ?? false
   useEffect(() => {
     if (!campaigns.some((c) => c.status === 'sending') && !newsletterSending) return
     const timer = setInterval(() => {
-      void loadHistory()
+      if (!forMediaManager) void loadHistory()
       if (FEATURES.mailLists) void loadNewsletter()
     }, 3000)
     return () => clearInterval(timer)
-  }, [campaigns, newsletterSending])
+  }, [campaigns, newsletterSending, forMediaManager])
 
   // Final send list = whatever the filter resolved to, minus anyone X'd
   // off, plus anyone hand-picked from the individual-member search.
@@ -458,7 +478,7 @@ export function AdminEmailPage({ embedded = false }: { embedded?: boolean } = {}
       await sendNewsletter({ subject: subject.trim(), bodyHtml: body })
       setSubject('')
       setBody('')
-      await Promise.all([loadNewsletter(), loadHistory()])
+      await Promise.all([loadNewsletter(), forMediaManager ? null : loadHistory()])
     } catch (err) {
       if (err instanceof Error) setError(err.message)
     } finally {
@@ -474,7 +494,7 @@ export function AdminEmailPage({ embedded = false }: { embedded?: boolean } = {}
     try {
       const { stopped: count } = await stopNewsletter()
       setStopped(`Stopped. ${count} addresses were not sent it.`)
-      await Promise.all([loadNewsletter(), loadHistory()])
+      await Promise.all([loadNewsletter(), forMediaManager ? null : loadHistory()])
     } catch (err) {
       if (err instanceof Error) setError(err.message)
     } finally {
@@ -515,18 +535,44 @@ export function AdminEmailPage({ embedded = false }: { embedded?: boolean } = {}
     : []
 
   // With mailLists on the subtitle says what the page offers now; today's promises a group by role, club or status.
-  const tabs = FEATURES.mailLists ? NEWSLETTER_TABS : TODAY_TABS
+  const tabs = forMediaManager ? MEDIA_MANAGER_TABS : FEATURES.mailLists ? NEWSLETTER_TABS : TODAY_TABS
+  const subtitle = forMediaManager ? MEDIA_MANAGER_SUBTITLE : NEWSLETTER_SUBTITLE
   const waitsForSes = newsletter?.sendsThrough === 'resend'
+
+  // The newsletter's own recent sends, with the status region and the stop: in the history column for everyone who may
+  // send it, and under its tab on the media manager's page, which draws no Send history column.
+  const newsletterSends = (
+    <div className="space-y-3">
+      <div role="status" className="space-y-1 text-sm text-ink">
+        {newsletterSending && newsletter?.summary.waits && <p>{newsletter.summary.waits}</p>}
+        {stopped && <p>{stopped}</p>}
+      </div>
+      {newsletterSending && (
+        <Button type="button" variant="outline" disabled={stopping} onClick={handleStop}>
+          Stop sending
+        </Button>
+      )}
+      {newsletter === null ? (
+        !newsletterFailed && <p className="text-sm text-muted-foreground">Loading…</p>
+      ) : newsletter.summary.recent.length === 0 ? (
+        <div className="rounded-xl border border-dashed px-6 py-10 text-center">
+          <p className="text-sm text-muted-foreground">No campaigns sent yet.</p>
+        </div>
+      ) : (
+        newsletter.summary.recent.map((send) => <CampaignRow key={send.id} c={asCampaign(send)} />)
+      )}
+    </div>
+  )
 
   return (
     <div>
       {FEATURES.mailLists && embedded ? (
         <div className="mb-5">
           <h2 className="text-xl font-bold text-ink">Group email</h2>
-          <p className="mt-0.5 text-sm text-muted-foreground">{NEWSLETTER_SUBTITLE}</p>
+          <p className="mt-0.5 text-sm text-muted-foreground">{subtitle}</p>
         </div>
       ) : FEATURES.mailLists ? (
-        <PageHero title="Group email" subtitle={NEWSLETTER_SUBTITLE} />
+        <PageHero title="Group email" subtitle={subtitle} />
       ) : embedded ? (
         <div className="mb-5">
           <h2 className="text-xl font-bold text-ink">Group email</h2>
@@ -542,7 +588,7 @@ export function AdminEmailPage({ embedded = false }: { embedded?: boolean } = {}
       )}
 
       <section className={embedded ? '' : 'mx-auto max-w-6xl px-6 py-10'}>
-        <div className={cn('grid gap-10', embedded ? 'xl:grid-cols-[1.3fr_1fr]' : 'lg:grid-cols-[1.3fr_1fr]')}>
+        <div className={cn('grid gap-10', !forMediaManager && (embedded ? 'xl:grid-cols-[1.3fr_1fr]' : 'lg:grid-cols-[1.3fr_1fr]'))}>
 
           {/* ── Compose ── */}
           <div>
@@ -569,10 +615,10 @@ export function AdminEmailPage({ embedded = false }: { embedded?: boolean } = {}
                       onClick={() => {
                         setMode(value)
                         setConfirming(false)
-                        // Choosing the newsletter tab reads its answer again, with Who gets it closed.
+                        // Choosing the newsletter tab reads its answer again, with Who gets it closed, for anyone who may send it.
                         if (value === 'newsletter') {
                           setWhoOpen(false)
-                          void loadNewsletter()
+                          if (canSend) void loadNewsletter()
                         }
                       }}
                       className={cn('rounded-md px-3 py-1 transition-colors',
@@ -657,6 +703,7 @@ export function AdminEmailPage({ embedded = false }: { embedded?: boolean } = {}
               </div>
 
               {/* ── Test send ── */}
+              {canSend && (
               <div className="rounded-lg border border-dashed p-3">
                 <p className="mb-2 flex items-center gap-1.5 text-[11px] font-medium text-muted-foreground">
                   <FlaskConical className="size-3.5 text-gold-ink" />
@@ -683,12 +730,21 @@ export function AdminEmailPage({ embedded = false }: { embedded?: boolean } = {}
                   Test emails are marked [TEST] in the subject and don't count toward — or appear in — send history.
                 </p>
               </div>
+              )}
 
               {FEATURES.mailLists ? (
                 <p role="status" className="text-sm text-destructive">{error}</p>
               ) : error && <p className="text-sm text-destructive">{error}</p>}
 
-              {mode === 'newsletter' ? (
+              {!canSend ? (
+                // The media manager signed in without a second factor: in place of the send buttons, one line to where it
+                // is set up, since the newsletter's every call is refused until then.
+                <p className="text-sm text-ink">
+                  <Link to="/account/security" className="rounded-sm font-medium underline underline-offset-2 outline-none hover:no-underline focus-visible:ring-3 focus-visible:ring-focus">
+                    {SECOND_FACTOR_LINE}
+                  </Link>
+                </p>
+              ) : mode === 'newsletter' ? (
                 <div className="space-y-1.5">
                   {/* Off while Resend still sends, with the reason beside it; the one confirm step asks with the count. */}
                   <Button
@@ -861,34 +917,18 @@ export function AdminEmailPage({ embedded = false }: { embedded?: boolean } = {}
                 </div>
               )}
             </div>
+            {/* The media manager's page has no history column: the newsletter's recent sends and its stop sit under its tab. */}
+            {forMediaManager && canSend && <div className="mt-6">{newsletterSends}</div>}
           </div>
 
           {/* ── History ── */}
+          {!forMediaManager && (
           <div>
             <h2 className="mb-4 text-xl font-bold text-ink">Send history</h2>
             {mode === 'newsletter' ? (
               // The newsletter's own recent sends while its tab is open, in the history's rows, for everyone who may send
               // it; the status region says how the sending one stands, why it waits and what the stop did.
-              <div className="space-y-3">
-                <div role="status" className="space-y-1 text-sm text-ink">
-                  {newsletterSending && newsletter?.summary.waits && <p>{newsletter.summary.waits}</p>}
-                  {stopped && <p>{stopped}</p>}
-                </div>
-                {newsletterSending && (
-                  <Button type="button" variant="outline" disabled={stopping} onClick={handleStop}>
-                    Stop sending
-                  </Button>
-                )}
-                {newsletter === null ? (
-                  !newsletterFailed && <p className="text-sm text-muted-foreground">Loading…</p>
-                ) : newsletter.summary.recent.length === 0 ? (
-                  <div className="rounded-xl border border-dashed px-6 py-10 text-center">
-                    <p className="text-sm text-muted-foreground">No campaigns sent yet.</p>
-                  </div>
-                ) : (
-                  newsletter.summary.recent.map((send) => <CampaignRow key={send.id} c={asCampaign(send)} />)
-                )}
-              </div>
+              newsletterSends
             ) : loadingHistory ? (
               <p className="text-sm text-muted-foreground">Loading…</p>
             ) : campaigns.length === 0 ? (
@@ -901,6 +941,7 @@ export function AdminEmailPage({ embedded = false }: { embedded?: boolean } = {}
               </div>
             )}
           </div>
+          )}
         </div>
       </section>
     </div>

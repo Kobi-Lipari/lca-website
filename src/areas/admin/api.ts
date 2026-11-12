@@ -325,6 +325,25 @@ export async function stopNewsletter(): Promise<ApiNewsletterStopped> {
   return handleResponse(response)
 }
 
+// The media manager (WS16 step 6): whether the signed-in member sends the newsletter as the media manager, which only
+// Admin's pages and the account menu ask, through src/areas/admin/useMediaManager.ts, once a session.
+
+/** What GET /api/me/media-manager answers (mediaManagerResponseSchema), about the person signed in and no one else. */
+export interface ApiMediaManager {
+  /** True for a member whose role Admin does not let in who holds the Media manager seat now; false while the newsletter is off. */
+  mediaManager: boolean
+  /** Whether the session carries a second factor, which sending asks of the media manager. */
+  secondFactor: boolean
+}
+
+/** Asks whether the person signed in is the media manager. The answer draws the page; the newsletter's guard is the grant. */
+export async function getMediaManager(): Promise<ApiMediaManager> {
+  const response = await fetch('/api/me/media-manager', {
+    headers: await authHeaders(),
+  })
+  return handleResponse(response)
+}
+
 export type AnnouncementTone = 'gold' | 'navy' | 'urgent' | 'info'
 
 export type AnnouncementSize = 'default' | 'compact'

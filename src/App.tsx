@@ -238,9 +238,11 @@ function App() {
             <Route path="/workspace" element={<RoleProtectedRoute roles={WORKSPACE_ROLES} allowDirectors><WorkspacePage /></RoleProtectedRoute>} />
             {/* ── Admin ── */}
             {/* Admin-only. Anyone else who follows an old /admin link lands in
-                their workspace (or the dashboard) instead of an empty panel. */}
-            <Route path="/admin" element={<RoleProtectedRoute roles={ADMIN_PANEL_ROLES} fallbackToToolsHome><AdminPage /></RoleProtectedRoute>} />
-            <Route path="/admin/:section" element={<RoleProtectedRoute roles={ADMIN_PANEL_ROLES} fallbackToToolsHome><AdminPage /></RoleProtectedRoute>} />
+                their workspace (or the dashboard) instead of an empty panel.
+                With mailLists on, the media manager is let in too, to Group
+                email alone (WS16 step 6). */}
+            <Route path="/admin" element={<RoleProtectedRoute roles={ADMIN_PANEL_ROLES} fallbackToToolsHome allowMediaManager><AdminPage /></RoleProtectedRoute>} />
+            <Route path="/admin/:section" element={<RoleProtectedRoute roles={ADMIN_PANEL_ROLES} fallbackToToolsHome allowMediaManager><AdminPage /></RoleProtectedRoute>} />
             <Route path="/admin/clubs/:id" element={<RoleProtectedRoute requireClubMatch><AdminClubPage /></RoleProtectedRoute>} />
             <Route path="/admin/tournaments/:id" element={<RoleProtectedRoute roles={['lca_admin', 'lca_observer', 'lca_officer', 'club_rep', 'tournament_director']} allowDirectors requireTournamentAccess><TournamentManagePage /></RoleProtectedRoute>} />
             {/* ── Accessibility test build only (see ScopeFixturePage above) ── */}

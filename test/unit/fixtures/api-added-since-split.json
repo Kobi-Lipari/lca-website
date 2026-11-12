@@ -5,11 +5,13 @@
     "/api/admin/mail/newsletter/test",
     "/api/mail/preferences/*",
     "/api/mail/unsubscribe/*",
+    "/api/me/media-manager",
     "/api/me/payout-request",
     "/api/me/tournament-creation"
   ],
   "exports": {
     "ApiEmailChoices": "membership",
+    "ApiMediaManager": "admin",
     "ApiNewsletter": "admin",
     "ApiNewsletterSent": "admin",
     "ApiNewsletterStopped": "admin",
@@ -18,6 +20,7 @@
     "ApiUnsubscribeLink": "membership",
     "ApiUnsubscribed": "membership",
     "getEmailChoices": "membership",
+    "getMediaManager": "admin",
     "getNewsletter": "admin",
     "getTournamentCreation": "membership",
     "requestPayoutAccount": "membership",

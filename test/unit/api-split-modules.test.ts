@@ -334,7 +334,7 @@ describe('calls through the barrel send what they sent before', () => {
     const { getTournamentCreation, requestPayoutAccount, ApiError } = await import('@/lib/api')
     expect([...ADDED.paths].sort()).toEqual([
       '/api/admin/mail/newsletter', '/api/admin/mail/newsletter/stop', '/api/admin/mail/newsletter/test', '/api/mail/preferences/*', '/api/mail/unsubscribe/*',
-      '/api/me/payout-request', '/api/me/tournament-creation',
+      '/api/me/media-manager', '/api/me/payout-request', '/api/me/tournament-creation',
     ])
     session.token = 'tok-5'
     const grant = { grant: 'standing_director', canCreate: true, canChargeFees: true, clubId: null }
