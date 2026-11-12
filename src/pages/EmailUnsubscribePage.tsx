@@ -66,14 +66,18 @@ export function EmailUnsubscribePage() {
   if (view.kind !== 'page') return <LinkFailedPage title="Unsubscribe" heading="Unsubscribe" notWorking={view.kind === 'not-working'} />
 
   const done = pressed?.kind === 'done' ? pressed : null
+  // With mailLists on, once "Done." is drawn the page no longer asks its question: its heading says what happened and the
+  // sentence about what the press would stop goes, the one about the email still to come staying above the box.
+  const answered = FEATURES.mailLists && done !== null
   return (
     <div className="mx-auto max-w-lg px-6 py-16">
       <PageTitle title="Unsubscribe" />
-      <h1 className="text-2xl font-bold text-ink">Stop {theList(view.list)}?</h1>
-      <p className="mt-3 text-ink">This stops {theList(view.list)} at this address.</p>
-      <p className="mt-1 text-muted-foreground">{EVENT_MAIL_STILL_COMES}</p>
+      <h1 className="text-2xl font-bold text-ink">{answered ? 'Unsubscribed' : `Stop ${theList(view.list)}?`}</h1>
+      {!answered && <p className="mt-3 text-ink">This stops {theList(view.list)} at this address.</p>}
+      <p className={answered ? 'mt-3 text-muted-foreground' : 'mt-1 text-muted-foreground'}>{EVENT_MAIL_STILL_COMES}</p>
       {!done && pressed?.kind !== 'not-working' && (
-        <Button type="button" variant="gold" className="mt-6" disabled={pressing} onClick={unsubscribe}>
+        // On a phone the one button is 44px tall, with mailLists on.
+        <Button type="button" variant="gold" className={FEATURES.mailLists ? 'mt-6 max-sm:min-h-11' : 'mt-6'} disabled={pressing} onClick={unsubscribe}>
           Unsubscribe
         </Button>
       )}

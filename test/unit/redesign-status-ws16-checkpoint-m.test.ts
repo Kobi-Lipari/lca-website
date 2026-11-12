@@ -11,6 +11,9 @@
 // pull request's text with its short headings and the words the review
 // asked for; the entries of the lists that gain a sentence, their earlier
 // words kept; and the plain-language rules on everything the round wrote.
+// After the pictures of the real pages, the round's second pass: its items,
+// P1 to P8, under their own words at the end of the review's bullet, what
+// each changed and how the switch off holds it, and the pins it moved.
 // The step blocks keep their own words, which their record tests hold.
 import { readFileSync } from 'node:fs'
 import { join, resolve } from 'node:path'
@@ -89,6 +92,10 @@ const ITEMS = ['R1.', 'R2.', 'R3.', 'S1.', 'S2.', 'S3.', 'S4.', 'S5.', 'S6.', 'S
 /** K's items of part A and part B, under K1. */
 const K_ITEMS = ['A1.', 'A2.', 'A3.', 'A4.', 'A5.', 'A6.', 'B1.', 'B2.', 'B3.', 'B4.', 'B5.', 'B6.', 'B7.', 'B8.']
 const item = (name: string) => FIXES.split('\n').find((l) => l.startsWith(`  - ${name}`)) ?? ''
+/** The pictures' items, in their order, each a sub-bullet under the words that open them. */
+const P_ITEMS = ['P1.', 'P2.', 'P3.', 'P4.', 'P5.', 'P6.', 'P7.', 'P8.']
+const PICTURES = "  - After the pictures of the real pages:"
+const pItem = (name: string) => FIXES.split('\n').find((l) => l.startsWith(`    - ${name}`)) ?? ''
 const kItem = (name: string) => FIXES.split('\n').find((l) => l.startsWith(`    - ${name}`)) ?? ''
 
 /** Every file the round adds or changes, as its Files bullet names it. */
@@ -358,6 +365,56 @@ describe("REDESIGN_STATUS.md, checkpoint M's review: the entries it extends", ()
     expect(ac3.split("Changed in checkpoint M's review:")).toHaveLength(2)
     expect(ac3).toMatch(/Changed in checkpoint M's review: [^]*`test\/integration\/campaigns-claims\.test\.ts` holds[^]* Planned: WS16 step 7\.$/)
     expect(entries(map).filter((l) => l.includes("checkpoint M's review"))).toHaveLength(1)
+  })
+})
+
+describe("REDESIGN_STATUS.md, checkpoint M's review: after the pictures of the real pages", () => {
+  it('gives P1 to P8 a sub-bullet each, in order, under the words that open them, after the switch-on patch\'s sub-bullet and at the end of the review\'s bullet', () => {
+    const lines = FIXES.split('\n')
+    const opens = lines.findIndex((l) => l.startsWith(PICTURES))
+    const patch = lines.findIndex((l) => l.startsWith("  - The switch-on change's patch:"))
+    expect(opens).toBeGreaterThan(patch)
+    expect(lines.filter((l) => l.startsWith(PICTURES))).toHaveLength(1)
+    const at = P_ITEMS.map((name) => lines.findIndex((l) => l.startsWith(`    - ${name} `)))
+    for (const [i, name] of P_ITEMS.entries()) {
+      expect(at[i], name).toBeGreaterThan(opens)
+      expect(lines.filter((l) => l.startsWith(`    - ${name} `)), name).toHaveLength(1)
+    }
+    expect([...at].sort((a, b) => a - b)).toEqual(at)
+    expect(at.at(-1)).toBe(lines.length - 1)
+    for (const piece of ['Thursday, November 12, 2026', '`mailLists` on', 'plainly made-up answers', 'which draw nothing as shipped', 'fails on the tree before it and passes after', '`test/unit/fixtures/admin-email-today.tsx`', '`test/unit/fixtures/email-pages-today.tsx`']) {
+      expect(lines[opens], piece).toContain(piece)
+    }
+  })
+
+  it('says what each item changed, in the words a person reads, and how the switch off holds it', () => {
+    const pieces: ReadonlyArray<readonly [string, string[]]> = [
+      ['P1.', ['the `large` choice', '"· 112 recipients" as one piece or not at all', 'no line ends in a lone dot', 'with the switch off, keep their markup byte for byte']],
+      ['P2.', ['"Waiting" with the clock mark in place of "Sending…"', "in the newsletter's rows alone", 'two sentences with one colon at most', 'is waiting. Not sent yet: list mail goes out through Amazon SES only.', 'keep "Sending…"']],
+      ['P3.', ['"Unsubscribed"', '"This stops the LCA newsletter at this address." is not drawn', 'stays above the Done box', 'Before the press', '`24bcf50`']],
+      ['P4.', ['"Test emails are marked [TEST] in the subject. They do not count toward send history and do not appear in it."', 'the same line of code', "keeps today's words byte for byte"]],
+      ['P5.', ['44px', '`max-sm:min-h-11`', 'Send test button']],
+      ['P6.', ['"Recent newsletters"', 'an officer\'s who holds the seat', '`text-base font-semibold text-ink`', '"No newsletter sent yet."', '"Send history"', '"No campaigns sent yet."']],
+      ['P7.', ['Unsubscribe and Save my choices', "each tick's row", 'at least 44px tall', 'the box stays 16px', 'With the switch off their markup is as before']],
+      ['P8.', ['Recorded, not built', '`RichTextEditor`', 'no focus ring', "the pages' restyle", 'the dashboard before the person\'s record arrived', 'not confirmed against the real sign-in', 'opening `/admin/email` directly while signed in on the live site', 'fixed in the route if it shows there']],
+    ]
+    for (const [name, words] of pieces) for (const piece of words) expect(pItem(name), `${name} ${piece}`).toContain(piece)
+    expect(kItem('B4.')).toContain('as P2 says')
+    expect(kItem('B5.')).toContain('as P1 says')
+  })
+
+  it('names the pass\'s files with their items, its pins and its build, and the chunk\'s size where the section gives it', () => {
+    for (const piece of ['`src/pages/AdminEmailPage.tsx` (R1, B3 to B6, P1, P2 and P4 to P6)', '`src/pages/EmailPreferencesPage.tsx` (B1, B2, B7, P7)', '`src/pages/EmailUnsubscribePage.tsx` (B1, B7, P3, P7)']) {
+      expect(FILES, piece).toContain(piece)
+    }
+    for (const piece of ['lines 717, 718 and 724', '"is waiting."', '"· 9 recipients"', '`max-sm:min-h-11`', '"Unsubscribed"']) expect(PINS, piece).toContain(piece)
+    expect(PINS.split('\n').filter((l) => l.startsWith('  - `test/unit/email-pages-review.test.tsx`'))).toHaveLength(1)
+    for (const piece of ['`AdminPage` from 100,628 to 102,832 bytes', '`EmailPreferencesPage` from 3,485 to 3,719', '`EmailUnsubscribePage` from 2,185 to 2,187']) expect(BUILD, piece).toContain(piece)
+    expect(WORKER).toContain("The pictures' items change no file under `functions/`, `domain/` or `workers/`")
+    expect(CHECKS).toContain("the pictures' items made no browser run")
+    const pages = bullet(checkpoint, '  - The pages.')
+    expect(pages).toContain('102,832 with the review\'s fixes')
+    expect(PULL_REQUEST.join('\n')).toContain("Admin's own code is larger, 92,035 bytes on `main` and 102,832 after.")
   })
 })
 

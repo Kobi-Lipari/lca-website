@@ -69,6 +69,12 @@ const MEDIA_MANAGER_TABS: ReadonlyArray<readonly [Mode, string]> = [['newsletter
 
 const NEWSLETTER_SUBTITLE = 'Send the LCA newsletter, or a note to specific people.'
 const MEDIA_MANAGER_SUBTITLE = 'Send the LCA newsletter.'
+/** The heading over the newsletter's recent sends under the media manager's form, and the words while there are none. */
+const RECENT_NEWSLETTERS = 'Recent newsletters'
+const NO_NEWSLETTER_YET = 'No newsletter sent yet.'
+/** The note under the test box with mailLists on, on both tabs: today's words made two sentences, without a dash.
+ *  With the switch off the page keeps today's line, where it was. */
+const TEST_NOTE = 'Test emails are marked [TEST] in the subject. They do not count toward send history and do not appear in it.'
 /** In place of the send buttons for the media manager signed in without a second factor, linked to where it is set up. */
 const SECOND_FACTOR_LINE = 'Set up two-factor sign-in to send group email.'
 /** K's guardrails for an issue (decision 23) and the simple way of writing one (decision 24), behind Help. */
@@ -174,6 +180,8 @@ const STATUS_META: Record<string, { label: string; icon: typeof Clock; className
   completed: { label: 'Completed', icon: CheckCircle2, className: 'bg-ok-100 text-ok' },
   failed: { label: 'Failed', icon: XCircle, className: 'bg-bad-100 text-bad-700' },
 }
+/** A sending newsletter the server says waits, in its own row, with mailLists on: in words, with the clock mark. */
+const WAITING_META = { ...STATUS_META.sending, label: 'Waiting' }
 
 /**
  * When a send was made, in a row of the history or of the newsletter's recent sends. With mailLists on, as the site
@@ -188,13 +196,18 @@ function sentAt(createdAt: string): string {
 /**
  * One send in the history's style. With mailLists on its count keeps its number with its noun, and a newsletter's row
  * can carry `extra`, why it waits, beside its own counts, and `large` draws its words at 14px; with the switch off it is today's row.
+ * A `large` row never ends a line on its separator: each " · " travels with what follows it, the time, the count, the
+ * failed count and the share, so a line breaks before one of them whole. `waiting`, which the tab gives the sending
+ * newsletter while the server says it waits, reads "Waiting" in place of "Sending…".
  */
-function CampaignRow({ c, extra, large }: { c: ApiCampaign; extra?: ReactNode; large?: boolean }) {
-  const meta = STATUS_META[c.status] ?? STATUS_META.sending
+function CampaignRow({ c, extra, large, waiting }: { c: ApiCampaign; extra?: ReactNode; large?: boolean; waiting?: boolean }) {
+  const meta = waiting ? WAITING_META : STATUS_META[c.status] ?? STATUS_META.sending
   const Icon = meta.icon
   const pct = c.total_recipients > 0
     ? Math.round(((c.sent_count + c.failed_count) / c.total_recipients) * 100)
     : 0
+  /** The words after a separator, kept on one line with it in a large row. */
+  const after = (words: ReactNode) => <span className="whitespace-nowrap">· {words}</span>
 
   return (
     <div className="rounded-xl border bg-card p-4 shadow-sm">
@@ -202,7 +215,11 @@ function CampaignRow({ c, extra, large }: { c: ApiCampaign; extra?: ReactNode; l
         <div className="min-w-0">
           <p className="truncate font-medium text-ink">{c.subject}</p>
           <p className={cn('mt-0.5', large ? 'text-sm' : 'text-xs', 'text-muted-foreground')}>
-            {sentAt(c.created_at)} · {FEATURES.mailLists ? <span className="whitespace-nowrap">{c.total_recipients} recipients</span> : <>{c.total_recipients} recipients</>}
+            {large ? (
+              <>{formatDate(c.created_at, { stored: 'utc', year: true })} {after(formatTime(c.created_at, { stored: 'utc' }))} {after(`${c.total_recipients} recipients`)}</>
+            ) : (
+              <>{sentAt(c.created_at)} · {FEATURES.mailLists ? <span className="whitespace-nowrap">{c.total_recipients} recipients</span> : <>{c.total_recipients} recipients</>}</>
+            )}
           </p>
         </div>
         <span className={cn('flex flex-shrink-0 items-center gap-1 rounded-full px-2 py-0.5', large ? 'text-sm' : 'text-[11px]', 'font-medium', meta.className)}>
@@ -215,8 +232,14 @@ function CampaignRow({ c, extra, large }: { c: ApiCampaign; extra?: ReactNode; l
         </div>
         <p className={cn('mt-1', large ? 'text-sm' : 'text-[11px]', 'text-muted-foreground')}>
           {c.sent_count} sent
-          {c.failed_count > 0 && <span className="text-bad"> · {c.failed_count} failed</span>}
-          {' '}· {pct}%
+          {large ? (
+            <>{c.failed_count > 0 && <span className="text-bad"> {after(`${c.failed_count} failed`)}</span>} {after(`${pct}%`)}</>
+          ) : (
+            <>
+              {c.failed_count > 0 && <span className="text-bad"> · {c.failed_count} failed</span>}
+              {' '}· {pct}%
+            </>
+          )}
         </p>
         {extra}
       </div>
@@ -555,10 +578,10 @@ export function AdminEmailPage({ embedded = false, mediaManager }: { embedded?: 
   // The newsletter tab's own words are 14px or more, its openers and its controls on a phone 44px tall (checkpoint M's
   // review); every other tab, and the page with mailLists off, keeps today's sizes.
   const nl = mode === 'newsletter'
-  // Why the sending newsletter waits, in the server's words, named by its subject: beside its own counts, and beside the
-  // Send button it holds back.
+  // Why the sending newsletter waits, named by its subject and then in the server's words, unchanged, as two sentences:
+  // beside its own counts, and beside the Send button it holds back. Its row's status then reads "Waiting".
   const sendingNow = newsletter?.summary.recent.find((s) => s.status === 'sending')
-  const waitingLine = sendingNow && newsletter?.summary.waits ? `\u201c${sendingNow.subject}\u201d is waiting: ${newsletter.summary.waits}` : null
+  const waitingLine = sendingNow && newsletter?.summary.waits ? `\u201c${sendingNow.subject}\u201d is waiting. ${newsletter.summary.waits}` : null
 
   // The newsletter's own recent sends, with the status region and the stop: in the history column for everyone who may
   // send it, and under its tab on the media manager's page, which draws no Send history column.
@@ -576,13 +599,13 @@ export function AdminEmailPage({ embedded = false, mediaManager }: { embedded?: 
         !newsletterFailed && <p className="text-sm text-muted-foreground">Loading…</p>
       ) : newsletter.summary.recent.length === 0 ? (
         <div className="rounded-xl border border-dashed px-6 py-10 text-center">
-          <p className="text-sm text-muted-foreground">No campaigns sent yet.</p>
+          <p className="text-sm text-muted-foreground">{NO_NEWSLETTER_YET}</p>
         </div>
       ) : (
         newsletter.summary.recent.map((send) => (
           <CampaignRow
             key={send.id}
-            c={asCampaign(send)} large
+            c={asCampaign(send)} large waiting={send.status === 'sending' && waitingLine !== null}
             extra={send.status === 'sending' ? <p role="status" className="mt-2 text-sm text-ink">{waitingLine}</p> : undefined}
           />
         ))
@@ -741,7 +764,7 @@ export function AdminEmailPage({ embedded = false, mediaManager }: { embedded?: 
                     <p className="min-w-0 truncate text-sm text-ink">{ownEmail}</p>
                   ) : (
                     <Input
-                      className="h-8 text-sm"
+                      className={cn('h-8 text-sm', nl && PHONE_TALL)}
                       value={testEmail}
                       onChange={(e) => { setTestEmail(e.target.value); setTestResult(null) }}
                       placeholder="you@example.com"
@@ -758,7 +781,9 @@ export function AdminEmailPage({ embedded = false, mediaManager }: { embedded?: 
                   <p className={cn('mt-2 text-xs', testResult.ok ? 'text-ok-700' : 'text-destructive')}>{testResult.message}</p>
                 )}
                 <p className={cn('mt-1.5', nl ? 'text-sm' : 'text-[10px]', 'text-muted-foreground')}>
+                  {FEATURES.mailLists ? TEST_NOTE : <>
                   Test emails are marked [TEST] in the subject and don't count toward — or appear in — send history.
+                  </>}
                 </p>
               </div>
               )}
@@ -952,7 +977,12 @@ export function AdminEmailPage({ embedded = false, mediaManager }: { embedded?: 
               )}
             </div>
             {/* The media manager's page has no history column: the newsletter's recent sends and its stop sit under its tab. */}
-            {forMediaManager && canSend && <div className="mt-6">{newsletterSends}</div>}
+            {forMediaManager && canSend && (
+              <section className="mt-6" aria-labelledby={`${helpId}-recent`}>
+                <h3 id={`${helpId}-recent`} className="mb-3 text-base font-semibold text-ink">{RECENT_NEWSLETTERS}</h3>
+                {newsletterSends}
+              </section>
+            )}
           </div>
 
           {/* ── History ── */}

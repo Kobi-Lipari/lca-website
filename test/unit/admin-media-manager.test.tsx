@@ -708,3 +708,27 @@ describe('an LCA officer who types Group email\'s address (checkpoint M\'s revie
     await later.release()
   }, 30_000)
 })
+
+describe('the recent sends under the media manager\'s form, after the pictures of the real pages (checkpoint M, P6)', () => {
+  beforeEach(() => {
+    on('GET', '/api/admin/members', { status: 200, body: { members: [] } })
+    on('GET', '/api/clubs', { status: 200, body: { clubs: [] } })
+    on('GET', '/api/admin/board-seats', { status: 200, body: { seats: [], holders: [], history: [] } })
+  })
+
+  it('heads them "Recent newsletters", with "No newsletter sent yet." while there are none, for the media manager and for an officer who holds the seat', async () => {
+    flags.mailLists = true
+    for (const role of ['member', 'lca_officer'] as const) {
+      on('GET', ASK_URL, { status: 200, body: { mediaManager: true, secondFactor: true } })
+      on('GET', NEWSLETTER_URL, { status: 200, body: newsletter([]) })
+      await site('/admin/email', person({ role, seats: [MEDIA_MANAGER] }))
+      await groupEmail()
+      const heading = await screen.findByRole('heading', { level: 3, name: 'Recent newsletters' }, { timeout: 10_000 })
+      expect(heading.getAttribute('class'), role).toBe('mb-3 text-base font-semibold text-ink')
+      expect(within(heading.closest('section')!).getByText('No newsletter sent yet.'), role).toBeTruthy()
+      expect(screen.queryByText('No campaigns sent yet.'), role).toBeNull()
+      expect(screen.queryByRole('heading', { name: 'Send history' }), role).toBeNull()
+      cleanup()
+    }
+  }, 60_000)
+})

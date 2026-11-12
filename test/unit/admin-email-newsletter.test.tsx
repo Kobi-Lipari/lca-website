@@ -451,11 +451,12 @@ describe('Group email with mailLists on: the send, the stop and the recent sends
     // Since checkpoint M's review the words sit in the sending newsletter's own row, named by its subject.
     await screen.findByText('153 addresses will get it.')
     const history = screen.getByRole('heading', { name: 'Send history' }).parentElement!
-    const words = await within(history).findByText(`\u201c${SENDING.subject}\u201d is waiting: ${waits}`)
+    // Since checkpoint M's pictures (P2) the line is two sentences, and the row's status reads "Waiting" while it waits.
+    const words = await within(history).findByText(`\u201c${SENDING.subject}\u201d is waiting. ${waits}`)
     expect(words.closest('[role="status"]')).toBeTruthy()
     expect(history.contains(words)).toBe(true)
     for (const subject of [SENDING.subject, SENT.subject]) expect(within(history).getByText(subject)).toBeTruthy()
-    expect(within(history).getByText(/Sending/)).toBeTruthy()
+    expect(within(history).getByText('Waiting')).toBeTruthy()
     expect(within(history).getByText('Completed')).toBeTruthy()
     // Group email's own history comes back with the Specific people tab.
     fireEvent.click(screen.getByRole('tab', { name: 'Specific people' }))
@@ -640,7 +641,7 @@ describe('Group email with mailLists on: checkpoint M\'s review (K\'s decision 5
     const waits = 'Not sent yet: the mail key is missing on this deployment.'
     api.getNewsletter.mockResolvedValue(newsletter({ sendsThrough: 'ses', recent: [SENDING, SENT], waits }))
     draw(<AdminEmailPage embedded />)
-    const line = `\u201c${SENDING.subject}\u201d is waiting: ${waits}`
+    const line = `\u201c${SENDING.subject}\u201d is waiting. ${waits}`
     const both = await screen.findAllByText(line)
     expect(both).toHaveLength(2)
     const row = screen.getByText(SENDING.subject).closest('.rounded-xl')!
@@ -662,7 +663,8 @@ describe('Group email with mailLists on: checkpoint M\'s review (K\'s decision 5
 
   it('keeps a recent send\'s count with its noun, the number and "recipients" in one span that does not break', async () => {
     draw(<AdminEmailPage embedded />)
-    const count = await screen.findByText('9 recipients')
+    // Since checkpoint M's pictures (P1) the separator before the count travels with it.
+    const count = await screen.findByText('· 9 recipients')
     expect(count.tagName).toBe('SPAN')
     expect(count.getAttribute('class')).toBe('whitespace-nowrap')
   })
@@ -729,7 +731,7 @@ describe('the newsletter tab\'s sizes, read from the classes it wears and compil
     await screen.findByText('153 addresses will get it.')
     fireEvent.click(screen.getByRole('button', { name: 'Preview email' }))
     fireEvent.click(screen.getByRole('button', { name: 'Who gets it' }))
-    for (const words of [WORDS.guardrails, WORDS.bothLinks, ' addresses will get it.', 'It goes from ', 'Every address on an account', 'Send yourself a test before the real thing', 'Test emails are marked [TEST]', "This is how it will look in the recipient's inbox:", 'is waiting: Not sent yet']) {
+    for (const words of [WORDS.guardrails, WORDS.bothLinks, ' addresses will get it.', 'It goes from ', 'Every address on an account', 'Send yourself a test before the real thing', 'Test emails are marked [TEST]', "This is how it will look in the recipient's inbox:", 'is waiting. Not sent yet']) {
       const [holder] = holders(words)
       expect(holder, words).toBeTruthy()
       expect(await fontPx(holder!), words).toBeGreaterThanOrEqual(14)
@@ -781,5 +783,184 @@ describe('the newsletter tab\'s sizes, read from the classes it wears and compil
     expect(setBy(css, 'max-sm:min-h-11', 'min-height')).toEqual({ px: 44, media: 'width < 40rem' })
     const controls = [...screen.getAllByRole('tab'), ...['Preview email', 'Send test', WORDS.send, 'Stop sending'].map((name) => screen.getByRole('button', { name }))]
     for (const control of controls) expect(control.getAttribute('class')?.split(/\s+/), control.textContent ?? '').toContain('max-sm:min-h-11')
+  })
+})
+
+describe('Group email after the pictures of the real pages (checkpoint M, P1, P2 and P4 to P6)', () => {
+  const WAITS = 'Not sent yet: list mail goes out through Amazon SES only.'
+  const NOTE_NOW = 'Test emails are marked [TEST] in the subject. They do not count toward send history and do not appear in it.'
+  const NOTE_TODAY = `Test emails are marked [TEST] in the subject and don't count toward ${String.fromCharCode(0x2014)} or appear in ${String.fromCharCode(0x2014)} send history.`
+  const FAILED: Send = { ...SENT, id: 'campaign-newsletter-0', subject: 'Sample newsletter zero', sentCount: 7, failedCount: 2 }
+  const rowOf = (subject: string) => screen.getByText(subject).closest('.rounded-xl') as HTMLElement
+  /** Every text node in an element, with the element it sits in. */
+  const textsIn = (root: Element) => {
+    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT)
+    const found: Array<{ text: string; parent: Element }> = []
+    for (let node = walker.nextNode(); node; node = walker.nextNode()) found.push({ text: node.textContent ?? '', parent: node.parentElement! })
+    return found
+  }
+
+  describe('with mailLists on', () => {
+    beforeEach(() => {
+      flags.mailLists = true
+    })
+
+    it('P1: keeps each separator of a recent send\'s row with the words after it, in a span that does not break, so no line ends in a dot', async () => {
+      api.getNewsletter.mockResolvedValue(newsletter({ recent: [SENDING, FAILED], waits: WAITS }))
+      draw(<AdminEmailPage embedded />)
+      await screen.findByText(FAILED.subject)
+      for (const subject of [SENDING.subject, FAILED.subject]) {
+        const row = rowOf(subject)
+        const dots = textsIn(row).filter(({ text }) => text.includes('·'))
+        expect(dots.length, subject).toBeGreaterThanOrEqual(3)
+        for (const { text, parent } of dots) {
+          // The dot is the first thing in its span, the words after it are in the same span, and the span does not break.
+          expect(text.startsWith('· '), `${subject}: "${text}"`).toBe(true)
+          expect(parent.getAttribute('class'), `${subject}: "${text}"`).toBe('whitespace-nowrap')
+          expect(parent.firstChild?.textContent, `${subject}: "${text}"`).toBe(text)
+          expect(parent.textContent!.trim().length, `${subject}: "${parent.textContent}"`).toBeGreaterThan(2)
+        }
+      }
+      // The words read as before: the time line whole, and the counts with their separators.
+      const line = (words: string) => (_: string, el: Element | null) => el?.tagName === 'P' && el.textContent === words
+      expect(screen.getAllByText(line('Tue, Nov 3, 2026 · 9:00 AM · 9 recipients'))).toHaveLength(2)
+      expect(within(rowOf(FAILED.subject)).getByText(line('7 sent · 2 failed · 100%'))).toBeTruthy()
+      expect(within(rowOf(FAILED.subject)).getByText('· 2 failed').closest('.text-bad')).toBeTruthy()
+      expect(within(rowOf(FAILED.subject)).getByText('· 9 recipients')).toBeTruthy()
+    })
+
+    it('P1: leaves the history\'s own rows on the Specific people tab as they were with the switch on', async () => {
+      draw(<AdminEmailPage embedded />)
+      await screen.findByText('153 addresses will get it.')
+      fireEvent.click(screen.getByRole('tab', { name: 'Specific people' }))
+      const row = rowOf(await screen.findByText('Sample group message').then((el) => el.textContent!))
+      expect(within(row).getByText('2 recipients').getAttribute('class')).toBe('whitespace-nowrap')
+      expect(within(row).queryByText(/^· /)).toBeNull()
+    })
+
+    it('P2: reads "Waiting" with the clock mark in the waiting newsletter\'s row, and its line as two sentences with one colon, the server\'s words unchanged, beside Send too', async () => {
+      api.getNewsletter.mockResolvedValue(newsletter({ sendsThrough: 'ses', recent: [SENDING, SENT], waits: WAITS }))
+      draw(<AdminEmailPage embedded />)
+      await screen.findByText(SENDING.subject)
+      const row = rowOf(SENDING.subject)
+      const status = within(row).getByText('Waiting')
+      expect(status.querySelector('svg')?.getAttribute('class')).toMatch(/lucide-clock/)
+      expect(row.textContent).not.toContain('Sending')
+      const words = `“${SENDING.subject}” is waiting. ${WAITS}`
+      expect(words.split(':')).toHaveLength(2)
+      expect(within(row).getByText(words).getAttribute('role')).toBe('status')
+      const send = screen.getByRole('button', { name: WORDS.send })
+      expect(within(send.parentElement!).getByText(words)).toBeTruthy()
+      expect(document.body.textContent).not.toContain('is waiting:')
+    })
+
+    it('P2: keeps "Sending…" for a newsletter that waits for nothing, and for the history\'s own rows on the Specific people tab', async () => {
+      api.getNewsletter.mockResolvedValue(newsletter({ sendsThrough: 'ses', recent: [SENDING, SENT] }))
+      api.getCampaigns.mockResolvedValue([{ ...CAMPAIGNS[0], id: 'campaign-sending', subject: 'Sample group message two', status: 'sending', completed_at: null }, ...CAMPAIGNS])
+      draw(<AdminEmailPage embedded />)
+      await screen.findByText(SENDING.subject)
+      expect(within(rowOf(SENDING.subject)).getByText('Sending…')).toBeTruthy()
+      expect(document.body.textContent).not.toContain('Waiting')
+      cleanup()
+      api.getNewsletter.mockResolvedValue(newsletter({ recent: [SENDING], waits: WAITS }))
+      draw(<AdminEmailPage embedded />)
+      await screen.findByText(SENDING.subject)
+      fireEvent.click(screen.getByRole('tab', { name: 'Specific people' }))
+      expect(within(rowOf(await screen.findByText('Sample group message two').then((el) => el.textContent!))).getByText('Sending…')).toBeTruthy()
+    })
+
+    it('P4: writes the test note with no dash on the newsletter tab, and the same words on Specific people, which draws it from the same line', async () => {
+      draw(<AdminEmailPage embedded />)
+      await screen.findByText('153 addresses will get it.')
+      expect(holders(NOTE_NOW)).toHaveLength(1)
+      expect(holders(NOTE_NOW)[0].textContent).toBe(NOTE_NOW)
+      expect(document.body.textContent).not.toMatch(/[\u2013\u2014]/)
+      fireEvent.click(screen.getByRole('tab', { name: 'Specific people' }))
+      expect(holders(NOTE_NOW)).toHaveLength(1)
+      expect(document.body.textContent).not.toContain(NOTE_TODAY)
+    })
+
+    it('P5: makes the admin\'s test address box on the newsletter tab 44px tall on a phone, as the Send test button beside it is', async () => {
+      draw(<AdminEmailPage embedded />)
+      await screen.findByText('153 addresses will get it.')
+      const css = (await builder())(['max-sm:min-h-11'])
+      expect(setBy(css, 'max-sm:min-h-11', 'min-height')).toEqual({ px: 44, media: 'width < 40rem' })
+      const box = screen.getByPlaceholderText('you@example.com')
+      expect(box.getAttribute('class')?.split(/\s+/)).toContain('max-sm:min-h-11')
+      expect(screen.getByRole('button', { name: 'Send test' }).getAttribute('class')?.split(/\s+/)).toContain('max-sm:min-h-11')
+      // Specific people's box keeps today's height.
+      fireEvent.click(screen.getByRole('tab', { name: 'Specific people' }))
+      expect(screen.getByPlaceholderText('you@example.com').getAttribute('class')?.split(/\s+/)).not.toContain('max-sm:min-h-11')
+    })
+
+    it('P6: heads the media manager\'s recent sends "Recent newsletters" in the page\'s heading style for a part of a card, with "No newsletter sent yet." while there are none', async () => {
+      const who = { role: 'member', member: { id: 'member-sample-mm', email: 'player.one@example.org' }, user: { id: 'member-sample-mm', email: 'player.one@example.org' } }
+      const mediaManager = () => render(
+        <MemoryRouter>
+          <AuthContext.Provider value={who as unknown as AuthContextValue}><AdminEmailPage embedded mediaManager={{ secondFactor: true }} /></AuthContext.Provider>
+        </MemoryRouter>,
+      )
+      api.getNewsletter.mockResolvedValue(newsletter({ recent: [] }))
+      mediaManager()
+      const heading = await screen.findByRole('heading', { level: 3, name: 'Recent newsletters' })
+      expect(heading.getAttribute('class')).toBe('mb-3 text-base font-semibold text-ink')
+      const part = heading.closest('section')!
+      expect(part.getAttribute('aria-labelledby')).toBe(heading.id)
+      expect(within(part).getByText('No newsletter sent yet.')).toBeTruthy()
+      expect(document.body.textContent).not.toContain('No campaigns sent yet.')
+      expect(screen.queryByRole('heading', { name: 'Send history' })).toBeNull()
+      cleanup()
+      api.getNewsletter.mockResolvedValue(newsletter({ recent: [SENT] }))
+      mediaManager()
+      const headed = await screen.findByRole('heading', { level: 3, name: 'Recent newsletters' })
+      expect(headed.closest('section')!.contains(await screen.findByText(SENT.subject))).toBe(true)
+    })
+
+    it('P6: keeps the admin\'s "Send history" heading, with "No newsletter sent yet." on the newsletter tab and today\'s words on Specific people', async () => {
+      api.getNewsletter.mockResolvedValue(newsletter({ recent: [] }))
+      api.getCampaigns.mockResolvedValue([])
+      draw(<AdminEmailPage embedded />)
+      await screen.findByText('153 addresses will get it.')
+      const history = screen.getByRole('heading', { level: 2, name: 'Send history' }).parentElement!
+      expect(await within(history).findByText('No newsletter sent yet.')).toBeTruthy()
+      expect(screen.queryByRole('heading', { name: 'Recent newsletters' })).toBeNull()
+      fireEvent.click(screen.getByRole('tab', { name: 'Specific people' }))
+      expect(await within(history).findByText('No campaigns sent yet.')).toBeTruthy()
+    })
+  })
+
+  describe('with mailLists off, beside today\'s page as stored (test/unit/fixtures/admin-email-today.tsx)', () => {
+    /** The history's row and the test note, as each page draws them. */
+    async function parts(Page: typeof AdminEmailPage) {
+      const { container } = draw(<Page embedded />)
+      await screen.findByText('Sample group message')
+      const row = rowOf('Sample group message').outerHTML
+      const note = holders('Test emails are marked [TEST]')[0].outerHTML
+      const box = screen.getByPlaceholderText('you@example.com').outerHTML
+      const text = container.textContent ?? ''
+      cleanup()
+      return { row, note, box, text }
+    }
+
+    it('keeps the history\'s row, the test note and the test address box byte for byte (P1, P2, P4, P5), with no newsletter word of P2 or P6', async () => {
+      api.getCampaigns.mockResolvedValue([{ ...CAMPAIGNS[0], failed_count: 1 }, { ...CAMPAIGNS[0], id: 'campaign-sending', subject: 'Sample group message two', status: 'sending', completed_at: null }])
+      const today = await parts(AdminEmailPageToday)
+      const now = await parts(AdminEmailPage)
+      expect(now).toEqual(today)
+      expect(now.note).toContain(NOTE_TODAY)
+      for (const words of ['Waiting', 'is waiting', 'Recent newsletters', 'No newsletter sent yet.', NOTE_NOW]) expect(now.text, words).not.toContain(words)
+    })
+
+    it('keeps the empty history\'s words as today\'s', async () => {
+      api.getCampaigns.mockResolvedValue([])
+      const drawn = async (Page: typeof AdminEmailPage) => {
+        const { container } = draw(<Page embedded />)
+        await screen.findByText('No campaigns sent yet.')
+        const html = normalised(container.innerHTML)
+        cleanup()
+        return html
+      }
+      expect(await drawn(AdminEmailPage)).toBe(await drawn(AdminEmailPageToday))
+    })
   })
 })

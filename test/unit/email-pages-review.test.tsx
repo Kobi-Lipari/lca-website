@@ -56,6 +56,10 @@ const TITLE_BEFORE = 'A title set before the page'
 const STOPPED = 'Off while all optional email is stopped.'
 const OLD_RING = 'focus-visible:ring-3 focus-visible:ring-focus'
 const NEW_RING = 'focus:ring-3 focus:ring-ring'
+/** The class that makes each tick's row and the one button 44px tall on a phone, with mailLists on (checkpoint M's pictures, P7). */
+const TALL = ' max-sm:min-h-11'
+/** Markup with the phone's 44px class taken out, to compare with the old page where nothing else may differ. */
+const short = (markup: string) => markup.split(TALL).join('')
 
 /** What a stand-in endpoint answers: a status and a body, or a thrown failure, as a request that got no answer. */
 type Answer = { status: number; body: unknown } | 'no answer'
@@ -191,18 +195,18 @@ describe('with mailLists on, the pages the review leaves alone', () => {
     flags.mailLists = true
   })
 
-  it('draws the unsubscribe page as it loads exactly as before, with the one GET', async () => {
+  it('draws the unsubscribe page as it loads exactly as before, the button 44px tall on a phone apart, with the one GET', async () => {
     const { old, now } = await pair(UNSUB.Old, UNSUB.New, UNSUB.path, { [`GET ${UNSUBSCRIBE_URL}`]: [unsubscribeAnswer] })
-    expect(now).toEqual(old)
+    expect({ ...now, markup: short(now.markup) }).toEqual(old)
     expect(now.text).toContain('Stop the LCA newsletter?')
     expect(now.calls).toEqual([`GET ${UNSUBSCRIBE_URL}`])
   })
 
-  it('draws the choices as they load exactly as before but for the status region\'s ring, which is at the site\'s full strength (B1)', async () => {
+  it('draws the choices as they load exactly as before but for the status region\'s ring, which is at the site\'s full strength (B1), and the rows and the button 44px tall on a phone', async () => {
     const { old, now } = await pair(PREFS.Old, PREFS.New, PREFS.path, { [`GET ${PREFERENCES_URL}`]: [choices()] })
     expect(old.markup).toContain(OLD_RING)
     expect(now.markup).toContain(NEW_RING)
-    expect(now.markup.replace(NEW_RING, OLD_RING)).toBe(old.markup)
+    expect(short(now.markup).replace(NEW_RING, OLD_RING)).toBe(old.markup)
     expect(now.text).toBe(old.text)
     expect(now.calls).toEqual(old.calls)
   })
@@ -211,7 +215,7 @@ describe('with mailLists on, the pages the review leaves alone', () => {
     for (const reply of [{ status: 400, body: { error: 'Pick a list that is yours.' } }, 'no answer'] as Answer[]) {
       const given = { [`GET ${PREFERENCES_URL}`]: [choices()], [`PATCH ${PREFERENCES_URL}`]: [reply] }
       const { old, now } = await pair(PREFS.Old, PREFS.New, PREFS.path, given, press('Save my choices'))
-      expect(now.markup.replace(NEW_RING, OLD_RING)).toBe(old.markup)
+      expect(short(now.markup).replace(NEW_RING, OLD_RING)).toBe(old.markup)
       expect(now.text).toBe(old.text)
     }
   })
@@ -231,7 +235,8 @@ describe('with mailLists on, the pages the review leaves alone', () => {
 
   it('keeps the words of "Done." and "Saved.", the one POST and the one PATCH, and the link on, in a box now (B1)', async () => {
     const unsub = await pair(UNSUB.Old, UNSUB.New, UNSUB.path, { [`GET ${UNSUBSCRIBE_URL}`]: [unsubscribeAnswer], [`POST ${UNSUBSCRIBE_URL}`]: [done] }, press('Unsubscribe'))
-    expect(unsub.now.text).toBe(unsub.old.text)
+    // Since checkpoint M's pictures (P3) the page no longer asks its question once "Done." is drawn; the rest is word for word.
+    expect(unsub.now.text).toBe(unsub.old.text.replace('Stop the LCA newsletter?This stops the LCA newsletter at this address.', 'Unsubscribed'))
     expect(unsub.now.calls).toEqual(unsub.old.calls)
     expect(unsub.old.markup).not.toContain('bg-ok-50')
     expect(unsub.now.markup).toContain('bg-ok-50')
@@ -252,7 +257,7 @@ describe('with mailLists on, the pages the review leaves alone', () => {
     expect(now.text.split(STOPPED)).toHaveLength(3)
     expect(now.calls).toEqual(old.calls)
     // Told from the old page's markup by the notes, the descriptions that point at them, the muted labels and the ring.
-    const stripped = now.markup
+    const stripped = short(now.markup)
       .replace(NEW_RING, OLD_RING)
       .replace(/<p id="[^"]*-off" class="ml-6 text-sm text-muted-foreground">Off while all optional email is stopped\.<\/p>/g, '')
       .replace(/ aria-describedby="[^"]*"/g, '')
@@ -328,5 +333,94 @@ describe('what a person meets of the pages, read from the classes they wear and 
     expect(setBy(css, 'size-5', 'height')).toEqual({ px: 20, media: null })
     // The words wear no size class of their own and are drawn at the page's size, 16px.
     expect(wordsSize).toBeNull()
+  })
+})
+
+describe('the two pages after the pictures of the real pages (checkpoint M, P3 and P7)', () => {
+  const STILL = "You'll still get email about your membership, registrations, payments and support requests."
+
+  /** A page drawn and left on the screen for a case to read, after `then`. */
+  async function open(Page: ComponentType, path: string, given: Answers, then?: () => Promise<void>) {
+    answers = Object.fromEntries(Object.entries(given).map(([key, replies]) => [key, [...replies]]))
+    calls = []
+    render(
+      <MemoryRouter initialEntries={[path]}>
+        <Routes>
+          <Route path="/email/unsubscribe/:token" element={<Page />} />
+          <Route path="/email/preferences/:token" element={<Page />} />
+        </Routes>
+      </MemoryRouter>,
+    )
+    await settle()
+    await then?.()
+  }
+  const unsubscribing = { [`GET ${UNSUBSCRIBE_URL}`]: [unsubscribeAnswer], [`POST ${UNSUBSCRIBE_URL}`]: [done] }
+
+  describe('with mailLists on', () => {
+    beforeEach(() => {
+      flags.mailLists = true
+    })
+
+    it('P3: once "Done." is drawn, heads the page "Unsubscribed", drops the sentence that asked, and keeps the sentence about the email still to come above the box, whose words and link are as they were', async () => {
+      await open(EmailUnsubscribePage, UNSUB.path, unsubscribing)
+      expect(screen.getByRole('heading', { level: 1 }).textContent).toBe('Stop the LCA newsletter?')
+      expect(screen.getByText('This stops the LCA newsletter at this address.')).toBeTruthy()
+      await press('Unsubscribe')()
+      expect(screen.getAllByRole('heading').map((h) => h.textContent)).toEqual(['Unsubscribed'])
+      expect(screen.queryByText('This stops the LCA newsletter at this address.')).toBeNull()
+      expect(document.body.textContent).not.toContain('Stop the LCA newsletter?')
+      const still = screen.getByText(STILL)
+      const box = screen.getByRole('status')
+      expect(box.textContent).toBe("Done. The LCA newsletter won't come to this address any more. Change your email choices")
+      expect(still.compareDocumentPosition(box) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
+      expect(screen.getByRole('link', { name: 'Change your email choices' }).getAttribute('href')).toBe(`/email/preferences/${PREFERENCES_TOKEN}`)
+      expect(calls).toEqual([`GET ${UNSUBSCRIBE_URL}`, `POST ${UNSUBSCRIBE_URL}`])
+    })
+
+    it('P3: keeps the question for a press that did not go through', async () => {
+      for (const reply of [notFound, 'no answer'] as Answer[]) {
+        await open(EmailUnsubscribePage, UNSUB.path, { [`GET ${UNSUBSCRIBE_URL}`]: [unsubscribeAnswer], [`POST ${UNSUBSCRIBE_URL}`]: [reply] }, press('Unsubscribe'))
+        expect(screen.getByRole('heading', { level: 1 }).textContent).toBe('Stop the LCA newsletter?')
+        expect(screen.getByText('This stops the LCA newsletter at this address.')).toBeTruthy()
+        cleanup()
+      }
+    })
+
+    it('P7: makes the one button on each page, and each tick\'s row, 44px tall on a phone, the box and its words as they were', async () => {
+      const css = (await builder())(['max-sm:min-h-11', 'size-4'])
+      expect(setBy(css, 'max-sm:min-h-11', 'min-height')).toEqual({ px: 44, media: 'width < 40rem' })
+      await open(EmailUnsubscribePage, UNSUB.path, unsubscribing)
+      expect(screen.getByRole('button', { name: 'Unsubscribe' }).getAttribute('class')?.split(/\s+/)).toContain('max-sm:min-h-11')
+      cleanup()
+      await open(EmailPreferencesPage, PREFS.path, { [`GET ${PREFERENCES_URL}`]: [choices()] })
+      expect(screen.getByRole('button', { name: 'Save my choices' }).getAttribute('class')?.split(/\s+/)).toContain('max-sm:min-h-11')
+      const boxes = screen.getAllByRole('checkbox')
+      expect(boxes.map((box) => box.closest('label')?.textContent)).toEqual(['LCA newsletter', 'Example Chess Club news', 'Stop all optional email from LCA'])
+      for (const box of boxes) {
+        const row = box.closest('label')!
+        // The whole row is the box's label, so a touch anywhere on it ticks the box.
+        expect(row.getAttribute('for')).toBe(box.id)
+        expect(row.getAttribute('class')?.split(/\s+/), row.textContent ?? '').toContain('max-sm:min-h-11')
+        expect(box.getAttribute('class')).toBe('size-4 accent-ink')
+      }
+      expect(setBy(css, 'size-4', 'width')).toEqual({ px: 16, media: null })
+    })
+  })
+
+  describe('with mailLists off, beside the pages as stored (test/unit/fixtures/email-pages-today.tsx)', () => {
+    it('P3 and P7: draws the unsubscribe page as it loads byte for byte, and after the press the old question and words', async () => {
+      const load = await pair(UNSUB.Old, UNSUB.New, UNSUB.path, unsubscribing)
+      expect(load.now).toEqual(load.old)
+      expect(load.now.markup).not.toContain('max-sm:min-h-11')
+      const pressed = await pair(UNSUB.Old, UNSUB.New, UNSUB.path, unsubscribing, press('Unsubscribe'))
+      expect(pressed.now.text).toBe(pressed.old.text)
+      expect(pressed.now.text.startsWith('Stop the LCA newsletter?This stops the LCA newsletter at this address.')).toBe(true)
+    })
+
+    it('P7: draws the choices with no phone height of the review\'s, the ring apart, as before', async () => {
+      const { old, now } = await pair(PREFS.Old, PREFS.New, PREFS.path, { [`GET ${PREFERENCES_URL}`]: [choices()] })
+      expect(now.markup).not.toContain('max-sm:min-h-11')
+      expect(now.markup.replace(NEW_RING, OLD_RING)).toBe(old.markup)
+    })
   })
 })

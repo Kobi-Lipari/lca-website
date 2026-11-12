@@ -26,6 +26,9 @@ import { cn } from '@/lib/utils'
 /** A list's status while "Stop all optional email from LCA" is ticked: off, in words, beside the muted box. */
 const STOPPED_WITH_ALL = 'Off while all optional email is stopped.'
 
+/** With mailLists on, each tick's row and the one button are 44px tall on a phone, the box and its words as they are. */
+const TALL_ON_A_PHONE = 'max-sm:min-h-11'
+
 /** What the page draws: nothing yet, nothing at all, the choices, or one of the two answers for a link that does not open. */
 type View = { kind: 'waiting' | 'nothing' | 'not-working' | 'no-answer' } | { kind: 'page'; choices: ApiEmailChoices }
 
@@ -102,7 +105,7 @@ export function EmailPreferencesPage() {
           const describedBy = [about, offNote].filter(Boolean).join(' ') || undefined
           return (
             <div key={list.id}>
-              <label htmlFor={box} className={cn('flex min-h-6 items-center gap-2 font-medium', optionalOff ? 'text-muted-foreground' : 'text-ink')}>
+              <label htmlFor={box} className={cn('flex min-h-6 items-center gap-2 font-medium', FEATURES.mailLists && TALL_ON_A_PHONE, optionalOff ? 'text-muted-foreground' : 'text-ink')}>
                 <input
                   id={box}
                   type="checkbox"
@@ -121,7 +124,7 @@ export function EmailPreferencesPage() {
         })}
         {!hasNewsletter && <p className="text-sm text-muted-foreground">The LCA newsletter goes to current members.</p>}
         <div>
-          <label htmlFor={`${ids}-all`} className="flex min-h-6 items-center gap-2 font-medium text-ink">
+          <label htmlFor={`${ids}-all`} className={cn('flex min-h-6 items-center gap-2 font-medium', FEATURES.mailLists && TALL_ON_A_PHONE, 'text-ink')}>
             <input
               id={`${ids}-all`}
               type="checkbox"
@@ -134,7 +137,7 @@ export function EmailPreferencesPage() {
           </label>
           <p id={`${ids}-all-about`} className="ml-6 text-sm text-muted-foreground">{EVENT_MAIL_STILL_COMES}</p>
         </div>
-        <Button type="submit" variant="gold" disabled={saving}>
+        <Button type="submit" variant="gold" className={FEATURES.mailLists ? TALL_ON_A_PHONE : undefined} disabled={saving}>
           Save my choices
         </Button>
       </form>
