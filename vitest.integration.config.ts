@@ -29,6 +29,9 @@ export default defineConfig({
           // opens nothing, and the secret is made up; the harness's catch point checks each request's signature with it.
           SES_ACCESS_KEY_ID: 'AKIDEXAMPLE',
           SES_SECRET_ACCESS_KEY: 'harness-made-up-ses-secret-0042',
+          // A made-up topic for the receiver of Amazon's reports, in the account of twelve zeros, which is no one's; the
+          // harness's helper signs each message the tests post with a key and a certificate of its own.
+          SES_SNS_TOPIC_ARN: 'arn:aws:sns:us-east-1:000000000000:lca-mail-events',
         },
       },
     }),

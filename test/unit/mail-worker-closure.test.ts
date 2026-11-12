@@ -16,7 +16,12 @@
 // test/unit/published-review-closure.test.ts, are not changed. Since WS16
 // step 7 the seam holds Amazon SES's transport, functions/utils/mail/ses.ts,
 // and its signer, functions/utils/mail/sigv4.ts, Web Crypto alone, so the
-// worker's closure holds both, still with no package.
+// worker's closure holds both, still with no package. The worker receives
+// nothing: the receiver of Amazon's reports (WS16 step 8), its endpoint
+// functions/api/mail/ses-events.ts, the check of SNS's signature
+// functions/utils/mail/sns.ts and the code that applies a report
+// functions/utils/mail/sesEvents.ts, stays out of its closure, so its
+// upload does not grow by them.
 import { existsSync, readFileSync, statSync } from 'node:fs'
 import { dirname, join, relative, resolve } from 'node:path'
 import ts from 'typescript'
@@ -97,6 +102,18 @@ describe('the daily-emails worker\'s imports, with the seam', () => {
       expect(existsSync(join(ROOT, file)), file).toBe(true)
       expect([...files], file).not.toContain(file)
     }
+  })
+
+  it('reach none of the receiver of Amazon\'s reports, which the worker never runs: its endpoint, the check of SNS\'s signature and the code that applies a report', () => {
+    const receiver = ['functions/api/mail/ses-events.ts', 'functions/utils/mail/sns.ts', 'functions/utils/mail/sesEvents.ts']
+    for (const file of receiver) {
+      expect(existsSync(join(ROOT, file)), file).toBe(true)
+      expect([...files], file).not.toContain(file)
+    }
+    expect([...files].filter((file) => file.startsWith('functions/api/mail/'))).toEqual([])
+    // The walk does find the receiver's own imports from its endpoint, so the case above is not blind.
+    const { files: endpoint } = closure('functions/api/mail/ses-events.ts')
+    for (const file of ['functions/utils/mail/sns.ts', 'functions/utils/mail/sesEvents.ts', 'functions/utils/mail/ses.ts']) expect([...endpoint], file).toContain(file)
   })
 })
 

@@ -5,8 +5,10 @@
 // configuration set below. It sends one message in one request and answers
 // what Amazon said, in the seam's terms; classifyOnce in ./outcome reads the
 // answer as sent, worth another try later, or never. This file and
-// ./resend are the only files under functions/ that name a mail service's
-// address (test/unit/mail-one-seam.test.ts). It takes only types from
+// ./resend are the transports, and with ./sns, the check of the reports
+// Amazon SNS posts back (WS16 step 8), the only files under functions/
+// that name a mail service's address (test/unit/mail-one-seam.test.ts).
+// It takes only types from
 // ./send, so the seam and its transports never import each other when the
 // code runs.
 //
@@ -41,6 +43,14 @@ export const SES_REGION = 'us-east-1'
 
 /** The configuration set every message names, which carries the bounces and spam reports to Amazon SNS (WS16 step 8). */
 export const SES_CONFIGURATION_SET = 'lca-mail'
+
+/**
+ * The names of the two tags every message carries: its kind, and for list mail and a test of a list's mail, its list.
+ * Amazon hands them back in each report, and the receiver of reports (./sesEvents) reads the list a spam report was
+ * pressed on from the second, so both names are written here alone.
+ */
+export const KIND_TAG = 'kind'
+export const LIST_TAG = 'list'
 
 /** SES's v2 SendEmail, in the region above. */
 const SES_ENDPOINT = `https://email.${SES_REGION}.amazonaws.com/v2/email/outbound-emails`
@@ -91,7 +101,7 @@ export function sesBody(mail: OutgoingMail): SesSendEmailBody {
       },
     },
     ConfigurationSetName: SES_CONFIGURATION_SET,
-    EmailTags: [{ Name: 'kind', Value: mail.kind ?? 'event' }, ...(mail.listId ? [{ Name: 'list', Value: mail.listId }] : [])],
+    EmailTags: [{ Name: KIND_TAG, Value: mail.kind ?? 'event' }, ...(mail.listId ? [{ Name: LIST_TAG, Value: mail.listId }] : [])],
   }
 }
 

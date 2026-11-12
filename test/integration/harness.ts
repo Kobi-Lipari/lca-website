@@ -101,6 +101,26 @@ export const AMAZON_CODES: Record<number, string> = {
 export let fetchCount = 0
 
 /**
+ * Amazon SNS in the site's region, as the receiver of Amazon's reports reaches it (WS16 step 8). certificate is the
+ * text a GET of any path ending in .pem answers, the test certificate test/integration/helpers/sns.ts sets, or none;
+ * certReachable false, or no certificate set, answers that GET with a 503. redirects.certificate, when set, answers a
+ * GET of a .pem path with a 302 to that address on another host, and redirects.confirmation the confirming GET; a
+ * request that does not ask for redirect 'manual' is then followed there, as the runtime would follow it, so a case
+ * can count a second fetch.
+ */
+export const snsBehavior: {
+  certificate: string | null
+  certReachable: boolean
+  redirects: { certificate: string | null; confirmation: string | null }
+} = { certificate: null, certReachable: true, redirects: { certificate: null, confirmation: null } }
+
+/** Every GET of a certificate the SNS catch point took, by its address, so a case can count what the receiver fetched. */
+export const snsCertificateFetches: string[] = []
+
+/** Every GET the SNS catch point took whose query holds Action=ConfirmSubscription, by its address. */
+export const snsConfirmations: string[] = []
+
+/**
  * Set succeed=false to simulate Stripe being down (createCheckoutSession
  * throws). sessionPaymentStatus is what a retrieved Checkout Session reports,
  * which is how the success page finds out a payment cleared when the webhook
@@ -202,6 +222,11 @@ export function resetHarness(): void {
   emailBehavior.code = null
   emailBehavior.noAnswer = null
   fetchCount = 0
+  snsBehavior.certificate = null
+  snsBehavior.certReachable = true
+  snsBehavior.redirects = { certificate: null, confirmation: null }
+  snsCertificateFetches.length = 0
+  snsConfirmations.length = 0
   stripeBehavior.succeed = true
   stripeBehavior.sessionPaymentStatus = 'paid'
   stripeBehavior.sessionStatus = 'complete'
@@ -267,6 +292,8 @@ function memberIdFromToken(token: string): string | null {
 const SES_HOST = 'email.us-east-1.amazonaws.com'
 const SES_PATH = '/v2/email/outbound-emails'
 const SES_SCOPE = 'us-east-1/ses/aws4_request'
+/** Amazon SNS's host in the same region, where the receiver of Amazon's reports fetches certificates and confirms its subscription. */
+const SNS_HOST = 'sns.us-east-1.amazonaws.com'
 
 /** What SES's v2 SendEmail carries, as far as the catch point reads it. */
 interface SesRequestBody {
@@ -527,6 +554,28 @@ export function installFetchInterceptor(): void {
         throw new Error('harness: the connection was lost before the answer came')
       }
       return Response.json({ MessageId: `ses-${emailOutbox.length}` })
+    }
+
+    // Amazon SNS, in the site's region: the certificate the receiver of Amazon's reports fetches to check a message's
+    // signature, and the address a subscription is confirmed at. Anything else is a path SNS does not hold.
+    if (url.hostname === SNS_HOST) {
+      const isCert = request.method === 'GET' && url.pathname.endsWith('.pem')
+      const isConfirm = request.method === 'GET' && url.searchParams.get('Action') === 'ConfirmSubscription'
+      if (isCert) snsCertificateFetches.push(url.href)
+      if (isConfirm) snsConfirmations.push(url.href)
+      const redirectTo = isCert ? snsBehavior.redirects.certificate : isConfirm ? snsBehavior.redirects.confirmation : null
+      if (redirectTo !== null) {
+        if (request.redirect !== 'manual') return globalThis.fetch(redirectTo)
+        return new Response(null, { status: 302, headers: { Location: redirectTo } })
+      }
+      if (isCert) {
+        if (!snsBehavior.certReachable || snsBehavior.certificate === null) return new Response('harness: Amazon SNS is not answering', { status: 503 })
+        return new Response(snsBehavior.certificate, { headers: { 'Content-Type': 'application/x-x509-ca-cert' } })
+      }
+      if (isConfirm) {
+        return new Response('<ConfirmSubscriptionResponse><ConfirmSubscriptionResult/></ConfirmSubscriptionResponse>', { headers: { 'Content-Type': 'text/xml' } })
+      }
+      return new Response('harness: no such path on Amazon SNS', { status: 404 })
     }
 
     // Anthropic: the scanner's vision model.

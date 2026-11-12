@@ -13,6 +13,9 @@
 //   recent sends, and the send;
 // - POST /api/admin/mail/newsletter/test, a test send to one address;
 // - POST /api/admin/mail/newsletter/stop, the stop.
+// And of the receiver of Amazon's reports (WS16 step 8), public, signed by
+// Amazon SNS: POST /api/mail/ses-events, whose 200 says the message was
+// taken.
 //
 // Response schemas are strict, like the other contracts. The requests are
 // loose, as every request schema is, so a key a page sends beside the ones
@@ -130,6 +133,12 @@ export const newsletterTestResponseSchema = z.strictObject({ sent: z.literal(tru
 /** POST /api/admin/mail/newsletter/stop's answer: how many addresses the stop kept the newsletter from. */
 export const newsletterStopResponseSchema = z.strictObject({ stopped: countSchema })
 
+/**
+ * POST /api/mail/ses-events's 200 (WS16 step 8): Amazon SNS's message was taken, whether it changed anything or not.
+ * SNS's body is not checked by a request schema, as Stripe's webhook's is not: the receiver checks its signature.
+ */
+export const sesEventsResponseSchema = z.strictObject({ received: z.literal(true) })
+
 export type UnsubscribeResponse = z.infer<typeof unsubscribeResponseSchema>
 export type UnsubscribeLinkResponse = z.infer<typeof unsubscribeLinkResponseSchema>
 export type EmailChoicesResponse = z.infer<typeof emailChoicesResponseSchema>
@@ -140,3 +149,4 @@ export type NewsletterResponse = z.infer<typeof newsletterResponseSchema>
 export type NewsletterTestRequest = z.infer<typeof newsletterTestRequestSchema>
 export type NewsletterTestResponse = z.infer<typeof newsletterTestResponseSchema>
 export type NewsletterStopResponse = z.infer<typeof newsletterStopResponseSchema>
+export type SesEventsResponse = z.infer<typeof sesEventsResponseSchema>

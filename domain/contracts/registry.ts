@@ -34,6 +34,7 @@ import {
   newsletterSummaryResponseSchema,
   newsletterTestRequestSchema,
   newsletterTestResponseSchema,
+  sesEventsResponseSchema,
   unsubscribeLinkResponseSchema,
   unsubscribeResponseSchema,
 } from './mail'
@@ -110,6 +111,9 @@ export const contracts = {
   'mail/preferences/[token]': {
     GET: { response: emailChoicesResponseSchema },
     PATCH: { request: emailChoicesRequestSchema, response: emailChoicesResponseSchema },
+  },
+  'mail/ses-events': {
+    POST: { response: sesEventsResponseSchema },
   },
   'mail/unsubscribe/[token]': {
     GET: { response: unsubscribeLinkResponseSchema },

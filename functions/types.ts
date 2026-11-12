@@ -40,6 +40,13 @@ export interface Env {
    */
   SES_ACCESS_KEY_ID?: string
   SES_SECRET_ACCESS_KEY?: string
+  /**
+   * The name of the Amazon SNS topic K made for Amazon SES's bounces and spam reports, the one topic whose messages the
+   * receiver (functions/api/mail/ses-events.ts) takes. A secret of the production environment of the Pages project
+   * alone, set by K, since the name holds K's AWS account number, which stays out of the repository; never on the
+   * Preview environment or the daily-emails worker. Without it the receiver answers 404 to everything.
+   */
+  SES_SNS_TOPIC_ARN?: string
 }
 
 export interface MemberRow {

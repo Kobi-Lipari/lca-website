@@ -7,9 +7,12 @@
 // (api.resend.com) or Amazon's (amazonaws.com). Under functions/ the files
 // are the transports, functions/utils/mail/resend.ts and, since WS16 step
 // 7, Amazon SES's, functions/utils/mail/ses.ts, whose signer,
-// functions/utils/mail/sigv4.ts, names no address; step 8 adds the receiver
-// of Amazon's reports to the list as it writes it. Outside functions/ the
-// only files are the two
+// functions/utils/mail/sigv4.ts, names no address; and, since WS16 step 8,
+// the check of the reports Amazon SNS posts to the site,
+// functions/utils/mail/sns.ts, which names SNS's own host for the region
+// its certificates come from, while the receiver's endpoint and the code
+// that applies a report name none. Outside functions/ the only files are
+// the two
 // launch scripts, each run by hand from a terminal with a key from the
 // shell, never by the site or the workers; their send halves go with
 // Resend in WS16 step 12, which empties that list.
@@ -32,8 +35,11 @@ function codeUnder(dir: string): string[] {
 /** A mail service's address: Resend's API, or any of Amazon's, where SES and SNS live. */
 const SERVICE = /api\.resend\.com|amazonaws\.com/
 
-/** The transports: the only files under functions/ that may name a mail service's address, Resend's and Amazon SES's. */
+/** The transports: Resend's and Amazon SES's. */
 const TRANSPORTS = ['functions/utils/mail/resend.ts', 'functions/utils/mail/ses.ts']
+
+/** The check of the reports Amazon SNS posts back (WS16 step 8), the third file under functions/ that may name a mail service's address. */
+const RECEIVER = 'functions/utils/mail/sns.ts'
 
 /** The files outside functions/ that still call Resend, each with the reason it may. */
 const LAUNCH_SCRIPTS: Record<string, string> = {
@@ -54,9 +60,12 @@ describe('one seam for every email', () => {
     expect(files.filter((file) => file.includes('/node_modules/') || file.includes('/.'))).toEqual([])
   })
 
-  it('finds a mail service\'s address under functions/ in the transports alone, so the two senders of before, the seam and the signer name none', () => {
-    expect(naming.filter((file) => file.startsWith('functions/')).sort()).toEqual([...TRANSPORTS].sort())
-    for (const file of ['functions/utils/email.ts', 'functions/utils/admin/campaigns.ts', 'functions/utils/mail/send.ts', 'functions/utils/mail/sigv4.ts']) {
+  it('finds a mail service\'s address under functions/ in the transports and the receiver\'s check alone, so the two senders of before, the seam, the signer and the receiver\'s other files name none', () => {
+    expect(naming.filter((file) => file.startsWith('functions/')).sort()).toEqual([...TRANSPORTS, RECEIVER].sort())
+    for (const file of [
+      'functions/utils/email.ts', 'functions/utils/admin/campaigns.ts', 'functions/utils/mail/send.ts', 'functions/utils/mail/sigv4.ts',
+      'functions/utils/mail/sesEvents.ts', 'functions/api/mail/ses-events.ts',
+    ]) {
       expect(read(file), file).not.toMatch(SERVICE)
     }
   })
@@ -83,6 +92,13 @@ describe('one seam for every email', () => {
     expect(ses).toContain('`https://email.${SES_REGION}.amazonaws.com/v2/email/outbound-emails`')
     expect(ses).not.toMatch(/api\.resend\.com/)
     expect(read(TRANSPORTS[0])).not.toMatch(/amazonaws\.com/)
+  })
+
+  it('the receiver\'s check names Amazon\'s address once, SNS\'s own host made from the region it is given, and Resend\'s never', () => {
+    const sns = read(RECEIVER)
+    expect(sns.match(/amazonaws\.com/g)).toHaveLength(1)
+    expect(sns).toContain('`sns.${region}.amazonaws.com`')
+    expect(sns).not.toMatch(/api\.resend\.com|email\.\$\{|outbound-emails/)
   })
 
   it('reads a mail service\'s address where one is written, so the search finds what it looks for', () => {

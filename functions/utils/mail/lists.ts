@@ -374,11 +374,20 @@ export function leaveSendingNewsletter(db: D1Database, email: string | null): D1
 }
 
 /**
+ * The statement that makes the contact for one address when it has none, which puts the address on no list: its id 32
+ * random hex characters. contactFor runs it on its own, and the receiver of Amazon's reports in the batch of a spam
+ * report (./sesEvents, WS16 step 8), so every contact is made the one way.
+ */
+export function makeContact(db: D1Database, address: string): D1PreparedStatement {
+  return db.prepare('INSERT OR IGNORE INTO mail_contacts (id, address) VALUES (lower(hex(randomblob(16))), ?1)').bind(address)
+}
+
+/**
  * The contact for one address, made when it has none, which puts the address on no list: a test send carries the real
  * links for the address it goes to. Two queries.
  */
 export async function contactFor(db: D1Database, address: string): Promise<string> {
-  await db.prepare('INSERT OR IGNORE INTO mail_contacts (id, address) VALUES (lower(hex(randomblob(16))), ?1)').bind(address).run()
+  await makeContact(db, address).run()
   const row = await db.prepare('SELECT id FROM mail_contacts WHERE address = ?1').bind(address).first<{ id: string }>()
   if (!row) throw new Error('The contact could not be made.')
   return row.id
