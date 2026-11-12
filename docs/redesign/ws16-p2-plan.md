@@ -12,7 +12,7 @@ Written on Thursday, November 12, 2026, for the lead and the builders, and revis
 6. Sending later follows as checkpoint Q about Monday, November 30, 2026 (estimate; range Friday, November 27 to Friday, December 4, 2026).
 7. The email takes the navy look, board Newsletter-Email-6 (decision 53), as a second layout beside today's, so no other email changes.
 8. WS09 starts about Thursday, November 26, 2026 (estimate; range Wednesday, November 25 to Monday, November 30, 2026) in place of Tuesday, November 24, 2026: about 2 days later. Checkpoint O keeps its day.
-9. K has eight choices in section 7. Adding people, each issue's page on the site, and the photo wait as checkpoint R until after checkpoint O.
+9. K answered the eight choices of section 7 on Thursday, November 12, 2026 (decision 56): the answers are at the head of that section, and this plan is amended to them. Adding people, each issue's page on the site, and the photo wait as checkpoint R until after checkpoint O.
 
 ## 1. The slot
 
@@ -109,7 +109,7 @@ Decision 27 says an extra is an option that is off until a sender asks for it. I
 
 ### The open points and the board notes, and where each goes
 
-- D1, one writer or live co-writing: K's choice 3.
+- D1, one writer or live co-writing: one writer at a time (K's answer 3), on one letter that everyone who may send sees and edits.
 - D2, where replies go: open with K, blocks nothing. The page shows today's reply address.
 - D5, how the newsletter grows later: not decided now, and nothing is built for it.
 - D6, the DMARC setting: open with K, not part of the page.
@@ -129,7 +129,7 @@ Decision 27 says an extra is an option that is off until a sender asks for it. I
 
 ### The states no board draws, in words
 
-"Saving". "Saved automatically at 2:15 PM". "Could not save", with "Try again". "Player Two changed this letter at 2:17 PM", with "Show their letter". "Test sent to your address". "The test could not be sent", with the reason. "Send a test of this letter first", beside an inactive Send. "Send to 155 people?", with "Send" and "Not now". "Sending, 40 of 155", with "Stop sending". "Sent to 155 people". "Stopped. 40 of 155 were sent." "Changed since the last test", on a scheduled letter. "Sending now", from a scheduled letter's time until a run has picked it up, with the reason when it waits. "Not sent", with the reason, for a scheduled letter that was held. Each refusal keeps today's words: Resend still sends, no link key, nobody to send to, one already sending.
+"Saving". "Saved automatically at 2:15 PM". "Could not save", with "Try again". "Player Two changed this letter at 2:17 PM", with "Show their letter". "Test sent to your address". "The test could not be sent", with the reason. "Send to 155 people?", with "Send" and "Not now". "Sending, 40 of 155", with "Stop sending". "Sent to 155 people". "Stopped. 40 of 155 were sent." "Sending now", from a scheduled letter's time until a run has picked it up, with the reason when it waits. "Not sent", with the reason, for a scheduled letter that was held. Each refusal keeps today's words: Resend still sends, no link key, nobody to send to, one already sending.
 
 On a phone, "Send a test to me" sits with Send at the foot of the "See the email" sheet. The sending-later board draws Send there and no test.
 
@@ -156,9 +156,9 @@ Twelve steps in three checkpoints. The step split is the finer one: files that n
 - Depends on: step 1.
 
 **Step 3, the letter's storage and saving (medium).**
-- Builds: migration 0061, one new table, `newsletter_issues`, with no CHECK and no rebuild. It holds the letter, its version, who saved it, the mark of its last test, and the columns checkpoint Q reads. Four methods behind `requireListMailer`: read the open letter, save it, start a new one, list the last ones. Contracts in a new `domain/contracts/newsletter.ts`. The switch pair. The page half's own part of the record, kept inside the WS16 section, since a test holds one block for each workstream.
+- Builds: migration 0061, one new table, `newsletter_issues`, with no CHECK and no rebuild. It holds the letter, its version, who saved it, and the columns checkpoint Q reads. It holds no mark of a test: K's answer 4 asks for none, and nothing else would read it. Four methods behind `requireListMailer`: read the open letter, save it, start a new one, list the last ones. Contracts in a new `domain/contracts/newsletter.ts`. The switch pair. The page half's own part of the record, kept inside the WS16 section, since a test holds one block for each workstream.
 - Switch off: the four methods answer 404. The table is empty. Nothing a visitor or a member meets.
-- Proof: migrations 0001 to 0060 with rows, then 0061, on real SQLite, run twice; who may and who may not, an officer without the seat and a media manager without a second factor among them; a save with an old version is refused with the other person's name and time, and loses nothing; saved text is cleaned, and a letter the cleaner cannot make clean is refused in words; a save empties the test's mark; starting a new letter sets the old one aside and deletes nothing.
+- Proof: migrations 0001 to 0060 with rows, then 0061, on real SQLite, run twice; who may and who may not, an officer without the seat and a media manager without a second factor among them; a save with an old version is refused with the other person's name and time, and loses nothing; saved text is cleaned, and a letter the cleaner cannot make clean is refused in words; starting a new letter sets the old one aside and deletes nothing.
 - Depends on: step 1.
 
 **Step 4, the page: writing and the side preview (large; the build may split it in two, the computer first, then tablet and phone).**
@@ -176,10 +176,10 @@ Twelve steps in three checkpoints. The step split is the finer one: files that n
 - Depends on: step 4.
 
 **Step 6, test and send from the page, and the ways in (medium; after checkpoint N has merged).**
-- Builds: the one change of checkpoint P to the live send path. `listMessage` takes an optional look and calls the navy layout. `createListCampaign` takes an optional letter: the look, the month and the preview line ride in `filter_json`, the insert also requires the letter open, unsent, at the version the page read and tested as it stands, and one more statement in the same batch marks it sent. Those statements are added only when a letter is given, and the letter's mark carries the batch's own condition that the campaign was made. The send and the test read a letter only with `MAIL_PAGE_ON`. A test that has gone marks the letter as tested at that version. On the page: the test's result, one confirm, Sending with Stop sending, Sent, Stopped. On a phone: "Send a test to me" and "Send to 155 people" at the foot of the "See the email" sheet, each at least 48px. The ways in: Newsletter in Admin and in the media manager's menu, and in Group email the tab's writing box gives way to one link, "Write the newsletter".
+- Builds: the one change of checkpoint P to the live send path. `listMessage` takes an optional look and calls the navy layout. `createListCampaign` takes an optional letter: the look, the month and the preview line ride in `filter_json`, the insert also requires the letter open, unsent and at the version the page read, and one more statement in the same batch marks it sent. Those statements are added only when a letter is given, and the letter's mark carries the batch's own condition that the campaign was made. The send and the test read a letter only with `MAIL_PAGE_ON`. A test changes nothing on the letter. On the page: the test's result, one confirm, Sending with Stop sending, Sent, Stopped. On a phone: "Send a test to me" and "Send to 155 people" at the foot of the "See the email" sheet, each at least 48px. The ways in: Newsletter in Admin and in the media manager's menu, and in Group email the tab's writing box gives way to one link, "Write the newsletter".
 - Covers: P15, P16, look E1.
 - Switch off: both endpoints ignore a letter. A plain send's batch is today's four statements and names no new table, so it works on a database 0061 has not reached. A plain send's bytes are today's. No row, no link, and the tab as today.
-- Proof: a letter is never sent twice (two presses, two tabs, a plain send under way); another newsletter is sending, and the letter stays open; today's refusals in today's order; Send is refused until a test of the letter as it stands has gone; the test carries the navy look, "[TEST]", the real footer and both headers; a save after the send is refused and offered as a new letter; with the switch on, a body sent without a saved letter is refused; a message with no look is today's bytes, in a test file of its own that outlives `mail-seam-bytes`; the confirm takes focus and gives it back; the phone's sheet in the browser run; the worker's upload against its ceiling.
+- Proof: a letter is never sent twice (two presses, two tabs, a plain send under way); another newsletter is sending, and the letter stays open; today's refusals in today's order; Send is never held for lack of a test (K's answer 4); the test carries the navy look, "[TEST]", the real footer and both headers; a save after the send is refused and offered as a new letter; with the switch on, a body sent without a saved letter is refused; a message with no look is today's bytes, in a test file of its own that outlives `mail-seam-bytes`; the confirm takes focus and gives it back; the phone's sheet in the browser run; the worker's upload against its ceiling.
 - Depends on: steps 2 to 5, and checkpoint N's merge.
 
 P lets K see, by pictures of the real page with the switches on: the whole page, writing, saving, the starters, the side preview, the test, the confirm and the sending states, on a computer and a phone. P's preview shows only that the site is unchanged with every switch off. No email leaves a preview, since a preview holds no keys.
@@ -194,10 +194,10 @@ P lets K see, by pictures of the real page with the switches on: the whole page,
 - Depends on: step 6. It is built on P's head while P waits for K's word, and checkpoint Q opens once P has merged.
 
 **Step 8, sending later on the page (medium).**
-- Builds: the arrow and its menu, the "Send later" panel, the scheduled state, "Changed since the last test", "Sending now", the three-row menu, and "Send later" beside Send on the phone's sheet.
+- Builds: the arrow and its menu, the "Send later" panel, the scheduled state, "Sending now", the three-row menu, and "Send later" beside Send on the phone's sheet.
 - Covers: S1, S2, S3, S4, S5, S6, S9, S10.
 - Switch off: Send has no arrow, and the phone's sheet is as checkpoint P left it.
-- Proof: a past day cannot be chosen and is told apart in words; rows at least 44px; each menu and the panel take focus and give it back, and the calendar works by keyboard; nothing is shown before the letter's time that is not true; the state survives a reload; a second person sees it.
+- Proof: a past day cannot be chosen and is told apart in words; rows at least 44px; each menu and the panel take focus and give it back, and the calendar works by keyboard; nothing is shown before the letter's time that is not true; the state survives a reload; a second person sees the same scheduled letter, may write on it, change its time, send it now or choose "Do not send it", and cannot start or schedule another while it stands (K's answer 3).
 - Depends on: step 7.
 
 **Step 9, pinned templates (small).**
@@ -241,7 +241,7 @@ Q lets K see scheduling by pictures of the real page, up to the scheduled state.
 - **If the Gmail app on an iPhone does nothing on a tap:** the list still reads as a contents list. The build notes' fallback, each line pointing at the issue's page on the site, needs step 11. K can then ask for step 11 sooner, after its board.
 - **The plain tab while the page is on:** with `mailPage` on, Group email's newsletter tab keeps its count, its recent sends and Stop sending, and its writing box becomes one link. Turning `mailPage` off brings the plain box back. That is the rollback. A send's look is read from its own row, never from the switch, so everyone on one send gets one look.
 - **When the plain box goes for good:** with WS08's admin home, which already rebuilds that page.
-- **`mailLater` with `MAIL_LATER_ON` shows:** the arrow on Send and all of section 6, and pinning. When it goes on is K's choice 7. Before it: checkpoint Q's worker run is green and no newsletter is sending. The first scheduled send is a real one, and the lead watches that run.
+- **`mailLater` with `MAIL_LATER_ON` shows:** the arrow on Send and all of section 6, and pinning. It goes on as soon as checkpoint Q has merged (K's answer 7), by its own small switch-on change on K's word. Before it: checkpoint Q's worker run is green and no newsletter is sending. The first scheduled send is a real one and may be the first send from the page, and the lead watches that run.
 - **The clean days and checkpoint O.** The page's and Q's switch-ons fall inside the 30 clean days. What K checks before O does not change: Amazon's bounce and complaint figures and K's alarms. One thing is added: K reads them once more after the first newsletter in the navy look, since a new look can change how many people report an email. The cutover's fallback still works with the page on: Send says it waits for Amazon SES, and a scheduled letter stays scheduled with that reason.
 
 ## 5. The email's look
@@ -265,7 +265,8 @@ Q lets K see scheduling by pictures of the real page, up to the scheduled state.
 - **The link key:** the campaign carries the site's key check, written when the person scheduled. A worker whose key differs sends nothing and says so, as part one built it.
 - **Two people:** every save and schedule action carries the letter's version. A stale one is refused, and the page shows the newer letter and who scheduled it.
 - **Writing on a scheduled letter:** it can be written on and tested until its time, as decision 51 says, and nothing extra is shown before then, since a change saved before the time always goes out. From its time on a save is refused and the head reads "Sending now", with the reason if it waits. So what goes out is the letter as it stood at its time, whichever run picks it up. To write on it again a person picks "Change the day or time" or "Do not send it".
-- **A test before Send (K's choice 4):** "Schedule it" and "Send now" need a test of the letter as it stands, like Send. A scheduled letter changed later still goes at its time. The head then reads "Changed since the last test", and the log names who saved it last beside who scheduled it.
+- **A test before Send (K's answer 4):** none is required. "Send", "Send now" and "Schedule it" never wait for a test, and the three numbers on the bar are a guide. "Send a test to me" stays one press away, and Send keeps its one confirm. A scheduled letter changed later goes at its time as it then stands, and the log names who saved it last beside who scheduled it.
+- **One letter, for everyone (K's answer 3):** there is one open letter for the newsletter, and a scheduled letter is that letter. Everyone who may send sees it when they open the page, with who scheduled it and for when, and may write on it, change its time, send it now or choose "Do not send it". While it is scheduled or sending, a new letter cannot be started and another cannot be scheduled, so two copies cannot go out; the chooser says so in words and offers the scheduled letter.
 - **Who may still send:** at the letter's time the phase reads the scheduler's member row. If that person is no longer an LCA admin, the president or a holder of the Media manager seat, the letter is held, back as a draft, with "Not sent: the person who scheduled it may no longer send the newsletter" and a log row. A second factor cannot be checked from the worker, and the record says so.
 - **A stop:** before the time, "Do not send it" makes it a draft again and deletes nothing. After it, today's Stop sending. The letter then reads "Stopped" with its counts and is not sent again by itself.
 - **Another newsletter still sending, Resend sending, or no link key:** the letter stays scheduled, the page shows the reason, and the phase tries again each run.
@@ -274,6 +275,8 @@ Q lets K see scheduling by pictures of the real page, up to the scheduled state.
 - **Activity log:** scheduled, time changed, "Do not send it", not sent (too late, or the scheduler may no longer send), sent by the schedule (in the scheduler's name, with the last person to save), and today's sent and stopped. Each row carries the month and the day and time.
 
 ## 7. What K must decide
+
+**K's answers, Thursday, November 12, 2026 (decision 56).** K's words: "all recommended. on 3 (make sure that everyone with access to the newsletter can see and edit the actively shceduled one so we dont have multiple copiies going out). 4, do not force a test everytime, they will eventually know and trust it works how they want. 7 B (no need to restrict this feature)." So: 1 (a), start now; 2 (a), the page and sending later ahead of WS09 (the December board meeting's date is still not given, and blocks nothing); 3 (a), one writer at a time, on one letter that everyone who may send sees and edits, a scheduled one included, so that two copies cannot go out; 4 (c), no test is forced, the three numbers are a guide; 5 (a), a line and "Add an event" now, the photo and the plain top after their boards; 6 (a), today's footer words and links with the "LCA on Facebook" line; 7 (b), sending later goes on as soon as checkpoint Q has merged; 8 (a), a late scheduled newsletter tries for 6 hours and then goes back to a draft. The choices below are kept as they were put to K; the rest of the plan is amended to the answers.
 
 Decided already, so not asked. K is told each in one line.
 
@@ -334,7 +337,7 @@ Open and not blocking: where replies go (the address map's choice 6); what an of
 6. **The email in real inboxes.** Jump links ignored, a long email cut by Gmail, dark mode. The letter's cap, the size test, and K's inbox checks on the named mail apps as the first act after the switch.
 7. **A newsletter sent twice, sent after a stop, or not at all.** One batch makes the campaign and marks the letter. Every schedule write moves the version, and the phase's insert requires the version it read and a time that is set and has come. A held letter says why. The first scheduled send is watched.
 8. **A newsletter sent in the name of someone who may no longer send.** The phase asks at the letter's time and holds the letter if not.
-9. **Words nobody tested go out.** Send needs a test of the letter as it stands (K's choice 4). A scheduled letter changed later says so in its head, and the log names who saved it last.
+9. **Words nobody tested go out.** K's answer 4 accepts it: senders are trusted, no test is forced, the test stays one press away and Send keeps its confirm, which names how many people will get it. The log names who saved a scheduled letter last.
 10. **Unsafe pasted HTML.** Cleaned on every save and copy, with the raw-text tags removed whole and a result the cleaner would itself change refused. The preview is a closed frame. With the switch on, the send takes a saved letter only. Each issue's public page cleans again when it reads. The plain box stays as it is until the switch is on.
 11. **A keyboard user loses their place.** A bar fixed at the foot, a chooser that opens upward, a confirm, Help, a sheet and a panel. Each takes focus and gives it back, and no focused control is hidden under the bar. Steps 4, 5, 6 and 8 each prove it.
 12. **The worker's size.** Its upload is 76.61 KiB against part one's ceiling of 96 KiB. The navy layout joins it in step 6. Step 2 measures the layout alone first, so the answer is known before anything imports it.
@@ -383,7 +386,7 @@ This is the whole text of `ws16-p2-summary.md`. Nothing below this line is for t
 
 **What it moves.** WS09 starts about Thursday, November 26, 2026, not Tuesday, November 24, 2026: 2 days later (range 1 to 6). Everything after WS09 moves the same. Nothing else moves.
 
-**Your choices.** "All recommended" works as an answer.
+**Your answers (Thursday, November 12, 2026).** 1 a, 2 a, 3 a with one shared letter that everyone who may send sees and edits, 4 c (no forced test), 5 a, 6 a, 7 b (sending later on as soon as it merges), 8 a. The choices as they were put:
 
 1. Start now? (a) Recommended: yes. The days are otherwise empty. (b) Wait for N: 1 day later. Look at: the dates.
 2. How much before WS09? (a) Recommended: the page and sending later, as you approved. (b) The page only: 1 day sooner. (c) All of it: 1 day later. Also: what date is December's board meeting? Look at: the dates.

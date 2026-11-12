@@ -13,7 +13,7 @@
 
 **What it moves.** WS09 starts about Thursday, November 26, 2026, not Tuesday, November 24, 2026: 2 days later (range 1 to 6). Everything after WS09 moves the same. Nothing else moves.
 
-**Your choices.** "All recommended" works as an answer.
+**Your answers (Thursday, November 12, 2026).** 1 a, 2 a, 3 a with one shared letter that everyone who may send sees and edits, 4 c (no forced test), 5 a, 6 a, 7 b (sending later on as soon as it merges), 8 a. The choices as they were put:
 
 1. Start now? (a) Recommended: yes. The days are otherwise empty. (b) Wait for N: 1 day later. Look at: the dates.
 2. How much before WS09? (a) Recommended: the page and sending later, as you approved. (b) The page only: 1 day sooner. (c) All of it: 1 day later. Also: what date is December's board meeting? Look at: the dates.
