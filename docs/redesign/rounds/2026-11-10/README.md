@@ -225,3 +225,15 @@ On `Newsletter-Page-4`: From and Subject share one 46px row above the letter's t
 The three option boards stay on canvas page 19 beside the page, titled as picked or not kept. The president's two page pictures were made again, and one true-size desktop picture of the page as picked.
 
 What "More options" holds, for the build: the top of the email, the words shown in the inbox, and where replies go. "Who gets it", which it held on the simple-version board, has its own card on this page. No picture on `Newsletter-Page-4` shows it opened yet.
+
+## Round 15: the bar at the foot, with More options easier to see (Thursday, November 12, 2026)
+
+K's notes on the page after round 14 (K's decision 50; K's words are in `feedback.md`): More options was too small and might not be seen, the 1, 2 and 3 marks were a little too small, and the buttons at the foot sat a little too close together with too much empty bar at the left. `newsletter3-specs.json` carries it as `revision15`; `results/newsletter15-results.json` holds the run. Canvas version 35.
+
+On `Newsletter-Page-4`, only the bar at the foot changed. More options is a bordered button, 46px tall, with a sliders icon, its words at 15.5px and its up chevron: white, a grey 1.5px border (3.4 to 1 on white), no number and no fill, so the three numbered steps and the gold Send still lead. The marks 1, 2 and 3 are 32px with 17px numerals (24px and 13px before), each 10px from its button. The four controls use the bar's whole width, from the writing column's left edge to the right column's right edge, with three equal gaps of about 36px (26px before between the steps, with 116px left empty after More options). Pick a template and Send lost a few pixels of inner padding to make the room; no word, type size or height changed. The letter still shows 684px in the board's frame and 531px in a real 1920 by 1080 window.
+
+The other pictures: "After pressing Make bigger" begins its bar with a compact bordered Options button (the icon above the word, named More options for a screen reader), since the full words do not fit that bar; the club tournament picture's bar is evenly spaced and still has no More options and no marks, which do not fit its width; the wiggle picture's mark 1 is the new size. The Help picture and the tablet draw no bar. On a phone the bar stays as it was, Pick a template and See the email: a third button does not fit beside them at a phone's width (the two already fill it), so More options stays at the end of the page, under the letter.
+
+For the page's build: the four controls fit on one line with their full words and these gaps in a bar 1197px wide or more. Below that the bar uses the short words "Pick a template" (down to about 1087px), then "Options" for More options (about 1048px), then the Make bigger picture's form, with no marks and Options stacked under its icon (down to about 793px); narrower than that is the phone's bar. The built site's content column is narrower than the board's frame, so the build starts from the short words.
+
+The president's page picture for a computer and the true-size desktop picture were made again.
