@@ -234,7 +234,7 @@ If choice 6 picks Google, turn on Google's DKIM in its admin console before DMAR
 
 1. The name of step 11's list: decided by K on Wednesday, November 11, 2026 (decision 37), "LCA tournament email", which migration 0060 writes. Nothing is left to answer.
 2. `npm run db:migrate:preview` from the branch (K, or the lead's session) before looking at the preview (ordering rule 2).
-3. Look at the preview with `mailLists` and `MAIL_LISTS_ON` on together, as far as signing in on a preview allows.
+3. Look at checkpoint M's own preview, which with every switch off is today's site. The look with `mailLists` and `MAIL_LISTS_ON` on together is by pictures of the real pages, drawn from the checkpoint's finished code with the switches on and made-up answers, which the lead sends K before the merge (the newsletter tab as an LCA admin, as the media manager and as an officer who holds the seat; the unsubscribe page; the email choices page). A live preview with the switches on would show no more: a preview cannot be signed into while the Preview environment holds no sign-in key, and it holds no link key, so the two link pages show only their words for a link that does not work (corrected on Thursday, November 12, 2026, from checkpoint M's review).
 4. Confirm again that the Preview environment holds none of section 8's names.
 5. The lead shows the two throwaway runs green: the switch-on change's gate (with `WORKERS_PLAN` `'paid'`, the path K is advised to take), and the cutover change's gate on top of it.
 6. K's go on the pull request.
