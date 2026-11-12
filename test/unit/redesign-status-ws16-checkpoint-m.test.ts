@@ -302,9 +302,14 @@ describe("REDESIGN_STATUS.md, checkpoint M's review: files, pins, build, worker 
 })
 
 describe("REDESIGN_STATUS.md, checkpoint M's review: the opening, the PR line and the pull request's text", () => {
-  it('names draft pull request 126 in the PR line and in the section\'s first sentence, with the day it was opened', () => {
-    expect(prLine).toContain('from draft pull request 126, opened from this branch on Thursday, November 12, 2026 once WS16 step 8 was built')
-    expect(opening.startsWith('**Not merged yet: checkpoint M waits for its merge into `main`** (draft pull request 126). Draft pull request 126 was opened from this branch on Thursday, November 12, 2026')).toBe(true)
+  it('names draft pull request 126 in the PR line and in the section\'s first sentence, with the day it was opened, or once merged its merge', () => {
+    // Before the merge, the day it was opened; once merged, the merge commit and its day, as the record of the merge writes them.
+    const opened = prLine.includes('from draft pull request 126, opened from this branch on Thursday, November 12, 2026 once WS16 step 8 was built')
+    const merged = prLine.includes('was draft pull request 126, merged into `main` as `d2c5ec0` on Thursday, November 12, 2026')
+    expect(opened || merged, prLine).toBe(true)
+    const waiting = opening.startsWith('**Not merged yet: checkpoint M waits for its merge into `main`** (draft pull request 126). Draft pull request 126 was opened from this branch on Thursday, November 12, 2026')
+    const done = opening.startsWith('**Merged into `main` as `d2c5ec0` on Thursday, November 12, 2026 at 3:26 PM UTC** (pull request 126, a merge commit on head `1cf41c2`)')
+    expect(waiting || done, opening.slice(0, 160)).toBe(true)
   })
 
   it('names in the opening, in the same sentence, the three changes that wait for neither switch', () => {

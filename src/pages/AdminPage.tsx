@@ -100,6 +100,12 @@ const GROUPS: { label: string; items: { id: AdminSection; label: string; icon: L
 /** Old ?tab / section names that should still land somewhere sensible. */
 const LEGACY: Record<string, AdminSection> = { boardseats: 'board-seats', audit: 'activity' }
 
+/**
+ * The header's badge for an LCA officer who holds the Media manager seat, with mailLists on and the seat's answer true:
+ * Admin is read-only for them but for the newsletter, which they send. Every other officer reads "View only".
+ */
+const VIEW_ONLY_BUT_NEWSLETTER = 'View only, except the newsletter'
+
 /** The media manager's Admin, with mailLists on: Communications, with Group email alone. */
 const MEDIA_MANAGER_GROUPS: typeof GROUPS = [
   { label: 'Communications', items: [{ id: 'email', label: 'Group email', icon: Mail }] },
@@ -153,7 +159,7 @@ export function AdminPage() {
                 ? 'See everything across the LCA. You can send the LCA newsletter, answer support tickets and manage the bylaws and minutes; other changes are made by admins.'
                 : 'See everything across the LCA. You can answer support tickets and manage the bylaws and minutes; other changes are made by admins.'
             : 'Manage members, clubs, tournaments and communications across the LCA.'}
-        badges={viewOnly ? <span className="rounded-full border border-white/25 px-2.5 py-0.5 text-xs text-white/85">View only</span> : undefined}
+        badges={viewOnly ? <span className="rounded-full border border-white/25 px-2.5 py-0.5 text-xs text-white/85">{officerMediaManager ? VIEW_ONLY_BUT_NEWSLETTER : 'View only'}</span> : undefined}
         size="compact"
       />
 

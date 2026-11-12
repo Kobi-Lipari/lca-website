@@ -20,11 +20,17 @@
 //   for word the old one (B7); "Saved." and "Done." keep their words and their
 //   status region, drawn in a box (B1); the choices with every optional email
 //   stopped gain one status in words under each list and a muted label (B2).
+// - Before the switch-on (F3), the status region that takes the focus after a
+//   save keeps B1's ring, ring-ring, with the switch on or off: in today's look
+//   it is the full-strength ring and ring-focus the half-strength one, and
+//   under the new look the two draw the same --focus. Nothing else that takes
+//   the focus on the two pages wears ring-ring.
 // Every token, address and list here is made up.
 import { act, cleanup, fireEvent, render, screen } from '@testing-library/react'
 import type { ComponentType } from 'react'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { contrast, indexCssRules, read, rootTokens } from './helpers/cssTokens'
 import { builder, setBy, sizeClassOf } from './helpers/tailwindPx'
 
 const flags = vi.hoisted(() => ({ mailLists: false }))
@@ -422,5 +428,92 @@ describe('the two pages after the pictures of the real pages (checkpoint M, P3 a
       expect(now.markup).not.toContain('max-sm:min-h-11')
       expect(now.markup.replace(NEW_RING, OLD_RING)).toBe(old.markup)
     })
+  })
+})
+
+describe('the ring round "Saved." before the switch-on (F3)', () => {
+  /** The status region's class on d2c5ec0, which the page keeps with mailLists on and off. */
+  const BASE_STATUS = 'mt-4 rounded-md text-ink outline-none focus:ring-3 focus:ring-ring'
+  const saving = { [`GET ${PREFERENCES_URL}`]: [choices()], [`PATCH ${PREFERENCES_URL}`]: [choices()] }
+
+  /** Every element on the page that can take the focus, by the press of Tab or from the page's own code. */
+  const focusable = (root: ParentNode) =>
+    [...root.querySelectorAll('a[href], button, input, select, textarea, [tabindex]')] as HTMLElement[]
+
+  it('keeps B1\'s ring, ring-ring, on the status region that takes the focus after a save, with mailLists on, as on d2c5ec0', async () => {
+    flags.mailLists = true
+    let status: HTMLElement | null = null
+    let focused: Element | null = null
+    await draw(PREFS.New, PREFS.path, saving, async () => {
+      await press('Save my choices')()
+      status = screen.getByRole('status')
+      focused = document.activeElement
+      expect(status.textContent).toBe('Saved.')
+      expect(status.getAttribute('class')).toBe(BASE_STATUS)
+    })
+    expect(focused).toBe(status)
+    // The two tokens, as Tailwind compiles them: ring-focus draws --focus and ring-ring draws --ring.
+    const css = (await builder())(['ring-focus', 'ring-ring'])
+    expect(css).toMatch(/\.ring-focus \{[^}]*--tw-ring-color: var\(--focus\)/)
+    expect(css).toMatch(/\.ring-ring \{[^}]*--tw-ring-color: var\(--(?:color-)?ring\)/)
+  })
+
+  it('finds ring-focus never stronger than ring-ring: half of it in today\'s look, the same navy under the new look', () => {
+    const rules = indexCssRules()
+    // Today's look, which production keeps after the switch-on: --focus is --ring at half strength.
+    const today = rootTokens(rules, { look: false, dark: false })
+    expect(today.get('--ring')).toBe('oklch(0.708 0 0)')
+    expect(today.get('--focus')).toBe('color-mix(in oklab, oklch(0.708 0 0) 50%, transparent)')
+    // The same two as plain colours, the grey #a1a1a1 and the fallback #a1a1a180 laid on white, #d0d0d0.
+    expect(read('src/index.css')).toContain('--focus: #a1a1a180;')
+    expect(contrast('#a1a1a1', '#ffffff')).toBeGreaterThan(2.5)
+    expect(contrast('#d0d0d0', '#ffffff')).toBeLessThan(1.6)
+    // The new look: --ring is --focus, the site's navy, so the two classes draw one ring.
+    const newLook = rootTokens(rules, { look: true, dark: false })
+    expect(newLook.get('--ring')).toBe(newLook.get('--focus'))
+    expect(newLook.get('--focus')?.toLowerCase()).toBe('#1a2744')
+  })
+
+  it('finds ring-ring on nothing else that takes the focus on the two pages and their shared parts, in each state, with mailLists on', async () => {
+    flags.mailLists = true
+    const states: Array<[ComponentType, string, Answers, (() => Promise<void>) | undefined]> = [
+      [UNSUB.New, UNSUB.path, { [`GET ${UNSUBSCRIBE_URL}`]: [unsubscribeAnswer] }, undefined],
+      [UNSUB.New, UNSUB.path, { [`GET ${UNSUBSCRIBE_URL}`]: [unsubscribeAnswer], [`POST ${UNSUBSCRIBE_URL}`]: [done] }, press('Unsubscribe')],
+      [UNSUB.New, UNSUB.path, { [`GET ${UNSUBSCRIBE_URL}`]: [notFound] }, undefined],
+      [PREFS.New, PREFS.path, saving, press('Save my choices')],
+      [PREFS.New, PREFS.path, { [`GET ${PREFERENCES_URL}`]: [notFound] }, undefined],
+    ]
+    for (const [Page, path, given, then] of states) {
+      let found: string[] = []
+      await draw(Page, path, given, async () => {
+        await then?.()
+        found = focusable(screen.getByTestId('main'))
+          .filter((el) => el.getAttribute('role') !== 'status')
+          .map((el) => `${el.tagName.toLowerCase()} ${el.getAttribute('class') ?? ''}`)
+      })
+      expect(found.length, path).toBeGreaterThan(0)
+      for (const el of found) expect(el, path).not.toMatch(/(?:^|\s)(?:focus|focus-visible):ring-ring(?:\s|$)/)
+    }
+    // "Done." sits in a status region that never takes the focus, and the heading of a link that does not work takes none.
+    await draw(UNSUB.New, UNSUB.path, { [`GET ${UNSUBSCRIBE_URL}`]: [unsubscribeAnswer], [`POST ${UNSUBSCRIBE_URL}`]: [done] }, async () => {
+      await press('Unsubscribe')()
+      expect(screen.getByRole('status').hasAttribute('tabindex')).toBe(false)
+    })
+    await draw(PREFS.New, PREFS.path, { [`GET ${PREFERENCES_URL}`]: [notFound] }, async () => {
+      expect(screen.getByRole('heading', { level: 1 }).hasAttribute('tabindex')).toBe(false)
+    })
+  })
+
+  it('keeps the class string of d2c5ec0 with mailLists off, beside the page as stored, the one ring apart as before', async () => {
+    flags.mailLists = false
+    let status = ''
+    await draw(PREFS.New, PREFS.path, saving, async () => {
+      await press('Save my choices')()
+      status = screen.getByRole('status').getAttribute('class') ?? ''
+    })
+    expect(status).toBe(BASE_STATUS)
+    const { old, now } = await pair(PREFS.Old, PREFS.New, PREFS.path, saving)
+    expect(now.markup).not.toContain('focus:ring-focus')
+    expect(now.markup.replace(NEW_RING, OLD_RING)).toBe(old.markup)
   })
 })

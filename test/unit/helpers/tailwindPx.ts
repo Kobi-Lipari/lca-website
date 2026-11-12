@@ -42,7 +42,8 @@ function lengthIn(css: string, value: string): number | null {
   for (let round = 0; round < 5 && /var\(/.test(text); round++) {
     text = text.replace(/var\((--[\w-]+)\)/g, (_, name: string) => css.match(new RegExp(`${name}:\\s*([^;]+);`))?.[1].trim() ?? 'unknown')
   }
-  const product = /^calc\(\s*([\d.]+)(rem|px)\s*\*\s*([\d.]+)\s*\)$/.exec(text)
+  // A negative utility, such as -ml-2.5, multiplies by a negative number.
+  const product = /^calc\(\s*([\d.]+)(rem|px)\s*\*\s*(-?[\d.]+)\s*\)$/.exec(text)
   if (product) return Number(product[1]) * Number(product[3]) * (product[2] === 'rem' ? PX : 1)
   const plain = /^([\d.]+)(rem|px)$/.exec(text)
   return plain ? Number(plain[1]) * (plain[2] === 'rem' ? PX : 1) : null
@@ -64,6 +65,18 @@ export function setBy(css: string, className: string, property: string): Setting
   const value = new RegExp(`(?:^|[;\\s])${property}:\\s*([^;]+);`).exec(rule[2])?.[1]
   const px = value === undefined ? null : lengthIn(css, value)
   return px === null ? null : { px, media: rule[1] ?? null }
+}
+
+/**
+ * The space a space-y- class puts under each child but the last, in pixels, or null when the class sets none.
+ * Tailwind writes it as a bottom margin on those children, with the reverse flag at its starting value, 0.
+ */
+export function spaceBelowChildren(css: string, className: string): number | null {
+  const selector = className.replace(/[^\w-]/g, (c) => `\\${c}`).replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+  const rule = new RegExp(`:where\\(\\.${selector} > :not\\(:last-child\\)\\)\\s*\\{([^}]*)\\}`).exec(css)
+  const value = rule && /margin-block-end:\s*([^;]+);/.exec(rule[1])?.[1]
+  if (!value) return null
+  return lengthIn(css, value.replace(/var\(--tw-space-y-reverse\)/g, '0').replace(/calc\(\s*1 - 0\s*\)/g, '1'))
 }
 
 /** The text size class an element wears, or the nearest one around it, which is the size its words are drawn at. */

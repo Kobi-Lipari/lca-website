@@ -86,6 +86,10 @@ describe('the generate guard reads every spelling', () => {
 })
 
 describe('scripts/db/build-local-sqlite.ts', () => {
+  // Each build applies every migration, so these two cases grow with each one added: about a second here, and past the
+  // default five on a busy runner. They get room, as the repository's other long cases do.
+  const BUILD_TIME = 30_000
+
   it('writes one database holding the 36 tables and the eight triggers, built from all 61 migrations', () => {
     const out = join(scratch(), 'nested/introspect.sqlite')
     expect(buildLocalSqlite(out)).toEqual({ files: 61, tables: 36 })
@@ -101,7 +105,7 @@ describe('scripts/db/build-local-sqlite.ts', () => {
     expect(names('view')).toEqual([])
     expect(names('table')).toEqual(expect.arrayContaining(['members', 'tournaments', 'tournament_directors', 'tournament_sections', 'tournament_schedules', 'tournament_schedule_rounds']))
     db.close()
-  })
+  }, BUILD_TIME)
 
   it('starts clean every time', () => {
     const out = join(scratch(), 'introspect.sqlite')
@@ -113,7 +117,7 @@ describe('scripts/db/build-local-sqlite.ts', () => {
     const again = new DatabaseSync(out, { readOnly: true })
     expect(again.prepare("SELECT COUNT(*) AS n FROM sqlite_master WHERE name = 'leftover'").get()).toEqual({ n: 0 })
     again.close()
-  })
+  }, BUILD_TIME)
 
   it('is ignored by git, while the drizzle snapshot is not', () => {
     const ignored = (p: string) => spawnSync('git', ['check-ignore', '-q', p], { cwd: ROOT }).status === 0
