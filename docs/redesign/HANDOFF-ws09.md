@@ -4,7 +4,7 @@ Written on Friday, November 13, 2026, for whoever takes this stream over. The wh
 
 ## Where it stands (Friday, November 13, 2026, about 12:15 AM UTC)
 
-- **The plan is written and waits for K's answers. Nothing is built.** The plan is `ws09-plan.md`, its 38 steps `ws09-manifest.json`, K's copy `ws09-summary.md`. K has eight numbered choices (plan section 9); choices 1 to 4 are wanted by Monday, November 16, 2026, for a start on Tuesday, November 17, 2026.
+- **The plan is written and waits for K's answers. Nothing is built.** The plan is `ws09-plan.md`, its 38 steps `ws09-manifest.json`, K's copy `ws09-summary.md`. K has nine numbered choices (plan section 9; the ninth was added after K's copy was written and is not in it); choices 1 to 4 and 9 are wanted by Monday, November 16, 2026, for a start on Tuesday, November 17, 2026.
 - **How the plan was made.** Five read-only reports (the clubs code on `main` at `af4a21c`; the brief's WS09 section with every "verify:" item; K's decisions; the decided boards; what WS09 leans on in other workstreams), two outlines from different angles (staff first; risk first), one joined plan, two reviews that tried to break it (does it throw anything off; is it what the brief and K's decisions ask), one revision. The reviews found seven blocking problems between them, all mended in the revision; plan section 14 lists what changed.
 - **The build branch does not exist yet.** `redesign/ws09-clubs` is cut from `main` only after K answers.
 - **No production read, no preview write and no merge has been made by this stream.**
@@ -19,7 +19,15 @@ Written on Friday, November 13, 2026, for whoever takes this stream over. The wh
 
 ## Where this stream meets the mail stream
 
-Each of these is in plan section 7. None is agreed yet; they are said to the mail stream's session and to K with the plan.
+Each of these is in plan section 7. The mail stream's session answered on Friday, November 13, 2026 (a peer's word, not K's):
+
+- Points 1 and 2 agreed, with one rule on the order: if its checkpoint P has not merged by Tuesday, December 1, 2026, checkpoint S goes first on K's word and the mail stream catches up. It makes 0061 on `redesign/ws16-page` and keeps 0062 to 0064 for its checkpoints Q and R.
+- Point 3 agreed in principle, each line confirmed when reached. For the worker: the two calls go after the mail phases; measure the worker's dry-run upload before and after steps 15 and 29 and give both figures (76.61 KiB, gzip 20.53 KiB on Thursday, November 12, 2026, against a ceiling of 96 KiB, gzip 28 KiB); its checkpoint O rewrites parts of the worker about Friday, December 18, 2026, so name the step and the day to it before adding each line. For `test/a11y/builds.spec.ts`: add the line after bringing `main` in, and say so to it first.
+- Point 4 is K's to decide, not the streams': it is choice 9 in plan section 9, with a copy of today's pictures into the preview bucket as the mail stream asked.
+- Points 5 and 7 are in its follow-ups. Production holds no club's mail list today.
+- A small fix to the News posts' cleaner (`fix/news-posts-cleaner`) merges on K's word ahead of both streams' checkpoints; it adds a short section at the end of `REDESIGN_STATUS.md` and touches no clubs file.
+
+The points as put:
 
 1. **Numbers.** WS09 takes 0065 to 0071; the mail stream holds 0061 to 0064. Once checkpoint S is on `main`, the generator would hand anyone 0072 next, so step 2 adds a number option and the README says who holds which numbers.
 2. **Order of the first merges.** Checkpoint S merges after the mail stream's checkpoint P, so the clubs stream is the second to merge and does the regenerating of the schema snapshot and the re-pinning of the tests that pin the migrations folder.
@@ -41,6 +49,6 @@ As in `HANDOFF.md` ("Standing rules", "Security", "How a slice is built") and `S
 
 ## Next
 
-1. K answers the eight choices; the answers are written into the manifest's `k_answers` and a decisions file for this stream, `ws09-k-decisions.md`, in the form of `ws16-k-decisions.md`.
-2. The mail stream answers the meeting points above.
+1. K answers the nine choices; the answers are written into the manifest's `k_answers` and a decisions file for this stream, `ws09-k-decisions.md`, in the form of `ws16-k-decisions.md`.
+2. Done: the mail stream answered the meeting points (above).
 3. Cut `redesign/ws09-clubs` from `main` at that moment and build step 1.
