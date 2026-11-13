@@ -116,7 +116,8 @@ describe('REDESIGN_STATUS.md, WS09 step 2: the block and the Status line', () =>
     expect([...at].sort((a, b) => a - b)).toEqual(at)
     const headings = ws09.split('\n').filter((l) => l.startsWith('### '))
     expect(headings[headings.indexOf(STEP_1) + 1]).toBe(STEP)
-    expect(headings[headings.indexOf(STEP) + 1]).toBe(LISTS[0])
+    // Once WS09 step 3 is written, its block is the one that follows this one.
+    expect(headings[headings.indexOf(STEP) + 1]).toBe(latestStep === 2 ? LISTS[0] : '### WS09 step 3: the regions fill')
   })
 
   it('gives the Status line this step\'s tail while this step is the latest', () => {

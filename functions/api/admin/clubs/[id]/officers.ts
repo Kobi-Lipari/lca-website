@@ -1,8 +1,10 @@
 // functions/api/admin/clubs/[id]/officers.ts
 // The officers shown on a club's public page. A rep manages their own club's
-// list; an admin manages any. Officers must belong to the club — their name
-// and email are published on the club page, so a rep can list only people
-// who are actually on their roster.
+// list; an admin manages any. Officers must belong to the club: their name
+// is published on the club page, so a rep can list only people who are
+// actually on their roster. A person admitted by a regional seat alone gets
+// the officers without their emails, and adds none: 403 in words
+// (functions/utils/clubs/memberView.ts).
 import type { Env } from '../../../../types'
 import { isResponse, requireClubRep, requireClubView } from '../../../../utils/auth'
 import {
@@ -12,6 +14,7 @@ import {
   parseJsonBody,
 } from '../../../../utils/response'
 import { recordAdminAction } from '../../../../utils/admin/audit'
+import { admittedByRegionAlone, officersWithoutEmail, ROSTER_KEPT_BACK } from '../../../../utils/clubs/memberView'
 
 interface AddOfficerBody {
   memberId?: string
@@ -39,13 +42,18 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
   const authResult = await requireClubView(context.request, context.env, clubId)
   if (isResponse(authResult)) return authResult
 
-  return jsonResponse({ officers: await listOfficers(context.env.DB, clubId) })
+  const officers = await listOfficers(context.env.DB, clubId)
+  return jsonResponse({ officers: admittedByRegionAlone(authResult.member, clubId) ? officersWithoutEmail(officers) : officers })
 }
 
 export const onRequestPost: PagesFunction<Env> = async (context) => {
   const clubId = context.params.id as string
   const authResult = await requireClubRep(context.request, context.env, clubId)
   if (isResponse(authResult)) return authResult
+  // Officers are chosen from the roster, and whether a member id is on it
+  // is the roster's to tell, so a person admitted by the region alone adds
+  // none. Member ids are public on the tournament pages.
+  if (admittedByRegionAlone(authResult.member, clubId)) return errorResponse(ROSTER_KEPT_BACK, 403)
 
   const body = await parseJsonBody<AddOfficerBody>(context.request)
   const title = body?.title?.trim()

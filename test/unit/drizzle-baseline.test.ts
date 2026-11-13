@@ -90,10 +90,10 @@ describe('scripts/db/build-local-sqlite.ts', () => {
   // default five on a busy runner. They get room, as the repository's other long cases do.
   const BUILD_TIME = 30_000
 
-  it('writes one database holding the 36 tables and the eight triggers, built from all 61 migrations', () => {
+  it('writes one database holding the 36 tables and the eight triggers, built from all 62 migrations', () => {
     const out = join(scratch(), 'nested/introspect.sqlite')
-    expect(buildLocalSqlite(out)).toEqual({ files: 61, tables: 36 })
-    expect(migrationFiles()).toHaveLength(61)
+    expect(buildLocalSqlite(out)).toEqual({ files: 62, tables: 36 })
+    expect(migrationFiles()).toHaveLength(62)
     const db = new DatabaseSync(out, { readOnly: true })
     const names = (type: string) => (db.prepare('SELECT name FROM sqlite_master WHERE type = ? ORDER BY name').all(type) as Array<{ name: string }>).map((r) => r.name)
     expect(names('trigger')).toEqual([
@@ -196,12 +196,12 @@ describe('the runners', () => {
     expect(existsSync(join(ROOT, 'migrations/meta'))).toBe(false)
   })
 
-  it('does not change what wrangler runs: 61 files, one duplicate 0022 prefix, the last 0060', () => {
+  it('does not change what wrangler runs: 62 files, one duplicate 0022 prefix, the last 0065', () => {
     const sql = readdirSync(join(ROOT, 'migrations')).filter((f) => f.endsWith('.sql')).sort()
-    expect(sql).toHaveLength(61)
+    expect(sql).toHaveLength(62)
     expect(sql[0].startsWith('0001_')).toBe(true)
     expect(sql.filter((f) => f.startsWith('0022_'))).toHaveLength(2)
-    expect(sql.at(-1)).toBe('0060_mail_lists.sql')
+    expect(sql.at(-1)).toBe('0065_club_regions.sql')
   })
 })
 

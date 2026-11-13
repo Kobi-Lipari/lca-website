@@ -71,6 +71,13 @@
       "when": 1794372417056,
       "tag": "0009_mail_lists",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "6",
+      "when": 1794548159684,
+      "tag": "0010_club_regions",
+      "breakpoints": true
     }
   ]
 }

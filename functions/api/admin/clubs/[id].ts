@@ -1,5 +1,5 @@
 // functions/api/admin/clubs/[id].ts
-// The single write path for club edits — this is what the admin UI calls.
+// The single write path for club edits: this is what the admin UI calls.
 // Merged from the two previous copies: full field set (color, imageUrl,
 // region) from one, hex-color validation from the other.
 import type { Env } from '../../../types'
@@ -11,6 +11,7 @@ import {
   parseJsonBody,
 } from '../../../utils/response'
 import { recordAdminAction } from '../../../utils/admin/audit'
+import { admittedByRegionAlone, officersWithoutEmail } from '../../../utils/clubs/memberView'
 
 interface UpdateClubBody {
   name?: string
@@ -39,6 +40,10 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
 
   if (!club) return errorResponse('Club not found', 404)
 
+  // A person admitted by a regional seat alone gets the club, its officers
+  // without their emails and an empty roster (functions/utils/clubs/memberView.ts).
+  const regionAlone = admittedByRegionAlone(authResult.member, clubId)
+
   const officers = await context.env.DB.prepare(
     `SELECT co.id, co.member_id, co.role, m.full_name, m.email
      FROM club_officers co
@@ -46,10 +51,12 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
      WHERE co.club_id = ? ORDER BY co.created_at`,
   ).bind(clubId).all()
 
-  const roster = await context.env.DB.prepare(
-    `SELECT m.id, m.full_name, m.email, m.uscf_id, m.uscf_rating, m.membership_status
-     FROM members m WHERE m.club_id = ? AND m.role != 'guest' ORDER BY m.full_name`,
-  ).bind(clubId).all()
+  const roster = regionAlone
+    ? { results: [] }
+    : await context.env.DB.prepare(
+      `SELECT m.id, m.full_name, m.email, m.uscf_id, m.uscf_rating, m.membership_status
+       FROM members m WHERE m.club_id = ? AND m.role != 'guest' ORDER BY m.full_name`,
+    ).bind(clubId).all()
 
   // Unlike the public club endpoint, this includes hidden drafts: the people
   // allowed here are exactly the people who manage those drafts.
@@ -60,7 +67,7 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
 
   return jsonResponse({
     club,
-    officers: officers.results,
+    officers: regionAlone ? officersWithoutEmail(officers.results) : officers.results,
     roster: roster.results,
     tournaments: tournaments.results,
   })
@@ -81,7 +88,7 @@ export const onRequestPatch: PagesFunction<Env> = async (context) => {
   if (!body) return errorResponse('Invalid JSON body', 400)
 
   // A club's name and region decide how it is listed and filtered site-wide,
-  // so those stay with LCA admins. Sending the unchanged value is fine — the
+  // so those stay with LCA admins. Sending the unchanged value is fine: the
   // edit form always sends the whole record.
   const isAdmin = authResult.member.role === 'lca_admin'
   if (!isAdmin) {
