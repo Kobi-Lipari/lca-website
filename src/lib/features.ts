@@ -224,6 +224,18 @@ const SWITCHES = {
   /** The new scoresheet scanner for active LCA members, with private drafts, My games and the printed kit. */
   scanner2: false,
 
+  // Redesign, clubs. Two switches beside newClubs, so the pages for the people
+  // who keep club listings can go on before the public ones. Each is turned on
+  // with its constant in functions/utils/clubs/pages.ts, in the order
+  // test/unit/club-pages-switch.test.ts holds: clubEmailHidden first, then
+  // clubKeepers, then regionEvents, then newClubs with newLook on.
+
+  /** The one club editor, Your club's page, My region and the monthly check, for the people who keep club listings. */
+  clubKeepers: false,
+
+  /** Regional representatives create and run their clubs' events, which wait for an LCA admin's approval. */
+  regionEvents: false,
+
   // Redesign, mail. Off until it is checked on a preview.
 
   /** The LCA newsletter list in Group email, with the unsubscribe link, the email preferences page and the footer every optional email carries, and the media manager's way in to it: Admin with Group email alone and a Group email link in the account menu. */

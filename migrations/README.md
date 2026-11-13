@@ -55,6 +55,16 @@ To change the schema:
    `drizzle/meta`.
 3. Read the file, run `npm run db:migrate:local` and `npm run test:all`.
 
+To give the file a number of its own, add `--number` and four digits
+(`npm run db:generate -- club regions --number 0065`, or `--number=0065`).
+The script refuses a number that is not four digits, or that a file here
+already has, says why, and writes nothing; without `--number` it numbers
+the file as in step 2, so `0061` is still what it gives next. Two streams of
+work share this folder: `0061` to `0064` are kept for the mail work and
+`0065` to `0071` for the clubs work, and each stream makes its files with
+`--number`, so that once a clubs file is on `main` nobody is handed a number
+the other stream holds.
+
 The script refuses, writes nothing and puts `drizzle/` back when the file
 would contain `DROP TABLE`, a `__new_` table or `PRAGMA foreign_keys`. That
 is drizzle-kit rebuilding a table to add or change a constraint, which is

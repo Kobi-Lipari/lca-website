@@ -1,9 +1,12 @@
 // test/unit/db-generate-guard.test.ts
 //
-// scripts/db/generate.ts (npm run db:generate -- <name> [--custom]) numbers
-// drizzle-kit's output into migrations/ and refuses what would hurt D1: a
-// table rebuild (DROP TABLE, a __new_ table, PRAGMA foreign_keys) and a column
-// added without the ON DELETE / ON UPDATE action the schema asks for.
+// scripts/db/generate.ts (npm run db:generate -- <name> [--custom]
+// [--number NNNN]) numbers drizzle-kit's output into migrations/ and refuses
+// what would hurt D1: a table rebuild (DROP TABLE, a __new_ table, PRAGMA
+// foreign_keys) and a column added without the ON DELETE / ON UPDATE action
+// the schema asks for. --number gives the file a prefix a stream holds; a
+// prefix in use, or one that is not four digits, is refused before
+// drizzle-kit runs, and without it the numbering is as before.
 //
 // drizzle-kit itself is replaced by a stand-in that writes into a temporary
 // staging folder the way drizzle-kit does (an NNNN_name.sql file, a snapshot
@@ -20,6 +23,8 @@ import {
   kitFailed,
   migrationText,
   nextMigrationNumber,
+  numberProblem,
+  readArguments,
   refusalReasons,
   slugName,
   type KitResult,
@@ -247,6 +252,80 @@ describe('generateMigration', () => {
     expect(written).not.toContain('Custom SQL migration file')
     expect(splitSql(written)).toEqual([])
     expect(existsSync(join(box.stagingDir, '0001_backfill.sql'))).toBe(false)
+  })
+
+  it('--number gives the file that prefix', () => {
+    const box = sandbox()
+    const kit = fakeKit(box.stagingDir, [NEW_TABLE])
+    const result = generateMigration({ name: 'club pages', number: '0065', ...box, runKit: kit.run })
+    expect(result).toMatchObject({ ok: true, file: '0065_club_pages.sql' })
+    expect(kit.calls).toEqual([['generate', '--name', 'club_pages']])
+    const written = readFileSync(join(box.migrationsDir, '0065_club_pages.sql'), 'utf8')
+    expect(written).toMatch(/^-- 0065_club_pages\.sql\n/)
+    expect(listing(box.migrationsDir)).toEqual(['0001_schema.sql', '0022_a.sql', '0051_club_map_location.sql', '0065_club_pages.sql', 'README.md'])
+    expect(listing(box.stagingDir)).toEqual(['meta'])
+    // A number below the highest is taken as given too, for a run of numbers kept for another stream.
+    const custom = generateMigration({ name: 'mail data', custom: true, number: '0030', ...box, runKit: fakeKit(box.stagingDir, [null, '-- Custom SQL migration file, put your code below! --\n']).run })
+    expect(custom).toMatchObject({ ok: true, file: '0030_mail_data.sql' })
+  })
+
+  it('a prefix already used is refused, in words, before drizzle-kit runs, and nothing is written', () => {
+    for (const [number, file] of [['0051', '0051_club_map_location.sql'], ['0022', '0022_a.sql']]) {
+      const box = sandbox()
+      const before = stagingFiles(box.stagingDir)
+      const migrationsBefore = listing(box.migrationsDir)
+      const kit = fakeKit(box.stagingDir, [NEW_TABLE])
+      const result = generateMigration({ name: 'club pages', number, ...box, runKit: kit.run })
+      expect(result.ok, number).toBe(false)
+      expect(result.message).toBe(`--number ${number} is already used by migrations/${file}. Pick a number no file has. Nothing was written.`)
+      expect(kit.calls).toEqual([])
+      expect(listing(box.migrationsDir)).toEqual(migrationsBefore)
+      expect(stagingFiles(box.stagingDir)).toEqual(before)
+    }
+    // Both files of a shared prefix are named.
+    expect(numberProblem('0022', ['0022_a.sql', '0022_b.sql'])).toContain('migrations/0022_a.sql and migrations/0022_b.sql')
+  })
+
+  it('a prefix that is not four digits is refused, in words, and nothing is written', () => {
+    for (const number of ['65', '00065', '0x65', 'abcd', '0000', '']) {
+      const box = sandbox()
+      const before = stagingFiles(box.stagingDir)
+      const kit = fakeKit(box.stagingDir, [NEW_TABLE])
+      const result = generateMigration({ name: 'club pages', number, ...box, runKit: kit.run })
+      expect(result.ok, number).toBe(false)
+      expect(result.message).toBe(`--number takes a four-digit number from 0001 to 9999, such as 0065; "${number}" is not one. Nothing was written.`)
+      expect(kit.calls).toEqual([])
+      expect(listing(box.migrationsDir)).toHaveLength(4)
+      expect(stagingFiles(box.stagingDir)).toEqual(before)
+    }
+    // README.md and other files without a four-digit prefix take no number.
+    expect(numberProblem('0065', ['README.md', '0065.txt', '00650_x.sql'])).toBeNull()
+  })
+
+  it('without it the number is the highest plus one, as before', () => {
+    const box = sandbox()
+    const result = generateMigration({ name: 'tournament notes', ...box, runKit: fakeKit(box.stagingDir, [NEW_TABLE]).run })
+    expect(result).toMatchObject({ ok: true, file: '0052_tournament_notes.sql' })
+    const unset = sandbox()
+    const same = generateMigration({ name: 'tournament notes', number: undefined, ...unset, runKit: fakeKit(unset.stagingDir, [NEW_TABLE]).run })
+    expect(same).toMatchObject({ ok: true, file: '0052_tournament_notes.sql' })
+    expect(readFileSync(join(unset.migrationsDir, '0052_tournament_notes.sql'), 'utf8')).toBe(readFileSync(join(box.migrationsDir, '0052_tournament_notes.sql'), 'utf8'))
+  })
+})
+
+describe('the command line', () => {
+  it('reads the name, --custom and --number in either spelling, and no number when it is not given', () => {
+    expect(readArguments(['club', 'notes'])).toEqual({ name: 'club notes', custom: false })
+    expect(readArguments(['club', 'notes', '--custom'])).toEqual({ name: 'club notes', custom: true })
+    expect(readArguments(['club', 'pages', '--number', '0065'])).toEqual({ name: 'club pages', custom: false, number: '0065' })
+    expect(readArguments(['--number=0066', 'club', 'seed', '--custom'])).toEqual({ name: 'club seed', custom: true, number: '0066' })
+  })
+
+  it('refuses --number with no value, or given twice, in words', () => {
+    expect(readArguments(['club', 'pages', '--number']).problem).toBe('Give --number its four-digit number, such as --number 0065. Nothing was written.')
+    expect(readArguments(['club', 'pages', '--number', '--custom']).problem).toBe('Give --number its four-digit number, such as --number 0065. Nothing was written.')
+    expect(readArguments(['club', 'pages', '--number=']).problem).toBe('Give --number its four-digit number, such as --number 0065. Nothing was written.')
+    expect(readArguments(['--number', '0065', 'x', '--number', '0066']).problem).toBe('Give --number once. Nothing was written.')
   })
 })
 
