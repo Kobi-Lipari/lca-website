@@ -85,6 +85,13 @@
       "when": 1794555549452,
       "tag": "0011_club_pages",
       "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "6",
+      "when": 1794563863646,
+      "tag": "0012_club_pages_seed",
+      "breakpoints": true
     }
   ]
 }

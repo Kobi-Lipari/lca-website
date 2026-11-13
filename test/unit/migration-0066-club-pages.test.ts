@@ -291,7 +291,7 @@ describe('0066_club_pages.sql and drizzle/meta', () => {
     expect(text).toContain('-- Hand-written migration (npm run db:generate -- <name> --custom), staged as\n-- drizzle/0011_club_pages.sql.')
     const entry = journal.entries.find((e) => e.tag.endsWith('_club_pages'))
     expect(entry).toEqual({ idx: 11, version: '6', when: expect.any(Number), tag: '0011_club_pages', breakpoints: true })
-    expect(journal.entries.at(-1)).toEqual(entry)
+    expect(journal.entries[11]).toEqual(entry)
   })
 
   it('has a snapshot that follows 0010\'s and records the four tables and the fifteen columns alone', () => {

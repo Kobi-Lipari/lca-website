@@ -142,7 +142,7 @@ describe('a slug is made once and kept on rename', () => {
     expect(res.status).toBe(200)
     expect(await env.DB.prepare(`SELECT id, name, slug FROM clubs WHERE name = 'Example Knights of the Board'`).first())
       .toEqual({ id: 'example-renamed-club', name: 'Example Knights of the Board', slug: 'example-renamed-club' })
-    expect(await env.DB.prepare('SELECT COUNT(*) AS n FROM club_slug_history').first()).toEqual({ n: 0 })
+    expect(await env.DB.prepare(`SELECT COUNT(*) AS n FROM club_slug_history WHERE club_id = 'example-renamed-club'`).first()).toEqual({ n: 0 })
   })
 
   it('a rename to a name another club\'s slug would come from changes no slug, and a later new club of the old name still gets a suffix', async () => {

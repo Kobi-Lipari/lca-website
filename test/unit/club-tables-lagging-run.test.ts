@@ -162,7 +162,7 @@ describe('on a database built from every migration', () => {
     expect(db.prepare(`SELECT slug FROM clubs WHERE id = 'example-chess-club-2'`).get()).toEqual({ slug: 'example-chess-club-2' })
     db.exec(`INSERT INTO club_places (club_id, name) VALUES ('example-chess-club', 'Example Library')`)
     expect((await call(clubDelete as PagesFunction<never>, db, { method: 'DELETE', id: 'example-chess-club' })).status).toBe(200)
-    expect(db.prepare('SELECT COUNT(*) AS n FROM club_places').get()).toEqual({ n: 0 })
+    expect(db.prepare(`SELECT COUNT(*) AS n FROM club_places WHERE club_id = 'example-chess-club'`).get()).toEqual({ n: 0 })
     for (const line of [CLUB_REFERENCES_UNCLEARED_LOG, CLUB_ROWS_UNCLEARED_LOG, CLUB_SLUGS_UNREAD_LOG]) expect(lines(warn)).not.toContain(line)
   })
 })
