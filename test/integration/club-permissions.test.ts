@@ -6,9 +6,9 @@
 // admitted to a club by a regional seat alone sees of its members: the club
 // without its roster or any officer's email, while an LCA admin, an
 // observer and the club's own rep get today's answer, byte for byte.
-import { describe, it, expect } from 'vitest'
+import { afterEach, describe, it, expect, vi } from 'vitest'
 import { env } from 'cloudflare:test'
-import { invoke } from './harness'
+import { flushWaitUntil, invoke } from './harness'
 import {
   seedAdmin,
   seedClub,
@@ -32,6 +32,24 @@ import { onRequestDelete as officerDelete } from '../../functions/api/admin/club
 import { onRequestGet as rosterGet } from '../../functions/api/admin/clubs/[id]/roster'
 import { onRequestGet as newsGet } from '../../functions/api/admin/clubs/[id]/news'
 import { ROSTER_KEPT_BACK } from '../../functions/utils/clubs/memberView'
+import { onRequestPut as placesPut, PLACES_CLOSED } from '../../functions/api/admin/clubs/[id]/places'
+
+// CLUB_KEEPERS_ON is false in the tree, and every case above the keepers'
+// save runs with it unset; the cases of criterion 9 at the end set it through
+// a getter on the mocked module, as functions/utils/clubs/pages.ts describes.
+const flags = vi.hoisted(() => ({ keepersOn: false }))
+vi.mock('../../functions/utils/clubs/pages', async (importOriginal) => {
+  const real = await importOriginal<typeof import('../../functions/utils/clubs/pages')>()
+  return {
+    ...real,
+    get CLUB_KEEPERS_ON() {
+      return flags.keepersOn
+    },
+  }
+})
+afterEach(() => {
+  flags.keepersOn = false
+})
 
 async function listIds(as?: string): Promise<string[]> {
   const res = await invoke(tournamentsGet, as ? { as } : {})
@@ -524,5 +542,168 @@ describe('the roster stays back from a region\'s representative', () => {
     await regionalSeat(admin)
     expect(await text(await invoke(adminClubGet, { as: admin, params: { id: clubId } }))).toBe(await todaysClubAnswer(clubId))
     expect(await text(await invoke(rosterGet, { as: admin, params: { id: clubId } }))).toBe(await todaysRoster(clubId))
+  })
+})
+
+// Criterion 9 for the keepers' save (WS09 step 6): only an LCA admin, the
+// club's named rep and the representative for the club's region save a
+// listing or its places, and only an LCA admin changes its region or its page
+// address. With CLUB_KEEPERS_ON unset the GET answers each person the base's
+// own answer.
+
+/** The listing's columns the keepers' save writes, read to see that a refusal wrote nothing. */
+async function listing(clubId: string) {
+  return env.DB.prepare('SELECT * FROM clubs WHERE id = ?').bind(clubId).first()
+}
+async function places(clubId: string) {
+  return (await env.DB.prepare('SELECT name, sort FROM club_places WHERE club_id = ? ORDER BY sort').bind(clubId).all()).results
+}
+
+/** GET /api/admin/clubs/[id] as the base answered a person admitted by the region alone: no roster, and the officers without their email. */
+async function baseRegionAloneAnswer(clubId: string): Promise<string> {
+  const today = JSON.parse(await todaysClubAnswer(clubId)) as { club: unknown; officers: Array<Record<string, unknown>>; tournaments: unknown[] }
+  return JSON.stringify({
+    club: today.club,
+    officers: today.officers.map((officer) => Object.fromEntries(Object.entries(officer).filter(([key]) => key !== 'email'))),
+    roster: [],
+    tournaments: today.tournaments,
+  })
+}
+
+/**
+ * Asks PATCH and PUT places as one person the keepers' save does not admit,
+ * and holds that each answers 403 (in the words given, where the case names
+ * them) and that neither the club nor its places changed.
+ */
+async function expectSaveRefused(clubId: string, who: string, body: Record<string, unknown>, placesBody: unknown[], words?: string) {
+  const before = { club: await listing(clubId), places: await places(clubId) }
+  const saved = await invoke(adminClubPatch, { method: 'PATCH', as: who, aal: 'aal1', params: { id: clubId }, body })
+  expect(saved.status).toBe(403)
+  if (words) expect(await saved.json()).toEqual({ error: words })
+  const placed = await invoke(placesPut, { method: 'PUT', as: who, aal: 'aal1', params: { id: clubId }, body: { places: placesBody } })
+  expect(placed.status).toBe(403)
+  if (words) expect(await placed.json()).toEqual({ error: words })
+  expect(await listing(clubId)).toEqual(before.club)
+  expect(await places(clubId)).toEqual(before.places)
+}
+
+describe('who may save a listing and its places (criterion 9)', () => {
+  it('with CLUB_KEEPERS_ON set, an LCA admin, the club\'s rep and the region\'s representative save the listing and its places', async () => {
+    flags.keepersOn = true
+    const { clubId, rep, admin } = await exampleClub()
+    const holder = await seedMember()
+    await regionalSeat(holder)
+    for (const [who, aal] of [[admin, 'aal2'], [rep, 'aal2'], [holder, 'aal1']] as const) {
+      const saved = await invoke(adminClubPatch, { method: 'PATCH', as: who, aal, params: { id: clubId }, body: { aboutText: `Saved by ${who}` } })
+      expect(saved.status, who).toBe(200)
+      const placed = await invoke(placesPut, { method: 'PUT', as: who, aal, params: { id: clubId }, body: { places: [{ name: `Example Hall of ${who}` }] } })
+      expect(placed.status, who).toBe(200)
+      expect(await listing(clubId), who).toMatchObject({ about_text: `Saved by ${who}`, told_by: who, confirmed_by: who })
+      expect(await places(clubId), who).toEqual([{ name: `Example Hall of ${who}`, sort: 0 }])
+    }
+    await flushWaitUntil()
+  })
+
+  it('with CLUB_KEEPERS_ON set, another region\'s representative gets 403 on PATCH and PUT, and nothing is written', async () => {
+    flags.keepersOn = true
+    const { clubId } = await exampleClub()
+    const elsewhere = await seedMember()
+    await regionalSeat(elsewhere, ['North Louisiana'])
+    await expectSaveRefused(clubId, elsewhere, { aboutText: 'Not theirs to save' }, [{ name: 'Example Hall' }], 'Forbidden')
+  })
+
+  it('with CLUB_KEEPERS_ON set, another club\'s rep gets 403 on PATCH and PUT, and nothing is written', async () => {
+    flags.keepersOn = true
+    const { clubId } = await exampleClub()
+    const otherRep = (await exampleClub()).rep
+    await expectSaveRefused(clubId, otherRep, { aboutText: 'Not theirs to save' }, [{ name: 'Example Hall' }], 'Forbidden')
+  })
+
+  it('with CLUB_KEEPERS_ON set, a one-event director gets 403 on PATCH and PUT, and nothing is written', async () => {
+    flags.keepersOn = true
+    const { clubId, draft } = await exampleClub()
+    const director = await seedMember()
+    await seedTournamentDirector(draft, director)
+    await expectSaveRefused(clubId, director, { aboutText: 'Not theirs to save' }, [{ name: 'Example Hall' }], 'Forbidden')
+  })
+
+  it('with CLUB_KEEPERS_ON set, a member of the club gets 403 on PATCH and PUT, and nothing is written', async () => {
+    flags.keepersOn = true
+    const { clubId } = await exampleClub()
+    const member = await seedMember({ clubId })
+    await expectSaveRefused(clubId, member, { aboutText: 'Not theirs to save' }, [{ name: 'Example Hall' }], 'Forbidden')
+  })
+
+  it('with CLUB_KEEPERS_ON set, an observer gets 403 on PATCH and PUT, and nothing is written', async () => {
+    flags.keepersOn = true
+    const { clubId } = await exampleClub()
+    const observer = await seedMember({ role: 'lca_observer' })
+    await expectSaveRefused(clubId, observer, { description: 'Not theirs to save' }, [])
+  })
+
+  it('with CLUB_KEEPERS_ON set, an LCA officer gets 403 on PATCH and PUT, and nothing is written', async () => {
+    flags.keepersOn = true
+    const { clubId } = await exampleClub()
+    const officer = await seedMember({ role: 'lca_officer' })
+    await expectSaveRefused(clubId, officer, { description: 'Not theirs to save' }, [])
+  })
+
+  it('with CLUB_KEEPERS_ON set, a seat holder whose term has ended gets 403 on PATCH and PUT, and nothing is written', async () => {
+    flags.keepersOn = true
+    const { clubId } = await exampleClub()
+    const ended = await seedMember()
+    const seat = await regionalSeat(ended)
+    await env.DB.prepare('UPDATE board_seat_assignments SET ended_at = \'2026-10-01 00:00:00\' WHERE seat_id = ?').bind(seat).run()
+    await expectSaveRefused(clubId, ended, { description: 'Not theirs to save' }, [])
+  })
+
+  it('with CLUB_KEEPERS_ON set, a guest gets 403 on PATCH and PUT, and nothing is written', async () => {
+    flags.keepersOn = true
+    const { clubId } = await exampleClub()
+    const guest = await seedMember({ role: 'guest', clubId })
+    await expectSaveRefused(clubId, guest, { description: 'Not theirs to save' }, [])
+  })
+
+  it('with CLUB_KEEPERS_ON set, a child account gets 403 on PATCH and PUT, and nothing is written', async () => {
+    flags.keepersOn = true
+    const { clubId, rep } = await exampleClub()
+    const child = await seedMember({ clubId, fullName: 'Player Junior' })
+    await env.DB.prepare('UPDATE members SET guardian_id = ? WHERE id = ?').bind(rep, child).run()
+    await expectSaveRefused(clubId, child, { description: 'Not theirs to save' }, [])
+  })
+
+  it('with CLUB_KEEPERS_ON set, only an LCA admin changes a club\'s region or its page address', async () => {
+    flags.keepersOn = true
+    const { clubId, rep, admin } = await exampleClub()
+    const holder = await seedMember()
+    await regionalSeat(holder)
+    for (const who of [rep, holder]) {
+      for (const [body, words] of [
+        [{ region: 'North Louisiana' }, 'Only LCA admins can change a club\'s region'],
+        [{ slug: `moved-${clubId}` }, 'Only LCA admins can change a club\'s page address'],
+      ] as const) {
+        const res = await invoke(adminClubPatch, { method: 'PATCH', as: who, aal: 'aal1', params: { id: clubId }, body })
+        expect(res.status, `${who} ${JSON.stringify(body)}`).toBe(403)
+        expect(await res.json()).toEqual({ error: words })
+      }
+    }
+    expect(await listing(clubId)).toMatchObject({ region: REGION, slug: null })
+    const res = await invoke(adminClubPatch, { method: 'PATCH', as: admin, params: { id: clubId }, body: { region: 'North Louisiana', slug: `moved-${clubId}` } })
+    expect(res.status).toBe(200)
+    expect(await listing(clubId)).toMatchObject({ region: 'North Louisiana', slug: `moved-${clubId}` })
+  })
+
+  it('with CLUB_KEEPERS_ON unset, the GET answers a region\'s representative the base\'s own answer, and PUT places is refused in words', async () => {
+    const { clubId, rep, admin } = await exampleClub()
+    const holder = await seedMember()
+    await regionalSeat(holder)
+    const res = await invoke(adminClubGet, { as: holder, aal: 'aal1', params: { id: clubId } })
+    expect(await text(res)).toBe(await baseRegionAloneAnswer(clubId))
+    for (const [who, aal] of [[admin, 'aal2'], [rep, 'aal2'], [holder, 'aal1']] as const) {
+      const placed = await invoke(placesPut, { method: 'PUT', as: who, aal, params: { id: clubId }, body: { places: [{ name: 'Example Hall' }] } })
+      expect(placed.status, who).toBe(403)
+      expect(await placed.json(), who).toEqual({ error: PLACES_CLOSED })
+    }
+    expect(await places(clubId)).toEqual([])
   })
 })

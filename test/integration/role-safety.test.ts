@@ -16,10 +16,11 @@ import { onRequestPatch as registrationPatch } from '../../functions/api/registr
 import { onRequestDelete as tournamentDelete, onRequestPatch as tournamentPatch } from '../../functions/api/admin/tournaments/[id]'
 import { onRequestDelete as directorRemove, onRequestPost as directorAssign } from '../../functions/api/admin/tournaments/[id]/directors'
 import { onRequestPatch as clubPatch } from '../../functions/api/admin/clubs/[id]'
+import { onRequestPut as clubPlacesPut } from '../../functions/api/admin/clubs/[id]/places'
 import { onRequestPost as supportPost } from '../../functions/api/support'
 import { onRequestDelete as adminTicketDelete } from '../../functions/api/admin/support/[id]'
 
-const flags = vi.hoisted(() => ({ rolesOn: false }))
+const flags = vi.hoisted(() => ({ rolesOn: false, keepersOn: false }))
 vi.mock('../../functions/utils/events/creation', async (importOriginal) => {
   const real = await importOriginal<typeof import('../../functions/utils/events/creation')>()
   return {
@@ -30,9 +31,21 @@ vi.mock('../../functions/utils/events/creation', async (importOriginal) => {
   }
 })
 
+// CLUB_KEEPERS_ON, false in the tree, read the same way by the keepers' save's cases (WS09 step 6).
+vi.mock('../../functions/utils/clubs/pages', async (importOriginal) => {
+  const real = await importOriginal<typeof import('../../functions/utils/clubs/pages')>()
+  return {
+    ...real,
+    get CLUB_KEEPERS_ON() {
+      return flags.keepersOn
+    },
+  }
+})
+
 beforeEach(resetHarness)
 afterEach(() => {
   flags.rolesOn = false
+  flags.keepersOn = false
 })
 
 async function logCount(action: string): Promise<number> {
@@ -93,6 +106,54 @@ describe('activity log', () => {
 
     await invoke(clubPatch, { method: 'PATCH', as: rep, params: { id: clubId }, body: { description: 'Tuesdays at 6' } })
     expect(await logCount('club_edit')).toBe(1)
+  })
+
+  it('with CLUB_KEEPERS_ON set, a keeper\'s save writes its club_edit row once, in the save\'s own batch, and a save that changes nothing writes none', async () => {
+    flags.keepersOn = true
+    const clubId = await seedClub({ name: 'Example Chess Club' })
+    const rep = await seedMember({ role: 'club_rep', clubId })
+    const before = await logCount('club_edit')
+
+    const saved = await invoke(clubPatch, { method: 'PATCH', as: rep, params: { id: clubId }, body: { aboutText: 'Tuesdays, 6:00 PM', weekendPlay: true } })
+    expect(saved.status).toBe(200)
+    expect(await logCount('club_edit')).toBe(before + 1)
+    const entry = await env.DB.prepare('SELECT actor_id, actor_email, target_label, detail FROM admin_audit_log WHERE action = \'club_edit\' ORDER BY rowid DESC LIMIT 1')
+      .first<{ actor_id: string; actor_email: string; target_label: string; detail: string }>()
+    const actor = await env.DB.prepare('SELECT email FROM members WHERE id = ?').bind(rep).first<{ email: string }>()
+    expect(entry).toMatchObject({ actor_id: rep, actor_email: actor?.email, target_label: 'Example Chess Club' })
+    expect(JSON.parse(entry!.detail)).toEqual({ club_id: clubId, fields: ['description', 'about_text', 'weekend_play'] })
+
+    expect((await invoke(clubPatch, { method: 'PATCH', as: rep, params: { id: clubId }, body: { aboutText: 'Tuesdays, 6:00 PM' } })).status).toBe(200)
+    expect(await logCount('club_edit')).toBe(before + 1)
+    expect((await invoke(clubPlacesPut, { method: 'PUT', as: rep, params: { id: clubId }, body: { places: [{ name: 'Example Hall' }] } })).status).toBe(200)
+    expect(await logCount('club_edit')).toBe(before + 2)
+  })
+})
+
+describe('a club\'s places', () => {
+  it('role safety: signed out, a member and another club\'s rep are refused on PUT places, with CLUB_KEEPERS_ON unset and set, each refusal is { error }, and nothing is written', async () => {
+    const clubId = await seedClub()
+    const member = await seedMember({ clubId })
+    const otherRep = await seedMember({ role: 'club_rep', clubId: await seedClub() })
+    const stored = async () => ({
+      places: (await env.DB.prepare('SELECT COUNT(*) AS n FROM club_places WHERE club_id = ?').bind(clubId).first<{ n: number }>())?.n,
+      club: await env.DB.prepare('SELECT * FROM clubs WHERE id = ?').bind(clubId).first(),
+      log: await logCount('club_edit'),
+    })
+    const before = await stored()
+    for (const on of [false, true]) {
+      flags.keepersOn = on
+      const body = { places: [{ name: 'Example Hall' }] }
+      const signedOut = await invoke(clubPlacesPut, { method: 'PUT', params: { id: clubId }, body })
+      expect(signedOut.status, String(on)).toBe(401)
+      await expectContract(signedOut, errorBodySchema)
+      for (const who of [member, otherRep]) {
+        const res = await invoke(clubPlacesPut, { method: 'PUT', as: who, params: { id: clubId }, body })
+        expect(res.status, `${who} ${on}`).toBe(403)
+        expect(await expectContract(res, errorBodySchema)).toEqual({ error: 'Forbidden' })
+      }
+    }
+    expect(await stored()).toEqual(before)
   })
 })
 
