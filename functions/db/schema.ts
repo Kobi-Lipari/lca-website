@@ -676,3 +676,60 @@ export const mailDoNotSend = sqliteTable('mail_do_not_send', {
   /** When the address was put on the list. */
   createdAt: text('created_at').default(sql`(datetime('now'))`).notNull(),
 })
+
+
+// The newsletter's own page (WS16 part two, migration 0061): where a letter
+// lives while it is written. functions/utils/mail/issues.ts reads and writes
+// it. A letter's state is read from its columns and never stored: open while
+// campaign_id and set_aside_at are both empty, sent once campaign_id is set,
+// set aside once set_aside_at is. No mark of a test is kept (K's decision
+// 56, answer 4). A member's id is held by the three _by columns alone, each
+// emptied when that account is deleted, so the name shown is read from
+// members at each read and never copied here.
+
+/** One letter of a list's newsletter: one open at a time for a list, which everyone who may send it sees and edits. */
+export const newsletterIssues = sqliteTable('newsletter_issues', {
+  /** 32 hex characters, random, written by the statement that makes the letter. */
+  id: text().primaryKey(),
+  /** The list it goes out on (mail_lists.id, with no foreign key), as email_campaigns holds a list. */
+  listId: text('list_id').notNull(),
+  /** The month as the email's band writes it, "December 2026": plain text, empty while the letter is written. */
+  monthLabel: text('month_label').default('').notNull(),
+  /** The subject: plain text, empty while the letter is written. */
+  subject: text().default('').notNull(),
+  /** The line an inbox shows under the subject: plain text, empty while the letter is written. */
+  preheader: text().default('').notNull(),
+  /** The letter as cleanLetterHtml wrote it, never what was sent to the cleaner. */
+  bodyHtml: text('body_html').default('').notNull(),
+  /** 1 when the letter is made, moved by one by every write to it, so a write made from an older read changes nothing. */
+  version: integer().default(1).notNull(),
+  /** Who started it. */
+  createdBy: text('created_by').references(() => members.id, { onDelete: 'set null' }),
+  /** When it was started. */
+  createdAt: text('created_at').default(sql`(datetime('now'))`).notNull(),
+  /** Who wrote to it last: a save, or the start that set it aside. */
+  updatedBy: text('updated_by').references(() => members.id, { onDelete: 'set null' }),
+  /** When it was written to last. */
+  updatedAt: text('updated_at').default(sql`(datetime('now'))`).notNull(),
+  /** The send it became (email_campaigns.id, with no foreign key), written by the page's send (WS16 part two step 6). */
+  campaignId: text('campaign_id'),
+  /** When a new letter took its place, its words kept. */
+  setAsideAt: text('set_aside_at'),
+  /** Sending later (WS16 part two step 7): the instant it is to go, in UTC, in the form of the other times here. */
+  sendAt: text('send_at'),
+  /** Who gave it that time. */
+  scheduledBy: text('scheduled_by').references(() => members.id, { onDelete: 'set null' }),
+  /** When the time was given. */
+  scheduledAt: text('scheduled_at'),
+  /** The 16 characters of the site's link key when the time was given (linkKeyCheck), as a list campaign's filter_json holds them. */
+  linkCheck: text('link_check'),
+  /** Why a letter given a time was not sent then, in words. */
+  heldReason: text('held_reason'),
+  /** Pinned templates (WS16 part two step 9): when a sent letter was pinned as a template. */
+  pinnedAt: text('pinned_at'),
+  /** The name it was pinned under. */
+  pinnedName: text('pinned_name'),
+},
+(table) => [
+  uniqueIndex('newsletter_issues_one_open').on(table.listId).where(sql`campaign_id IS NULL AND set_aside_at IS NULL`),
+])

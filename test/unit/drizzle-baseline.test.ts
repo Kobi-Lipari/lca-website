@@ -86,10 +86,10 @@ describe('the generate guard reads every spelling', () => {
 })
 
 describe('scripts/db/build-local-sqlite.ts', () => {
-  it('writes one database holding the 36 tables and the eight triggers, built from all 61 migrations', () => {
+  it('writes one database holding the 37 tables and the eight triggers, built from all 62 migrations', () => {
     const out = join(scratch(), 'nested/introspect.sqlite')
-    expect(buildLocalSqlite(out)).toEqual({ files: 61, tables: 36 })
-    expect(migrationFiles()).toHaveLength(61)
+    expect(buildLocalSqlite(out)).toEqual({ files: 62, tables: 37 })
+    expect(migrationFiles()).toHaveLength(62)
     const db = new DatabaseSync(out, { readOnly: true })
     const names = (type: string) => (db.prepare('SELECT name FROM sqlite_master WHERE type = ? ORDER BY name').all(type) as Array<{ name: string }>).map((r) => r.name)
     expect(names('trigger')).toEqual([
@@ -109,7 +109,7 @@ describe('scripts/db/build-local-sqlite.ts', () => {
     const db = new DatabaseSync(out)
     db.exec('CREATE TABLE leftover (id text)')
     db.close()
-    expect(buildLocalSqlite(out).tables).toBe(36)
+    expect(buildLocalSqlite(out).tables).toBe(37)
     const again = new DatabaseSync(out, { readOnly: true })
     expect(again.prepare("SELECT COUNT(*) AS n FROM sqlite_master WHERE name = 'leftover'").get()).toEqual({ n: 0 })
     again.close()
@@ -143,7 +143,7 @@ describe('drizzle.config.ts filter, run through drizzle-kit pull', () => {
     expect(schema).toContain('sqliteTable("members"')
     expect(schema).toContain('counter_note')
     expect(schema).not.toMatch(/d1_migrations|_cf_KV|sqlite_sequence/)
-    expect((schema.match(/= sqliteTable\(/g) ?? []).length).toBe(37)
+    expect((schema.match(/= sqliteTable\(/g) ?? []).length).toBe(38)
   }, 60_000)
 })
 
@@ -192,12 +192,12 @@ describe('the runners', () => {
     expect(existsSync(join(ROOT, 'migrations/meta'))).toBe(false)
   })
 
-  it('does not change what wrangler runs: 61 files, one duplicate 0022 prefix, the last 0060', () => {
+  it('does not change what wrangler runs: 62 files, one duplicate 0022 prefix, the last 0061', () => {
     const sql = readdirSync(join(ROOT, 'migrations')).filter((f) => f.endsWith('.sql')).sort()
-    expect(sql).toHaveLength(61)
+    expect(sql).toHaveLength(62)
     expect(sql[0].startsWith('0001_')).toBe(true)
     expect(sql.filter((f) => f.startsWith('0022_'))).toHaveLength(2)
-    expect(sql.at(-1)).toBe('0060_mail_lists.sql')
+    expect(sql.at(-1)).toBe('0061_newsletter_issues.sql')
   })
 })
 

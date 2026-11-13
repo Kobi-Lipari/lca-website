@@ -326,6 +326,128 @@ export async function stopNewsletter(): Promise<ApiNewsletterStopped> {
   return handleResponse(response)
 }
 
+// The newsletter's own page (WS16 part two, page step 3): its four methods under /api/admin/mail/newsletter/issue and
+// /issues, behind requireListMailer, each answering 404 while the page is switched off on the server. Their answers are
+// the contracts in domain/contracts/newsletter.ts, written here by hand, as the newsletter's above are. Nothing imports
+// these yet; the page that calls them comes in WS16 part two step 4.
+
+/** One letter as the server keeps it (newsletterLetterSchema): its words are the cleaner's own, its times the database's. */
+export interface ApiNewsletterLetter {
+  id: string
+  /** 1 when the letter is made, one more at each write; a save sends the version it read. */
+  version: number
+  monthLabel: string
+  subject: string
+  /** The inbox preview line. */
+  preheader: string
+  bodyHtml: string
+  createdAt: string
+  updatedAt: string
+}
+
+/** What GET /api/admin/mail/newsletter/issue answers, and POST .../issue/start once it has started a letter. */
+export interface ApiNewsletterIssue {
+  issue: ApiNewsletterLetter | null
+  state: 'none' | 'draft'
+  /** Who wrote to the letter last, by name; null once their account is gone. */
+  lastSavedBy: string | null
+  lastSavedAt: string | null
+}
+
+/** What a save answers once it has saved: the new version, when, and the stored letter when the cleaner changed it, else null. */
+export interface ApiNewsletterIssueSaved {
+  id: string
+  version: number
+  savedAt: string
+  bodyHtml: string | null
+}
+
+/**
+ * What a save or a start refused with 409 answers, nothing written: why, who did it, by name, and when. 'changed' when
+ * someone wrote to the letter after it was read, 'sent' or 'set_aside' when it was sent or a new letter took its place.
+ */
+export interface ApiNewsletterIssueRefused {
+  error: string
+  reason: 'changed' | 'sent' | 'set_aside'
+  changedBy: string | null
+  changedAt: string
+}
+
+/** One of the last newsletters, without its words: a letter sent or set aside, or a send on the list with no letter. */
+export interface ApiLastNewsletter {
+  issueId: string | null
+  campaignId: string | null
+  /** '' for a send with no letter. */
+  monthLabel: string
+  subject: string
+  state: 'sending' | 'completed' | 'failed' | 'set_aside'
+  at: string
+  by: string | null
+  /** How many a send went to; null for a letter never sent. */
+  totalRecipients: number | null
+}
+
+/** The newsletter's open letter, or none, with who wrote to it last and when. */
+export async function getNewsletterIssue(): Promise<ApiNewsletterIssue> {
+  const response = await fetch('/api/admin/mail/newsletter/issue', {
+    headers: await authHeaders(),
+  })
+  return handleResponse(response)
+}
+
+/**
+ * Saves the open letter, by the id and version the page read (id null and version 0 for the first save when it read
+ * none). A 409 is answered, not thrown, so the page keeps the person's words and can name who changed the letter and
+ * when; every other refusal throws ApiError with the server's words.
+ */
+export async function saveNewsletterIssue(payload: {
+  id: string | null
+  version: number
+  monthLabel: string
+  subject: string
+  preheader: string
+  bodyHtml: string
+}): Promise<{ saved: ApiNewsletterIssueSaved } | { refused: ApiNewsletterIssueRefused }> {
+  const response = await fetch('/api/admin/mail/newsletter/issue', {
+    method: 'PUT',
+    headers: await authHeaders(),
+    body: JSON.stringify(payload),
+  })
+  if (response.status === 409) {
+    const refused = (await response.clone().json().catch(() => null)) as ApiNewsletterIssueRefused | null
+    if (refused && typeof refused.reason === 'string') return { refused }
+  }
+  return { saved: await handleResponse<ApiNewsletterIssueSaved>(response) }
+}
+
+/**
+ * Starts a new letter for a month, from a blank letter or one of LCA's starters by its id (STARTER_IDS in
+ * domain/mail/letter.ts), a past letter or a past send. The open letter is set aside, its words kept, when it holds any.
+ */
+export async function startNewsletterIssue(payload: {
+  from: 'blank' | 'monthly' | 'results-and-thanks' | 'short-notice' | { issueId: string } | { campaignId: string }
+  monthLabel: string
+}): Promise<{ started: ApiNewsletterIssue } | { refused: ApiNewsletterIssueRefused }> {
+  const response = await fetch('/api/admin/mail/newsletter/issue/start', {
+    method: 'POST',
+    headers: await authHeaders(),
+    body: JSON.stringify(payload),
+  })
+  if (response.status === 409) {
+    const refused = (await response.clone().json().catch(() => null)) as ApiNewsletterIssueRefused | null
+    if (refused && typeof refused.reason === 'string') return { refused }
+  }
+  return { started: await handleResponse<ApiNewsletterIssue>(response) }
+}
+
+/** The last newsletters, at most 20, newest first, without their words. */
+export async function getLastNewsletters(): Promise<{ issues: ApiLastNewsletter[] }> {
+  const response = await fetch('/api/admin/mail/newsletter/issues', {
+    headers: await authHeaders(),
+  })
+  return handleResponse(response)
+}
+
 // The media manager (WS16 step 6): whether the signed-in member sends the newsletter as the media manager, which only
 // Admin's pages and the account menu ask, through src/areas/admin/useMediaManager.ts, once a session.
 

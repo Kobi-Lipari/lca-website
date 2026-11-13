@@ -13,6 +13,12 @@
 // file reading no setting of its environment, so nothing outside the code
 // can turn it on.
 //
+// mailPage, the newsletter's own page (WS16 part two, page step 3), has its
+// server half in the same file, MAIL_PAGE_ON, held to mailPage the same
+// four ways. The page rests on the newsletter list, so MAIL_PAGE_ON is on
+// only while MAIL_LISTS_ON is, as the modules export them and as the file
+// writes them: a change that turns the page on alone turns this file red.
+//
 // MAIL_SENDER, the service that sends every email, follows no switch: it
 // changes only in a pull request of its own. It is held here as written
 // once, in its one line, and assigned in no other file of the server or
@@ -32,7 +38,7 @@ import { readdirSync, readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
 import { FEATURES } from '@/lib/features'
-import { COMPLAINT_STOPS_OTHER_SENDERS, MAIL_LISTS_ON, MAIL_SENDER, WORKERS_PLAN } from '../../functions/utils/mail/switches'
+import { COMPLAINT_STOPS_OTHER_SENDERS, MAIL_LISTS_ON, MAIL_PAGE_ON, MAIL_SENDER, WORKERS_PLAN } from '../../functions/utils/mail/switches'
 
 const ROOT = join(__dirname, '../..')
 const read = (path: string) => readFileSync(join(ROOT, path), 'utf8')
@@ -64,30 +70,58 @@ function codeUnder(dir: string): string[] {
 /** A line that gives MAIL_SENDER a value: a declaration or an assignment, never a comparison. */
 const ASSIGNS = /\bMAIL_SENDER\b(?:\s*:\s*[\w|' ]+?)?\s*=(?![=>])/
 
-const PAIR = { feature: 'mailLists', constant: 'MAIL_LISTS_ON', file: FILE, value: MAIL_LISTS_ON } as const
+const PAIRS = [
+  { feature: 'mailLists', constant: 'MAIL_LISTS_ON', file: FILE, value: MAIL_LISTS_ON },
+  { feature: 'mailPage', constant: 'MAIL_PAGE_ON', file: FILE, value: MAIL_PAGE_ON },
+] as const
 
-describe('MAIL_LISTS_ON follows mailLists', () => {
-  it('MAIL_LISTS_ON equals FEATURES.mailLists', () => {
-    expect(typeof PAIR.value).toBe('boolean')
-    expect(PAIR.value).toBe(FEATURES[PAIR.feature])
+describe.each(PAIRS)('$constant follows $feature', (pair) => {
+  it(`${pair.constant} equals FEATURES.${pair.feature}`, () => {
+    expect(typeof pair.value).toBe('boolean')
+    expect(pair.value).toBe(FEATURES[pair.feature])
   })
 
-  it('functions/utils/mail/switches.ts writes MAIL_LISTS_ON as src/lib/features.ts writes mailLists', () => {
-    expect(constantWritten(PAIR.file, PAIR.constant)).toBe(switchWritten(PAIR.feature))
+  it(`functions/utils/mail/switches.ts writes ${pair.constant} as src/lib/features.ts writes ${pair.feature}`, () => {
+    expect(constantWritten(pair.file, pair.constant)).toBe(switchWritten(pair.feature))
   })
 
-  it('MAIL_LISTS_ON says what it turns on and names its switch and this file', () => {
-    const text = read(PAIR.file)
-    const at = text.indexOf(`export const ${PAIR.constant} =`)
+  it(`${pair.constant} says what it turns on and names its switch and this file`, () => {
+    const text = read(pair.file)
+    const at = text.indexOf(`export const ${pair.constant} =`)
     expect(at).toBeGreaterThan(0)
     const comment = text.slice(text.lastIndexOf('/**', at), at)
     expect(comment).toMatch(/^\/\*\*\n \* Set: /)
-    expect(comment).toContain(PAIR.feature)
+    expect(comment).toContain(pair.feature)
     expect(comment).toContain('test/unit/mail-switches.test.ts')
   })
 
   it('reads no setting of the environment: constants in the code alone', () => {
-    expect(read(PAIR.file)).not.toMatch(/\benv\b|process\.|import\.meta/)
+    expect(read(pair.file)).not.toMatch(/\benv\b|process\.|import\.meta/)
+  })
+})
+
+describe('MAIL_PAGE_ON rests on MAIL_LISTS_ON', () => {
+  /** What is wrong with the two constants as a file writes them: the page on while the newsletter list is off. */
+  const pageFault = (text: string): string | null => {
+    const lists = /^export const MAIL_LISTS_ON = (true|false)$/m.exec(text)?.[1]
+    const page = /^export const MAIL_PAGE_ON = (true|false)$/m.exec(text)?.[1]
+    if (lists === undefined || page === undefined) return 'each constant is written once'
+    return page === 'true' && lists !== 'true' ? 'MAIL_PAGE_ON is on while MAIL_LISTS_ON is off' : null
+  }
+
+  it('is on only while MAIL_LISTS_ON is, as the module exports them and as the file writes them, and so are the two switches', () => {
+    if (MAIL_PAGE_ON) expect(MAIL_LISTS_ON).toBe(true)
+    if (FEATURES.mailPage) expect(FEATURES.mailLists).toBe(true)
+    expect(pageFault(read(FILE))).toBeNull()
+    // The same file with the page turned on alone is refused; with the list on as well it passes.
+    const at = (lists: boolean, page: boolean) =>
+      read(FILE)
+        .replace(/^export const MAIL_LISTS_ON = (?:true|false)$/m, `export const MAIL_LISTS_ON = ${lists}`)
+        .replace(/^export const MAIL_PAGE_ON = (?:true|false)$/m, `export const MAIL_PAGE_ON = ${page}`)
+    expect(pageFault(at(false, true))).toBe('MAIL_PAGE_ON is on while MAIL_LISTS_ON is off')
+    expect(pageFault(at(true, true))).toBeNull()
+    expect(pageFault(at(true, false))).toBeNull()
+    expect(pageFault(at(false, false))).toBeNull()
   })
 })
 

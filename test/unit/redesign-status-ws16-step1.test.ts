@@ -317,7 +317,8 @@ describe('REDESIGN_STATUS.md, WS16 step 1: the step block', () => {
     const headings = sectionLines.filter((l) => l.startsWith('### '))
     const FIXED = [MAP, STEP, ...LISTS]
     for (const fixed of FIXED) expect(headings.filter((h) => h === fixed), fixed).toHaveLength(1)
-    for (const h of headings.filter((l) => !FIXED.includes(l))) expect(/^### WS16 step (?:[1-9]|1[0-2]): \S/.test(h) || isCheckpoint(h), h).toBe(true)
+    // The page half of WS16 part two keeps its part of the record under one heading of its own (its page step 3).
+    for (const h of headings.filter((l) => !FIXED.includes(l))) expect(/^### WS16 step (?:[1-9]|1[0-2]): \S/.test(h) || isCheckpoint(h) || h === '### WS16 part two: the newsletter\'s own page', h).toBe(true)
     expect(strayHeadings(ws16)).toEqual([])
     expect(headings.filter((h) => /^### Step\b/.test(h))).toEqual([])
   })

@@ -40,6 +40,13 @@ import {
 } from './mail'
 import { mediaManagerResponseSchema, payoutRequestRequestSchema, payoutRequestResponseSchema, tournamentCreationResponseSchema } from './me'
 import {
+  newsletterIssueResponseSchema,
+  newsletterIssueSavedResponseSchema,
+  newsletterIssueSaveRequestSchema,
+  newsletterIssuesResponseSchema,
+  newsletterIssueStartRequestSchema,
+} from './newsletter'
+import {
   batchRegistrationRequestSchema,
   batchRegistrationResponseSchema,
   createRegistrationRequestSchema,
@@ -74,6 +81,16 @@ export const contracts = {
   'admin/mail/newsletter': {
     GET: { response: newsletterSummaryResponseSchema },
     POST: { request: newsletterRequestSchema, response: newsletterResponseSchema },
+  },
+  'admin/mail/newsletter/issue': {
+    GET: { response: newsletterIssueResponseSchema },
+    PUT: { request: newsletterIssueSaveRequestSchema, response: newsletterIssueSavedResponseSchema },
+  },
+  'admin/mail/newsletter/issue/start': {
+    POST: { request: newsletterIssueStartRequestSchema, response: newsletterIssueResponseSchema },
+  },
+  'admin/mail/newsletter/issues': {
+    GET: { response: newsletterIssuesResponseSchema },
   },
   'admin/mail/newsletter/stop': {
     POST: { response: newsletterStopResponseSchema },

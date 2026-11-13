@@ -333,7 +333,8 @@ describe('calls through the barrel send what they sent before', () => {
   it('asks what the member may create and sends a payout request, signed in, to the two paths added since the split', async () => {
     const { getTournamentCreation, requestPayoutAccount, ApiError } = await import('@/lib/api')
     expect([...ADDED.paths].sort()).toEqual([
-      '/api/admin/mail/newsletter', '/api/admin/mail/newsletter/stop', '/api/admin/mail/newsletter/test', '/api/mail/preferences/*', '/api/mail/unsubscribe/*',
+      '/api/admin/mail/newsletter', '/api/admin/mail/newsletter/issue', '/api/admin/mail/newsletter/issue/start', '/api/admin/mail/newsletter/issues',
+      '/api/admin/mail/newsletter/stop', '/api/admin/mail/newsletter/test', '/api/mail/preferences/*', '/api/mail/unsubscribe/*',
       '/api/me/media-manager', '/api/me/payout-request', '/api/me/tournament-creation',
     ])
     session.token = 'tok-5'
