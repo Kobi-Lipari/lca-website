@@ -13,7 +13,7 @@ Written on Thursday, November 12, 2026, for the clubs stream and its builders. K
 7. **Migrations run from 0065 to 0071**, seven files, all additive. The repository allows the gap after 0060. The generator gains a number option so neither stream is handed the other's numbers. Two files write to live rows; section 5 says how each is proved safe.
 8. **Three shared pieces** the brief gives to other workstreams do not exist and are built here under the brief's own names: signed links, the record of timed runs, and the rate limit. Follow, follower emails, Add to calendar, road miles and address lookup are left out, each because its base does not exist.
 9. **The mail stream's held files** are avoided. Three single lines are asked of it (two in the worker, one in a browser test), each with a way to go on if the answer is late. It is also told three things before checkpoint S: how numbers are given out, that S merges after its checkpoint P, and what the preview bucket does to its previews (section 7).
-10. **K has eight choices** (section 9). Choices 1 to 4 come before building starts. The brief's defaults the plan builds on are listed after them, so no choice is hidden.
+10. **K has nine choices** (section 9). Choices 1 to 4 come before building starts. The brief's defaults the plan builds on are listed after them, so no choice is hidden.
 
 ## 2. The order and the checkpoints
 
@@ -258,7 +258,7 @@ Planned here, built by neither stream until the mail stream gives its word on th
 
 ## 9. What K must decide
 
-Recommended first, each with its reason. K may answer "all recommended" or give numbers. Choices 1 to 4 are answered by Monday, November 16, 2026, before building starts; 5 before step 6; 6 before checkpoint V; 7 and 8 before checkpoint W. The manifest's `open_questions_for_k` holds the same eight.
+Recommended first, each with its reason. K may answer "all recommended" or give numbers. Choices 1 to 4 and 9 are answered by Monday, November 16, 2026, before building starts; 5 before step 6; 6 before checkpoint V; 7 and 8 before checkpoint W. The manifest's `open_questions_for_k` holds the same nine.
 
 1. **Filling the regions in production.** With every switch off, a filled region does three things at once: today's public clubs page prints each club's region and its region buttons start to filter; a regional seat holder can open and save that region's clubs on today's admin club page; and, unless it is held back, that page shows them the club's roster with members' emails, US Chess IDs, ratings and membership status, and the officers' emails.
    - (a) Recommended: the fill-blank file merges with checkpoint S, after one read of what production holds and after K maps the unmatched Baton Rouge seat, and the roster and officers' emails stay with LCA admins and the club's own rep. My region is empty without regions, a representative needs the listing and not the roster, and the roster tools leave the page in step 37 anyway.
@@ -296,6 +296,12 @@ Recommended first, each with its reason. K may answer "all recommended" or give 
    - (a) Recommended: yes. Once the public switch has sent browsers and search engines on to the new addresses, a switch-off still finds the club.
    - (b) No change until the public switch is on. A switch-off after it leaves those visitors at "Club not found".
    - Look at: step 23.
+
+9. **The preview's picture bucket** (added Friday, November 13, 2026, after the mail stream's answer). The brief has WS09 bind pictures on previews to a bucket of their own, `lca-club-logos-preview`, so a picture saved on a preview never reaches the live one. Once bound, every preview, the newsletter's included, shows no logo, post picture or officer photo unless the new bucket is first filled with a copy of today's pictures.
+   - (a) Recommended: bind it when photos are built (step 36, checkpoint Z), with a copy of today's pictures made first, by K's hands or on K's go. Nothing before step 36 needs it, a preview cannot be signed into so nothing is uploaded there meanwhile, and previews keep looking like the site through the mail work's busy weeks.
+   - (b) Bind it in step 2, with the copy made first. Previews are safe sooner; K makes the bucket and the copy next week.
+   - (c) Bind it in step 2 with no copy. Previews show no pictures until some are uploaded there.
+   - Look at: any preview's home page and Board page, which show today's pictures.
 
 Lines in commits and pull requests about how the text was made are not a choice: K's standing rule 1 and the handoff's git rule already say none, and every step follows them.
 
