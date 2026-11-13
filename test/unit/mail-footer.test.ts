@@ -235,7 +235,7 @@ describe('the footer', () => {
     for (const [what, text] of [['domain/mail/footer.ts', code], ['the footer', footerHtml.replace(/href="[^"]+"/g, '')], ['the footer source', read('functions/utils/mail/footer.ts').split('\n').filter((line) => !/^\s*(?:\/\/|\/\*\*|\*)/.test(line)).join('\n')]] as const) {
       expect(text, what).not.toMatch(POSTAL)
     }
-    expect(Object.keys(await import('../../domain/mail/footer')).sort()).toEqual(['EVENT_MAIL_STILL_COMES', 'LIST_FOOTER_WORDS', 'PREFERENCES_LABEL', 'listFooterWords'])
+    expect(Object.keys(await import('../../domain/mail/footer')).sort()).toEqual(['EVENT_MAIL_STILL_COMES', 'LIST_FOOTER_WORDS', 'NEWSLETTER_FOLLOW_LINE', 'PREFERENCES_LABEL', 'listFooterWords'])
   })
 
   it('draws its lines in the footer\'s ink and its links underlined in navy, each at 4.5 to 1 or more on the footer\'s ground', () => {
