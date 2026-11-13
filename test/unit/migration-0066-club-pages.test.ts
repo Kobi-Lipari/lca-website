@@ -21,8 +21,9 @@
 //   gives later steps (club_photos, zip_regions, club_distances and the four
 //   tournaments columns) are not here;
 // - run a second time it stops at its first statement and changes nothing;
-// - drizzle/meta: the journal's twelfth entry and 0011_snapshot.json, which
-//   follows 0010's and records the four tables and the fifteen columns.
+// - drizzle/meta: the journal entry its header names, found by its tag, and
+//   that entry's snapshot, which follows the one before it and records the
+//   four tables and the fifteen columns.
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import type { DatabaseSync } from 'node:sqlite'
@@ -286,17 +287,23 @@ describe('0066_club_pages.sql and drizzle/meta', () => {
     tables: Record<string, { columns: Record<string, unknown>; indexes: Record<string, unknown> }>
   }
 
+  // The entry is found by its tag and its number read from it, as the tests of
+  // 0065 and 0067 do, so a renumbering of the staging entries at a merge moves
+  // the header alone.
+  const entry = journal.entries.find((e) => e.tag.endsWith('_club_pages'))
+  const idx = entry?.idx ?? -1
+
   it('was made by the generator with --custom, and its header names the staged file its journal entry names', () => {
     expect(text.split('\n')[0]).toBe('-- 0066_club_pages.sql')
-    expect(text).toContain('-- Hand-written migration (npm run db:generate -- <name> --custom), staged as\n-- drizzle/0011_club_pages.sql.')
-    const entry = journal.entries.find((e) => e.tag.endsWith('_club_pages'))
-    expect(entry).toEqual({ idx: 11, version: '6', when: expect.any(Number), tag: '0011_club_pages', breakpoints: true })
-    expect(journal.entries[11]).toEqual(entry)
+    expect(entry, 'the journal entry').toBeDefined()
+    expect(entry).toEqual({ idx, version: '6', when: expect.any(Number), tag: `${String(idx).padStart(4, '0')}_club_pages`, breakpoints: true })
+    expect(text).toContain(`-- Hand-written migration (npm run db:generate -- <name> --custom), staged as\n-- drizzle/${entry!.tag}.sql.`)
+    expect(journal.entries[idx]).toEqual(entry)
   })
 
-  it('has a snapshot that follows 0010\'s and records the four tables and the fifteen columns alone', () => {
-    const now = snapshot(11)
-    const was = snapshot(10)
+  it('has a snapshot that follows the one before it and records the four tables and the fifteen columns alone', () => {
+    const now = snapshot(idx)
+    const was = snapshot(idx - 1)
     expect(now.prevId).toBe(was.id)
     expect(Object.keys(now.tables).filter((t) => !(t in was.tables)).sort()).toEqual(Object.keys(TABLES).sort())
     expect(Object.keys(was.tables).filter((t) => !(t in now.tables))).toEqual([])

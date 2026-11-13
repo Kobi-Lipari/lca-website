@@ -8,16 +8,19 @@
 -- Data only: the club page's fields for today's 25 clubs, in the columns and
 -- tables migration 0066 added. No table, column, index or reference changes.
 --
--- Every value is typed out per club id, which never changes, rather than
--- matched by name, which an admin may have edited. Every write is to an
+-- Every value is typed out per club id, which never changes: the id picks
+-- the club, never the name, which an admin may have edited. For the six
+-- typed slugs the name 0013 stored is also checked, so a club renamed in
+-- production keeps its id as its slug (part (a)). Every write is to an
 -- empty field: a slug only where slug is NULL, a statement or an About text
 -- only where it is NULL and the club's description still equals what
 -- migration 0013 stored (so a description changed in production is left for
 -- K), a place only where the club has none, a point only where the place has
 -- none, and the told date only where it is NULL. told_by stays NULL, so each
 -- club reads "As told to LCA" with the month until K or the club's rep saves
--- it. A club added since the 25 gets a slug equal to its id and the told
--- date, and nothing else. A second run changes no row.
+-- it. A club added since the 25 gets a slug equal to its id, when the id has
+-- the form domain/clubs/slug.ts gives a slug and is not a reserved word, and
+-- the told date, and nothing else. A second run changes no row.
 --
 -- K's decision 1, choice 4 (a), of Friday, November 13, 2026, settles four
 -- data points, and each has its statements together under a comment of its
@@ -33,39 +36,52 @@
 -- wrote them, old initials and all; they are compared, never written.
 
 -- (a) The slugs. Six clubs' ids differ from the slug of their name, so their
--- slugs are typed out, each only where no other club holds it as its id or
--- its slug. Then every club whose slug is still NULL takes its id, unless the
--- id is a word the club pages keep for their own addresses
--- (domain/clubs/slug.ts) or another club holds it as its slug. The six come
--- first, so none of them takes its id.
+-- slugs are typed out, each only where the club still has the name 0013
+-- stored, from which the slug is made, and no other club holds it as its id
+-- or its slug; one of the six renamed since takes its id, as the others do.
+-- Then every club whose slug is still NULL takes its id, unless the id is a
+-- word the club pages keep for their own addresses (domain/clubs/slug.ts),
+-- the id is not in the form that file gives a slug (at most 48 characters of
+-- a to z, 0 to 9 and single hyphens, with no hyphen at either end), or
+-- another club holds it as its slug; such a club keeps an empty slug for K.
+-- The six come first, so none of them that keeps its name takes its id.
 
 UPDATE clubs SET slug = 'baton-rouge-chess-club'
  WHERE id = 'baton-rouge' AND slug IS NULL
+   AND name = 'Baton Rouge Chess Club'
    AND NOT EXISTS (SELECT 1 FROM clubs AS other WHERE other.id = 'baton-rouge-chess-club' OR other.slug = 'baton-rouge-chess-club');
 
 UPDATE clubs SET slug = 'metairie-chess-academy'
  WHERE id = 'metairie' AND slug IS NULL
+   AND name = 'Metairie Chess Academy'
    AND NOT EXISTS (SELECT 1 FROM clubs AS other WHERE other.id = 'metairie-chess-academy' OR other.slug = 'metairie-chess-academy');
 
 UPDATE clubs SET slug = 'monroe-chess-club'
  WHERE id = 'monroe' AND slug IS NULL
+   AND name = 'Monroe Chess Club'
    AND NOT EXISTS (SELECT 1 FROM clubs AS other WHERE other.id = 'monroe-chess-club' OR other.slug = 'monroe-chess-club');
 
 UPDATE clubs SET slug = 'ruston-knights-chess-club'
  WHERE id = 'ruston' AND slug IS NULL
+   AND name = 'Ruston Knights Chess Club'
    AND NOT EXISTS (SELECT 1 FROM clubs AS other WHERE other.id = 'ruston-knights-chess-club' OR other.slug = 'ruston-knights-chess-club');
 
 UPDATE clubs SET slug = 'shreveport-bossier-chess-club'
  WHERE id = 'shreveport' AND slug IS NULL
+   AND name = 'Shreveport-Bossier Chess Club'
    AND NOT EXISTS (SELECT 1 FROM clubs AS other WHERE other.id = 'shreveport-bossier-chess-club' OR other.slug = 'shreveport-bossier-chess-club');
 
 UPDATE clubs SET slug = 'slidell-chess-club'
  WHERE id = 'slidell' AND slug IS NULL
+   AND name = 'Slidell Chess Club'
    AND NOT EXISTS (SELECT 1 FROM clubs AS other WHERE other.id = 'slidell-chess-club' OR other.slug = 'slidell-chess-club');
 
 UPDATE clubs SET slug = id
  WHERE slug IS NULL
    AND id NOT IN ('suggest', 'reports', 'confirm', 'reply', 'page', 'contact', 'logo')
+   AND length(id) BETWEEN 1 AND 48
+   AND id NOT GLOB '*[^a-z0-9-]*'
+   AND id NOT GLOB '-*' AND id NOT GLOB '*-' AND id NOT GLOB '*--*'
    AND NOT EXISTS (SELECT 1 FROM clubs AS other WHERE other.slug = clubs.id);
 
 -- (b) The old addresses: one row for each of the six, its old slug the id,

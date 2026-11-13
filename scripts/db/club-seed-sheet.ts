@@ -2,8 +2,12 @@
 //
 // Prints the check sheet of today's clubs as migration 0067 seeds them: for
 // each club A to Z, its address and old address, its region, its statement
-// of how it meets, its About text, its places with their pins and the told
-// month. K checks the sheet before the seed merges.
+// of how it meets, its About text, its description and location as they now
+// stand, its places with their pins and the told month. K checks the sheet
+// before the seed merges. The description and location are printed beside
+// what the seed writes, so that part (g), the two doubled apostrophes mended,
+// can be seen on the sheet, and so that K can read today's text against the
+// statement and the About text made from it.
 //
 // It reads the local database that scripts/db/build-local-sqlite.ts builds
 // from migrations/*.sql (.drizzle/introspect.sqlite, gitignored), opened
@@ -47,6 +51,8 @@ interface ClubRow {
   slug: string | null
   how_we_meet_text: string | null
   about_text: string | null
+  description: string | null
+  location: string | null
   told_updated_at: string | null
   told_by: string | null
 }
@@ -84,7 +90,7 @@ export function clubSeedSheet(path: string = DEFAULT_OUT): string {
       throw new Error(`The database at ${path} has no club slugs, so migration 0067 has not run on it. Run npm run db:local-sqlite to build it again from the migrations.`)
     }
     const clubs = db.prepare(
-      'SELECT id, name, city, region, slug, how_we_meet_text, about_text, told_updated_at, told_by FROM clubs',
+      'SELECT id, name, city, region, slug, how_we_meet_text, about_text, description, location, told_updated_at, told_by FROM clubs',
     ).all() as unknown as ClubRow[]
     clubs.sort((a, b) => a.name.localeCompare(b.name, 'en') || a.id.localeCompare(b.id, 'en'))
     const history = db.prepare('SELECT old_slug, club_id FROM club_slug_history ORDER BY old_slug').all() as Array<{ old_slug: string; club_id: string }>
@@ -116,6 +122,8 @@ export function clubSeedSheet(path: string = DEFAULT_OUT): string {
       lines.push(`   City: ${club.city ?? 'None'}. Region: ${club.region ?? 'None'}`)
       lines.push(`   How we meet: ${club.how_we_meet_text ?? 'None'}`)
       lines.push(`   About: ${club.about_text ?? 'None'}`)
+      lines.push(`   Description today: ${club.description ?? 'None'}`)
+      lines.push(`   Location today: ${club.location ?? 'None'}`)
       const own = places.filter((p) => p.club_id === club.id)
       if (own.length === 0) lines.push('   Places: None')
       for (const [n, p] of own.entries()) {
