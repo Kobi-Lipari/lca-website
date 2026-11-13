@@ -2,12 +2,12 @@
 
 Written on Friday, November 13, 2026, for whoever takes this stream over. The whole project's handoff is `HANDOFF.md`; the rules where the two streams meet are `STREAMS.md`. This file holds only what is the clubs stream's own.
 
-## Where it stands (Friday, November 13, 2026, about 12:15 AM UTC)
+## Where it stands (Friday, November 13, 2026, about 2:30 AM UTC)
 
-- **The plan is written and waits for K's answers. Nothing is built.** The plan is `ws09-plan.md`, its 38 steps `ws09-manifest.json`, K's copy `ws09-summary.md`. K has nine numbered choices (plan section 9; the ninth was added after K's copy was written and is not in it); choices 1 to 4 and 9 are wanted by Monday, November 16, 2026, for a start on Tuesday, November 17, 2026.
-- **How the plan was made.** Five read-only reports (the clubs code on `main` at `af4a21c`; the brief's WS09 section with every "verify:" item; K's decisions; the decided boards; what WS09 leans on in other workstreams), two outlines from different angles (staff first; risk first), one joined plan, two reviews that tried to break it (does it throw anything off; is it what the brief and K's decisions ask), one revision. The reviews found seven blocking problems between them, all mended in the revision; plan section 14 lists what changed.
-- **The build branch does not exist yet.** `redesign/ws09-clubs` is cut from `main` only after K answers.
-- **No production read, no preview write and no merge has been made by this stream.**
+- **K answered the plan: "All recommendations are good"** (decision 1 in `ws09-k-decisions.md`): option (a) of all nine choices. The manifest's `k_answers` holds them, with two amendments (choice 9 moves the preview bucket's binding from step 2 to step 36).
+- **Building has started.** `redesign/ws09-clubs` was cut from `main` at `af4a21c` on Friday, November 13, 2026. Step 1, `ws09-01-the-record-and-a-named-public-answer`, is the step in hand; the lead's notes say how far it is.
+- **The plan** is `ws09-plan.md`, its 38 steps `ws09-manifest.json`, K's copy `ws09-summary.md`. It was made from five read-only reports, two outlines from different angles, one joined plan, two reviews that tried to break it and one revision (plan section 14 lists what the reviews changed).
+- **No production read, no preview write and no merge has been made by this stream.** The one production read (which clubs hold a region, which seats cover one) is wanted before checkpoint S merges and is asked of K then.
 
 ## The plan in short
 
@@ -49,6 +49,5 @@ As in `HANDOFF.md` ("Standing rules", "Security", "How a slice is built") and `S
 
 ## Next
 
-1. K answers the nine choices; the answers are written into the manifest's `k_answers` and a decisions file for this stream, `ws09-k-decisions.md`, in the form of `ws16-k-decisions.md`.
-2. Done: the mail stream answered the meeting points (above).
-3. Cut `redesign/ws09-clubs` from `main` at that moment and build step 1.
+1. Build steps 1 to 5 on `redesign/ws09-clubs`, each scouted, built, tested, reviewed (two rounds at most), closed and gated before its commit, then pushed.
+2. Checkpoint S: bring `main` in, run the gate again, open the draft pull request (no footer), the merge-safety review, a fix round, the check sheet of the 25 clubs for K, the production read on K's go, and K's word before the merge, after the mail stream's checkpoint P or on Tuesday, December 1, 2026, whichever comes first.

@@ -13,6 +13,8 @@
 7. Friday, December 18, 2026: the directory.
 8. Wednesday, December 23, 2026: photos, last checks.
 
+**Your answer (Friday, November 13, 2026).** "All recommendations are good": option (a) of each, and of choice 9, added after this page was written (the preview's picture bucket: set up when photos are built, with a copy of today's pictures first). Building has started. The choices as they were put:
+
 **Your choices.** "All recommended" works. Answer 1 to 4 by Monday, November 16, 2026.
 
 1. Club regions in production. Today's clubs page then shows them, and representatives can edit their clubs today. (a) Recommended: fill them, keeping members' emails from representatives. (b) Fill them, roster shown. (c) You set each by hand. Look at: Appendix C.
