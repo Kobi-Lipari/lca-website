@@ -51,10 +51,10 @@ describe('REDESIGN_STATUS.md, the News posts\' cleaner: where its section stands
     expect(section).not.toMatch(/\n### /)
   })
 
-  it('opens with its status, branch and pull request, built and not merged, the pull request a draft', () => {
-    expect(lines[2]).toBe('**Status:** built on branch `fix/news-posts-cleaner` on Friday, November 13, 2026, from `af4a21c`, the merge of pull request 127; not merged yet.')
+  it('opens with its status, branch and pull request, now merged into main', () => {
+    expect(lines[2]).toBe('**Status:** built on branch `fix/news-posts-cleaner` on Friday, November 13, 2026, from `af4a21c`, the merge of pull request 127; merged into `main` as `13a2c36` on Friday, November 13, 2026 at 4:56 AM UTC.')
     expect(lines[3]).toBe('**Branch:** `fix/news-posts-cleaner`, cut from `main` at `af4a21c` on Thursday, November 12, 2026.')
-    expect(lines[4]).toBe('**PR:** draft pull request 128, opened from this branch on Friday, November 13, 2026; not merged yet.')
+    expect(lines[4]).toBe('**PR:** pull request 128, merged into `main` as `13a2c36` on Friday, November 13, 2026 at 4:56 AM UTC.')
   })
 
   it('gives the date line a date on or after the day it was written, the line\'s pinned start and end kept', () => {
@@ -172,11 +172,11 @@ describe('REDESIGN_STATUS.md, the News posts\' cleaner: what it records', () => 
     }
   })
 
-  it('leaves a link written as a site path to K and a post\'s fields to before checkpoint N, neither changed here', () => {
+  it('records the two follow-ups the cleaner left, now closed by decision 61 in the links and fields section', () => {
     const followUp = bullet('Follow-up for K: a link written as a site path.')
-    for (const piece of ['Not changed here', '`isSafeLink`', 'once the browser has decoded entities and dropped tabs and line breaks', 'in the same tab', 'No script runs through one', 'K\'s to decide']) expect(followUp, piece).toContain(piece)
+    for (const piece of ['Not changed here', '`isSafeLink`', 'once the browser has decoded entities and dropped tabs and line breaks', 'in the same tab', 'No script runs through one', 'decision 61', 'the News posts\' links and fields']) expect(followUp, piece).toContain(piece)
     const fields = bullet('Follow-up: a post\'s fields are trusted to be text.')
-    for (const piece of ['as it was at `af4a21c`', '`applyPostEdits`', 'leaves its empty draft behind', 'nothing live gets out that way', 'before checkpoint N']) expect(fields, piece).toContain(piece)
+    for (const piece of ['as it was at `af4a21c`', '`applyPostEdits`', 'leaves its empty draft behind', 'nothing live gets out that way', 'before checkpoint N', 'decision 61']) expect(fields, piece).toContain(piece)
   })
 
   it('gives a checks line with this change\'s figures and the base\'s, the browser run the gate\'s before the commit', () => {

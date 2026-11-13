@@ -44,9 +44,27 @@ export async function uniqueSlug(db: D1Database, base: string, exceptId?: string
   return `${root}-${Date.now().toString(36)}`
 }
 
-/** Site paths ("/tournaments/x") or http(s)/mailto links only. */
+/**
+ * A link's address the body cleaner and the button link both accept: a page
+ * on this site, or an http(s) or mailto address. An address that starts with
+ * "/" is a page on this site only when no browser could read it as another
+ * site's, whether from an href attribute (where entities are decoded first)
+ * or as a plain address: its second character is not "/", not a backslash and
+ * not "&" (an entity can spell either of the first two), and it holds no tab,
+ * line break or other control character, which a browser drops and which could
+ * leave "//" or "/\" at the front. A backslash, "&", "%2f" or "%5c" later in
+ * the address, a query and a fragment all stay on this site and are kept.
+ */
 export function isSafeLink(url: string): boolean {
-  if (url.startsWith('/') && !url.startsWith('//')) return true
+  if (url.startsWith('/')) {
+    for (let i = 0; i < url.length; i++) {
+      const code = url.charCodeAt(i)
+      // A control character (C0, DEL or C1): a browser drops a tab or line break,
+      // which could leave "//" or "/\" at the front, so refuse any of them.
+      if (code <= 0x1f || (code >= 0x7f && code <= 0x9f)) return false
+    }
+    return url.length === 1 || (url[1] !== '/' && url[1] !== '\\' && url[1] !== '&')
+  }
   return /^(https?:\/\/|mailto:)/i.test(url)
 }
 
@@ -220,6 +238,31 @@ const MAX_TITLE = 140
 const MAX_SUMMARY = 400
 const MAX_BODY = 60_000
 
+/** The one plain refusal when a create or edit request is not in the shape the site sends. */
+export const POST_FIELD_REFUSAL =
+  'This post could not be saved because part of it was not in the form the site expects. Reload the page and try again.'
+
+/**
+ * Holds every field of a create or edit request to its kind before any field
+ * is read or any row is written: the whole body an object; title, slug,
+ * summary and bodyHtml text; linkUrl, linkLabel and publishedAt text or null;
+ * status text; pinned true or false. A field left out is fine. Anything else
+ * returns the one refusal above, so a request made by hand cannot end in an
+ * unhandled error, leave a half-made post behind, or pass a length limit on a
+ * value that is not text (a list's length counts its items). Unknown keys are
+ * left alone, as the request parser elsewhere leaves them.
+ */
+export function checkPostBody(body: unknown): string | null {
+  if (typeof body !== 'object' || body === null || Array.isArray(body)) return POST_FIELD_REFUSAL
+  const b = body as Record<string, unknown>
+  const text = (v: unknown) => v === undefined || typeof v === 'string'
+  const textOrNull = (v: unknown) => v === undefined || v === null || typeof v === 'string'
+  if (!text(b.title) || !text(b.slug) || !text(b.summary) || !text(b.bodyHtml) || !text(b.status)) return POST_FIELD_REFUSAL
+  if (!textOrNull(b.linkUrl) || !textOrNull(b.linkLabel) || !textOrNull(b.publishedAt)) return POST_FIELD_REFUSAL
+  if (b.pinned !== undefined && typeof b.pinned !== 'boolean') return POST_FIELD_REFUSAL
+  return null
+}
+
 /**
  * Applies a (partial) edit and returns the saved post, or an error message.
  * Shared with create so both follow the same rules.
@@ -230,6 +273,9 @@ export async function applyPostEdits(
   body: PostBody,
   memberId: string,
 ): Promise<PostRow | string> {
+  const fieldError = checkPostBody(body)
+  if (fieldError) return fieldError
+
   const existing = await db.prepare('SELECT * FROM lca_posts WHERE id = ?').bind(id).first<PostRow>()
   if (!existing) return 'Post not found'
 
@@ -255,7 +301,7 @@ export async function applyPostEdits(
   }
   if (body.linkUrl !== undefined) {
     const url = body.linkUrl?.trim() || null
-    if (url && !isSafeLink(url)) return 'The button link must start with /, http://, https:// or mailto:'
+    if (url && !isSafeLink(url)) return 'The button link must be a page on this site, starting with a single /, or start with http://, https:// or mailto:'
     next.link_url = url
   }
   if (body.linkLabel !== undefined) {
