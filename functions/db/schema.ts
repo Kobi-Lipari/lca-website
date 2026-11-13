@@ -48,6 +48,7 @@
 // later change rewrites them.
 import { sql } from 'drizzle-orm'
 import { foreignKey, index, integer, primaryKey, real, sqliteTable, text, uniqueIndex } from 'drizzle-orm/sqlite-core'
+import type { AnySQLiteColumn } from 'drizzle-orm/sqlite-core'
 
 export const clubs = sqliteTable('clubs', {
   id: text().primaryKey(),
@@ -63,7 +64,39 @@ export const clubs = sqliteTable('clubs', {
   region: text().default(sql`(NULL)`),
   latitude: real(),
   longitude: real(),
-})
+  // The club page's columns (WS09, migration 0066). Each is nullable or has a
+  // default, and no answer reads them yet: the public answer and today's
+  // admin answers name their columns (functions/utils/clubs/publicAnswer.ts
+  // and adminAnswer.ts).
+  /** The club's address part, /clubs/:slug: made from the name at the first save and kept on rename (domain/clubs/slug.ts). NULL until set; the unique index allows many NULLs. */
+  slug: text(),
+  /** The one sentence, or the club's own paragraphs. */
+  aboutText: text('about_text'),
+  /** The meeting statement in the club's own words; empty reads "Schedule not listed". */
+  howWeMeetText: text('how_we_meet_text'),
+  costText: text('cost_text'),
+  welcomeText: text('welcome_text'),
+  /** 1 when the club says it plays on weekends; set by the club on its page. */
+  weekendPlay: integer('weekend_play').default(0).notNull(),
+  /** 1 when the club says it welcomes school players; set by the club on its page. */
+  scholasticFriendly: integer('scholastic_friendly').default(0).notNull(),
+  /** A contact's public name, such as "Ray A."; contact_email stays private. */
+  contactNamePublic: text('contact_name_public'),
+  facebookUrl: text('facebook_url'),
+  websiteUrl: text('website_url'),
+  otherUrl: text('other_url'),
+  /** The last save of the club's words. */
+  toldUpdatedAt: text('told_updated_at'),
+  /** Who made that save. No delete action: the member delete sets it to NULL first. */
+  toldBy: text('told_by').references((): AnySQLiteColumn => members.id),
+  /** The last monthly check, shown to keepers only. */
+  lastConfirmedAt: text('last_confirmed_at'),
+  /** Who made that check. No delete action: the member delete sets it to NULL first. */
+  confirmedBy: text('confirmed_by').references((): AnySQLiteColumn => members.id),
+},
+(table) => [
+  uniqueIndex('idx_clubs_slug').on(table.slug),
+])
 
 export const tournaments = sqliteTable('tournaments', {
   id: text().primaryKey(),
@@ -674,5 +707,70 @@ export const mailDoNotSend = sqliteTable('mail_do_not_send', {
   /** The bounce's kind as Amazon names it, such as General, NoEmail, Suppressed or OnAccountSuppressionList, and nothing else of the notification. */
   detail: text(),
   /** When the address was put on the list. */
+  createdAt: text('created_at').default(sql`(datetime('now'))`).notNull(),
+})
+
+
+// WS09's club tables (migration 0066). Their CHECKs (the kinds, the
+// statuses and the connections) are in the migration, as the header says of
+// every CHECK. No reference has a delete action: the member delete and the
+// club delete clear each one before the row they point at goes
+// (functions/api/admin/members/[id].ts and functions/api/admin/clubs/[id].ts).
+
+/** Today's ids and every old slug of a club, each to answer with a move to its page. */
+export const clubSlugHistory = sqliteTable('club_slug_history', {
+  oldSlug: text('old_slug').primaryKey(),
+  clubId: text('club_id').notNull().references(() => clubs.id),
+})
+
+/** Where a club meets: at most two places, place 1 the directory's pin. */
+export const clubPlaces = sqliteTable('club_places', {
+  id: integer().primaryKey({ autoIncrement: true }),
+  clubId: text('club_id').notNull().references(() => clubs.id),
+  name: text().notNull(),
+  street: text(),
+  /** Such as "Meeting room past the front desk". */
+  note: text(),
+  latitude: real(),
+  longitude: real(),
+  sort: integer().default(0).notNull(),
+})
+
+/** Suggest an update (a club's), and Suggest a club and Start a club (no club yet). */
+export const clubReports = sqliteTable('club_reports', {
+  id: integer().primaryKey({ autoIncrement: true }),
+  /** NULL for Suggest a club and Start a club. */
+  clubId: text('club_id').references(() => clubs.id),
+  /** 'suggestion', 'new_club' or 'start_club'. */
+  kind: text().notNull(),
+  /** The "What changed?" choice. */
+  field: text(),
+  message: text().notNull(),
+  /** A new club's name, city or ZIP and meeting words. */
+  proposedJson: text('proposed_json'),
+  region: text(),
+  /** Optional on a suggestion. */
+  reporterEmail: text('reporter_email'),
+  /** 'open', 'applied', 'answered' or 'dismissed'. */
+  status: text().default('open').notNull(),
+  resolvedBy: text('resolved_by').references(() => members.id),
+  resolvedAt: text('resolved_at'),
+  createdAt: text('created_at').default(sql`(datetime('now'))`).notNull(),
+  /** When an open report, unanswered at 14 days, also went to the LCA admins. */
+  escalatedAt: text('escalated_at'),
+})
+
+/** A member's request to be named a club's rep. */
+export const clubRepRequests = sqliteTable('club_rep_requests', {
+  id: integer().primaryKey({ autoIncrement: true }),
+  clubId: text('club_id').notNull().references(() => clubs.id),
+  memberId: text('member_id').notNull().references(() => members.id),
+  /** 'runs_it', 'helps_run_it', 'keeps_page' or 'other'. */
+  connection: text().notNull(),
+  note: text(),
+  /** 'open', 'approved' or 'declined'. */
+  status: text().default('open').notNull(),
+  decidedBy: text('decided_by').references(() => members.id),
+  decidedAt: text('decided_at'),
   createdAt: text('created_at').default(sql`(datetime('now'))`).notNull(),
 })

@@ -303,9 +303,11 @@ async function exampleClub(region: string | null = REGION) {
   return { clubId, rep, one, two, admin, draft }
 }
 
-/** GET /api/admin/clubs/[id] as the code before migration 0065 answered it, for anyone it admitted. */
+/** GET /api/admin/clubs/[id] as the code before migration 0065 answered it, for anyone it admitted; its club is the row's 13 columns of that time, which SELECT * read before migration 0066 added more. */
 async function todaysClubAnswer(clubId: string): Promise<string> {
-  const club = await env.DB.prepare('SELECT * FROM clubs WHERE id = ?').bind(clubId).first()
+  const club = await env.DB.prepare(
+    'SELECT id, name, city, location, description, meeting_schedule, contact_email, created_at, color, image_url, region, latitude, longitude FROM clubs WHERE id = ?',
+  ).bind(clubId).first()
   const officers = await env.DB.prepare(
     `SELECT co.id, co.member_id, co.role, m.full_name, m.email
      FROM club_officers co

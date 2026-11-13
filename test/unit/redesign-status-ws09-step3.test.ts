@@ -247,7 +247,8 @@ describe('REDESIGN_STATUS.md, WS09 step 3: the parts', () => {
     ]) expect(run, piece).toContain(piece)
     expect(read('migrations/0065_club_regions.sql')).toContain('-- drizzle/0010_club_regions.sql.')
     const readme = read('migrations/README.md').replace(/\s+/g, ' ')
-    expect(readme).toContain('The clubs work\'s next file, `0066`, is made with `--number`')
+    // The README names the clubs work's next file, the number the generator gives next: `0066` while this step is the latest.
+    expect(readme).toContain(`The clubs work's next file, \`${nextMigrationNumber(readdirSync(join(ROOT, 'migrations')))}\`, is made with \`--number\``)
     if (latestStep !== 3) return
     const journal = JSON.parse(read('drizzle/meta/_journal.json')) as { entries: Array<{ idx: number; tag: string; version: string; breakpoints: boolean }> }
     expect(journal.entries).toHaveLength(11)

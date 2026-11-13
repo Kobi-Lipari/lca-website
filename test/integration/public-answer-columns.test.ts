@@ -6,7 +6,7 @@
 // - the answer is today's, byte for byte: a made up club with every column
 //   filled, an officer, a listed event and a news item answers the text the
 //   handler sent before its select named the columns, and every club the
-//   migrations seed answers its row exactly as SELECT * reads it;
+//   migrations seed answers its row exactly as its 13 columns read it;
 // - who asks changes nothing: signed out, a member and an LCA admin get
 //   the same 13 keys.
 import { env } from 'cloudflare:test'
@@ -23,6 +23,12 @@ beforeEach(resetHarness)
 const COLUMNS = [
   'id', 'name', 'city', 'location', 'description', 'meeting_schedule', 'contact_email',
   'created_at', 'color', 'image_url', 'region', 'latitude', 'longitude',
+]
+
+/** The club page's 15 columns, which migration 0066 adds after today's 13 and no public answer carries. */
+const ADDED_BY_0066 = [
+  'slug', 'about_text', 'how_we_meet_text', 'cost_text', 'welcome_text', 'weekend_play', 'scholastic_friendly', 'contact_name_public',
+  'facebook_url', 'website_url', 'other_url', 'told_updated_at', 'told_by', 'last_confirmed_at', 'confirmed_by',
 ]
 
 /** A column that is not in the list, added for one case and dropped again after it. */
@@ -94,10 +100,10 @@ describe('the public club answer names its columns', () => {
     const id = await seedExampleClub()
     await withThrowawayColumn(async () => {
       const row = await env.DB.prepare('SELECT * FROM clubs WHERE id = ?').bind(id).first<Record<string, unknown>>()
-      expect(Object.keys(row!)).toEqual([...COLUMNS, THROWAWAY])
+      expect(Object.keys(row!)).toEqual([...COLUMNS, ...ADDED_BY_0066, THROWAWAY])
       expect(Object.keys(publicClubAnswer(row!, false))).toEqual(COLUMNS)
       expect(Object.keys(publicClubAnswer(row!, true))).toEqual(COLUMNS.filter((c) => c !== 'contact_email'))
-      expect(Object.keys(row!)).toEqual([...COLUMNS, THROWAWAY])
+      expect(Object.keys(row!)).toEqual([...COLUMNS, ...ADDED_BY_0066, THROWAWAY])
     })
   })
 
@@ -169,8 +175,8 @@ describe('the public club answer is today\'s, byte for byte', () => {
     expect(await result.response.text()).toBe(STORED)
   })
 
-  it('answers every club the migrations seed with its row exactly as SELECT * reads it', async () => {
-    const { results } = await env.DB.prepare('SELECT * FROM clubs ORDER BY id').all<Record<string, unknown>>()
+  it('answers every club the migrations seed with its row exactly as its 13 columns read it', async () => {
+    const { results } = await env.DB.prepare(`SELECT ${COLUMNS.join(', ')} FROM clubs ORDER BY id`).all<Record<string, unknown>>()
     expect(results.length).toBeGreaterThan(20)
     for (const row of results) {
       const result = await invoke(clubGet, { params: { id: String(row.id) } })

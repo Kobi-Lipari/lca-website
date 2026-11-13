@@ -50,8 +50,8 @@ To change the schema:
    the staging folder `drizzle/`; the script numbers it after the highest
    prefix here (the sections tables were `0052`, `requires_lca_membership`
    was `0054`, the 2026 champion `0058`, the ticket kinds `0059`, the mail
-   lists `0060`, the club regions `0065`; `0066` is next), adds a header and
-   writes it here as `0066_club_notes.sql`. Commit it together with the new
+   lists `0060`, the club regions `0065`, the club pages `0066`; `0067` is
+   next), adds a header and writes it here as `0067_club_notes.sql`. Commit it together with the new
    snapshot in `drizzle/meta`.
 3. Read the file, run `npm run db:migrate:local` and `npm run test:all`.
 
@@ -60,11 +60,11 @@ To give the file a number of its own, add `--number` and four digits
 The script refuses a number that is not four digits, or that a file here
 already has, says why, and writes nothing; without `--number` it numbers
 the file as in step 2, the highest prefix here plus one, so with
-`0065_club_regions.sql` in this folder it gives `0066` next. Two streams of
+`0066_club_pages.sql` in this folder it gives `0067` next. Two streams of
 work share this folder: `0061` to `0064` are kept for the mail work and
 `0065` to `0071` for the clubs work, and each stream makes its files with
 `--number`, so that once a clubs file is on `main` nobody is handed a number
-the other stream holds. The clubs work's next file, `0066`, is made with
+the other stream holds. The clubs work's next file, `0067`, is made with
 `--number` as well, like each of its files after it.
 
 The script refuses, writes nothing and puts `drizzle/` back when the file

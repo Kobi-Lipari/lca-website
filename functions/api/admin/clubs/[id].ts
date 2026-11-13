@@ -12,6 +12,11 @@ import {
 } from '../../../utils/response'
 import { recordAdminAction } from '../../../utils/admin/audit'
 import { admittedByRegionAlone, officersWithoutEmail } from '../../../utils/clubs/memberView'
+import { ADMIN_CLUB_COLUMNS } from '../../../utils/clubs/adminAnswer'
+import { isMissingTableOrColumn } from '../../../utils/clubs/migrationLag'
+
+/** The one log line for a club's rows in migration 0066's tables that the delete could not clear; it names no club. */
+export const CLUB_ROWS_UNCLEARED_LOG = 'club delete: the club tables of migration 0066 could not be read; the delete goes on without them'
 
 interface UpdateClubBody {
   name?: string
@@ -34,7 +39,8 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
   const authResult = await requireClubView(context.request, context.env, clubId)
   if (isResponse(authResult)) return authResult
 
-  const club = await context.env.DB.prepare('SELECT * FROM clubs WHERE id = ?')
+  // Today's 13 columns by name, so the answer is what it was before 0066.
+  const club = await context.env.DB.prepare(`SELECT ${ADMIN_CLUB_COLUMNS} FROM clubs WHERE id = ?`)
     .bind(clubId)
     .first()
 
@@ -161,7 +167,8 @@ export const onRequestPatch: PagesFunction<Env> = async (context) => {
     clubId,
   ).run()
 
-  const club = await context.env.DB.prepare('SELECT * FROM clubs WHERE id = ?')
+  // Today's 13 columns by name, so the answer is what it was before 0066.
+  const club = await context.env.DB.prepare(`SELECT ${ADMIN_CLUB_COLUMNS} FROM clubs WHERE id = ?`)
     .bind(clubId).first<Record<string, unknown>>()
 
   // Which fields actually changed, for the activity log.
@@ -196,7 +203,25 @@ export const onRequestDelete: PagesFunction<Env> = async (context) => {
   await context.env.DB.prepare('UPDATE tournaments SET club_id = NULL WHERE club_id = ?').bind(clubId).run()
   await context.env.DB.prepare('DELETE FROM club_officers WHERE club_id = ?').bind(clubId).run()
   await context.env.DB.prepare('DELETE FROM club_news WHERE club_id = ?').bind(clubId).run()
-  await context.env.DB.prepare('DELETE FROM clubs WHERE id = ?').bind(clubId).run()
+  // The club's rows in migration 0066's tables, which reference it with no
+  // delete action, go in one batch with the club itself, so a club whose own
+  // delete fails keeps its places, old slugs, reports and rep requests. A club
+  // that owns a mail list (mail_lists.club_id, 0060) still cannot be deleted,
+  // as before. Before 0066 has run the four tables are not there, and the club
+  // is deleted on its own as before, with one log line.
+  try {
+    await context.env.DB.batch([
+      context.env.DB.prepare('DELETE FROM club_places WHERE club_id = ?').bind(clubId),
+      context.env.DB.prepare('DELETE FROM club_slug_history WHERE club_id = ?').bind(clubId),
+      context.env.DB.prepare('DELETE FROM club_reports WHERE club_id = ?').bind(clubId),
+      context.env.DB.prepare('DELETE FROM club_rep_requests WHERE club_id = ?').bind(clubId),
+      context.env.DB.prepare('DELETE FROM clubs WHERE id = ?').bind(clubId),
+    ])
+  } catch (err) {
+    if (!isMissingTableOrColumn(err)) throw err
+    console.warn(CLUB_ROWS_UNCLEARED_LOG)
+    await context.env.DB.prepare('DELETE FROM clubs WHERE id = ?').bind(clubId).run()
+  }
 
   return jsonResponse({ success: true })
 }
