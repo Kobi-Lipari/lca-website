@@ -2320,10 +2320,23 @@
   "Choice 9, the preview's picture bucket (added Friday, November 13, 2026, after the mail stream's answer). Once pictures on previews are bound to lca-club-logos-preview, every preview, the newsletter's included, shows no logo, post picture or officer photo unless the bucket is first filled with a copy of today's pictures. Recommended: (a) bind it when photos are built (step 36), with a copy made first by K's hands or on K's go; nothing before step 36 needs it and previews keep looking like the site meanwhile. Other options: (b) bind it in step 2, with the copy made first; (c) bind it in step 2 with no copy. Look at: any preview's home page and Board page. If K picks (a), step 2 leaves wrangler.toml's preview section as it is and step 36 carries the binding and its test."
  ],
  "k_answers": {
-  "given": "",
-  "words": "",
-  "answers": [],
+  "given": "Friday, November 13, 2026 (decision 1 in ws09-k-decisions.md)",
+  "words": "All recommendations are good",
+  "answers": [
+   "1 (a): the blank regions are filled with checkpoint S, after one read of production and after the Baton Rouge seat is mapped; the roster and officers' emails stay with LCA admins and the club's own rep",
+   "2 (a): two more switches, clubKeepers and regionEvents, beside newClubs; clubEmailHidden goes on before them",
+   "3 (a): a save in the new editor also writes today's fields",
+   "4 (a): two doubled apostrophes mended, pins seeded from today's map list, Shreveport-Bossier's second pin kept as place 2, the shared New Orleans pin kept, Heart of Worship as stored; K may turn any point at checkpoint S's look",
+   "5 (a): straight-line miles and a built-in place list; no provider",
+   "6 (a): representatives' club events in the staff half as checkpoint V, behind regionEvents, with an LCA admin's approval, always $0",
+   "7 (a): the new public pages show only with the new look on, held by a test",
+   "8 (a): from checkpoint W a club's new short address finds today's page with every switch off",
+   "9 (a): the preview's picture bucket is bound when photos are built (step 36), with a copy of today's pictures made first by K's hands or on K's go"
+  ],
   "how_to_read": "A step's scout composes its brief from the step's entry as amended here; where an entry and an amendment differ, the amendment holds, and the step's record names it as a deviation from the entry.",
-  "amendments": {}
+  "amendments": {
+   "ws09-02-the-switches-and-the-preview-bucket": "Choice 9 (a): the step leaves wrangler.toml's preview section and test/unit/wrangler-config.test.ts as they are; the binding of CLUB_LOGOS to lca-club-logos-preview and its test move to step 36.",
+   "ws09-36-club-photos": "Choice 9 (a): the step carries the binding of CLUB_LOGOS to lca-club-logos-preview under [env.preview] and its case in test/unit/wrangler-config.test.ts, and does not start until K has made the bucket and a copy of today's pictures is in it (by K's hands or on K's go, said to K first)."
+  }
  }
 }
