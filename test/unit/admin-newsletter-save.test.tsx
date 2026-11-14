@@ -20,7 +20,10 @@
 //   as a request that outlives the page, the question a link of the site
 //   asks first, and the save that goes at once when the page is left within
 //   the site;
-// - a reload keeps the words.
+// - a reload keeps the words;
+// - since the second half: a read of their letter that fails changes the
+//   refusal's region once, and words a 400 or a 413 refused are not sent
+//   again by the page itself, while a change to them is.
 // Every name, word and time here is made up.
 import type { ReactNode } from 'react'
 import { act, cleanup, fireEvent, render, renderHook, screen } from '@testing-library/react'
@@ -230,7 +233,7 @@ describe('the refusals, each in words, none tried again by itself', () => {
     puts.push({ status: 409, body: { error: 'Someone saved this letter after you opened it, so your words were not saved.', reason: 'changed', changedBy: 'Player Two', changedAt: '2026-11-13 20:17:00' } })
     act(() => result.current.edit(words({ bodyHtml: `${BODY}<p>Mine</p>` })))
     await wait(SAVE_PAUSE_MS)
-    expect(result.current.line).toEqual({ kind: 'conflict', reason: 'changed', by: 'Player Two', at: '2026-11-13 20:17:00', readFailed: false })
+    expect(result.current.line).toEqual({ kind: 'conflict', reason: 'changed', by: 'Player Two', at: '2026-11-13 20:17:00', readFailures: 0 })
     // Nothing more is saved over their letter, and the words on the page are the person's.
     act(() => result.current.edit(words({ bodyHtml: `${BODY}<p>Mine and more</p>` })))
     await wait(SAVE_PAUSE_MS * 3)
@@ -257,18 +260,18 @@ describe('the refusals, each in words, none tried again by itself', () => {
     await wait(SAVE_PAUSE_MS)
     gets.push({ status: 0, body: null })
     await act(async () => result.current.showTheirs())
-    expect(result.current.line).toMatchObject({ kind: 'conflict', reason: 'set_aside', readFailed: true })
+    expect(result.current.line).toMatchObject({ kind: 'conflict', reason: 'set_aside', readFailures: 1 })
   })
 
-  it('says again that their letter could not be read when a read fails a second time, taking the failure away while it reads', async () => {
+  it('says again that their letter could not be read when a read fails a second time, keeping the failure on the line while it reads', async () => {
     const { result } = await opened()
     puts.push({ status: 409, body: { error: 'x', reason: 'changed', changedBy: 'Player Two', changedAt: '2026-11-13 20:17:00' } })
     act(() => result.current.edit(words({ bodyHtml: `${BODY}<p>Mine</p>` })))
     await wait(SAVE_PAUSE_MS)
     gets.push({ status: 0, body: null })
     await act(async () => result.current.showTheirs())
-    expect(result.current.line).toMatchObject({ kind: 'conflict', readFailed: true })
-    // Pressed again: the failure leaves the line while their letter is read, and comes back to it when the read fails
+    expect(result.current.line).toMatchObject({ kind: 'conflict', readFailures: 1 })
+    // Pressed again: the failure stays on the line while their letter is read, and is counted again when the read fails
     // again, so the refusal's region, which draws it, says it again.
     const later = held({ status: 500, body: { error: 'Something went wrong' } })
     gets.push(later.answer)
@@ -276,10 +279,56 @@ describe('the refusals, each in words, none tried again by itself', () => {
     act(() => {
       reading = result.current.showTheirs()
     })
-    expect(result.current.line).toEqual({ kind: 'conflict', reason: 'changed', by: 'Player Two', at: '2026-11-13 20:17:00', readFailed: false })
+    expect(result.current.line).toEqual({ kind: 'conflict', reason: 'changed', by: 'Player Two', at: '2026-11-13 20:17:00', readFailures: 1 })
     await later.release()
     await act(async () => reading)
-    expect(result.current.line).toEqual({ kind: 'conflict', reason: 'changed', by: 'Player Two', at: '2026-11-13 20:17:00', readFailed: true })
+    expect(result.current.line).toEqual({ kind: 'conflict', reason: 'changed', by: 'Player Two', at: '2026-11-13 20:17:00', readFailures: 2 })
+    expect(saves()).toHaveLength(1)
+  })
+
+  it('changes the refusal\'s region once for each read of their letter that fails, the failure\'s sentence a part of its own', async () => {
+    let issue!: ReturnType<typeof useIssue>
+    function Line() {
+      issue = useIssue(true)
+      return <SavedLine line={issue.line} onTryAgain={issue.saveNow} onShowTheirs={() => {}} />
+    }
+    gets.push({ status: 200, body: letter() })
+    render(<Line />)
+    await settle()
+    puts.push({ status: 409, body: { error: 'x', reason: 'changed', changedBy: 'Player Two', changedAt: '2026-11-13 20:17:00' } })
+    act(() => issue.edit(words({ bodyHtml: `${BODY}<p>Mine</p>` })))
+    await wait(SAVE_PAUSE_MS)
+    const alert = screen.getByRole('alert')
+    const refusal = 'Player Two changed this letter at 2:17 PM. Nothing more is saved over their letter. Your words stay here for you to copy.'
+    expect(alert.textContent).toBe(refusal)
+    // Each change of the region is one round of the browser's mutation records, as a screen reader takes it.
+    let changes = 0
+    const watcher = new MutationObserver(() => {
+      changes += 1
+    })
+    watcher.observe(alert, { subtree: true, childList: true, characterData: true })
+    try {
+      for (const n of [1, 2, 3]) {
+        const before = changes
+        const later = held({ status: 500, body: { error: 'Something went wrong' } })
+        gets.push(later.answer)
+        let reading: Promise<void> = Promise.resolve()
+        act(() => {
+          reading = issue.showTheirs()
+        })
+        await settle()
+        // While their letter is read, the region keeps its words, the failure before among them.
+        expect(changes - before, `read ${n} on its way`).toBe(0)
+        await later.release()
+        await act(async () => reading)
+        await settle()
+        expect(changes - before, `read ${n} failed`).toBe(1)
+        expect(screen.getByRole('alert')).toBe(alert)
+        expect(alert.textContent).toBe(`${refusal} Their letter could not be read. Press "Show their letter" to try again.`)
+      }
+    } finally {
+      watcher.disconnect()
+    }
     expect(saves()).toHaveLength(1)
   })
 
@@ -372,13 +421,13 @@ describe('the words in the saved line', () => {
     expect(draw({ kind: 'saved', at: '2026-11-12 20:15:00' })).toBe('Saved on Thursday, November 12, 2026 at 2:15 PM')
     expect(draw({ kind: 'failed' })).toBe('Could not saveTry again')
     expect(draw({ kind: 'refused', words: 'This letter is too long for one email. Make it shorter, then save again.' })).toBe('This letter is too long for one email. Make it shorter, then save again.')
-    expect(draw({ kind: 'conflict', reason: 'changed', by: 'Player Two', at: '2026-11-13 20:17:00', readFailed: false })).toBe(
+    expect(draw({ kind: 'conflict', reason: 'changed', by: 'Player Two', at: '2026-11-13 20:17:00', readFailures: 0 })).toBe(
       'Player Two changed this letter at 2:17 PM. Nothing more is saved over their letter. Your words stay here for you to copy.Show their letter',
     )
-    expect(draw({ kind: 'conflict', reason: 'sent', by: 'Player Two', at: '2026-11-12 23:05:00', readFailed: false })).toBe(
+    expect(draw({ kind: 'conflict', reason: 'sent', by: 'Player Two', at: '2026-11-12 23:05:00', readFailures: 0 })).toBe(
       'Player Two sent this letter on Thursday, November 12, 2026 at 5:05 PM. Nothing more is saved to it. Your words stay here for you to copy.',
     )
-    expect(draw({ kind: 'conflict', reason: 'set_aside', by: null, at: '2026-11-13 20:17:00', readFailed: true })).toBe(
+    expect(draw({ kind: 'conflict', reason: 'set_aside', by: null, at: '2026-11-13 20:17:00', readFailures: 1 })).toBe(
       'Someone started a new letter at 2:17 PM. Nothing more is saved over their letter. Your words stay here for you to copy. Their letter could not be read. Press "Show their letter" to try again.Show their letter',
     )
   })
@@ -391,16 +440,16 @@ describe('the words in the saved line', () => {
     expect(screen.getByRole('status').textContent).toBe('')
     expect(screen.getByRole('alert').textContent).toBe('Could not save')
     expect(screen.getByRole('button', { name: 'Try again' })).toBeTruthy()
-    draw({ kind: 'conflict', reason: 'sent', by: 'Player Two', at: '2026-11-13 20:17:00', readFailed: false })
+    draw({ kind: 'conflict', reason: 'sent', by: 'Player Two', at: '2026-11-13 20:17:00', readFailures: 0 })
     expect(screen.queryByRole('button', { name: 'Show their letter' })).toBeNull()
   })
 
   it('reads every sentence of a refusal out at once from its one region, and a read of their letter that failed from the same region', () => {
-    const line = { kind: 'conflict', reason: 'changed', by: 'Player Two', at: '2026-11-13 20:17:00', readFailed: false } as const
+    const line = { kind: 'conflict', reason: 'changed', by: 'Player Two', at: '2026-11-13 20:17:00', readFailures: 0 } as const
     const view = render(<SavedLine line={line} onTryAgain={() => {}} onShowTheirs={() => {}} />)
     const alert = screen.getByRole('alert')
     expect(alert.textContent).toBe('Player Two changed this letter at 2:17 PM. Nothing more is saved over their letter. Your words stay here for you to copy.')
-    view.rerender(<SavedLine line={{ ...line, readFailed: true }} onTryAgain={() => {}} onShowTheirs={() => {}} />)
+    view.rerender(<SavedLine line={{ ...line, readFailures: 1 }} onTryAgain={() => {}} onShowTheirs={() => {}} />)
     expect(screen.getByRole('alert')).toBe(alert)
     expect(alert.textContent).toBe(
       'Player Two changed this letter at 2:17 PM. Nothing more is saved over their letter. Your words stay here for you to copy. Their letter could not be read. Press "Show their letter" to try again.',
@@ -711,7 +760,7 @@ describe('the page\'s own saves it never heard back about', () => {
     act(() => result.current.edit(words({ bodyHtml: `${BODY}<p>Mine and more</p>` })))
     await wait(SAVE_PAUSE_MS)
     await settle()
-    expect(result.current.line).toEqual({ kind: 'conflict', reason: 'changed', by: 'Player Two', at: '2026-11-13 20:17:00', readFailed: false })
+    expect(result.current.line).toEqual({ kind: 'conflict', reason: 'changed', by: 'Player Two', at: '2026-11-13 20:17:00', readFailures: 0 })
     await wait(SAVE_PAUSE_MS * 3)
     expect(saves()).toHaveLength(2)
     // A save with no answer, then Try again meets a newer letter, and the letter cannot be read: the refusal stands.
@@ -724,7 +773,7 @@ describe('the page\'s own saves it never heard back about', () => {
     gets.push({ status: 0, body: null })
     act(() => again.result.current.saveNow())
     await settle()
-    expect(again.result.current.line).toEqual({ kind: 'conflict', reason: 'changed', by: 'Player Two', at: '2026-11-13 20:17:00', readFailed: false })
+    expect(again.result.current.line).toEqual({ kind: 'conflict', reason: 'changed', by: 'Player Two', at: '2026-11-13 20:17:00', readFailures: 0 })
     expect(saves()).toHaveLength(2)
   })
 
@@ -744,9 +793,57 @@ describe('the page\'s own saves it never heard back about', () => {
     gets.push({ status: 200, body: { ...letter({ version: 5, bodyHtml: '<h2>Sample heading two</h2><p>Theirs</p>' }), lastSavedBy: 'Player Two', lastSavedAt: '2026-11-13 21:05:00' } })
     await first.release()
     await settle()
-    expect(result.current.line).toEqual({ kind: 'conflict', reason: 'changed', by: 'Player Two', at: '2026-11-13 21:05:00', readFailed: false })
+    expect(result.current.line).toEqual({ kind: 'conflict', reason: 'changed', by: 'Player Two', at: '2026-11-13 21:05:00', readFailures: 0 })
     await wait(SAVE_PAUSE_MS * 3)
     expect(saves().map((s) => [s.body?.version, s.keepalive])).toEqual([[3, false], [3, true]])
+  })
+
+  it('sends nothing by itself after a 400 or a 413, as the page goes and comes back, and a change to the words sends again', async () => {
+    for (const [status, refusal] of [[413, 'This letter is too long for one email. Make it shorter, then save again.'], [400, 'Keep the subject to 200 characters.']] as const) {
+      cleanup()
+      calls = []
+      const { result } = await opened()
+      puts.push(status === 400 ? { status, body: { error: 'Some fields are missing or not valid.', fields: { subject: refusal } } } : { status, body: { error: refusal } })
+      act(() => result.current.edit(words({ bodyHtml: `${BODY}<p>Refused ${status}</p>` })))
+      await wait(SAVE_PAUSE_MS)
+      expect(result.current.line, `${status}`).toEqual({ kind: 'refused', words: refusal })
+      // The page goes, as a tab closes or another site opens, and is brought back by Back: the refused words stay unsent.
+      await gone()
+      await settle()
+      await back()
+      await settle()
+      await wait(SAVE_PAUSE_MS * 3)
+      expect(saves(), `${status}`).toHaveLength(1)
+      expect(result.current.line, `${status}`).toEqual({ kind: 'refused', words: refusal })
+      // A change to the words is the person's own, and sends them.
+      puts.push(saved(4))
+      act(() => result.current.edit(words({ bodyHtml: `${BODY}<p>Refused ${status}, mended</p>` })))
+      await wait(SAVE_PAUSE_MS)
+      expect(saves(), `${status}`).toHaveLength(2)
+      expect(saves()[1].body, `${status}`).toMatchObject({ version: 3, bodyHtml: `${BODY}<p>Refused ${status}, mended</p>` })
+      expect(result.current.line, `${status}`).toEqual({ kind: 'saved', at: '2026-11-13 21:00:00' })
+    }
+  })
+
+  it('sends nothing by itself after a 400 or a 413 when the page is left within the site, nor when typing goes back to the refused words', async () => {
+    for (const status of [413, 400] as const) {
+      cleanup()
+      calls = []
+      const view = await opened()
+      puts.push({ status, body: { error: 'Sample words the server refused.' } })
+      act(() => view.result.current.edit(words({ bodyHtml: `${BODY}<p>Refused</p>` })))
+      await wait(SAVE_PAUSE_MS)
+      expect(view.result.current.line, `${status}`).toEqual({ kind: 'refused', words: 'Sample words the server refused.' })
+      // Words typed and taken back within the pause: the words on the page are the refused ones again, and stay unsent.
+      act(() => view.result.current.edit(words({ bodyHtml: `${BODY}<p>Refused, and more</p>` })))
+      act(() => view.result.current.edit(words({ bodyHtml: `${BODY}<p>Refused</p>` })))
+      await wait(SAVE_PAUSE_MS * 2)
+      expect(saves(), `${status}`).toHaveLength(1)
+      expect(view.result.current.line, `${status}`).toEqual({ kind: 'refused', words: 'Sample words the server refused.' })
+      view.unmount()
+      await wait(SAVE_PAUSE_MS * 2)
+      expect(saves(), `${status}`).toHaveLength(1)
+    }
   })
 
   it('saves at once, when brought back by Back, words too long to send as the page went', async () => {

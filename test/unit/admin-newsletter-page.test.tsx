@@ -26,7 +26,12 @@
 //   out by it, is still untouched for holdsWords.
 // - The preview is renderNewsletter's email with a footer in the real words,
 //   in a frame with a sandbox of no allowances; the frame on show holds the
-//   letter as it stands, a change taken back among them.
+//   letter as it stands, a change taken back among them; put away by Hide,
+//   it keeps its frames, so Show the email never shows an empty one.
+// - What a narrow window is given, as far as this runtime can tell: "See the
+//   email" and its sheet with the side preview's own copy, and the Subject's
+//   field, which wraps its words and takes no line break: one pasted becomes
+//   a space, as a field of one line makes it.
 // The editor's library measures text through browser APIs jsdom lacks; they
 // are given stand-ins here, in this file only. Every name, word and number
 // here is made up.
@@ -565,6 +570,37 @@ describe('the side preview', () => {
     expect(document.activeElement).toBe(holder)
   })
 
+  it('keeps its frames while it is hidden, so Show the email puts on show a frame that has loaded the letter as it stands, never an empty one', async () => {
+    await site('/admin/newsletter', person({ role: 'lca_admin' }))
+    await thePage()
+    const frames = () => [...document.querySelectorAll<HTMLIFrameElement>('[data-slot="side-preview"] iframe')]
+    const onShow = () => document.querySelector<HTMLIFrameElement>('[data-slot="side-preview"] iframe[data-shown]')
+    const written = (words: string) => frames().some((frame) => frame.getAttribute('srcdoc')?.includes(words))
+    /** The browser has finished loading what each frame was given; jsdom loads no frame by itself. */
+    const loaded = () => {
+      for (const frame of frames()) fireEvent.load(frame)
+    }
+    await waitFor(() => expect(written('Sample words two')).toBe(true))
+    loaded()
+    fireEvent.click(screen.getByRole('button', { name: 'Hide' }))
+    // Put away, the email is out of sight and out of a screen reader's reach, and its two frames are kept.
+    expect(screen.queryByRole('complementary', { name: 'What members will get' })).toBeNull()
+    const kept = frames()
+    expect(kept).toHaveLength(2)
+    // A word typed while it is hidden goes into the frame not on show, which loads it as any frame does.
+    await act(async () => {
+      editorOf().chain().insertContentAt(editorOf().state.doc.content.size - 1, ' Zebrafish').run()
+    })
+    await waitFor(() => expect(written('Zebrafish')).toBe(true))
+    loaded()
+    fireEvent.click(screen.getByRole('button', { name: 'Show the email' }))
+    expect(screen.getByRole('complementary', { name: 'What members will get' })).toBeTruthy()
+    // The same two frames, not drawn afresh: the one on show has loaded the letter as it stands.
+    expect(frames()).toEqual(kept)
+    expect(onShow()?.getAttribute('srcdoc')).toContain('Zebrafish')
+    expect(document.querySelectorAll('[data-slot="side-preview"] iframe[data-shown]')).toHaveLength(1)
+  })
+
   it('sets its width by Phone and Computer, and Hide puts it away with Show the email where Hide was', async () => {
     await site('/admin/newsletter', person({ role: 'lca_admin' }))
     await thePage()
@@ -575,8 +611,58 @@ describe('the side preview', () => {
     expect([phone.getAttribute('aria-pressed'), computer.getAttribute('aria-pressed')]).toEqual(['false', 'true'])
     expect(document.querySelector('[data-view]')?.getAttribute('data-view')).toBe('computer')
     fireEvent.click(screen.getByRole('button', { name: 'Hide' }))
-    expect(document.querySelector('[data-slot="side-preview"]')).toBeNull()
+    expect(screen.queryByRole('complementary', { name: 'What members will get' })).toBeNull()
     fireEvent.click(screen.getByRole('button', { name: 'Show the email' }))
-    expect(document.querySelector('[data-slot="side-preview"]')).not.toBeNull()
+    expect(screen.queryByRole('complementary', { name: 'What members will get' })).not.toBeNull()
+  })
+})
+
+describe('the page on a tablet and a phone, as far as this runtime can tell', () => {
+  // The page lays itself out by the window's width at the site's own breakpoints, in its stylesheet, which this runtime
+  // does not apply: so what is held here is what a narrow window is given to use, the sheet and the Subject's field.
+  it('gives "See the email", which opens a sheet with the side preview\'s own copy of the email and "Back to writing", and no Phone, Computer or Hide', async () => {
+    await site('/admin/newsletter', person({ role: 'lca_admin' }))
+    await thePage()
+    const side = () => [...document.querySelectorAll<HTMLIFrameElement>('[data-slot="side-preview"] iframe')].find((f) => f.getAttribute('srcdoc')?.includes('Sample words two'))
+    await waitFor(() => expect(side()).toBeTruthy())
+    const see = screen.getByRole('button', { name: 'See the email' })
+    expect(see.getAttribute('aria-haspopup')).toBe('dialog')
+    fireEvent.click(see)
+    const sheet = screen.getByRole('dialog', { name: 'What members will get' })
+    const frame = await waitFor(() => {
+      const shown = within(sheet).getAllByTitle('The email as members will get it').find((f) => f.getAttribute('srcdoc')?.includes('Sample words two'))
+      expect(shown).toBeTruthy()
+      return shown as HTMLIFrameElement
+    })
+    // The same closed frame and the same copy as the side preview's: no allowance, every link but a jump link without its address.
+    expect(frame.getAttribute('sandbox')).toBe('')
+    expect(frame.getAttribute('srcdoc')).toBe(side()!.getAttribute('srcdoc'))
+    expect(frame.getAttribute('srcdoc')).toContain('<a tabindex="-1" role="link" aria-disabled="true" style="color:#1a2744;text-decoration:underline;">Unsubscribe from the LCA newsletter</a>')
+    expect(within(sheet).getByText('LCA Newsletter · December 2026')).toBeTruthy()
+    expect(within(sheet).getByRole('button', { name: 'Back to writing' })).toBeTruthy()
+    for (const name of ['Phone', 'Computer', 'Hide']) expect(within(sheet).queryByRole('button', { name }), name).toBeNull()
+  })
+
+  it('takes no line break in the Subject, typed or pasted, in a field that wraps its words', async () => {
+    await site('/admin/newsletter', person({ role: 'lca_admin' }))
+    await thePage()
+    const subject = screen.getByRole('textbox', { name: /Subject/ }) as HTMLTextAreaElement
+    // A field whose words wrap, so a long subject shows whole on a phone, and one line of text to the server.
+    expect(subject.tagName).toBe('TEXTAREA')
+    subject.focus()
+    expect(fireEvent.keyDown(subject, { key: 'Enter' })).toBe(false)
+    // A line break pasted becomes a space, as a field of one line makes it, so the words either side stay apart; the
+    // caret stays where it was, though the field's words are put back.
+    fireEvent.change(subject, { target: { value: 'Sample subject\nrunning on\r\nto a third line', selectionStart: 26 } })
+    expect(subject.value).toBe('Sample subject running on to a third line')
+    expect(subject.selectionStart).toBe(26)
+    // A line break at the end of the words, as a line copied with its end brings one, is dropped, the caret after them.
+    fireEvent.change(subject, { target: { value: 'Sample subject running on to a third line\n', selectionStart: 42 } })
+    expect(subject.value).toBe('Sample subject running on to a third line')
+    expect(subject.selectionStart).toBe(41)
+    // A run of them is one space, and none is added at the start or beside a space already there.
+    fireEvent.change(subject, { target: { value: '\nSample subject \nrunning on\n\nto a third line\r\n' } })
+    expect(subject.value).toBe('Sample subject running on to a third line')
+    expect(subject.value).not.toMatch(/[\n\r]/)
   })
 })

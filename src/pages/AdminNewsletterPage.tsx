@@ -18,9 +18,21 @@
 // The page: the head with the saved line (NewsletterHead), From and
 // Subject, the tools and the letter (LetterEditor), the size controls, and
 // at the side what members will get with the count. Saving is useIssue's.
-// The bar at the foot, Help, the tablet's and the phone's own pieces, the
-// test and Send come with later steps: the page keeps 80 pixels of room at
-// its foot for the bar, which is 76 pixels tall on the board.
+// The bar at the foot, Help, the test and Send come with later steps: the
+// page keeps 80 pixels of room at its foot for the bar, which is 76 pixels
+// tall on the board.
+//
+// By the window's width, at the site's own breakpoints: from 1024 pixels up
+// the computer's page, the letter with the email beside it; under 1024 the
+// tablet's (board P19), the letter the whole width with the big tools, From
+// and Subject stacked, and "See the email" at the head's right opening the
+// email as a sheet; under 768 the phone's (board P20), the same with the
+// phone's own tools and head. Each is drawn by the stylesheet, so the page is
+// right at every width and as a window turns, with nothing to wait for.
+//
+// Make bigger fills the window with the letter: the page itself, its head
+// then the letter's top with "Show the email", is the dialog, so the saved
+// line in the head is one element whatever the letter's size.
 
 import { useEffect, useRef, useState, type KeyboardEvent } from 'react'
 import { Link, Navigate } from 'react-router-dom'
@@ -30,8 +42,8 @@ import { useMediaManagerAnswer } from '@/areas/admin/mediaManagerAnswer'
 import { CountCard } from '@/areas/admin/newsletter/CountCard'
 import { FromSubjectRow } from '@/areas/admin/newsletter/FromSubjectRow'
 import { LetterEditor } from '@/areas/admin/newsletter/LetterEditor'
-import { MonthState, NewsletterHead, SavedLine, type SavedLineProps } from '@/areas/admin/newsletter/NewsletterHead'
-import { SidePreview, type PreviewView } from '@/areas/admin/newsletter/SidePreview'
+import { NewsletterHead, SavedLineNotice, type SavedLineProps } from '@/areas/admin/newsletter/NewsletterHead'
+import { EmailSheet, SidePreview, type PreviewView } from '@/areas/admin/newsletter/SidePreview'
 import { useIssue, type Issue, type LetterDraft } from '@/areas/admin/newsletter/useIssue'
 import { usePageTitle } from '@/hooks/usePageTitle'
 import { getNewsletter } from '@/lib/api'
@@ -47,9 +59,13 @@ const PREVIEW_PAUSE_MS = 400
  * The page's ground under the head: the board's desk, a warm tint over the site's own ground, in every look. Each
  * control the keyboard reaches keeps room above it for the site's sticky header, which today's header does not ask the
  * page to keep, and below it for the bar page step 5 fixes at the window's foot, so a control reached by Tab is
- * scrolled clear of both.
+ * scrolled clear of both. On a phone the room below is 144 pixels, the bar's 80 and the new look's dock under it, whose
+ * own room the site gives up while the letter or a field has the focus.
  */
-const DESK = 'min-h-[calc(100dvh-var(--header-h,64px))] bg-lca-gold/20 pb-20 [&_:is(a,button,input,[tabindex],[contenteditable])]:scroll-mb-24 [&_:is(a,button,input,[tabindex],[contenteditable])]:scroll-mt-24'
+const DESK = 'min-h-[calc(100dvh-var(--header-h,64px))] bg-lca-gold/20 pb-20 [&_:is(a,button,input,textarea,[tabindex],[contenteditable])]:scroll-mb-24 max-md:[&_:is(a,button,input,textarea,[tabindex],[contenteditable])]:scroll-mb-36 [&_:is(a,button,input,textarea,[tabindex],[contenteditable])]:scroll-mt-24'
+
+/** The page while the letter fills the window: the whole window, scrolling inside itself, its controls kept clear as on the page. */
+const BIGGER = 'fixed inset-0 z-[70] flex flex-col overflow-y-auto bg-background [&_:is(a,button,input,textarea,[tabindex],[contenteditable])]:scroll-mb-24 [&_:is(a,button,input,textarea,[tabindex],[contenteditable])]:scroll-mt-24'
 
 /** Every control the keyboard stops on inside a part of the page, in the page's order. */
 function tabStops(root: HTMLElement | null): HTMLElement[] {
@@ -172,7 +188,11 @@ function NewsletterLetter({ issue, count, view, onView, previewHidden, onPreview
   // The side draws the letter as the editor holds it, never the words as they came, so it starts with the band alone.
   const [preview, setPreview] = useState<LetterDraft>({ ...issue.letter, bodyHtml: '' })
   const [bigger, setBigger] = useState(false)
-  const column = useRef<HTMLElement>(null)
+  const [sheetOpen, setSheetOpen] = useState(false)
+  const desk = useRef<HTMLDivElement>(null)
+  const side = useRef<HTMLDivElement>(null)
+  /** The control that opened the email's sheet, which takes the focus back as it closes. */
+  const opener = useRef<HTMLButtonElement | null>(null)
   const previewPause = useRef<number | undefined>(undefined)
   const preheader = issue.letter.preheader
 
@@ -202,20 +222,20 @@ function NewsletterLetter({ issue, count, view, onView, previewHidden, onPreview
 
   /**
    * While the letter fills the window, the keyboard stays inside it, and Escape gives the page back. A key pressed in
-   * something drawn over the letter, such as the "Show their letter?" question, reaches here through React's tree from
-   * outside the column, and is that thing's own: Escape there closes the question alone. Whether the key was marked
-   * handled is not asked, since the letter's editor marks every Escape as its own.
+   * something drawn over the letter, such as the "Show their letter?" question or the email's sheet, reaches here
+   * through React's tree from outside the page, and is that thing's own: Escape there closes it alone. Whether the key
+   * was marked handled is not asked, since the letter's editor marks every Escape as its own.
    */
-  function onColumnKey(event: KeyboardEvent<HTMLElement>) {
+  function onDeskKey(event: KeyboardEvent<HTMLDivElement>) {
     if (!bigger) return
-    if (!column.current?.contains(event.target as Node)) return
+    if (!desk.current?.contains(event.target as Node)) return
     if (event.key === 'Escape') {
       event.preventDefault()
       setBigger(false)
       return
     }
     if (event.key !== 'Tab') return
-    const stops = tabStops(column.current)
+    const stops = tabStops(desk.current)
     if (stops.length === 0) return
     const first = stops[0]
     const last = stops[stops.length - 1]
@@ -228,34 +248,35 @@ function NewsletterLetter({ issue, count, view, onView, previewHidden, onPreview
     }
   }
 
+  /** Opens the email's sheet from the control pressed, which takes the focus back as it closes. */
+  function openSheet(from: HTMLButtonElement) {
+    opener.current = from
+    setSheetOpen(true)
+  }
+
   const saved: SavedLineProps = { line: issue.line, onTryAgain: issue.saveNow, onShowTheirs }
   return (
-    <div className={DESK} data-slot="newsletter-page">
-      <NewsletterHead month={month} state={issue.state} saved={bigger ? undefined : saved} />
+    <div
+      ref={desk}
+      role={bigger ? 'dialog' : undefined}
+      aria-modal={bigger || undefined}
+      aria-label={bigger ? 'The letter, made bigger' : undefined}
+      onKeyDown={onDeskKey}
+      className={bigger ? BIGGER : DESK}
+      data-slot="newsletter-page"
+    >
+      <NewsletterHead month={month} state={issue.state} saved={saved} bigger={bigger} onSeeEmail={openSheet} sheetOpen={sheetOpen} />
       <div
         className={cn(
-          'mx-auto max-w-[1198px] px-4 pt-2.5 sm:px-6 lg:grid lg:gap-x-8',
-          previewHidden ? 'lg:grid-cols-[minmax(0,1fr)_auto]' : 'lg:grid-cols-[minmax(0,806px)_312px] lg:justify-center',
+          // The letter made bigger keeps the same 80 pixels at its foot as the page, where the board draws the bar under it.
+          bigger
+            ? 'flex min-w-0 flex-1 flex-col bg-lca-gold/20 px-4 pb-20 pt-2.5 sm:px-5'
+            : 'mx-auto max-w-[1198px] px-4 pt-2.5 sm:px-6 lg:grid lg:gap-x-8',
+          !bigger && (previewHidden ? 'lg:grid-cols-[minmax(0,1fr)_auto]' : 'lg:grid-cols-[minmax(0,806px)_312px] lg:justify-center'),
         )}
       >
-        <section
-          ref={column}
-          role={bigger ? 'dialog' : undefined}
-          aria-modal={bigger || undefined}
-          aria-label={bigger ? 'The letter, made bigger' : undefined}
-          onKeyDown={onColumnKey}
-          className={cn('@container min-w-0', bigger && 'fixed inset-0 z-[70] overflow-y-auto bg-background')}
-        >
-          <div className={cn('flex min-w-0 flex-col gap-2.5', bigger && 'min-h-full bg-lca-gold/20 px-4 pb-4 sm:px-5')}>
-            {bigger && (
-              <div className="-mx-4 border-b border-border bg-background px-5 py-2 sm:-mx-5">
-                {/* Held to the letter's width, which stops at the board's 1200 pixels so its lines never run the window's width. */}
-                <div className="mx-auto flex min-h-[52px] w-full max-w-[1200px] flex-wrap items-center gap-x-4 gap-y-1">
-                  <MonthState month={month} state={issue.state} />
-                  <SavedLine {...saved} />
-                </div>
-              </div>
-            )}
+        <section className={cn('@container min-w-0', bigger && 'flex flex-1 flex-col')}>
+          <div className={cn('flex min-w-0 flex-col gap-2.5', bigger && 'flex-1')}>
             <FromSubjectRow
               subject={subject}
               stacked={bigger}
@@ -279,12 +300,20 @@ function NewsletterLetter({ issue, count, view, onView, previewHidden, onPreview
             />
           </div>
         </section>
-        <div className="mt-8 flex min-h-0 flex-col lg:mt-0">
+        {/* The email at the side, from 1024 pixels up; under it, the email is the sheet's, and while the letter fills the window, put away. */}
+        <div ref={side} hidden={bigger} className="mt-8 flex min-h-0 flex-col max-lg:hidden lg:mt-0">
           <SidePreview letter={preview} view={view} onView={onView} hidden={previewHidden} onHidden={onPreviewHidden}>
             <CountCard count={count} />
           </SidePreview>
         </div>
       </div>
+      <EmailSheet
+        open={sheetOpen}
+        onOpenChange={setSheetOpen}
+        letter={preview}
+        notice={<SavedLineNotice line={issue.line} />}
+        returnFocus={() => [opener.current, ...(side.current?.querySelectorAll<HTMLElement>('button') ?? [])]}
+      />
     </div>
   )
 }

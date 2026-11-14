@@ -36,11 +36,33 @@
 //
 // Hide puts the column away and gives the letter the room, and the control
 // that brings it back, "Show the email", is where Hide was; each takes the
-// focus from the other. The phone's own sheet, "See the email", is the
-// second half of page step 4's.
+// focus from the other. Put away, the column keeps its frames, out of sight
+// and out of a screen reader's reach, still following the letter, so "Show
+// the email" never shows an empty frame while an email loads.
+//
+// The sheet (boards P19 and P20; K's decision 29): on a tablet and a phone,
+// under 1024 pixels, where the column is not drawn, "See the email" opens
+// "What members will get" as a sheet over the page, and "Show the email" does
+// the same from the letter made bigger at any width. It is a dialog on the
+// site's dialog primitive, as the site's menu sheet is: it takes the focus
+// as it opens, keeps it inside, closes on Escape, on "Back to writing" and
+// on a press outside it, hides the page behind it from a screen reader and
+// keeps that page from scrolling or taking a press. While it is open the
+// site's root, the page behind it, is inert, so no key can take the focus
+// there: the keys pressed inside the email's frame are the frame's own,
+// which the dialog cannot see, and Shift and Tab from the frame would
+// otherwise move the focus to the page's last control and scroll the page
+// to it. Shift and Tab from the frame, or from the sheet itself, goes round
+// to "Back to writing", the sheet's last control. Its email is the side
+// preview's own, in the same frames with the same copy and the same rules,
+// drawn at the sheet's own width, with no Phone, Computer or Hide, as the
+// board draws it; the sheet shows itself once its first email has loaded,
+// so it never opens on an empty frame. Its foot holds "Back to writing" and
+// is kept for page step 6's Send and Send later, a row above it.
 
-import { useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react'
-import { Eye, EyeOff } from 'lucide-react'
+import { useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode, type RefObject } from 'react'
+import * as DialogPrimitive from '@radix-ui/react-dialog'
+import { ChevronLeft, Eye, EyeOff } from 'lucide-react'
 import { PREFERENCES_LABEL, LIST_FOOTER_WORDS } from '@domain/mail/footer'
 import { NEWSLETTER_LIST_ID } from '@domain/mail/lists'
 import { renderNewsletter } from '@domain/mail/newsletterLayout'
@@ -127,9 +149,9 @@ function withOne(pair: readonly [string, string], index: 0 | 1, value: string): 
 /**
  * Two frames, one on show: a new email is written into the other, which takes its place once it has loaded. An email
  * the other frame already holds, loaded, goes on show at once. The keyboard's focus, when it is in the frame going off
- * show, goes with the frame coming on show.
+ * show, goes with the frame coming on show. `onLoaded` hears each time the email as it stands has finished loading.
  */
-function Frames({ email }: { email: string }) {
+function Frames({ email, onLoaded }: { email: string; onLoaded?: () => void }) {
   // What each frame was given, and what each has finished loading: '' while a frame loads what it was given last.
   const [docs, setDocs] = useState<[string, string]>([email, ''])
   const [loaded, setLoaded] = useState<[string, string]>(['', ''])
@@ -165,6 +187,7 @@ function Frames({ email }: { email: string }) {
           onLoad={() => {
             setLoaded((now) => withOne(now, index, docs[index]))
             if (index !== shown && docs[index] === email) setShown(index)
+            if (docs[index] === email) onLoaded?.()
           }}
           className={cn('absolute inset-0 h-full w-full border-0', index !== shown && 'invisible')}
         />
@@ -186,17 +209,9 @@ export interface SidePreviewProps {
 const SEGMENT = 'min-h-11 px-4 text-sm font-semibold outline-none focus-visible:ring-3 focus-visible:ring-inset focus-visible:ring-focus'
 const QUIET_BUTTON = 'inline-flex min-h-11 items-center gap-1.5 rounded-lg border border-muted-foreground bg-background px-3 text-sm font-semibold text-ink outline-none focus-visible:ring-3 focus-visible:ring-focus'
 
-export function SidePreview({ letter, view, onView, hidden, onHidden, children }: SidePreviewProps) {
-  const hideRef = useRef<HTMLButtonElement>(null)
-  const showRef = useRef<HTMLButtonElement>(null)
-  const wasHidden = useRef(hidden)
-  // Hide and Show the email stand in one place, so the focus goes from the one pressed to the one that takes its place.
-  useEffect(() => {
-    if (hidden !== wasHidden.current) (hidden ? showRef : hideRef).current?.focus()
-    wasHidden.current = hidden
-  }, [hidden])
-
-  const email = useMemo(
+/** The email of a letter as the frames take it: renderNewsletter's, with the sample footer, in the frame's own copy. */
+function useFrameEmail(letter: PreviewLetter): string {
+  return useMemo(
     () =>
       forTheFrame(
         renderNewsletter({
@@ -210,21 +225,55 @@ export function SidePreview({ letter, view, onView, hidden, onHidden, children }
       ),
     [letter.monthLabel, letter.subject, letter.preheader, letter.bodyHtml],
   )
+}
 
-  if (hidden) {
-    return (
-      <div className="flex justify-end">
-        <button ref={showRef} type="button" className={QUIET_BUTTON} onClick={() => onHidden(false)}>
-          <Eye className="size-4" aria-hidden="true" />
-          Show the email
-        </button>
-      </div>
-    )
-  }
+export function SidePreview({ letter, view, onView, hidden, onHidden, children }: SidePreviewProps) {
+  const hideRef = useRef<HTMLButtonElement>(null)
+  const showRef = useRef<HTMLButtonElement>(null)
+  const wasHidden = useRef(hidden)
+  // Hide and Show the email stand in one place, so the focus goes from the one pressed to the one that takes its place.
+  useEffect(() => {
+    if (hidden !== wasHidden.current) (hidden ? showRef : hideRef).current?.focus()
+    wasHidden.current = hidden
+  }, [hidden])
 
+  const email = useFrameEmail(letter)
   const { width, scale } = VIEWS[view]
   return (
-    <aside aria-labelledby="newsletter-preview-heading" className="flex min-h-0 flex-1 flex-col" data-slot="side-preview">
+    <>
+      {hidden && (
+        <div className="flex justify-end">
+          <button ref={showRef} type="button" className={QUIET_BUTTON} onClick={() => onHidden(false)}>
+            <Eye className="size-4" aria-hidden="true" />
+            Show the email
+          </button>
+        </div>
+      )}
+      {/* Put away, the column keeps its frames, so the email they hold is loaded when it is shown again. */}
+      <SideColumn hidden={hidden} hideRef={hideRef} view={view} onView={onView} onHide={() => onHidden(true)} subject={letter.subject.trim()} width={width} scale={scale} email={email}>
+        {children}
+      </SideColumn>
+    </>
+  )
+}
+
+interface SideColumnProps {
+  hidden: boolean
+  hideRef: RefObject<HTMLButtonElement | null>
+  view: PreviewView
+  onView: (view: PreviewView) => void
+  onHide: () => void
+  subject: string
+  width: number
+  scale: number
+  email: string
+  children?: ReactNode
+}
+
+/** The column itself: its heading, Phone and Computer, Hide, the email in its frames, and the count under it. */
+function SideColumn({ hidden, hideRef, view, onView, onHide, subject, width, scale, email, children }: SideColumnProps) {
+  return (
+    <aside hidden={hidden} aria-labelledby="newsletter-preview-heading" className="flex min-h-0 flex-1 flex-col" data-slot="side-preview">
       <h2 id="newsletter-preview-heading" className="text-[17px] font-bold leading-tight text-ink">What members will get</h2>
       <div className="mb-3 mt-2.5 flex items-center justify-between gap-2.5">
         <div role="group" aria-label="Show the email on" className="inline-flex overflow-hidden rounded-[10px] border border-muted-foreground bg-background">
@@ -240,7 +289,7 @@ export function SidePreview({ letter, view, onView, hidden, onHidden, children }
             </button>
           ))}
         </div>
-        <button ref={hideRef} type="button" className={QUIET_BUTTON} onClick={() => onHidden(true)}>
+        <button ref={hideRef} type="button" className={QUIET_BUTTON} onClick={onHide}>
           <EyeOff className="size-4" aria-hidden="true" />
           Hide
         </button>
@@ -253,7 +302,7 @@ export function SidePreview({ letter, view, onView, hidden, onHidden, children }
         data-view={view}
       >
         <div className="absolute left-0 top-0 flex origin-top-left flex-col" style={{ width, height: `${100 / scale}%`, transform: `scale(${scale})` }}>
-          <MailTop subject={letter.subject.trim()} />
+          <MailTop subject={subject} />
           <div className="relative min-h-0 flex-1">
             <Frames email={email} />
           </div>
@@ -261,5 +310,152 @@ export function SidePreview({ letter, view, onView, hidden, onHidden, children }
       </div>
       {children}
     </aside>
+  )
+}
+
+/** Whether a control is drawn, where the browser can tell; a page with no layout to ask takes it as drawn. */
+function drawn(element: HTMLElement): boolean {
+  return element.isConnected && (typeof element.checkVisibility !== 'function' || element.checkVisibility())
+}
+
+export interface EmailSheetProps {
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  letter: PreviewLetter
+  /** What the sheet says about the letter's saving while it hides the page: the saved line's notice. */
+  notice?: ReactNode
+  /**
+   * The controls the focus goes back to as the sheet closes, in turn: the one that opened it, and, when that one is no
+   * longer drawn, as when the window has grown past 1024 pixels while the sheet was open, the side preview's own.
+   */
+  returnFocus: () => Array<HTMLElement | null | undefined>
+}
+
+/** The sheet's foot, kept for page step 6's Send and Send later, which go in a row above "Back to writing". */
+const SHEET_FOOT = 'flex flex-none flex-col gap-2 border-t border-border bg-background px-3.5 pt-2.5 pb-[calc(10px+env(safe-area-inset-bottom))] shadow-[0_-6px_14px_rgba(16,24,43,0.07)]'
+
+/** The element the site is drawn in (index.html, src/main.tsx): the page behind the sheet, whose portal stands outside it. */
+const SITE_ROOT_ID = 'root'
+
+/** The mark the dialog primitive gives the two guards it keeps at the document's start and end. */
+const FOCUS_GUARD = 'data-radix-focus-guard'
+
+/** Whether a key is Shift and Tab alone, the key that moves the focus back a stop. */
+function isShiftTab(event: { key: string; shiftKey: boolean; altKey: boolean; ctrlKey: boolean; metaKey: boolean }): boolean {
+  return event.key === 'Tab' && event.shiftKey && !event.altKey && !event.ctrlKey && !event.metaKey
+}
+
+/**
+ * "What members will get" as a sheet (boards P19 and P20): the side preview's email at the sheet's own width, with
+ * "Back to writing" at its foot. It opens with the focus on itself, so a screen reader says its name, and Tab goes to
+ * the email's frame and to "Back to writing" and round again; Shift and Tab goes round the other way, from the frame or
+ * from the sheet itself to "Back to writing", and never reaches the page behind.
+ */
+export function EmailSheet({ open, onOpenChange, letter, notice, returnFocus }: EmailSheetProps) {
+  const sheet = useRef<HTMLDivElement>(null)
+  const back = useRef<HTMLButtonElement>(null)
+  // While the sheet is open, the site's root is inert: none of the page's controls can take the focus, whatever key is
+  // pressed in the email's frame, so the page is never scrolled to one. It is let go as the sheet closes, in the same
+  // moment, so the control the focus is given back to can take it. A root made inert by something else is left as it is.
+  useLayoutEffect(() => {
+    if (!open) return
+    const root = document.getElementById(SITE_ROOT_ID)
+    if (!root || root.hasAttribute('inert')) return
+    root.setAttribute('inert', '')
+    return () => root.removeAttribute('inert')
+  }, [open])
+  // Shift and Tab in the email's frame leaves the frame for the stop before it, which, with the page inert, is the
+  // dialog's guard at the document's start; the focus is sent on round to "Back to writing" instead. The page hears one
+  // of two things: the focus landing on the guard, when the browser's own Tab had taken it into the frame, or the focus
+  // leaving the frame for the guard, when the dialog had put it in the frame, going round from "Back to writing", and
+  // the dialog's trap would hold it in the frame.
+  useEffect(() => {
+    if (!open) return
+    const isStartGuard = (target: EventTarget | null) => target instanceof Element && target === document.querySelector(`[${FOCUS_GUARD}]`)
+    const onFocusIn = (event: FocusEvent) => {
+      if (isStartGuard(event.target)) back.current?.focus()
+    }
+    const onFocusOut = (event: FocusEvent) => {
+      if (isStartGuard(event.relatedTarget)) back.current?.focus()
+    }
+    document.addEventListener('focusin', onFocusIn, true)
+    document.addEventListener('focusout', onFocusOut, true)
+    return () => {
+      document.removeEventListener('focusin', onFocusIn, true)
+      document.removeEventListener('focusout', onFocusOut, true)
+    }
+  }, [open])
+  return (
+    <DialogPrimitive.Root open={open} onOpenChange={onOpenChange}>
+      <DialogPrimitive.Portal>
+        <DialogPrimitive.Overlay className="fixed inset-0 z-[80] bg-brand-navy/55" data-slot="email-sheet-scrim" />
+        <DialogPrimitive.Content
+          ref={sheet}
+          aria-modal="true"
+          aria-describedby={undefined}
+          data-slot="email-sheet"
+          onOpenAutoFocus={(event) => {
+            // The sheet itself takes the focus, never the email's frame, whose document a screen reader would land in.
+            event.preventDefault()
+            sheet.current?.focus({ preventScroll: true })
+          }}
+          onKeyDown={(event) => {
+            // Shift and Tab from the sheet itself, as it opens, goes round to its last control, as from its first.
+            if (isShiftTab(event) && event.target === event.currentTarget) {
+              event.preventDefault()
+              back.current?.focus()
+            }
+          }}
+          onCloseAutoFocus={(event) => {
+            const to = returnFocus().find((element): element is HTMLElement => !!element && drawn(element))
+            if (!to) return
+            event.preventDefault()
+            to.focus()
+          }}
+          className="fixed inset-x-0 bottom-0 top-[min(100px,12dvh)] z-[80] mx-auto flex max-w-[860px] flex-col overflow-hidden rounded-t-[18px] bg-background text-ink shadow-[0_-10px_30px_rgba(16,24,43,0.25)] outline-none"
+        >
+          <SheetInside letter={letter} notice={notice} backRef={back} />
+        </DialogPrimitive.Content>
+      </DialogPrimitive.Portal>
+    </DialogPrimitive.Root>
+  )
+}
+
+/** How long the sheet waits for its first email before it shows itself whatever the frame has done. */
+const SHEET_WAIT_MS = 1000
+
+/**
+ * What the sheet holds, drawn afresh each time it opens: it stays clear until the frame on show has loaded the email, so
+ * the person never meets an empty frame, and the focus, already on the sheet, is not moved by it.
+ */
+function SheetInside({ letter, notice, backRef }: { letter: PreviewLetter; notice?: ReactNode; backRef: RefObject<HTMLButtonElement | null> }) {
+  const email = useFrameEmail(letter)
+  const [ready, setReady] = useState(false)
+  useEffect(() => {
+    const wait = window.setTimeout(() => setReady(true), SHEET_WAIT_MS)
+    return () => window.clearTimeout(wait)
+  }, [])
+  return (
+    <div className={cn('flex min-h-0 flex-1 flex-col', !ready && 'opacity-0')} data-slot="email-sheet-inside">
+      <div className="flex flex-none justify-center pb-0.5 pt-2" aria-hidden="true">
+        <i className="block h-[5px] w-10 rounded-full bg-muted-foreground/40" />
+      </div>
+      <div className="flex-none border-b border-border px-[18px] pb-3 pt-1.5">
+        <DialogPrimitive.Title className="text-[19px] font-bold leading-tight text-ink">What members will get</DialogPrimitive.Title>
+        {notice}
+      </div>
+      <div className="flex min-h-0 flex-1 flex-col">
+        <MailTop subject={letter.subject.trim()} />
+        <div className="relative min-h-0 flex-1">
+          <Frames email={email} onLoaded={() => setReady(true)} />
+        </div>
+      </div>
+      <div className={SHEET_FOOT} data-slot="email-sheet-foot">
+        <DialogPrimitive.Close ref={backRef} className="inline-flex min-h-[50px] w-full items-center justify-center gap-2 rounded-lg bg-brand-navy px-5 text-base font-semibold text-white outline-none focus-visible:ring-3 focus-visible:ring-focus focus-visible:ring-offset-2">
+          <ChevronLeft className="size-[18px]" aria-hidden="true" />
+          Back to writing
+        </DialogPrimitive.Close>
+      </div>
+    </div>
   )
 }

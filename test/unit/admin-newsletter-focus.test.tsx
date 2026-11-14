@@ -20,6 +20,14 @@
 //   the refusal's own region with the focus back on Show their letter.
 // And the controls a keyboard moves: the tools, one stop with the arrow keys
 // among them, Heading's three forms in words, and "Pull to make taller".
+// Since the second half, the page on a tablet and a phone: the saved line's
+// two regions kept in place as the letter is made bigger and smaller; the
+// email's sheet, from "See the email" and from the letter made bigger, which
+// takes the focus, keeps it inside, closes on Escape and on Back to writing,
+// gives it back and hides the page behind it from a screen reader, keeps the
+// site's root inert while it is open and goes round to Back to writing on
+// Shift and Tab from the email's frame and from itself; and the caret brought
+// into view when the keyboard gives the letter the focus.
 // The editor's library measures text through browser APIs jsdom lacks; they
 // are given stand-ins here, in this file only. Every word here is made up.
 import { act, cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react'
@@ -120,10 +128,18 @@ beforeEach(() => {
 afterEach(() => {
   cleanup()
   vi.unstubAllGlobals()
+  vi.useRealTimers()
 })
 
+/** The clock on the day of the refusals below, so a refusal at 2:17 PM is today's whatever day a run is made. */
+const onTheDay = () => {
+  vi.useFakeTimers({ toFake: ['Date'] })
+  vi.setSystemTime(new Date('2026-11-13T21:00:00Z'))
+}
+
 const settle = (ms = 40) => act(async () => new Promise((resolve) => setTimeout(resolve, ms)))
-async function thePage() {
+/** The page signed in as an admin, drawn in `container` when one is given, as the site draws itself in its root. */
+async function thePage(container?: HTMLElement) {
   await act(async () => {
     render(
       <AuthContext.Provider value={ADMIN}>
@@ -131,6 +147,7 @@ async function thePage() {
           <App />
         </MemoryRouter>
       </AuthContext.Provider>,
+      container ? { container } : undefined,
     )
   })
   await screen.findByRole('heading', { level: 1, name: 'Newsletter' }, { timeout: 10_000 })
@@ -291,11 +308,12 @@ describe('Make bigger', () => {
     expect(dialog.getAttribute('aria-modal')).toBe('true')
     expect(within(dialog).getByRole('button', { name: 'Make smaller' })).toBe(bigger)
     await waitFor(() => expect(editorOf().isFocused).toBe(true))
-    // The keyboard stays inside: Tab from the last control goes to the first, and Shift and Tab from the first to the last.
+    // The keyboard stays inside: Tab from the last control goes to the first, "Show the email" in the letter's own top,
+    // and Shift and Tab from the first to the last.
     act(() => bigger.focus())
     const tab = key(dialog, 'Tab')
     expect(tab).toBe(false)
-    expect(within(dialog).getByRole('textbox', { name: /Subject/ })).toBe(focused())
+    expect(within(dialog).getByRole('button', { name: 'Show the email' })).toBe(focused())
     key(dialog, 'Tab', { shiftKey: true })
     expect(focused()).toBe(bigger)
     key(dialog, 'Escape')
@@ -315,6 +333,144 @@ describe('Make bigger', () => {
     expect(screen.queryByRole('dialog', { name: 'The letter, made bigger' })).toBeNull()
     await settle()
     expect(focused()).toBe(screen.getByRole('button', { name: 'Make bigger' }))
+  })
+})
+
+describe('the saved line as the letter is made bigger and smaller', () => {
+  it('keeps the line\'s two regions in place, so a refusal on it is not read out again at each change of size', async () => {
+    onTheDay()
+    on('PUT', ISSUE_URL, { status: 409, body: { error: 'x', reason: 'changed', changedBy: 'Player Two', changedAt: '2026-11-13 20:17:00' } })
+    await thePage()
+    await act(async () => {
+      editorOf().chain().focus('end').insertContent('<p>Mine</p>').run()
+    })
+    await settle(2300)
+    const line = () => document.querySelector('[data-slot="saved-line"]') as HTMLElement
+    const alert = within(line()).getByRole('alert')
+    const status = within(line()).getByRole('status')
+    expect(alert.textContent).toBe('Player Two changed this letter at 2:17 PM. Nothing more is saved over their letter. Your words stay here for you to copy.')
+    fireEvent.click(screen.getByRole('button', { name: 'Make bigger' }))
+    const bigger = screen.getByRole('dialog', { name: 'The letter, made bigger' })
+    // The one line, now in the bigger letter's own top, with the very regions it had.
+    expect(document.querySelectorAll('[data-slot="saved-line"]')).toHaveLength(1)
+    expect(bigger.contains(line())).toBe(true)
+    expect(within(line()).getByRole('alert')).toBe(alert)
+    expect(within(line()).getByRole('status')).toBe(status)
+    fireEvent.click(within(bigger).getByRole('button', { name: 'Make smaller' }))
+    await settle()
+    expect(screen.queryByRole('dialog', { name: 'The letter, made bigger' })).toBeNull()
+    expect(within(line()).getByRole('alert')).toBe(alert)
+    expect(within(line()).getByRole('status')).toBe(status)
+    expect(alert.textContent).toBe('Player Two changed this letter at 2:17 PM. Nothing more is saved over their letter. Your words stay here for you to copy.')
+  })
+})
+
+describe('"See the email" and its sheet', () => {
+  const sheet = () => screen.getByRole('dialog', { name: 'What members will get' })
+
+  it('opens the sheet with the focus in it, keeps the focus inside by Tab and Shift and Tab, and gives it back on Escape and on Back to writing', async () => {
+    await thePage()
+    const see = screen.getByRole('button', { name: 'See the email' })
+    fireEvent.click(see)
+    const dialog = sheet()
+    expect(dialog.getAttribute('aria-modal')).toBe('true')
+    expect(dialog.contains(focused())).toBe(true)
+    // The page behind it is hidden from a screen reader while it is open.
+    expect(document.querySelector('[data-slot="newsletter-page"]')?.closest('[aria-hidden="true"]')).not.toBeNull()
+    // Tab from its last control goes round to its first, and Shift and Tab from its first to its last.
+    const back = within(dialog).getByRole('button', { name: 'Back to writing' })
+    act(() => back.focus())
+    key(back, 'Tab')
+    expect(dialog.contains(focused())).toBe(true)
+    expect(focused()).not.toBe(back)
+    key(focused(), 'Tab', { shiftKey: true })
+    expect(focused()).toBe(back)
+    key(focused(), 'Escape')
+    await settle()
+    expect(screen.queryByRole('dialog', { name: 'What members will get' })).toBeNull()
+    expect(focused()).toBe(see)
+    expect(document.querySelector('[data-slot="newsletter-page"]')?.closest('[aria-hidden="true"]')).toBeNull()
+    // Back to writing closes it the same way.
+    fireEvent.click(see)
+    fireEvent.click(within(sheet()).getByRole('button', { name: 'Back to writing' }))
+    await settle()
+    expect(screen.queryByRole('dialog', { name: 'What members will get' })).toBeNull()
+    expect(focused()).toBe(see)
+  })
+
+  it('opens over the letter made bigger from its "Show the email", and Escape closes the sheet alone', async () => {
+    await thePage()
+    fireEvent.click(screen.getByRole('button', { name: 'Make bigger' }))
+    const bigger = screen.getByRole('dialog', { name: 'The letter, made bigger' })
+    const show = within(bigger).getByRole('button', { name: 'Show the email' })
+    fireEvent.click(show)
+    expect(sheet().contains(focused())).toBe(true)
+    key(focused(), 'Escape')
+    await settle()
+    expect(screen.queryByRole('dialog', { name: 'What members will get' })).toBeNull()
+    expect(screen.getByRole('dialog', { name: 'The letter, made bigger' })).toBe(bigger)
+    expect(focused()).toBe(show)
+    // Escape from inside the bigger letter itself still gives the page back.
+    key(focused(), 'Escape')
+    expect(screen.queryByRole('dialog', { name: 'The letter, made bigger' })).toBeNull()
+  })
+
+  it('keeps the site\'s root inert while it is open, so no key can take the focus behind it, and lets it go before the focus is given back', async () => {
+    // The page in the element the site draws itself in (index.html's root), which the sheet's portal stands outside.
+    const root = document.body.appendChild(Object.assign(document.createElement('div'), { id: 'root' }))
+    await thePage(root)
+    const see = screen.getByRole('button', { name: 'See the email' })
+    const inertAsFocused: boolean[] = []
+    see.addEventListener('focus', () => inertAsFocused.push(root.hasAttribute('inert')))
+    for (const close of ['Escape', 'Back to writing'] as const) {
+      fireEvent.click(see)
+      const dialog = sheet()
+      expect(root.contains(dialog), close).toBe(false)
+      expect(root.hasAttribute('inert'), close).toBe(true)
+      if (close === 'Escape') key(focused(), 'Escape')
+      else fireEvent.click(within(dialog).getByRole('button', { name: 'Back to writing' }))
+      await settle()
+      expect(screen.queryByRole('dialog', { name: 'What members will get' }), close).toBeNull()
+      expect(root.hasAttribute('inert'), close).toBe(false)
+      expect(focused(), close).toBe(see)
+    }
+    // The root was let go before the focus came back to "See the email", each time, so the focus could take it.
+    expect(inertAsFocused).toEqual([false, false])
+  })
+
+  it('goes round to Back to writing on Shift and Tab from the sheet itself and from the email\'s frame, which leaves the frame for the dialog\'s guard', async () => {
+    await thePage()
+    fireEvent.click(screen.getByRole('button', { name: 'See the email' }))
+    const dialog = sheet()
+    const back = within(dialog).getByRole('button', { name: 'Back to writing' })
+    // As it opens the focus is on the sheet itself, and Shift and Tab from there goes round to its last control.
+    expect(focused()).toBe(dialog)
+    expect(key(dialog, 'Tab', { shiftKey: true })).toBe(false)
+    expect(focused()).toBe(back)
+    // A key pressed in the email's frame is the frame's own, which the page never hears: Shift and Tab there takes the
+    // focus out of the frame to the stop before it, which, with the site's root inert, is the dialog's guard at the
+    // document's start, and the focus is sent on round to Back to writing. The page hears one of two things, as a
+    // browser gives them. A frame the browser's own Tab took the focus into: only the focus landing on the guard.
+    const frame = dialog.querySelector<HTMLIFrameElement>('iframe[data-shown]')!
+    const guard = document.body.firstElementChild as HTMLElement
+    expect(guard.hasAttribute('data-radix-focus-guard')).toBe(true)
+    act(() => frame.focus())
+    act(() => {
+      guard.dispatchEvent(new FocusEvent('focusin', { bubbles: true }))
+    })
+    expect(focused()).toBe(back)
+    // A frame the dialog put the focus in, as Tab goes round from Back to writing: the focus leaving it for the guard,
+    // which the dialog's trap would answer by holding the focus in the frame.
+    expect(key(back, 'Tab')).toBe(false)
+    expect(focused()).toBe(frame)
+    act(() => {
+      frame.dispatchEvent(new FocusEvent('focusout', { bubbles: true, relatedTarget: guard }))
+    })
+    expect(focused()).toBe(back)
+    // Escape still closes the sheet.
+    key(focused(), 'Escape')
+    await settle()
+    expect(screen.queryByRole('dialog', { name: 'What members will get' })).toBeNull()
   })
 })
 
@@ -348,6 +504,7 @@ describe('the question before their letter takes the place of the person\'s word
   })
 
   it('says at once, in the refusal\'s own region, that their letter could not be read, with the focus back on Show their letter', async () => {
+    onTheDay()
     on('PUT', ISSUE_URL, { status: 409, body: { error: 'x', reason: 'changed', changedBy: 'Player Two', changedAt: '2026-11-13 20:17:00' } })
     on('GET', ISSUE_URL, { status: 200, body: letter() }, { status: 500, body: { error: 'Something went wrong' } })
     await thePage()
@@ -450,6 +607,36 @@ describe('the controls a keyboard moves', () => {
     })
     fireEvent.click(bold)
     expect(bold.getAttribute('aria-pressed')).toBe('true')
+  })
+
+  it('brings the caret into view inside the letter\'s box when the keyboard gives the letter the focus, and leaves it where a press put it', async () => {
+    await thePage()
+    const scrolled: Array<{ inBox: boolean; hidden: string | null }> = []
+    const had = Element.prototype.scrollIntoView
+    Element.prototype.scrollIntoView = function scrolledInto(this: Element) {
+      scrolled.push({ inBox: this.parentElement?.getAttribute('data-slot') === 'letter-sheet', hidden: this.getAttribute('aria-hidden') })
+    }
+    try {
+      const letter = document.querySelector('.ProseMirror') as HTMLElement
+      // The keyboard's focus: the browser shows the letter's top, and the caret is brought into view after it.
+      await act(async () => {
+        letter.focus()
+        await new Promise((resolve) => requestAnimationFrame(resolve))
+      })
+      expect(scrolled).toEqual([{ inBox: true, hidden: 'true' }])
+      // Nothing of it is left in the letter's box.
+      expect(document.querySelectorAll('[data-slot="letter-sheet"] > span[aria-hidden="true"]')).toHaveLength(0)
+      // A press puts the caret where it pressed, and nothing scrolls.
+      act(() => letter.blur())
+      fireEvent.pointerDown(letter)
+      await act(async () => {
+        letter.focus()
+        await new Promise((resolve) => requestAnimationFrame(resolve))
+      })
+      expect(scrolled).toHaveLength(1)
+    } finally {
+      Element.prototype.scrollIntoView = had
+    }
   })
 
   it('moves "Pull to make taller" by the arrow keys, Page Up and Down, Home and End, and the letter\'s box with it', async () => {
