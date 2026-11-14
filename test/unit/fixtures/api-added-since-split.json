@@ -10,6 +10,8 @@
     "/api/me/tournament-creation"
   ],
   "exports": {
+    "ApiClubListing": "clubs",
+    "ApiClubPlace": "clubs",
     "ApiEmailChoices": "membership",
     "ApiMediaManager": "admin",
     "ApiNewsletter": "admin",
@@ -24,6 +26,7 @@
     "getNewsletter": "admin",
     "getTournamentCreation": "membership",
     "requestPayoutAccount": "membership",
+    "saveClubListing": "clubs",
     "saveEmailChoices": "membership",
     "sendNewsletter": "admin",
     "sendNewsletterTest": "admin",

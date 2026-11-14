@@ -1,5 +1,5 @@
 // src/pages/AdminClubPage.tsx
-import { useEffect, useRef, useState, type ChangeEvent, type FormEvent } from 'react'
+import { lazy, Suspense, useEffect, useRef, useState, type ChangeEvent, type FormEvent } from 'react'
 import { Link, useParams, useSearchParams } from 'react-router-dom'
 import {
   ArrowLeft, Building2, EyeOff, Newspaper, Palette, Trash2, Trophy, Upload, UserPlus, Users,
@@ -22,6 +22,7 @@ import {
   type ApiAdminMember,
   type ApiClubDetail,
   type ApiClubNews,
+  type ApiClubPlace,
 } from '@/lib/api'
 import { useAuth } from '@/contexts/auth-context'
 import { isViewOnlyAdmin, toolsHomeFor } from '@/areas/admin/roles'
@@ -33,6 +34,9 @@ import { cn } from '@/lib/utils'
 import { usePageTitle } from '@/hooks/usePageTitle'
 import { LCA } from '@/lib/brand'
 import { ViewOnlyFieldset, ViewOnlyNote } from '@/lib/viewOnly'
+import { keepersOn } from '@/areas/clubs/switches'
+// The one club editor, fetched only when the Details tab draws it, with clubKeepers on.
+const ClubEditor = lazy(() => import('@/areas/clubs/components/ClubEditor').then((m) => ({ default: m.ClubEditor })))
 
 const goldButtonClass = 'bg-lca-gold font-semibold text-brand-navy hover:bg-lca-gold/90'
 
@@ -54,6 +58,7 @@ export function AdminClubPage() {
   const [roster, setRoster] = useState<ApiAdminMember[]>([])
   const [tournaments, setTournaments] = useState<ApiAdminClubTournament[]>([])
   const [officers, setOfficers] = useState<ApiAdminClubOfficer[]>([])
+  const [places, setPlaces] = useState<ApiClubPlace[]>([])
   const [officerForm, setOfficerForm] = useState({ memberId: '', title: '' })
   const [officerBusy, setOfficerBusy] = useState(false)
   const [loading, setLoading] = useState(true)
@@ -103,6 +108,7 @@ export function AdminClubPage() {
         setClub(c)
         setTournaments(clubData.tournaments ?? [])
         setOfficers(clubData.officers ?? [])
+        setPlaces(clubData.places ?? [])
         setForm({
           name: c.name,
           city: c.city,
@@ -322,7 +328,7 @@ export function AdminClubPage() {
 
         {/* ── Details tab ── */}
         <ViewOnlyNote />
-        {tab === 'details' && (
+        {tab === 'details' && !keepersOn() && (
           <ViewOnlyFieldset>
           <form onSubmit={handleSaveClub} className="space-y-6">
             <div className="rounded-xl border bg-card p-6 shadow-sm">
@@ -475,6 +481,22 @@ export function AdminClubPage() {
             />
           </div>
           </ViewOnlyFieldset>
+        )}
+        {/* The editor shuts its own fields and Save for an observer and leaves Help open to them. */}
+        {tab === 'details' && keepersOn() && (
+          <Suspense fallback={<p className="text-muted-foreground">Loading the editor…</p>}>
+            <ClubEditor
+              club={club}
+              places={places}
+              isAdmin={isAdmin}
+              showAdminFields={isAdmin || isViewOnlyAdmin(role)}
+              viewOnly={isViewOnlyAdmin(role)}
+              onSaved={(saved, savedPlaces) => {
+                setClub(saved)
+                setPlaces(savedPlaces)
+              }}
+            />
+          </Suspense>
         )}
 
         {/* ── News tab ── */}

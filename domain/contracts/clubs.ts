@@ -172,6 +172,27 @@ export function isWebAddress(text: string): boolean {
   }
 }
 
+/** A place's point, set by hand: a latitude and a longitude within the world's bounds. */
+export const clubPlacePointSchema = z.looseObject({
+  lat: z.number().min(-90).max(90),
+  lng: z.number().min(-180).max(180),
+})
+
+/**
+ * A club's places, at most two, in their order, which replace the ones it
+ * has. Each has a name, and may have a street, a note and a point set by hand
+ * (a click on the map or pasted numbers); nothing is looked up at any
+ * provider. Written once here and read by both saves that take places: the
+ * PUT's body (clubPlacesRequestSchema) and the PATCH's optional `places`
+ * (updateClubRequestSchema).
+ */
+export const clubPlacesListSchema = z.array(z.looseObject({
+  name: z.string().trim().min(1, 'A place needs a name').max(CLUB_PLACE_LIMITS.name),
+  street: z.string().max(CLUB_PLACE_LIMITS.street).nullable().optional(),
+  note: z.string().max(CLUB_PLACE_LIMITS.note).nullable().optional(),
+  point: clubPlacePointSchema.nullable().optional(),
+})).max(CLUB_PLACES_MAX, `A club lists at most ${CLUB_PLACES_MAX} places`)
+
 const keeperText = (max: number) => z.string().max(max).nullable().optional()
 const keeperLink = (max: number) =>
   z.string().max(max).refine((text) => text.trim() === '' || isWebAddress(text.trim()), WEB_ADDRESS_WORDS).nullable().optional()
@@ -208,8 +229,11 @@ export const todaysClubSaveRequestSchema = z.looseObject(todaysClubSaveShape)
  * (CLUB_TODAY_LIMITS) and the new ones (CLUB_TEXT_LIMITS); each of the three links is empty or a web address that
  * starts with http:// or https://; an empty text or null clears a field.
  * `slug` is the club's address after /clubs/, an LCA admin's alone to
- * change, at most 48 characters in a slug's form. With the constant unset a
- * body that carries any of the new keys is refused 403.
+ * change, at most 48 characters in a slug's form. `places`, when sent, is
+ * the club's places as the PUT takes them (clubPlacesListSchema), saved in
+ * the same batch as the listing, so one press of the editor is one save.
+ * With the constant unset a body that carries any of the new keys is refused
+ * 403.
  */
 export const updateClubRequestSchema = z.looseObject({
   ...todaysClubSaveShape,
@@ -233,6 +257,7 @@ export const updateClubRequestSchema = z.looseObject({
   websiteUrl: keeperLink(CLUB_TEXT_LIMITS.websiteUrl),
   otherUrl: keeperLink(CLUB_TEXT_LIMITS.otherUrl),
   slug: z.string().max(CLUB_SLUG_MAX).regex(CLUB_SLUG_FORM, 'An address is lower case letters and digits, joined by single hyphens').optional(),
+  places: clubPlacesListSchema.optional(),
 })
 
 /** Today's text fields that may already be stored longer than their limit, by the save's own key. */
@@ -260,26 +285,13 @@ export function updateClubRequestSchemaFor(stored: ClubTodayStored) {
   return Object.keys(kept).length === 0 ? updateClubRequestSchema : updateClubRequestSchema.extend(kept)
 }
 
-/** A place's point, set by hand: a latitude and a longitude within the world's bounds. */
-export const clubPlacePointSchema = z.looseObject({
-  lat: z.number().min(-90).max(90),
-  lng: z.number().min(-180).max(180),
-})
-
 /**
- * PUT /api/admin/clubs/[id]/places: the club's places, at most two, in their
- * order, which replace the ones it has. Each has a name, and may have a
- * street, a note and a point set by hand (a click on the map or pasted
- * numbers); nothing is looked up at any provider. Open only while
- * CLUB_KEEPERS_ON is set.
+ * PUT /api/admin/clubs/[id]/places: the club's places (clubPlacesListSchema),
+ * which replace the ones it has. Open only while CLUB_KEEPERS_ON is set. The
+ * club editor sends its places with the listing in the PATCH instead.
  */
 export const clubPlacesRequestSchema = z.looseObject({
-  places: z.array(z.looseObject({
-    name: z.string().trim().min(1, 'A place needs a name').max(CLUB_PLACE_LIMITS.name),
-    street: z.string().max(CLUB_PLACE_LIMITS.street).nullable().optional(),
-    note: z.string().max(CLUB_PLACE_LIMITS.note).nullable().optional(),
-    point: clubPlacePointSchema.nullable().optional(),
-  })).max(CLUB_PLACES_MAX, `A club lists at most ${CLUB_PLACES_MAX} places`),
+  places: clubPlacesListSchema,
 })
 
 /** One of the club's places, as the admin endpoints answer it, first place first. */
@@ -356,8 +368,12 @@ export const adminClubResponseSchema = z.strictObject({
   places: z.array(clubPlaceSchema).optional(),
 })
 
-/** PATCH /api/admin/clubs/[id] (adminUpdateClub): the club as saved. */
-export const updateClubResponseSchema = z.strictObject({ club: adminClubRowSchema })
+/**
+ * PATCH /api/admin/clubs/[id] (adminUpdateClub, and the club editor's
+ * saveClubListing): the club as saved, and its places as saved when the
+ * body carried `places`.
+ */
+export const updateClubResponseSchema = z.strictObject({ club: adminClubRowSchema, places: z.array(clubPlaceSchema).optional() })
 
 /** PUT /api/admin/clubs/[id]/places: the club's places as saved. */
 export const clubPlacesResponseSchema = z.strictObject({ places: z.array(clubPlaceSchema) })

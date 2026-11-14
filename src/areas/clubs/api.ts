@@ -11,6 +11,7 @@
 
 import { authHeaders, handleResponse } from '@/lib/http'
 import type { ApiAdminMember } from '@/areas/membership/api'
+import type { AdminClubResponse, ClubPlace, UpdateClubRequest } from '@domain/contracts'
 
 export interface ApiClubDetail {
   id: string
@@ -123,17 +124,45 @@ export interface ApiAdminClubTournament extends ApiClubTournament {
   registration_status: string | null
 }
 
-/** GET /api/admin/clubs/:id — club reps (own club) and admins. */
+/**
+ * The club as the admin answers give it: today's columns, and while
+ * CLUB_KEEPERS_ON is set on the server the listing's new ones as well
+ * (adminClubRowSchema in domain/contracts/clubs.ts), each optional here
+ * because an answer with the constant unset carries none of them.
+ */
+export type ApiClubListing = ApiClubDetail & Partial<Omit<AdminClubResponse['club'], keyof ApiClubDetail>>
+
+/** One of the club's places, first place first, as the admin endpoints answer it. */
+export type ApiClubPlace = ClubPlace
+
+/** GET /api/admin/clubs/:id: club reps (own club), the region's representative and admins. */
 export async function adminGetClub(id: string): Promise<{
-  club: ApiClubDetail
+  club: ApiClubListing
   officers: ApiAdminClubOfficer[]
   roster: ApiAdminMember[]
   tournaments: ApiAdminClubTournament[]
+  /** Answered only while CLUB_KEEPERS_ON is set on the server. */
+  places?: ApiClubPlace[]
 }> {
   const response = await fetch(`/api/admin/clubs/${id}`, {
     headers: await authHeaders(),
   })
   return handleResponse(response)
+}
+
+/**
+ * The club editor's one save: PATCH /api/admin/clubs/:id with the listing's
+ * fields and, when sent, its places (updateClubRequestSchema), written by
+ * the server in one batch, so a press saves all of it or none of it.
+ * Answers the club as saved, and its places as saved when they were sent.
+ */
+export async function saveClubListing(id: string, body: UpdateClubRequest): Promise<{ club: ApiClubListing; places?: ApiClubPlace[] }> {
+  const response = await fetch(`/api/admin/clubs/${id}`, {
+    method: 'PATCH',
+    headers: await authHeaders(),
+    body: JSON.stringify(body),
+  })
+  return handleResponse<{ club: ApiClubListing; places?: ApiClubPlace[] }>(response)
 }
 
 export async function adminCreateClub(body: {

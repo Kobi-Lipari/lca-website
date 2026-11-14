@@ -20,6 +20,13 @@
 // location place 1's name and street, and latitude and longitude place 1's
 // point, each only when place 1 has one.
 //
+// The club editor sends its places with the listing, so one press is one
+// save: saveListing then writes the places, their mirror into today's
+// location and pin, the listing's columns, the stamps and one activity row
+// in the same batch, and answers every field that changed across both, for
+// the one notice. savePlaces stays for PUT /api/admin/clubs/[id]/places,
+// which the editor no longer calls.
+//
 // With CLUB_KEEPERS_ON unset nothing here runs: today's PATCH writes today's
 // columns alone, with no stamp, as before.
 
@@ -54,11 +61,12 @@ export const KEEPER_FLAG_FIELDS = [
   ['scholasticFriendly', 'scholastic_friendly'],
 ] as const
 
-/** Every key of the PATCH body that belongs to the new save: the ten new fields and the slug. */
+/** Every key of the PATCH body that belongs to the new save: the ten new fields, the slug and the places. */
 export const KEEPER_BODY_KEYS: readonly string[] = [
   ...KEEPER_TEXT_FIELDS.map(([key]) => key),
   ...KEEPER_FLAG_FIELDS.map(([key]) => key),
   'slug',
+  'places',
 ]
 
 /** Whether a body carries any key of the new save. */
@@ -157,34 +165,44 @@ export interface ListingSave {
   existing: Record<string, unknown>
   /** Each column the save writes, with its value; `slug` only when an admin changes it. */
   next: Record<string, unknown>
+  /** The places that replace the club's own, when the body sent them; absent leaves the places as they are. */
+  places?: PlaceInput[]
 }
 
 /**
  * Writes one listing save in one batch: the club's columns with the four
  * stamps; when the slug changes, the old slug into club_slug_history, after
  * taking out the club's own row for the slug it takes back, if it held that
- * one before; and the activity log's row when a field changed. Answers the
- * columns that changed. A failed statement fails the whole batch, and the
- * error is thrown to the caller with nothing written.
+ * one before; when places are sent, the club's places replaced by them, with
+ * place 1's line and point copied into today's location and pin by the
+ * places' own rule (placesMirror); and the activity log's row when a field
+ * changed. Answers the fields that changed, the columns and 'places' when
+ * the places differ from those before. A failed statement fails the whole
+ * batch, and the error is thrown to the caller with nothing written.
  */
 export async function saveListing(db: D1Database, save: ListingSave): Promise<string[]> {
-  const columns = Object.keys(save.next)
+  const next = { ...save.next }
+  const places = save.places ? await placesStatements(db, save.clubId, save.places) : null
+  if (places) Object.assign(next, placesMirror(save.places!, next))
+  const columns = Object.keys(next)
   for (const column of columns) if (!SAVABLE.has(column)) throw new Error(`club save: ${column} is not a listing column`)
-  const changed = changedColumns(save.existing, save.next)
-  const label = String(save.next.name ?? save.existing.name)
+  const changed = changedColumns(save.existing, next)
+  if (places && !places.same) changed.push('places')
+  const label = String(next.name ?? save.existing.name)
 
   const statements: D1PreparedStatement[] = [
     db
       .prepare(`UPDATE clubs SET ${columns.map((column) => `${column} = ?`).join(', ')}, ${STAMPS} WHERE id = ?`)
-      .bind(...columns.map((column) => save.next[column] ?? null), save.saver.id, save.saver.id, save.clubId),
+      .bind(...columns.map((column) => next[column] ?? null), save.saver.id, save.saver.id, save.clubId),
   ]
   const oldSlug = save.existing.slug
   if (changed.includes('slug') && typeof oldSlug === 'string' && oldSlug !== '') {
     statements.push(
-      db.prepare('DELETE FROM club_slug_history WHERE old_slug = ? AND club_id = ?').bind(save.next.slug, save.clubId),
+      db.prepare('DELETE FROM club_slug_history WHERE old_slug = ? AND club_id = ?').bind(next.slug, save.clubId),
       db.prepare('INSERT INTO club_slug_history (old_slug, club_id) VALUES (?, ?)').bind(oldSlug, save.clubId),
     )
   }
+  if (places) statements.push(...places.statements)
   if (changed.length > 0) statements.push(auditRow(db, save.saver, label, save.clubId, changed))
 
   await db.batch(statements)
@@ -224,8 +242,29 @@ export interface PlacesSave {
  * changed, 'places' among them when the places differ from those before.
  */
 export async function savePlaces(db: D1Database, save: PlacesSave): Promise<string[]> {
-  const before = await readPlaces(db, save.clubId)
-  const after = save.places.map((place) => ({
+  const places = await placesStatements(db, save.clubId, save.places)
+  const mirror = placesMirror(save.places, save.existing)
+  const changed = [...(places.same ? [] : ['places']), ...changedColumns(save.existing, mirror)]
+
+  const statements: D1PreparedStatement[] = [
+    ...places.statements,
+    db
+      .prepare(`UPDATE clubs SET location = ?, latitude = ?, longitude = ?, ${STAMPS} WHERE id = ?`)
+      .bind(mirror.location, mirror.latitude, mirror.longitude, save.saver.id, save.saver.id, save.clubId),
+  ]
+  if (changed.length > 0) statements.push(auditRow(db, save.saver, String(save.existing.name), save.clubId, changed))
+
+  await db.batch(statements)
+  return changed
+}
+
+/**
+ * The statements that replace a club's places with these, in their order,
+ * and whether they are the same as the places before, read first.
+ */
+async function placesStatements(db: D1Database, clubId: string, places: PlaceInput[]): Promise<{ statements: D1PreparedStatement[]; same: boolean }> {
+  const before = await readPlaces(db, clubId)
+  const after = places.map((place) => ({
     name: place.name.trim(),
     street: storedText(place.street),
     note: storedText(place.note),
@@ -235,13 +274,31 @@ export async function savePlaces(db: D1Database, save: PlacesSave): Promise<stri
   const same = before.length === after.length && before.every((row, i) =>
     row.name === after[i].name && row.street === after[i].street && row.note === after[i].note
     && row.latitude === after[i].latitude && row.longitude === after[i].longitude)
-
-  const mirror: Record<string, unknown> = {
-    location: save.existing.location ?? null,
-    latitude: save.existing.latitude ?? null,
-    longitude: save.existing.longitude ?? null,
+  return {
+    same,
+    statements: [
+      db.prepare('DELETE FROM club_places WHERE club_id = ?').bind(clubId),
+      ...after.map((place, sort) =>
+        db
+          .prepare('INSERT INTO club_places (club_id, name, street, note, latitude, longitude, sort) VALUES (?, ?, ?, ?, ?, ?, ?)')
+          .bind(clubId, place.name, place.street, place.note, place.latitude, place.longitude, sort),
+      ),
+    ],
   }
-  const first = save.places[0]
+}
+
+/**
+ * Today's location and pin once the places are saved: place 1's line, and
+ * its point when it has one; with no place 1, or no point, what `club`
+ * holds, so the copy never blanks either.
+ */
+function placesMirror(places: PlaceInput[], club: Record<string, unknown>): Record<string, unknown> {
+  const mirror: Record<string, unknown> = {
+    location: club.location ?? null,
+    latitude: club.latitude ?? null,
+    longitude: club.longitude ?? null,
+  }
+  const first = places[0]
   if (first) {
     mirror.location = locationLine(first)
     if (first.point) {
@@ -249,21 +306,5 @@ export async function savePlaces(db: D1Database, save: PlacesSave): Promise<stri
       mirror.longitude = degrees(first.point.lng)
     }
   }
-  const changed = [...(same ? [] : ['places']), ...changedColumns(save.existing, mirror)]
-
-  const statements: D1PreparedStatement[] = [
-    db.prepare('DELETE FROM club_places WHERE club_id = ?').bind(save.clubId),
-    ...after.map((place, sort) =>
-      db
-        .prepare('INSERT INTO club_places (club_id, name, street, note, latitude, longitude, sort) VALUES (?, ?, ?, ?, ?, ?, ?)')
-        .bind(save.clubId, place.name, place.street, place.note, place.latitude, place.longitude, sort),
-    ),
-    db
-      .prepare(`UPDATE clubs SET location = ?, latitude = ?, longitude = ?, ${STAMPS} WHERE id = ?`)
-      .bind(mirror.location, mirror.latitude, mirror.longitude, save.saver.id, save.saver.id, save.clubId),
-  ]
-  if (changed.length > 0) statements.push(auditRow(db, save.saver, String(save.existing.name), save.clubId, changed))
-
-  await db.batch(statements)
-  return changed
+  return mirror
 }

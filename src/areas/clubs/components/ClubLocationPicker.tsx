@@ -5,11 +5,17 @@
 // pin) to place it, or paste coordinates or a Google Maps link. Saving goes
 // through the normal club update, so admins, the club's rep and its regional
 // representative can all do it.
+//
+// The club editor (src/areas/clubs/components/EditorPlaces.tsx) draws the
+// same map and pasted coordinates bare: no heading, no words and no save of
+// its own, with each new point handed to the form, which saves it with the
+// rest on Save and publish.
 import { useEffect, useRef, useState } from 'react'
 import { MapPin } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import { MAP_STYLES, findPinByName, fitLouisiana, loadMapsScript } from '@/areas/clubs/clubMap'
 import { LCA } from '@/lib/brand'
 import { parseLocation, round6 } from '@/areas/clubs/mapLocation'
@@ -25,19 +31,29 @@ const PIN =
     '</svg>',
   )
 
+/** The editor's bare picker: the id of its coordinates box, and where each new point goes (null once the pin is removed). */
+export interface BarePicker {
+  inputId: string
+  onChange: (point: LatLng | null) => void
+}
+
 export function ClubLocationPicker({
-  clubName, latitude, longitude, disabled, onSave,
+  clubName, latitude, longitude, disabled, onSave, bare,
 }: {
   clubName: string
   latitude: number | null | undefined
   longitude: number | null | undefined
   disabled?: boolean
-  /** Saves the location (null removes it); resolves once saved. */
-  onSave: (location: LatLng | null) => Promise<void>
+  /** Saves the location (null removes it); resolves once saved. Today's card alone calls it. */
+  onSave?: (location: LatLng | null) => Promise<void>
+  /** Draws the map and the coordinates box alone, for the club editor's form. */
+  bare?: BarePicker
 }) {
   const saved: LatLng | null =
     typeof latitude === 'number' && typeof longitude === 'number' ? { lat: latitude, lng: longitude } : null
-  const fallback = findPinByName(clubName)
+  // The original club list's spot stands in on today's card alone: the
+  // editor sends the point it shows, so it shows only one a person set.
+  const fallback = bare ? null : findPinByName(clubName)
   const [draft, setDraft] = useState<LatLng | null>(saved ?? (fallback ? { lat: fallback.lat, lng: fallback.lng } : null))
   const [paste, setPaste] = useState('')
   const [pasteError, setPasteError] = useState<string | null>(null)
@@ -54,6 +70,20 @@ export function ClubLocationPicker({
   useEffect(() => {
     disabledRef.current = disabled
   }, [disabled])
+
+  // The editor hears of each new point after the render that draws it.
+  const onChange = useRef(bare?.onChange)
+  useEffect(() => {
+    onChange.current = bare?.onChange
+  })
+  const first = useRef(true)
+  useEffect(() => {
+    if (first.current) {
+      first.current = false
+      return
+    }
+    onChange.current?.(draft)
+  }, [draft])
 
   const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY as string | undefined
   useEffect(() => {
@@ -127,6 +157,7 @@ export function ClubLocationPicker({
   }
 
   async function save(location: LatLng | null) {
+    if (!onSave) return
     setBusy(true)
     setNote(null)
     try {
@@ -142,6 +173,49 @@ export function ClubLocationPicker({
 
   const changed = !!draft && (!saved || draft.lat !== saved.lat || draft.lng !== saved.lng)
 
+  const mapBox = apiKey ? (
+    <div className="relative h-72 overflow-hidden rounded-lg border bg-[#f2efe6]">
+      <div ref={mapEl} className="h-full w-full" />
+      {!loaded && (
+        <div className="absolute inset-0 flex items-center justify-center text-sm text-muted-on-light">Loading map…</div>
+      )}
+    </div>
+  ) : null
+
+  if (bare) {
+    const errorId = `${bare.inputId}-error`
+    return (
+      <div className="space-y-3">
+        {mapBox}
+        <div className="space-y-1.5">
+          <Label htmlFor={bare.inputId}>Pin: coordinates or a Google Maps link</Label>
+          <div className="flex flex-col gap-2 sm:flex-row">
+            <Input
+              id={bare.inputId}
+              value={paste}
+              disabled={disabled}
+              onChange={(e) => setPaste(e.target.value)}
+              onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); applyPasted() } }}
+              aria-invalid={pasteError ? true : undefined}
+              aria-describedby={pasteError ? errorId : undefined}
+              className="min-h-11"
+            />
+            <Button type="button" variant="outline" className="min-h-11" disabled={disabled || !paste.trim()} onClick={applyPasted}>Use this</Button>
+          </div>
+          {pasteError && <p id={errorId} className="text-sm text-destructive">{pasteError}</p>}
+        </div>
+        <div className="flex flex-col items-start gap-2 sm:flex-row sm:items-center sm:gap-3">
+          <p className="text-sm tabular-nums text-ink">
+            {draft ? `Pin at ${draft.lat.toFixed(5)}, ${draft.lng.toFixed(5)}` : 'No pin set'}
+          </p>
+          {draft && (
+            <Button type="button" variant="outline" className="min-h-11" disabled={disabled} onClick={() => setDraft(null)}>Remove pin</Button>
+          )}
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="rounded-xl border bg-card p-6 shadow-sm">
       <div className="mb-1 flex items-center gap-2">
@@ -155,14 +229,7 @@ export function ClubLocationPicker({
         {!saved && !fallback && ' This club isn’t on the map yet.'}
       </p>
 
-      {apiKey ? (
-        <div className="relative h-72 overflow-hidden rounded-lg border bg-[#f2efe6]">
-          <div ref={mapEl} className="h-full w-full" />
-          {!loaded && (
-            <div className="absolute inset-0 flex items-center justify-center text-sm text-muted-on-light">Loading map…</div>
-          )}
-        </div>
-      ) : (
+      {mapBox ?? (
         <p className="rounded-lg border border-dashed p-4 text-sm text-muted-foreground">The map isn&rsquo;t available here, but you can paste coordinates below.</p>
       )}
 

@@ -132,7 +132,9 @@ describe('the committed map', () => {
     expect(membership).toContain("import type { EmailChoicesResponse, PayoutRequestResponse, TournamentCreationResponse, UnsubscribeLinkResponse, UnsubscribeResponse } from '@domain/contracts'")
     expect(membership).toMatch(/export type ApiTournamentCreation = TournamentCreationResponse\b/)
     expect(membership).toMatch(/export type ApiPayoutRequest = PayoutRequestResponse\b/)
-    for (const file of MODULES.filter((f) => f !== moduleOf('events') && f !== moduleOf('membership'))) {
+    // The club editor's save, added since the split, takes its body and answer from the contracts the same way.
+    expect(importsOf(moduleOf('clubs')).filter((i) => i.specifier.startsWith('@domain/'))).toEqual([{ specifier: '@domain/contracts', typeOnly: true, reexport: false }])
+    for (const file of MODULES.filter((f) => f !== moduleOf('events') && f !== moduleOf('membership') && f !== moduleOf('clubs'))) {
       expect(importsOf(file).filter((i) => i.specifier.startsWith('@domain/')), file).toEqual([])
     }
   })

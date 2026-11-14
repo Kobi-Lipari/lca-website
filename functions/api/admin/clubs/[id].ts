@@ -5,10 +5,11 @@
 //
 // With CLUB_KEEPERS_ON set (functions/utils/clubs/pages.ts) the GET also
 // answers the listing's fifteen new columns and its places, and the PATCH
-// takes the new fields and an admin's new page address, saved in one batch
-// with the keepers' stamps (functions/utils/clubs/save.ts). With it unset
-// both answer and write exactly what they did before, and a body carrying a
-// new field is refused 403.
+// takes the new fields, an admin's new page address and, from the club
+// editor, the club's places, saved in one batch with the keepers' stamps
+// (functions/utils/clubs/save.ts), so one press of the editor is one save
+// and one notice. With it unset both answer and write exactly what they did
+// before, and a body carrying a new field or places is refused 403.
 import type { Env, MemberRow } from '../../../types'
 import { isResponse, requireClubRep, requireAdmin, requireClubView } from '../../../utils/auth'
 import {
@@ -254,9 +255,13 @@ export const onRequestPatch: PagesFunction<Env> = async (context) => {
     .bind(clubId).first<Record<string, unknown>>()
 
   // With CLUB_KEEPERS_ON set the save above wrote its own activity row in
-  // its batch, and the answer carries the fifteen new columns too.
+  // its batch, and the answer carries the fifteen new columns too, and the
+  // places as saved when the body sent them, so the editor shows what was
+  // stored.
   if (keepersOn) {
-    return jsonResponse({ club: { ...club, ...(await readKeeperColumns(context.env.DB, clubId)) } })
+    const saved = { club: { ...club, ...(await readKeeperColumns(context.env.DB, clubId)) } }
+    if (body.places === undefined) return jsonResponse(saved)
+    return jsonResponse({ ...saved, places: await readPlaces(context.env.DB, clubId) })
   }
 
   // Which fields actually changed, for the activity log.
@@ -279,11 +284,13 @@ export const onRequestPatch: PagesFunction<Env> = async (context) => {
 /**
  * The keepers' save, while CLUB_KEEPERS_ON is set: today's eleven columns,
  * the new fields the body carries, the mirror of About and the statement
- * into today's description and meeting schedule, and an admin's new page
- * address, written in one batch with the stamps and the activity row
- * (functions/utils/clubs/save.ts); then the notice to the region's
- * representatives, after the answer. Answers a refusal, or null once the
- * save is written.
+ * into today's description and meeting schedule, an admin's new page
+ * address, and the places when the body sends them, with place 1 copied
+ * into today's location and pin, written in one batch with the stamps and
+ * the activity row (functions/utils/clubs/save.ts); then one notice to the
+ * region's representatives, naming every field that changed across the
+ * listing and the places, after the answer. Answers a refusal, or null once
+ * the save is written.
  */
 async function saveKeepersListing(
   context: EventContext<Env, string, unknown>,
@@ -314,7 +321,7 @@ async function saveKeepersListing(
 
   let changed: string[]
   try {
-    changed = await saveListing(context.env.DB, { clubId, saver, existing, next })
+    changed = await saveListing(context.env.DB, { clubId, saver, existing, next, places: body.places })
   } catch (err) {
     if (/UNIQUE constraint failed/i.test(err instanceof Error ? err.message : String(err))) return errorResponse(SAVE_CLASHED, 409)
     throw err
