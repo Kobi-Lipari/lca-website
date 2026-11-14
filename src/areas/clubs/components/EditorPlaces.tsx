@@ -13,6 +13,9 @@
 // are read only, and the pickers' boxes and buttons, Remove place 2 and Add
 // another place are marked shut (`waiting`), never disabled, so none of them
 // drops the focus (WS09 step 9); `disabled` is the observer's shut form.
+// A save that stores fewer than two places folds the second place away; the
+// editor then moves a focus that was in it to Add another place, found by
+// its `data-add-place` mark, from the place's own `data-place` mark.
 import { useEffect, useRef } from 'react'
 
 import { Button } from '@/components/ui/button'
@@ -69,83 +72,88 @@ export function EditorPlaces({
     }
   }, [second])
 
+  // "Where" is a line of its own, the fieldset named by it, rather than a
+  // legend: a legend stands outside the list item's flow, so the item's
+  // number would sit on "Place name" in place of "Where".
   return (
-    <fieldset className="m-0 min-w-0 space-y-4 border-0 p-0">
-      <legend className="mb-3 text-sm font-medium leading-snug">Where</legend>
-      <EditorField
-        field="placeName" label="Place name" autoComplete="organization"
-        value={values.placeName} error={errors.placeName} differs={differs} readOnly={waiting}
-        onChange={(v) => onChange('placeName', v)}
-      />
-      <EditorField
-        field="placeStreet" label="Street address" autoComplete="street-address"
-        value={values.placeStreet} error={errors.placeStreet} readOnly={waiting}
-        onChange={(v) => onChange('placeStreet', v)}
-      />
-      <EditorField
-        field="placeNote" label="Note about the place"
-        value={values.placeNote} error={errors.placeNote} readOnly={waiting}
-        onChange={(v) => onChange('placeNote', v)}
-      />
-      <ClubLocationPicker
-        key={pickerKey}
-        clubName={clubName}
-        latitude={point?.lat}
-        longitude={point?.lng}
-        disabled={disabled}
-        waiting={waiting}
-        bare={{ inputId: 'editor-point', onChange: onPoint }}
-      />
-      {second ? (
-        <fieldset className="m-0 min-w-0 space-y-4 border-0 border-t border-hairline p-0 pt-4">
-          <legend className="mb-3 text-sm font-medium leading-snug">Place 2</legend>
-          <EditorField
-            field="place2Name" label="Place 2 name" autoComplete="off"
-            value={values.place2Name} error={errors.place2Name} readOnly={waiting}
-            onChange={(v) => onChange('place2Name', v)}
-          />
-          <EditorField
-            field="place2Street" label="Place 2 street address"
-            value={values.place2Street} error={errors.place2Street} readOnly={waiting}
-            onChange={(v) => onChange('place2Street', v)}
-          />
-          <EditorField
-            field="place2Note" label="Note about place 2"
-            value={values.place2Note} error={errors.place2Note} readOnly={waiting}
-            onChange={(v) => onChange('place2Note', v)}
-          />
-          <ClubLocationPicker
-            key={`second-${pickerKey}`}
-            clubName={clubName}
-            latitude={point2?.lat}
-            longitude={point2?.lng}
-            disabled={disabled}
-            waiting={waiting}
-            bare={{ inputId: 'editor-point-2', onChange: onPoint2, place: 'place 2' }}
-          />
+    <>
+      <p id="editor-where" className="mb-3 text-sm font-medium leading-snug">Where</p>
+      <fieldset aria-labelledby="editor-where" className="m-0 min-w-0 space-y-4 border-0 p-0">
+        <EditorField
+          field="placeName" label="Place name" autoComplete="organization"
+          value={values.placeName} error={errors.placeName} differs={differs} readOnly={waiting}
+          onChange={(v) => onChange('placeName', v)}
+        />
+        <EditorField
+          field="placeStreet" label="Street address" autoComplete="street-address"
+          value={values.placeStreet} error={errors.placeStreet} readOnly={waiting}
+          onChange={(v) => onChange('placeStreet', v)}
+        />
+        <EditorField
+          field="placeNote" label="Note about the place"
+          value={values.placeNote} error={errors.placeNote} readOnly={waiting}
+          onChange={(v) => onChange('placeNote', v)}
+        />
+        <ClubLocationPicker
+          key={pickerKey}
+          clubName={clubName}
+          latitude={point?.lat}
+          longitude={point?.lng}
+          disabled={disabled}
+          waiting={waiting}
+          bare={{ inputId: 'editor-point', onChange: onPoint }}
+        />
+        {second ? (
+          <fieldset data-place="2" className="m-0 min-w-0 space-y-4 border-0 border-t border-hairline p-0 pt-4">
+            <legend className="mb-3 text-sm font-medium leading-snug">Place 2</legend>
+            <EditorField
+              field="place2Name" label="Place 2 name" autoComplete="off"
+              value={values.place2Name} error={errors.place2Name} readOnly={waiting}
+              onChange={(v) => onChange('place2Name', v)}
+            />
+            <EditorField
+              field="place2Street" label="Place 2 street address"
+              value={values.place2Street} error={errors.place2Street} readOnly={waiting}
+              onChange={(v) => onChange('place2Street', v)}
+            />
+            <EditorField
+              field="place2Note" label="Note about place 2"
+              value={values.place2Note} error={errors.place2Note} readOnly={waiting}
+              onChange={(v) => onChange('place2Note', v)}
+            />
+            <ClubLocationPicker
+              key={`second-${pickerKey}`}
+              clubName={clubName}
+              latitude={point2?.lat}
+              longitude={point2?.lng}
+              disabled={disabled}
+              waiting={waiting}
+              bare={{ inputId: 'editor-point-2', onChange: onPoint2, place: 'place 2' }}
+            />
+            <Button
+              type="button" variant="outline" className={SHUT_BUTTON} disabled={disabled} aria-disabled={waiting || undefined}
+              onClick={() => {
+                if (waiting) return
+                focusNext.current = 'add'
+                onSecond(false)
+              }}
+            >
+              Remove place 2
+            </Button>
+          </fieldset>
+        ) : (
           <Button
-            type="button" variant="outline" className={SHUT_BUTTON} disabled={disabled} aria-disabled={waiting || undefined}
+            ref={addButton} data-add-place="" type="button" variant="outline" className={SHUT_BUTTON} disabled={disabled} aria-disabled={waiting || undefined}
             onClick={() => {
               if (waiting) return
-              focusNext.current = 'add'
-              onSecond(false)
+              focusNext.current = 'name'
+              onSecond(true)
             }}
           >
-            Remove place 2
+            Add another place
           </Button>
-        </fieldset>
-      ) : (
-        <Button
-          ref={addButton} type="button" variant="outline" className={SHUT_BUTTON} disabled={disabled} aria-disabled={waiting || undefined}
-          onClick={() => {
-            if (waiting) return
-            focusNext.current = 'name'
-            onSecond(true)
-          }}
-        >
-          Add another place
-        </Button>
-      )}
-    </fieldset>
+        )}
+      </fieldset>
+    </>
   )
 }

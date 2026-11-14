@@ -140,13 +140,18 @@ export function changedColumns(existing: Record<string, unknown>, next: Record<s
 /** The four stamps of a keeper's save, set to now and to the saver. */
 const STAMPS = 'told_updated_at = datetime(\'now\'), told_by = ?, last_confirmed_at = datetime(\'now\'), confirmed_by = ?'
 
-/** The activity log's club_edit row, as recordAdminAction in functions/utils/admin/audit.ts writes one, prepared for the save's batch. */
+/**
+ * The activity log's club_edit row, as recordAdminAction in
+ * functions/utils/admin/audit.ts writes one, prepared for the save's batch.
+ * It is written only while the club is there, so a save whose club was
+ * deleted after its read writes no row for a club that is gone.
+ */
 function auditRow(db: D1Database, saver: MemberRow, label: string, clubId: string, fields: string[]): D1PreparedStatement {
   return db
     .prepare(
       `INSERT INTO admin_audit_log
          (id, actor_id, actor_email, action, target_member_id, target_label, detail)
-       VALUES (?, ?, ?, 'club_edit', NULL, ?, ?)`,
+       SELECT ?, ?, ?, 'club_edit', NULL, ?, ? WHERE EXISTS (SELECT 1 FROM clubs WHERE id = ?)`,
     )
     .bind(
       `aud-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`,
@@ -154,8 +159,25 @@ function auditRow(db: D1Database, saver: MemberRow, label: string, clubId: strin
       saver.email,
       label,
       JSON.stringify({ club_id: clubId, fields }),
+      clubId,
     )
 }
+
+/**
+ * Whether a save's batch failed because its club is gone. A place or an old
+ * address names the club, so with the club deleted after the save read it
+ * the batch fails on its foreign key and writes nothing. Without such a row
+ * the batch's own UPDATE of the club tells instead: it is one transaction,
+ * so no row changed means the club was not there, and the activity row,
+ * written only while the club is there, is not written either.
+ */
+async function clubGone(db: D1Database, clubId: string, err: unknown): Promise<boolean> {
+  if (!/FOREIGN KEY constraint failed/i.test(err instanceof Error ? err.message : String(err))) return false
+  return !(await db.prepare('SELECT 1 FROM clubs WHERE id = ?').bind(clubId).first())
+}
+
+/** Whether the batch's UPDATE of the club met its row. */
+const updated = (result: D1Result | undefined) => (result?.meta?.changes ?? 0) > 0
 
 /** One listing save: the club as read before it, and every column the save writes with its new value. */
 export interface ListingSave {
@@ -177,22 +199,26 @@ export interface ListingSave {
  * place 1's line and point copied into today's location and pin by the
  * places' own rule (placesMirror); and the activity log's row when a field
  * changed. Answers the fields that changed, the columns and 'places' when
- * the places differ from those before. A failed statement fails the whole
- * batch, and the error is thrown to the caller with nothing written.
+ * the places differ from those before, or null, with nothing written, when
+ * the club was deleted after the save read it. A failed statement fails the
+ * whole batch, and the error is thrown to the caller with nothing written.
  */
-export async function saveListing(db: D1Database, save: ListingSave): Promise<string[]> {
+export async function saveListing(db: D1Database, save: ListingSave): Promise<string[] | null> {
   const next = { ...save.next }
   const places = save.places ? await placesStatements(db, save.clubId, save.places) : null
-  if (places) Object.assign(next, placesMirror(save.places!, next))
+  if (places) Object.assign(next, placesMirror(save.places!))
   const columns = Object.keys(next)
   for (const column of columns) if (!SAVABLE.has(column)) throw new Error(`club save: ${column} is not a listing column`)
-  const changed = changedColumns(save.existing, next)
+  // The columns in one order, today's first, whichever the body carried, so the fields the activity row and the notice name keep it.
+  const order = [...SAVABLE]
+  columns.sort((a, b) => order.indexOf(a) - order.indexOf(b))
+  const changed = changedColumns(save.existing, Object.fromEntries(columns.map((column) => [column, next[column]])))
   if (places && !places.same) changed.push('places')
   const label = String(next.name ?? save.existing.name)
 
   const statements: D1PreparedStatement[] = [
     db
-      .prepare(`UPDATE clubs SET ${columns.map((column) => `${column} = ?`).join(', ')}, ${STAMPS} WHERE id = ?`)
+      .prepare(`UPDATE clubs SET ${[...columns.map((column) => `${column} = ?`), STAMPS].join(', ')} WHERE id = ?`)
       .bind(...columns.map((column) => next[column] ?? null), save.saver.id, save.saver.id, save.clubId),
   ]
   const oldSlug = save.existing.slug
@@ -205,8 +231,14 @@ export async function saveListing(db: D1Database, save: ListingSave): Promise<st
   if (places) statements.push(...places.statements)
   if (changed.length > 0) statements.push(auditRow(db, save.saver, label, save.clubId, changed))
 
-  await db.batch(statements)
-  return changed
+  let results: D1Result[]
+  try {
+    results = await db.batch(statements)
+  } catch (err) {
+    if (await clubGone(db, save.clubId, err)) return null
+    throw err
+  }
+  return updated(results[0]) ? changed : null
 }
 
 /** One place as a keeper saves it. */
@@ -239,23 +271,32 @@ export interface PlacesSave {
  * ones written in their order, today's location, latitude and longitude
  * taken from place 1 where place 1 has them, the four stamps, and the
  * activity log's row when anything changed. Answers the fields that
- * changed, 'places' among them when the places differ from those before.
+ * changed, 'places' among them when the places differ from those before, or
+ * null, with nothing written, when the club was deleted after the save read
+ * it.
  */
-export async function savePlaces(db: D1Database, save: PlacesSave): Promise<string[]> {
+export async function savePlaces(db: D1Database, save: PlacesSave): Promise<string[] | null> {
   const places = await placesStatements(db, save.clubId, save.places)
-  const mirror = placesMirror(save.places, save.existing)
+  const mirror = placesMirror(save.places)
+  const columns = Object.keys(mirror)
   const changed = [...(places.same ? [] : ['places']), ...changedColumns(save.existing, mirror)]
 
   const statements: D1PreparedStatement[] = [
     ...places.statements,
     db
-      .prepare(`UPDATE clubs SET location = ?, latitude = ?, longitude = ?, ${STAMPS} WHERE id = ?`)
-      .bind(mirror.location, mirror.latitude, mirror.longitude, save.saver.id, save.saver.id, save.clubId),
+      .prepare(`UPDATE clubs SET ${[...columns.map((column) => `${column} = ?`), STAMPS].join(', ')} WHERE id = ?`)
+      .bind(...columns.map((column) => mirror[column]), save.saver.id, save.saver.id, save.clubId),
   ]
   if (changed.length > 0) statements.push(auditRow(db, save.saver, String(save.existing.name), save.clubId, changed))
 
-  await db.batch(statements)
-  return changed
+  let results: D1Result[]
+  try {
+    results = await db.batch(statements)
+  } catch (err) {
+    if (await clubGone(db, save.clubId, err)) return null
+    throw err
+  }
+  return updated(results[places.statements.length]) ? changed : null
 }
 
 /**
@@ -289,15 +330,12 @@ async function placesStatements(db: D1Database, clubId: string, places: PlaceInp
 
 /**
  * Today's location and pin once the places are saved: place 1's line, and
- * its point when it has one; with no place 1, or no point, what `club`
- * holds, so the copy never blanks either.
+ * its point when it has one. With no place 1, or no point, the column is
+ * left out, so the copy never blanks either and never writes back a value
+ * read before the save that someone has changed since.
  */
-function placesMirror(places: PlaceInput[], club: Record<string, unknown>): Record<string, unknown> {
-  const mirror: Record<string, unknown> = {
-    location: club.location ?? null,
-    latitude: club.latitude ?? null,
-    longitude: club.longitude ?? null,
-  }
+function placesMirror(places: PlaceInput[]): Record<string, unknown> {
+  const mirror: Record<string, unknown> = {}
   const first = places[0]
   if (first) {
     mirror.location = locationLine(first)

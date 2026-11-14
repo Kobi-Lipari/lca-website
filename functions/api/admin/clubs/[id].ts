@@ -61,6 +61,29 @@ export const SLUG_ELSEWHERE = 'That page address leads to another club, so it ca
 /** The 409 for a save whose batch failed on a unique key, as when another save took the address first. */
 export const SAVE_CLASHED = 'The page address clashed with one already kept, so nothing was saved.'
 
+/** The 409 for a keeper's save from a form opened before the club was saved again, by another keeper or in another tab. */
+export const SAVED_SINCE = 'This club\'s page was saved after you opened it. Copy what you want to keep, then reload the page to see the latest version'
+
+/**
+ * Today's columns a keeper's body can carry, with the body's key, and
+ * whether only an LCA admin writes it. On the keepers' path a column is
+ * written only when the body carries it, never from the row read before the
+ * save, so a change someone made in between is never put back.
+ */
+const TODAYS_CARRIED: ReadonlyArray<readonly [keyof UpdateClubRequest, string, boolean]> = [
+  ['name', 'name', true],
+  ['city', 'city', false],
+  ['location', 'location', false],
+  ['description', 'description', false],
+  ['meetingSchedule', 'meeting_schedule', false],
+  ['contactEmail', 'contact_email', false],
+  ['color', 'color', false],
+  ['imageUrl', 'image_url', true],
+  ['region', 'region', true],
+  ['mapLocation', 'latitude', false],
+  ['mapLocation', 'longitude', false],
+]
+
 export const onRequestOptions: PagesFunction<Env> = async () => handleOptions()
 
 /**
@@ -179,6 +202,14 @@ export const onRequestPatch: PagesFunction<Env> = async (context) => {
   if (isResponse(parsed)) return parsed
   const body = parsed as UpdateClubRequest
   if (!keepersOn && carriesKeeperFields(body)) return errorResponse(KEEPER_FIELDS_CLOSED, 403)
+  // A form opened before another keeper's save would put that save's words
+  // back, so its press is refused and nothing is written. The stamp is the
+  // club's told_updated_at as the form read it, null only for a club with
+  // no stamp, since migration 0067 stamps every club; a body without it is
+  // not checked.
+  if (keepersOn && body.toldUpdatedAt !== undefined && (body.toldUpdatedAt ?? null) !== (existing.told_updated_at ?? null)) {
+    return errorResponse(SAVED_SINCE, 409)
+  }
 
   // A club's name and region decide how it is listed and filtered site-wide,
   // so those stay with LCA admins. Sending the unchanged value is fine: the
@@ -311,8 +342,9 @@ export const onRequestPatch: PagesFunction<Env> = async (context) => {
 }
 
 /**
- * The keepers' save, while CLUB_KEEPERS_ON is set: today's eleven columns,
- * the new fields the body carries, the mirror of About and the statement
+ * The keepers' save, while CLUB_KEEPERS_ON is set: those of today's eleven
+ * columns the body carries (the name, the region and the logo's address an
+ * LCA admin's alone), the new fields the body carries, the mirror of About and the statement
  * into today's description and meeting schedule, an admin's new page
  * address, and the places when the body sends them, with place 1 copied
  * into today's location and pin, written in one batch with the stamps and
@@ -329,8 +361,17 @@ async function saveKeepersListing(
   body: UpdateClubRequest,
 ): Promise<Response | null> {
   const clubId = context.params.id as string
-  const next: Record<string, unknown> = { ...todays }
+  // Today's columns the body carries, each as today's save reads it; the
+  // name, the region and the logo's address only for an LCA admin, and a
+  // colour only when it is cleared or a colour's form.
+  const next: Record<string, unknown> = {}
   const fields = body as Record<string, unknown>
+  const admin = saver.role === 'lca_admin'
+  for (const [key, column, adminOnly] of TODAYS_CARRIED) {
+    if (fields[key] === undefined || (adminOnly && !admin)) continue
+    if (column === 'color' && fields[key] !== null && todays.color !== fields[key]) continue
+    next[column] = todays[column]
+  }
   for (const [key, column] of KEEPER_TEXT_FIELDS) {
     if (fields[key] !== undefined) next[column] = storedText(fields[key] as string | null)
   }
@@ -348,13 +389,15 @@ async function saveKeepersListing(
     next.slug = body.slug
   }
 
-  let changed: string[]
+  let changed: string[] | null
   try {
     changed = await saveListing(context.env.DB, { clubId, saver, existing, next, places: body.places })
   } catch (err) {
     if (/UNIQUE constraint failed/i.test(err instanceof Error ? err.message : String(err))) return errorResponse(SAVE_CLASHED, 409)
     throw err
   }
+  // The club was deleted after this save read it: nothing was written, and no one is told.
+  if (changed === null) return errorResponse('Club not found', 404)
 
   context.waitUntil(sendClubSaveNotice(context.env, context.request, {
     clubId,

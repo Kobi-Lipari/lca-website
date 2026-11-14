@@ -234,7 +234,7 @@ describe('the club editor: who may press Save and publish', () => {
     await within(status()).findByText(/^Saved/)
     const { places: sent, ...rest } = saves()[0]
     expect(rest).toEqual({
-      aboutText: CLUB.about_text, howWeMeetText: CLUB.how_we_meet_text, contactNamePublic: '', contactEmail: null,
+      aboutText: CLUB.about_text, howWeMeetText: CLUB.how_we_meet_text, contactNamePublic: '', contactEmail: null, toldUpdatedAt: null,
     })
     expect(sent).toHaveLength(2)
   })

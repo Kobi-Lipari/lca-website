@@ -139,14 +139,15 @@ describe('REDESIGN_STATUS.md, WS09 step 9: the block and the Status line', () =>
     const headings = ws09.split('\n').filter((l) => l.startsWith('### '))
     expect(headings[headings.indexOf(MERGE) + 1]).toBe(STEP)
     expect(headings[headings.indexOf(STEP) + 1]).toBe(CHECKPOINT)
-    if (latestStep === 9) expect(headings[headings.indexOf(CHECKPOINT) + 1]).toBe(LISTS[0])
+    // Checkpoint T's review writes its block between checkpoint T's section and the lists, so the heading after the section passes over it.
+    if (latestStep === 9) expect(headings.slice(headings.indexOf(CHECKPOINT) + 1).find((h) => h !== '### WS09 checkpoint T: the review of the whole and its fixes')).toBe(LISTS[0])
   })
 
   it('gives the Status line this step\'s tail while this step is the latest', () => {
     expect(latestStep).toBeGreaterThanOrEqual(9)
     const tail = statusLine.slice(statusLine.indexOf('checkpoint Z for steps 36 to 38); ') + 'checkpoint Z for steps 36 to 38); '.length)
     if (latestStep === 9) {
-      expect(tail).toBe('checkpoint S waits for its pull request; checkpoint T, steps 6 to 9, waits on its own branch for its review; steps 1 to 9 and K\'s answers to checkpoint S\'s review are built.')
+      expect(tail).toBe('checkpoint S waits for its pull request; checkpoint T, steps 6 to 9, has had the review of the whole with its fixes and waits on its own branch for K\'s look at the pictures and K\'s own word; steps 1 to 9 and K\'s answers to checkpoint S\'s review are built.')
     }
     expect(tail).toMatch(/\bbuilt\.$/)
   })
@@ -262,7 +263,7 @@ describe('REDESIGN_STATUS.md, WS09 step 9: the parts', () => {
     expect(page).toContain('const time = formatTime(club.told_updated_at, { stored: \'utc\' })')
     expect(page).toContain('<Link to={`/clubs/${club.id}`}>')
     expect(page.match(/<h1\b/g)).toHaveLength(1)
-    expect(page).toContain('usePageTitle(club ? `Your club\'s page: ${club.name}` : \'Your club\\\'s page\')')
+    expect(page).toContain('usePageTitle(club ? `${pageName}: ${club.name}` : pageName)')
     expect(page).not.toMatch(/\.(?:officers|roster|rosterKeptBack|tournaments)\b/)
     expect(read(API)).toContain('fetch(`/api/admin/clubs/${encodeURIComponent(id)}`')
   })
@@ -289,7 +290,8 @@ describe('REDESIGN_STATUS.md, WS09 step 9: the parts', () => {
     expect(picker).toContain('readOnly={waiting}')
     expect(picker.match(/aria-disabled=\{waiting \|\| undefined\}/g)).toHaveLength(3)
     expect(picker).toContain('function applyPasted() {\n    if (waiting) return')
-    expect(picker).toContain('onClick={() => { if (!waiting) setDraft(null) }}')
+    // Checkpoint T's review gives Remove pin's press a line that hands the focus to the pin's box; the refusal while a save runs stays first.
+    expect(picker).toContain('onClick={() => {\n                if (waiting) return\n                focusBox.current = bare.inputId\n                setDraft(null)\n              }}')
     const editor = codeOf(EDITOR)
     expect(editor).toContain('disabled={viewOnly}\n                      waiting={busy}')
     expect(editor).not.toContain('disabled={viewOnly || busy}')
@@ -344,8 +346,8 @@ describe('REDESIGN_STATUS.md, WS09 step 9: the parts', () => {
     expect(step8).toContain('expect(basics.match(/aria-disabled=\\{waiting \\|\\| undefined\\}/g)?.length).toBe(3)')
     expect(step8).toContain('expect(basics.match(/ disabled=\\{waiting\\}/g)).toBeNull()')
     expect(read('test/unit/redesign-status-ws09-step6.test.ts')).toContain('if (latestStep === 6 || file !== \'test/integration/club-permissions.test.ts\') expect(casesIn(file), file).toBe(n)')
-    expect(read('test/unit/goldText.test.ts')).toContain('\'src/pages/AdminClubPage.tsx:412 the style colour color: clubTextColor(color) -> light\'')
-    expect(read('src/pages/AdminClubPage.tsx').split('\n')[411]).toContain('color: clubTextColor(color),')
+    expect(read('test/unit/goldText.test.ts')).toContain('\'src/pages/AdminClubPage.tsx:428 the style colour color: clubTextColor(color) -> light\'')
+    expect(read('src/pages/AdminClubPage.tsx').split('\n')[427]).toContain('color: clubTextColor(color),')
   })
 
   it('gives the lint as unchanged and the build\'s figures with their reasons', () => {
@@ -476,6 +478,9 @@ describe('REDESIGN_STATUS.md, WS09 step 9: the map and the lists', () => {
     expect(tagged(followUps).map(head)).toEqual([
       'Items R3 and R4, answered by K, are left as they stand (WS09 step 9).','A focus held in a pin\'s picker when a save ends (WS09 step 9).', 'My LCA\'s own row and the header\'s link (WS09 step 9).',
       'Bring `main` in before checkpoint T\'s pull request (WS09 step 9).', 'Pictures with a stand-in sign-in (WS09 step 9).',
+      // Checkpoint T's review of the whole logs two more under this step's tag, N7 and N11 of its leftovers, and its closing mend one, M2's.
+      'The admin club page at a page address (WS09 step 9).', 'The club page\'s head escapes its words (WS09 step 9).',
+      'Controls under today\'s header from `lg` up (WS09 step 9).',
     ])
     for (const text of [block, checkpoint, ...tagged(decisions), ...tagged(deviations), ...tagged(verify), ...tagged(followUps)]) expect(text).not.toContain(MERGE_MARK)
   })

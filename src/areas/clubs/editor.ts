@@ -55,15 +55,34 @@ export const LINK_FIELDS = ['facebookUrl', 'websiteUrl', 'otherUrl'] as const
  */
 export const WEB_ADDRESS_FORM = /^https?:\/\/[^\s\\/\p{Cc}][^\s\\\p{Cc}]*$/iu
 
-/** The words a link the save would refuse is said with, before anything is sent. */
-export const LINK_WORDS = 'A link must be a web address that starts with http:// or https://.'
+/**
+ * The name of the editor's card that links to today's page, which Help names
+ * too: "your page" only to the club's own rep, and the club's to anyone else.
+ */
+export const addressCardName = (own: boolean) => (own ? 'Your page\'s address' : 'Address of the club\'s page')
+
+/**
+ * The words a link the save would refuse is said with, before anything is
+ * sent: the contract's WEB_ADDRESS_WORDS with a full stop, which say what to
+ * do, and so hold whichever reason refused it.
+ */
+export const LINK_WORDS = 'Paste the whole web address copied from the browser\'s address bar, starting with https:// or http://.'
+
+/**
+ * What no link a visitor can trust holds as typed: a quote mark, an angle
+ * bracket or a backtick, which a browser writes as %22, %3C, %3E or %60 in an
+ * address it copies, and the invisible format marks, such as the one that
+ * turns the text after it around, which make a link read as another.
+ */
+const NOT_IN_A_LINK = /["<>`\p{Cf}]/u
 
 /** True for an address written as http:// or https:// with a host after it, as the save decides it. */
 export function isWebAddress(text: string): boolean {
-  if (!WEB_ADDRESS_FORM.test(text)) return false
+  if (!WEB_ADDRESS_FORM.test(text) || NOT_IN_A_LINK.test(text)) return false
   try {
     const url = new URL(text)
-    return (url.protocol === 'http:' || url.protocol === 'https:') && url.hostname !== ''
+    // A name or a password before an @ makes "https://facebook.com@example.net" lead to example.net.
+    return (url.protocol === 'http:' || url.protocol === 'https:') && url.hostname !== '' && url.username === '' && url.password === ''
   } catch {
     return false
   }

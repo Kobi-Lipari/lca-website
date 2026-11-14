@@ -34,7 +34,11 @@
 // are marked shut without being disabled, so none of them drops the focus;
 // and the status says so in words, so nothing typed during it can be lost. Once it has saved the whole
 // form, place and pin included, is filled again from what the answer says
-// was stored, so the next press sends back exactly that. A failure is said in
+// was stored, so the next press sends back exactly that; a save that stores
+// fewer than two places folds the second place away, and a focus that was in
+// it moves to Add another place. The body carries the club's last save as
+// the form read it (toldUpdatedAt), so a form opened before someone else's
+// save is refused in words and puts nothing back. A failure is said in
 // words beside the form, keeps everything the person typed, and never shows
 // "Saved". A second press while a save is under way does nothing.
 //
@@ -61,7 +65,17 @@
 // For an observer, who may read but not save, the fields and Save sit in a
 // shut fieldset; Help's button and Close help stay outside it, so Help
 // opens and closes for them as for everyone.
-import { useEffect, useEffectEvent, useRef, useState, type FormEvent } from 'react'
+//
+// From the width where the previews stand beside it, the form sits in a box
+// that scrolls on its own, with Save and publish under the box. Below that
+// width, on a phone, the form runs the page's full length with no box of its
+// own to scroll, Save and publish at its end and the previews after it, and
+// each control keeps clear of the site's header when the focus moves to it.
+//
+// The words say "your" only to the club's own rep (`own`); anyone else who
+// keeps the club, a region's representative or an LCA admin, reads "the
+// club's", here, in the previews, the checklist and Help.
+import { useEffect, useEffectEvent, useRef, useState, type FocusEvent, type FormEvent, type KeyboardEvent } from 'react'
 import { Link } from 'react-router-dom'
 
 import { ChevronDown } from 'lucide-react'
@@ -132,10 +146,101 @@ function pointOf(row: { latitude?: number | null; longitude?: number | null } | 
   return row && typeof row.latitude === 'number' && typeof row.longitude === 'number' ? { lat: row.latitude, lng: row.longitude } : null
 }
 
-/** Today's words beside the listing's, when a field the save mirrors was changed in the older form since. */
+/**
+ * Today's words beside the listing's, when a field the save mirrors differs:
+ * for every club the seed of migration 0067 filled, from the first day, since
+ * its words are longer than today's lines, and after a change in today's form.
+ * A save then puts the listing's words on today's page.
+ */
 function differsOf(listing: string | null | undefined, today: string | null | undefined): Differs | null {
   if (listing == null || listing === (today ?? '')) return null
   return { today: today ? today : 'Nothing shown', listing }
+}
+
+/**
+ * Moves the focus into Help without the browser's own scroll, which would
+ * push the page's heading under the site's header. Help is the first thing
+ * in the editor's box, so the box goes back to its top, which moves the box
+ * alone and never the page: a box scrolled down would otherwise keep Help's
+ * top, and its heading, above what the box shows once Help opens. Help is
+ * then brought into the window only when its top is out of the window's view
+ * (its scroll margin keeps it clear of the header then). Help above the
+ * window is brought in by its top, since on a phone it is taller than the
+ * window, and by its nearest edge the browser would show its foot alone.
+ * Below lg, where Help sits in the page under the site's header, a top that
+ * lands under the header, inside the room UNDER_HEADER keeps, is brought in
+ * the same way; from lg up only a top above the window is.
+ */
+function focusWithoutJump(el: HTMLElement | null) {
+  if (!el) return
+  el.focus({ preventScroll: true })
+  const box = el.closest<HTMLElement>('[data-slot="scroll-panel"]')
+  if (box) box.scrollTop = 0
+  const top = el.getBoundingClientRect().top
+  const room = typeof window.matchMedia === 'function' && !window.matchMedia(SIDE_BY_SIDE).matches ? UNDER_HEADER : 0
+  if (top < room) el.scrollIntoView?.({ block: 'start' })
+  else if (top > window.innerHeight - 48) el.scrollIntoView?.({ block: 'nearest' })
+}
+
+/**
+ * The width from which the previews stand beside the form and the form's box
+ * scrolls on its own: Tailwind's lg, as the layout's lg: classes use it.
+ */
+const SIDE_BY_SIDE = '(min-width: 64rem)'
+
+/**
+ * The box's classes: below lg its height bound and its scrolling are lifted
+ * and its header bar stays where it is drawn, so the form runs the page's
+ * length; from lg up it is the box it always was.
+ */
+const BOX = 'scroll-mt-[100vh] max-lg:max-h-none max-lg:overflow-visible max-lg:[&>[data-slot=scroll-panel-header]]:static'
+
+/** Room kept above a field brought into view on a phone: the site's header and a gap, as Help's scroll-mt-24 keeps. */
+const UNDER_HEADER = 96
+
+/**
+ * Below lg the form runs the page's length under the site's header, and
+ * today's header gives the page no scroll padding, so a control the focus
+ * moves to, as Shift+Tab up the form does, could stop under the header. Each
+ * control keeps the room UNDER_HEADER keeps, so the browser brings it out
+ * from under the header. From lg up nothing is added, so there, as on every
+ * page of today's look, the page keeps no room for the header and Shift+Tab
+ * can still leave a control wholly or partly under it, as before; the new
+ * look's scroll padding ends that.
+ */
+const CLEAR_OF_HEADER = 'max-lg:[&_:is(a,button,input,select,textarea,[tabindex])]:scroll-mt-24'
+
+/**
+ * A box of words the focus moves to is brought into view by its caret, not
+ * by its scroll margin, so one whose first line shows under the site's
+ * header is left there. Below lg such a box is brought down clear of the
+ * header, by its top, before the browser looks for the caret. The editor
+ * calls this only for a focus that Tab brought from another control, never
+ * for a tap or a click, which leave the page where the person put it, nor
+ * for the focus a box gets back when the window does.
+ */
+function textBoxClear(el: EventTarget) {
+  if (!(el instanceof HTMLTextAreaElement) || typeof window.matchMedia !== 'function' || window.matchMedia(SIDE_BY_SIDE).matches) return
+  if (el.getBoundingClientRect().top < UNDER_HEADER) el.scrollIntoView?.({ block: 'start' })
+}
+
+/**
+ * Moves the focus to a field a save refused. Where the form's box scrolls,
+ * the browser's own focus brings the field into view inside it, as before.
+ * On a phone the form is the page, and the browser leaves a field that is
+ * partly in view where it is, which can be under the site's header, so the
+ * field is brought to the window's middle unless it is already clear of the
+ * header and inside the window.
+ */
+function focusRefused(el: HTMLElement | null) {
+  if (!el) return
+  if (typeof window.matchMedia !== 'function' || window.matchMedia(SIDE_BY_SIDE).matches) {
+    el.focus()
+    return
+  }
+  el.focus({ preventScroll: true })
+  const { top, bottom } = el.getBoundingClientRect()
+  if (top < UNDER_HEADER || bottom > window.innerHeight) el.scrollIntoView?.({ block: 'center' })
 }
 
 /** A refusal's words, ending as a sentence does. */
@@ -153,10 +258,12 @@ const SAVING_WORDS = 'Saving. The form is read only until the save is done.'
 type LogoOutcome = { saved: true } | { saved: false; text: string }
 
 export function ClubEditor({
-  club, places, isAdmin, showAdminFields, viewOnly, onSaved,
+  club, places, own, isAdmin, showAdminFields, viewOnly, onSaved,
 }: {
   club: ApiClubListing
   places: ApiClubPlace[]
+  /** The club is the reader's own, as for its rep: only then do the words say "your". */
+  own: boolean
   /** An LCA admin, who sends the name, the region and the page address. */
   isAdmin: boolean
   /** Draws those three fields: for an LCA admin, and for an observer, who sees them as the rest, unchangeable. */
@@ -182,6 +289,14 @@ export function ClubEditor({
   const [previewOpen, setPreviewOpen] = useState(false)
   // The pin picker keeps its own point once drawn, so it is drawn afresh after each save, from the point the answer gives.
   const [saves, setSaves] = useState(0)
+  // Set when a save folds the second place away while the focus is in it: the focus then goes to Add another place.
+  const focusAddPlace = useRef(false)
+  useEffect(() => {
+    if (focusAddPlace.current && !second) {
+      document.querySelector<HTMLElement>('[data-add-place]')?.focus()
+      focusAddPlace.current = false
+    }
+  }, [second])
 
   const [helpOpen, setHelpOpen] = useState(() => !helpShownBefore())
   const helpButton = useRef<HTMLButtonElement>(null)
@@ -193,7 +308,7 @@ export function ClubEditor({
   // The mark is cleared only once acted on: the first draw's run can come after the first press, and must not wipe it.
   useEffect(() => {
     if (focusNext.current === 'panel' && helpOpen) {
-      helpPanel.current?.focus()
+      focusWithoutJump(helpPanel.current)
       focusNext.current = null
     } else if (focusNext.current === 'button' && !helpOpen) {
       helpButton.current?.focus()
@@ -333,7 +448,7 @@ export function ClubEditor({
     if (found.length > 0) {
       setErrors(Object.fromEntries(found))
       setOutcome({ saved: false, text: found.length === 1 ? 'Nothing was saved: one field needs a change.' : `Nothing was saved: ${found.length} fields need a change.` })
-      document.getElementById(`editor-${found[0][0]}`)?.focus()
+      focusRefused(document.getElementById(`editor-${found[0][0]}`))
       return
     }
     setErrors({})
@@ -347,6 +462,8 @@ export function ClubEditor({
       howWeMeetText: values.howWeMeetText,
       contactNamePublic: values.contactNamePublic,
       contactEmail: values.contactEmail.trim() || null,
+      // The last save as this form read it: the server refuses the press if someone has saved since.
+      toldUpdatedAt: club.told_updated_at ?? null,
     }
     // The save copies About and the meeting's words into today's fields only
     // when they hold words, so a box emptied here clears today's field too;
@@ -394,6 +511,7 @@ export function ClubEditor({
       setValues(startValues(answer.club, savedPlaces))
       setPoint(pointOf(savedPlaces[0]) ?? pointOf(answer.club))
       setPointTouched(false)
+      if (second && savedPlaces.length < 2 && document.activeElement?.closest('[data-place="2"]')) focusAddPlace.current = true
       setSecond(savedPlaces.length > 1)
       setPoint2(pointOf(savedPlaces[1]))
       setSaves((n) => n + 1)
@@ -418,6 +536,22 @@ export function ClubEditor({
     saveHeldPress()
   }, [uploading])
 
+  // The control a Tab was last pressed in, until the focus next moves inside
+  // the editor or a pointer presses it: a box of words is brought clear of
+  // the header only when that Tab brought the focus to it from elsewhere.
+  const tabbedFrom = useRef<EventTarget | null>(null)
+  const noteTab = (e: KeyboardEvent<HTMLDivElement>) => {
+    if (e.key === 'Tab') tabbedFrom.current = e.target
+  }
+  const forgetTab = () => {
+    tabbedFrom.current = null
+  }
+  const focusMoved = (e: FocusEvent<HTMLDivElement>) => {
+    const from = tabbedFrom.current
+    tabbedFrom.current = null
+    if (from && from !== e.target) textBoxClear(e.target)
+  }
+
   const differs = {
     aboutText: differsOf(club.about_text, club.description),
     howWeMeetText: differsOf(club.how_we_meet_text, club.meeting_schedule),
@@ -430,9 +564,22 @@ export function ClubEditor({
   const colour = values.color.toLowerCase() !== start.color.toLowerCase() ? values.color : club.color
 
   return (
-    <div className="mx-auto flex max-w-6xl flex-col gap-8 lg:flex-row lg:items-start">
+    <div className={cn('mx-auto flex max-w-6xl flex-col gap-8 lg:flex-row lg:items-start', CLEAR_OF_HEADER)} onKeyDown={noteTab} onPointerDown={forgetTab} onFocus={focusMoved}>
       <form onSubmit={save} noValidate className="w-full min-w-0 max-w-2xl space-y-4 lg:flex-1">
+        {/*
+          The box is the first stop of Tab in the editor, and is taller than
+          what is left of the window under the page's heading, so a browser
+          scrolls the page to show its foot and puts the heading under the
+          site's header. Its scroll margin of a whole window's height tells
+          the browser the box is already in view whenever any of it is, so
+          the page stays still; a box wholly out of view is still scrolled
+          into view. Below lg the box does not scroll (BOX), so it is no stop
+          for Tab and no named region (scrollsWhen), and Tab goes from the
+          links above the form straight to Help.
+        */}
         <ScrollPanel
+          className={BOX}
+          scrollsWhen={SIDE_BY_SIDE}
           label="Club listing"
           header={(
             <div className="flex min-h-11 items-center justify-between gap-3 px-4 py-2">
@@ -443,7 +590,7 @@ export function ClubEditor({
         >
           <div className="space-y-6 p-4">
             <EditorHelp
-              ref={helpPanel} open={helpOpen} emailHidden={FEATURES.clubEmailHidden} pagesOn={clubPagesOn()} showAdmin={showAdminFields} onClose={closeHelp}
+              ref={helpPanel} open={helpOpen} own={own} emailHidden={FEATURES.clubEmailHidden} pagesOn={clubPagesOn()} showAdmin={showAdminFields} onClose={closeHelp}
             />
             <ViewOnlyFieldset viewOnly={viewOnly}>
               <div className="space-y-6">
@@ -451,6 +598,7 @@ export function ClubEditor({
                   values={values}
                   errors={errors}
                   differs={differs}
+                  own={own}
                   waiting={busy}
                   onChange={change}
                   where={(
@@ -477,9 +625,11 @@ export function ClubEditor({
                   errors={errors}
                   waiting={busy}
                   showAdminFields={showAdminFields}
+                  own={own}
                   address={todaysAddress}
                   logo={logo}
                   logoShut={busy || uploading}
+                  noColour={ownColour(colour) === null}
                   onChange={change}
                   onLogo={changeLogo}
                 />
@@ -534,20 +684,21 @@ export function ClubEditor({
             className="inline-flex min-h-11 w-full items-center justify-between gap-2 rounded-md border border-hairline px-3 text-ink outline-none focus-visible:ring-3 focus-visible:ring-focus lg:hidden"
           >
             Preview
-            <ChevronDown className={cn('size-4 transition-transform', previewOpen && 'rotate-180')} aria-hidden="true" />
+            <ChevronDown className={cn('size-4 transition-transform motion-reduce:transition-none', previewOpen && 'rotate-180')} aria-hidden="true" />
           </button>
           <span className="hidden lg:inline">Preview</span>
         </h2>
         <div id="club-editor-previews" data-slot="editor-previews" className={cn('space-y-6', !previewOpen && 'hidden lg:block')}>
           <SearchPreview
-            name={values.name} city={values.city} about={values.aboutText} statement={values.howWeMeetText}
+            own={own} name={values.name} city={values.city} about={values.aboutText} statement={values.howWeMeetText}
             address={values.slug.trim() || club.slug || club.id}
           />
-          <SharePreview name={values.name} city={values.city} about={values.aboutText} statement={values.howWeMeetText} logo={club.image_url} />
-          <CardPreview name={values.name} city={values.city} statement={values.howWeMeetText} about={values.aboutText} />
+          <SharePreview own={own} name={values.name} city={values.city} about={values.aboutText} statement={values.howWeMeetText} logo={club.image_url} />
+          <CardPreview own={own} name={values.name} city={values.city} statement={values.howWeMeetText} about={values.aboutText} />
           <PageChecklist
+            own={own}
             items={pageChecklist({
-              statement: values.howWeMeetText, pinned: point !== null || (second && point2 !== null), email: values.contactEmail, logo: club.image_url, colour,
+              statement: values.howWeMeetText, pinned: point !== null || (second && point2 !== null), email: values.contactEmail, logo: club.image_url, colour, own,
             })}
           />
         </div>

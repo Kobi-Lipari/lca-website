@@ -262,7 +262,7 @@ describe('REDESIGN_STATUS.md, WS09 step 7: the parts', () => {
     expect(code).toContain('const pagesOn = clubPagesOn()')
     expect(codeOf(EDITOR)).toContain('pagesOn={clubPagesOn()}')
     expect(codeOf(EDITOR)).toContain('if (pointTouched && point === null) body.mapLocation = null')
-    expect(code).toContain('label={emailHidden ? \'Email for messages, never shown\' : \'Email for messages, shown on your club\\\'s page today\'}')
+    expect(code).toContain('label={emailHidden ? \'Email for messages, never shown\' : `Email for messages, shown on ${own ? \'your\' : \'the\'} club\'s page today`}')
     expect(read('src/areas/clubs/switches.ts')).toContain('if (features.clubKeepers && !features.clubEmailHidden) {')
   })
 
@@ -316,7 +316,7 @@ describe('REDESIGN_STATUS.md, WS09 step 7: the parts', () => {
       '`test/unit/goldText.test.ts`', 'line 406 on the base and 412 now', '`test/unit/redesign-status-ws09-step6.test.ts` lines 261 and 262', 'lines 140 and 478 now',
       '`test/unit/api-split-modules.test.ts`', '`test/unit/base-components-scope.test.ts`', 'Not moved:', 'moves none of its record test\'s pins',
     ]) expect(pins, piece).toContain(piece)
-    expect(read('test/unit/goldText.test.ts')).toContain('\'src/pages/AdminClubPage.tsx:412 the style colour color: clubTextColor(color) -> light\'')
+    expect(read('test/unit/goldText.test.ts')).toContain('\'src/pages/AdminClubPage.tsx:428 the style colour color: clubTextColor(color) -> light\'')
     const step6 = read('test/unit/redesign-status-ws09-step6.test.ts').split('\n')
     expect(step6[260]).toContain('if (latestStep === 6) expect(callers[133])')
     expect(step6[261]).toContain('if (latestStep === 6) expect(callers[471])')

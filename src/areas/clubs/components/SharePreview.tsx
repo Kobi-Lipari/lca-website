@@ -7,12 +7,16 @@
 // A screen reader reads the picture as what it shows. The logo is drawn only
 // from the club's own stored path on this site (ownLogo), never from an
 // address someone typed, so the preview makes no request to any other site.
+// Its heading says "your page" only to the club's own rep, and "the club's
+// page" to anyone else who keeps the club.
 import { SITE_HOST, clubPageDescription, clubPageTitle } from '@domain/clubs/pageMeta'
 import { clubInitials, ownLogo } from '@/areas/clubs/previews'
 
 export function SharePreview({
-  name, city, about, statement, logo,
+  own, name, city, about, statement, logo,
 }: {
+  /** The club is the reader's own. */
+  own: boolean
   name: string
   city: string
   about: string
@@ -20,15 +24,15 @@ export function SharePreview({
   /** The club's stored logo, as the club's answer gives it. */
   logo: string | null | undefined
 }) {
-  const own = ownLogo(logo)
+  const stored = ownLogo(logo)
   const initials = clubInitials(name)
   const description = clubPageDescription(about, statement)
   return (
     <section aria-labelledby="preview-share-title" className="space-y-2">
-      <h3 id="preview-share-title" className="text-sm font-semibold text-ink">When someone shares your page</h3>
+      <h3 id="preview-share-title" className="text-sm font-semibold text-ink">{own ? 'When someone shares your page' : 'When someone shares the club\'s page'}</h3>
       <div className="overflow-hidden rounded-lg border border-hairline bg-card">
-        {own ? (
-          <img src={own} alt="The club's logo" className="h-36 w-full bg-card object-contain p-4" />
+        {stored ? (
+          <img src={stored} alt="The club's logo" className="h-36 w-full bg-card object-contain p-4" />
         ) : (
           <div role="img" aria-label={`The initials ${initials} in white on navy`} className="flex h-36 items-center justify-center bg-brand-navy">
             <span aria-hidden="true" className="text-4xl font-bold tracking-wide text-white">{initials}</span>

@@ -7,12 +7,16 @@
 // and the club's own description in grey. The card carries no colour, logo
 // or initials, and no date of any kind: no next meeting, no "Checked" month
 // and no claim about a week. A screen reader reads it as its lines. It is a
-// drawing, so nothing in it is a link or a button.
+// drawing, so nothing in it is a link or a button. Its heading says "your
+// card" only to the club's own rep, and "the club's card" to anyone else who
+// keeps the club.
 import { plainText } from '@domain/clubs/pageMeta'
 
 export function CardPreview({
-  name, city, statement, about,
+  own, name, city, statement, about,
 }: {
+  /** The club is the reader's own. */
+  own: boolean
   name: string
   city: string
   /** How the club meets, in its own words. */
@@ -25,7 +29,7 @@ export function CardPreview({
   const town = plainText(city)
   return (
     <section aria-labelledby="preview-card-title" className="space-y-2">
-      <h3 id="preview-card-title" className="text-sm font-semibold text-ink">Your card in LCA's club directory</h3>
+      <h3 id="preview-card-title" className="text-sm font-semibold text-ink">{own ? 'Your card in LCA\'s club directory' : 'The club\'s card in LCA\'s club directory'}</h3>
       <div role="group" aria-label="Directory card" className="space-y-1 rounded-lg border border-hairline bg-card p-3 text-sm">
         <p className="break-words font-semibold text-ink">{plainText(name)}{town ? ` · ${town}` : ''}</p>
         {meets ? (

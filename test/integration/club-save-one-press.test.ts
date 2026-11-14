@@ -167,7 +167,7 @@ describe('one press is one save, with CLUB_KEEPERS_ON set', () => {
     expect(sentTo()).toEqual([`holder.${clubId}@example.org`, `second.${clubId}@example.org`].sort())
     for (const notice of emailOutbox) {
       for (const text of [notice.html, notice.text ?? '']) {
-        expect(text).toContain('Location, Description, Contact email, Map pin, About, How we meet, Contact name, Places')
+        expect(text).toContain('One sentence about the club; How the club meets, in words; Where; Contact name; Email for messages')
         for (const value of ['private.contact@example.org', 'club@example.org', 'Words for the notice, never in it.', 'Example Center', '2 Example Road', 'Upstairs', `rep.${clubId}@example.org`]) {
           expect(text, value).not.toContain(value)
         }
@@ -186,7 +186,7 @@ describe('one press is one save, with CLUB_KEEPERS_ON set', () => {
     expect((await patch(rep, clubId, { ...PRESS, places: [{ name: 'Example Annex', note: 'Side door' }] })).status).toBe(200)
     await flushWaitUntil()
     expect(sentTo()).toEqual([`holder.${clubId}@example.org`, `second.${clubId}@example.org`].sort())
-    expect(emailOutbox.every((m) => (m.text ?? '').includes('What changed: Places'))).toBe(true)
+    expect(emailOutbox.every((m) => (m.text ?? '').includes('What changed: Where\n'))).toBe(true)
   })
 
   it('never fails the save when the notice cannot be sent', async () => {

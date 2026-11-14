@@ -71,7 +71,7 @@ function editor(club: Record<string, unknown> = CLUB, places: unknown[] = [PLACE
   return render(
     <AuthContext.Provider value={auth}>
       <MemoryRouter>
-        <ClubEditor club={club as never} places={places as never} isAdmin={false} showAdminFields={false} viewOnly={viewOnly} onSaved={() => {}} />
+        <ClubEditor club={club as never} places={places as never} own isAdmin={false} showAdminFields={false} viewOnly={viewOnly} onSaved={() => {}} />
       </MemoryRouter>
     </AuthContext.Provider>,
   )
@@ -81,7 +81,7 @@ const type = (label: string | RegExp, value: string) => fireEvent.change(screen.
 
 describe('each preview read in words', () => {
   it('reads the search result as a site, a title and a description', () => {
-    render(<SearchPreview name="Example Chess Club" city="Example City" about="Casual games for everyone" statement="Tuesdays from 7:00 PM." address="example-chess" />)
+    render(<SearchPreview own name="Example Chess Club" city="Example City" about="Casual games for everyone" statement="Tuesdays from 7:00 PM." address="example-chess" />)
     expect(wordsOf(screen.getByRole('region', { name: 'How your page shows up in a search' }))).toBe(
       'How your page shows up in a search Site Louisiana Chess Association · louisianachess.org › clubs › example-chess '
       + 'Title Example Chess Club · Chess club in Example City, Louisiana · Louisiana Chess Association '
@@ -97,10 +97,10 @@ describe('each preview read in words', () => {
   })
 
   it('says every item "Not yet" in words when nothing is done, with the count, and "Done" in words when all are', () => {
-    render(<PageChecklist items={pageChecklist({ statement: '', pinned: false, email: '  ', logo: null, colour: null })} />)
+    render(<PageChecklist own items={pageChecklist({ statement: '', pinned: false, email: '  ', logo: null, colour: null, own: true })} />)
     expect(screen.getByText('0 of 5 done')).toBeTruthy()
     expect(screen.getAllByRole('listitem').map((li) => wordsOf(li))).toEqual([
-      'How the club meets, in your words : Not yet', 'A place pinned on the map : Not yet', 'Email for messages : Not yet', 'Logo : Not yet', 'Club colour : Not yet',
+      'How the club meets, in your words : Not yet', 'A place pinned on the map : Not yet', 'Email for messages : Not yet', 'Logo : Not yet', 'Club color : Not yet',
     ])
     cleanup()
     render(<PageChecklist items={pageChecklist({ statement: 'x', pinned: true, email: 'club@example.org', logo: '/api/clubs/c/logo?v=1', colour: '#2e7d32' })} />)

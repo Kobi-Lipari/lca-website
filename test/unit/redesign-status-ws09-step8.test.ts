@@ -187,11 +187,11 @@ describe('REDESIGN_STATUS.md, WS09 step 8: the parts', () => {
     const fields = bullet(block, '- **The fields.**')
     for (const piece of [
       '"Name and address"', '"N of 2,000 characters"', '"Add another place"', '"Remove place 2"', '"Cost and who is welcome"', '"The club plays on weekends"',
-      '"Scholastic friendly"', '"Links"', '"Logo and club colour"', '`saveClubListing`', 'held equal to `isWebAddress` by a case', '"Kept by LCA admins"',
+      '"Scholastic friendly"', '"Links"', '"Logo and club color"', '`saveClubListing`', 'held equal to `isWebAddress` by a case', '"Kept by LCA admins"',
       'sent only when they differ from what was stored', 'no tick but the brief\'s two',
     ]) expect(fields, piece).toContain(piece)
     const code = codeOf(BASICS)
-    const order = ['<legend className={PART_NAME}>Name and address</legend>', 'Cost and who is welcome</legend>', 'Links</legend>', 'Logo and club colour</legend>']
+    const order = ['<legend className={PART_NAME}>Name and address</legend>', 'Cost and who is welcome</legend>', 'Links</legend>', 'Logo and club color</legend>']
     const at = order.map((p) => code.indexOf(p))
     for (const [i, p] of order.entries()) expect(at[i], p).toBeGreaterThan(-1)
     expect([...at].sort((a, b) => a - b)).toEqual(at)
@@ -207,7 +207,7 @@ describe('REDESIGN_STATUS.md, WS09 step 8: the parts', () => {
     expect(editor).not.toMatch(/imageUrl:|body\.imageUrl/)
     const rules = read(RULES)
     expect(rules).toContain('export const WEB_ADDRESS_FORM = /^https?:\\/\\/[^\\s\\\\/\\p{Cc}][^\\s\\\\\\p{Cc}]*$/iu')
-    expect(rules).toContain('export const LINK_WORDS = \'A link must be a web address that starts with http:// or https://.\'')
+    expect(rules).toContain('export const LINK_WORDS = \'Paste the whole web address copied from the browser\\\'s address bar, starting with https:// or http://.\'')
   })
 
   it('names the previews, made by the one rule the server page will use, and no weekly claim on the card', () => {
@@ -297,8 +297,8 @@ describe('REDESIGN_STATUS.md, WS09 step 8: the parts', () => {
       expect(pins, piece).toContain(piece)
     }
     expect(read('test/unit/redesign-status-ws09-step7.test.ts')).toContain('if (latestStep !== 7 && [\'test/unit/club-editor.test.tsx\', \'test/unit/club-editor-off.test.tsx\'].includes(file)) continue')
-    expect(read('test/unit/goldText.test.ts')).toContain('\'src/pages/AdminClubPage.tsx:412 the style colour color: clubTextColor(color) -> light\'')
-    expect(read(PAGE).split('\n')[411]).toContain('color: clubTextColor(color),')
+    expect(read('test/unit/goldText.test.ts')).toContain('\'src/pages/AdminClubPage.tsx:428 the style colour color: clubTextColor(color) -> light\'')
+    expect(read(PAGE).split('\n')[427]).toContain('color: clubTextColor(color),')
   })
 
   it('closes the five things the second review found, each as the files now hold it, the description\'s rule among the judgement calls', () => {

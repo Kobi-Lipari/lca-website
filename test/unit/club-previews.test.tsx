@@ -97,7 +97,7 @@ function editor(person: 'rep' | 'admin' = 'rep', club: Record<string, unknown> =
     <AuthContext.Provider value={auth}>
       <MemoryRouter>
         <ClubEditor
-          club={club as never} places={[PLACE]} isAdmin={person === 'admin'} showAdminFields={person === 'admin'} viewOnly={false} onSaved={() => {}}
+          club={club as never} places={[PLACE]} own={person !== 'admin'} isAdmin={person === 'admin'} showAdminFields={person === 'admin'} viewOnly={false} onSaved={() => {}}
         />
       </MemoryRouter>
     </AuthContext.Provider>,
@@ -106,7 +106,7 @@ function editor(person: 'rep' | 'admin' = 'rep', club: Record<string, unknown> =
 
 describe('the search preview', () => {
   it('the title and description are the page\'s', () => {
-    render(<SearchPreview name="Example Chess Club" city="Example City" about={ABOUT} statement={STATEMENT} address="example-chess" />)
+    render(<SearchPreview own name="Example Chess Club" city="Example City" about={ABOUT} statement={STATEMENT} address="example-chess" />)
     const result = screen.getByRole('region', { name: 'How your page shows up in a search' })
     const title = clubPageTitle('Example Chess Club', 'Example City')
     expect(title).toBe('Example Chess Club · Chess club in Example City, Louisiana · Louisiana Chess Association')
@@ -121,7 +121,7 @@ describe('the search preview', () => {
 
   it('155 characters at most, About cut and the meeting\'s words kept whole', () => {
     const long = `${ABOUT} ${ABOUT}`
-    render(<SearchPreview name="Example Chess Club" city="Example City" about={long} statement={STATEMENT} address="example-chess" />)
+    render(<SearchPreview own name="Example Chess Club" city="Example City" about={long} statement={STATEMENT} address="example-chess" />)
     const description = screen.getByRole('region', { name: 'How your page shows up in a search' }).querySelectorAll('dd')[2].textContent ?? ''
     expect(description).toBe(clubPageDescription(long, STATEMENT))
     expect(description.length).toBeLessThanOrEqual(PAGE_DESCRIPTION_MAX)
@@ -130,14 +130,14 @@ describe('the search preview', () => {
     expect(long.startsWith(description.slice(0, description.indexOf('…')))).toBe(true)
     cleanup()
     // With no meeting's words, About alone is cut.
-    render(<SearchPreview name="Example Chess Club" city="Example City" about={long} statement="" address="example-chess" />)
+    render(<SearchPreview own name="Example Chess Club" city="Example City" about={long} statement="" address="example-chess" />)
     const alone = screen.getByRole('region', { name: 'How your page shows up in a search' }).querySelectorAll('dd')[2].textContent ?? ''
     expect(alone.endsWith('…')).toBe(true)
     expect(long.startsWith(alone.slice(0, -1))).toBe(true)
   })
 
   it('says there is no description yet when About and the meeting\'s words are both empty', () => {
-    render(<SearchPreview name="Example Chess Club" city="" about="" statement="  " address="example-chess-club" />)
+    render(<SearchPreview own name="Example Chess Club" city="" about="" statement="  " address="example-chess-club" />)
     const result = screen.getByRole('region', { name: 'How your page shows up in a search' })
     expect(within(result).getByText('Example Chess Club · Chess club in Louisiana · Louisiana Chess Association')).toBeTruthy()
     expect(within(result).getByText('No description yet.')).toBeTruthy()
@@ -146,7 +146,7 @@ describe('the search preview', () => {
 
 describe('the share preview', () => {
   it('initials on navy with no logo', () => {
-    render(<SharePreview name="Example Chess Club" city="Example City" about="" statement="" logo={null} />)
+    render(<SharePreview own name="Example Chess Club" city="Example City" about="" statement="" logo={null} />)
     const card = screen.getByRole('region', { name: 'When someone shares your page' })
     const tile = within(card).getByRole('img', { name: 'The initials EC in white on navy' })
     expect(tile.className).toContain('bg-brand-navy')
@@ -157,12 +157,12 @@ describe('the share preview', () => {
   })
 
   it('draws the club\'s own stored logo, and never one from another site, so it makes no request elsewhere', () => {
-    render(<SharePreview name="Example Chess Club" city="Example City" about={ABOUT} statement="" logo="/api/clubs/example-chess-club/logo?v=2" />)
+    render(<SharePreview own name="Example Chess Club" city="Example City" about={ABOUT} statement="" logo="/api/clubs/example-chess-club/logo?v=2" />)
     const card = screen.getByRole('region', { name: 'When someone shares your page' })
     expect(within(card).getByAltText('The club\'s logo').getAttribute('src')).toBe('/api/clubs/example-chess-club/logo?v=2')
     cleanup()
     for (const elsewhere of ['https://example.org/logo.png', '//example.org/logo.png', '/\\example.org/logo.png', 'javascript:alert(1)', '']) {
-      render(<SharePreview name="Example Chess Club" city="Example City" about="" statement="" logo={elsewhere} />)
+      render(<SharePreview own name="Example Chess Club" city="Example City" about="" statement="" logo={elsewhere} />)
       const shared = screen.getByRole('region', { name: 'When someone shares your page' })
       expect(shared.querySelector('img'), elsewhere).toBeNull()
       expect(within(shared).getByRole('img', { name: 'The initials EC in white on navy' })).toBeTruthy()
@@ -214,12 +214,12 @@ describe('the directory card preview', () => {
 
 describe('the page\'s checklist', () => {
   it('says each item\'s state in words beside its mark, and the count done', () => {
-    const items = pageChecklist({ statement: STATEMENT, pinned: true, email: '', logo: null, colour: '#c8a94a' })
-    render(<PageChecklist items={items} />)
+    const items = pageChecklist({ statement: STATEMENT, pinned: true, email: '', logo: null, colour: '#c8a94a', own: true })
+    render(<PageChecklist own items={items} />)
     const list = screen.getByRole('region', { name: 'Your page\'s checklist' })
     expect(within(list).getByText('2 of 5 done')).toBeTruthy()
     expect(screen.getAllByRole('listitem').map((li) => wordsOf(li))).toEqual([
-      'How the club meets, in your words : Done', 'A place pinned on the map : Done', 'Email for messages : Not yet', 'Logo : Not yet', 'Club colour : Not yet',
+      'How the club meets, in your words : Done', 'A place pinned on the map : Done', 'Email for messages : Not yet', 'Logo : Not yet', 'Club color : Not yet',
     ])
     // The marks are for the eye alone, and no colour carries a state.
     for (const svg of list.querySelectorAll('svg')) expect(svg.getAttribute('aria-hidden')).toBe('true')
@@ -248,7 +248,7 @@ describe('the preview column in the editor', () => {
     expect(column.className).toContain('lg:sticky')
     expect(column.parentElement!.className).toContain('lg:flex-row')
     expect(column.parentElement!.className).toContain('flex-col')
-    for (const name of ['How your page shows up in a search', 'When someone shares your page', 'Your page\'s checklist']) expect(within(column).getByRole('region', { name })).toBeTruthy()
+    for (const name of ['How the club\'s page shows up in a search', 'When someone shares the club\'s page', 'Checklist for the club\'s page']) expect(within(column).getByRole('region', { name })).toBeTruthy()
     expect(within(column).getByRole('group', { name: 'Directory card' })).toBeTruthy()
     fireEvent.change(screen.getByLabelText('Club name'), { target: { value: 'Example Town Chess Club' } })
     fireEvent.change(screen.getByLabelText('City'), { target: { value: 'Example Town' } })
@@ -257,7 +257,7 @@ describe('the preview column in the editor', () => {
     expect(within(column).getByText('Example Town Chess Club · Example Town')).toBeTruthy()
     // The club still has the default gold, so its colour is not yet set; a colour picked counts at once.
     expect(within(column).getByText('3 of 5 done')).toBeTruthy()
-    fireEvent.change(screen.getByLabelText('Club colour'), { target: { value: '#2e7d32' } })
+    fireEvent.change(screen.getByLabelText('Club color'), { target: { value: '#2e7d32' } })
     expect(within(column).getByText('4 of 5 done')).toBeTruthy()
     expect(fetched).toEqual([])
   })

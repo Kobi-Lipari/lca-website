@@ -14,7 +14,17 @@
 // the editor saves, the bare picker is marked shut (`waiting`) and not
 // disabled, so its box and its buttons keep the focus: the box is read
 // only, a press of a button or Enter in the box does nothing, and the map
-// takes no click or drag (WS09 step 9).
+// takes no click or drag (WS09 step 9). The bare picker keeps the focus in
+// place for a keyboard: Use this stays a live button with an empty box, which
+// it refuses in words, so a good paste that empties the box never disables
+// the button that holds the focus, and Remove pin, which goes once the pin
+// is gone, hands the focus to the pin's box. The pin's line and a refused
+// paste's words stand in live regions drawn from the first render, polite
+// and assertive (not the roles, so the editor's own status and alert stay
+// the form's only ones), so a screen reader hears the point set, the pin
+// removed and the refusal, a second refusal in the same words as well. For
+// a person who asks for less motion the editor's map moves to a pasted pin
+// at once rather than gliding there.
 import { useEffect, useRef, useState } from 'react'
 import { MapPin } from 'lucide-react'
 
@@ -44,6 +54,11 @@ export interface BarePicker {
   place?: string
 }
 
+/** Whether the person has asked for less motion, in whichever look the page is drawn. */
+function reducesMotion(): boolean {
+  return typeof window !== 'undefined' && typeof window.matchMedia === 'function' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
+}
+
 /** A control of the bare picker, shut by its aria-disabled mark as by disabled. */
 const SHUT = 'min-h-11 aria-disabled:cursor-not-allowed aria-disabled:opacity-50'
 
@@ -69,9 +84,13 @@ export function ClubLocationPicker({
   const [draft, setDraft] = useState<LatLng | null>(saved ?? (fallback ? { lat: fallback.lat, lng: fallback.lng } : null))
   const [paste, setPaste] = useState('')
   const [pasteError, setPasteError] = useState<string | null>(null)
+  // Counts the refusals, so the bare picker draws each one afresh and a second with the same words is heard again.
+  const [refusals, setRefusals] = useState(0)
   const [busy, setBusy] = useState(false)
   const [note, setNote] = useState<{ ok: boolean; text: string } | null>(null)
   const [loaded, setLoaded] = useState(false)
+  // The pin's box, set by a press of Remove pin, whose button goes with the pin: the focus then moves to the box.
+  const focusBox = useRef<string | null>(null)
 
   const mapEl = useRef<HTMLDivElement>(null)
   const mapRef = useRef<google.maps.Map | null>(null)
@@ -96,6 +115,10 @@ export function ClubLocationPicker({
       return
     }
     onChange.current?.(draft)
+    if (focusBox.current && !draft) {
+      document.getElementById(focusBox.current)?.focus()
+      focusBox.current = null
+    }
   }, [draft])
 
   const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY as string | undefined
@@ -158,15 +181,23 @@ export function ClubLocationPicker({
 
   function applyPasted() {
     if (waiting) return
+    if (bare && !paste.trim()) {
+      setPasteError('Paste coordinates or a Google Maps link in the box first.')
+      setRefusals((n) => n + 1)
+      return
+    }
     const parsed = parseLocation(paste)
     if (!parsed) {
       setPasteError('Couldn’t find coordinates in that. Paste something like 30.4515, -91.1871 or a Google Maps link.')
+      setRefusals((n) => n + 1)
       return
     }
     setPasteError(null)
     setPaste('')
     setDraft(parsed)
-    mapRef.current?.panTo(parsed)
+    // In the editor the map moves straight to the pin for a person who asked for less motion; today's card glides as before.
+    if (bare && reducesMotion()) mapRef.current?.setCenter(parsed)
+    else mapRef.current?.panTo(parsed)
     mapRef.current?.setZoom(15)
   }
 
@@ -218,22 +249,28 @@ export function ClubLocationPicker({
               className={SHUT}
             />
             <Button
-              type="button" variant="outline" className={SHUT} disabled={disabled || !paste.trim()} aria-disabled={waiting || undefined}
+              type="button" variant="outline" className={SHUT} disabled={disabled} aria-disabled={waiting || undefined}
               onClick={applyPasted}
             >
               {`Use this${of}`}
             </Button>
           </div>
-          {pasteError && <p id={errorId} className="text-sm text-destructive">{pasteError}</p>}
+          <div aria-live="assertive">
+            {pasteError && <p key={refusals} id={errorId} className="text-sm text-destructive">{pasteError}</p>}
+          </div>
         </div>
         <div className="flex flex-col items-start gap-2 sm:flex-row sm:items-center sm:gap-3">
-          <p className="text-sm tabular-nums text-ink">
+          <p aria-live="polite" className="text-sm tabular-nums text-ink">
             {draft ? `Pin${of} at ${draft.lat.toFixed(5)}, ${draft.lng.toFixed(5)}` : `No pin set${of}`}
           </p>
           {draft && (
             <Button
               type="button" variant="outline" className={SHUT} disabled={disabled} aria-disabled={waiting || undefined}
-              onClick={() => { if (!waiting) setDraft(null) }}
+              onClick={() => {
+                if (waiting) return
+                focusBox.current = bare.inputId
+                setDraft(null)
+              }}
             >
               {`Remove pin${of}`}
             </Button>

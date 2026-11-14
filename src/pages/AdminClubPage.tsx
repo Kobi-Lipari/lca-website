@@ -1,6 +1,6 @@
 // src/pages/AdminClubPage.tsx
 import { lazy, Suspense, useEffect, useRef, useState, type ChangeEvent, type FormEvent } from 'react'
-import { Link, useParams, useSearchParams } from 'react-router-dom'
+import { Link, useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import {
   ArrowLeft, Building2, EyeOff, Newspaper, Palette, Trash2, Trophy, Upload, UserPlus, Users,
 } from 'lucide-react'
@@ -44,7 +44,7 @@ type ClubTab = 'details' | 'news' | 'roster' | 'tournaments'
 
 export function AdminClubPage() {
   const { id } = useParams<{ id: string }>()
-  const { role } = useAuth()
+  const { role, member } = useAuth()
   const isAdmin = role === 'lca_admin'
   const toolsHome = toolsHomeFor(role)
   // Regional representatives reach this page through their board seat, not a
@@ -53,6 +53,11 @@ export function AdminClubPage() {
   const backLabel = isAdmin ? 'All clubs' : toolsHome === '/dashboard' ? 'My profile' : toolsHome.startsWith('/admin') ? 'Admin panel' : 'Workspace'
   const showTournaments = isAdmin || isViewOnlyAdmin(role) || role === 'club_rep'
   const [params, setParams] = useSearchParams()
+  const navigate = useNavigate()
+  // The address's query (the open tab), kept for a move to the club's id's address without loading again on each tab.
+  const { search } = useLocation()
+  const searchNow = useRef(search)
+  useEffect(() => { searchNow.current = search }, [search])
 
   const [club, setClub] = useState<ApiClubDetail | null>(null)
   const [roster, setRoster] = useState<ApiAdminMember[] | null>([]) // null: the roster is kept back from this person
@@ -98,13 +103,24 @@ export function AdminClubPage() {
 
   useEffect(() => {
     if (!id) return
+    // Set when the club answered for a page address moves the page to its id's address, where it loads again.
+    let moved = false
     async function load() {
       try {
         const [clubData, newsData] = await Promise.all([
           adminGetClub(id!),
-          adminGetClubNews(id!),
+          adminGetClubNews(id!).then((list) => ({ list }), (failed: unknown) => ({ failed })),
         ])
         const c = clubData.club
+        // With CLUB_KEEPERS_ON set the GET also finds a club by its page address, and every
+        // other call here takes the club's id alone, so the page moves to the id's address,
+        // in place of this one, before it draws anything.
+        if (c.id !== id) {
+          moved = true
+          navigate({ pathname: `/admin/clubs/${encodeURIComponent(c.id)}`, search: searchNow.current }, { replace: true })
+          return
+        }
+        if ('failed' in newsData) throw newsData.failed
         setClub(c)
         setTournaments(clubData.tournaments ?? [])
         setOfficers(clubData.officers ?? [])
@@ -121,15 +137,15 @@ export function AdminClubPage() {
           region: c.region ?? '',
         })
         setRoster(clubData.rosterKeptBack ? null : clubData.roster ?? [])
-        setNews(newsData)
+        setNews(newsData.list)
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to load club')
       } finally {
-        setLoading(false)
+        if (!moved) setLoading(false)
       }
     }
     load()
-  }, [id])
+  }, [id, navigate])
 
   async function handleSaveClub(e: FormEvent) {
     e.preventDefault()
@@ -482,12 +498,17 @@ export function AdminClubPage() {
           </div>
           </ViewOnlyFieldset>
         )}
-        {/* The editor shuts its own fields and Save for an observer and leaves Help open to them. */}
+        {/*
+          The editor shuts its own fields and Save for an observer and leaves Help open to them.
+          Its words say "your" only to the club's own rep, whom this page lets in at the club's
+          id as before; an LCA admin, an observer and a region's representative read "the club's".
+        */}
         {tab === 'details' && keepersOn() && (
           <Suspense fallback={<p className="text-muted-foreground">Loading the editor…</p>}>
             <ClubEditor
               club={club}
               places={places}
+              own={role === 'club_rep' && !!member?.club_id && member.club_id === club.id}
               isAdmin={isAdmin}
               showAdminFields={isAdmin || isViewOnlyAdmin(role)}
               viewOnly={isViewOnlyAdmin(role)}

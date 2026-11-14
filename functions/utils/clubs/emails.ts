@@ -17,45 +17,67 @@ import { emailDetails, escapeHtml, p, renderEmail } from '../emailLayout'
 import { resolveSiteUrl } from '../site'
 import { regionRepresentativesOf } from './routing'
 
-/** Each field a save can change, by its column, as the notice names it. */
+/**
+ * Each field a save can change, by its column, as the notice names it: in
+ * the words the editor shows for that field, so a keeper and the region's
+ * representative read the same name. A column of today's that a save copies
+ * from the listing (description from About, meeting_schedule from how the
+ * club meets, and location and the pin from the places) takes the name of
+ * the field it is copied from, so one change is named once.
+ */
 export const CLUB_FIELD_LABELS: Record<string, string> = {
-  name: 'Name',
+  about_text: 'One sentence about the club',
+  description: 'One sentence about the club',
+  how_we_meet_text: 'How the club meets, in words',
+  meeting_schedule: 'How the club meets, in words',
+  places: 'Where',
+  location: 'Where',
+  latitude: 'Where',
+  longitude: 'Where',
+  contact_name_public: 'Contact name',
+  contact_email: 'Email for messages',
+  name: 'Club name',
   city: 'City',
-  location: 'Location',
-  description: 'Description',
-  meeting_schedule: 'Meeting schedule',
-  contact_email: 'Contact email',
-  color: 'Color',
-  image_url: 'Logo',
   region: 'Region',
-  latitude: 'Map pin',
-  longitude: 'Map pin',
   slug: 'Page address',
-  about_text: 'About',
-  how_we_meet_text: 'How we meet',
   cost_text: 'Cost',
   welcome_text: 'Who is welcome',
-  weekend_play: 'Plays on weekends',
+  weekend_play: 'The club plays on weekends',
   scholastic_friendly: 'Scholastic friendly',
-  contact_name_public: 'Contact name',
   facebook_url: 'Facebook page',
   website_url: 'Website',
-  other_url: 'Other link',
-  places: 'Places',
+  other_url: 'Another link',
+  image_url: 'Logo',
+  color: 'Club color',
 }
 
-/** The fields' names, each once, in the order given; a column with no label is left out. */
+/** The fields' names in the editor's order. */
+const LABEL_ORDER = [...new Set(Object.values(CLUB_FIELD_LABELS))]
+
+/** The fields' names, each once, in the editor's order; a column with no label is left out. */
 export function fieldNames(columns: readonly string[]): string[] {
-  const names: string[] = []
+  const names = new Set<string>()
   for (const column of columns) {
     const label = CLUB_FIELD_LABELS[column]
-    if (label && !names.includes(label)) names.push(label)
+    if (label) names.add(label)
   }
-  return names
+  return LABEL_ORDER.filter((label) => names.has(label))
+}
+
+/**
+ * A stored name as one line: every run of white space or control characters
+ * made one space, so no name a member typed can break the notice's lines or
+ * stand in it as a line of its own.
+ */
+export function oneLine(text: string): string {
+  return text.replace(/[\s\p{Cc}\p{Zl}\p{Zp}]+/gu, ' ').trim()
 }
 
 /** The pause between one representative's email and the next, the pace functions/utils/events/publishedReview.ts keeps. */
 const SEND_INTERVAL_MS = 400
+
+/** The notice's heading, true whoever saved: the club's own rep, another keeper or an LCA admin. */
+const HEADING = 'A club\'s listing in your region was updated'
 
 /** The notice for one club. Its `to` is empty, as every template's is, and is filled for each representative. */
 export function clubSaveNoticeEmail(data: {
@@ -66,27 +88,30 @@ export function clubSaveNoticeEmail(data: {
   fields: readonly string[]
 }): EmailMessage {
   const url = `${data.siteUrl}/admin/clubs/${encodeURIComponent(data.clubId)}`
-  const changed = data.fields.join(', ')
+  // A name may hold a comma, so the names are kept apart by semicolons.
+  const changed = data.fields.join('; ')
+  const clubName = oneLine(data.clubName)
+  const saverName = oneLine(data.saverName)
   const why = 'You are told because your board seat covers this club\'s region. Nothing needs doing unless something looks wrong.'
   return {
     to: '',
-    subject: `${data.clubName}: its listing was updated`,
+    subject: `${clubName}: its listing was updated`,
     html: renderEmail({
       siteUrl: data.siteUrl,
-      heading: 'A club in your region updated its listing',
-      preheader: `${data.clubName}: ${changed}`,
+      heading: HEADING,
+      preheader: `${clubName}: ${changed}`,
       body: emailDetails([
-        ['Club', data.clubName],
-        ['Saved by', data.saverName],
+        ['Club', clubName],
+        ['Saved by', saverName],
         ['What changed', changed],
       ]) + p(escapeHtml(why)),
       cta: { label: 'See the club', url },
     }),
     text: [
-      'A club in your region updated its listing.',
+      `${HEADING}.`,
       '',
-      `Club: ${data.clubName}`,
-      `Saved by: ${data.saverName}`,
+      `Club: ${clubName}`,
+      `Saved by: ${saverName}`,
       `What changed: ${changed}`,
       '',
       why,

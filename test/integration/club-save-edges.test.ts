@@ -254,7 +254,7 @@ describe('a replayed places save', () => {
     expect((await put(rep, clubId, places)).status).toBe(200)
     await flushWaitUntil()
     expect(sentTo()).toEqual([`holder.${clubId}@example.org`])
-    expect(emailOutbox[0].text).toContain('Places')
+    expect(emailOutbox[0].text).toContain('What changed: Where\n')
     const log = await editRows(clubId)
 
     emailOutbox.length = 0

@@ -250,7 +250,8 @@ describe('Your club\'s page: the ways in, with clubKeepers on', () => {
     expect(screen.getByRole('link', { name: 'Back to your profile' }).getAttribute('href')).toBe('/dashboard')
     expect(screen.queryByText('Other Example Club')).toBeNull()
     expect(screen.queryByRole('button', { name: 'Save and publish' })).toBeNull()
-    expect(screen.getAllByRole('heading', { level: 1 }).map((h) => h.textContent)).toEqual(['Your club\'s page'])
+    // The club is not this person's own, so the page is not called theirs.
+    expect(screen.getAllByRole('heading', { level: 1 }).map((h) => h.textContent)).toEqual(['The club\'s page'])
     expect(document.activeElement).toBe(screen.getByRole('heading', { level: 1 }))
   })
 
@@ -315,7 +316,7 @@ describe('Your club\'s page: the ways in, with clubKeepers on', () => {
     await act(async () => finish(json({ club: OTHER_CLUB, ...FULL })))
     await editor()
     expect(within(hero()).getByText('Other Example Club')).toBeTruthy()
-    expect(document.title).toBe('Your club\'s page: Other Example Club | Louisiana Chess Association')
+    expect(document.title).toBe('The club\'s page: Other Example Club | Louisiana Chess Association')
   })
 
   it('has one main heading, which takes the focus once the club is drawn, and its own controls at least 44px tall in one column on a phone', async () => {

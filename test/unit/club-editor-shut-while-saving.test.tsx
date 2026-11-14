@@ -163,7 +163,7 @@ describe('the club editor while a save runs: the controls that keep the focus', 
   it('both pins and both pins\' buttons keep the focus while the save runs, and each press, Enter and typed value is refused until it ends', async () => {
     const server = serve([PLACE_1, PLACE_2])
     await openEditor()
-    // Words in the first pin's box, so that its Use this is a live button (with an empty box it is disabled, as it always was).
+    // Words in the first pin's box, so that its Use this has a paste to refuse (with an empty box it refuses the press in words).
     fireEvent.change(field('Pin: coordinates or a Google Maps link'), { target: { value: '30.5, -91.5' } })
     const run = await saveRunning(server)
     await run.startSave()

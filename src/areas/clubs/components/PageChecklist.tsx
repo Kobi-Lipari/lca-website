@@ -5,16 +5,17 @@
 // a logo and a colour (a photo joins with the club's photos, in a later
 // step), each with its state in words, "Done" or "Not yet", and the count
 // done. The marks beside them are drawn for the eye alone; the words carry
-// the state, and no colour does.
+// the state, and no colour does. Its heading says "your page" only to the
+// club's own rep, and "the club's page" to anyone else who keeps the club.
 import { Circle, CircleCheck } from 'lucide-react'
 
 import type { ChecklistItem } from '@/areas/clubs/previews'
 
-export function PageChecklist({ items }: { items: ChecklistItem[] }) {
+export function PageChecklist({ own, items }: { own: boolean; items: ChecklistItem[] }) {
   const done = items.filter((i) => i.done).length
   return (
     <section aria-labelledby="preview-checklist-title" className="space-y-2">
-      <h3 id="preview-checklist-title" className="text-sm font-semibold text-ink">Your page's checklist</h3>
+      <h3 id="preview-checklist-title" className="text-sm font-semibold text-ink">{own ? 'Your page\'s checklist' : 'Checklist for the club\'s page'}</h3>
       <p className="text-sm text-ink">{done} of {items.length} done</p>
       <ul className="space-y-1.5 text-sm text-ink">
         {items.map((item) => (

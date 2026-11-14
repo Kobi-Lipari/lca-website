@@ -14,6 +14,11 @@
 // club page the server writes later uses the same two functions, so the
 // preview is the page's own words. Pure code: it imports nothing, so the
 // site, the server and the tests all read the one rule.
+//
+// What they return is plain text, not text made safe for HTML: a tag left
+// open, a quote mark and an ampersand pass through as typed. The previews
+// draw it as React text, which escapes it; whatever writes it into HTML, a
+// page's head among them, escapes it there for where it lands.
 
 /** The association's name, which ends every club page's title. */
 export const SITE_NAME = 'Louisiana Chess Association'
@@ -32,7 +37,9 @@ const CUT_MARK = '…'
  * (a less-than sign, a letter, and on to the next greater-than sign) taken
  * out, and every run of spaces, tabs and line breaks made one space. Signs a
  * keeper types as words, "rated <1200" or "over > 18", are kept, so a page's
- * description never loses the words between them.
+ * description never loses the words between them. It does not make the text
+ * safe for HTML: a tag with no closing sign, a quote mark and an ampersand
+ * stay, so a writer of HTML escapes what it returns.
  */
 export function plainText(text: string | null | undefined): string {
   return (text ?? '')

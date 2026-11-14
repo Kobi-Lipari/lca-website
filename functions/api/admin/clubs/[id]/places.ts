@@ -39,6 +39,8 @@ export const onRequestPut: PagesFunction<Env> = async (context) => {
   if (isResponse(body)) return body
 
   const changed = await savePlaces(context.env.DB, { clubId, saver: authResult.member, existing, places: body.places })
+  // The club was deleted after this save read it: nothing was written, and no one is told.
+  if (changed === null) return errorResponse('Club not found', 404)
 
   context.waitUntil(sendClubSaveNotice(context.env, context.request, {
     clubId,

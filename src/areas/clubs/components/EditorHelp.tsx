@@ -22,8 +22,21 @@
 // new club pages (clubPagesOn) the same way: today's club page shows neither
 // the contact name nor the place's note, so until those pages are on Help
 // says what goes live on today's page at once and what shows once they open.
+// The cost, who is welcome, the two ticks and the three links follow it too,
+// since today's club page and directory read none of them, and so does
+// Preview, which draws the new pages' search result, share and card; and so
+// does the city's sentence, since today's page shows the city under the
+// name as "Baton Rouge, LA" and not the new pages' line, and so do the
+// sentences on the page's address, since today's page keeps the club's id
+// as its address until the new pages open.
+//
+// Help speaks of "your club" and "your page" only to the club's own rep
+// (`own`); anyone else who keeps the club, a region's representative or an
+// LCA admin, reads "the club's".
 import type { KeyboardEvent, Ref } from 'react'
 import { CircleHelp } from 'lucide-react'
+
+import { addressCardName } from '@/areas/clubs/editor'
 
 /** The id of the part Help opens, which its button controls. */
 const HELP_ID = 'club-editor-help'
@@ -41,13 +54,16 @@ export function EditorHelpButton({ open, onToggle, ref }: { open: boolean; onTog
 }
 
 /** Each field and what it is for, in the form's order, then the previews. */
-function sentences(emailHidden: boolean, pagesOn: boolean, showAdmin: boolean): Array<[string, string]> {
+function sentences(own: boolean, emailHidden: boolean, pagesOn: boolean, showAdmin: boolean): Array<[string, string]> {
+  // "Your club" only to the club's own rep; anyone else who keeps the club reads "the club's".
+  const clubs = own ? 'your club\'s' : 'the club\'s'
+  const page = own ? 'your page' : 'the club\'s page'
   const where =
     'The place the club meets, its street if you know it, and a note such as the room. Set the pin by clicking the map or dragging the pin, or paste coordinates or a Google Maps link; nothing is looked up for you. If the club meets in two places, Add another place; a place you empty, or Remove place 2, comes off the page at the next save.'
   return [
     [
       'One sentence about the club',
-      'It is shown as About on your club\'s page and at the start of search results. You may write more, the club in its own words, up to 2,000 characters: the count under the box says how many you have used. A search result shows the start of About and then How the club meets, in words, about 155 characters in all. Keep that box short so both fit.',
+      `It is shown as About on ${clubs} page and at the start of search results. You may write more, the club in its own words, up to 2,000 characters: the count under the box says how many you have used. A search result shows the start of About and then How the club meets, in words, about 155 characters in all. Keep that box short so both fit.`,
     ],
     [
       'How the club meets, in words',
@@ -55,58 +71,72 @@ function sentences(emailHidden: boolean, pagesOn: boolean, showAdmin: boolean): 
     ],
     ['Where', pagesOn ? where : `${where} Today's club page shows the place's name, its street and its pin; the note shows once the new club pages open.`],
     pagesOn
-      ? ['Contact name shown on the page', 'The name visitors see beside Contact on your club\'s page.']
-      : ['Contact name', 'The name visitors will see beside Contact on your club\'s page once the new club pages open. Today\'s club page does not show it.'],
+      ? ['Contact name shown on the page', `The name visitors see beside Contact on ${clubs} page.`]
+      : ['Contact name', `The name visitors will see beside Contact on ${clubs} page once the new club pages open. Today's club page does not show it.`],
     [
       'Email for messages',
       emailHidden
-        ? 'It is never shown on your club\'s page or to visitors.'
+        ? `It is never shown on ${clubs} page or to visitors.`
         : 'Today\'s club page shows this address to visitors.',
     ],
     [
       'Name and address',
-      `The city makes the line under your club's name, such as "Chess club in Baton Rouge, Louisiana", on your page and in search results, and helps people who search for a chess club near it. Your page's address is made from the club's name the first time the page is saved, and stays the same if the club is renamed, so links and search results keep working.${showAdmin ? '' : ' The name, the region and the address are kept by LCA admins: ask LCA if one ever needs to change.'}`,
+      `${pagesOn
+        ? `The city makes the line under ${clubs} name, such as "Chess club in Baton Rouge, Louisiana", on ${page} and in search results, and helps people who search for a chess club near it.`
+        : `Today's club page shows the city under ${clubs} name, such as "Baton Rouge, LA", and a shared link to the page starts with a line such as "Chess club in Baton Rouge, Louisiana", which search results may show too. The city also helps people who search for a chess club near it. That line goes under the name once the new club pages open.`
+      } ${pagesOn
+        ? `${own ? 'Your page\'s address' : 'The address of the club\'s page'} is made from the club's name the first time the page is saved, and stays the same if the club is renamed, so links and search results keep working.`
+        : `Today's club page keeps the address shown under "${addressCardName(own)}", which stays the same if the club is renamed, so links and search results keep working.`
+      }${showAdmin ? '' : ' The name, the region and the address are kept by LCA admins: ask LCA if one ever needs to change.'}`,
     ],
     ...(showAdmin
       ? [[
           'Club name, region and page address',
-          'Only LCA admins change these. The page address is the part after /clubs/ in the club page\'s address; when it changes, the old address keeps working.',
+          pagesOn
+            ? 'Only LCA admins change these. The page address is the part after /clubs/ in the club page\'s address; when it changes, the old address keeps working.'
+            : 'Only LCA admins change these. The page address is used once the new club pages open; today\'s club page keeps its own address, which does not change.',
         ] as [string, string]]
       : []),
     [
       'Cost and who is welcome',
-      'Cost is what a club night costs, such as "Free" or "$5 toward the room". Who is welcome says who the club is for and what a first-timer should bring or ask for. Tick The club plays on weekends or Scholastic friendly only when it is so; the club directory\'s filters read them.',
+      `Cost is what a club night costs, such as "Free" or "$5 toward the room". Who is welcome says who the club is for and what a first-timer should bring or ask for. Tick The club plays on weekends or Scholastic friendly only when it is so${pagesOn
+        ? '; the club directory\'s filters read them.'
+        : '. Today\'s club page and directory show none of these; they show once the new club pages open, and the new directory\'s filters read the ticks.'}`,
     ],
     [
       'Links',
-      'Each link is a whole web address that starts with http:// or https://, such as your club\'s Facebook page. Leave a box empty to show no link there.',
+      `Each link is a whole web address that starts with http:// or https://, such as ${clubs} Facebook page. ${pagesOn
+        ? 'Leave a box empty to show no link there.'
+        : 'Today\'s club page shows none of these links; they show once the new club pages open, and a box left empty shows no link there.'}`,
     ],
     [
-      'Logo and club colour',
-      'A logo you choose is made to fit and saved at once, on its own, before Save and publish. Press Save and publish while it uploads and your changes save as soon as the upload is done. The club\'s colour is drawn as a band, a tint and small bars on the new club pages, never as words; a club with no colour of its own shows navy.',
+      'Logo and club color',
+      'A logo you choose is made to fit and saved at once, on its own, before Save and publish. Press Save and publish while it uploads and your changes save as soon as the upload is done. The club\'s color is drawn as a band, a tint and small bars on the new club pages, never as words; a club with no color of its own shows navy.',
     ],
     [
       'Today\'s page shows different words here',
-      'Your club\'s page as it stands shows other words than this listing holds, because they were changed in the older form. Save and publish puts this listing\'s words on the page.',
+      'Today\'s club page shows its own, shorter words where this listing holds the words written for the new club pages, or words changed in the older form since. Any save, even of one other field, puts this listing\'s words on today\'s page in place of today\'s, so read both before you save.',
     ],
     [
       'Save and publish',
       `${pagesOn
-        ? 'Your changes go live on your club\'s page at once.'
-        : 'The sentence about the club, how it meets, and the place\'s name, street and pin go live on today\'s club page at once; the contact name and the place\'s note show once the new club pages open.'
+        ? `Your changes go live on ${clubs} page at once.`
+        : 'The sentence about the club, how it meets, and the place\'s name, street and pin go live on today\'s club page at once; the contact name and the place\'s note show once the new club pages open. So do the cost, who is welcome, the two ticks and the links.'
       } When someone other than the region's representative saves, the representative is emailed what changed. Search results may take a few days to show a change.`,
     ],
     [
       'Preview',
-      'Beside the form, or under Preview on a phone, you see how your page shows up in a search and when someone shares it, its card in LCA\'s club directory, and what the page has. They change as you type. Google shows about the first 60 characters of a title, so your club\'s name and city come first. A shared link shows your logo, or your club\'s initials on navy when it has none.',
+      `Beside the form, or under Preview on a phone, you see how ${page} shows up in a search and when someone shares it, its card in LCA's club directory, and what the page has. They change as you type.${pagesOn ? '' : ' They show the new club pages as they will be once they open, not today\'s page.'} Google shows about the first 60 characters of a title, so ${clubs} name and city come first. A shared link shows ${own ? 'your logo, or your club\'s initials' : 'the club\'s logo, or its initials'} on navy when it has none.`,
     ],
   ]
 }
 
 export function EditorHelp({
-  open, emailHidden, pagesOn, showAdmin, onClose, ref,
+  open, own, emailHidden, pagesOn, showAdmin, onClose, ref,
 }: {
   open: boolean
+  /** The club is the reader's own, as for its rep: only then does Help speak of "your club". */
+  own: boolean
   emailHidden: boolean
   /** The new club pages are on (clubPagesOn), which show the contact name and the place's note. */
   pagesOn: boolean
@@ -129,11 +159,11 @@ export function EditorHelp({
       tabIndex={-1}
       aria-labelledby={`${HELP_ID}-title`}
       onKeyDown={onKeyDown}
-      className="space-y-3 rounded-lg border border-hairline bg-card p-4 text-sm text-ink outline-none focus-visible:ring-3 focus-visible:ring-focus"
+      className="scroll-mt-24 space-y-3 rounded-lg border border-hairline bg-card p-4 text-sm text-ink outline-none focus-visible:ring-3 focus-visible:ring-focus"
     >
       <h3 id={`${HELP_ID}-title`} className="text-base font-semibold">Help</h3>
       <dl className="space-y-3">
-        {sentences(emailHidden, pagesOn, showAdmin).map(([term, text]) => (
+        {sentences(own, emailHidden, pagesOn, showAdmin).map(([term, text]) => (
           <div key={term}>
             <dt className="font-medium">{term}</dt>
             <dd className="text-muted-foreground">{text}</dd>

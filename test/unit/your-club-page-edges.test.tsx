@@ -58,7 +58,7 @@ vi.mock('@/pages/AdminPage', async () => {
   const { useParams } = await import('react-router-dom')
   return { AdminPage: () => createElement('p', null, `The admin panel at ${useParams().section ?? 'its start'}`) }
 })
-// The editor is stood in for: it names the club it is given and saves on a press, with the stamp the next save would carry.
+// The editor is stood in for: it names the club it is given and saves on a press, with the stamps the next save would carry, the saver's among them, as a keeper's save sets them.
 const SAVED_AT = vi.hoisted(() => ({ value: '2026-11-16 18:00:00' }))
 // Each save takes the next page address queued here, as an LCA admin's save that changes Page address does; with none queued the address stays.
 const RENAMES = vi.hoisted(() => ({ next: [] as string[] }))
@@ -71,7 +71,7 @@ vi.mock('@/areas/clubs/components/ClubEditor', async () => {
         createElement('p', { 'data-testid': 'editor-address' }, props.club.slug ?? 'no address'),
         createElement('button', {
           type: 'button',
-          onClick: () => props.onSaved({ ...props.club, slug: RENAMES.next.shift() ?? props.club.slug, told_updated_at: SAVED_AT.value }, []),
+          onClick: () => props.onSaved({ ...props.club, slug: RENAMES.next.shift() ?? props.club.slug, told_updated_at: SAVED_AT.value, told_by: 'm-rep', last_confirmed_at: SAVED_AT.value }, []),
         }, 'Save and publish')),
   }
 })

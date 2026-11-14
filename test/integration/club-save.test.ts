@@ -218,7 +218,7 @@ describe('the keepers\' save, with CLUB_KEEPERS_ON set', () => {
     const [notice] = emailOutbox
     expect(notice.to).toBe(`holder.${clubId}@example.org`)
     for (const text of [notice.html, notice.text ?? '']) {
-      expect(text).toContain('Description, Contact email, About, Plays on weekends')
+      expect(text).toContain('One sentence about the club; Email for messages; The club plays on weekends')
       for (const value of ['private.contact@example.org', 'club@example.org', 'Words not yet read by the region.', `rep.${clubId}@example.org`]) expect(text, value).not.toContain(value)
     }
     expect(notice.text).toContain(`/admin/clubs/${clubId}`)
@@ -314,10 +314,15 @@ describe('the keepers\' save, with CLUB_KEEPERS_ON set', () => {
     expect((await patch(admin, other.clubId, { slug: `kept-${other.clubId}` })).status).toBe(200)
     expect(await historyOf(other.clubId)).toContain(left)
 
+    // A made up club planted as a seeded one is: its id is also its old address, and its slug is another.
+    const planted = await seedClub({ id: 'example-chess-club', name: 'Example Chess Club', city: 'Example City' })
+    await env.DB.prepare('UPDATE clubs SET slug = ? WHERE id = ?').bind('example-chess-club-of-example-city', planted).run()
+    await env.DB.prepare('INSERT INTO club_slug_history (old_slug, club_id) VALUES (?, ?)').bind(planted, planted).run()
+
     const before = { club: await row(clubId), history: await historyOf(clubId), log: await editRows(clubId) }
-    // "monroe" is Monroe Chess Club's id and its old address, and "monroe-chess-club" its slug, for good.
+    // "example-chess-club" is the planted club's id and its old address, and "example-chess-club-of-example-city" its slug, for good.
     for (const [slug, status, words] of [
-      ['monroe', 409, SLUG_ELSEWHERE], ['monroe-chess-club', 409, SLUG_ELSEWHERE], [other.clubId, 409, SLUG_ELSEWHERE],
+      ['example-chess-club', 409, SLUG_ELSEWHERE], ['example-chess-club-of-example-city', 409, SLUG_ELSEWHERE], [other.clubId, 409, SLUG_ELSEWHERE],
       [`kept-${other.clubId}`, 409, SLUG_ELSEWHERE], [left, 409, SLUG_ELSEWHERE], ['contact', 400, SLUG_RESERVED], ['suggest', 400, SLUG_RESERVED],
     ] as const) {
       const res = await patch(admin, clubId, { slug, aboutText: 'Not saved' })

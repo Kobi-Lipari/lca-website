@@ -54,15 +54,19 @@ export interface ChecklistItem {
   done: boolean
 }
 
-/** The page's checklist, in its order: the meeting's words, a pinned place, the email for messages, a logo and a colour. */
+/**
+ * The page's checklist, in its order: the meeting's words, a pinned place,
+ * the email for messages, a logo and a colour. The meeting's words are "your
+ * words" only to the club's own rep (`own`), and the club's own to anyone else.
+ */
 export function pageChecklist({
-  statement, pinned, email, logo, colour,
-}: { statement: string; pinned: boolean; email: string; logo: string | null | undefined; colour: string | null | undefined }): ChecklistItem[] {
+  statement, pinned, email, logo, colour, own,
+}: { statement: string; pinned: boolean; email: string; logo: string | null | undefined; colour: string | null | undefined; own: boolean }): ChecklistItem[] {
   return [
-    { label: 'How the club meets, in your words', done: statement.trim() !== '' },
+    { label: own ? 'How the club meets, in your words' : 'How the club meets, in its own words', done: statement.trim() !== '' },
     { label: 'A place pinned on the map', done: pinned },
     { label: 'Email for messages', done: email.trim() !== '' },
     { label: 'Logo', done: ownLogo(logo) !== null },
-    { label: 'Club colour', done: ownColour(colour) !== null },
+    { label: 'Club color', done: ownColour(colour) !== null },
   ]
 }

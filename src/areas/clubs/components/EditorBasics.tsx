@@ -22,6 +22,10 @@
 // page" is drawn only once those pages are on (clubPagesOn), and until then
 // the label says the name shows once they open.
 //
+// The words say "your" only to the club's own rep (`own`): the email's label
+// with the switch off, the card that links to today's page and the logo's
+// description; anyone else who keeps the club reads "the club's".
+//
 // About, the first basic, is also the club's own words at length (Club-G-2's
 // "The club in your own words"): one column holds both, so the one box takes
 // up to 2,000 characters and shows its count under it; what the count means,
@@ -44,7 +48,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { FEATURES } from '@/lib/features'
 import { REGIONS } from '@/lib/regions'
-import { EDITOR_LIMITS, type EditorField as FieldName, type EditorValues } from '@/areas/clubs/editor'
+import { EDITOR_LIMITS, addressCardName, type EditorField as FieldName, type EditorValues } from '@/areas/clubs/editor'
 import { clubPagesOn } from '@/areas/clubs/switches'
 
 /** A box of one line: 44px tall at every width, and its border in the error's colour beside the error's words. */
@@ -105,6 +109,7 @@ export function EditorField({
       {differs && (
         <div id={differsId} className="rounded-md border border-hairline px-3 py-2 text-sm text-ink">
           <p className="font-medium">Today's page shows different words here</p>
+          <p>Saving puts this listing's words on today's page.</p>
           <dl className="mt-1 space-y-1">
             <div>
               <dt className="font-medium">Today's page</dt>
@@ -123,11 +128,13 @@ export function EditorField({
 }
 
 export function EditorBasics({
-  values, errors, differs, waiting, where, onChange,
+  values, errors, differs, own, waiting, where, onChange,
 }: {
   values: EditorValues
   errors: Partial<Record<FieldName, string>>
   differs: { aboutText: Differs | null; howWeMeetText: Differs | null }
+  /** The club is the reader's own, as for its rep: only then do the words say "your". */
+  own: boolean
   /** A save is under way: every box is read only until it ends. */
   waiting: boolean
   /** The third basic, the club's place, drawn by EditorPlaces. */
@@ -165,7 +172,7 @@ export function EditorBasics({
       <li>
         <EditorField
           field="contactEmail" type="email" autoComplete="email"
-          label={emailHidden ? 'Email for messages, never shown' : 'Email for messages, shown on your club\'s page today'}
+          label={emailHidden ? 'Email for messages, never shown' : `Email for messages, shown on ${own ? 'your' : 'the'} club's page today`}
           value={values.contactEmail} error={errors.contactEmail} readOnly={waiting}
           onChange={(v) => onChange('contactEmail', v)}
         />
@@ -182,8 +189,12 @@ const SELECT =
 const TICK_ROW = 'flex min-h-11 cursor-pointer items-center gap-3 text-sm text-ink'
 const TICK = 'size-5 shrink-0 rounded outline-none focus-visible:ring-3 focus-visible:ring-focus disabled:cursor-not-allowed disabled:opacity-50 aria-disabled:cursor-not-allowed aria-disabled:opacity-50'
 
-/** A part of the rest of the listing, under a line, with its name. */
-const PART = 'm-0 min-w-0 space-y-4 border-0 border-t border-hairline p-0 pt-6'
+/**
+ * A part of the rest of the listing, under a line, with its name. It sets no
+ * margin of its own, so the parent's space-y-6 keeps the parts apart and no
+ * part's name sits against the box, or the focus ring, above it.
+ */
+const PART = 'min-w-0 space-y-4 border-0 border-t border-hairline p-0 pt-6'
 const PART_NAME = 'mb-3 text-sm font-medium leading-snug'
 
 /**
@@ -216,12 +227,14 @@ function KeptWords({ label, value }: { label: string; value: ReactNode }) {
 }
 
 export function EditorRest({
-  values, errors, waiting, showAdminFields, address, logo, logoShut, onChange, onLogo,
+  values, errors, waiting, showAdminFields, own, address, logo, logoShut, noColour, onChange, onLogo,
 }: {
   values: EditorValues
   errors: Partial<Record<FieldName, string>>
   /** A save is under way: every box is read only until it ends. */
   waiting: boolean
+  /** The club is the reader's own, as for its rep: only then do the words say "your". */
+  own: boolean
   /** Draws the club's name, its region and its page address as boxes: for an LCA admin, and for an observer, shut. */
   showAdminFields: boolean
   /** The page's address on this site, the part from /clubs/ on. */
@@ -230,6 +243,8 @@ export function EditorRest({
   logo: string | null
   /** The logo's box is shut while a save or an upload runs: marked so, never disabled, so it keeps the focus. */
   logoShut: boolean
+  /** The club has no color of its own and the swatch is untouched, so the swatch's navy stands in for none. */
+  noColour: boolean
   onChange: <K extends keyof EditorValues>(field: K, value: EditorValues[K]) => void
   /** A logo chosen: uploaded at once, as today's page does. */
   onLogo: (file: File) => void
@@ -311,7 +326,7 @@ export function EditorRest({
           <dl><KeptWords label="Region" value={values.region || 'No region'} /></dl>
         )}
         <div className="space-y-1 rounded-md border border-hairline px-3 py-2 text-sm text-ink">
-          <p className="font-medium">Your page's address</p>
+          <p className="font-medium">{addressCardName(own)}</p>
           <Link to={address} className="inline-flex min-h-11 items-center break-all font-medium underline underline-offset-2 outline-none focus-visible:ring-3 focus-visible:ring-focus">
             {window.location.host}{address}
           </Link>
@@ -358,11 +373,11 @@ export function EditorRest({
       </fieldset>
 
       <fieldset className={PART}>
-        <legend className={PART_NAME}>Logo and club colour</legend>
+        <legend className={PART_NAME}>Logo and club color</legend>
         <div className="space-y-1.5">
           <Label htmlFor="editor-logo" className="leading-snug">Logo</Label>
           {logo
-            ? <img src={logo} alt="Your club's logo" className="h-24 w-auto max-w-full rounded-md border border-hairline bg-card object-contain p-2" />
+            ? <img src={logo} alt={own ? 'Your club\'s logo' : 'The club\'s logo'} className="h-24 w-auto max-w-full rounded-md border border-hairline bg-card object-contain p-2" />
             : <p className="text-sm text-ink">No logo yet</p>}
           {/*
             Marked shut rather than disabled while a save or an upload runs: the
@@ -382,12 +397,14 @@ export function EditorRest({
           />
         </div>
         <div className="space-y-1.5">
-          <Label htmlFor="editor-color" className="leading-snug">Club colour</Label>
+          <Label htmlFor="editor-color" className="block leading-snug">Club color</Label>
           <input
             id="editor-color" type="color" className={SWATCH} value={values.color} aria-disabled={waiting || undefined}
+            aria-describedby={noColour ? 'editor-color-none' : undefined}
             onClick={(e) => { if (waiting) e.preventDefault() }}
             onChange={(e) => onChange('color', e.target.value)}
           />
+          {noColour && <p id="editor-color-none" className="text-sm text-ink">No club color chosen yet</p>}
         </div>
       </fieldset>
     </div>

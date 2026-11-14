@@ -150,8 +150,14 @@ export const CLUB_SLUG_MAX = 48
 /** A slug as domain/clubs/slug.ts makes one: lower case letters and digits in runs joined by single hyphens. */
 export const CLUB_SLUG_FORM = /^[a-z0-9]+(?:-[a-z0-9]+)*$/
 
-/** The words a link field is refused with. */
-export const WEB_ADDRESS_WORDS = 'A link must be a web address that starts with http:// or https://'
+/**
+ * The words a link field is refused with. They say what to do rather than
+ * what is wrong, and an address copied whole from a browser's address bar
+ * passes isWebAddress, so they hold whichever reason refused the link: a
+ * missing http:// or https://, a space, a name before the site, a quote mark,
+ * a hidden character, a backslash, a third slash or a port that cannot be.
+ */
+export const WEB_ADDRESS_WORDS = 'Paste the whole web address copied from the browser\'s address bar, starting with https:// or http://'
 
 /**
  * The written form of a link: http:// or https://, then no space, control
@@ -161,12 +167,21 @@ export const WEB_ADDRESS_WORDS = 'A link must be a web address that starts with 
  */
 const WEB_ADDRESS_FORM = /^https?:\/\/[^\s\\/\p{Cc}][^\s\\\p{Cc}]*$/iu
 
+/**
+ * What no link a visitor can trust holds as typed: a quote mark, an angle
+ * bracket or a backtick, which a browser writes as %22, %3C, %3E or %60 in an
+ * address it copies, and the invisible format marks, such as the one that
+ * turns the text after it around, which make a link read as another.
+ */
+const NOT_IN_A_LINK = /["<>`\p{Cf}]/u
+
 /** True for an address written as http:// or https:// with a host after it. */
 export function isWebAddress(text: string): boolean {
-  if (!WEB_ADDRESS_FORM.test(text)) return false
+  if (!WEB_ADDRESS_FORM.test(text) || NOT_IN_A_LINK.test(text)) return false
   try {
     const url = new URL(text)
-    return (url.protocol === 'http:' || url.protocol === 'https:') && url.hostname !== ''
+    // A name or a password before an @ makes "https://facebook.com@example.net" lead to example.net.
+    return (url.protocol === 'http:' || url.protocol === 'https:') && url.hostname !== '' && url.username === '' && url.password === ''
   } catch {
     return false
   }
@@ -232,8 +247,11 @@ export const todaysClubSaveRequestSchema = z.looseObject(todaysClubSaveShape)
  * change, at most 48 characters in a slug's form. `places`, when sent, is
  * the club's places as the PUT takes them (clubPlacesListSchema), saved in
  * the same batch as the listing, so one press of the editor is one save.
- * With the constant unset a body that carries any of the new keys is refused
- * 403.
+ * `toldUpdatedAt` is the club's last save (told_updated_at) as the form that
+ * sends the body read it, null only for a club with no stamp, since
+ * migration 0067 stamps every club; when it is sent and the club has been
+ * saved since, the save is refused 409 and nothing is written. With the constant unset a body that carries any of
+ * the new keys is refused 403; `toldUpdatedAt` is not read then.
  */
 export const updateClubRequestSchema = z.looseObject({
   ...todaysClubSaveShape,
@@ -258,6 +276,7 @@ export const updateClubRequestSchema = z.looseObject({
   otherUrl: keeperLink(CLUB_TEXT_LIMITS.otherUrl),
   slug: z.string().max(CLUB_SLUG_MAX).regex(CLUB_SLUG_FORM, 'An address is lower case letters and digits, joined by single hyphens').optional(),
   places: clubPlacesListSchema.optional(),
+  toldUpdatedAt: z.string().max(40).nullable().optional(),
 })
 
 /** Today's text fields that may already be stored longer than their limit, by the save's own key. */

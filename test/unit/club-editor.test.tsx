@@ -213,7 +213,7 @@ describe('the club editor: the five basics', () => {
       'Pin: coordinates or a Google Maps link', 'Place 2 name', 'Place 2 street address', 'Note about place 2', 'Pin for place 2: coordinates or a Google Maps link',
       CONTACT, 'Email for messages, never shown',
       'Club name', 'City', 'Region', 'Page address', 'Cost', 'Who is welcome', 'The club plays on weekends', 'Scholastic friendly',
-      'Facebook page', 'Website', 'Logo', 'Club colour',
+      'Facebook page', 'Website', 'Logo', 'Club color',
     ])
     // The basics before anything else the form holds, and one save.
     expect(form.querySelector('ol')!.compareDocumentPosition(screen.getByRole('group', { name: 'Name and address' })) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
@@ -278,6 +278,7 @@ describe('the club editor: Save and publish', () => {
         { name: 'Example Center', street: null, note: 'Upstairs', point: { lat: 30.45, lng: -91.18 } },
         { name: 'Example Hall', street: null, note: 'Saturdays only', point: null },
       ],
+      toldUpdatedAt: null,
     })
     expect(within(status()).getByRole('link').getAttribute('href')).toBe(`/clubs/${ID}`)
     expect(status().textContent).toBe(`Saved · live at ${window.location.host}/clubs/${ID}`)
@@ -297,7 +298,7 @@ describe('the club editor: Save and publish', () => {
     await openEditor('representative')
     press()
     await within(status()).findByText(/^Saved/)
-    expect(Object.keys(bodyOf(`PATCH ${CLUB_URL}`)).sort()).toEqual(['aboutText', 'contactEmail', 'contactNamePublic', 'howWeMeetText', 'places'])
+    expect(Object.keys(bodyOf(`PATCH ${CLUB_URL}`)).sort()).toEqual(['aboutText', 'contactEmail', 'contactNamePublic', 'howWeMeetText', 'places', 'toldUpdatedAt'])
   })
 
   it('gives the page\'s address by its slug only once the new club pages are on', async () => {
@@ -406,10 +407,10 @@ describe('the club editor: Save and publish', () => {
     type('One sentence about the club', 'Words typed during the save.')
     type('Place name', 'Example Annex')
     // A colour picked or typed while the save runs does not reach the form either.
-    fireEvent.change(field('Club colour'), { target: { value: '#2e7d32' } })
+    fireEvent.change(field('Club color'), { target: { value: '#2e7d32' } })
     expect(field('One sentence about the club').value).toBe('Words sent with the press.')
     expect(field('Place name').value).toBe('Example Library')
-    expect(field('Club colour').value).toBe('#1f4e79')
+    expect(field('Club color').value).toBe('#1f4e79')
     await act(async () => finish(json(server.patch(sent))))
     await within(status()).findByText(/^Saved/)
     expect(field('One sentence about the club').value).toBe('Words sent with the press.')
@@ -450,7 +451,7 @@ describe('the club editor: Save and publish', () => {
     await within(status()).findByText(/^Saved/)
     const { places: sent, ...rest } = bodyOf(`PATCH ${CLUB_URL}`)
     expect(rest).toEqual({
-      aboutText: '  ', howWeMeetText: '', description: null, meetingSchedule: null, contactNamePublic: 'Player One', contactEmail: 'club@example.org',
+      aboutText: '  ', howWeMeetText: '', description: null, meetingSchedule: null, contactNamePublic: 'Player One', contactEmail: 'club@example.org', toldUpdatedAt: null,
     })
     expect(sent).toHaveLength(2)
     cleanup()
@@ -491,7 +492,7 @@ describe('the club editor: Save and publish', () => {
     const lines = within(form).getAllByText('Today\'s page shows different words here').filter((el) => !el.closest('[data-slot="editor-help"]'))
     expect(lines).toHaveLength(2)
     const about = document.getElementById('editor-aboutText-differs') as HTMLElement
-    expect(about.textContent).toBe('Today\'s page shows different words hereToday\'s pageWords saved in the older form.This listingThe listing\'s own words.')
+    expect(about.textContent).toBe('Today\'s page shows different words hereSaving puts this listing\'s words on today\'s page.Today\'s pageWords saved in the older form.This listingThe listing\'s own words.')
     expect(field('One sentence about the club').getAttribute('aria-describedby')).toBe('editor-aboutText-differs')
     const place = document.getElementById('editor-placeName-differs') as HTMLElement
     expect(within(place).getByText('Example Library, 1 Example Street')).toBeTruthy()
@@ -628,7 +629,7 @@ describe('the club editor: Help', () => {
       'Name and address', 'Club name', 'Example Chess Club', 'Kept by LCA admins', 'City', 'Region', 'Bayou Region', 'Kept by LCA admins',
       'Your page\'s address', window.location.host, `/clubs/${ID}`, 'Kept by LCA admins',
       'Cost and who is welcome', 'Cost', 'Who is welcome', 'The club plays on weekends', 'Scholastic friendly',
-      'Links', 'Facebook page', 'Website', 'Add another link', 'Logo and club colour', 'Logo', 'No logo yet', 'Club colour', 'Save and publish',
+      'Links', 'Facebook page', 'Website', 'Add another link', 'Logo and club color', 'Logo', 'No logo yet', 'Club color', 'Save and publish',
     ])
     for (const words of EXPLAINING) expect(wordsOutsideHelp(form).join('\n'), String(words)).not.toMatch(words)
     // Nothing explains in a placeholder or a title either.
@@ -644,11 +645,12 @@ describe('the club editor: Help', () => {
     // From WS09 step 8 the admin's three fields sit in Name and address, as boxes.
     const adminWords = wordsOutsideHelp(admin)
     const named = adminWords.indexOf('Name and address')
-    expect(adminWords.slice(named, named + 5)).toEqual(['Name and address', 'Club name', 'City', 'Region', 'Your page\'s address'])
+    expect(adminWords.slice(named, named + 5)).toEqual(['Name and address', 'Club name', 'City', 'Region', 'Address of the club\'s page'])
     expect(adminWords).toContain('Page address')
     expect(adminWords).not.toContain('Kept by LCA admins')
     for (const words of EXPLAINING) expect(wordsOutsideHelp(admin).join('\n'), String(words)).not.toMatch(words)
-    expect(help().textContent).toMatch(/old address keeps working/)
+    // With the new club pages off, today's page keeps its own address, so Help says so (checkpoint T's review, P6).
+    expect(help().textContent).toMatch(/today's club page keeps its own address, which does not change/)
   })
 
   it('the email\'s label and Help say never shown only while clubEmailHidden is on', async () => {
@@ -700,7 +702,7 @@ describe('the club editor: what it asks and how it is drawn', () => {
     press()
     await within(status()).findByText(/^Saved/)
     const sent = [...Object.keys(bodyOf(`PATCH ${CLUB_URL}`)), ...Object.keys(placesSent()[0])]
-    expect(sent.sort()).toEqual(['aboutText', 'contactEmail', 'contactNamePublic', 'howWeMeetText', 'name', 'note', 'places', 'point', 'region', 'street', 'name'].sort())
+    expect(sent.sort()).toEqual(['aboutText', 'contactEmail', 'contactNamePublic', 'howWeMeetText', 'name', 'note', 'places', 'point', 'region', 'street', 'name', 'toldUpdatedAt'].sort())
   })
 
   it('makes every control at least 44px tall at every width, with a visible ring on focus and a label tied to each box', async () => {
@@ -989,8 +991,8 @@ describe('the club editor: the rest of the listing, in the one call (WS09 step 8
   it('saves the colour from today\'s swatch in the one call, and uploads a logo at once through today\'s endpoint, never as an address', async () => {
     routes[`POST ${CLUB_URL}/logo`] = () => json({ imageUrl: `/api/clubs/${ID}/logo?v=2` })
     await openEditor('rep')
-    expect(field('Club colour').value).toBe('#1f4e79')
-    fireEvent.change(field('Club colour'), { target: { value: '#2e7d32' } })
+    expect(field('Club color').value).toBe('#1f4e79')
+    fireEvent.change(field('Club color'), { target: { value: '#2e7d32' } })
     fireEvent.change(field('Logo'), { target: { files: [new File(['example'], 'logo.png', { type: 'image/png' })] } })
     await within(status()).findByText('Logo saved.')
     expect(calls()).toEqual([`POST ${CLUB_URL}/logo`])
@@ -1024,7 +1026,7 @@ describe('the club editor: the rest of the listing, in the one call (WS09 step 8
     expect(button.hasAttribute('aria-disabled')).toBe(false)
     // The boxes still take words while the press is held; only a save under way shuts them.
     expect(tick('Scholastic friendly').disabled).toBe(false)
-    expect(field('Club colour').disabled).toBe(false)
+    expect(field('Club color').disabled).toBe(false)
     // Words typed after the press are part of the held save.
     fireEvent.change(field('Cost'), { target: { value: 'Free for everyone.' } })
     await act(async () => finish(json({ imageUrl: `/api/clubs/${ID}/logo?v=3` })))
@@ -1133,7 +1135,7 @@ describe('the club editor: the rest of the listing, in the one call (WS09 step 8
     expect(button.matches(':disabled')).toBe(false)
     expect(document.activeElement).toBe(button)
     // The ticks and the swatch are marked shut, not disabled.
-    const marks = () => [weekends, tick('Scholastic friendly'), field('Club colour')].map((box) => [box.getAttribute('aria-disabled'), box.disabled])
+    const marks = () => [weekends, tick('Scholastic friendly'), field('Club color')].map((box) => [box.getAttribute('aria-disabled'), box.disabled])
     expect(marks()).toEqual([['true', false], ['true', false], ['true', false]])
     // A tick clicked while the save runs neither moves nor flickers.
     expect(fireEvent.click(tick('Scholastic friendly'))).toBe(false)
