@@ -337,7 +337,7 @@ export function DashboardPage() {
                   <Building2 className="size-5 text-gold-ink" /> Clubs in your region
                 </h2>
                 <p className="mt-1 text-sm text-muted-foreground">
-                  As regional representative you can update these clubs' pages, officers and news.
+                  As regional representative you can update these clubs' pages and news.
                 </p>
                 <ul className="mt-4 grid gap-2 sm:grid-cols-2">
                   {managedClubs.map((c) => (

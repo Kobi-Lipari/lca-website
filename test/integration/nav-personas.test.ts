@@ -125,6 +125,21 @@ function sameAsServer(said: object, sent: Row, where: string, timeOfDay: string[
   }
 }
 
+/**
+ * The clubs the server says a person's seats cover, but for the clubs the
+ * migrations themselves hold, which migration 0065 places in the seven
+ * regions: the persona list, the browser tests' input, is written against
+ * the seed's own clubs (their ids start fx-), and each other club the
+ * server adds must sit in a region one of the person's seats covers.
+ */
+function seedClubsOnly(person: SignedIn, clubs: Row[]): Row[] {
+  const covered = new Set(person.answers.mySeats.seats.flatMap((s) => s.regions ?? []))
+  for (const club of clubs.filter((c) => !String(c.id).startsWith('fx-'))) {
+    expect(covered.has(String(club.region)), `${person.key}: ${String(club.id)} in a region no seat covers`).toBe(true)
+  }
+  return clubs.filter((c) => String(c.id).startsWith('fx-'))
+}
+
 describe('the people of the persona list, as the server answers for them', () => {
   it('holds the eleven people who sign in, five of them the seed\'s own', () => {
     expect(PEOPLE).toHaveLength(11)
@@ -164,7 +179,7 @@ describe('the people of the persona list, as the server answers for them', () =>
       const said = person.answers.mySeats
       expect(body.seats.map((s) => s.id), person.key).toEqual(said.seats.map((s) => s.id))
       said.seats.forEach((seat, i) => sameAsServer(seat, body.seats[i], `${person.key} seat ${seat.id}`, ['started_at']))
-      expect(body.managedClubs, person.key).toEqual(said.managedClubs)
+      expect(seedClubsOnly(person, body.managedClubs), person.key).toEqual(said.managedClubs)
     }
   })
 
@@ -176,7 +191,7 @@ describe('the people of the persona list, as the server answers for them', () =>
       const role = me.member.role
       // As src/contexts/AuthContext.tsx works it out.
       const isBoardMember = mine.seats.length > 0 || role === 'lca_admin' || VIEW_ONLY.includes(role)
-      expect({ role, isBoardMember, managedClubs: mine.managedClubs.length, directedEvents: me.directedTournaments.length, hasChildren: me.children.length > 0 }, person.key).toEqual(person.holds)
+      expect({ role, isBoardMember, managedClubs: seedClubsOnly(person, mine.managedClubs).length, directedEvents: me.directedTournaments.length, hasChildren: me.children.length > 0 }, person.key).toEqual(person.holds)
     }
   })
 })

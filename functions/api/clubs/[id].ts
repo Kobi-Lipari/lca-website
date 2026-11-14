@@ -13,7 +13,15 @@ export const onRequestOptions: PagesFunction<Env> = async () => handleOptions()
 export const onRequestGet: PagesFunction<Env> = async (context) => {
   const clubId = context.params.id as string
 
-  const club = await context.env.DB.prepare('SELECT * FROM clubs WHERE id = ?')
+  // Today's 13 columns by name, in the table's own order, the ones
+  // PUBLIC_CLUB_COLUMNS lists, so a column added to clubs later is not
+  // answered by accident.
+  const club = await context.env.DB.prepare(
+    `SELECT id, name, city, location, description, meeting_schedule, contact_email,
+            created_at, color, image_url, region, latitude, longitude
+     FROM clubs
+     WHERE id = ?`,
+  )
     .bind(clubId)
     .first()
 
