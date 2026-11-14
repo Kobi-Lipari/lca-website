@@ -494,6 +494,8 @@ export function AdminClubPage() {
               onSaved={(saved, savedPlaces) => {
                 setClub(saved)
                 setPlaces(savedPlaces)
+                // The header's band follows a colour the editor saved.
+                setForm((p) => ({ ...p, color: saved.color ?? LCA.gold, imageUrl: saved.image_url ?? '' }))
               }}
             />
           </Suspense>

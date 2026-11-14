@@ -9,10 +9,14 @@
 // copied into today's description and meeting schedule when they hold
 // words, and, when the body sends `places`, the places replaced and place
 // 1's line and point copied over today's location and pin, never blanking
-// either. The answer is the club as saved, with the places as saved when the
-// body sent them. Each save starts from the one before, as the real save
-// reads the club afresh. test/integration/club-save-one-press.test.ts holds
-// the real save to these rules.
+// either. The rest of the listing as the real save keeps it: the city
+// trimmed, the cost, who is welcome and the three links trimmed and null
+// when empty, the two ticks as 1 or 0, and a colour taken only as a # and
+// six hex digits, any other string leaving the stored colour as it was. The
+// answer is the club as saved, with the places as saved when the body sent
+// them. Each save starts from the one before, as the real save reads the
+// club afresh. test/integration/club-save-one-press.test.ts holds the real
+// save to these rules.
 
 type Row = Record<string, unknown>
 
@@ -37,7 +41,11 @@ const TODAYS: ReadonlyArray<readonly [string, string]> = [
 /** The new texts the editor sends, by the body's key and the column. */
 const TEXTS: ReadonlyArray<readonly [string, string]> = [
   ['aboutText', 'about_text'], ['howWeMeetText', 'how_we_meet_text'], ['contactNamePublic', 'contact_name_public'],
+  ['costText', 'cost_text'], ['welcomeText', 'welcome_text'], ['facebookUrl', 'facebook_url'], ['websiteUrl', 'website_url'], ['otherUrl', 'other_url'],
 ]
+
+/** The two ticks, by the body's key and the column, stored as 1 or 0. */
+const FLAGS: ReadonlyArray<readonly [string, string]> = [['weekendPlay', 'weekend_play'], ['scholasticFriendly', 'scholastic_friendly']]
 
 export function clubSaveServer(club: Row, places: Row[]) {
   const state = { club: { ...club }, places: places.map((place) => ({ ...place })) }
@@ -53,7 +61,10 @@ export function clubSaveServer(club: Row, places: Row[]) {
       next.latitude = pin?.lat ?? null
       next.longitude = pin?.lng ?? null
     }
+    if (typeof body.city === 'string') next.city = body.city.trim()
+    if (body.color !== undefined) next.color = body.color === null ? null : /^#[0-9A-Fa-f]{6}$/.test(String(body.color)) ? body.color : next.color
     for (const [key, column] of TEXTS) if (body[key] !== undefined) next[column] = stored(body[key])
+    for (const [key, column] of FLAGS) if (body[key] !== undefined) next[column] = body[key] ? 1 : 0
     if (body.aboutText !== undefined && typeof next.about_text === 'string') next.description = next.about_text
     if (body.howWeMeetText !== undefined && typeof next.how_we_meet_text === 'string') next.meeting_schedule = next.how_we_meet_text
 

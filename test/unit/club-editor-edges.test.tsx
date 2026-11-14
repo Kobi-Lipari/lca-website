@@ -34,6 +34,11 @@ import {
 import { HELP_SHOWN_KEY } from '@/areas/clubs/editor'
 import { clubSaveServer } from './helpers/clubSaveServer'
 
+// Each case may wait up to 5 seconds for the editor's file to load before it
+// reads the page, which is the whole of vitest's own budget for a case, so
+// this file gives each case 15 seconds.
+vi.setConfig({ testTimeout: 15000 })
+
 const flags = vi.hoisted(() => ({ clubKeepers: true, clubEmailHidden: true, newClubs: false, newLook: false }))
 vi.mock('@/lib/features', async (importOriginal) => {
   const real = await importOriginal<typeof import('@/lib/features')>()
@@ -130,7 +135,10 @@ async function openEditor(person: Person = 'rep'): Promise<HTMLFormElement> {
       </MemoryRouter>
     </AuthContext.Provider>,
   )
-  const save = await screen.findByRole('button', { name: 'Save and publish' })
+  // The editor's file loads on first use, which a busy machine can take more than a second over.
+  const save = await screen.findByRole('button', { name: 'Save and publish' }, { timeout: 5000 })
+  // The first draw's effects (Help opening by itself, and its focus) have run before any case reads the page.
+  await act(async () => {})
   return save.closest('form') as HTMLFormElement
 }
 

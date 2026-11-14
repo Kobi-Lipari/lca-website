@@ -5,7 +5,11 @@
 // labels and values, for an LCA admin, an observer, the club's rep and the
 // region's representative alike, whether or not the server's answer carries
 // the listing's new columns and places; Save club sends today's body; the
-// editor's own file is never fetched. With the switch on, in this file
+// editor's own file is never fetched. From WS09 step 8 the same holds for an
+// answer whose listing holds the rest of the listing (the cost, who is
+// welcome, the two ticks, the three links and a second place), for every
+// kind of person, and none of those words reaches the page. With the switch
+// on, in this file
 // alone, the News, Roster and Tournaments tabs and the page's header draw
 // exactly what they draw with it off, and the Details tab draws the editor
 // in place of today's form. The switch is flipped through a getter on the
@@ -17,6 +21,11 @@ import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { AuthContext } from '@/contexts/auth-context'
 import type { AuthContextValue } from '@/contexts/AuthContext'
+
+// The case that turns the switch on waits up to 5 seconds for the editor's
+// file to load, which is the whole of vitest's own budget for a case, so this
+// file gives each case 15 seconds.
+vi.setConfig({ testTimeout: 15000 })
 
 const flags = vi.hoisted(() => ({ clubKeepers: false, clubEmailHidden: false }))
 const loads = vi.hoisted(() => ({ editor: 0 }))
@@ -191,6 +200,34 @@ describe('the admin club page with clubKeepers off: the Details tab is today\'s 
     expect(after.textContent).not.toContain('Example Hall')
   })
 
+  it('draws the same form for every kind of person from an answer that holds the rest of the listing, and Save club sends today\'s body', async () => {
+    const full = {
+      ...KEEPERS_CLUB, cost_text: 'Free for everyone.', welcome_text: 'All ages and all levels.', weekend_play: 1, scholastic_friendly: 1,
+      facebook_url: 'https://www.facebook.com/examplechessclub', website_url: 'https://example.org', other_url: 'https://example.org/events',
+    }
+    for (const person of Object.keys(PEOPLE) as Person[]) {
+      answer = { club: TODAYS_CLUB, ...REST }
+      const before = body(await openPage(person)).innerHTML
+      cleanup()
+      answer = { club: full, ...REST, places: PLACES }
+      const after = body(await openPage(person))
+      expect(after.innerHTML, person).toBe(before)
+      for (const words of ['Free for everyone.', 'All ages and all levels.', 'examplechessclub', 'example.org/events', 'Example Hall', 'plays on weekends', 'Scholastic friendly', 'Preview']) {
+        expect(after.textContent, `${person} ${words}`).not.toContain(words)
+      }
+      if (person === 'rep') {
+        fireEvent.click(screen.getByRole('button', { name: 'Save club' }))
+        await waitFor(() => expect(seen.filter((x) => x.method === 'PATCH')).toHaveLength(1))
+        expect(Object.keys(JSON.parse(seen.find((x) => x.method === 'PATCH')!.body!)).sort()).toEqual(
+          ['city', 'color', 'contactEmail', 'description', 'location', 'meetingSchedule', 'name', 'region'],
+        )
+      }
+      cleanup()
+      seen = []
+    }
+    expect(loads.editor).toBe(0)
+  })
+
   it('sends today\'s body from Save club, as before, and asks nothing else', async () => {
     await openPage('rep')
     fireEvent.click(screen.getByRole('button', { name: 'Save club' }))
@@ -243,7 +280,8 @@ describe('the admin club page with clubKeepers on, in this test alone', () => {
     flags.clubEmailHidden = true
     const on = await openPage('admin')
     expect(on.querySelector('section[data-ground="dark"]')!.outerHTML).toBe(header)
-    expect(await screen.findByRole('button', { name: 'Save and publish' })).toBeTruthy()
+    // The editor's file loads on first use, which a busy machine can take more than a second over.
+    expect(await screen.findByRole('button', { name: 'Save and publish' }, { timeout: 5000 })).toBeTruthy()
     expect(on.querySelector('#city')).toBeNull()
     expect(screen.queryByRole('button', { name: 'Save club' })).toBeNull()
     expect(loads.editor).toBe(1)

@@ -9,7 +9,8 @@
 // The club editor (src/areas/clubs/components/EditorPlaces.tsx) draws the
 // same map and pasted coordinates bare: no heading, no words and no save of
 // its own, with each new point handed to the form, which saves it with the
-// rest on Save and publish.
+// rest on Save and publish. A second place's picker names its place in its
+// label, its buttons and its line, so each of the two reads apart.
 import { useEffect, useRef, useState } from 'react'
 import { MapPin } from 'lucide-react'
 
@@ -35,6 +36,8 @@ const PIN =
 export interface BarePicker {
   inputId: string
   onChange: (point: LatLng | null) => void
+  /** The place it sets, such as "place 2", named in its words; the first place's picker names none. */
+  place?: string
 }
 
 export function ClubLocationPicker({
@@ -184,11 +187,12 @@ export function ClubLocationPicker({
 
   if (bare) {
     const errorId = `${bare.inputId}-error`
+    const of = bare.place ? ` for ${bare.place}` : ''
     return (
       <div className="space-y-3">
         {mapBox}
         <div className="space-y-1.5">
-          <Label htmlFor={bare.inputId}>Pin: coordinates or a Google Maps link</Label>
+          <Label htmlFor={bare.inputId}>{`Pin${of}: coordinates or a Google Maps link`}</Label>
           <div className="flex flex-col gap-2 sm:flex-row">
             <Input
               id={bare.inputId}
@@ -200,16 +204,16 @@ export function ClubLocationPicker({
               aria-describedby={pasteError ? errorId : undefined}
               className="min-h-11"
             />
-            <Button type="button" variant="outline" className="min-h-11" disabled={disabled || !paste.trim()} onClick={applyPasted}>Use this</Button>
+            <Button type="button" variant="outline" className="min-h-11" disabled={disabled || !paste.trim()} onClick={applyPasted}>{`Use this${of}`}</Button>
           </div>
           {pasteError && <p id={errorId} className="text-sm text-destructive">{pasteError}</p>}
         </div>
         <div className="flex flex-col items-start gap-2 sm:flex-row sm:items-center sm:gap-3">
           <p className="text-sm tabular-nums text-ink">
-            {draft ? `Pin at ${draft.lat.toFixed(5)}, ${draft.lng.toFixed(5)}` : 'No pin set'}
+            {draft ? `Pin${of} at ${draft.lat.toFixed(5)}, ${draft.lng.toFixed(5)}` : `No pin set${of}`}
           </p>
           {draft && (
-            <Button type="button" variant="outline" className="min-h-11" disabled={disabled} onClick={() => setDraft(null)}>Remove pin</Button>
+            <Button type="button" variant="outline" className="min-h-11" disabled={disabled} onClick={() => setDraft(null)}>{`Remove pin${of}`}</Button>
           )}
         </div>
       </div>

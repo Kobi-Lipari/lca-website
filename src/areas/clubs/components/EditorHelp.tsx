@@ -8,6 +8,14 @@
 // opens the focus moves into it; Escape or Close help shuts it and the focus
 // goes back to the button.
 //
+// From WS09 step 8 it also holds the sentences for the rest of the listing
+// and the preview column: what About's count means and that a search result
+// shows the start of About and then how the club meets, about 155
+// characters in all, which holds only while how the club meets is short, so
+// Help asks for it short (domain/clubs/pageMeta.ts), the city's line and the
+// page's address, the cost, who is welcome and the two ticks, the links, the logo
+// and the colour, and what each preview shows.
+//
 // The email's sentence follows clubEmailHidden, as the field's label does:
 // only while that switch is on does Help say the address is never shown.
 // The contact name's, the note's and Save and publish's sentences follow the
@@ -32,12 +40,15 @@ export function EditorHelpButton({ open, onToggle, ref }: { open: boolean; onTog
   )
 }
 
-/** Each basic and what it is for, in the form's order. */
+/** Each field and what it is for, in the form's order, then the previews. */
 function sentences(emailHidden: boolean, pagesOn: boolean, showAdmin: boolean): Array<[string, string]> {
   const where =
-    'The place the club meets, its street if you know it, and a note such as the room. Set the pin by clicking the map or dragging the pin, or paste coordinates or a Google Maps link; nothing is looked up for you. The city and the region come from LCA\'s club list.'
+    'The place the club meets, its street if you know it, and a note such as the room. Set the pin by clicking the map or dragging the pin, or paste coordinates or a Google Maps link; nothing is looked up for you. If the club meets in two places, Add another place; a place you empty, or Remove place 2, comes off the page at the next save.'
   return [
-    ['One sentence about the club', 'It is shown as About on your club\'s page and at the start of search results.'],
+    [
+      'One sentence about the club',
+      'It is shown as About on your club\'s page and at the start of search results. You may write more, the club in its own words, up to 2,000 characters: the count under the box says how many you have used. A search result shows the start of About and then How the club meets, in words, about 155 characters in all. Keep that box short so both fit.',
+    ],
     [
       'How the club meets, in words',
       'The days, the time and the place, as the club says them, such as "First and third Tuesdays at 7:00 PM". The page shows them as words and never turns them into dates.',
@@ -52,12 +63,28 @@ function sentences(emailHidden: boolean, pagesOn: boolean, showAdmin: boolean): 
         ? 'It is never shown on your club\'s page or to visitors.'
         : 'Today\'s club page shows this address to visitors.',
     ],
+    [
+      'Name and address',
+      `The city makes the line under your club's name, such as "Chess club in Baton Rouge, Louisiana", on your page and in search results, and helps people who search for a chess club near it. Your page's address is made from the club's name the first time the page is saved, and stays the same if the club is renamed, so links and search results keep working.${showAdmin ? '' : ' The name, the region and the address are kept by LCA admins: ask LCA if one ever needs to change.'}`,
+    ],
     ...(showAdmin
       ? [[
           'Club name, region and page address',
           'Only LCA admins change these. The page address is the part after /clubs/ in the club page\'s address; when it changes, the old address keeps working.',
         ] as [string, string]]
       : []),
+    [
+      'Cost and who is welcome',
+      'Cost is what a club night costs, such as "Free" or "$5 toward the room". Who is welcome says who the club is for and what a first-timer should bring or ask for. Tick The club plays on weekends or Scholastic friendly only when it is so; the club directory\'s filters read them.',
+    ],
+    [
+      'Links',
+      'Each link is a whole web address that starts with http:// or https://, such as your club\'s Facebook page. Leave a box empty to show no link there.',
+    ],
+    [
+      'Logo and club colour',
+      'A logo you choose is made to fit and saved at once, on its own, before Save and publish. Press Save and publish while it uploads and your changes save as soon as the upload is done. The club\'s colour is drawn as a band, a tint and small bars on the new club pages, never as words; a club with no colour of its own shows navy.',
+    ],
     [
       'Today\'s page shows different words here',
       'Your club\'s page as it stands shows other words than this listing holds, because they were changed in the older form. Save and publish puts this listing\'s words on the page.',
@@ -68,6 +95,10 @@ function sentences(emailHidden: boolean, pagesOn: boolean, showAdmin: boolean): 
         ? 'Your changes go live on your club\'s page at once.'
         : 'The sentence about the club, how it meets, and the place\'s name, street and pin go live on today\'s club page at once; the contact name and the place\'s note show once the new club pages open.'
       } When someone other than the region's representative saves, the representative is emailed what changed. Search results may take a few days to show a change.`,
+    ],
+    [
+      'Preview',
+      'Beside the form, or under Preview on a phone, you see how your page shows up in a search and when someone shares it, its card in LCA\'s club directory, and what the page has. They change as you type. Google shows about the first 60 characters of a title, so your club\'s name and city come first. A shared link shows your logo, or your club\'s initials on navy when it has none.',
     ],
   ]
 }
