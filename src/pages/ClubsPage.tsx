@@ -153,9 +153,9 @@ function ClubCard({
           )}
         </div>
         <div className="mt-1 space-y-0.5 text-xs text-muted-foreground">
-          <p className="flex items-center gap-1.5">
-            <MapPin className="size-3 flex-shrink-0 text-gold-ink" />
-            <span className="truncate">
+          <p className="flex items-start gap-1.5">
+            <MapPin className="mt-0.5 size-3 flex-shrink-0 text-gold-ink" />
+            <span className="min-w-0 break-words">
               {club.city}, LA{club.region ? ` · ${club.region}` : ''}
             </span>
           </p>

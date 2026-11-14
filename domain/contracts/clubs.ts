@@ -336,8 +336,9 @@ export const adminClubRowSchema = z.strictObject({ ...clubRowSchema.shape, ...ke
  * the club's rep and the representative for its region. The officers carry
  * their email and the roster its members for all but a person admitted by
  * the region alone, who gets the officers without an email and an empty
- * roster (functions/utils/clubs/memberView.ts). `places` is answered only
- * while CLUB_KEEPERS_ON is set.
+ * roster (functions/utils/clubs/memberView.ts), and `rosterKeptBack: true`,
+ * which no one else is answered, so the page can tell a roster kept back
+ * from an empty one. `places` is answered only while CLUB_KEEPERS_ON is set.
  */
 export const adminClubResponseSchema = z.strictObject({
   club: adminClubRowSchema,
@@ -356,6 +357,7 @@ export const adminClubResponseSchema = z.strictObject({
     uscf_rating: z.number().nullable(),
     membership_status: z.string(),
   })),
+  rosterKeptBack: z.literal(true).optional(),
   tournaments: z.array(z.strictObject({
     id: idSchema,
     name: z.string(),

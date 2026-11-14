@@ -380,7 +380,8 @@ describe('the keepers\' save, with CLUB_KEEPERS_ON set', () => {
       const res = await invoke(adminClubGet, { as: who, aal, params: { id: clubId } })
       expect(res.status, who).toBe(200)
       const body = await expectContract(res, contracts['admin/clubs/[id]'].GET.response)
-      expect(Object.keys(body), who).toEqual(['club', 'officers', 'roster', 'tournaments', 'places'])
+      // The region's representative alone is told the roster is kept back (K's answer 2 (a) to checkpoint S's review).
+      expect(Object.keys(body), who).toEqual(['club', 'officers', 'roster', ...(who === holder ? ['rosterKeptBack'] : []), 'tournaments', 'places'])
       expect(Object.keys(body.club), who).toEqual([...TODAYS_13, ...ADDED_15])
       expect(body.places, who).toEqual([{ id: expect.any(Number), name: 'Example Hall', street: null, note: null, latitude: 30, longitude: -91 }])
       expect(body.club.told_by, who).toBe(admin)
@@ -388,6 +389,7 @@ describe('the keepers\' save, with CLUB_KEEPERS_ON set', () => {
     const byHolder = await invoke(adminClubGet, { as: holder, aal: 'aal1', params: { id: clubId } })
     const text = await byHolder.response.text()
     expect(JSON.parse(text).roster).toEqual([])
+    expect(JSON.parse(text).rosterKeptBack).toBe(true)
     for (const piece of [`player.one.${clubId}@example.org`, '90000011', '"uscf_rating"', '"membership_status"', `rep.${clubId}@example.org`, `holder.${clubId}@example.org`]) {
       expect(text, piece).not.toContain(piece)
     }

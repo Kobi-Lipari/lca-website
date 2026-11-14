@@ -390,13 +390,13 @@ describe('the roster stays back from a region\'s representative', () => {
       roster: unknown[]
       tournaments: Array<{ id: string }>
     }>()
-    expect(Object.keys(body)).toEqual(['club', 'officers', 'roster', 'tournaments'])
+    expect(Object.keys(body)).toEqual(['club', 'officers', 'roster', 'rosterKeptBack', 'tournaments'])
     expect(body.club).toMatchObject({ id: clubId, region: REGION, contact_email: 'club@example.org' })
     expect(body.roster).toEqual([])
     expect(body.officers).toHaveLength(1)
     expect(Object.keys(body.officers[0])).toEqual(['id', 'member_id', 'role', 'full_name'])
     expect(body.officers[0]).toMatchObject({ member_id: one, role: 'President', full_name: 'Player One' })
-    expect(body.tournaments.map((t) => t.id)).toEqual([draft])
+    expect(body.tournaments.map((t) => t.id), draft).toEqual([])
     holdsNoMemberData(await text(res))
 
     // The listing stays theirs to keep, and the news to read.
@@ -559,14 +559,19 @@ async function places(clubId: string) {
   return (await env.DB.prepare('SELECT name, sort FROM club_places WHERE club_id = ? ORDER BY sort').bind(clubId).all()).results
 }
 
-/** GET /api/admin/clubs/[id] as the base answered a person admitted by the region alone: no roster, and the officers without their email. */
+/**
+ * GET /api/admin/clubs/[id] as the base answers a person admitted by the
+ * region alone: no roster, the officers without their email, rosterKeptBack
+ * and the visible events only, by K's answer 2 (a) to checkpoint S's review.
+ */
 async function baseRegionAloneAnswer(clubId: string): Promise<string> {
-  const today = JSON.parse(await todaysClubAnswer(clubId)) as { club: unknown; officers: Array<Record<string, unknown>>; tournaments: unknown[] }
+  const today = JSON.parse(await todaysClubAnswer(clubId)) as { club: unknown; officers: Array<Record<string, unknown>>; tournaments: Array<{ is_visible: number }> }
   return JSON.stringify({
     club: today.club,
     officers: today.officers.map((officer) => Object.fromEntries(Object.entries(officer).filter(([key]) => key !== 'email'))),
     roster: [],
-    tournaments: today.tournaments,
+    rosterKeptBack: true,
+    tournaments: today.tournaments.filter((event) => event.is_visible === 1),
   })
 }
 

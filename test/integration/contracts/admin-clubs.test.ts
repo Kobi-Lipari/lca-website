@@ -108,12 +108,28 @@ describe('GET /api/admin/clubs/[id] keeps its contract', () => {
         expect('slug' in body.club, `${who} ${on}`).toBe(on)
         expect(body.roster.length > 0, `${who} ${on}`).toBe(who !== holder)
         expect(body.officers.every((o) => 'email' in o), `${who} ${on}`).toBe(who !== holder)
+        // The roster kept back is said to the region's representative alone, as true, and to no one else at all.
+        expect('rosterKeptBack' in body, `${who} ${on}`).toBe(who === holder)
+        if (who === holder) expect(body.rosterKeptBack, `${who} ${on}`).toBe(true)
+        // The club's one event is a hidden draft, which the region's representative is not answered.
+        expect(body.tournaments.length, `${who} ${on}`).toBe(who === holder ? 0 : 1)
       }
     }
   })
 
   it('the contract is strict: a key it does not name, a missing column and a wrong type are refused', async () => {
-    const { clubId, admin } = await exampleClub()
+    const { clubId, admin, rep, holder } = await exampleClub()
+    // rosterKeptBack is taken only as true, from the region's representative, and is in no other answer's text.
+    const held = await (await invoke(adminClubGet, { as: holder, aal: 'aal1', params: { id: clubId } })).json<Record<string, unknown>>()
+    expect(Object.keys(held)).toEqual(['club', 'officers', 'roster', 'rosterKeptBack', 'tournaments'])
+    expect(adminClubResponseSchema.safeParse(held).success).toBe(true)
+    for (const wrong of [false, 1, 'true', null]) {
+      expect(adminClubResponseSchema.safeParse({ ...held, rosterKeptBack: wrong }).success, String(wrong)).toBe(false)
+    }
+    for (const [who, aal] of [[admin, 'aal2'], [rep, 'aal2']] as const) {
+      const text = await (await invoke(adminClubGet, { as: who, aal, params: { id: clubId } })).response.text()
+      expect(text, who).not.toContain('rosterKeptBack')
+    }
     const body = await (await invoke(adminClubGet, { as: admin, params: { id: clubId } })).json<Record<string, unknown>>()
     expect(adminClubResponseSchema.safeParse(body).success).toBe(true)
     expect(adminClubResponseSchema.safeParse({ ...body, extra: 1 }).success).toBe(false)

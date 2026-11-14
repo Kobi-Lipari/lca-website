@@ -140,6 +140,8 @@ export async function adminGetClub(id: string): Promise<{
   club: ApiClubListing
   officers: ApiAdminClubOfficer[]
   roster: ApiAdminMember[]
+  /** Set only for a person a regional seat alone admits: the empty roster is held back, not empty. */
+  rosterKeptBack?: true
   tournaments: ApiAdminClubTournament[]
   /** Answered only while CLUB_KEEPERS_ON is set on the server. */
   places?: ApiClubPlace[]

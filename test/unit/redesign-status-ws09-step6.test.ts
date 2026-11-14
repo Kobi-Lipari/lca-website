@@ -124,7 +124,7 @@ describe('REDESIGN_STATUS.md, WS09 step 6: the block and the Status line', () =>
     for (const i of at) expect(i).toBeGreaterThan(-1)
     expect([...at].sort((a, b) => a - b)).toEqual(at)
     const headings = ws09.split('\n').filter((l) => l.startsWith('### '))
-    expect(headings[headings.indexOf(STEP_5) + 1]).toBe(STEP)
+    expect(headings.slice(headings.indexOf(STEP_5) + 1).find((h) => !h.startsWith('### WS09 checkpoint S, after K\'s answers: '))).toBe(STEP)
     if (latestStep === 6) expect(headings[headings.indexOf(STEP) + 1]).toBe(LISTS[0])
   })
 

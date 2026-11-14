@@ -135,13 +135,13 @@ describe('REDESIGN_STATUS.md, WS09 step 8: the block and the Status line', () =>
     expect([...at].sort((a, b) => a - b)).toEqual(at)
     const headings = ws09.split('\n').filter((l) => l.startsWith('### '))
     expect(headings[headings.indexOf(STEP_7) + 1]).toBe(STEP)
-    if (latestStep === 8) expect(headings[headings.indexOf(STEP) + 1]).toBe(LISTS[0])
+    if (latestStep === 8) expect(headings.slice(headings.indexOf(STEP) + 1).find((h) => !h.startsWith('### WS09 checkpoint T: '))).toBe(LISTS[0])
   })
 
   it('gives the Status line this step\'s tail while this step is the latest', () => {
     expect(latestStep).toBeGreaterThanOrEqual(8)
     const tail = statusLine.slice(statusLine.indexOf('checkpoint Z for steps 36 to 38); ') + 'checkpoint Z for steps 36 to 38); '.length)
-    if (latestStep === 8) expect(tail).toBe('checkpoint S waits for its pull request; checkpoint T has begun on its own branch; steps 1 to 8 are built.')
+    if (latestStep === 8) expect(tail).toBe('checkpoint S waits for its pull request; checkpoint T has begun on its own branch; steps 1 to 8 and K\'s answers to checkpoint S\'s review are built.')
     expect(tail).toMatch(/\bbuilt\.$/)
   })
 

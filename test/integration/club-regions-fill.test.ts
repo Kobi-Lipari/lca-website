@@ -289,7 +289,7 @@ describe('no club endpoint gives a regional seat holder a member\'s data', () =>
     expect(statuses['news GET']).toBe(200)
     expect(statuses['news POST']).toBe(201)
     expect(statuses['logo POST']).toBe(200)
-    expect(statuses['officer DELETE']).toBe(200)
+    expect(statuses['officer DELETE']).toBe(403)
 
     // The same calls from an admin do reach the data, so the checks above can fail.
     const full = await invoke(adminClubGet, { as: admin, params: { id: clubId } })

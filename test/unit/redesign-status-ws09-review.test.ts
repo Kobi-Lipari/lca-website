@@ -153,8 +153,8 @@ describe('REDESIGN_STATUS.md, checkpoint S\'s merge-safety review', () => {
     expect(workflow.split('\n').slice(16, 20).join('\n')).toContain('The\n# migration takes seconds and the site build takes minutes')
     expect(workflow).toMatch(/^ {2}workflow_dispatch:$/m)
     expect(workflow).toContain('It can also be started by\n# hand from the Actions tab')
-    expect(read('src/pages/DashboardPage.tsx')).toContain('As regional representative you can update these clubs\' pages, officers and news.')
-    expect(read('src/areas/admin/components/BoardSeatsPanel.tsx')).toMatch(/Whoever holds the seat can\s+manage every club in those regions: the club page, officers, news and logo\./)
+    expect(read('src/pages/DashboardPage.tsx')).toContain('As regional representative you can update these clubs\' pages and news.')
+    expect(read('src/areas/admin/components/BoardSeatsPanel.tsx')).toMatch(/Whoever holds the seat can\s+manage every club in those regions: the club page, news and logo\./)
     expect(read('functions/api/admin/board-seats.ts')).toContain('COUNT(*) AS clubs')
     expect(read('functions/api/admin/clubs/[id].ts')).toContain('FROM tournaments WHERE club_id = ? ORDER BY date DESC')
     if (latestStep !== 5) return

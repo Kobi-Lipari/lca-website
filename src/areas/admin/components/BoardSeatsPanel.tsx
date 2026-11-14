@@ -94,7 +94,7 @@ function SeatRow({
   const [showHistory, setShowHistory] = useState(false)
   const [query, setQuery] = useState('')
 
-  const heldIds = new Set(holders.map((h) => h.member_id))
+  // The search offers no member who already holds the seat.
 
   const matches = useMemo(() => {
     const q = query.trim().toLowerCase()
@@ -102,7 +102,7 @@ function SeatRow({
     return members
       .filter(
         (m) =>
-          !heldIds.has(m.id) &&
+          !holders.some((h) => h.member_id === m.id) &&
           (m.full_name.toLowerCase().includes(q) ||
             m.email.toLowerCase().includes(q)),
       )
@@ -321,7 +321,7 @@ export function BoardSeatsPanel() {
         </p>
         <p className="mt-1 text-sm text-muted-foreground">
           Regional representative seats also pick the regions they cover. Whoever holds the seat can
-          manage every club in those regions: the club page, officers, news and logo.
+          manage every club in those regions: the club page, news and logo.
         </p>
         {clubsWithoutRegion > 0 && (
           <p className="mt-2 rounded-md bg-lca-gold/10 px-3 py-2 text-xs text-gold-ink-badge">
