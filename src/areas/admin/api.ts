@@ -10,7 +10,7 @@
 // another area owns is imported from that area's api.ts, never from
 // '@/lib/api', which re-exports this file.
 
-import { authHeaders, handleResponse } from '@/lib/http'
+import { ApiError, authHeaders, handleResponse } from '@/lib/http'
 
 /**
  * Opens a support ticket, optionally routed to a board seat.
@@ -398,7 +398,13 @@ export async function getNewsletterIssue(): Promise<ApiNewsletterIssue> {
 /**
  * Saves the open letter, by the id and version the page read (id null and version 0 for the first save when it read
  * none). A 409 is answered, not thrown, so the page keeps the person's words and can name who changed the letter and
- * when; every other refusal throws ApiError with the server's words.
+ * when; every other refusal throws ApiError with the server's words. A 400 that names a field (parseBody's `fields`)
+ * throws that field's words, the first when it names more, since they say what to mend where the sentence above them
+ * does not. A 400 or a 413 that brings no words of the server's own, as an empty body or a page from the edge, throws
+ * with no words, so the page says it could not save rather than give a status code.
+ *
+ * As the page is left, the page sends the save with sign-in headers it read ahead and `keepalive`, so the request
+ * starts at once, before the page goes, and outlives it (the newsletter's own page, WS16 part two, page step 4).
  */
 export async function saveNewsletterIssue(payload: {
   id: string | null
@@ -407,15 +413,22 @@ export async function saveNewsletterIssue(payload: {
   subject: string
   preheader: string
   bodyHtml: string
-}): Promise<{ saved: ApiNewsletterIssueSaved } | { refused: ApiNewsletterIssueRefused }> {
+}, asPageGoes?: { headers: HeadersInit; keepalive: true }): Promise<{ saved: ApiNewsletterIssueSaved } | { refused: ApiNewsletterIssueRefused }> {
   const response = await fetch('/api/admin/mail/newsletter/issue', {
     method: 'PUT',
-    headers: await authHeaders(),
+    headers: asPageGoes ? asPageGoes.headers : await authHeaders(),
     body: JSON.stringify(payload),
+    ...(asPageGoes ? { keepalive: true } : {}),
   })
   if (response.status === 409) {
     const refused = (await response.clone().json().catch(() => null)) as ApiNewsletterIssueRefused | null
     if (refused && typeof refused.reason === 'string') return { refused }
+  }
+  if (response.status === 400 || response.status === 413) {
+    const refused = (await response.clone().json().catch(() => null)) as { error?: unknown; fields?: unknown } | null
+    const words = response.status === 400 && refused && typeof refused.fields === 'object' && refused.fields !== null ? Object.values(refused.fields)[0] : undefined
+    if (typeof words === 'string' && words !== '') throw new ApiError(words, 400)
+    if (typeof refused?.error !== 'string' || refused.error === '') throw new ApiError('', response.status)
   }
   return { saved: await handleResponse<ApiNewsletterIssueSaved>(response) }
 }

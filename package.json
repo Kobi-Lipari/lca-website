@@ -47,6 +47,7 @@
     "@radix-ui/react-toggle": "^1.1.14",
     "@supabase/supabase-js": "^2.49.8",
     "@tiptap/extension-link": "^3.27.3",
+    "@tiptap/extensions": "3.28.0",
     "@tiptap/react": "^3.27.3",
     "@tiptap/starter-kit": "^3.27.3",
     "chess.js": "^1.4.0",

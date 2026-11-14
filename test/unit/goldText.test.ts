@@ -777,9 +777,10 @@ describe('the gold guard on the tree', () => {
 
   it('places every badge and pill token on its kind of ground: a badge\'s dark gold on light grounds, a pill\'s light gold on navy, each branch of the filter dropdowns by its on, and 11 uses by an entry', () => {
     const of = (gold: 'ink' | 'pill', ground: Ground) => result.badgeUses.filter((b) => tokenGold(b.use.utility) === gold && b.ground === ground).map((b) => `${b.use.file}:${b.use.line}`)
-    // 28 dark gold words and the club badge's, and 5 pills.
-    expect(result.badgeUses).toHaveLength(33)
-    expect(of('ink', 'light')).toHaveLength(18)
+    // 28 dark gold words and the club badge's, and 5 pills; WS16 part two's page step 4 adds the 29th word, the
+    // newsletter letter's "In this issue" label on its cream strip (src/areas/admin/newsletter/InThisIssue.tsx), on light.
+    expect(result.badgeUses).toHaveLength(34)
+    expect(of('ink', 'light')).toHaveLength(19)
     expect(of('ink', 'navy')).toEqual([])
     expect(of('pill', 'light')).toEqual([])
     // The contact page's pill sat at line 61 until WS02 step 8, whose 32 lines above it (the footer's subjects) move it to 93.

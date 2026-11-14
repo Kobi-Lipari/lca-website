@@ -18,6 +18,7 @@ const AboutPage = lazy(() => import('@/pages/AboutPage').then(m => ({ default: m
 const AnnualMeetingPage = lazy(() => import('@/pages/AnnualMeetingPage').then(m => ({ default: m.AnnualMeetingPage })))
 const AdminClubPage = lazy(() => import('@/pages/AdminClubPage').then(m => ({ default: m.AdminClubPage })))
 const AdminPage = lazy(() => import('@/pages/AdminPage').then(m => ({ default: m.AdminPage })))
+const AdminNewsletterPage = lazy(() => import('@/pages/AdminNewsletterPage').then(m => ({ default: m.AdminNewsletterPage })))
 const BoardInboxPage = lazy(() => import('@/pages/BoardInboxPage').then(m => ({ default: m.BoardInboxPage })))
 const BoardPage = lazy(() => import('@/pages/BoardPage').then(m => ({ default: m.BoardPage })))
 const ChampionsPage = lazy(() => import('@/pages/ChampionsPage').then(m => ({ default: m.ChampionsPage })))
@@ -242,6 +243,12 @@ function App() {
                 With mailLists on, the media manager is let in too, to Group
                 email alone (WS16 step 6). */}
             <Route path="/admin" element={<RoleProtectedRoute roles={ADMIN_PANEL_ROLES} fallbackToToolsHome allowMediaManager><AdminPage /></RoleProtectedRoute>} />
+            {/* The newsletter's own page (WS16 part two), only with mailPage on: the route lets in Admin's roles and the
+                media manager, as /admin/:section does, and the page sends an officer without the seat on to Admin.
+                With mailPage off this address reaches /admin/:section, which sends an unknown section to /admin. */}
+            {FEATURES.mailPage && (
+              <Route path="/admin/newsletter" element={<RoleProtectedRoute roles={ADMIN_PANEL_ROLES} fallbackToToolsHome allowMediaManager><AdminNewsletterPage /></RoleProtectedRoute>} />
+            )}
             <Route path="/admin/:section" element={<RoleProtectedRoute roles={ADMIN_PANEL_ROLES} fallbackToToolsHome allowMediaManager><AdminPage /></RoleProtectedRoute>} />
             <Route path="/admin/clubs/:id" element={<RoleProtectedRoute requireClubMatch><AdminClubPage /></RoleProtectedRoute>} />
             <Route path="/admin/tournaments/:id" element={<RoleProtectedRoute roles={['lca_admin', 'lca_observer', 'lca_officer', 'club_rep', 'tournament_director']} allowDirectors requireTournamentAccess><TournamentManagePage /></RoleProtectedRoute>} />

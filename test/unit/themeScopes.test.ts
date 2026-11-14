@@ -163,12 +163,14 @@ describe('routeScope: the route-to-scope map', () => {
 
   it('no admin, workspace, manage, dashboard, account or board inbox route resolves to heritage', () => {
     const working = APP_ROUTES.filter((path) => ALWAYS_BASE_PREFIXES.some((p) => path === p || path.startsWith(`${p}/`)))
-    // The working routes the app has today, so a new one is covered by a prefix or fails here.
+    // The working routes the app has today, so a new one is covered by a prefix or fails here. WS16 part two's page
+    // step 4 adds the newsletter's own page, /admin/newsletter, registered only with the mailPage switch on.
     expect(working.sort()).toEqual([
       '/account/security',
       '/admin',
       '/admin/:section',
       '/admin/clubs/:id',
+      '/admin/newsletter',
       '/admin/tournaments/:id',
       '/board/inbox',
       '/dashboard',
