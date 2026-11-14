@@ -28,3 +28,9 @@ K's decisions on the clubs work, numbered in the order K made them, each with th
    - 5 (a): the one over-long line in the message of the commit that brought main in stays as it is.
    - 6 (a): the region's name wraps onto a second line on a club card instead of being cut short.
    - What the answer does not cover: the merge itself, which waits for K's own word on the day; K's mapping of the Baton Rouge seat; and turning any switch on.
+
+4. The sideways scroll and next week's pace (Saturday, November 14, 2026, about 12:15 PM UTC). The lead had put three things to K. One: the public Clubs page scrolls sideways by 20 pixels on a phone 320 pixels wide, a fault on production today and not brought by this work: (a) fix now and let a long meeting time wrap, recommended; (b) the smallest fix; (c) leave it. Two: next week's pace: (a) slow, recommended, so the mail work's switch-on keeps the allowance it needs; (b) paused; (c) full pace. Three: which region the Baton Rouge seat covers. K's words: "Recommend is fine for everything." The lead's reading:
+   - 1 (a): the fix is made now, on checkpoint S's branch: the clubs' grid is one column on a narrow screen, and a long meeting time wraps onto a second line instead of being cut short. It changes a page every visitor sees with every switch off, and K's answer is the yes that needs.
+   - 2 (a): from Monday, November 16, 2026, when the weekly allowance refills, the clubs stream works slowly: one run at a time and no wide panels.
+   - The third had no recommended option, so the answer does not settle it. The brief's Appendix C names South Central Louisiana for the "Baton Rouge / East Central Representative" seat; the mapping is K's own, in Board seats, before checkpoint S merges.
+   - What the answer does not cover: any merge and any switch.

@@ -1,21 +1,21 @@
 # Handoff: the clubs stream (WS09, clubs as living listings)
 
-Written on Friday, November 13, 2026, for whoever takes this stream over. The whole project's handoff is `HANDOFF.md`; the rules where the two streams meet are `STREAMS.md`. This file holds only what is the clubs stream's own.
+Written on Saturday, November 14, 2026, for whoever takes this stream over. The whole project's handoff is `HANDOFF.md`; the rules where the two streams meet are `STREAMS.md`. This file holds only what is the clubs stream's own.
 
-## Where it stands (Friday, November 13, 2026, about 6:45 PM UTC)
+## Where it stands (Saturday, November 14, 2026, about 12:30 PM UTC)
 
-- **K answered the plan: "All recommendations are good"** (decision 1 in `ws09-k-decisions.md`): option (a) of all nine choices. The manifest's `k_answers` holds them, with two amendments (choice 9 moves the preview bucket's binding from step 2 to step 36).
-- **Steps 1 to 5 of checkpoint S are built, gated, committed (as K) and pushed on `redesign/ws09-clubs`**, which was cut from `main` at `af4a21c` on Friday, November 13, 2026. Each passed its gate and two review rounds at most:
-  - Step 1, `0fec98b`: the record and a named public answer. One pin outside the step's list moved (`test/unit/contracts-status.test.ts` now holds the K1d row's 110 as history).
-  - Step 2, `42e232a`: the switches `clubKeepers` and `regionEvents`, three constants, the test that holds the switch order, and the generator's number option.
-  - Step 3, `391796d`: the regions fill, migration 0065. Review added a 403 on POST officers for a region-alone holder.
-  - Step 4, `535b6a9`: the club tables, migration 0066 (40 tables), and the slug rule. Review fixed a club delete that lost rows when the club's own delete failed.
-  - Step 5, `c37ba11`: the seed on today's clubs, migration 0067. A reviewer checked the last fix alone and said ready.
-- **Checkpoint S is under way.** `main` (`f914d8f`, two news fixes) is being brought in, merged without committing and clean; the gate is running on it, and the merge commit is made by hand once it is green. Then come the draft pull request (no footer), the merge-safety review, its fix round, the check sheet of the 25 clubs for K, and the pictures for K (the admin club page's words for a roster kept back).
-- **Owed before checkpoint S merges:** (1) the production read, on K's go (asked, awaiting); (2) K's mapping of the Baton Rouge seat; (3) K shown the admin club page's words ("No members assigned") for a roster kept back from a region holder; (4) the preview rehearsal said to K first (asked, awaiting) and to the mail stream, after the review's fixes; (5) the Apply database migrations run seen green; (6) the mail stream's checkpoint P merged, or Tuesday, December 1, 2026 reached; (7) K's own word for the merge.
-- **Numbers:** this stream holds migrations 0065 to 0071; 0065, 0066 and 0067 are made. The next clubs file is 0068, made with `--number`. The drizzle snapshot (0010 and 0011) and journal entries now on the branch collide with the mail stream's; whichever merges second regenerates them.
+- **K's answers.** Decision 1 (Friday, November 13, 2026): "All recommendations are good", option (a) of all nine choices; the manifest's `k_answers` holds them, with two amendments (choice 9 moves the preview bucket's binding from step 2 to step 36). Decision 3 (Saturday): "All recommended" on checkpoint S's six choices. Decision 4 (Saturday): "Recommend is fine for everything", the scroll fix now and a slow pace from Monday, November 16, 2026. All in `ws09-k-decisions.md`.
+- **Checkpoint S is built and waits for its merge.** Branch `redesign/ws09-clubs`, draft pull request 130, cut from `main` at `af4a21c`. Steps 1 to 5, each gated and reviewed, then main brought in, the merge-safety review's fixes, and K's answers built:
+  - Step 1, `0fec98b`: the record and a named public answer. Step 2, `42e232a`: the switches `clubKeepers` and `regionEvents`, three constants, the test that holds the switch order, the generator's number option.
+  - Step 3, `391796d`: the regions fill, migration 0065. Step 4, `535b6a9`: the club tables, migration 0066 (40 tables), the slug rule. Step 5, `c37ba11`: the seed on today's clubs, migration 0067.
+  - `main` brought in (`be9ef6d`; `main` is `f914d8f`). The merge-safety review (five reviewers, each finding tested by a second; fourteen findings stood) fixed in `6c62fcf`. K's answers built in `60267d4`: for a regional representative no hidden draft events and no removing of an officer, the roster kept back said in words, the city and region line wrapping on a club card.
+  - The production read (17 read-only statements) and the rehearsal of 0065 to 0067 on the preview database were made on Saturday, November 14, 2026, each on K's go. Results are in the record and in the pull request's words.
+  - K chose to merge S's code first: K turns the workflow "Apply database migrations" off, merges, sees the new build live, turns it on again, starts it by hand and sees it green. The lead walks K through it on the day.
+- **Still owed before S merges:** (1) the small fix K said yes to (decision 4, 1 (a)): the public Clubs page scrolls sideways by 20 pixels at 320 pixels wide, on production today; the fix is one column for the clubs' grid on a narrow screen and a long meeting time wrapping, in `src/pages/ClubsPage.tsx`; built on S's branch, gated, committed, then merged into T's branch; (2) K's mapping of the "Baton Rouge / East Central Representative" seat to South Central Louisiana in Board seats; (3) the mail stream's checkpoint P merged first, or Tuesday, December 1, 2026 reached; (4) K's own word for the merge, never on a fence day.
+- **Checkpoint T is built, behind `clubKeepers` and `CLUB_KEEPERS_ON`, both off.** Its own branch `redesign/ws09-clubs-t`, stacked on S's (a deviation from the brief, told to K). No migration. Step 6, `91e0f35`: saving a listing. Step 7, `f4d83cd`: the editor, basics first. Step 8, `71e744c`: the rest of the editor and its previews. `3ab1ddf`: S's answers merged in. Step 9, `8ace6a1`: Your club's page and the ways in. Latest gate, on `8ace6a1`: lint 13 errors and 12 warnings over 1,048 files; unit 9,542 tests in 381 files; integration 2,357 in 128; browser 659 passing and 336 skipped, the baseline unchanged.
+- **Under way:** checkpoint T's review of the whole (three reviewers, each finding tested by a second, one fix round, a check of the fix). Then pictures of the editor and Your club's page for K, taken locally with the switches on and made-up people; the gate and the commit of the review's fixes; the scroll fix on S and its merge into T; a draft pull request for T with base `redesign/ws09-clubs` and no footer; then the report to K.
+- **Numbers:** this stream holds migrations 0065 to 0071; 0065, 0066 and 0067 are made. The next clubs file is 0068, made with `--number`. The mail stream's migration 0061 and drizzle snapshot 0010 land with its checkpoint P, so this stream regenerates its drizzle snapshots 0010 to 0012 and journal entries after P merges.
 - **The plan** is `ws09-plan.md`, its 38 steps `ws09-manifest.json`, K's copy `ws09-summary.md`. It was made from five read-only reports, two outlines from different angles, one joined plan, two reviews that tried to break it and one revision (plan section 14 lists what the reviews changed).
-- **No production read, no preview write and no merge has been made by this stream.** The one production read (which clubs hold a region, which seats cover one) is wanted before checkpoint S merges and is asked of K then.
 
 ## The plan in short
 
@@ -34,6 +34,7 @@ Each of these is in plan section 7. The mail stream's session answered on Friday
 - Point 4 is K's to decide, not the streams': it is choice 9 in plan section 9, with a copy of today's pictures into the preview bucket as the mail stream asked.
 - Points 5 and 7 are in its follow-ups. Production holds no club's mail list today.
 - A small fix to the News posts' cleaner (`fix/news-posts-cleaner`) merges on K's word ahead of both streams' checkpoints; it adds a short section at the end of `REDESIGN_STATUS.md` and touches no clubs file.
+- The mail stream's note of Saturday, November 14, 2026: `test/unit/app-routes.test.tsx` pins the count of lazy pages in `src/App.tsx` (35 on `main`, 36 on its page branch, 36 on checkpoint T). Whoever merges second sets it to main's count plus their own pages and reads the line again after the merge, a clean merge not trusted; the same care for the lazy imports' block and the routes near `/admin/newsletter`. Its migration 0061 and drizzle snapshot 0010 land with its checkpoint P.
 
 The points as put:
 
@@ -54,21 +55,24 @@ Told to the mail stream on Friday, November 13, 2026, at about 6:50 PM UTC, befo
 
 ## K's words since the plan, and how the lead works now
 
-K's words, all on Friday, November 13, 2026:
+K's words, on Friday, November 13, 2026, and Saturday, November 14, 2026:
 
 - About 2:30 AM UTC: "All recommendations are good" (decision 1).
 - About 5:10 PM UTC, K turned the wider-run setting off and asked to hear later whether the session's extra effort helps or hurts. Owed to K: a plain comparison, extra against medium, at checkpoint S (muddied by step 5's restart) and properly after two or three of checkpoint T's steps. The numbers kept per step: run time, helpers' tokens, tool uses, first-review findings, review at which it was ready, gate run that was green.
 - About 5:40 PM UTC: K turned the wider-run setting on again and said the lead may override what it needs. Read as: the lead chooses the helper settings per stage and what to hand off, aiming at the usage limit. Every standing and security rule stands; merges, production reads, preview migrations and switches still need K's own word.
 - About 5:55 PM UTC: "1 b is fine": the session's effort stays at extra. Settled; do not raise it again unless the usage limit forces it.
+- Saturday, November 14, 2026, about 2:54 AM UTC: "All recommended" on checkpoint S's six choices (decision 3).
+- Saturday, about 12:15 PM UTC: "Recommend is fine for everything" (decision 4): the scroll fix now, and a slow pace from Monday, November 16, 2026, one run at a time and no wide panels. It does not settle the Baton Rouge seat, which has no recommended option.
+- K used a limit reset on Saturday; the weekly allowance refills Monday, November 16, 2026 at 10:00 PM UTC.
 
 What the lead found: the helper types' own definitions in the repository's helper folder set which helper and how much effort they use (the builder and reviewer on the heavier helper at high effort, the tester and others on the lighter helper), so the session's effort reaches only the lead. Most of the usage is the heavier helper's, and what a helper reads in costs as much as what it re-reads.
 
 How the lead works now:
 
-- Tools in the scratchpad's `tools/`: `gate.sh` (the full gate in a folder), `close.py` (checks the gate log against the tree, the record and the message, then commits as K by path and pushes), `mklaunch.py` (makes a step's launch files from its note and the manifest), `build-slice-lean.js` and its second version `build-slice-v2.js` (per-stage settings, reading rules, a short digest in place of the full reports, which stay in the run's journal). The last-fix check is one reviewer on the last fix alone when both fix rounds were used.
+- Tools in the scratchpad's `tools/`: `gate.sh` (the full gate in a folder); `close.py` (checks the gate log against the tree, the record and the message, then commits as K by path and pushes the current branch; takes a step number or a named key, a folder `ws09-<key>` with `heading.txt` and `commit.txt`; accepts fewer lint warnings than the base, never more); `mklaunch2.py` (makes a step's launch files; takes a named key with `spec.json` and `extra.txt`); `build-slice-v2.js`, the build run every step uses (per-stage settings, reading rules, a short digest in place of the full reports, which stay in the run's journal). The review of a checkpoint and its pictures run are scripts in the checkpoint's own scratch folder (`ws09-S/`, `ws09-T/`). The last-fix check is one reviewer on the last fix alone when both fix rounds were used.
 - While any long run is going, an hourly check-in that resumes a killed run: after a restart during step 5, a build sat stopped for nearly seven hours. Re-arm it at each check.
 - Both review rounds stay full. In steps 3 and 4 the full second review found the real problems the first missed (the roster inferred through POST officers; the club delete losing rows). The mail stream's session advised the same, and K there chose the best output over saving.
-- Trials one at a time, each said to K first and measured: first, a lighter helper as builder on a plain step with the heavier helper reviewing, dropped at the first sign it lowers what the reviews find; then the record written by the recorder before review. Measured usage is reported to K at each checkpoint.
+- The trials of a lighter helper as builder, and of the record written by the recorder before review, are held back for now: K leans to the best output. Measured usage is still reported to K at each checkpoint.
 
 ## K's standing rules, security and method
 
@@ -82,5 +86,10 @@ As in `HANDOFF.md` ("Standing rules", "Security", "How a slice is built") and `S
 
 ## Next
 
-1. Finish checkpoint S: the gate on the merge with `main`, the merge commit, the draft pull request (no footer), the merge-safety review, a fix round, the check sheet of the 25 clubs and the pictures for K, then the items owed above, and K's word before the merge, after the mail stream's checkpoint P or on Tuesday, December 1, 2026, whichever comes first.
-2. Then checkpoint T, from step 6, with the second build tool and the trials above.
+1. Close checkpoint T: the review's fix round and its check, the pictures of the editor and Your club's page, the gate, the commit.
+2. The scroll fix on checkpoint S (`src/pages/ClubsPage.tsx`), gated and committed; then its merge into T's branch, gated and committed.
+3. Update pull request 130's words (no footer).
+4. The draft pull request for T, base `redesign/ws09-clubs`, no footer.
+5. The report to K with the pictures, and what T's steps decided that K can overrule: T on its own branch; one press makes one save; a search result's description keeps the line on how the club meets when About is long; Enter on a tick box no longer saves and publishes; the contact name's label; the place's note label. Also the older faults seen on today's pages, none from this work: gold text on white for officers' roles and the Contact link on the public club page; dates without a weekday; long dashes in Board seats and the Club image card.
+6. Then checkpoint U from step 10 (My region and the monthly check), at the slow pace from Monday, November 16, 2026. After the mail stream's merge, read the `src/App.tsx` count and block again as its note says.
+7. Checkpoint S's merge, on K's word as written above.
