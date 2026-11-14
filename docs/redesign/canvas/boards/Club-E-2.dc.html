@@ -1,0 +1,464 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Club page · E · Club-E-2 · Next-meeting mini-site, thin club and phone (round 2)</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/6107adb451dbab26ee5d89f4189b81f8">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1a2744}
+.ce-root{box-sizing:border-box;padding:20px 0 30px;background:#ecebe6;color:#1a2744}
+.ce-root *{box-sizing:border-box}
+/* board doc strip */
+.ce-doc{margin:0 40px;background:#fbfaf6;border:1px solid #d9d8d1;border-radius:14px;padding:16px 22px 16px}
+.ce-doc-top{display:flex;justify-content:space-between;align-items:flex-start;gap:28px}
+.ce-title{font-size:32px;line-height:1.15;font-weight:700;letter-spacing:-.015em;margin:6px 0 0}
+.ce-ml{font-size:13.5px;line-height:1.45;color:#3d4556;margin:2px 0 0;max-width:1080px}
+.ce-ml b{color:#1a2744;font-weight:600}
+.ce-round{display:inline-flex;align-items:center;height:26px;padding:0 10px;border-radius:6px;background:#1a2744;color:#ffffff;font-size:12.5px;font-weight:700;letter-spacing:.04em}
+.ce-grey{flex:none;width:600px;background:#efefea;border:1px solid #dfded6;border-radius:10px;padding:12px 14px;display:grid;grid-template-columns:1fr 1fr 1.15fr;gap:10px 16px}
+.ce-grey > div > p + p{margin-top:8px}
+.ce-grey p{font-size:12px;line-height:1.4;color:#2b3446;margin:0}
+.ce-grey b{display:block;font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#555c6b;margin-bottom:2px}
+.ce-grey ol{margin:0;padding-left:16px;font-size:12px;line-height:1.4;color:#2b3446}
+.ce-grey li{margin-bottom:3px}
+.ce-lbox{background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:12px 16px 12px;margin-top:12px}
+.ce-notes{list-style:none;margin:8px 0 0;padding:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px 22px}
+.ce-notes li{display:flex;gap:8px;align-items:flex-start;font-size:12px;line-height:1.4;color:#2b3446}
+.ce-notes .k-num-badge{width:22px;height:22px;font-size:11.5px}
+.ce-notes b{font-weight:600;color:#1a2744}
+.ce-notes li.ce-data{display:block;margin:0;padding:0 0 0 12px;border-left:1px solid #ecebe5;font-size:11.5px;line-height:1.4;color:#555c6b}
+.ce-data code{font-family:"Geist Mono",ui-monospace,monospace;font-size:11px;color:#2b3446}
+.ce-flab{display:flex;align-items:center;gap:12px;margin:14px 40px 8px}
+.ce-flab h2{white-space:nowrap;margin:0;font-size:19px;line-height:1.2;font-weight:600;letter-spacing:-.01em}
+.ce-code{display:inline-flex;align-items:center;justify-content:center;min-width:28px;height:28px;padding:0 9px;border-radius:7px;background:#c8a94a;color:#1a2744;font-weight:700;font-size:13px}
+.ce-urlchip{white-space:nowrap;font-family:"Geist Mono",ui-monospace,monospace;font-size:12px;color:#3d4556;background:#ffffff;border:1px solid #d9d8d1;border-radius:7px;padding:4px 10px;margin-left:auto}
+.ce-frame{width:1440px;background:#ffffff;border-top:1px solid #cfcec6;border-bottom:1px solid #cfcec6;box-shadow:0 20px 50px rgba(16,24,43,.10)}
+.ce-frame .k-browser-url{max-width:760px}
+.ce-page{background:#f5f5f2;position:relative}
+.ce-nb{width:24px;height:24px;font-size:12px}
+.ce-nbs{width:22px;height:22px;font-size:11px;vertical-align:middle}
+.ce-anno{display:flex;gap:8px;align-items:flex-start;border:1px dashed #b9b7ad;border-radius:10px;background:#fbfbf8;padding:9px 12px;font-size:12.5px;line-height:1.45;color:#3d4556}
+.ce-anno b{color:#1a2744;font-weight:600}
+/* decided header + footer */
+.ce-hd-in{gap:0;position:relative}
+.ce-hd .k-brand{margin-right:16px}
+.ce-rook{width:30px;height:30px;fill:#ffffff;flex:none}
+.ce-rook-sm{width:24px;height:24px}
+.ce-nav{gap:0}
+.ce-nav a{padding:0 10px;white-space:nowrap}
+.ce-navbtn{display:inline-flex;align-items:center;gap:4px;min-height:44px;padding:0 10px;border:0;background:transparent;color:#ffffff;font:inherit;font-size:15px;font-weight:500;cursor:pointer}
+.ce-sbtn{display:inline-flex;align-items:center;gap:8px;width:200px;height:44px;padding:0 8px 0 12px;margin-right:14px;border-radius:8px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.45);color:#ffffff;text-decoration:none;font-size:14.5px;font-weight:500;flex:none}
+.ce-kbd{margin-left:auto;font-family:"Geist Mono",ui-monospace,monospace;font-size:12px;color:#e8ecf4;border:1px solid rgba(255,255,255,.4);border-radius:5px;padding:2px 6px;line-height:1.2}
+.ce-util{gap:10px}
+.ce-util .k-ulink{padding:0 4px}
+.ce-foot-in{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px;padding-top:18px;padding-bottom:20px}
+.ce-foot .k-meta{color:rgba(255,255,255,.78)}
+.ce-foot nav a{font-size:14px}
+/* club page */
+.ce-band{height:8px;background:#2f6b4f}
+.ce-band-navy{background:#1a2744}
+.ce-hero{background:#f2f6f4;border-bottom:1px solid #dfe8e2}
+.ce-crumbs{display:flex;flex-wrap:wrap;gap:8px;font-size:13px;color:#555c6b;padding:16px 0 0}
+.ce-crumbs a{color:#1a2744}
+.ce-hero-in{display:grid;grid-template-columns:minmax(0,1fr) 420px;gap:36px;align-items:start;padding:14px 0 24px}
+.ce-eyebrow{display:flex;align-items:center;gap:16px}
+.ce-logo{width:72px;height:72px;border-radius:14px;background:#ffffff;border:1px solid #d6e3db;padding:6px;flex:none;position:relative}
+.ce-logo .k-img{width:100%;height:100%;border-radius:9px;padding:6px;font-size:10.5px}
+.ce-gc{width:72px;height:72px;border-radius:14px;background:#1a2744;color:#ffffff;font-size:24px;font-weight:700;display:flex;align-items:center;justify-content:center;flex:none;letter-spacing:.02em}
+.ce-ename{display:block;font-size:20px;line-height:1.25;font-weight:700;color:#1a2744}
+.ce-ename span{font-weight:500;color:#3d4556}
+.ce-eline{display:flex;flex-wrap:wrap;align-items:center;gap:4px 10px;font-size:13.5px;color:#3d4556;margin-top:4px}
+.ce-check{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:999px;background:#e1f0e7;color:#145b3a;font-size:12.5px;font-weight:600}
+.ce-check-none{background:#eceef2;color:#3d4555}
+.ce-h1{font-size:44px;line-height:1.08;font-weight:700;letter-spacing:-.02em;margin:0;color:#1a2744}
+.ce-sub{font-size:18px;line-height:1.5;color:#3d4556;margin:0;max-width:820px}
+.ce-sub b{color:#1a2744;font-weight:600}
+.ce-tiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.ce-tile{background:#ffffff;border:1px solid #d6e3db;border-radius:12px;padding:13px 15px 14px;display:flex;flex-direction:column;gap:5px}
+.ce-tile-h{display:flex;align-items:center;gap:7px;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#555c6b}
+.ce-tile-h svg{color:#2f6b4f}
+.ce-tile-m{font-size:15.5px;line-height:1.4;font-weight:600;color:#1a2744;margin:0}
+.ce-tile-s{font-size:13.5px;line-height:1.45;color:#3d4556;margin:0}
+.ce-btns{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
+.ce-btn2{flex-direction:column;align-items:flex-start;gap:2px;min-height:52px;padding:6px 16px}
+.ce-btn2 small{font-size:12px;font-weight:500;color:#555c6b}
+.ce-btn2 span.t{display:inline-flex;align-items:center;gap:8px}
+.ce-mapbox{position:relative;height:150px;border-radius:10px;overflow:hidden}
+.ce-vlabel{position:absolute;background:#ffffff;border:1px solid #e4e2db;border-radius:8px;padding:4px 8px;font-size:12px;font-weight:600;color:#1a2744;white-space:nowrap}
+.ce-vlabel-on{border-color:#1a2744;box-shadow:0 2px 6px rgba(26,39,68,.18)}
+.ce-venue{display:flex;gap:10px;align-items:flex-start;font-size:13.5px;color:#1a2744;line-height:1.4}
+.ce-vno{width:22px;height:22px;border-radius:50%;background:#1a2744;color:#ffffff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex:none}
+.ce-gin{display:flex;gap:10px;align-items:flex-start;font-size:13.5px;line-height:1.45;color:#1a2744;padding:4px 0;margin:0}
+.ce-gin svg{margin-top:2px;flex:none}
+.ce-reptag{display:inline-flex;align-items:center;gap:5px;padding:3px 8px;border-radius:6px;background:#eceef3;color:#2b3446;font-size:11.5px;font-weight:600}
+.ce-blank{color:#555c6b;font-style:italic;font-weight:400}
+.ce-sug{font-size:13px;font-weight:600;color:#1a2744;text-decoration:underline;text-decoration-color:#c8a94a;text-decoration-thickness:2px;text-underline-offset:3px;white-space:nowrap}
+/* state strip */
+.ce-states{background:#ffffff;border-bottom:1px solid #e4e2db}
+.ce-states-in{display:grid;grid-template-columns:200px minmax(0,1fr) minmax(0,1.35fr);gap:16px;align-items:stretch;padding-top:10px;padding-bottom:10px}
+.ce-stcard{border:1px dashed #b9b7ad;border-radius:10px;background:#fbfbf8;padding:8px 14px;display:flex;flex-direction:column;gap:5px}
+.ce-sth{font-size:24px;line-height:1.1;font-weight:700;letter-spacing:-.015em;color:#1a2744;margin:0}
+.ce-amber{display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px;border:1px solid #e7c27a;background:#fdf1dc;border-radius:8px;padding:7px 10px;font-size:13px;line-height:1.4;color:#5e3d00}
+.ce-amber b{color:#5e3d00}
+.ce-tagamber{display:inline-flex;align-items:center;gap:5px;padding:3px 8px;border-radius:6px;font-size:12px;font-weight:700;line-height:1.2;white-space:nowrap;background:#f7dcb5;color:#5e3d00}
+/* jump strip */
+.ce-jump{background:#ffffff;border-bottom:1px solid #e4e2db;box-shadow:0 4px 10px rgba(16,24,43,.05);position:sticky;top:0;z-index:5}
+.ce-jump-in{display:flex;align-items:center;gap:6px;min-height:52px}
+.ce-jump-l{font-size:13.5px;font-weight:600;color:#555c6b;margin-right:6px}
+.ce-jump a.j{display:inline-flex;align-items:center;min-height:44px;padding:0 10px;font-size:15px;font-weight:600;color:#1a2744;text-decoration:underline;text-decoration-color:#c4c3bb;text-underline-offset:5px}
+.ce-jump .dot{color:#9aa1b0}
+.ce-sec{padding:24px 0}
+.ce-alt{background:#fbfaf6;border-top:1px solid #ecebe6;border-bottom:1px solid #ecebe6}
+.ce-h{display:flex;align-items:center;gap:10px;margin:0}
+.ce-bar{width:6px;height:24px;border-radius:3px;background:#2f6b4f;flex:none}
+.ce-bar-navy{background:#1a2744}
+.ce-secno{font-family:"Geist Mono",ui-monospace,monospace;font-size:12.5px;font-weight:500;color:#555c6b}
+/* first visit */
+.ce-visit{display:grid;grid-template-columns:minmax(0,1fr) 480px;gap:36px;align-items:start}
+.ce-tl{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.ce-tl li{display:grid;grid-template-columns:96px 22px minmax(0,1fr);column-gap:14px}
+.ce-tl-time{text-align:right;font-size:15px;font-weight:500;padding-top:1px;color:#1a2744}
+.ce-tl-rail{position:relative}
+.ce-tl-rail::before{content:"";position:absolute;left:10px;top:6px;bottom:-6px;width:2px;background:#d6d5cd}
+.ce-tl li:last-child .ce-tl-rail::before{display:none}
+.ce-tl-rail::after{content:"";position:absolute;left:4px;top:4px;width:14px;height:14px;border-radius:50%;background:#2f6b4f;border:3px solid #fbfaf6;box-shadow:0 0 0 1px #2f6b4f}
+.ce-tl-body{padding-bottom:10px}
+.ce-tl-body h3{margin:0}
+.ce-tl-body p{margin:2px 0 0}
+.ce-tl-body .k-body{font-size:15px;line-height:1.5}
+.ce-qa{margin:0}
+.ce-qa div{padding:7px 0;border-bottom:1px solid #ecebe6}
+.ce-qa dt{font-weight:600;color:#1a2744;font-size:14px}
+.ce-qa dd{margin:2px 0 0;color:#3d4556;font-size:14px;display:flex;flex-wrap:wrap;gap:4px 10px;align-items:baseline}
+/* when and where */
+.ce-ww{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) 380px;gap:20px;align-items:start}
+.ce-nrow{display:grid;grid-template-columns:46px minmax(0,1fr) auto;gap:12px;align-items:center;padding:7px 0;border-bottom:1px solid #ecebe6}
+.ce-nrow .k-date{width:46px;min-height:46px}
+.ce-nrow .k-date b{font-size:19px;color:inherit}
+.ce-nrow b.t{display:block;font-size:15px;color:#1a2744}
+.ce-nrow .s{display:block;font-size:13px;color:#555c6b;line-height:1.4}
+.ce-nrow-off .k-date{background:#efefea}
+.ce-big{display:block;font-size:26px;font-weight:700;color:#1a2744;font-variant-numeric:tabular-nums;line-height:1.1}
+.ce-facts{display:grid;grid-template-columns:auto minmax(0,1fr);gap:6px 14px;margin:0;font-size:13.5px}
+.ce-facts dt{color:#555c6b}
+.ce-facts dd{margin:0;color:#1a2744;font-weight:500}
+/* events + news */
+.ce-two{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,0.9fr);gap:40px;align-items:start}
+.ce-evrow{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:16px;align-items:center;padding:10px 0;border-bottom:1px solid #e4e2db}
+.ce-evrow .k-date{width:58px;min-height:58px}
+.ce-evrow b.n{display:block;font-size:16px;color:#1a2744;margin:4px 0 1px}
+.ce-out{color:#1a2744;font-size:14px;font-weight:600;text-decoration:underline;text-decoration-color:#9aa1b0;text-underline-offset:3px;white-space:nowrap}
+.ce-post{padding:11px 0;border-bottom:1px solid #e4e2db;display:flex;flex-direction:column;gap:4px}
+.ce-post h3{margin:0}
+.ce-post h3 a{color:#1a2744;text-decoration:none}
+.ce-post p{margin:0}
+.ce-empty{border:1.5px dashed #b9b7ad;border-radius:10px;background:#fbfbf8;padding:10px 14px;display:flex;flex-direction:column;gap:3px;font-size:13.5px;line-height:1.45;color:#3d4556}
+.ce-empty .k-label{font-size:11px}
+/* contact */
+.ce-contact{display:grid;grid-template-columns:minmax(0,1fr) 430px 360px;gap:22px;align-items:start}
+.ce-near{display:flex;flex-direction:column;gap:2px;padding:10px 0;border-bottom:1px solid #ecebe6;font-size:13.5px}
+.ce-near a{font-weight:600;color:#1a2744}
+.ce-ts{display:flex;align-items:center;gap:12px;width:280px;height:58px;padding:0 14px;border:1px solid #d6d5cd;border-radius:6px;background:#fafaf7;font-size:13.5px;color:#3d4556}
+.ce-ts i{display:block;width:22px;height:22px;border:2px solid #858b99;border-radius:4px;background:#ffffff;flex:none}
+.ce-ts span{margin-left:auto;font-size:11px;color:#555c6b;text-align:right;line-height:1.25}
+.ce-vars{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-top:18px}
+.ce-kvline{font-size:13px;line-height:1.45;color:#3d4556;background:#ffffff;border:1px solid #e6e4da;border-radius:8px;padding:9px 11px;margin:0}
+.ce-kvline b{color:#1a2744;font-weight:600}
+.ce-kvline.ce-am{background:#fdf1dc;border-color:#e7c27a;color:#5e3d00}
+.ce-kvline.ce-am b{color:#5e3d00}
+/* bottom row */
+.ce-row2{display:flex;gap:24px;margin:0 40px;align-items:flex-start}
+.ce-col{display:flex;flex-direction:column;gap:12px}
+.ce-inset{width:600px;flex:none;background:#f5f5f2;border:1px solid #cfcec6;border-radius:12px;overflow:hidden;box-shadow:0 14px 34px rgba(16,24,43,.10)}
+.ce-ihero{background:#ffffff;border-bottom:1px solid #e4e2db;padding:14px 22px 20px;display:flex;flex-direction:column;gap:12px}
+.ce-ih1{font-size:32px;line-height:1.1;font-weight:700;letter-spacing:-.015em;margin:0;color:#1a2744}
+.ce-itiles{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr) minmax(0,1fr);gap:10px}
+.ce-itiles .ce-tile{border-color:#dddcd4;padding:11px 13px}
+.ce-mis{font-size:14.5px;font-weight:600;color:#555c6b;font-style:italic;margin:0}
+.ce-ijump{background:#ffffff;border-bottom:1px solid #e4e2db;display:flex;align-items:center;flex-wrap:wrap;gap:2px 4px;padding:6px 22px;font-size:13.5px}
+.ce-ijump a{display:inline-flex;align-items:center;min-height:36px;padding:0 6px;font-weight:600;color:#1a2744;text-decoration:underline;text-decoration-color:#c4c3bb;text-underline-offset:4px}
+.ce-isec{padding:18px 22px;display:flex;flex-direction:column;gap:12px}
+.ce-form{border:1px solid #c9c8c0;border-left:4px solid #1a2744;border-radius:10px;background:#ffffff;padding:14px 16px;display:flex;flex-direction:column;gap:11px}
+.ce-q{font-size:13.5px;font-weight:600;color:#1a2744}
+.ce-form .k-chip{min-height:32px;padding:0 11px;font-size:13px}
+.ce-form .k-input{min-height:40px;font-size:14px}
+.ce-form .k-field label{font-size:13.5px}
+.ce-g2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.ce-wk{margin:0}
+.ce-wk div{display:grid;grid-template-columns:96px minmax(0,1fr) auto;gap:10px;align-items:baseline;padding:8px 0;border-bottom:1px solid #ecebe6}
+.ce-wk div:last-child{border-bottom:0}
+.ce-wk dt{font-size:13px;color:#555c6b;font-weight:600}
+.ce-wk dd{margin:0;font-size:14px;color:#1a2744}
+.ce-wk dd.m{color:#555c6b;font-style:italic}
+.ce-iev{display:flex;gap:12px;align-items:center;padding:9px 0;border-bottom:1px solid #ecebe6;font-size:14px}
+.ce-iev:last-child{border-bottom:0}
+.ce-iev .k-date{width:52px;min-height:52px}
+.ce-iev .k-date b{font-size:19px}
+/* phone */
+.ce-phone{width:390px;height:844px;box-sizing:content-box;border:10px solid #10182b;border-radius:52px;background:#10182b;position:relative;box-shadow:0 24px 50px rgba(16,24,43,.2);flex:none}
+.ce-scr{position:absolute;inset:0;border-radius:42px;overflow:hidden;display:flex;flex-direction:column;background:#f5f5f2}
+.ce-status{flex:none;height:47px;background:#1a2744;color:#ffffff;display:flex;align-items:center;justify-content:space-between;padding:4px 30px 0 40px;font-size:15px;font-weight:600;position:relative}
+.ce-island{position:absolute;left:50%;top:11px;width:120px;height:34px;margin-left:-60px;border-radius:20px;background:#000000}
+.ce-statr{display:flex;align-items:center;gap:6px}
+.ce-sig{display:inline-flex;align-items:flex-end;gap:1.5px;height:11px}
+.ce-sig i{display:block;width:3px;background:currentColor;border-radius:1px}
+.ce-sig i:nth-child(1){height:4px}.ce-sig i:nth-child(2){height:6px}.ce-sig i:nth-child(3){height:8.5px}.ce-sig i:nth-child(4){height:11px}
+.ce-batt{display:inline-flex;width:24px;height:12px;border:1.5px solid currentColor;border-radius:4px;padding:1.5px}
+.ce-batt i{display:block;width:70%;background:currentColor;border-radius:1.5px}
+.ce-app{flex:none;height:56px;background:#1a2744;display:flex;align-items:center;gap:8px;padding:0 10px 0 14px;color:#ffffff}
+.ce-app .ce-rook{width:28px;height:28px}
+.ce-bname{display:flex;flex-direction:column;line-height:1.12;color:#ffffff}
+.ce-bname b{font-size:14px;font-weight:700;white-space:nowrap}
+.ce-bname span{font-size:11px;font-weight:500;color:rgba(255,255,255,.78)}
+.ce-pbtn{display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;border:1.5px solid rgba(255,255,255,.6);border-radius:9px;color:#ffffff;flex:none}
+.ce-pmain{flex:1;min-height:0;overflow:hidden;position:relative;display:flex;flex-direction:column}
+.ce-phero{background:#f2f6f4;padding:10px 16px 12px;display:flex;flex-direction:column;gap:8px;border-bottom:1px solid #dfe8e2}
+.ce-plogo{width:44px;height:44px;border-radius:10px;background:#ffffff;border:1px solid #d6e3db;padding:4px;flex:none}
+.ce-plogo .k-img{width:100%;height:100%;border-radius:6px;padding:3px;font-size:8.5px}
+.ce-ph1{font-size:25px;line-height:1.12;font-weight:700;letter-spacing:-.015em;margin:0;color:#1a2744}
+.ce-psub{font-size:13.5px;line-height:1.42;color:#3d4556;margin:0}
+.ce-ptiles{background:#ffffff;border:1px solid #d6e3db;border-radius:10px;padding:0 12px}
+.ce-ptile{display:grid;grid-template-columns:20px minmax(0,1fr);gap:8px;padding:7px 0;border-bottom:1px solid #ecebe6;font-size:13px;line-height:1.35;color:#3d4556}
+.ce-ptile:last-child{border-bottom:0}
+.ce-ptile b{color:#1a2744;font-weight:600}
+.ce-ptile svg{color:#2f6b4f;margin-top:1px}
+.ce-half{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.ce-half .k-btn{padding:0 8px;font-size:14px}
+.ce-pkept{font-size:12px;line-height:1.4;color:#3d4556;margin:2px 0 0}
+.ce-pills{display:flex;gap:6px;overflow:hidden;padding:8px 16px;background:#ffffff;border-bottom:1px solid #e4e2db;white-space:nowrap;box-shadow:0 4px 10px rgba(16,24,43,.06)}
+.ce-pill{display:inline-flex;align-items:center;min-height:36px;padding:0 13px;border-radius:999px;border:1px solid #c4c3bb;background:#ffffff;font-size:14px;font-weight:600;color:#1a2744;flex:none}
+.ce-pbody{padding:12px 16px 90px;display:flex;flex-direction:column;gap:8px;background:#fbfaf6}
+.ce-ptl li{grid-template-columns:62px 18px minmax(0,1fr);column-gap:8px}
+.ce-ptl .ce-tl-time{font-size:13px}
+.ce-ptl .ce-tl-rail::before{left:8px}
+.ce-ptl .ce-tl-rail::after{left:2px}
+.ce-ptl .ce-tl-body{padding-bottom:8px}
+.ce-ptl .ce-tl-body h3{font-size:15px}
+.ce-ptl .ce-tl-body p{font-size:13px;line-height:1.4}
+.ce-pbar{position:absolute;left:0;right:0;bottom:0;background:#ffffff;border-top:1px solid #dddcd4;padding:10px 16px 24px;display:grid;grid-template-columns:1fr 1fr;gap:8px;box-shadow:0 -6px 18px rgba(16,24,43,.08)}
+.ce-homeind{position:absolute;left:50%;bottom:8px;width:134px;height:5px;margin-left:-67px;border-radius:3px;background:#10182b}
+.ce-pcap{flex:1;min-width:0;display:flex;flex-direction:column;gap:10px}
+.ce-pcap p{margin:0;font-size:13px;line-height:1.5;color:#3d4556}
+.ce-pcap p b{color:#1a2744}
+.ce-vcard{background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:12px 14px;display:flex;flex-direction:column;gap:8px}
+.ce-vlab{font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#555c6b;margin:0}
+.ce-dgroup{display:flex;flex-direction:column;gap:12px}
+.ce-dgroup .ce-stcard{background:#ffffff}
+.ce-dgroup .ce-vcard{gap:10px}
+</style>
+</helmet>
+<div class="ce-root" style="width:1440px;height:2500px">
+
+<section class="ce-doc" aria-label="About this board">
+<div class="ce-doc-top">
+<div>
+<div class="k-row-sm" style="gap:10px"><p class="k-kicker" style="margin:0">9 · Club page · round 2 · option E · part 2 of 2</p><span class="ce-round">ROUND 2</span></div>
+<h1 class="ce-title">Club page · E · Next-meeting mini-site: thin club and phone</h1>
+<p class="ce-ml" style="margin-top:6px"><b>Built from:</b> Club-C's structured form and honest "Not listed yet" rows, made the thin club's first block · Club-B's mini-site and Club-A's headline and first visit, drawn small for the phone · the decided mobile app bar.</p>
+<p class="ce-ml"><b>Replaces:</b> Club-B and Club-C for the thin case (with part 1). Dropped: Club-C's "I run this club" claim card; a club with no times now says so in its h1.</p>
+<p class="ce-ml"><b>K's feedback applied (Fri, Oct 9):</b> no leaderboard, roster or member count; the South Central Louisiana representative and LCA admins keep the page; "Do you run this club?" is one line to the representative, not a claim path.</p>
+<p class="ce-ml"><b>Shown:</b> part 2, frame B the thin Gonzales Chess Club page at 600px, C one phone at 390 × 844 with the "Tonight" headline beside it, D the headline and maintained-by states. Part 1 (Club-E) has the full Baton Rouge page at 1440px.</p>
+<p class="ce-ml" style="margin-top:6px"><span class="k-sample">Sample data: colour, logo, rep name, Checked months, first-visit answers. Gonzales's area, the nearby clubs' times and the two partner events are real.</span></p>
+</div>
+<aside class="ce-grey" aria-label="Board note">
+<p><b>What</b>Round-2 option E, part 2: how the next-meeting page scales down. Gonzales Chess Club has a name and a town, so its h1 is the gap, "Meeting times not listed yet", and its first block is the form that fills it.</p>
+<div><p><b>Built from</b>Club-C's form and "What we know" rows; Club-B and Club-A for the phone. Decided header, app bar and footer.</p><p><b>K's feedback applied</b>No claim card; the representative fills the page from what the public sends.</p></div>
+<div><p><b>Open for K</b></p><ol><li>Should a club with no times appear in the directory at all, or only after the representative confirms one meeting?</li><li>Keep "Do you run this club?" as one line to the representative, or drop it?</li></ol></div>
+</aside>
+</div>
+<div class="ce-lbox">
+<p class="k-label" style="margin:0">Notes on this board</p>
+<ol class="ce-notes">
+<li><span class="k-num-badge">1</span><span><b>The headline is the next meeting</b>, from club_schedules and club_schedule_exceptions in America/Chicago. "Tonight" and "off tonight" come from the Tonight switch in the representative's Workspace › My region.</span></li>
+<li><span class="k-num-badge">2</span><span><b>First-visit text and getting-in notes</b> are written by the regional representative with the club. Blanks stay visible as brackets, with Suggest an answer, until filled.</span></li>
+<li><span class="k-num-badge">3</span><span><b>No tabs:</b> one page and a jump strip of links. A thin club scales by stating the gap in the headline and making the first block the form (part 2, frame B).</span></li>
+<li><span class="k-num-badge">4</span><span><b>No leaderboard, no roster, no member count.</b> Players aren't tied to clubs anywhere on the site.</span></li>
+<li><span class="k-num-badge">5</span><span><b>Maintainers:</b> the region's representative (seat_regions, the seven Appendix C regions) and LCA admins only. Suggest an update and Report outdated info reach both. No club-manager role, no claim path.</span></li>
+<li><span class="k-num-badge">6</span><span><b>Proposal for K to confirm:</b> a club event is created by the regional representative or an admin, who names the tournament director; it registers here, "X of Y registered".</span></li>
+<li><span class="k-num-badge">7</span><span><b>Proposal for K to confirm:</b> the representative posts news for the club; the contact form relays to the club's listed contact, else the representative. Retire club_rep, members.club_id and the admin "club members" designation; Work-B becomes "My region".</span></li>
+<li class="ce-data"><b>Data:</b> as Club-D (<code>club_schedules</code>, <code>club_schedule_exceptions</code>, <code>club_reports</code>, <code>tournaments.club_id</code>), plus <code>clubs.tonight_status</code> and reason, <code>club_follows.remind_day_before</code> and <code>seat_regions</code>. Times in America/Chicago.</li>
+</ol>
+
+</div>
+</section>
+
+<div class="ce-row2" style="margin-top:22px">
+<div class="ce-col">
+<div class="ce-flab" style="margin:0"><span class="ce-code">B</span><h2>Thin club · Gonzales Chess Club · 600 wide</h2><span class="ce-urlchip" style="margin-left:0">/clubs/gonzales</span></div>
+<div class="ce-inset">
+<div class="ce-band ce-band-navy"></div>
+<div class="ce-ihero">
+<nav class="ce-crumbs" aria-label="Breadcrumb" style="padding:0"><a href="#">Clubs</a><span aria-hidden="true">/</span><a href="#">South Central Louisiana</a><span aria-hidden="true">/</span><span aria-current="page">Gonzales Chess Club</span></nav>
+<div class="ce-eyebrow" style="gap:14px">
+<span class="ce-gc" aria-hidden="true">GC</span>
+<div>
+<span class="ce-ename" style="font-size:18px">Gonzales Chess Club <span>· South Central Louisiana</span></span>
+<div class="ce-eline"><span class="ce-check ce-check-none">Not checked yet</span><span class="k-num-badge ce-nbs">5</span></div>
+</div>
+</div>
+<div class="k-stack-sm" style="gap:8px">
+<div class="k-row-sm"><span class="k-label-gold">Next club night</span><span class="k-num-badge ce-nbs">3</span></div>
+<h1 class="ce-ih1">Meeting times not listed yet</h1>
+<p class="k-body k-muted" style="margin:0">Gonzales area · we only know the town</p>
+</div>
+<div class="ce-itiles">
+<div class="ce-tile"><span class="ce-tile-h"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true" style="color:#1a2744"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"></path><circle cx="12" cy="9.5" r="2.5"></circle></svg>Where</span><p class="ce-mis">Not listed yet</p><a class="ce-sug" href="#" style="align-self:flex-start">Suggest an update</a><div style="background:#e9edf2;border-radius:8px;padding:3px;overflow:hidden;flex:none"><svg viewBox="100 115.5 48 15" preserveAspectRatio="xMidYMid slice" style="width:100%;height:58px;display:block" role="img" aria-label="Map showing the approximate Gonzales area, with the Baton Rouge clubs to the northwest">
+<rect x="100" y="115.5" width="48" height="15" fill="#ffffff"></rect>
+<path d="M100 117.6 C 110 119.5, 118 121.5, 126 122.3 S 140 124, 148 126" stroke="#d6dbe3" stroke-width="0.7" fill="none"></path>
+<path d="M103 115.5 C 106 119, 108 122, 112 125 S 120 130, 128 131" stroke="#cddcea" stroke-width="0.9" fill="none"></path>
+<circle cx="124" cy="125.5" r="4.2" fill="#c8a94a" fill-opacity="0.22" stroke="#866a1e" stroke-width="0.22" stroke-dasharray="0.9 0.6"></circle>
+<circle cx="110.5" cy="119.2" r="0.55" fill="#1a2744"></circle>
+<circle cx="113" cy="120.4" r="0.55" fill="#1a2744"></circle>
+<g font-family="Geist, sans-serif">
+<text x="124" y="126.4" font-size="2.6" font-weight="700" fill="#1a2744" text-anchor="middle">Gonzales area</text>
+<text x="114.4" y="120" font-size="2.2" fill="#3d4556">Baton Rouge clubs</text>
+</g>
+</svg></div><span class="k-meta" style="font-size:12px">Approximate area: no pin, no Directions</span></div>
+<div class="ce-tile"><span class="ce-tile-h"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true" style="color:#1a2744"><path d="M4 7h16v3a2 2 0 0 0 0 4v3H4v-3a2 2 0 0 0 0-4z"></path><path d="M14 7v10"></path></svg>Cost</span><p class="ce-mis">Not listed yet</p><a class="ce-sug" href="#" style="align-self:flex-start">Suggest an update</a></div>
+<div class="ce-tile"><span class="ce-tile-h"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true" style="color:#1a2744"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg>Games</span><p class="ce-mis">Not listed yet</p><a class="ce-sug" href="#" style="align-self:flex-start">Suggest an update</a></div>
+</div>
+<div class="k-row-sm" style="gap:8px"><a class="k-btn k-btn-gold k-btn-sm" href="#"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 16v-5a6 6 0 0 1 12 0v5l1.5 2h-15L6 16zM10 20.5a2 2 0 0 0 4 0"></path></svg>Follow</a><a class="k-btn k-btn-line k-btn-sm" href="#">Suggest an update</a><span class="k-meta">Follow emails you when times are added</span></div>
+</div>
+<nav class="ce-ijump" aria-label="On this page"><span class="k-meta" style="font-weight:600;margin-right:4px">On this page:</span><a href="#">Help complete</a><span class="k-meta">·</span><a href="#">When &amp; where</a><span class="k-meta">·</span><a href="#">Events</a><span class="k-meta">·</span><a href="#">Contact</a></nav>
+<div class="ce-isec">
+<div class="ce-form" aria-label="Help complete this listing">
+<div style="display:flex;align-items:flex-start;gap:12px"><h2 class="k-h4" style="margin:0;flex:1">Help a first-timer: if you know when and where Gonzales Chess Club meets, tell the regional representative</h2><span class="k-num-badge ce-nb">3</span></div>
+<div class="k-stack-sm"><span class="ce-q">Which day?</span><div class="k-row-sm" role="group" aria-label="Meeting day"><button class="k-chip" type="button">Mon</button><button class="k-chip" type="button">Tue</button><button class="k-chip" type="button">Wed</button><button class="k-chip" type="button">Thu</button><button class="k-chip" type="button">Fri</button><button class="k-chip" type="button">Sat</button><button class="k-chip" type="button">Sun</button><button class="k-chip" type="button">Not sure</button></div></div>
+<div class="k-stack-sm"><span class="ce-q">How often?</span><div class="k-row-sm" role="group" aria-label="How often"><button class="k-chip" type="button">Every week</button><button class="k-chip" type="button">1st &amp; 3rd</button><button class="k-chip" type="button">1st, 3rd &amp; 5th</button><button class="k-chip" type="button">Monthly</button><button class="k-chip" type="button">Not sure</button></div></div>
+<div class="ce-g2"><div class="k-field"><label for="ce-gt">Start time</label><input id="ce-gt" class="k-input" placeholder="e.g. 6:00 PM"></div><div class="k-field"><label for="ce-gv">Venue</label><input id="ce-gv" class="k-input" placeholder="Name and street"></div></div>
+<div class="ce-g2">
+<div class="k-stack-sm"><span class="ce-q">Cost</span><div class="k-row-sm" role="group" aria-label="Cost"><button class="k-chip" type="button">Free</button><button class="k-chip" type="button">Small fee</button><button class="k-chip" type="button">Not sure</button></div></div>
+<div class="k-stack-sm"><span class="ce-q">Good for</span><div class="k-row-sm" role="group" aria-label="Good for"><button class="k-chip" type="button">Casual</button><button class="k-chip" type="button">Rated</button><button class="k-chip" type="button">Kids</button><button class="k-chip" type="button">Beginners</button></div></div>
+</div>
+<div class="k-field"><label for="ce-ge">Your email</label><input id="ce-ge" class="k-input" placeholder="Only for a follow-up question"></div>
+<button class="k-btn k-btn-gold k-btn-sm" type="button" style="align-self:flex-start">Send to the South Central Louisiana representative</button>
+<p class="k-small" style="margin:0"><b class="k-ink">What happens next:</b> Camille Broussard checks with the club, then this page fills in.</p>
+</div>
+<div class="k-card k-card-pad k-stack-sm" style="padding:12px 16px">
+<div class="k-between"><h2 class="k-h3 ce-h"><span class="ce-bar ce-bar-navy"></span>When &amp; where</h2><span class="k-meta">What LCA's club list knows</span></div>
+<dl class="ce-wk" style="display:grid;grid-template-columns:1fr 1fr;column-gap:18px">
+<div style="grid-template-columns:52px minmax(0,1fr)"><dt>Name</dt><dd>Gonzales Chess Club</dd></div>
+<div style="grid-template-columns:52px minmax(0,1fr)"><dt>Area</dt><dd>Gonzales · South Central</dd></div>
+<div style="grid-template-columns:52px minmax(0,1fr) auto;border-bottom:0"><dt>When</dt><dd class="m">Not listed yet</dd><a class="ce-sug" href="#">Suggest</a></div>
+<div style="grid-template-columns:52px minmax(0,1fr) auto;border-bottom:0"><dt>Venue</dt><dd class="m">Not listed yet</dd><a class="ce-sug" href="#">Suggest</a></div>
+</dl>
+</div>
+<div class="ce-g2" style="gap:12px;align-items:start">
+<div class="k-card k-card-pad" style="padding:12px 14px">
+<div class="k-between"><span class="k-label">Near Gonzales</span><span class="k-meta">Events</span></div>
+<div class="ce-iev" style="align-items:flex-start"><span class="k-date k-date-navy"><b>10</b><span>Oct</span></span><span><b>Lafayette Open 2026</b><span class="k-meta" style="display:block">Sat–Sun, Oct 10–11 · Lafayette</span><a class="ce-out" style="font-size:13px;white-space:normal" href="#">Registers on the organizer's site ↗</a></span></div>
+<div class="ce-iev" style="align-items:flex-start"><span class="k-date"><b>24</b><span>Oct</span></span><span><b>The Baton Rouge Classic</b><span class="k-meta" style="display:block">Sat–Sun, Oct 24–25 · Baton Rouge</span><a class="ce-out" style="font-size:13px;white-space:normal" href="#">Registers on the organizer's site ↗</a></span></div>
+</div>
+<div class="k-card k-card-pad" style="padding:12px 14px">
+<span class="k-label">Nearby clubs</span>
+<div class="ce-near"><a href="#">Baton Rouge Chess Club</a><span class="k-meta">about 20 mi · next Wed, Oct 7 · 6:00 PM</span></div>
+<div class="ce-near"><a href="#">Bluebonnet Chess Club</a><span class="k-meta">about 20 mi · next Sun, Oct 18 · 4:30 PM</span></div>
+<div class="ce-near" style="border-bottom:0"><a href="#">Houma Chess Club</a><span class="k-meta">about 60 mi · <span class="k-tag k-tag-open" style="padding:2px 7px">Tonight</span> Mon, Oct 5 · 6:00 PM</span></div>
+</div>
+</div>
+<p class="ce-anno" style="margin:0"><span class="k-num-badge ce-nbs">3</span><span><b>News is hidden</b> while the club has none, and the jump strip drops it. Contact relays to the representative, since no club contact is on file.</span></p>
+<p class="k-small" style="margin:0">Do you run this club? Tell your regional representative: <b class="k-ink">Camille Broussard</b> · <a class="ce-sug" href="#">Message</a></p>
+</div>
+</div>
+</div>
+
+<div class="ce-col" style="flex:1;min-width:0;gap:24px">
+<div style="display:flex;gap:24px;align-items:flex-start">
+<div class="ce-col" style="flex:none;width:410px">
+<div class="ce-flab" style="margin:0"><span class="ce-code">C</span><h2>Phone · 390 × 844</h2><span class="k-meta">Mon, Oct 5, 4:40 PM</span></div>
+<div class="ce-phone" aria-label="Baton Rouge Chess Club on a phone">
+<div class="ce-scr">
+<div class="ce-status" aria-hidden="true"><span>4:40</span><span class="ce-island"></span><span class="ce-statr"><span class="ce-sig"><i></i><i></i><i></i><i></i></span><span class="ce-batt"><i></i></span></span></div>
+<div class="ce-app"><a class="k-brand" href="#" aria-label="Louisiana Chess Association, home" style="gap:8px"><svg class="ce-rook" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span class="ce-bname"><b>Louisiana Chess</b><span>Association</span></span></a><a class="ce-pbtn" href="#" aria-label="Search" style="margin-left:auto"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg></a><a class="ce-pbtn" href="#" aria-label="Menu"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg></a></div>
+<div class="ce-pmain">
+<div class="ce-band" style="flex:none;height:6px"></div>
+<div class="ce-phero">
+<div class="k-row" style="gap:10px;flex-wrap:nowrap;align-items:center"><div class="ce-plogo"><div class="k-img">Logo</div></div><div><b style="display:block;font-size:15px;line-height:1.25">Baton Rouge Chess Club</b><p class="ce-pkept">Checked Sept 2026 by the South Central Louisiana representative · <a class="ce-sug" href="#" style="font-size:12px">Suggest an update</a></p></div></div>
+<h1 class="ce-ph1">Next: Wed, Oct 7 · 6:00 PM</h1>
+<p class="ce-psub">Casual night at Boba ParTea, O'Neil Lane · then Sat, Oct 10 · 10:00 AM, long games at Jones Creek Branch Library</p>
+<div class="ce-ptiles">
+<div class="ce-ptile"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"></path><circle cx="12" cy="9.5" r="2.5"></circle></svg><span><b>Boba ParTea, O'Neil Lane</b> · Saturdays: Jones Creek Branch Library</span></div>
+<div class="ce-ptile"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16v3a2 2 0 0 0 0 4v3H4v-3a2 2 0 0 0 0-4z"></path><path d="M14 7v10"></path></svg><span><b class="ce-blank" style="font-weight:600">[Free or amount]</b> · no LCA membership needed</span></div>
+<div class="ce-ptile"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg><span><b>Wed casual, no clock</b> · Sat G/90+30</span></div>
+</div>
+<a class="k-btn k-btn-gold k-btn-block" href="#">Directions</a>
+<div class="ce-half"><a class="k-btn k-btn-line" href="#">Add to calendar</a><a class="k-btn k-btn-line" href="#">Follow</a></div>
+</div>
+<div class="ce-pills" role="navigation" aria-label="On this page"><span class="ce-pill">First visit</span><span class="ce-pill">When &amp; where</span><span class="ce-pill">Events</span><span class="ce-pill">News</span></div>
+<div class="ce-pbody">
+<b style="font-size:17px">Your first visit</b>
+<ol class="ce-tl ce-ptl">
+<li><div class="ce-tl-time k-mono">5:45 PM</div><div class="ce-tl-rail"></div><div class="ce-tl-body"><h3 class="k-h4">Find the club's tables</h3><p class="k-muted"><span class="ce-blank">[Where in the café]</span></p></div></li>
+<li><div class="ce-tl-time k-mono">6:00 PM</div><div class="ce-tl-rail"></div><div class="ce-tl-body"><h3 class="k-h4">Sit down to a game</h3><p class="k-muted"><span class="ce-blank">[How pairing works]</span></p></div></li>
+</ol>
+</div>
+<div class="ce-pbar"><a class="k-btn k-btn-gold" href="#">Directions</a><a class="k-btn k-btn-navy" href="#">Add to calendar</a></div>
+</div>
+<span class="ce-homeind"></span>
+</div>
+</div>
+</div>
+
+<div class="ce-col ce-pcap" style="padding-top:40px">
+<p><b>What changes on a phone.</b> The logo shrinks to 44px beside the name, and the maintained-by line shortens to "Checked Sept 2026 by the South Central Louisiana representative". <span class="k-num-badge ce-nbs">5</span></p>
+<p>The h1 stays the next meeting. The three tiles stack into one card; Directions is full width, Add to calendar and Follow share a row.</p>
+<p>The jump strip becomes pills that scroll sideways and stick under the header. <span class="k-num-badge ce-nbs">3</span></p>
+<p>A bottom bar keeps Directions and Add to calendar in reach all the way down.</p>
+<div class="ce-vcard">
+<p class="ce-vlab">On the day · Wed, Oct 7 <span class="k-num-badge ce-nbs" style="margin-left:4px">1</span></p>
+<div style="border:1px solid #dfe8e2;border-radius:10px;overflow:hidden">
+<div class="ce-band" style="height:5px"></div>
+<div style="background:#f2f6f4;padding:10px 12px;display:flex;flex-direction:column;gap:6px">
+<span class="k-meta" style="font-weight:600;color:#1a2744">Baton Rouge Chess Club</span>
+<div class="k-row-sm"><p class="ce-ph1" style="font-size:22px">Tonight, 6:00 PM</p><span class="k-tag k-tag-open">Tonight</span></div>
+<p class="ce-psub" style="font-size:12.5px">Casual night at Boba ParTea, O'Neil Lane</p>
+</div>
+</div>
+<p style="font-size:12px">Off tonight shows the amber line instead, and the h1 rolls to "Next: Sat, Oct 10 · 10:00 AM".</p>
+</div>
+</div>
+</div>
+<div class="ce-dgroup">
+<div class="ce-flab" style="margin:0"><span class="ce-code">D</span><h2>States · the headline and the maintained-by line</h2><span class="k-meta">Part 1's hero on other days</span></div>
+<div class="ce-vcard">
+<div class="k-row-sm"><p class="ce-vlab">Headline states</p><span class="k-num-badge ce-nbs">1</span></div>
+<div class="ce-stcard">
+<span class="k-meta">On the day · Wed, Oct 7, from midnight</span>
+<div class="k-row-sm"><p class="ce-sth">Tonight, 6:00 PM</p><span class="k-tag k-tag-open">Tonight</span></div>
+<span class="k-small">Casual night at Boba ParTea, O'Neil Lane · then Sat, Oct 10 · 10:00 AM</span>
+</div>
+<div class="ce-stcard">
+<span class="k-meta">The representative marks tonight off in Workspace › My region</span>
+<div class="ce-amber"><span class="ce-tagamber">Off tonight</span><span>Tonight's casual night is off · <span style="font-style:italic">[reason]</span> · set by the regional representative</span></div>
+<div class="k-row-sm"><p class="ce-sth">Next: Sat, Oct 10 · 10:00 AM</p><span class="k-meta">the headline rolls to the next meeting</span></div>
+</div>
+</div>
+<div class="ce-vcard" aria-label="The maintained-by line in four other states">
+<div class="k-row-sm"><p class="ce-vlab">The maintained-by line in four other states</p><span class="k-num-badge ce-nbs">5</span></div>
+<p class="k-meta" style="margin:0">Part 1 shows the usual line: "Kept up to date by Camille Broussard, LCA's South Central Louisiana representative, and LCA admins · Checked Sept 2026".</p>
+<div class="k-stack-sm" style="gap:6px">
+<p class="ce-kvline"><span class="k-meta">Seat open:</span> This region's representative seat is open, so LCA admins keep this page · Checked Jul 2026 · <a class="ce-sug" href="#">Volunteer for the seat</a></p>
+<p class="ce-kvline ce-am"><span class="ce-tagamber">Overdue</span> <b>Not checked since Jun 2026</b> · <a class="ce-sug" href="#">Suggest an update</a></p>
+<p class="ce-kvline"><span class="k-meta">Never checked:</span> <b>Not checked yet</b> · <a class="ce-sug" href="#">Suggest an update</a></p>
+<p class="ce-kvline"><span class="k-meta">Seat holder or admin, signed in:</span> <a class="ce-sug" href="#">Edit listing</a> opens Workspace › My region. Never a public claim.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":2500}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

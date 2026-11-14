@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Newsletter · the email · option 3 · The card</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/6107adb451dbab26ee5d89f4189b81f8">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&amp;display=swap">
+<style>
+body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1a2744}
+.nc-root{width:1440px;margin:0 auto;box-sizing:border-box;padding:36px 72px 48px;background:#ecebe6;color:#1a2744;font-family:Geist,system-ui,sans-serif}
+.nc-root *{box-sizing:border-box}
+
+/* label strip */
+.nc-strip{display:flex;align-items:center;justify-content:space-between;gap:32px;padding:24px 30px 26px;background:#ffffff;border:1px solid #dddcd4;border-radius:16px}
+.nc-strip .k-kicker{margin:0}
+.nc-name{margin:8px 0 0;font-size:40px;line-height:1.1;font-weight:700;letter-spacing:-.015em;color:#1a2744}
+.nc-sent{margin:8px 0 0;font-size:18px;line-height:1.5;color:#3d4556}
+.nc-strip .k-sample{flex:none}
+
+/* layout */
+.nc-grid{display:grid;grid-template-columns:780px 390px;justify-content:space-between;align-items:start;margin-top:36px}
+.nc-col{display:flex;flex-direction:column;gap:14px}
+.nc-phones{display:flex;flex-direction:column;gap:48px}
+.nc-cap{margin:0;font-size:14px;line-height:1.4;color:#555c6b}
+
+/* computer mail window */
+.nm-win{background:#ffffff;border:1px solid #cfcec6;border-radius:14px;overflow:hidden;box-shadow:0 18px 40px rgba(16,24,43,.12)}
+.nm-top{display:flex;align-items:center;gap:8px;height:40px;padding:0 16px;background:#eeede8;border-bottom:1px solid #d9d8d1}
+.nm-top i{display:block;width:12px;height:12px;border-radius:50%;background:#cfcdc4}
+.nm-top span{flex:1;text-align:center;margin-right:52px;font-size:13px;font-weight:600;color:#3d4556}
+.nm-tools{display:flex;align-items:center;gap:6px;height:48px;padding:0 14px;border-bottom:1px solid #ecebe4}
+.nm-tools span{display:inline-flex;align-items:center;gap:7px;height:34px;padding:0 10px;border-radius:7px;font-size:13.5px;font-weight:600;color:#3d4556}
+.nm-tools .nm-gap{flex:1;padding:0}
+.nm-head{padding:20px 28px 18px;border-bottom:1px solid #e6e3d8}
+.nm-head h3{margin:0;font-size:22px;line-height:1.25;font-weight:600;color:#1a2744}
+.nm-who{display:grid;grid-template-columns:42px minmax(0,1fr) auto;gap:12px;align-items:center;margin-top:14px}
+.nm-av{display:flex;align-items:center;justify-content:center;width:42px;height:42px;border-radius:50%;background:#1a2744}
+.nm-av svg{width:23px;height:23px;fill:#ffffff}
+.nm-who b{display:block;font-size:15px;line-height:1.3;color:#1a2744}
+.nm-who small{display:block;font-size:13px;line-height:1.4;color:#555c6b}
+.nm-when{font-size:13px;color:#3d4556;text-align:right}
+.nm-body{background:#f6f2e7;padding:52px 0 34px}
+
+/* the email: cream ground, white card */
+.ec{font-family:Geist,Arial,sans-serif;color:#26304a}
+.ec-msg{width:600px;margin:0 auto}
+.ec-card{position:relative;width:552px;margin:0 auto;background:#ffffff;border:1px solid #e4ddca;border-radius:14px;box-shadow:0 1px 2px rgba(26,39,68,.04),0 10px 28px rgba(26,39,68,.06);padding:50px 32px 34px}
+.ec-seal{position:absolute;top:-28px;left:50%;margin-left:-28px;width:56px;height:56px;border-radius:50%;background:#1a2744;border:3px solid #ffffff;box-shadow:0 0 0 1px #e4ddca;display:flex;align-items:center;justify-content:center}
+.ec-seal svg{width:28px;height:28px;fill:#ffffff}
+.ec-mast{text-align:center;padding-bottom:26px}
+.ec-mast h2{margin:0;font-size:30px;line-height:1.15;font-weight:700;letter-spacing:-.015em;color:#1a2744}
+.ec-mast p{margin:9px 0 0 !important;font-size:13px;line-height:1;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:#866a1e}
+.ec p{margin:0 0 12px;font-size:16px;line-height:1.65}
+.ec a{color:#1a2744;text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:1px}
+.ec b{font-weight:700;color:#1a2744}
+.ec-sec{border-top:1px solid #ece6d6;padding-top:24px;margin-top:26px}
+.ec-mast+.ec-sec{margin-top:0}
+.ec-lab{display:block;margin:0 0 10px;font-size:11.5px;line-height:1;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:#866a1e}
+.ec-h{margin:0 0 10px;font-size:19px;line-height:1.3;font-weight:700;letter-spacing:-.005em;color:#1a2744}
+.ec .ec-last{margin-bottom:0}
+.ec-rows{margin:0;padding:0;list-style:none}
+.ec-rows li{padding:13px 0;border-bottom:1px solid #f1ece0}
+.ec-rows li:first-child{padding-top:2px}
+.ec-rows li:last-child{border-bottom:0;padding-bottom:0}
+.ec-rows .ec-d{display:block;font-size:14.5px;line-height:1.4;font-weight:700;color:#1a2744;margin-bottom:3px}
+.ec-rows p{margin:0}
+.ec-foot{width:600px;margin:22px auto 0;text-align:center;font-size:13.5px;line-height:1.6;color:#555c6b}
+.ec-foot p{margin:0 !important;font-size:13.5px;line-height:1.6;text-wrap:balance}
+.ec-links{margin-top:8px !important}
+.ec-links a{color:#1a2744;font-weight:600}
+.ec-links i{font-style:normal;color:#8a8577;padding:0 8px}
+
+/* phones */
+.np-sb{display:flex;justify-content:space-between;align-items:center;height:46px;padding:0 28px;font-family:Geist,system-ui,sans-serif;font-size:15px;font-weight:600;color:#1a2744;flex:none;background:#ffffff}
+.np-sbi{display:flex;gap:6px;align-items:center}
+.np-sbi i{display:block;width:16px;height:10px;border-radius:2px;background:currentColor}
+.np-sbi i+i{width:23px;height:11px;border-radius:3px;border:1.5px solid currentColor;background:transparent}
+.np-nav{display:flex;justify-content:space-between;align-items:center;height:44px;padding:0 16px;font-family:Geist,system-ui,sans-serif;font-size:16px;color:#2d5fb5;flex:none;background:#ffffff}
+.np-nav span{display:inline-flex;align-items:center;gap:4px}
+.np-mh{padding:4px 20px 14px;border-bottom:1px solid #e6e3d8;font-family:Geist,system-ui,sans-serif;flex:none;background:#ffffff}
+.np-mh h3{margin:0;font-size:20px;line-height:1.25;font-weight:600;color:#1a2744}
+.np-mh .nm-who{grid-template-columns:36px minmax(0,1fr);gap:10px;margin-top:12px}
+.np-mh .nm-av{width:36px;height:36px}
+.np-mh .nm-av svg{width:20px;height:20px}
+.np-mh .nm-who b{font-size:14.5px}
+.np-scr{position:relative;background:#f6f2e7}
+.np-msg{padding:50px 12px 0}
+.np-msg .ec-card{width:auto;padding:48px 22px 26px;border-radius:14px}
+.np-msg .ec-seal{width:50px;height:50px;top:-25px;margin-left:-25px}
+.np-msg .ec-seal svg{width:25px;height:25px}
+.np-msg .ec-mast{padding-bottom:26px}
+.np-msg .ec-mast h2{font-size:26px}
+.np-msg .ec-mast p{font-size:12px}
+.np-msg .ec-sec{padding-top:22px;margin-top:22px}
+.np-msg .ec-mast+.ec-sec{margin-top:0}
+.np-msg .ec-foot{width:auto;margin-top:22px;padding:0 10px 28px}
+.np-msg .ec-links a{display:block;margin-top:6px}
+.np-msg .ec-links i{display:none}
+.np-bot{display:flex;justify-content:space-around;align-items:center;height:52px;border-top:1px solid #e6e3d8;color:#2d5fb5;flex:none;background:#ffffff}
+.np-safe{flex:none;height:26px;display:flex;align-items:flex-end;justify-content:center;padding-bottom:8px;background:#ffffff}
+.np-safe i{display:block;width:124px;height:5px;border-radius:3px;background:#10182b}
+.np-end{position:absolute;left:0;right:0;bottom:0;padding-top:0}
+
+/* dark setting */
+.np-dark{background:#151719}
+.np-dark .np-sb{color:#ffffff;background:#151719}
+.np-dark .np-nav,.np-dark .np-bot{color:#8fb0f0;background:#151719}
+.np-dark .np-nav{position:relative;z-index:2;border-bottom:1px solid #2b2e33}
+.np-dark .np-bot{border-top-color:#2b2e33}
+.np-dark .np-safe{background:#151719}
+.np-dark .np-safe i{background:#ffffff}
+.np-dark .np-scr{background:#151719}
+.np-dark .ec{color:#e2e4e8}
+.np-dark .ec-card{background:#23262b;border-color:#33373e;box-shadow:none}
+.np-dark .ec b,.np-dark .ec-h,.np-dark .ec-rows .ec-d{color:#ffffff}
+.np-dark .ec-lab{color:#d9bf6e}
+.np-dark .ec a{color:#c9d7f5}
+.np-dark .ec-sec{border-top-color:#353a41}
+.np-dark .ec-rows li{border-bottom-color:#2f3339}
+.np-dark .ec-foot{color:#b9bdc6}
+.np-dark .ec-links a{color:#c9d7f5}
+</style>
+</helmet>
+<div class="nc-root" style="width:1440px;height:2400px">
+
+<header class="nc-strip" aria-label="About this option">
+<div><p class="k-kicker">LCA Newsletter · The email · Option 3 of 5</p>
+<h1 class="nc-name">The card</h1>
+<p class="nc-sent">A soft cream background with the newsletter on a white card: friendly and modern, like a well made app.</p></div>
+<span class="k-sample">Sample data</span>
+</header>
+
+<div class="nc-grid">
+<section class="nc-col" aria-label="On a computer">
+<div class="nm-win">
+<div class="nm-top"><i></i><i></i><i></i><span>LCA Newsletter · December 2026</span></div>
+<div class="nm-tools"><span><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 6L4 12l6 6"></path><path d="M4 12h10a6 6 0 0 1 6 6v1"></path></svg>Reply</span><span><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 6l6 6-6 6"></path><path d="M20 12H10a6 6 0 0 0-6 6v1"></path></svg>Forward</span><span class="nm-gap"></span><span><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="5" rx="1"></rect><path d="M5 9v10h14V9"></path><path d="M10 13h4"></path></svg>Archive</span><span><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16"></path><path d="M9 7V4h6v3"></path><path d="M6 7l1 13h10l1-13"></path></svg>Delete</span></div>
+<div class="nm-head"><h3>LCA Newsletter · December 2026</h3>
+<div class="nm-who"><span class="nm-av"><svg viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg></span><span><b>Louisiana Chess Association</b><small>to me</small></span><span class="nm-when">Tue, Dec 1, 2026, 8:00 AM</span></div></div>
+<div class="nm-body"><article class="ec ec-msg" aria-label="The December 2026 newsletter">
+<div class="ec-card">
+<div class="ec-seal"><svg viewBox="0 0 100 100" role="img" aria-label="LCA rook"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg></div>
+<div class="ec-mast"><h2>LCA Newsletter</h2><p>December 2026</p></div>
+<div class="ec-sec"><span class="ec-lab">A note from the president</span>
+<p>Dear members,</p>
+<p>Thank you to every volunteer who ran the State Championship weekend in Sulphur.</p>
+<p>The new year starts busy: the Ken Ferguson Memorial in January, a youth meet every month to May.</p>
+<p>One ask: please <a href="#">renew your membership</a>, and bring one new player to a club night.</p>
+<p class="ec-last">See you over the board,<br>LCA President</p></div>
+<div class="ec-sec"><span class="ec-lab">Coming up</span>
+<ul class="ec-rows"><li><span class="ec-d">Sat, Dec 5, 2026</span><p>New Orleans Youth Chess December Meet · New Orleans · <a href="#">Register on King Registration ↗</a></p></li><li><span class="ec-d">Sat to Mon, Jan 16 to 18, 2027</span><p>Ken Ferguson Memorial · New Orleans · run by Downriver Chess · <a href="#">Registers on the organizer's site ↗</a></p></li><li><span class="ec-d">Sat, May 8, 2027</span><p>New Orleans Youth Chess Grand Prix Final · New Orleans · <a href="#">Details&nbsp;on&nbsp;King&nbsp;Registration&nbsp;↗</a></p></li></ul></div>
+<div class="ec-sec"><span class="ec-lab">Results</span>
+<p class="ec-last"><b>Marcus Landry wins the 2026 Louisiana State Championship</b> with 4½&nbsp;of&nbsp;5 in Sulphur, Sat to Mon, Sep&nbsp;5&nbsp;to&nbsp;7,&nbsp;2026, among 64 players. Section winners: Open&nbsp;Marcus&nbsp;Landry&nbsp;4½ · U1800&nbsp;Devin&nbsp;Batiste&nbsp;4½ · U1400&nbsp;Sam Nguyen and Leo Robichaux&nbsp;4,&nbsp;tied · U1000&nbsp;Theo&nbsp;Guidry&nbsp;4½. <a href="#">Full results ↗</a></p></div>
+<div class="ec-sec"><span class="ec-lab">From the clubs</span>
+<ul class="ec-rows"><li><p><b>Picayune Chess Club:</b> quick-rated nights on first Mondays, next Mon,&nbsp;Dec&nbsp;7,&nbsp;2026 at 6:00&nbsp;PM. <a href="#">Club page</a></p></li><li><p><b>Bunkie Chess Club:</b> Tuesdays, 4:00&nbsp;PM to 6:00&nbsp;PM, Bunkie Library. Ages 8 to 108, free to join. <a href="#">Club page</a></p></li><li><p><b>Baton Rouge Chess Club:</b> casual nights on Wednesdays at Boba ParTea. <a href="#">Club page</a></p></li></ul></div>
+<div class="ec-sec"><span class="ec-lab">Scholastic</span>
+<p class="ec-last">For parents: the New Orleans Youth Chess season began Sat,&nbsp;Nov&nbsp;14,&nbsp;2026, one Saturday a month to May.<br>Players need a US Chess membership. <a href="#">Scholastic page</a></p></div>
+<div class="ec-sec"><span class="ec-lab">Board business</span>
+<p class="ec-last">Two regional representative seats are open, Central Louisiana and Southwest Louisiana; reply to this email if you would like to help. Draft minutes of the annual meeting of Sun,&nbsp;Sep&nbsp;6,&nbsp;2026 are posted for members' comments. <a href="#">Read the draft minutes</a></p></div>
+</div>
+<footer class="ec-foot"><p>You get this newsletter because you are an LCA member.</p>
+<p class="ec-links"><a href="#">Unsubscribe from the newsletter</a><i>·</i><a href="#">Choose which LCA emails you get</a><i>·</i><a href="#">LCA on Facebook ↗</a></p></footer>
+</article></div>
+</div>
+<p class="nc-cap">On a computer</p>
+</section>
+
+<div class="nc-phones">
+<section class="nc-col" aria-label="On a phone">
+<div class="k-phone"><div class="k-phone-screen">
+<div class="np-sb"><span>8:04</span><span class="np-sbi"><i></i><i></i></span></div>
+<div class="np-nav"><span><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"></path></svg>Inbox</span><span><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 15l7-7 7 7"></path></svg><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"></path></svg></span></div>
+<div class="np-mh"><h3>LCA Newsletter · December 2026</h3><div class="nm-who"><span class="nm-av"><svg viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg></span><span><b>Louisiana Chess Association</b><small>to me · Tue, Dec 1, 2026, 8:00 AM</small></span></div></div>
+<div class="k-phone-scroll np-scr"><article class="ec np-msg" aria-label="The top of the newsletter"><div class="ec-card">
+<div class="ec-seal"><svg viewBox="0 0 100 100" role="img" aria-label="LCA rook"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg></div>
+<div class="ec-mast"><h2>LCA Newsletter</h2><p>December 2026</p></div>
+<div class="ec-sec"><span class="ec-lab">A note from the president</span>
+<p>Dear members,</p>
+<p>Thank you to every volunteer who ran the State Championship weekend in Sulphur.</p>
+<p>The new year starts busy: the Ken Ferguson Memorial in January, a youth meet every month to May.</p>
+<p>One ask: please <a href="#">renew your membership</a>, and bring one new player to a club night.</p>
+<p class="ec-last">See you over the board,<br>LCA President</p></div>
+<div class="ec-sec"><span class="ec-lab">Coming up</span>
+<ul class="ec-rows"><li><span class="ec-d">Sat, Dec 5, 2026</span><p>New Orleans Youth Chess December Meet · New Orleans · <a href="#">Register on King Registration ↗</a></p></li><li><span class="ec-d">Sat to Mon, Jan 16 to 18, 2027</span><p>Ken Ferguson Memorial · New Orleans · run by Downriver Chess · <a href="#">Registers on the organizer's site ↗</a></p></li><li><span class="ec-d">Sat, May 8, 2027</span><p>New Orleans Youth Chess Grand Prix Final · New Orleans · <a href="#">Details&nbsp;on&nbsp;King&nbsp;Registration&nbsp;↗</a></p></li></ul></div>
+</div></article></div>
+<div class="np-bot"><svg class="k-i-lg" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="5" rx="1"></rect><path d="M5 9v10h14V9"></path><path d="M10 13h4"></path></svg><svg class="k-i-lg" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16"></path><path d="M9 7V4h6v3"></path><path d="M6 7l1 13h10l1-13"></path></svg><svg class="k-i-lg" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 6L4 12l6 6"></path><path d="M4 12h10a6 6 0 0 1 6 6v1"></path></svg><svg class="k-i-lg" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20l4-1L19 8l-3-3L5 16z"></path></svg></div>
+<div class="np-safe"><i></i></div>
+</div></div>
+<p class="nc-cap">On a phone</p>
+</section>
+
+<section class="nc-col" aria-label="On a phone, dark setting">
+<div class="k-phone" style="border-color:#000000"><div class="k-phone-screen np-dark">
+<div class="np-sb"><span>8:06</span><span class="np-sbi"><i></i><i></i></span></div>
+<div class="np-nav"><span><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"></path></svg>Inbox</span><span><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 15l7-7 7 7"></path></svg><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"></path></svg></span></div>
+<div class="k-phone-scroll np-scr"><article class="ec np-msg np-end" aria-label="The end of the newsletter"><div class="ec-card" style="border-top-left-radius:0;border-top-right-radius:0;border-top:0">
+<div class="ec-sec" style="border-top:0;margin-top:0;padding-top:0"><ul class="ec-rows" style="margin-top:0"><li><p><b>Bunkie Chess Club:</b> Tuesdays, 4:00&nbsp;PM to 6:00&nbsp;PM, Bunkie Library. Ages 8 to 108, free to join. <a href="#">Club page</a></p></li><li><p><b>Baton Rouge Chess Club:</b> casual nights on Wednesdays at Boba ParTea. <a href="#">Club page</a></p></li></ul></div>
+<div class="ec-sec"><span class="ec-lab">Scholastic</span>
+<p class="ec-last">For parents: the New Orleans Youth Chess season began Sat,&nbsp;Nov&nbsp;14,&nbsp;2026, one Saturday a month to May.<br>Players need a US Chess membership. <a href="#">Scholastic page</a></p></div>
+<div class="ec-sec"><span class="ec-lab">Board business</span>
+<p class="ec-last">Two regional representative seats are open, Central Louisiana and Southwest Louisiana; reply to this email if you would like to help. Draft minutes of the annual meeting of Sun,&nbsp;Sep&nbsp;6,&nbsp;2026 are posted for members' comments. <a href="#">Read the draft minutes</a></p></div>
+</div>
+<footer class="ec-foot"><p>You get this newsletter because you are an LCA member.</p>
+<p class="ec-links"><a href="#">Unsubscribe from the newsletter</a><i>·</i><a href="#">Choose which LCA emails you get</a><i>·</i><a href="#">LCA on Facebook ↗</a></p></footer>
+</article></div>
+<div class="np-bot"><svg class="k-i-lg" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="5" rx="1"></rect><path d="M5 9v10h14V9"></path><path d="M10 13h4"></path></svg><svg class="k-i-lg" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16"></path><path d="M9 7V4h6v3"></path><path d="M6 7l1 13h10l1-13"></path></svg><svg class="k-i-lg" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 6L4 12l6 6"></path><path d="M4 12h10a6 6 0 0 1 6 6v1"></path></svg><svg class="k-i-lg" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20l4-1L19 8l-3-3L5 16z"></path></svg></div>
+<div class="np-safe"><i></i></div>
+</div></div>
+<p class="nc-cap">On a phone, dark setting</p>
+</section>
+</div>
+</div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":2400}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

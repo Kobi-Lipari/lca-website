@@ -1,0 +1,339 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Tournament send-out 6</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/6107adb451dbab26ee5d89f4189b81f8">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&amp;display=swap">
+<style>
+body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1a2744}
+.nb-root{width:1440px;margin:0 auto;box-sizing:border-box;padding:36px 72px 48px;background:#ecebe6;color:#1a2744;font-family:Geist,system-ui,sans-serif}
+.nb-root *{box-sizing:border-box}
+
+/* label strip */
+.nb-strip{display:flex;align-items:center;justify-content:space-between;gap:32px;padding:24px 30px 26px;background:#ffffff;border:1px solid #dddcd4;border-radius:16px}
+.nb-strip .k-kicker{margin:0}
+.nb-name{margin:8px 0 0;font-size:40px;line-height:1.1;font-weight:700;letter-spacing:-.015em;color:#1a2744}
+.nb-sent{margin:8px 0 0;font-size:18px;line-height:1.5;color:#3d4556}
+.nb-strip .k-sample{flex:none}
+
+/* layout */
+.nb-grid{display:grid;grid-template-columns:780px 390px;justify-content:space-between;align-items:start;margin-top:36px}
+.nb-col{display:flex;flex-direction:column;gap:14px}
+.nb-phones{display:flex;flex-direction:column;gap:48px}
+.nb-cap{margin:0;font-size:14px;line-height:1.4;color:#555c6b}
+
+/* computer mail window */
+.nm-win{background:#ffffff;border:1px solid #cfcec6;border-radius:14px;overflow:hidden;box-shadow:0 18px 40px rgba(16,24,43,.12)}
+.nm-top{display:flex;align-items:center;gap:8px;height:40px;padding:0 16px;background:#eeede8;border-bottom:1px solid #d9d8d1}
+.nm-top i{display:block;width:12px;height:12px;border-radius:50%;background:#cfcdc4}
+.nm-top span{flex:1;text-align:center;margin-right:52px;font-size:13px;font-weight:600;color:#3d4556}
+.nm-tools{display:flex;align-items:center;gap:6px;height:48px;padding:0 14px;border-bottom:1px solid #ecebe4}
+.nm-tools span{display:inline-flex;align-items:center;gap:7px;height:34px;padding:0 10px;border-radius:7px;font-size:13.5px;font-weight:600;color:#3d4556}
+.nm-tools .nm-gap{flex:1;padding:0}
+.nm-head{padding:20px 28px 18px;border-bottom:1px solid #ecebe4}
+.nm-head h3{margin:0;font-size:22px;line-height:1.25;font-weight:600;color:#1a2744}
+.nm-who{display:grid;grid-template-columns:42px minmax(0,1fr) auto;gap:12px;align-items:center;margin-top:14px}
+.nm-av{display:flex;align-items:center;justify-content:center;width:42px;height:42px;border-radius:50%;background:#1a2744}
+.nm-av svg{width:23px;height:23px;fill:#ffffff}
+.nm-who b{display:block;font-size:15px;line-height:1.3;color:#1a2744}
+.nm-who small{display:block;font-size:13px;line-height:1.4;color:#555c6b}
+.nm-when{font-size:13px;color:#3d4556;text-align:right}
+.nm-body{background:#f1efe8;padding:32px 0 36px}
+
+/* the email */
+.em{width:600px;margin:0 auto;background:#ffffff;font-family:"Source Serif 4",Georgia,"Times New Roman",serif;font-size:16px;line-height:1.7;color:#1f2a40;box-shadow:0 1px 0 #e3e0d4,0 0 0 1px #e8e5da}
+.em p{margin:0 0 12px;text-wrap:pretty}
+.em a{white-space:nowrap;color:#1a2744;text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:1px}
+.em b{font-weight:700;color:#1a2744}
+.em-band{display:flex;align-items:center;gap:18px;height:112px;padding:0 36px;background:#1a2744;border-bottom:3px solid #c8a94a;font-family:Geist,Arial,sans-serif}
+.em-band svg{width:52px;height:52px;fill:#ffffff;flex:none}
+.em-band small{display:block;font-size:17px;line-height:1;letter-spacing:.08em;font-weight:700;color:#efd98a;margin-bottom:9px}
+.em-band strong{display:block;font-size:36px;line-height:1;font-weight:700;letter-spacing:-.015em;color:#ffffff}
+.em-in{padding:34px 36px 30px}
+.em-h{margin:34px 0 10px;font-family:Geist,Arial,sans-serif;font-size:20px;line-height:1.25;font-weight:700;letter-spacing:-.005em;color:#1a2744}
+.em-h:before{content:"";display:block;width:32px;height:3px;background:#866a1e;margin-bottom:12px}
+.em-in>.em-h:first-child{margin-top:0}
+.em-l{margin:0 0 10px}
+.em .em-last{margin-bottom:0}
+.em-foot{padding:24px 36px 26px;background:#f8f4e8;border-top:1px solid #ebe3c9;font-family:Geist,Arial,sans-serif;font-size:14px;line-height:1.55;color:#3d4556}
+.em-foot p{margin:0}
+.em-links{display:flex;flex-direction:column;align-items:flex-start;gap:8px;margin-top:12px !important}
+.em-links a{color:#1a2744;font-weight:600;text-decoration:underline;text-underline-offset:3px}
+
+/* phones */
+.np-sb{display:flex;justify-content:space-between;align-items:center;height:46px;padding:0 28px;font-family:Geist,system-ui,sans-serif;font-size:15px;font-weight:600;color:#1a2744;flex:none}
+.np-sbi{display:flex;gap:6px;align-items:center}
+.np-sbi i{display:block;width:16px;height:10px;border-radius:2px;background:currentColor}
+.np-sbi i+i{width:23px;height:11px;border-radius:3px;border:1.5px solid currentColor;background:transparent}
+.np-nav{display:flex;justify-content:space-between;align-items:center;height:44px;padding:0 16px;font-family:Geist,system-ui,sans-serif;font-size:16px;color:#2d5fb5;flex:none}
+.np-nav span{display:inline-flex;align-items:center;gap:4px}
+.np-mh{padding:4px 20px 14px;border-bottom:1px solid #ecebe4;font-family:Geist,system-ui,sans-serif;flex:none}
+.np-mh h3{margin:0;font-size:20px;line-height:1.25;font-weight:600;color:#1a2744}
+.np-mh .nm-who{grid-template-columns:36px minmax(0,1fr);gap:10px;margin-top:12px}
+.np-mh .nm-av{width:36px;height:36px}
+.np-mh .nm-av svg{width:20px;height:20px}
+.np-mh .nm-who b{font-size:14.5px}
+.np-em{font-family:"Source Serif 4",Georgia,serif;font-size:16px;line-height:1.65;color:#1f2a40}
+.np-em p{margin:0 0 11px;text-wrap:pretty}
+.np-em a{white-space:nowrap;color:#1a2744;text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:1px}
+.np-em b{font-weight:700;color:#1a2744}
+.np-band{display:flex;align-items:center;gap:13px;height:88px;padding:0 20px;background:#1a2744;border-bottom:3px solid #c8a94a;font-family:Geist,Arial,sans-serif}
+.np-band svg{width:38px;height:38px;fill:#ffffff;flex:none}
+.np-band small{display:block;font-size:15px;line-height:1;letter-spacing:.08em;font-weight:700;color:#efd98a;margin-bottom:7px}
+.np-band strong{display:block;font-size:27px;line-height:1;font-weight:700;letter-spacing:-.01em;color:#ffffff}
+.np-in{padding:24px 20px 16px}
+.np-em .em-h{margin:26px 0 8px;font-size:19px}
+.np-em .em-h:before{margin-bottom:10px;width:28px}
+.np-in>.em-h:first-child{margin-top:0}
+.np-foot{padding:20px 20px 20px;font-family:Geist,Arial,sans-serif;font-size:14px;line-height:1.55}
+.np-foot p{margin:0}
+.np-foot .em-links{flex-direction:column;gap:8px;margin-top:12px !important}
+.np-bot{display:flex;justify-content:space-around;align-items:center;height:52px;border-top:1px solid #ecebe4;color:#2d5fb5;flex:none;background:#ffffff}
+.np-safe{flex:none;height:26px;display:flex;align-items:flex-end;justify-content:center;padding-bottom:8px;background:#ffffff}
+.np-safe i{display:block;width:124px;height:5px;border-radius:3px;background:#10182b}
+.np-scroll{position:relative}
+
+/* dark setting */
+.np-dark{background:#151719}
+.np-dark .np-sb{color:#ffffff}
+.np-dark .np-nav,.np-dark .np-bot{color:#8fb0f0}
+.np-dark .np-nav{position:relative;z-index:2;background:#151719;border-bottom:1px solid #2b2e33}
+.np-dark .np-bot{background:#151719;border-top-color:#2b2e33}
+.np-dark .np-safe{background:#151719}
+.np-dark .np-safe i{background:#ffffff}
+.np-dark .np-em{color:#e4e5e8}
+.np-dark .np-em b,.np-dark .np-em .em-h{color:#ffffff}
+.np-dark .np-em .em-h:before{background:#c8a94a}
+.np-dark .np-em a{color:#c9d7f5}
+.np-dark .np-foot{background:#202328;border-top:3px solid #c8a94a;color:#c4c7ce}
+.np-dark .np-foot .em-links a{color:#c9d7f5}
+.np-end{position:absolute;left:0;right:0;top:0;bottom:0;display:flex;flex-direction:column}
+.np-end .np-foot{flex:1}
+.np-dark .np-end{top:-18px;bottom:-18px}
+
+/* tournament send-out additions */
+.nm-av.nm-club{background:#2f6b4f;font-family:Geist,Arial,sans-serif;font-size:15px;font-weight:700;letter-spacing:.02em;color:#ffffff}
+.np-mh .nm-av.nm-club{font-size:13px}
+.nm-who small+small{margin-top:1px}
+.em-band.tb{height:auto;padding:26px 36px 28px}
+.em-band.tb small{font-size:16px;letter-spacing:.07em;white-space:nowrap;margin-bottom:12px}
+.em-band.tb strong{font-size:36px;line-height:1.05}
+.em-band.tb em{display:block;margin-top:12px;font-style:normal;font-size:19px;line-height:1.2;font-weight:600;color:#ffffff}
+.np-band.tb{height:auto;align-items:flex-start;gap:14px;padding:17px 20px 18px}
+.np-band.tb svg{width:40px;height:40px;margin-top:2px}
+.np-band.tb small{line-height:1.3;margin-bottom:8px}
+.np-band.tb small span{white-space:nowrap}
+.np-band.tb strong{font-size:29px;line-height:1.04}
+.np-band.tb em{display:block;margin-top:8px;font-style:normal;font-size:16px;line-height:1.25;font-weight:600;color:#ffffff}
+.tf{margin:0;border-top:1px solid #e6e1d2}
+.tf-r{display:grid;grid-template-columns:190px minmax(0,1fr);gap:16px;padding:12px 0 11px;border-bottom:1px solid #e6e1d2}
+.tf-r dt{font-family:Geist,Arial,sans-serif;font-size:14.5px;line-height:1.75;font-weight:700;color:#1a2744}
+.tf-r dd{margin:0;font-size:16px;line-height:1.65}
+.tf-fee dd{font-size:17px}
+.tf-big{font-family:Geist,Arial,sans-serif;font-size:21px;line-height:1;font-weight:700;color:#1a2744}
+.ta{margin:24px 0 0;padding:24px 26px 22px;background:#f8f4e8;border:1px solid #ebe3c9;border-radius:6px}
+.em .ta-btn,.np-em .ta-btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;height:56px;padding:0 30px;background:#1a2744;border-radius:7px;border-bottom:3px solid #c8a94a;font-family:Geist,Arial,sans-serif;font-size:17px;font-weight:700;line-height:1;color:#ffffff;text-decoration:none;white-space:nowrap}
+.em .ta-open,.np-em .ta-open{margin:0 0 11px;font-family:Geist,Arial,sans-serif;font-size:20px;line-height:1.25;font-weight:700;letter-spacing:-.005em;color:#1a2744}
+.em .ta-alt,.np-em .ta-alt{margin:14px 0 0;font-family:Geist,Arial,sans-serif;font-size:12.5px;line-height:1.55;color:#555c6b}
+.ta-alt a{font-weight:600;display:inline-block;line-height:24px}
+.em-sent{margin-top:16px !important;padding-top:14px;border-top:1px solid #e3d9b8;font-size:13px;line-height:1.5;color:#555c6b}
+.np-em .tf-r{grid-template-columns:minmax(0,1fr);gap:1px;padding:10px 0 9px}
+.np-em .np-in{padding-top:25px}
+.np-em .np-in .em-h{margin-top:22px}
+.np-mh{padding-bottom:12px}
+.np-em .tf-r dt{font-size:14px;line-height:1.5}
+.np-em .tf-r dd{font-size:15.5px;line-height:1.6}
+.np-em .tf-fee dd{font-size:16px}
+.np-em .tf-big{font-size:20px}
+.np-em .ta{margin:0 0 4px;padding:18px 16px 16px}
+.np-em .ta-btn{display:flex;width:100%;height:54px;padding:0 12px;font-size:16.5px}
+.np-em .ta-open{font-size:19px;margin-bottom:10px}
+.np-em .ta-alt{font-size:12px}
+.np-dark .tf,.np-dark .tf-r{border-color:#33363c}
+.np-dark .tf-r dt{color:#ffffff}
+.np-dark .tf-big{color:#ffffff}
+.np-dark .ta{background:#202328;border-color:#33363c}
+.np-dark .np-em .ta-btn{color:#ffffff;background:#2a3a63;border-bottom-color:#c8a94a}
+.np-dark .np-em .ta-open{color:#ffffff}
+.np-dark .ta-alt{color:#a9adb5}
+.np-dark .ta-alt a{color:#c9d7f5}
+.np-em .np-in-end{padding:14px 20px 6px}
+.np-em .np-in-end .em-h{margin-top:16px}
+.np-in-end .em-h:before{margin-bottom:8px}
+.np-in-end .em-l{margin-bottom:6px}
+.np-in-end p{line-height:1.55}
+.np-in-end .ta{padding:14px 14px 12px}
+.np-in-end .ta-btn{height:52px}
+.np-in-end .ta-alt{margin-top:10px}
+.np-dark .np-foot{padding:18px 20px 16px}
+.np-dark .np-foot .em-links{gap:7px;margin-top:10px !important}
+.np-dark .em-sent{margin-top:12px !important;padding-top:10px;border-top-color:#3a3d43;color:#a9adb5}
+
+/* at a glance, under the band (from send-out 5's structure, in look 1's type) */
+.gs{padding:24px 36px 22px;background:#f8f4e8;border-bottom:1px solid #ebe3c9}
+.gs-lab{margin:0 0 12px !important;font-family:Geist,Arial,sans-serif;font-size:13px;line-height:1;letter-spacing:.14em;font-weight:700;text-transform:uppercase;color:#866a1e}
+.gs-dl{display:grid;grid-template-columns:88px minmax(0,1fr);gap:7px 16px;margin:0}
+.gs-dl dt{font-family:Geist,Arial,sans-serif;font-size:14.5px;line-height:1.75;font-weight:700;color:#1a2744}
+.gs-dl dd{margin:0;font-size:16px;line-height:1.65}
+.gs-go{display:flex;flex-wrap:wrap;gap:6px 26px;margin:16px 0 0 !important;padding-top:14px;border-top:1px solid #e3d9b8;font-family:Geist,Arial,sans-serif;font-size:15px;line-height:1.5}
+.em .gs-go a,.np-em .gs-go a{font-weight:600}
+.np-em .gs{padding:13px 20px 0}
+.np-em .gs-lab{margin-bottom:6px !important}
+.np-em .gs-dl{grid-template-columns:72px minmax(0,1fr);gap:6px 12px}
+.np-em .gs-dl dt{font-size:14px;line-height:1.5}
+.np-em .gs-dl dd{font-size:15.5px;line-height:1.35}
+.np-em .gs-go{display:grid;grid-template-columns:1fr 1fr;gap:0 16px;margin-top:4px !important;padding-top:0;font-size:15.5px}
+.np-em .gs-go a{display:flex;align-items:center;min-height:44px}
+</style>
+</helmet>
+<div class="nb-root" style="width:1440px;height:2450px">
+
+<header class="nb-strip" aria-label="About this option">
+<div><p class="k-kicker">LCA Newsletter · A tournament send-out · Look 1 with At a glance</p>
+<h1 class="nb-name">A club's tournament announcement</h1>
+<p class="nb-sent">The dark blue band of option 1, with the key facts and a short list of links at the top.</p></div>
+<span class="k-sample">Sample data</span>
+</header>
+
+<div class="nb-grid">
+<section class="nb-col" aria-label="On a computer">
+<div class="nm-win">
+<div class="nm-top"><i></i><i></i><i></i><span>Sample Winter&nbsp;Open&nbsp;· Sat,&nbsp;Jan&nbsp;9,&nbsp;2027&nbsp;· registration is open</span></div>
+<div class="nm-tools">
+<span><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 6L4 12l6 6"></path><path d="M4 12h10a6 6 0 0 1 6 6v1"></path></svg>Reply</span>
+<span><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 6l6 6-6 6"></path><path d="M20 12H10a6 6 0 0 0-6 6v1"></path></svg>Forward</span>
+<span class="nm-gap"></span>
+<span><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="5" rx="1"></rect><path d="M5 9v10h14V9"></path><path d="M10 13h4"></path></svg>Archive</span>
+<span><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16"></path><path d="M9 7V4h6v3"></path><path d="M6 7l1 13h10l1-13"></path></svg>Delete</span>
+</div>
+<div class="nm-head"><h3>Sample Winter Open&nbsp;· Sat,&nbsp;Jan&nbsp;9,&nbsp;2027&nbsp;· registration is open</h3>
+<div class="nm-who"><span class="nm-av nm-club" aria-hidden="true">EC</span><span><b>Example Chess Club</b><small>through the Louisiana Chess Association</small><small>to me</small></span><span class="nm-when">Mon,&nbsp;Dec&nbsp;7,&nbsp;2026, 9:00&nbsp;AM</span></div></div>
+<div class="nm-body"><article class="em" aria-label="The Sample Winter Open announcement">
+<div class="em-band tb"><svg viewBox="0 0 100 100" role="img" aria-label="LCA rook"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span><small>TOURNAMENT · FROM EXAMPLE CHESS CLUB</small><strong>Sample Winter Open</strong><em>Sat,&nbsp;Jan&nbsp;9,&nbsp;2027 · Sample&nbsp;City</em></span></div>
+<div class="gs">
+<p class="gs-lab">At a glance</p>
+<dl class="gs-dl">
+<dt>Rounds</dt><dd>Four, at 9:00&nbsp;AM, 11:30&nbsp;AM, 2:00&nbsp;PM and 4:30&nbsp;PM</dd>
+<dt>Sections</dt><dd>Open, Under&nbsp;1400, and Scholastic&nbsp;(K&nbsp;to&nbsp;12)</dd>
+<dt>Entry</dt><dd>$25 through Sat,&nbsp;Jan&nbsp;2,&nbsp;2027, then&nbsp;$35</dd>
+<dt>Closes</dt><dd>Fri,&nbsp;Jan&nbsp;8,&nbsp;2027 at 8:00&nbsp;PM, on King Registration</dd>
+</dl>
+<p class="gs-go"><a href="#c-details">The details</a><a href="#c-register">Register</a><a href="#c-know">Good to know</a><a href="#c-runs">Who runs it</a></p>
+</div>
+<div class="em-in">
+<p>Example Chess Club warmly invites you to the Sample Winter Open, a one-day rated tournament to start the new year.</p>
+<p class="em-last">Players of every level are welcome, and young players have a section of their own. We hope to see you there.</p>
+<h4 class="em-h" id="c-details">The details</h4>
+<dl class="tf">
+<div class="tf-r"><dt>When</dt><dd><b>Sat,&nbsp;Jan&nbsp;9,&nbsp;2027.</b> Rounds at 9:00&nbsp;AM, 11:30&nbsp;AM, 2:00&nbsp;PM and 4:30&nbsp;PM.</dd></div>
+<div class="tf-r"><dt>Where</dt><dd>Sample City; the exact place is on the registration page.</dd></div>
+<div class="tf-r"><dt>Sections</dt><dd>Open, Under&nbsp;1400, and Scholastic (K&nbsp;to&nbsp;12).</dd></div>
+<div class="tf-r"><dt>Rounds and time control</dt><dd>Four rounds, game in 45 minutes with a 5&nbsp;second delay, US&nbsp;Chess rated.</dd></div>
+<div class="tf-r tf-fee"><dt>Entry fee</dt><dd><span class="tf-big">$25</span> through Sat,&nbsp;Jan&nbsp;2,&nbsp;2027, then&nbsp;<span class="tf-big">$35</span>.</dd></div>
+<div class="tf-r"><dt>Registration</dt><dd>On King Registration, closes <b>Fri,&nbsp;Jan&nbsp;8,&nbsp;2027 at 8:00&nbsp;PM</b>.</dd></div>
+</dl>
+<div class="ta" id="c-register"><p class="ta-open">Registration is open</p>
+<a class="ta-btn" href="#">Register on King Registration <svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true" style="width:17px;height:17px"><path d="M7 17L17 7"></path><path d="M8 7h9v9"></path></svg></a>
+<p class="ta-alt">If the button does not show, use this link: <a href="#">https://www.kingregistration.com/…</a></p></div>
+<h4 class="em-h" id="c-know">Good to know</h4>
+<p class="em-l">Bring a set and a clock if you have them.</p>
+<p class="em-l em-last">A current US&nbsp;Chess membership is needed to play.</p>
+<h4 class="em-h" id="c-runs">Who runs it</h4>
+<p class="em-last">Run by Example Chess Club. Questions? Reply to this email and it reaches the club.</p>
+</div>
+<footer class="em-foot"><p>You get tournament email from LCA because you are an LCA member.</p>
+<p class="em-links"><a href="#">Unsubscribe from tournament email</a><a href="#">Choose which LCA emails you get</a><a href="#">LCA on Facebook ↗</a></p>
+<p class="em-sent">Sent through the Louisiana Chess Association for Example Chess Club.</p></footer>
+</article></div>
+</div>
+<p class="nb-cap">On a computer</p>
+</section>
+
+<div class="nb-phones">
+<section class="nb-col" aria-label="On a phone">
+<div class="k-phone"><div class="k-phone-screen">
+<div class="np-sb"><span>9:04</span><span class="np-sbi"><i></i><i></i></span></div>
+<div class="np-nav"><span><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"></path></svg>Inbox</span><span><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 15l7-7 7 7"></path></svg><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"></path></svg></span></div>
+<div class="np-mh"><h3>Sample Winter&nbsp;Open&nbsp;· Sat,&nbsp;Jan&nbsp;9,&nbsp;2027&nbsp;· registration is open</h3><div class="nm-who"><span class="nm-av nm-club" aria-hidden="true">EC</span><span><b>Example Chess Club</b><small>through the Louisiana Chess Association</small><small>to me · Mon,&nbsp;Dec&nbsp;7,&nbsp;2026, 9:00&nbsp;AM</small></span></div></div>
+<div class="k-phone-scroll np-em">
+<div class="np-band tb"><svg viewBox="0 0 100 100" role="img" aria-label="LCA rook"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span><small><span>TOURNAMENT · FROM</span> <span>EXAMPLE CHESS CLUB</span></small><strong>Sample<br>Winter Open</strong><em>Sat,&nbsp;Jan&nbsp;9,&nbsp;2027 · Sample&nbsp;City</em></span></div>
+<div class="gs">
+<p class="gs-lab">At a glance</p>
+<dl class="gs-dl">
+<dt>Rounds</dt><dd>Four, at 9:00&nbsp;AM, 11:30&nbsp;AM, 2:00&nbsp;PM and 4:30&nbsp;PM</dd>
+<dt>Sections</dt><dd>Open, Under&nbsp;1400, and Scholastic&nbsp;(K&nbsp;to&nbsp;12)</dd>
+<dt>Entry</dt><dd>$25 through Sat,&nbsp;Jan&nbsp;2,&nbsp;2027, then&nbsp;$35</dd>
+<dt>Closes</dt><dd>Fri,&nbsp;Jan&nbsp;8,&nbsp;2027 at 8:00&nbsp;PM, on King Registration</dd>
+</dl>
+<p class="gs-go"><a href="#p-details">The details</a><a href="#p-register">Register</a><a href="#p-know">Good to know</a><a href="#p-runs">Who runs it</a></p>
+</div>
+<div class="np-in">
+<p>Example Chess Club warmly invites you to the Sample Winter Open, a one-day rated tournament to start the new year.</p>
+<p class="em-last">Players of every level are welcome, and young players have a section of their own. We hope to see you there.</p>
+<h4 class="em-h" id="p-details">The details</h4>
+<dl class="tf">
+<div class="tf-r"><dt>When</dt><dd><b>Sat,&nbsp;Jan&nbsp;9,&nbsp;2027.</b> Rounds at 9:00&nbsp;AM, 11:30&nbsp;AM, 2:00&nbsp;PM and 4:30&nbsp;PM.</dd></div>
+<div class="tf-r"><dt>Where</dt><dd>Sample City; the exact place is on the registration page.</dd></div>
+<div class="tf-r"><dt>Sections</dt><dd>Open, Under&nbsp;1400, and Scholastic (K&nbsp;to&nbsp;12).</dd></div>
+<div class="tf-r"><dt>Rounds and time control</dt><dd>Four rounds, game in 45 minutes with a 5&nbsp;second delay, US&nbsp;Chess rated.</dd></div>
+<div class="tf-r tf-fee"><dt>Entry fee</dt><dd><span class="tf-big">$25</span> through Sat,&nbsp;Jan&nbsp;2,&nbsp;2027, then&nbsp;<span class="tf-big">$35</span>.</dd></div>
+<div class="tf-r"><dt>Registration</dt><dd>On King Registration, closes <b>Fri,&nbsp;Jan&nbsp;8,&nbsp;2027 at 8:00&nbsp;PM</b>.</dd></div>
+</dl>
+<div class="ta" id="p-register" style="margin-top:20px"><p class="ta-open">Registration is open</p>
+<a class="ta-btn" href="#">Register on King Registration <svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true" style="width:17px;height:17px"><path d="M7 17L17 7"></path><path d="M8 7h9v9"></path></svg></a>
+<p class="ta-alt">If the button does not show, use this link: <a href="#">https://www.kingregistration.com/…</a></p></div>
+<h4 class="em-h" id="p-know">Good to know</h4>
+<p class="em-l">Bring a set and a clock if you have them.</p>
+<p class="em-l em-last">A current US&nbsp;Chess membership is needed to play.</p>
+<h4 class="em-h" id="p-runs">Who runs it</h4>
+<p class="em-last">Run by Example Chess Club. Questions? Reply to this email and it reaches the club.</p>
+</div>
+</div>
+<div class="np-bot"><svg class="k-i-lg" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="5" rx="1"></rect><path d="M5 9v10h14V9"></path><path d="M10 13h4"></path></svg><svg class="k-i-lg" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16"></path><path d="M9 7V4h6v3"></path><path d="M6 7l1 13h10l1-13"></path></svg><svg class="k-i-lg" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 6L4 12l6 6"></path><path d="M4 12h10a6 6 0 0 1 6 6v1"></path></svg><svg class="k-i-lg" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20l4-1L19 8l-3-3L5 16z"></path></svg></div>
+<div class="np-safe"><i></i></div>
+</div></div>
+<p class="nb-cap">On a phone</p>
+</section>
+
+<section class="nb-col" aria-label="On a phone, dark setting">
+<div class="k-phone" style="border-color:#000000"><div class="k-phone-screen np-dark">
+<div class="np-sb"><span>9:06</span><span class="np-sbi"><i></i><i></i></span></div>
+<div class="np-nav"><span><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"></path></svg>Inbox</span><span><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 15l7-7 7 7"></path></svg><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"></path></svg></span></div>
+<div class="k-phone-scroll np-em np-scroll"><div class="np-end">
+<div class="np-in np-in-end">
+<div class="ta" id="d-register"><p class="ta-open">Registration is open</p>
+<a class="ta-btn" href="#">Register on King Registration <svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true" style="width:17px;height:17px"><path d="M7 17L17 7"></path><path d="M8 7h9v9"></path></svg></a>
+<p class="ta-alt">If the button does not show, use this link: <a href="#">https://www.kingregistration.com/…</a></p></div>
+<h4 class="em-h" id="d-know">Good to know</h4>
+<p class="em-l">Bring a set and a clock if you have them.</p>
+<p class="em-l em-last">A current US&nbsp;Chess membership is needed to play.</p>
+<h4 class="em-h" id="d-runs">Who runs it</h4>
+<p class="em-last">Run by Example Chess Club. Questions? Reply to this email and it reaches the club.</p>
+</div>
+<div class="np-foot"><p>You get tournament email from LCA because you are an LCA member.</p>
+<p class="em-links"><a href="#">Unsubscribe from tournament email</a><a href="#">Choose which LCA emails you get</a><a href="#">LCA on Facebook ↗</a></p>
+<p class="em-sent">Sent through the Louisiana Chess Association for Example Chess Club.</p></div>
+</div></div>
+<div class="np-bot"><svg class="k-i-lg" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="5" rx="1"></rect><path d="M5 9v10h14V9"></path><path d="M10 13h4"></path></svg><svg class="k-i-lg" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16"></path><path d="M9 7V4h6v3"></path><path d="M6 7l1 13h10l1-13"></path></svg><svg class="k-i-lg" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 6L4 12l6 6"></path><path d="M4 12h10a6 6 0 0 1 6 6v1"></path></svg><svg class="k-i-lg" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20l4-1L19 8l-3-3L5 16z"></path></svg></div>
+<div class="np-safe"><i></i></div>
+</div></div>
+<p class="nb-cap">On a phone, dark setting</p>
+</section>
+</div>
+</div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":2450}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

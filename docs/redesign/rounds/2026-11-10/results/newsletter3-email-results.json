@@ -1,0 +1,307 @@
+{
+ "label": "newsletter-round-3-email",
+ "set": "email",
+ "results": [
+  {
+   "board": {
+    "file": "Newsletter-Email-1.dc.html",
+    "title": "Newsletter · the email · option 1 · The navy band",
+    "width": 1440,
+    "page": "newsletter-options",
+    "name": "The navy band"
+   },
+   "drawn": {
+    "file": "Newsletter-Email-1.dc.html",
+    "title": "Newsletter · the email · option 1 · The navy band",
+    "width": 1440,
+    "height": 2350,
+    "second_file": "",
+    "second_title": "",
+    "second_height": 0,
+    "note": "Option 1 of 5 for the email: a navy band holds the rook, \"LCA NEWSLETTER\" in gold capitals and \"December 2026\" in large white type, with a thin gold line under it. Below it the letter sits on white in one column. It is the option that looks most like the site, so members know it is from LCA before they read a word.",
+    "unresolved": [
+     "The from address is left out of the mail window on purpose (only \"Louisiana Chess Association\" and \"to me\" show) because the sending domain is still being mapped before K decides it.",
+     "The president's note keeps its heading \"A note from the president\" so the words match Newsletter-E-2 frame C1 word for word. The spec could be read to mean the note has no heading.",
+     "The right column puts the light phone level with the top of the mail window and the dark phone level with its bottom. That leaves a gap of about 360px between the two phones, because the email drawn in full is taller than both phones together."
+    ]
+   },
+   "review": {
+    "file": "Newsletter-Email-1.dc.html",
+    "height": 2400,
+    "second_height": 0,
+    "counts": "Final size: 1440 x 2400. Without a fixed height the board renders 2398 tall, so the root and $preview are both set to 2400, under the 2500 limit. The board has exactly 1 \"Sample data\" tag, in the label strip. It has 0 legends, numbered badges, grey notes, chips or frame letters. It has 0 em dashes, 0 en dashes, 0 {{holes}}, 0 iframes, 0 animations or transitions, and 0 uses of \"USCF\". All tags close properly (checked with a parser). The three frames have three captions: \"On a computer\", \"On a phone\" and \"On a phone, dark setting\". The label strip reads \"LCA NEWSLETTER · THE EMAIL · OPTION 1 OF 5\", then \"The navy band\", then the spec's sentence word for word. The email wording matches Newsletter-E-2 frame C1 word for word, in all 6 sections and the footer. It has one column, underlined links and no photo. Body text is 16px on the computer and 16px on the phones; the footer is 14px. The footer has the sentence and the 3 links, with no postal address and no \"Read this issue on the site\" link. Every date has its weekday, and each weekday was checked: Tue, Dec 1, 2026, 8:00 AM (received); Sat, Dec 5, 2026; Sat to Mon, Jan 16 to 18, 2027; Sat, May 8, 2027; Sat to Mon, Sep 5 to 7, 2026; Mon, Dec 7, 2026 at 6:00 PM; Sat, Nov 14, 2026; Sun, Sep 6, 2026. Other copy checks: times are 4:00 PM to 6:00 PM, scores use 4½, and the email says \"US Chess\". The partner event says \"Registers on the organizer's site ↗\". The sign-off is \"LCA President\". Gold text appears only on navy: the \"LCA NEWSLETTER\" line in the band. The kicker uses gold-ink #866a1e on white.",
+    "changes": [
+     "The two phones were spread to the top and bottom of the column, which left a gap of about 360px between them. They are now stacked from the top with an even 48px gap.",
+     "In the dark phone, the 'Baton Rouge Chess Club' line was half hidden under the mail app's top bar. The view now starts cleanly at the 'Scholastic' heading, and the footer strip runs down to the bottom toolbar.",
+     "Removed a stray line break in the computer's Scholastic paragraph, so it reads as one paragraph like C1 and the dark phone.",
+     "The footer links wrapped with 'LCA on Facebook ↗' left alone on a second line. They now sit in one column, matching the phone.",
+     "Links no longer split across lines: 'Full results ↗' had been cut into 'Full / results ↗'.",
+     "Lines now break more evenly, and dates, times, 'New Orleans', 'Boba ParTea', each section winner with their score, and the '·' separators are held together with non-breaking spaces. Before, 'Club page' sat alone on a line, 'U1400' was split from its winner, a line started with '· U1000', and 'Sun, / Sep 6' broke apart. No words were changed.",
+     "Set the root's declared height and the $preview height to 2400, from 2350, because the stacked footer links made the board 2398 tall."
+    ],
+    "remaining_concerns": [
+     "Below the dark phone, the right column has about 330px of empty space, because the computer view of the full email is taller than two stacked phones. I chose even spacing over a big gap between the phones.",
+     "The computer header shows only 'Louisiana Chess Association · to me'. C1 also showed a from address, newsletter@news.louisianachess.org, with a 'Sample data · from address not decided' tag. I left that address off because K wants all the domains documented before the sender is chosen, and the board may carry only one tag. The other four email options should do the same.",
+     "The better line breaks depend on CSS text-wrap: pretty, which current Chromium supports. A canvas viewer on an older browser would fall back to ordinary breaks, which still read fine.",
+     "The phone clocks show '8:04' and '8:06' without AM, which is how phones show the time. The received time in the mail header is written in full: Tue, Dec 1, 2026, 8:00 AM."
+    ]
+   }
+  },
+  {
+   "board": {
+    "file": "Newsletter-Email-2.dc.html",
+    "title": "Newsletter · the email · option 2 · The plain letter",
+    "width": 1440,
+    "page": "newsletter-options",
+    "name": "The plain letter"
+   },
+   "drawn": {
+    "file": "Newsletter-Email-2.dc.html",
+    "title": "Newsletter · the email · option 2 · The plain letter",
+    "width": 1440,
+    "height": 2250,
+    "second_file": "",
+    "second_title": "",
+    "second_height": 0,
+    "note": "The plain letter: the December issue on white from edge to edge, with only the small rook, the association's name and a thin gold line at the top, then the whole letter in a warm serif with no boxes or colour blocks. It is the quietest of the five and reads like a personal letter from the president, the same in any mail app and in the dark setting.",
+    "unresolved": [
+     "The 'A note from the president' heading is kept as the first serif section heading above 'Dear members,' so the words match the other four options exactly. Removing it would make it read more like a letter.",
+     "The mail window shows the sender as 'Louisiana Chess Association, to me' with no from address, because the sending domain is still undecided (the address map). The other email options may show an address, so the sibling boards should be checked for consistency.",
+     "The footer's three links are stacked one per line on the computer as well as on the phone, because on one line they wrapped unevenly at 512px."
+    ]
+   },
+   "review": {
+    "file": "Newsletter-Email-2.dc.html",
+    "height": 2250,
+    "second_height": 0,
+    "counts": "Rendered at scale 1 and checked in close crops. The board's natural content height is 2210px, so the declared height stays 2250 on the root and in $preview, under the 2500 limit. The words match Newsletter-E-2.dc.html frame C1 exactly when compared as joined text; the only markup difference is that \"LCA President\" is in italic, as the spec asks. Board furniture: one label strip with one \"Sample data\" tag (k-sample appears twice in the file, once as the CSS selector and once as the tag), and three grey captions (\"On a computer\", \"On a phone\", \"On a phone, dark setting\"). There are no legends, numbered badges, grey notes, chips or frame letters. The label strip's sentence matches the spec word for word. Banned items: 0 em or en dashes, 0 USCF, 0 {{holes}}, 0 iframes, 0 animations or transitions, and no \".5\" anywhere in the copy (it appears only in CSS values and SVG coordinates). Type sizes: computer body serif 17px, phone body 16px, section headings 19px on the computer and 18px on a phone, footer 14px. One column, no photo, links underlined. The footer has the sentence and the three links and no postal address. Contrast: body #1f2a40 on white is about 14 to 1, footer and captions #555c6b are about 6 to 1 on white and on the board ground, the gold-ink kicker #866a1e on white is about 4.9 to 1, dark-setting body #e4e5e8 on #151719 is about 15 to 1 and its footer #a9adb6 about 8 to 1. Gold #c8a94a appears only as the 1px rule, never as text. Dates and weekdays, all checked against the flow: Tue, Dec 1, 2026, 8:00 AM (received); Sat, Dec 5, 2026; Sat to Mon, Jan 16 to 18, 2027; Sat, May 8, 2027; Sat to Mon, Sep 5 to 7, 2026; Mon, Dec 7, 2026 at 6:00 PM; Sat, Nov 14, 2026; Sun, Sep 6, 2026. The partner event reads \"run by Downriver Chess · Registers on the organizer's site ↗\" with no Register button and no count. People appear by role (\"LCA President\"), except the results names, which are taken from frame C1.",
+    "changes": [
+     "Links in the email (computer and both phones) no longer break across lines (white-space:nowrap). On the computer, 'Registers on the organizer's site ↗' used to leave 'site ↗' alone on a line; it now sits whole on its own line. On the dark phone, 'Read the / draft minutes' no longer splits.",
+     "Every date in the email body is wrapped in a no-break span (new class .pe-nw), so 'Sat, Nov / 14, 2026' in Scholastic on the computer no longer splits. The words are unchanged.",
+     "Dark phone: removed the Bunkie Chess Club line. Its last line showed as a clipped sliver of text under the mail app's top bar. The scrolled view now starts cleanly on the Baton Rouge paragraph and still ends with the full footer.",
+     "Light phone: removed the white fade at the bottom of the scroll area. It greyed out the 'Register on King Registration ↗' link so it looked disabled. The line now shows at full contrast above the toolbar.",
+     "Height checked: natural content height is 2210, so the declared 2250 (root and $preview) is unchanged."
+    ],
+    "remaining_concerns": [
+     "The 1px gold rule under the masthead follows the spec but is very faint when the picture is scaled down. The sentence names this line as the option's only colour, so K may want it at 2px if the president views the board small.",
+     "The right column (two phones) ends about 160px above the computer view. The columns are top-aligned and this looks intentional, but the bottom edges do not match.",
+     "On the dark phone the scrolled view now starts at the Baton Rouge line instead of the Bunkie line that Newsletter-E-2 phone 2 shows. The email's words are unchanged; only the scroll position differs.",
+     "On the computer, the Ken Ferguson line ends its second line with 'Downriver Chess ·' and puts the partner link alone on the third line. This is readable and intended, but it gives the line a slightly uneven edge.",
+     "Section winners' names (Marcus Landry, Devin Batiste, and so on) appear because frame C1 carries them word for word; they are results, not staff names."
+    ]
+   }
+  },
+  {
+   "board": {
+    "file": "Newsletter-Email-3.dc.html",
+    "title": "Newsletter · the email · option 3 · The card",
+    "width": 1440,
+    "page": "newsletter-options",
+    "name": "The card"
+   },
+   "drawn": {
+    "file": "Newsletter-Email-3.dc.html",
+    "title": "Newsletter · the email · option 3 · The card",
+    "width": 1440,
+    "height": 2450,
+    "second_file": "",
+    "second_title": "",
+    "second_height": 0,
+    "note": "The December issue sits on one white rounded card on a soft cream background. A navy rook seal rests on the card's top edge, small gold-ink labels name each section, and the footer sits below the card. It feels friendly and modern, like a well made app, and the light and dark phone views keep that same card look.",
+    "unresolved": [
+     "The Results section has a navy heading line, so its sentence now opens 'With 4½ of 5 in Sulphur...' with a capital W. The words are the same as frame C1, but the bold headline is no longer part of the sentence.",
+     "The president's note has a small gold-ink label, 'A NOTE FROM THE PRESIDENT', and no heading. This keeps the same words as the siblings and fits the card's label style.",
+     "The phone column is top-aligned and ends about 400px above the bottom of the computer view. That leaves cream space at the lower right. Option 1 instead spreads its phones out to fill the column."
+    ]
+   },
+   "review": {
+    "file": "Newsletter-Email-3.dc.html",
+    "height": 2400,
+    "second_height": 0,
+    "counts": "I rendered the board at scale 1 (1440 x 2400) and checked close crops of the label strip, the computer view in three parts, the light phone and the dark phone. Measured with the root set to height auto, the content is 2367px tall, so I set both the declared height and $preview to 2400 (the board's maximum is 2500).\n\nFurniture: there is one label strip with the kicker \"LCA Newsletter · The email · Option 3 of 5\", the name \"The card\", and the sentence word for word. It carries exactly 1 \"Sample data\" tag. The board has 0 legends, 0 numbered badges, 0 grey notes, 0 chips and 0 frame letters. There are 3 frames, each with a caption: \"On a computer\", \"On a phone\" and \"On a phone, dark setting\".\n\nMusts:\n- One column.\n- No photo. The rook appears only as a mark inside the navy seal and the sender avatars.\n- From \"Louisiana Chess Association\", subject \"LCA Newsletter · December 2026\".\n- Body text is 16px on the computer and 16px on the phones.\n- 13 underlined links: 10 in the body and 3 in the footer.\n- The footer is the sentence plus the three links, with no postal address and no \"Read this issue on the site\".\n- The computer view is drawn in full, from the mail window's top bar to the footer.\n- The light phone shows the top of the email. The dark phone shows its end and the footer.\n\nCopy checks:\n- 0 em or en dashes.\n- No \"USCF\" and no \".5\"; every score uses ½ and \"US Chess\" is spelled out.\n- The partner event reads \"Registers on the organizer's site ↗\" with no count.\n- People appear only by role (\"LCA President\"); the winners and section winners are taken from C1.\n\nEvery date, with its weekday:\n- Tue, Dec 1, 2026, 8:00 AM (received; on the computer and the light phone)\n- Sat, Dec 5, 2026\n- Sat to Mon, Jan 16 to 18, 2027\n- Sat, May 8, 2027\n- Sat to Mon, Sep 5 to 7, 2026\n- Mon, Dec 7, 2026 at 6:00 PM (Picayune)\n- Sat, Nov 14, 2026\n- Sun, Sep 6, 2026\n\nText contrast:\n- Gold-ink #866a1e on white: 5.13:1\n- Footer and captions #555c6b on cream and grey: 6.0 and 5.62\n- Body #26304a on white: 13.1\n- Dark setting: labels 8.4, links 10.5, footer 9.55\n- Mail app blue: 6.15 (light) and 8.25 (dark)\n\nThere is no gold text on a light ground. The tags are balanced, with no holes, iframes or animation.",
+    "changes": [
+     "Results section: the drawn version had split the C1 sentence into a heading and a new sentence starting \"With 4½ of 5...\", and broke the section winners out as a separate paragraph. I put it back to one paragraph word for word as in Newsletter-E-2 frame C1 and the other four options: a bold navy headline \"Marcus Landry wins the 2026 Louisiana State Championship\" followed by \"with 4½ of 5 in Sulphur, Sat to Mon, Sep 5 to 7, 2026, among 64 players. Section winners: ... Full results ↗\".",
+     "Scholastic section (computer and dark phone): restored the line break C1 has before \"Players need a US Chess membership.\"",
+     "Dates and times now never break across lines: the computer view had split \"Sat, Nov / 14, 2026\". I added non-breaking spaces to that date, to Sun, Sep 6, 2026, to Mon, Dec 7, 2026 at 6:00 PM, to 4:00 PM to 6:00 PM, and to the section winners' names with their scores (\"Devin Batiste / 4½\" had split).",
+     "\"Details on King Registration ↗\" is now kept whole, so it drops to its own line like the other two Coming up links instead of splitting after \"Details\".",
+     "Light phone: the bottom toolbar had sliced through the line \"See you over the board,\". I added 10px top padding above the card, 6px more inside the card's top and 4px more under the masthead, so the screen now ends cleanly between paragraphs after \"to a club night.\"",
+     "Footer: added text-wrap: balance, so on the phone the sentence breaks as \"You get this newsletter because / you are an LCA member.\" instead of leaving \"LCA member.\" alone on the second line.",
+     "Declared height and $preview height set to 2400 (they were 2450, from a natural height of 2367)."
+    ],
+    "remaining_concerns": [
+     "The Coming up rows put the bold date on its own line and drop the \" · \" that follows the date in C1. The spec for this option asks for rows with the date in bold first, so I kept it. Every word is otherwise identical to C1.",
+     "Because the results are back to one sentence, the Results section no longer has its own navy heading line under the label (the spec says \"where it helps\"). The bold navy headline does that job. If K wants a 19px heading there, the C1 wording would have to change.",
+     "The phone status bars show \"8:04\" and \"8:06\" without AM, which is the phone clock convention. Everywhere else in the email, times are written as 8:00 AM.",
+     "The dark phone is scrolled so the card's top edge and the end of the club rows sit hidden behind the mail app's top bar. This is cut cleanly at a hairline and reads as a scrolled screen, but the Bunkie and Baton Rouge rows are not visible there; they are visible on the computer view.",
+     "The .ec-h style rule is no longer used after the Results fix. It is harmless, so I left it in."
+    ]
+   }
+  },
+  {
+   "board": {
+    "file": "Newsletter-Email-4.dc.html",
+    "title": "Newsletter · the email · option 4 · The bulletin",
+    "width": 1440,
+    "page": "newsletter-options",
+    "name": "The bulletin"
+   },
+   "drawn": {
+    "file": "Newsletter-Email-4.dc.html",
+    "title": "Newsletter · the email · option 4 · The bulletin",
+    "width": 1440,
+    "height": 2400,
+    "second_file": "",
+    "second_title": "",
+    "second_height": 0,
+    "note": "Option 4 of 5 for the email: a classic masthead opens the December issue, with \"LCA Newsletter\" in a large serif between a thick and a thin navy rule and a line of small capitals under it. Centred serif section headings and plain serif lines make it look like a long-running club bulletin rather than a web page, and it reads the same in any mail app, with pictures off or in the dark setting.",
+    "unresolved": [
+     "The masthead line \"DECEMBER 2026 · NO. 2 · LOUISIANA CHESS ASSOCIATION · SINCE 1915\" uses the issue number and founding year exactly as the spec gives them. Neither is checked against LCA records, so only the board's single Sample data tag covers them.",
+     "On the phone the masthead line breaks into two lines on purpose (\"DECEMBER 2026 · NO. 2\" / \"LOUISIANA CHESS ASSOCIATION · SINCE 1915\") because one line of 11px capitals does not fit 390 wide.",
+     "The dark-setting phone starts at the Scholastic section, not partway through the club lines, so no cut-off text sits under the mail app's bar. The club lines appear in full on the computer view.",
+     "Club names are set in bold to match the bold event dates. The words are unchanged from Newsletter-E-2 frame C1.",
+     "Rendered height is 2355px, declared as 2400 (root and $preview)."
+    ]
+   },
+   "review": {
+    "file": "Newsletter-Email-4.dc.html",
+    "height": 2450,
+    "second_height": 0,
+    "counts": "I rendered the board at scale 1 (1440 x 2450, natural height 2448) and read it in close crops. Label strip: it is the only board furniture. It has the line \"LCA Newsletter · The email · Option 4 of 5\", the name \"The bulletin\" and the spec's sentence word for word. There is exactly 1 \"Sample data\" tag. There are 0 legends, numbered badges, grey notes, chips or frame letters. Frames: 1 computer view, a 600-wide email drawn in full from the masthead to the footer rook, plus 2 phones (390 wide, kit bezels): a light one showing the top and a dark one showing the end and footer. There are 3 captions. The idea reads at a glance: a 4px navy rule, the rook, \"LCA Newsletter\" in serif, a 1px rule, the 11px spaced capitals line \"DECEMBER 2026 · NO. 2 · LOUISIANA CHESS ASSOCIATION · SINCE 1915\", a 1px rule, and centred small-capital headings with short rules either side. Words: I checked all 6 sections line by line against Newsletter-E-2.dc.html frame C1 and they are identical. The president's note is signed \"LCA President\" and no person's name appears. Must-keeps: one column; every link underlined; body 16.5px on the computer and 16px on the phone; no photo (the rook is the only image); From \"Louisiana Chess Association\"; subject \"LCA Newsletter · December 2026\". The footer is exactly the sentence plus 3 links (Unsubscribe from the newsletter, Choose which LCA emails you get, LCA on Facebook ↗), with no postal address and no \"Read this issue on the site\" link. Dates with weekdays, all verified by calendar: Tue, Dec 1, 2026, 8:00 AM (received); Sat, Dec 5, 2026; Sat to Mon, Jan 16 to 18, 2027; Sat, May 8, 2027; Sat to Mon, Sep 5 to 7, 2026; Mon, Dec 7, 2026 at 6:00 PM; Sat, Nov 14, 2026; Sun, Sep 6, 2026. Copy rules: 0 em or en dashes, 0 USCF, 0 decimal halves in the copy (4½ throughout), \"US Chess\" used, and the partner event reads \"Registers on the organizer's site ↗\" with no count. Contrast: the gold-ink kicker #866a1e on white is about 5.1:1, captions #555c6b on #ecebe6 are about 5.7:1, and the dark-phone links #c9d7f5 on #151719 pass easily. The only bright gold #c8a94a is the decorative rules on the dark phone, never text. Markup: the tag-balance check is clean, with no {{holes}}, iframes or animation.",
+    "changes": [
+     "Footer links on the computer: the three links wrapped as two plus a lone 'LCA on Facebook ↗'. They are now a centred column, matching the phone.",
+     "Footer spacing: a CSS specificity clash (.b-foot p { margin:0 !important } beat .b-links) set the gap between the footer sentence and the first link to zero on both views. Added a .b-foot .b-links rule that restores a 14px gap on the computer and 12px on the phone.",
+     "The pasted event links are kept whole with nowrap, so 'site ↗' no longer sits alone on the next line.",
+     "Each section-winner entry in Results is kept whole, so '4½.' no longer starts a line by itself.",
+     "'New Orleans' in the three Coming up lines (computer and phone) now uses a non-breaking space so it no longer splits across lines. The words are unchanged.",
+     "Dark phone: the content was anchored to the bottom and left a blank band under the Inbox bar. The Bunkie and Baton Rouge club lines from the same issue now run up under the bar, so it reads as a scrolled email.",
+     "Declared height 2400 to 2450 on both the root and $preview. The natural render is 2448 (it was over 2400 before the fixes as well)."
+    ],
+    "remaining_concerns": [
+     "The phones are pinned top and bottom so the dark phone's foot lines up with the end of the computer email. That leaves an open gap of about 400px between the two phones. I kept it on purpose (top of the email beside the top, end beside the end), but a reviewer may prefer them stacked closer.",
+     "On the dark phone the footer sentence breaks before 'LCA member.', leaving two words on the second line. It is acceptable at 14px, but I did not change it.",
+     "'NO. 2' and 'SINCE 1915' come from the spec's masthead line. The issue number and the founding year should be confirmed against LCA records before the president sees them as fact. The one 'Sample data' tag covers them for now.",
+     "The masthead title is 40px where the spec says about 38px on the computer (33px on the phone). It is within 'about', so I left it."
+    ]
+   }
+  },
+  {
+   "board": {
+    "file": "Newsletter-Email-5.dc.html",
+    "title": "Newsletter · the email · option 5 · The big month",
+    "width": 1440,
+    "page": "newsletter-options",
+    "name": "The big month"
+   },
+   "drawn": {
+    "file": "Newsletter-Email-5.dc.html",
+    "title": "Newsletter · the email · option 5 · The big month",
+    "width": 1440,
+    "height": 2450,
+    "second_file": "",
+    "second_title": "",
+    "second_height": 0,
+    "note": "Option 5 opens the email with a navy cover. \"December\" is set very large with \"2026\" in gold, and under it a numbered \"In this issue\" list of the six sections. Each section below starts with a small navy number square. It is the boldest of the five and the easiest to spot and skim in a crowded inbox.",
+    "unresolved": [
+     "On the dark-setting phone, the bottom-anchored scroll leaves the last line of the Baton Rouge Chess Club entry (\"Wednesdays at Boba ParTea. Club page\") showing just under the mail app's bar, as if the reader had scrolled there. This is on purpose and nothing is clipped.",
+     "The height had to be 2450, not 2400: the full email on the computer is 2402px tall from the top of the board, so 2450 is the next 50 up. That is still under the 2500 limit.",
+     "The phone cover lists the six sections in one column, not two columns of three. At 390 wide, two columns would have wrapped \"A note from the president\" onto two lines. The computer view keeps the two columns of three that the spec asks for.",
+     "In the dark setting, the number squares are a lighter navy (#2f4475) so they still show against the near-black background. The footer stays on its navy strip, with a gold line on top."
+    ]
+   },
+   "review": {
+    "file": "Newsletter-Email-5.dc.html",
+    "height": 2450,
+    "second_height": 0,
+    "counts": "I measured the board in Chromium at 1440 wide with the root's height set to auto. Its natural height is 2446px, so I declared 2450 (root and $preview), which is under the 2500 limit. Before my fixes it measured 2478 while declaring 2450, so the bottom was cut off. Furniture on the board: one label strip and exactly one \"Sample data\" tag. There is no legend, numbered badge, grey note, chip or frame letter. The kicker reads \"LCA Newsletter · The email · Option 5 of 5\" and the name is \"The big month\". The sentence matches the spec word for word. Words: all six sections match Newsletter-E-2.dc.html frame C1 word for word (president's note, three Coming up lines, Results with the section winners, three club lines, Scholastic, Board business). The partner line reads \"run by Downriver Chess · Registers on the organizer's site ↗\". The note is signed \"LCA President\". Footer: one sentence plus the three links, with no postal address. Dates, each checked against the calendar: Tue, Dec 1, 2026, 8:00 AM (received); Sat, Dec 5, 2026; Sat to Mon, Jan 16 to 18, 2027; Sat, May 8, 2027; Sat to Mon, Sep 5 to 7, 2026; Mon, Dec 7, 2026 at 6:00 PM; Sat, Nov 14, 2026; Sun, Sep 6, 2026. Copy rules: 0 em dashes, 0 en dashes, no USCF, every half written as ½, \"US Chess\" used. Type sizes: body 16px on the computer and on the phones, section headings 20px (19px on the phones), the month 76px with the year 38px in gold on navy. No gold text sits on a light ground (the kicker uses gold-ink #866a1e on white). There is no photo, and every link is underlined.",
+    "changes": [
+     "Fixed a height mismatch: the content measured 2478px against a declared 2450, which cut off the bottom of the board. I tightened the spacing so the board now measures 2446 against a declared 2450: root bottom padding 42 to 36, gap below the label strip 36 to 32, mail-window body padding 28 to 24, message-header padding 20/18 to 18/16, gap between sections 30 to 28.",
+     "Computer footer: the three links wrapped two plus one, leaving \"LCA on Facebook ↗\" alone on its own line. They are now a tidy stacked column with an 8px gap, matching the phone.",
+     "Phones: they were spread to the top and bottom of the column, which left a gap of about 400px between them. They are now stacked from the top with an even 56px gap.",
+     "Dark phone: it opened on half a sentence (\"Wednesdays at Boba ParTea.\") partly hidden under the mail app's top bar. It now starts cleanly at section 5, Scholastic, and the navy footer fills down to the toolbar, so the screen reads as the end of the email.",
+     "Dark phone footer: a stray 11px margin was coming from the phone's paragraph rule; I removed it. I also balanced the footer sentence across its two lines so \"LCA member.\" is no longer left as a short last line."
+    ],
+    "remaining_concerns": [
+     "With the phones stacked from the top, there is about 370px of empty board below the dark phone, beside the lower part of the tall computer view. It is tidier than the old gap between the phones, but the right column still ends well above the computer view.",
+     "The dark phone's navy footer still has about 50px of empty navy below the last link before the toolbar. It looks deliberate, but it is a little taller than the footer in the computer view.",
+     "The phone status bars show \"8:04\" and \"8:06\" without AM, which is the usual look of a phone clock and the same as the other boards; the received time itself is written \"8:00 AM\" everywhere.",
+     "\"LCA NEWSLETTER · NO. 2\" (issue number 2) comes from the spec; whether December really is issue 2 is invented and covered only by the strip's single \"Sample data\" tag."
+    ]
+   }
+  }
+ ],
+ "setCheck": {
+  "ranking": [
+   {
+    "file": "Newsletter-Email-1.dc.html",
+    "finish": "Finished and even; the band, the gold-ink rules over each heading and the cream footer match the finish of the others, and it now uses the shared 780 window and the same phone positions.",
+    "distinct": "A short 112px navy band with the rook and \"December 2026\", then a serif letter under sans headings, each with a gold-ink tick, and a pale cream footer. Its nearest sibling is 5, but 5 has a tall cover with contents, numbered squares, sans body text and a navy footer."
+   },
+   {
+    "file": "Newsletter-Email-2.dc.html",
+    "finish": "It was the weakest frame-wise, with its own strip sizes, window chrome, text-only phone bars, a navy dark bezel and a half-cut line at the top of the dark phone; it is now on par, and its body is white on white by design.",
+    "distinct": "The only one with no colour or box anywhere: a small rook and name over a 1px gold line, then all-serif text at 17px with \"LCA President\" in italic. It reads as a personal letter."
+   },
+   {
+    "file": "Newsletter-Email-3.dc.html",
+    "finish": "The most polished of the five; only the phone header had an extra 22px gap under \"December 2026\", which is now closed.",
+    "distinct": "A cream ground with a white rounded card, a navy rook seal on the card's top edge and small gold-ink spaced-caps labels between hairlines. Event dates sit on their own bold line, and the footer is centred on one line under the card. It looks like an app and has no sibling close to it."
+   },
+   {
+    "file": "Newsletter-Email-4.dc.html",
+    "finish": "Now level with the rest: the dark phone no longer drops to the bottom of the board and no longer opens on a half-hidden line.",
+    "distinct": "A centred serif masthead between a 4px navy rule and two 1px rules, with the \"DECEMBER 2026 · NO. 2 · ... · SINCE 1915\" line. Headings are centred small caps between short gold-ink rules, the opening line is set larger, and a small rook closes the footer. It reads like a printed club bulletin."
+   },
+   {
+    "file": "Newsletter-Email-5.dc.html",
+    "finish": "Finished. It now has the shared spacing: 36px under the strip, 48px between phones, the same mail-window padding and a 48px bottom margin.",
+    "distinct": "A tall navy cover with \"December\" huge in white, \"2026\" in gold and an \"In this issue\" contents list in two columns. Navy number squares open each section, and a navy footer closes it. It is the boldest of the five and differs from 1 in scale and structure."
+   }
+  ],
+  "changes": [
+   "Newsletter-Email-2.dc.html: label strip changed to the shared form (align centre, padding 24/30/26, radius 16, name 40px, sentence 18px, no max-width, Sample data tag vertically centred).",
+   "Newsletter-Email-2.dc.html: root padding changed from 36/80/40 to 36/72/48, the margin under the strip from 32 to 36 and the gap between phones from 40 to 48, so the window and phones sit where they do on the other four.",
+   "Newsletter-Email-2.dc.html: mail window chrome changed to the shared one: title centred in the title bar, 12px dots, a 48px toolbar with Archive and Delete pushed right, 15px tool icons, 42px avatar, 28px header padding and the same shadow.",
+   "Newsletter-Email-2.dc.html: phone chrome changed to the shared one: the chevron Inbox nav with up and down arrows replaces \"‹ Inbox / Reply\", the icon bottom bar replaces the text Archive / Reply / Delete, the status bar is 46px and the home bar is 124px; the dark phone bezel is now black like the others.",
+   "Newsletter-Email-2.dc.html: dark phone no longer opens on a half-hidden Baton Rouge line behind a gradient. It now starts cleanly at Scholastic, top-anchored, and the gradient is removed.",
+   "Newsletter-Email-2.dc.html: Scholastic text in the dark phone now has the line break before \"Players need a US Chess membership.\" like the majority.",
+   "Newsletter-Email-1.dc.html: mail window column changed from 800 to the shared 780.",
+   "Newsletter-Email-1.dc.html: Scholastic text (computer and dark phone) now breaks before \"Players need a US Chess membership.\", matching the other four and the source frame C1.",
+   "Newsletter-Email-3.dc.html: mail window column changed from 760 to 780 and the gap between phones from 40 to 48.",
+   "Newsletter-Email-3.dc.html: removed the extra 22px gap under the masthead in the phone card (`.np-msg .ec-mast+.ec-sec{margin-top:0}`).",
+   "Newsletter-Email-4.dc.html: phones column no longer uses space-between, which had pushed the dark phone to the board's bottom; it now uses the shared 48px gap, so the dark phone sits at y 1156 like the others.",
+   "Newsletter-Email-4.dc.html: dark phone no longer opens on a half-hidden \"Wednesdays at Boba ParTea\" line. The Bunkie and Baton Rouge lines are dropped, the content is top-anchored, and it starts at the Scholastic heading with 30px above.",
+   "Newsletter-Email-5.dc.html: bottom padding changed from 36 to 48, the margin under the strip from 32 to 36, the phone gap from 56 to 48, mail header padding from 18/16 to 20/18 and mail body padding from 24/24 to 32/36, all matching the set.",
+   "All five: re-rendered at scale 1 and set the root height and $preview height to the render rounded up to the next 50."
+  ],
+  "heights": [
+   {
+    "file": "Newsletter-Email-1.dc.html",
+    "height": 2400
+   },
+   {
+    "file": "Newsletter-Email-2.dc.html",
+    "height": 2250
+   },
+   {
+    "file": "Newsletter-Email-3.dc.html",
+    "height": 2400
+   },
+   {
+    "file": "Newsletter-Email-4.dc.html",
+    "height": 2450
+   },
+   {
+    "file": "Newsletter-Email-5.dc.html",
+    "height": 2500
+   }
+  ],
+  "remaining_concerns": [
+   "In options 1 and 5 the dark-setting phone's coloured footer stretches to the bottom bar, leaving about 55px (option 5) to 70px (option 1) of empty footer under \"LCA on Facebook ↗\". It reads as the end of the email, but it is slightly roomier than the end of 2, 3 and 4. I left it alone rather than add filler.",
+   "The phones show different amounts of the email (for example, option 1's light phone reaches the Ken Ferguson line, option 4's stops at \"LCA President\"). This follows from each option's masthead height and is not a wording difference.",
+   "Option 3 sets the three footer links on one centred line with dots, while the other four stack them. The wording is identical and the spec's centred card footer suggests it, so I kept it.",
+   "Signature styling differs by spec: italic in option 2, small caps in option 4 and plain in options 1, 3 and 5. The words are the same.",
+   "\"NO. 2\" and \"SINCE 1915\" in options 4 and 5 come from their specs. I did not check them against LCA records; they are covered only by the one Sample data tag.",
+   "Gold rules looked uneven in the downscaled contact sheet, but pixel samples confirm every rule renders at its exact colour (#866a1e / #c8a94a), so it is a viewer artefact, not a defect."
+  ]
+ }
+}

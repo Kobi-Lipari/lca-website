@@ -1,0 +1,391 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>My LCA · O-2 · Board: states, the President and Secretary, the way in and back (round 2)</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/6107adb451dbab26ee5d89f4189b81f8">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1a2744}
+.ao-root{box-sizing:border-box;padding:24px 40px 32px;background:#ecebe6;color:#1a2744}
+.ao-root *{box-sizing:border-box}
+.ao-title{display:block;background:#1a2744;color:#ffffff;border-radius:14px;padding:18px 24px 18px;border-bottom:4px solid #c8a94a}
+.ao-title .k-kicker{color:#e6cf86;margin:0}
+.ao-title h1{font-size:30px;line-height:1.12;font-weight:700;letter-spacing:-.015em;margin:6px 0 10px}
+.ao-tmeta{display:grid;grid-template-columns:auto 1fr;gap:3px 14px;font-size:13px;line-height:1.4;margin:0;max-width:1040px}
+.ao-tmeta dt{font-weight:600;color:#e6cf86;white-space:nowrap}
+.ao-tmeta dd{margin:0;color:#ffffff}
+.ao-tside{display:flex;flex-direction:column;align-items:flex-end;gap:8px;flex:none;width:250px}
+.ao-tag-r2{display:inline-flex;align-items:center;height:26px;padding:0 10px;border-radius:6px;background:#c8a94a;color:#1a2744;font-size:12.5px;font-weight:700;letter-spacing:.04em}
+.ao-tag-frame{display:inline-flex;align-items:center;height:26px;padding:0 10px;border-radius:6px;border:1px solid rgba(255,255,255,.6);color:#ffffff;font-size:12.5px;font-weight:600}
+.ao-tside .k-meta{color:rgba(255,255,255,.82);text-align:right}
+.ao-legend{margin-top:12px}
+.ao-title .ao-grey{flex:none;width:500px}
+.ao-lbox{background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:14px 18px}
+.ao-notes{list-style:none;margin:10px 0 0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px 24px}
+.ao-notes li{display:flex;gap:9px;align-items:flex-start;font-size:12.5px;line-height:1.4;color:#2b3446}
+.ao-notes .k-num-badge{width:22px;height:22px;font-size:11.5px}
+.ao-notes b{font-weight:600;color:#1a2744}
+.ao-grey{background:#efefea;border:1px solid #dfded6;border-radius:12px;padding:12px 14px;display:grid;grid-template-columns:1fr 1fr;gap:8px 16px;align-content:start}
+.ao-grey p{font-size:12px;line-height:1.4;color:#2b3446;margin:0}
+.ao-grey p + p{margin-top:7px}
+.ao-grey b.ao-gh{display:block;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#555c6b;margin-bottom:2px}
+.ao-grey ol{margin:0;padding-left:16px;font-size:12px;line-height:1.4;color:#2b3446}
+.ao-grey li{margin-bottom:3px}
+/* frame labels */
+.ao-flab{display:flex;align-items:center;gap:12px;margin:18px 0 8px;flex-wrap:nowrap}
+.ao-flab h2{margin:0;font-size:18px;line-height:1.2;font-weight:600;letter-spacing:-.01em;white-space:nowrap}
+.ao-code{display:inline-flex;align-items:center;justify-content:center;min-width:28px;height:28px;padding:0 9px;border-radius:7px;background:#c8a94a;color:#1a2744;font-weight:700;font-size:13px;flex:none}
+.ao-url{white-space:nowrap;font-family:"Geist Mono",ui-monospace,monospace;font-size:12px;color:#3d4556;background:#ffffff;border:1px solid #d9d8d1;border-radius:6px;padding:3px 8px}
+.ao-fmeta{font-size:13px;color:#555c6b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ao-frame{position:relative;border:1px solid #cfcec6;border-radius:12px;overflow:hidden;background:#f5f5f2;box-shadow:0 14px 34px rgba(16,24,43,.10)}
+/* decided header */
+.ao-hd-in{display:flex;align-items:center;height:68px;padding:0 24px}
+.ao-brand{margin-right:16px}
+.ao-rook{width:30px;height:30px;fill:#ffffff;flex:none}
+.ao-rook-sm{width:22px;height:22px;fill:#ffffff;flex:none}
+.ao-nav{gap:0}
+.ao-nav a{padding:0 8px !important;white-space:nowrap}
+.ao-navbtn{display:inline-flex;align-items:center;gap:4px;min-height:44px;padding:0 8px;border:0;background:transparent;color:#ffffff;font-size:15px;font-weight:500}
+.ao-search{display:inline-flex;align-items:center;gap:8px;width:220px;height:44px;padding:0 8px 0 12px;margin-right:16px;border-radius:8px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.45);color:#ffffff;text-decoration:none;font-size:14.5px;font-weight:500;flex:none}
+.ao-kbd{margin-left:auto;font-family:"Geist Mono",ui-monospace,monospace;font-size:12px;color:#e8ecf4;border:1px solid rgba(255,255,255,.4);border-radius:5px;padding:2px 6px;line-height:1.2}
+.ao-util{gap:12px}
+.ao-util .k-ulink{padding:0 4px}
+.ao-my{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 8px;border:0;border-radius:8px;background:transparent;color:#ffffff;font-size:14px;font-weight:500}
+.ao-count{display:inline-flex;align-items:center;justify-content:center;min-width:20px;height:20px;padding:0 6px;border-radius:999px;background:#fbfaf6;color:#1a2744;font-size:12px;font-weight:700}
+.ao-foot-in{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:18px 24px 20px}
+.ao-foot .k-meta{color:rgba(255,255,255,.78)}
+.ao-foot nav a{font-size:14px}
+/* hub band */
+.ao-band{background:#fbfaf6;border-bottom:1px solid #e6e3d8;padding:12px 24px 12px}
+.ao-band-top{display:flex;justify-content:space-between;align-items:flex-end;gap:20px}
+.ao-name{font-size:32px;line-height:1.1;font-weight:700;letter-spacing:-.015em;margin:4px 0 0}
+.ao-roles{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;align-items:center}
+.ao-rchip{display:inline-flex;align-items:center;gap:8px;border-radius:999px;padding:5px 14px 5px 5px;font-size:14px;border:1px solid #d9d6cb;background:#ffffff;color:#1a2744;text-decoration:none;min-height:44px}
+.ao-rchip-on{border-color:#1a2744;box-shadow:inset 0 0 0 1px #1a2744}
+.ao-role{display:inline-flex;align-items:center;border-radius:999px;padding:4px 10px;font-size:12px;font-weight:600;white-space:nowrap;line-height:1.2}
+.ao-r-td{background:#1a2744;color:#ffffff}
+.ao-r-rep{background:#f6efd9;color:#5e4a12}
+.ao-r-board{background:#e4e9f3;color:#1a2744}
+.ao-r-parent{background:#e3efe6;color:#1f4d33}
+.ao-r-member{background:#ecebe5;color:#1a2744}
+/* layout */
+.ao-layout{display:grid;grid-template-columns:220px minmax(0,1fr);gap:30px;align-items:start;padding:16px 24px 20px}
+.ao-railcard{background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:14px 12px}
+.ao-rnav{display:flex;flex-direction:column;gap:2px;margin-top:8px}
+.ao-rnav a{display:flex;justify-content:space-between;align-items:center;padding:0 10px;border-radius:8px;color:#1a2744;text-decoration:none;font-size:14px;min-height:40px}
+.ao-rnav a.ao-on{background:#efede6;font-weight:600;box-shadow:inset 3px 0 0 #1a2744}
+.ao-rc{font-size:12px;font-weight:700;color:#3d4556;background:#eceef2;border-radius:999px;padding:1px 8px}
+.ao-col{display:flex;flex-direction:column;gap:8px;min-width:0}
+.ao-coll{display:flex;align-items:center;gap:12px;height:48px;padding:0 16px;background:#ffffff;border:1px solid #dddcd4;border-radius:10px;font-size:14.5px}
+.ao-coll b{font-weight:600}
+.ao-coll .ao-cm{color:#555c6b}
+.ao-coll .ao-show{margin-left:auto;display:inline-flex;align-items:center;gap:6px;font-size:13.5px;font-weight:600;color:#1a2744}
+/* the section */
+.ao-sec{background:#ffffff;border:1px solid #c9c8c0;border-radius:12px;padding:18px 20px 0;margin:6px 0}
+.ao-sh{display:flex;justify-content:space-between;align-items:flex-start;gap:16px}
+.ao-sh h2{margin:0;font-size:24px;line-height:1.2;font-weight:700;letter-spacing:-.01em;display:flex;align-items:center;gap:10px}
+.ao-chip-dir{display:inline-flex;align-items:center;border-radius:999px;padding:4px 11px;font-size:12.5px;font-weight:600;background:#1a2744;color:#ffffff;line-height:1.2}
+.ao-subl{font-size:15px;line-height:1.45;color:#555c6b;margin:4px 0 0}
+.ao-anchor{font-family:"Geist Mono",ui-monospace,monospace;font-size:12px;color:#555c6b}
+.ao-row{display:grid;grid-template-columns:72px minmax(0,1fr) 220px;gap:10px 18px;padding:17px 0;border-top:1px solid #eeede7}
+.ao-sh + .ao-row{margin-top:14px}
+.ao-date{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;width:72px;min-height:74px;padding:8px 2px;border:1px solid #d6d5cd;border-radius:10px;background:#ffffff;line-height:1;text-align:center}
+.ao-date b{font-size:24px;font-weight:600;letter-spacing:-.02em}
+.ao-date span{font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#555c6b;white-space:nowrap}
+.ao-date-navy{background:#1a2744;border-color:#1a2744;color:#ffffff}
+.ao-date-navy span{color:#e6cf86}
+.ao-date-done{background:#efefea;border-color:#dddcd4}
+.ao-main{display:flex;flex-direction:column;gap:7px;min-width:0}
+.ao-tl{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.ao-tl b{font-size:20px;line-height:1.25;font-weight:600}
+.ao-det{font-size:14px;line-height:1.45;color:#555c6b;margin:0}
+.ao-cnt{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:15px}
+.ao-cnt > b{font-weight:600;margin-right:4px}
+.ao-pill{display:inline-flex;align-items:center;gap:5px;height:24px;padding:0 9px;border-radius:999px;background:#f1f0eb;color:#3d4556;font-size:12.5px;font-weight:500}
+.ao-pill i{font-style:normal;font-weight:700;color:#1a2744}
+.ao-flags{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.ao-t{display:inline-flex;align-items:center;gap:6px;padding:4px 9px;border-radius:6px;font-size:13px;font-weight:600;line-height:1.2;white-space:nowrap}
+.ao-t::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor;flex:none}
+.ao-t-nodot::before{display:none}
+.ao-t-green{background:#e3efe6;color:#1f4d33}
+.ao-t-amber{background:#f6efd9;color:#5e4a12}
+.ao-t-navy{background:#e4e9f3;color:#1a2744}
+.ao-t-red{background:#fbe9e4;color:#9a3b1b}
+.ao-t-grey{background:#ecebe5;color:#3d4555}
+.ao-next{font-size:14px;font-weight:600;margin:0;display:flex;align-items:center;gap:8px}
+.ao-next span{font-weight:500;color:#555c6b}
+.ao-btns{display:flex;flex-direction:column;gap:8px;align-items:stretch}
+.ao-btns .k-btn{width:100%}
+.ao-btn-muted{background:#ffffff;border:1px solid #c9c8c0;color:#5d6371;flex-direction:column;gap:2px;min-height:52px}
+.ao-btn-muted small{font-size:12px;font-weight:500;color:#5d6371}
+.ao-plink{font-size:13px;font-weight:600;color:#1a2744;text-align:center;text-decoration:underline;text-underline-offset:3px;text-decoration-color:#9aa1b0;margin-top:2px}
+/* inline decisions */
+.ao-dec{grid-column:2 / 4;background:#f5f5f2;border-radius:10px;padding:4px 14px}
+.ao-sub{display:flex;align-items:center;gap:14px;min-height:48px;font-size:13.5px;line-height:1.35;border-top:1px solid #e6e5df}
+.ao-sub:first-child{border-top:0}
+.ao-sub > .ao-st{flex:1;min-width:0}
+.ao-sub b{font-weight:600}
+.ao-sub .k-btn{min-height:36px;padding:0 14px;font-size:13.5px;flex:none}
+.ao-after{grid-column:2 / 4;display:flex;align-items:center;gap:10px;font-size:12.5px;color:#555c6b;margin-top:-2px}
+.ao-done{display:inline-flex;align-items:center;gap:8px;padding:5px 10px;border-radius:8px;background:#e3efe6;color:#1f4d33;font-size:12.5px;font-weight:600}
+.ao-done u{color:#1a2744;text-underline-offset:2px}
+/* checks */
+.ao-check{display:flex;gap:8px;align-items:flex-start;font-size:13.5px;line-height:1.4;margin:0}
+.ao-ok{color:#1f4d33;font-weight:700;flex:none;width:14px}
+.ao-bad{color:#9a3b1b;font-weight:700;flex:none;width:14px}
+.ao-checks{display:flex;flex-direction:column;gap:3px;padding:8px 12px;border:1px solid #ecebe5;border-radius:8px;background:#fdfdfb}
+.ao-checks .k-label{margin-bottom:2px}
+.ao-tap{font-weight:600;color:#1a2744;text-decoration:underline;text-decoration-color:#c8a94a;text-decoration-thickness:2px;text-underline-offset:3px}
+.ao-sec-foot{display:flex;align-items:center;gap:10px;margin:0 -20px;padding:12px 20px;background:#fbfaf6;border-top:1px solid #eeede7;border-radius:0 0 12px 12px;font-size:14px}
+.ao-sec-foot b{font-weight:600;white-space:nowrap}
+.ao-sec-foot .k-sample{white-space:nowrap}
+/* live */
+.ao-strip{display:flex;align-items:center;gap:12px;height:44px;padding:0 6px 0 24px;background:#0e1526;color:#f3f5f9;border-top:2px solid #c8a94a;font-size:14px;white-space:nowrap}
+.ao-livetag{display:inline-flex;align-items:center;gap:5px;padding:4px 9px;border-radius:6px;background:#ff4757;color:#070b14;font-size:12px;font-weight:700;line-height:1.2;flex:none}
+.ao-evname{font-weight:700;color:#f3f5f9;text-decoration:underline;text-decoration-color:#c8a94a;text-underline-offset:3px}
+.ao-ps{color:#b9c2d3}
+.ao-ps b{color:#f3f5f9;font-weight:600}
+.ao-hide{margin-left:auto;display:inline-flex;align-items:center;justify-content:center;width:44px;height:38px;border-radius:8px;border:1px solid rgba(243,245,249,.3);color:#f3f5f9;font-size:13px;font-weight:600;padding:0 10px;width:auto}
+.ao-liveband{background:#0e1526;color:#f3f5f9;border-top:2px solid #c8a94a;border-radius:10px;padding:14px 18px;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px 20px;align-items:center;margin-top:14px}
+.ao-liveband .ao-l1{font-size:16px;font-weight:600;line-height:1.35;margin:6px 0 0}
+.ao-liveband .ao-l1 span{color:#b9c2d3;font-weight:500}
+.ao-liveband .ao-l2{font-size:14px;line-height:1.45;color:#d5dbe6;margin:6px 0 0;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.ao-lbtns{display:flex;gap:8px}
+.ao-btn-light{background:transparent;color:#f3f5f9;border:1px solid rgba(243,245,249,.7)}
+.ao-shrunk{font-size:14px;line-height:1.5;color:#3d4556;padding:10px 0 14px;margin:0}
+/* phone */
+.ao-phone{width:360px;height:640px;flex:none;border-radius:34px;border:10px solid #10182b;background:#fbfaf6;overflow:hidden;position:relative;box-shadow:0 20px 44px rgba(16,24,43,.2)}
+.ao-pbar{display:flex;align-items:center;justify-content:space-between;height:52px;padding:0 14px;background:#1a2744;color:#ffffff;font-size:16px;font-weight:600}
+.ao-pbody{padding:10px 12px 0;display:flex;flex-direction:column;gap:7px}
+.ao-ptabs{position:absolute;left:0;right:0;bottom:0;height:56px;background:#ffffff;border-top:1px solid #dddcd4;display:grid;grid-template-columns:repeat(4,1fr);font-size:11px;font-weight:600;color:#555c6b;text-align:center;align-items:center}
+.ao-ptabs .ao-pon{color:#1a2744;box-shadow:inset 0 2px 0 #1a2744;height:100%;display:flex;align-items:center;justify-content:center}
+/* insets */
+.ao-inset{background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:12px 14px}
+.ao-ilab{font-size:11.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#555c6b;margin:0 0 8px}
+.ao-mrow{display:flex;justify-content:space-between;align-items:center;gap:10px;min-height:32px;padding:3px 10px;border-radius:7px;font-size:14px;font-weight:500}
+.ao-mrow-todo{background:#fbf7e9}
+.ao-mrow-cur{background:#f3eedc;font-weight:600}
+.ao-mrow-ev{font-weight:600}
+.ao-msep{height:1px;background:#e3e2dc;margin:4px 2px}
+.ao-msub{font-size:12px;color:#555c6b;font-weight:400}
+.ao-crumbs{display:grid;grid-template-columns:52px minmax(0,1fr);gap:8px 10px;font-size:13.5px;line-height:1.4;align-items:baseline}
+.ao-crumbs .ao-fn{font-size:12px;font-weight:700;color:#555c6b}
+.ao-crumbs .ao-cr a{color:#1a2744;text-decoration:underline;text-underline-offset:3px;text-decoration-color:#9aa1b0}
+.ao-console{display:flex;align-items:center;justify-content:space-between;gap:10px;height:56px;padding:0 14px;margin-top:12px;border-radius:10px;background:#1a2744;color:#ffffff;font-size:13.5px}
+.ao-console a{color:#ffffff}
+.ao-exit{display:inline-flex;align-items:center;height:36px;padding:0 12px;border-radius:8px;border:1px solid rgba(255,255,255,.7);font-weight:600;font-size:13px;color:#ffffff;flex:none}
+.ao-cap{font-size:13px;line-height:1.45;color:#3d4556;margin:8px 0 0}
+.ao-cap b{color:#1a2744;font-weight:600}
+.ao-lookup{display:flex;align-items:center;gap:8px;width:420px;height:44px;padding:0 12px;border:1px solid #858b99;border-radius:8px;background:#ffffff;font-size:15px;color:#1a2744}
+.ao-res{display:flex;align-items:center;gap:10px;padding:8px 12px;border:1px solid #ecebe5;border-radius:8px;font-size:14px;width:420px}
+.ao-row > .ao-date{align-self:start}
+.ao-plrow{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:2px}
+.ao-nolook{display:flex;align-items:center;gap:8px;font-size:13px;color:#555c6b;margin-left:12px}
+.ao-tbody{display:flex;justify-content:space-between;align-items:flex-start;gap:28px}
+.ao-tbody > div{flex:1;min-width:0}
+.ao-after > span{white-space:nowrap}
+/* O: today card */
+.ao-today{background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:16px 20px 8px}
+.ao-th{display:flex;align-items:center;gap:12px}
+.ao-th h2{margin:0;font-size:24px;line-height:1.2;font-weight:700;letter-spacing:-.01em}
+.ao-thd{margin-left:auto;font-size:13px;color:#555c6b}
+.ao-tsub{font-size:14px;color:#555c6b;margin:4px 0 6px}
+.ao-trow{display:grid;grid-template-columns:230px minmax(0,1fr) auto;gap:16px;align-items:center;min-height:58px;padding:7px 0;border-top:1px solid #e8e8e3}
+.ao-trow .ao-role{white-space:normal;max-width:230px;line-height:1.3;justify-self:start}
+.ao-ts{font-size:15px;line-height:1.35;font-weight:600;margin:0}
+.ao-tm{font-size:13px;line-height:1.4;color:#555c6b;margin:2px 0 0}
+.ao-trow .k-btn{min-height:36px;padding:0 14px;font-size:14px;white-space:nowrap}
+.ao-more{display:flex;align-items:center;gap:8px;min-height:44px;border-top:1px solid #e8e8e3;font-size:14.5px;font-weight:600}
+.ao-more u{text-decoration-color:#9aa1b0;text-underline-offset:3px}
+.ao-more span{font-weight:400;color:#555c6b;font-size:13px}
+.ao-r-off{background:#ecebe5;color:#1a2744}
+/* collapsed strips */
+.ao-coll{gap:12px;height:50px}
+.ao-coll .ao-role{flex:none}
+.ao-coll .ao-cm{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;font-size:13.5px}
+.ao-coll b{white-space:nowrap}
+/* board section */
+.ao-bsec{background:#ffffff;border:1px solid #c9c8c0;border-radius:12px;padding:22px 24px 0}
+.ao-bsh{display:flex;justify-content:space-between;align-items:flex-start;gap:20px}
+.ao-bsh h2{margin:8px 0 0;font-size:24px;line-height:1.2;font-weight:700;letter-spacing:-.01em;display:flex;align-items:center;gap:10px}
+.ao-bshr{display:flex;flex-direction:column;align-items:flex-end;gap:8px;flex:none}
+.ao-bgrid{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:24px;margin-top:12px;align-items:start}
+.ao-cap{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#555c6b;margin:0 0 4px;display:flex;align-items:center;gap:8px}
+.ao-ib{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:4px 14px;align-items:center;min-height:64px;padding:8px 0;border-top:1px solid #eeede7}
+.ao-ib .ao-ts{font-size:15px}
+.ao-ib .k-btn{min-height:36px;padding:0 14px;font-size:14px}
+.ao-new{display:inline-flex;align-items:center;height:24px;padding:0 9px;border-radius:999px;background:#eef1f8;color:#1a2744;font-size:12.5px;font-weight:600}
+.ao-second{display:flex;align-items:center;gap:8px;font-size:13px;color:#555c6b;padding:10px 0 0;border-top:1px solid #eeede7;margin:0}
+.ao-room{display:flex;align-items:center;gap:8px;font-size:12.5px;line-height:1.4;color:#3d4556;margin:8px 0 0;padding:8px 10px;background:#f5f5f2;border-radius:8px}
+.ao-room b{font-weight:600;color:#1a2744}
+.ao-cream{background:#fbf7e9;border:1px solid #866a1e;border-radius:10px;padding:14px 16px}
+.ao-cream + .ao-cream{margin-top:12px}
+.ao-big{font-size:18px;font-weight:700;margin:2px 0 2px}
+.ao-sm{font-size:13px;line-height:1.45;color:#3d4556;margin:0}
+.ao-sm-g{font-size:13px;line-height:1.45;color:#555c6b;margin:0}
+.ao-doc{display:block;margin-top:8px;font-size:14px;line-height:1.35}
+.ao-doc a{color:#1a2744;font-weight:600;text-decoration:underline;text-underline-offset:3px;text-decoration-color:#866a1e}
+.ao-doc span{display:block;font-size:12.5px;color:#555c6b}
+.ao-div{display:flex;align-items:center;gap:12px;margin:16px 0 0;padding-top:12px;border-top:2px solid #1a2744}
+.ao-div .ao-sm-g{font-size:14px}
+.ao-orow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 18px;align-items:center;min-height:56px;padding:9px 0;border-top:1px solid #eeede7}
+.ao-div + .ao-orow{border-top:0}
+.ao-orow .k-btn{min-height:40px;padding:0 16px;font-size:14px}
+.ao-ot{font-size:15px;line-height:1.4;margin:0}
+.ao-ot b{font-weight:600}
+.ao-rt{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:4px}
+.ao-goes{font-family:"Geist Mono",ui-monospace,monospace;font-size:11.5px;color:#3d4556;background:#f5f5f2;border:1px solid #e3e2dc;border-radius:5px;padding:2px 7px;white-space:nowrap}
+.ao-acol{display:flex;flex-direction:column;align-items:flex-end;gap:5px}
+.ao-lk{display:flex;align-items:flex-start;gap:20px}
+.ao-bfoot{display:flex;align-items:center;gap:10px;margin:14px -24px 0;padding:12px 24px;background:#fbfaf6;border-top:1px solid #eeede7;border-radius:0 0 12px 12px;font-size:14px;line-height:1.4;color:#3d4556}
+.ao-bfoot b{color:#1a2744;font-weight:600}
+.ao-eyb{display:flex;align-items:center;gap:10px}
+.ao-sub2{font-size:13px;color:#555c6b;margin:2px 0 0}
+.ao-res b{white-space:nowrap}
+.ao-root{padding-bottom:18px}
+.ao-trow .ao-role{border-radius:10px}
+/* part 2 */
+.ao-pan{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px;background:#f6f6f2;border:1px solid #dddcd4;border-radius:14px;padding:18px 20px 20px}
+.ao-plab{font-size:13px;color:#555c6b;margin:0 0 8px;display:flex;align-items:center;gap:8px;font-weight:600}
+.ao-card{background:#ffffff;border:1px solid #d9d8d1;border-radius:12px;padding:16px 18px}
+.ao-card h3{margin:6px 0 0;font-size:20px;line-height:1.2;font-weight:700;letter-spacing:-.01em}
+.ao-one{font-size:16px;line-height:1.45;font-weight:600;margin:12px 0 10px}
+.ao-mini{display:flex;justify-content:space-between;align-items:center;gap:10px;min-height:44px;padding:4px 0;border-top:1px solid #eeede7;font-size:13.5px;line-height:1.35}
+.ao-mini b{font-weight:600}
+.ao-mini .k-btn{min-height:32px;padding:0 10px;font-size:13px;flex:none}
+.ao-amber{display:inline-flex;align-items:center;height:22px;padding:0 8px;border-radius:999px;background:#fff4d6;color:#7a5c00;font-size:12px;font-weight:600;white-space:nowrap}
+.ao-cnts{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.ao-ring{box-shadow:inset 0 0 0 2px #c8a94a}
+.ao-band2{display:flex;align-items:center;justify-content:space-between;gap:10px;height:52px;padding:0 14px;border-radius:10px;background:#1a2744;color:#ffffff;font-size:13.5px}
+.ao-band2 a{color:#ffffff}
+.ao-about{border:1px solid #dddcd4;border-radius:10px;overflow:hidden;background:#ffffff}
+.ao-tabs{display:flex;gap:0;border-bottom:1px solid #dddcd4;padding:0 12px;font-size:13.5px}
+.ao-tabs span{padding:10px 10px;color:#555c6b}
+.ao-tabs span.on{color:#1a2744;font-weight:600;box-shadow:inset 0 -2px 0 #1a2744}
+.ao-edstrip{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 12px;background:#fbf7e9;border-bottom:1px solid #e9dfbf;font-size:13px}
+.ao-doneline{display:inline-flex;align-items:center;gap:8px;padding:6px 10px;border-radius:8px;background:#e3efe6;color:#1f4d33;font-size:13px;font-weight:600;margin-top:8px}
+.ao-doneline u{color:#1a2744;text-underline-offset:2px}
+</style>
+</helmet>
+<div class="ao-root" style="width:1440px;height:2000px">
+<section class="ao-title" aria-label="About this board"><div class="ao-thead">
+<div class="k-row-sm" style="gap:10px"><p class="k-kicker">14 · My LCA · round 2 · option O · part 2 of 2</p><span class="ao-tag-r2">ROUND 2</span><span class="ao-tag-frame">Frame: Int-A, swappable</span><span class="k-sample">Sample data</span></div>
+<h1>My LCA · O-2 · Board: states, the President and Secretary, the way in and back</h1></div><div class="ao-tbody"><div>
+<dl class="ao-tmeta">
+<dt>Built from</dt><dd>Account-C's Board card; BoardInboxPage, AdminSupportPage, AdminEmailPage and MinutesPage for what the rooms already do; the decided My LCA menu (Nav-Header-Final).</dd>
+<dt>Replaces</dt><dd>Account-C's "Workspace" and "Admin" header links for officers and the "Officers and admins also see Admin in the header" line.</dd>
+<dt>Shown</dt><dd>Frame B: the Board section empty, busy, for the President (lca_observer) and for the Secretary. Frame C: the rail row, the menu rows and the way into and back from each room. Part 1 is Account-O.</dd>
+<dt>Differs</dt><dd>From Account-P-2: here the President's Email the members and the Secretary's minutes open their own rooms; on P they open inside the view-only Admin panel.</dd>
+<dt>K's feedback applied</dt><dd>A good default, every section drawn in full, roles hosted in My LCA, options for each (Tue, Oct 13).</dd>
+<dt>Sample data</dt><dd>The busy subjects and waits, the email subject and counts, the ticket counts and all times are invented.</dd>
+</dl></div>
+<aside class="ao-grey" aria-label="Board note">
+<div><p><b class="ao-gh">What</b>Part 2 of option O: the section with nothing waiting and with a backlog, the two seats that add a row, and how an officer gets into each room and back to My LCA.</p><p><b class="ao-gh">Built from</b>Account-C, the frame's officer and president rows, Nav-Header-Final's menu.</p></div>
+<div><p><b class="ao-gh">K's feedback applied</b>Every state drawn; the rooms are named for what they are; no row reads Workspace or Admin.</p><p><b class="ao-gh">Open for K</b></p><ol><li>The President's email room keeps no second factor? Group email reaches every member.</li><li>Confirm a week as the "waiting too long" line.</li></ol></div>
+</aside></div>
+</section><div class="ao-legend"><div class="ao-lbox"><p class="k-label" style="margin:0">Notes on this board</p><ol class="ao-notes"><li><span class="k-num-badge">1</span><span><b>Empty is one sentence, never an empty box.</b> The next dated thing stays (the meeting); the rail reads "Board" and the menu rows lose their counts.</span></li><li><span class="k-num-badge">2</span><span><b>Busy condenses rows to 44px</b> and names a wait of more than a week in words on amber. The rail count is inbox plus tickets: "Board · 17".</span></li><li><span class="k-num-badge">3</span><span><b>The President adds one row,</b> Email the members, which opens its own room (/workspace/email; today /admin/email inside Admin). Nothing else changes.</span></li><li><span class="k-num-badge">4</span><span><b>The Secretary keeps the minutes.</b> Post minutes edits the About › Minutes tab in place; 14 days after a meeting the row also joins Today as dated upkeep (tier 4).</span></li><li><span class="k-num-badge">5</span><span><b>Rail and menu name the rooms.</b> "Board inbox (3)" and "Support tickets (4)" sit with the other role rows; no row reads Workspace, Admin or Member lookup.</span></li><li><span class="k-num-badge">6</span><span><b>Drawn inside Int-A</b> (My LCA as the hub, rooms open from each section). The frame is swappable: under Int-B this section is the page the left rail opens; under Int-C it is a card on Your work. The room itself does not change; only the breadcrumb, the way back and the menu row do. Pick the frame on Account-Int-A, B or C.</span></li></ol></div>
+</div>
+<div class="ao-flab"><span class="ao-code">B</span><h2>States and seats · the Board section on Mon, Oct 5</h2><span class="ao-url">/dashboard#board</span><span class="ao-fmeta">Section only; the page around it is Account-O, Frame A.</span></div>
+<div class="ao-pan">
+<div><p class="ao-plab"><span class="k-num-badge" style="width:24px;height:24px;font-size:12px">1</span>Empty · nothing waiting</p>
+<div class="ao-card"><span class="ao-role ao-r-board">Treasurer</span><h3>Board · Treasurer</h3><p class="ao-sub2">Officer seat · term ends Wed, Jun 30, 2027</p>
+<p class="ao-one">Nothing waiting in the Treasurer inbox. Next meeting Tue, Nov 10 · 7:00 PM.</p>
+<div class="k-row-sm" style="gap:10px"><a class="k-btn k-btn-line k-btn-sm" href="#">Add to calendar</a><a class="k-link" href="#" style="font-size:14px">Open board inbox</a></div>
+<div class="ao-div" style="margin-top:16px"><span class="ao-role ao-r-off">LCA office</span></div>
+<div class="ao-mini" style="border-top:0"><span>No open support tickets.</span></div>
+<div class="ao-mini"><span><b>Treasurer's report, September</b> · <span class="ao-t ao-t-grey">Draft</span></span><a class="k-btn k-btn-line" href="#">Edit</a></div>
+<div class="ao-mini" style="flex-direction:column;align-items:stretch;gap:6px;padding:10px 0 0"><b>Look up a member</b><div class="ao-lookup" style="width:100%;height:40px"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg><span style="color:#555c6b">Name or US Chess ID</span></div></div>
+<div class="ao-cnts"><span class="ao-pill">Rail · Board</span><span class="ao-pill">Menu · Board inbox</span><span class="ao-pill">Menu · Support tickets</span></div>
+</div></div>
+<div><p class="ao-plab"><span class="k-num-badge" style="width:24px;height:24px;font-size:12px">2</span>Busy · a backlog <span class="k-sample">Sample data</span></p>
+<div class="ao-card"><span class="ao-role ao-r-board">Treasurer</span><h3>Board · Treasurer</h3>
+<p class="ao-cap" style="margin-top:12px">Treasurer inbox · 6 waiting · 2 waiting more than a week</p>
+<div class="ao-mini"><span><b>Invoice for the State Scholastic hall</b><br><span class="ao-amber">Waiting 12 days · more than a week</span></span><a class="k-btn k-btn-line" href="#">Reply</a></div>
+<div class="ao-mini"><span><b>Dues question from a club</b><br><span class="ao-amber">Waiting 9 days · more than a week</span></span><a class="k-btn k-btn-line" href="#">Reply</a></div>
+<div class="ao-mini"><span><b>Receipt for the Lafayette Open sponsorship</b><br><span class="ao-sub2">Waiting 3 days</span></span><a class="k-btn k-btn-line" href="#">Reply</a></div>
+<div class="ao-mini"><span><b>Reimbursement for State Scholastic trophies</b><br><span class="ao-sub2">Waiting 1 day</span></span><a class="k-btn k-btn-line" href="#">Reply</a></div>
+<div class="ao-mini"><span><b>Question about the 2026 financial summary</b><br><span class="ao-sub2">Waiting since today</span></span><a class="k-btn k-btn-line" href="#">Reply</a></div>
+<div class="ao-mini"><span><b>Deposit for the Paul Morphy Open hall</b><br><span class="ao-sub2">Waiting since today</span></span><a class="k-btn k-btn-line" href="#">Reply</a></div>
+<div class="ao-div" style="margin-top:10px"><span class="ao-role ao-r-off">LCA office</span></div>
+<div class="ao-mini" style="border-top:0"><span><b>Support tickets</b> · 11 open · 3 assigned to you · oldest 6 days</span><a class="k-btn k-btn-line" href="#">Answer tickets</a></div>
+<div class="ao-cnts"><span class="ao-pill">Rail · Board <i>17</i></span><span class="ao-pill">Menu · Board inbox (6)</span><span class="ao-pill">Menu · Support tickets (11)</span></div>
+</div></div>
+<div style="display:flex;flex-direction:column;gap:14px">
+<div><p class="ao-plab"><span class="k-num-badge" style="width:24px;height:24px;font-size:12px">3</span>If you are the President (lca_observer)</p>
+<div class="ao-card"><div class="k-row-sm" style="gap:8px"><span class="ao-rchip" style="min-height:36px"><span class="ao-role ao-r-board">President</span>board seat</span><span class="ao-sub2">the chip</span></div>
+<p class="ao-sub2" style="margin-top:10px">The officer's section, plus one LCA office row:</p>
+<div class="ao-mini" style="align-items:flex-start;padding-top:8px"><span><b>Email the members</b> · last sent Thu, Oct 1, "Lafayette Open, Sat–Sun, Oct 10–11" · 41 sent · <span class="ao-t ao-t-red">2 failed</span> <span class="k-sample" style="margin-top:4px">Sample data</span></span><a class="k-btn k-btn-line" href="#">Write an email</a></div>
+<p class="ao-sub2" style="margin-top:6px"><span class="ao-goes">opens Email the members · /workspace/email</span></p>
+<p class="ao-sub2" style="margin-top:8px">Email entrants appears on any event row you are involved with. The seat filter in the inbox shows every seat, read-only.</p>
+</div></div>
+<div><p class="ao-plab"><span class="k-num-badge" style="width:24px;height:24px;font-size:12px">4</span>If you are the Secretary</p>
+<div class="ao-card">
+<div class="ao-mini" style="border-top:0;align-items:flex-start"><span><b>Documents you keep</b> · Minutes of the Tue, Sep 8 board meeting · <span class="ao-amber">Not posted · 27 days</span></span><a class="k-btn k-btn-line" href="#">Post minutes</a></div>
+<p class="ao-sub2" style="margin:8px 0 6px">And in Today, ranked as dated upkeep:</p>
+<div class="ao-mini" style="align-items:flex-start;padding-top:8px"><span><span class="ao-role ao-r-board" style="margin-right:6px">Secretary</span><b>September minutes not posted yet.</b><br><span class="ao-sub2">Meeting Tue, Sep 8 · 27 days ago · joins Today 14 days after a meeting</span></span><a class="k-btn k-btn-line" href="#">Post minutes</a></div>
+</div></div>
+</div>
+</div>
+<div class="ao-flab" style="margin-top:22px"><span class="ao-code">C</span><h2>Rail, menu and the way in and back</h2><span class="k-num-badge">5</span><span class="ao-fmeta">Drawn at 1:1. The Board rows are ringed in gold.</span></div>
+<div style="display:grid;grid-template-columns:400px minmax(0,1fr);gap:20px;align-items:start">
+<div style="display:flex;flex-direction:column;gap:12px">
+<div class="ao-inset"><p class="ao-ilab">On this page · the section's row</p>
+<div class="ao-rnav" style="margin:0"><a class="ao-on" href="#"><span>Board</span><span class="ao-rc">7</span></a></div>
+<p class="k-meta" style="margin:6px 0 0">7 = 3 inbox messages + 4 open tickets; no count when both are empty.</p></div>
+<div class="ao-inset"><p class="ao-ilab">My LCA ▾ menu · Chris · Mon, Oct 5</p>
+<div class="ao-mrow ao-mrow-todo"><span>To do · 1: Pay Ella's entry · November Meet $20</span><span class="ao-t ao-t-amber ao-t-nodot">Unpaid</span></div>
+<p class="k-meta" style="margin:0 10px 4px">early price ends today</p>
+<div class="ao-msep"></div>
+<div class="ao-mrow"><span>My LCA</span></div>
+<div class="ao-mrow"><span>Family</span></div>
+<div class="ao-mrow"><span>Membership card</span></div>
+<div class="ao-msep"></div>
+<p class="ao-ilab" style="margin:4px 10px 2px">By role</p>
+<div class="ao-mrow"><span>Events you direct (3)</span></div>
+<div class="ao-mrow"><span>My region · 4 to check</span></div>
+<div class="ao-mrow ao-ring"><span>Board inbox (3)</span><span class="ao-msub">/board/inbox</span></div>
+<div class="ao-mrow ao-ring"><span>Support tickets (4)</span><span class="ao-msub">/workspace/tickets</span></div>
+<div class="ao-msep"></div>
+<div class="ao-mrow"><span>Log out</span></div>
+<p class="k-meta" style="margin:6px 10px 0">No row reads Workspace, Admin or Member lookup; an officer's lookup is the field in the section.</p>
+</div></div>
+<div style="display:flex;flex-direction:column;gap:12px">
+<div class="ao-inset"><div class="k-row-sm" style="justify-content:space-between"><p class="ao-ilab" style="margin:0">The way in and back, under each frame</p><span class="k-num-badge">6</span></div>
+<div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-top:10px">
+<div><p class="ao-cap">Board inbox</p><div class="ao-crumbs"><span class="ao-fn">Int-A</span><span class="ao-cr"><a href="#">My LCA</a> › Board inbox</span><span class="ao-fn">Int-B</span><span class="ao-cr" style="color:#3d4556">My LCA rail › Board › Inbox</span><span class="ao-fn">Int-C</span><span class="ao-cr" style="color:#3d4556">Your work › Board inbox</span></div></div>
+<div><p class="ao-cap">Support tickets</p><div class="ao-crumbs"><span class="ao-fn">Int-A</span><span class="ao-cr"><a href="#">My LCA</a> › Support tickets</span><span class="ao-fn">Int-B</span><span class="ao-cr" style="color:#3d4556">My LCA rail › Board › Support tickets</span><span class="ao-fn">Int-C</span><span class="ao-cr" style="color:#3d4556">Your work › Support tickets</span></div></div>
+<div><p class="ao-cap">Treasurer's report</p><div class="ao-crumbs"><span class="ao-fn">Int-A</span><span class="ao-cr"><a href="#">About</a> › Minutes · Back to My LCA</span><span class="ao-fn">Int-B</span><span class="ao-cr" style="color:#3d4556">About › Minutes · Back to Board</span><span class="ao-fn">Int-C</span><span class="ao-cr" style="color:#3d4556">About › Minutes · Back to Your work</span></div></div>
+<div><p class="ao-cap">Email the members · President</p><div class="ao-crumbs"><span class="ao-fn">Int-A</span><span class="ao-cr"><a href="#">My LCA</a> › Email the members</span><span class="ao-fn">Int-B</span><span class="ao-cr" style="color:#3d4556">My LCA rail › Board › Email the members</span><span class="ao-fn">Int-C</span><span class="ao-cr" style="color:#3d4556">Your work › Email the members</span></div></div>
+<div><p class="ao-cap">Member lookup · the full list</p><div class="ao-crumbs"><span class="ao-fn">Int-A</span><span class="ao-cr"><a href="#">My LCA</a> › Member lookup</span><span class="ao-fn">Int-B</span><span class="ao-cr" style="color:#3d4556">My LCA rail › Board › Member lookup</span><span class="ao-fn">Int-C</span><span class="ao-cr" style="color:#3d4556">Your work › Member lookup</span></div></div>
+<div><p class="ao-cap">Way back, every room</p><p class="ao-sub2" style="margin:0;line-height:1.45">The first crumb returns to /dashboard#board with the Board section open; Back to My LCA does the same. The menu rows move between rooms.</p></div>
+</div></div>
+<div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px">
+<div class="ao-inset"><p class="ao-ilab">The room's band · Board inbox and Support tickets</p>
+<div class="ao-band2"><span><a href="#">‹ My LCA</a> › <b>Board inbox</b> · Treasurer</span><a class="ao-exit" href="#">Back to My LCA</a></div>
+<div class="ao-band2" style="margin-top:8px"><span><a href="#">‹ My LCA</a> › <b>Support tickets</b></span><a class="ao-exit" href="#">Back to My LCA</a></div>
+<span class="ao-doneline">Reply sent 8:52 AM · <u>Back to My LCA</u></span>
+<p class="k-meta" style="margin:6px 0 0">The same site header above both; no sidebar, no mode switch. Between rooms: the menu rows.</p></div>
+<div class="ao-inset"><p class="ao-ilab">Edit in place · About › Minutes</p>
+<div class="ao-about"><div class="ao-tabs"><span>About</span><span>Board &amp; regions</span><span>Bylaws</span><span class="on">Minutes</span><span>Champions</span></div>
+<div class="ao-edstrip"><span>You can edit this as Treasurer.</span><a class="k-link" href="#">Back to My LCA</a></div>
+<div class="ao-mini" style="padding:6px 12px;border-top:0"><span><b>Treasurer's report, September</b> · <span class="ao-t ao-t-grey">Draft</span></span><span class="k-row-sm" style="gap:6px"><a class="k-btn k-btn-line" href="#">Edit</a><a class="k-btn k-btn-navy" href="#">Post</a></span></div>
+<div class="ao-mini" style="padding:6px 12px"><span>Treasurer's report, August · Posted Thu, Sep 3</span></div>
+</div>
+<p class="k-meta" style="margin:6px 0 0">Members see the same tab without the strip or the buttons.</p></div>
+</div></div></div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":2000}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

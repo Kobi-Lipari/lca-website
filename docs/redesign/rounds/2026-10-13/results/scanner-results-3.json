@@ -1,0 +1,267 @@
+{
+ "label": "scanner-3",
+ "results": [
+  {
+   "board": {
+    "file": "Scan-O.dc.html",
+    "title": "Scanner · O · My games: Event cards with boards (round 2)",
+    "width": 1440,
+    "page": "scanner",
+    "name": "Event cards with boards",
+    "idea": "A card per tournament with the round games as small final-position boards in a row, empty slots for rounds not scanned, and a Club nights group for everything else; closer to how a family thinks about a weekend, with the list as a toggle.",
+    "differs": "Cards with a little board per round of the event, including dashed slots for rounds without a sheet; Scan-N is a plain dated list with no cards and no slots."
+   },
+   "drawn": {
+    "file": "Scan-O.dc.html",
+    "title": "Scanner · O · My games: Event cards with boards (round 2)",
+    "width": 1440,
+    "height": 2850,
+    "second_file": "",
+    "second_title": "",
+    "second_height": 0,
+    "note": "What: My games (part 6 of 8), option 2. Each tournament gets a card, with one 120px final-position board per round. Rounds without a sheet show as dashed slots with \"Scan it\". Club nights get their own card, and a Cards · List toggle switches to Scan-N's dated list. The board shows Marcus Landry on the laptop on Sun, Sep 6 at 8:14 PM, with the More menu open on his Round 4 game (17. Rd8#), the Delete dialog and the \"Saved to My games\" toast. It also shows a guardian's view of Priya's games (family-only, \"Sharing Priya's games: not allowed yet · Allow\"), six states (Empty, Loading, Failure, Drafts while reading, Offline, Limit reached) and a 390px phone where the round slots scroll sideways with snap.\n\nBuilt from: Scan-A panel 5 (the \"My games · 3 saved\" list and its search), Scan-B screen 4 (the final-position board and \"Saved to My games\"), Scan-B screen 2 (\"The draft waits in My games\"), Scan-C (the notation kit link), the WS13 family cards, and WS15's MyGamesPage with GET /api/me/games. The header, footer and title strip follow the decided boards.\n\nK's feedback applied: one scanner in parts, with options per part. This is part 6 of 8, drawn in full, as option 2 beside Scan-N (Dated rows). It uses the same game, the same daily count (\"17 of 20 scans left today · resets at midnight\") and the same privacy rules as every other part. Open for K: cards or dated rows; where My games lives (a dashboard section plus /me/games, or only the page; task 27); photo retention, which decides whether the \"Photo not kept\" draft variant ever shows; whether a guardian consents to sharing once per child or once per game; and whether Public should exist at all (D9).",
+    "unresolved": [
+     "The Round 1, Round 2 and club-night positions are made up (back-rank mate, Scholar's mate, opposite-colour bishops). They are badged as sample data, so they can be swapped for real final positions if K has them.",
+     "The spec asks for 'My LCA ▾ \"Marcus Landry\" current' in the header. The decided header never shows a name, so I drew the My LCA button as the current page with an ML initials avatar and put Marcus Landry's name in its aria-label and the frame title.",
+     "The guardian frame came out at about 370px instead of the spec's 360. To fit it, Round 4 sits in a wider horizontal slot and the four dashed slots are narrower.",
+     "The board is 2850px, against a limit of under 2900. The rendered content is 2827px, so the declared height and $preview are both 2850.",
+     "I didn't read Live-Final-Pairings-2 or Live-Final-Standings. They aren't under docs/redesign/decided-boards (they are in canvas-out/project), and this board needs no crosstable or console queue: its card only links to Results page and Crosstable."
+    ]
+   },
+   "review": {
+    "file": "Scan-O.dc.html",
+    "height": 2850,
+    "second_height": 0,
+    "counts": "One file, 1440 wide with a fixed root, no second part (so second_height is 0). It renders at 2843px naturally, and both the declared height and $preview are 2850, under the 2900 cap. The legend has 6 numbered notes, and the board carries 6 badges in all (1 to 6). There are 4 frames: A, the laptop page with the decided header and footer; B, the guardian view; C, states; D, the 390 phone. The States band has 6 frames, each 220 tall: Empty, Loading, Failure, Drafts while reading (with the \"Photo not kept\" variant), Offline and Limit reached; Junior points to frame B. Card 1 has 5 round slots: Round 1 lost, Round 2 won, Round 3 dashed with Scan it, Round 4 the 17. Rd8# position won with a gold tint, Round 5 dashed. The Club nights card has 1 row (Houma Chess Club, Mon, Aug 31, vs Sam Nguyen, drew). The guardian card has 1 of 5 rounds scanned and 4 dashed slots. There are 6 Sample data badges. Text search found no em or en dashes, no \"USCF\", no \".5\", no {{holes}}, no iframes, no animation and no AI references. #c8a94a is used only as fills, borders and underline colour, never as text on a light ground; gold-ink text uses #866a1e. Every date has a weekday (Sat, Sep 5 to Sun, Sep 6; Mon, Aug 31; Sun, Sep 6) and times read 8:14 PM, 3:40 PM and 7:00 PM. Every colour state has a word beside it (Checked, Reading, Draft · 1 to check, won/lost/drew, not allowed yet). Decoder contract: the draft shows only Review, with no Share, PGN or Export while a check is open, \"Needs a check 0\" heads the chips, and nothing says the reader corrected a move. No tournament result is written on this board. Privacy: Priya's game is \"Only you and your parents\" by default, \"Sharing Priya's games: not allowed yet · Allow\" sits on it, and no child email, grade or birthdate appears.",
+    "changes": [
+     "Header: replaced the 'ML' initials avatar on My LCA with the decided person icon, so it matches Tourn-List-Final and Nav-Header-Final. The current-page underline is kept.",
+     "Page-head Sample badge: 'scan limit' is now 'scan count'. The 20 a day is the real DAILY_SCAN_LIMIT; only the 17 used is invented. This matches the title strip badge.",
+     "Phone inset: event cards no longer run off the right edge, and the left slot no longer pokes out over the card's left border. The card now clips its own slot row (overflow hidden, padding all round), with Round 4 centred and Rounds 3 and 5 cut off at the card edges to show the sideways scroll.",
+     "Delete dialog: changed to 'The moves, and the photo if one was kept, are removed at once.' so it does not settle the open photo-retention question.",
+     "Open for K in the grey note: added who may scan (any LCA account today) and the 20 a day, reset at midnight.",
+     "Root bottom padding 32px to 24px, so the natural height is 2843 and stays within the declared 2850 (it had reached 2851 after the note grew)."
+    ],
+    "remaining_concerns": [
+     "The States band draws the Drafts state as two compact rows, each with a spinner square or an empty square, rather than a full Round 4 slot inside an event card. The spec's spinner, copy and Review action are all there, but at a glance it reads less like 'drafts show in their round slot'.",
+     "The Delete dialog shows the developer label 'DELETE /api/games/:id' as small grey text inside the UI. I left it, but it could be read as on-screen copy.",
+     "The guardian frame is about 470px tall, not the 360 in the spec, because the five slots and the sharing consent need the room. Nothing clips.",
+     "Marcus's Round 4 game against a junior (Priya) is shown as 'Anyone with the link', with her full name. This follows the flow's Part 6 row. Whether a junior opponent's name may appear on a shared game page is still open for K, but the legend does not name that question on this board."
+    ]
+   }
+  },
+  {
+   "board": {
+    "file": "Scan-P.dc.html",
+    "title": "Scanner · P · Into the tournament: From the game, stack upload (round 2)",
+    "width": 1440,
+    "page": "scanner",
+    "name": "From the game, stack upload",
+    "idea": "The player pushes a checked game to the event from the Save & share step, and the director feeds a whole round in at once as a batch of photos or a PDF, so the crosstable fills from the games.",
+    "differs": "The way in is the game: the attach card sits on the Save & share step and in My games, a 'Game' word on the crosstable cell opens the game in a side sheet, and the TD's 'Upload Round 4 sheets' takes the stack in one go and fills Scan-A's tile grid as the jobs finish. Scan-Q instead starts from the crosstable cell ('Add your game') and has the TD photograph each sheet from its board row as it is handed in."
+   },
+   "drawn": {
+    "file": "Scan-P.dc.html",
+    "title": "Scanner · P · Into the tournament: From the game, stack upload (round 2)",
+    "width": 1440,
+    "height": 2900,
+    "second_file": "Scan-P-2.dc.html",
+    "second_title": "Scanner · P-2 · Into the tournament: From the game, stack upload, the director's side (round 2)",
+    "second_height": 2950,
+    "note": "What: This is option P for part 7 of the scanner, Into the tournament. It is drawn as one game: Landry 1-0 Shah, Board 6, Round 4, Louisiana State Championship 2026, Sun, Sep 6. Board 1 has frame A, where Marcus links his game at Save & share at 8:15 PM (Save to My games, Attach to the crosstable, Share & export, and the same card in My games). It also has frame B, the public results page with the Key game block, a \"Game\" line on the W12 and L3 cells, and the game open in a side sheet. Board 2 (Scan-P-2) has the phone version, the guardian's Hide from Priya's row, the recap with its one text link, the director's \"Upload Round 4 sheets\" at 4:10 PM with the 30-tile grid in words, the Reported results queue reading \"Scoresheet says\", and 16 states.\n\nBuilt from: Scan-A's Attach box, Share & export card, panel 6 tile grid and step strip. Scan-B screens 1 to 4 (the phone bar, the done card and the crosstable tick). Scan-C note 4 (a read result is a suggestion for the TD). The decided crosstable (Live-Final-Standings) and Reported results queue (Live-Final-Pairings-2). The decided signed-in header (My LCA) and the compact footer with the Play column's Scoresheet scanner link.\n\nK's feedback applied: Scan-A, B and C are treated as parts of one scanner, and nothing from them is turned down. Each legend note names where its piece of Scan-A, B or C landed. The scan count is redrawn as \"17 of 20 scans left today\", every tile states its status in words, linking stays shut while a flag is open, and the recap carries no board. Open for K: who links the game, and whether the opponent agrees first or can only hide it afterwards; whether the photo is kept for 30 days (drawn) or gone within the hour; whether Public should exist at all (D9); whether a junior's full name appears on a game page; a text link only in recaps; whether paper-sheet results skip the queue; the size of the event allowance; phasing; and offline stack uploads.",
+    "unresolved": [
+     "The spec's regions add up to about 3,900px at legible sizes, which is over the 2,900px limit, so I split the board. Scan-P (2,900px) has the player's Save & share page and the public results page. Scan-P-2 (2,950px) has the phones, the recap's one line, the director's round scan and every state.",
+     "The spec labels the frames with badges 1, 2 and 3, but those numbers clash with the six legend notes. Frames are labelled with gold letters A to F instead, and the numbered badges point only to legend notes.",
+     "The spec's headline 'Landry takes the Open on tiebreak' needs Marcus (3½) to have the top score. The sample rows 1, 2 and 4 (Andre Charbonnet, Grant Melancon, Hannah Breaux) were invented so that four players tie on 3½. They carry the Sample data badge.",
+     "Share & export uses a 96px board as the spec says, so the piece letters are barely readable at that size.",
+     "The game sheet sits beside the crosstable at the right of the results page instead of covering it, so the table and the Key game block stay readable. It is still the 420px sheet with Close.",
+     "Live-Final-Pairings-2 and Live-Final-Standings are not in docs/redesign/decided-boards. I used the copies in the canvas project folder."
+    ]
+   },
+   "review": {
+    "file": "Scan-P.dc.html (main) and Scan-P-2.dc.html (second)",
+    "height": 2900,
+    "second_height": 3000,
+    "counts": "Scan-P renders at 2881px (declared 2900, under the 2900 cap). Scan-P-2 renders at 2961px (declared 3000 after the fix, was 2950; cap 3000). Both are 1440 wide. Neither file has overflow or clipping (scroll and spill check on every element). Tags are balanced in both. Neither file has an em or en dash, USCF, .5 or a {{hole}}. Each legend has 6 numbered notes. Scan-P badges on the design: 1 (attach card), 2 (result cross-check, twice), 3 (Key game, Rd 4 header, side note). Scan-P-2 badges: 4 (recap), 5 (round scan, queue, TD empty state), 6 (allowance, daily limit), plus 1, 2 and 3 on the state cards. The Every state grid has 16 cards (2 rows of 8). The tile grid has 30 boards: 21 matching and checked, Board 5 waiting, 11 differs, 22 no result, 14 unmatched, 17 reading, and 8, 28, 29, 30 no sheet yet. That reconciles with \"24 of 30 sheets scanned\" and with the queue's \"27 of 30 confirmed · 2 scoresheets waiting · 1 differs\". Every regional item checked in the spec is present: band, step strip, 17 of 20, the three cards, My games row, results page with the Key game block, Game cells and game sheet, phones, guardian view, recap pair, console round rail, upload, allowance, tiles, queue and footnote. Header markup matches Tourn-List-Final. Decoder contract: \"Every move checked, 17 of 17. Linking opens only then.\" Nothing says the reader corrected a move, and a flag left open is shown as \"Left for the players to check\". A scanned result only ever appears as \"Scoresheet says\" with Confirm, Keep or Change, and the footnote reads \"A scoresheet never sets a result\". Privacy: guardian email and a \"Hide from Priya's row\" button. The junior's private state waits on Allow sharing. There is no child email, grade or birthdate. Full names appear only in results and the console. Canvas sticky note text: \"Scanner · P, part 7 Into the tournament, option P (2 boards). The way in is the game: the player links a checked game from Save & share or My games (public because the crosstable is public; the opponent's guardian is emailed and can hide it from her row), the crosstable cell says Game and opens the game in a side sheet, the directors pick a Key game, and the recap carries only a text link. Board 2: phones, the guardian's view, the recap, and the TD's Upload Round 4 sheets taking the stack in one go, with tiles named in words and read results entering Reported results as 'Scoresheet says 1-0 · Confirm', never as a result. Open for K: who links and whether the opponent agrees first, photo retention, Public at all, a junior's name on a game page, paper results in the queue, allowance size.\"",
+    "changes": [
+     "Scan-P: the three Save & share cards now fill the frame (grid 412/440/412 changed to 1fr/470px/1fr). They had left about 80px empty on the right and did not line up with the band.",
+     "Scan-P: fixed a repeat pairing in the crosstable. Andre Charbonnet and Hannah Breaux met in both Rd 2 and Rd 5 (D4/D1). Rd 5 is now D6 and D10, and the totals are unchanged at 3 each.",
+     "Scan-P: changed the misleading row 'Rows 5 to 11 · 26 more players in the Open' to 'Rows 5 to 11 · Show all 60 players in the Open'. 30 boards means 60 players.",
+     "Scan-P: changed the footer meta to the decided wording 'US Chess state affiliate · Louisiana's chess community since 1915'. Trimmed the Play column to Tournaments and Scoresheet scanner so the footer stays on one row. The scanner link stays named and underlined.",
+     "Scan-P: the frame B time chip said 'any visitor' while the page shows Marcus's 'You' chip. It now reads 'Sun, Sep 6 · 8:16 PM · Marcus signed in'. Shortened the right chip to 'Recap: board 2', which had spilled 58px.",
+     "Both boards: added an 'Option P, at a glance' line to the title strip so the sibling difference shows at once. P comes in from the game and takes the round as one stack. Scan-Q starts from the crosstable cell ('Add your game') and its TD photographs each sheet at the board.",
+     "Scan-P: note 4 now says 'Board 2.' because its badge is only on board 2. Scan-P-2: dropped the 'Board 2.' suffix from notes 5 and 6, since those badges are on that board.",
+     "Scan-P-2: corrected the count line to '24 of 30 sheets scanned · 21 match the entered result · 1 waiting for you to confirm · 1 differs · 1 no result on the sheet'. It had said 22 match, which counted Board 5 even though Board 5 has no entered result yet.",
+     "Scan-P: shortened the Round 2, Option P and Shown lines and the second side note to bring the board back under the 2900 cap after the additions (2970 down to 2881).",
+     "Scan-P-2: set the declared root height and $preview from 2950 to 3000. It rendered at 2961, taller than its declared 2950."
+    ],
+    "remaining_concerns": [
+     "Scan-P-2 has 39px of headroom under its 3000px cap and Scan-P has 19px under 2900, so any added copy will need an equal cut.",
+     "The spec puts Board 14 'Couldn't match, pick the board' on its own board tile. A sheet that can't be matched sitting on a numbered tile is a little contradictory, and it is not counted in the 24. I left it as the spec draws it.",
+     "The pressed 'Link the game' button has the annotation 'Drawn pressed, 8:15 PM' inside the button. It reads as UI copy rather than a board note. I kept it because it is the spec's 'drawn pressed' state.",
+     "The game sheet and Key game show Priya Shah's full name on a public game view. This is drawn as the spec says and listed as open for K (D3 vs D15), but a reviewer may read it as a privacy slip.",
+     "The notes and legend use the British spelling 'colour'. That matches the spec's wording, but the site copy elsewhere may use 'color'."
+    ]
+   }
+  },
+  {
+   "board": {
+    "file": "Scan-Q.dc.html",
+    "title": "Scanner · Q · Into the tournament: From the crosstable, at the table (round 2)",
+    "width": 1440,
+    "page": "scanner",
+    "name": "From the crosstable, at the table",
+    "idea": "The crosstable cell is the way in: a player's own cell says 'Add your game' and opens the scanner already filled in, and the director photographs each sheet from its board row as it is handed in, so the sheet and the result arrive together.",
+    "differs": "Scan-P starts from the game (the attach card at Save, a stack upload for the TD); Scan-Q starts from the crosstable (an 'Add your game' word in the player's own cell, a 'Games from this event' list under the crosstable, 'Make this the key game' on any listed game in TD view) and gives the TD a camera button on every board row of the results grid so the queue row reads 'Scoresheet says 1-0 · Confirm' the moment the sheet is read."
+   },
+   "drawn": {
+    "file": "Scan-Q.dc.html",
+    "title": "Scanner · Q · Into the tournament: From the crosstable, at the table (round 2)",
+    "width": 1440,
+    "height": 2900,
+    "second_file": "Scan-Q-2.dc.html",
+    "second_title": "Scanner · Q-2 · Into the tournament: From the crosstable, at the table (round 2)",
+    "second_height": 2950,
+    "note": "What: Option Q for part 7, Into the tournament. The crosstable is the way in. A signed-in player's own Round 4 cell says \"Add your game\" and opens the scanner with the event, round, board and both names filled in from the pairing. Saving from that cell adds the game to the crosstable. Under the crosstable, \"Games from this event\" lists the linked games, and TD view adds \"Make this the key game\". The director photographs each sheet from its board row, so the queue reads \"Scoresheet says 1-0 · Confirm\" as soon as the sheet is read. Board 1 has the scanner's top band, the results page at 3:52 PM and every state. Board 2 has the player's three phone screens at the table (3:52 to 3:58 PM), the guardian's version and the mismatch version, then the console and the TD's phone at 4:05 PM.\n\nBuilt from: Scan-B screen 1 (the capture screen: gold guide frame, Upload, Back side, the count) and screen 4 (the done card). From Scan-A: the two matched crosstable rows, Share & export and the step strip. Scan-C note 4 (a read result is only a suggestion). The decided crosstable and Reported results queue (Live-Final-Standings, Live-Final-Pairings-2), and the decided header and footer.\n\nK's feedback applied: one scanner in parts, with options per part. The game, the step strip, \"17 of 20 scans left today\" and the privacy rules are the same as on every other part. Open for K: who links the game, and whether the opponent agrees first or hides it after. How long the photo is kept (drawn: kept, ticked). Whether Public should exist at all (D9). A junior's full name on a game page. Whether a scanned result goes into the queue, since the replan says paper-sheet results skip it. The event allowance (300 drawn). Whether a guardian's OK is given once per child or once per game.",
+    "unresolved": [
+     "The board is split into two files (Scan-Q 2900px, Scan-Q-2 2950px). The spec's single 2950px board would not fit the doc block, the 844px phone frames and the console. Frames A, B and E (every state) are on board 1; frames C (phones) and D (director) are on board 2. The legend sits at the top of each board instead of as a bottom Region F.",
+     "Changed sample names in 'Games from this event' to Board 1 Andre Charbonnet 1-0 Malik Johnson and Board 3 Rachel Doucet ½-½ Isaac Dupre. The spec's names put Jordan Lee on Boards 1 and 5, Lucas Pham on Boards 1 and 22, and Amara Johnson on Boards 3 and 11, all in Round 4. Boards 7, 8 and 14 in the results grid use sample names from the decided boards.",
+     "The crosstable is drawn after four rounds with Rd 5 blank, as the spec says. So the totals are Marcus 3 and Priya 2½, not the spec's 3½, which already counted Round 5.",
+     "The browser URL is the spec's /pairings, but the tab is drawn as the decided 'Standings & crosstable' tab, because that is where the crosstable lives on the decided boards.",
+     "The results grid's Result column uses the real ResultsEntry one-tap buttons (1-0 · ½-½ · 0-1 · More) instead of the spec's W/D/L/F entry. The round rail drops the separate scan step (Pair · Post · Results · Pair next round), as the spec says.",
+     "The Board 3 row in 'Games from this event' is marked 'Owner only' and explained as visible only to its owner and the TDs until every move is checked. As literally specified, Marcus would be shown a row he cannot see.",
+     "The queue counts (26 of 30 confirmed, 3 waiting, 1 not reported) are kept as the spec gives them, even though the grid shows more unconfirmed boards than that."
+    ]
+   },
+   "review": {
+    "file": "Scan-Q.dc.html (main) and Scan-Q-2.dc.html (second)",
+    "height": 2900,
+    "second_height": 3000,
+    "counts": "Main board (Scan-Q): renders 2886px, declared 2900 (root and $preview), limit 2950. Second board (Scan-Q-2): renders 2946px, declared 2950 (root and $preview), limit 3000. The second_height field says 3000 because that is the limit; the declared height of Scan-Q-2 is 2950. After the fixes the overflow and clipping scan finds nothing on either file, and every tag is balanced in both. Legend: 6 numbered notes on each board, the same six as region F of the spec. The grey note has What, Built from, K's feedback applied and Open for K, with 5 open items. Badges: on Scan-Q, 1 on Marcus's Rd 4 cell, 3 on the Games list, and 1 to 6 on the state cards; on Scan-Q-2, 2 on Who can see it, 4 and 5 on the grid's Sheet and Status headers, 4 on the TD phone panel and 6 on the allowance line. Region checks: A (band, step strip with Save & share current, 17 of 20 count, Scan another sheet, Filled from the pairing strip and Not this game?) is present. B (dashed key-game placeholder plus the filled callout, the crosstable with rows 1 to 4, an ellipsis row and row 12, Add your game in Marcus's cell, the guardian callout, the Game key line, Games from this event with Boards 1, 3 and 6 and Show all 14, and TD view chips) is present. C (three phones with the tab bar hidden, the guardian callout and the mismatch callout) is present. D (round rail with no scan step; queue rows for Boards 11, 6 and 5, the disagreement first; a grid of 7 rows with the Status and Sheet states in words; counts; allowance; footnote; Open for K chip; TD phone and caption) is present. E has all 16 state cards. Rule scan of the visible copy: 0 em or en dashes, 0 USCF, 0 '.5', 0 AI words, 0 grade, birthdate or financial questions, 0 dates without a weekday, 0 animations or iframes, and 0 cases of gold as text. The two #c8a94a hits are underline and tab-border colours. Before the fix there were 2 times without PM ('3:52 to 3:58 PM'). Decoder contract: no line says the reader corrected anything. Save appears only after 'Every move checked'. Board 3, with 2 moves to check, is owner only and has no Play through. Every scanned result stays a suggestion ('Scoresheet says 1-0', and Confirm writes it through the grid). Boards 5 and 6 have no result selected in the grid. Privacy: Priya's own scan saves as Only me and needs Allow sharing from her guardian. The page asks for no child email and no grade. Full names appear only in results and the crosstable. Header is the decided signed-in header with My LCA. Footer matches the Scan-P sibling (Play column).",
+    "changes": [
+     "Scan-Q: Andre Charbonnet's Round 4 cell (W5) said 'TD view: Add', but Board 1 (Charbonnet 1-0 Malik Johnson) is listed as a linked game with Play through. The cell now reads 'Game' with the play icon, so the crosstable and the Games list agree.",
+     "Scan-Q: Board 3 is owner only with 2 moves to check, but in the Games list it offered 'TD view: Make this the key game'. That contradicted the rule that a game is only shared once checked. It is now a muted dashed chip, 'TD view: key game only once checked'.",
+     "Scan-Q: the dashed TD-view callout now adds 'Make this the key game only works once the event is finalized (state Not final)'. The enabled-looking chips no longer contradict the Not final state card or the 'chosen once the event is finalized' placeholder.",
+     "Scan-Q: the Daily limit and Offline state cards said 'Player and TD' above the player text and then a separate TD section. The first label is now 'Player'.",
+     "Scan-Q: the footer trust line was shortened to 'US Chess state affiliate · since 1915'. It now reads 'US Chess state affiliate · Louisiana's chess community since 1915', as on the decided footer (Nav-Footer-Final, Tourn-List-Final).",
+     "Scan-Q: gave the crosstable fixed column widths (Rd 1 to Rd 5, Rating, Total). Rd 4 no longer takes most of the spare width while Rd 5 squeezes.",
+     "Scan-Q-2: the times '3:52 to 3:58 PM' in the Shown line and the frame C time chip are now '3:52 PM to 3:58 PM'.",
+     "Scan-Q-2: phone 3 (Done) overflowed its screen by 6px and clipped 'Back to the crosstable · Scan the next sheet'. PGN and Share link were stacked because k-grid-2 collapses at phone width. They now sit side by side in an explicit two-column grid, and the clip is gone.",
+     "Scan-Q-2: the selected 'Public' choice in Who can see it had a padlock icon, which reads as private. It is now a globe icon."
+    ],
+    "remaining_concerns": [
+     "Story timing on Board 6: Marcus saves the game at 3:58 PM with every move checked ('you checked 1 move'). At 4:05 PM the TD's scan of the same sheet still shows 'Scanned · 1 move to check · left for the players', and the caption says both players find the game in My games. The spec asks for this copy, so I kept it. The board does not say what happens when a player has already saved the game from the cell, for example whether the TD's read is filed beside the player's game rather than as a second copy. This needs a decision for the spec or for K.",
+     "In the Games list, the chips on Boards 1 and 6 still read 'TD view: Make this the key game' while the event is in progress. The callout now says the action only works once the event is finalized, but the chip itself does not look disabled. If K reads the chips literally, it may be worth showing them disabled.",
+     "The spec's Games list names (Board 1 Lucas Pham vs Jordan Lee, Board 3 Amara Johnson vs Sam Nguyen) clash with its own console rows, where Sam Nguyen and Jordan Lee are on Board 5 in the same round. The designer used Charbonnet vs Malik Johnson and Doucet vs Dupre from the decided Live boards instead. I kept that, but it differs from the spec text.",
+     "The browser URL reads /tournaments/louisiana-state-championship-2026/pairings, as the spec gives it, while the current tab is 'Standings & crosstable'. I left it to match the spec, but the URL and the tab may look mismatched to K.",
+     "The footer keeps the compact Play-column strip that the sibling Scan-P uses, not the full four-column decided footer. Only the trust line was brought into line with the decided wording."
+    ]
+   }
+  },
+  {
+   "board": {
+    "file": "Scan-R.dc.html",
+    "title": "Scanner · R · The printed notation kit: Scan-ready sheet, one print route (round 2)",
+    "width": 1960,
+    "page": "scanner",
+    "name": "Scan-ready sheet, one print route",
+    "idea": "Every LCA sheet carries four corner marks and, when printed from the pairings, a signed QR, so the reader straightens on the marks, reads the result boxes and files the game under its pairing, and the whole kit prints from one place.",
+    "differs": "Scan-R keeps Scan-C's corner marks and sheet QR (new backend: a scoresheets table, de-skew on the marks, result boxes read) and prints everything from /scanner/kit plus a Scoresheets option in the TD's print kit. Scan-S drops the marks and the QR, relies on today's grid finder and name matching with nothing new on the backend, and splits the kit by audience."
+   },
+   "drawn": {
+    "file": "Scan-R.dc.html",
+    "title": "Scanner · R · The printed notation kit: Scan-ready sheet, one print route (round 2)",
+    "width": 1960,
+    "height": 1950,
+    "second_file": "",
+    "second_title": "",
+    "second_height": 0,
+    "note": "What: Option R for part 8 of the scanner, the printed notation kit. It shows three US Letter sheets in black ink. The first is the scan-ready LCA scoresheet: four corner marks, one boxed cell per move, 50 moves on each side, result boxes, signatures, and (when printed from the pairings) a typed header and a signed sheet QR. It is filled in for Marcus Landry 2014 vs Priya Shah 1803, Round 4, Board 6, Sun, Sep 6, 2026, ending 17. Rd8#, 1-0. Below it are the back side and the blank club-night version. The other two sheets are the kids' notation cheat sheet and the two cut-out cards. The board also shows where the kit prints from (/scanner/kit for the blank kit, and the TD's Print & QR kit with Scoresheets added to the What to print list and a \"Scoresheets · Round 4 · Open\" row in the Download menu) and nine states.\n\nBuilt from: Scan-C (all three sheets, kept whole), today's TournamentPrintPage What to print select, the decided print kit's Download menu (Live-Final-Print), and the decided header and footer.\n\nK's feedback applied: one scanner in parts, with options per part. Scan-C is part 8 and nothing in it is turned down. Its Paul Morphy Open sample header is redrawn with the round's game, and the cards read \"Log in to scan · members only · up to 20 scans a day\". Scan-S is the other option for this part. Open for K: (1) the cards' photo line, today's \"read once and never stored\" (drawn in a dashed box) or \"kept 30 days unless you save the game\"; (2) a junior's full name on a printed sheet, or Priya S. with her US Chess ID; (3) whether \"Scoresheet says 1-0 · Confirm\" goes in the Reported results queue at all; (4) who may scan, and whether the kit stays in Phase 5.",
+    "unresolved": [
+     "The header and footer inside the two region E browser frames are the decided 1440px chrome scaled to 62.5% so they fit 900px insets, so their text reads small at canvas zoom.",
+     "The scoresheet header uses the official full-colour logo blob (/_blob/670986b2f9e137948361309bea54fef8), as D1 says for the print kit. On a black-ink sheet it prints in greyscale, and the board says so beside the sheets.",
+     "To keep the board under 1960px, the spec's region A kicker, its separate 'Under both' caption and its bottom legend were merged: the legend sits in the top notes box, the token caption is in region E's heading line, and the spec line is in region F's heading line. Every sentence is kept.",
+     "The open Download menu on the print page hangs over part of that frame's footer, as an open dropdown would.",
+     "'Blank sheets instead of names (10)' is drawn word for word from the spec. The meaning of the (10) is not defined anywhere, so K may want it reworded."
+    ]
+   },
+   "review": {
+    "file": "Scan-R.dc.html",
+    "height": 1950,
+    "second_height": 0,
+    "counts": "This is a single file at 1960 x 1950 with no second part, so second_height is 0. With the root's fixed height released, the board renders 1947.8px tall. The declared root height and $preview are both 1950, under the 1960 cap. Counts: 6 numbered legend notes, and badges 1 to 6 all placed on the design. Open for K has 4 items in the grey note, plus a separate open-for-K box for the photo line on the cards. Region F has all 9 state cards, each with its status tag in words. There are 3 Letter sheets, 2 insets (Back side, Blank) and 2 browser insets (/scanner/kit and the TD print page). Each browser inset carries the header from Tourn-List-Final markup for markup. Rule greps found no em or en dashes, no \".5\" in visible copy (only SVG and CSS numbers), no USCF, no AI wording, no {{holes}}, no iframes and no animation or transitions. The skeleton is exact: support.js, the kit blob, one helmet style block, and the data-dc-script with $preview 1960 x 1950. A tag-balance parse found nothing unclosed. The decoder contract holds: the cards' Check step has the player pick the move that was played, and nowhere says the reader corrected a move. The scanned result appears only as \"Scoresheet says 1-0 · Confirm\" in the Reported results queue, and nothing posts without the TD. Privacy holds: Priya's game saves as Only me, there is no grade, birthdate or child email anywhere, and her full name on the printed sheet is marked open for K. The board keeps the same game, players, event, round, board and dates as the other parts. The daily limit appears in words, both as \"17 of 20 left today\" and as \"up to 20 scans a day\".",
+    "changes": [
+     "Title strip: rewrote the Round 2 line so the difference from the sibling board shows at a glance: \"Unlike Scan-S: marks and a signed QR on every sheet (new backend), one print route.\" Shortened Built from and Replaces to one line each so the strip did not grow.",
+     "Loop strip: changed the third pill from \"Scanner: photo, check, fix\" to \"Scanner: Photo · Read · Check · Save & share\", so it uses the same step strip as the other scanner parts.",
+     "Sheet 1: the bottom line (\"Pen or dark pencil...\" / \"LCA scoresheet v1\") ran into the two bottom corner marks. Added a 14px side inset so the marks stay clear.",
+     "Sheet 1: moved badge 4 up 12px so it sits on the result boxes, not the signature line.",
+     "Sheet 1: the colour LCA logo now renders in greyscale, which matches the board's own claim that every sheet prints in black ink.",
+     "Region E, right inset: the open Download menu ran about 30px past the page and covered the footer. Dropped its \"Tournament directors only / US Chess rating report checklist\" group, since the whole page is already marked directors only. The menu now ends inside the page and no longer covers the footer.",
+     "Region E, left inset: badge 6 sat on the corner of the Directors box. It is now inline beside the \"Print the notation kit\" heading.",
+     "Region E, right inset: badge 3 was clipped by the browser frame's overflow. Moved it from left:-6px to left:4px.",
+     "Re-rendered and checked full-size crops after each change. The final render has no overlaps or clipping. The only overflows are the intentional ones: badges hanging off the sheet edges and the scaled chrome wrappers, which clip on purpose."
+    ],
+    "remaining_concerns": [
+     "Sticky note text for the canvas: Scanner · R · Part 8, the printed notation kit, option R \"Scan-ready sheet, one print route\". Scan-C's three Letter sheets are kept whole. Every sheet has four corner marks, and a sheet printed from the pairings also has a signed QR (/scanner?sheet=<token>). The reader straightens the photo on the marks, reads the result boxes and files the game under Round 4, Board 6. The blank kit and the cards print from /scanner/kit, and pre-filled scoresheets print from the TD's print kit (new \"Scoresheets\" option). Open for K: the cards' photo line, a junior's full name on a printed sheet, \"Scoresheet says\" in the queue, who may scan and phasing.",
+     "The footer meta reads \"US Chess state affiliate · since 1915\", the same as sibling Scan-S. The decided footer says \"Louisiana's chess community since 1915\". The longer wording would wrap inside the scaled 46px footer, which also carries the Play column from Nav-Footer-Final, so I left it short.",
+     "The Download menu in the TD print-page inset now leaves out the \"US Chess rating report checklist\" row that Live-Final-Print has. This board does not need it, but the drawn menu is a trimmed copy of the decided one.",
+     "Sheet 1's 56px QR sits about 20px from the top-right corner mark. Nothing overlaps, but in a real build the corner-mark finder should not confuse the QR's finder squares with a corner mark.",
+     "The logo on the sheet uses the blob /_blob/670986b2f9e137948361309bea54fef8. Among the decided boards only Looks-Compare uses it, and Scan-S uses it too. The local renderer stands in the repo logo for it, so I could not confirm the blob resolves on the canvas.",
+     "The step strip only appears as a loop pill here, because the kit is printed matter outside the /scanner page. The spec for this board does not call for the full step strip."
+    ]
+   }
+  },
+  {
+   "board": {
+    "file": "Scan-S.dc.html",
+    "title": "Scanner · S · The printed notation kit: Plain LCA sheet, kit split by audience (round 2)",
+    "width": 1960,
+    "page": "scanner",
+    "name": "Plain LCA sheet, kit split by audience",
+    "idea": "The same LCA sheet without corner marks or a QR, read by today's grid finder and matched by the names in its typed header, and the kit lives where each audience already looks: scoresheets with the TD, the cheat sheet and cards on the Scholastic page.",
+    "differs": "Scan-R's sheet carries four corner marks and a signed QR and needs new backend work, with the whole kit printed from /scanner/kit and the TD print kit. Scan-S's sheet has neither mark nor QR, today's grid finder reads it as any US Chess style sheet, names match the pairings, nothing is added on the backend, and the kit is split: scoresheets in the TD's print kit, the cheat sheet and cards as static PDFs in the Scholastic page's parents' resources, /scanner/kit a short page linking to both."
+   },
+   "drawn": {
+    "file": "Scan-S.dc.html",
+    "title": "Scanner · S · The printed notation kit: Plain LCA sheet, kit split by audience (round 2)",
+    "width": 1960,
+    "height": 1950,
+    "second_file": "",
+    "second_title": "",
+    "second_height": 0,
+    "note": "What: Option S for part 8, the printed notation kit. It uses Scan-C's three US Letter sheets with no corner marks and no QR. Today's grid finder reads the LCA scoresheet the same way it reads any US Chess style sheet, and the names typed in the header match the Round 4 pairings, so nothing new is needed on the backend. The kit is split by audience. Scoresheets (from the pairings, or blank) go in the TD's print kit. The cheat sheet and the how-to-scan cards become PDFs in the Scholastic page's resources for parents and coaches. /scanner/kit becomes a short page of links. The board also shows the same game (Landry 2014 vs Shah 1803, Round 4, Board 6, Sun, Sep 6), where each sheet lives, and every state.\n\nBuilt from: Scan-C sheets 1 to 3 (layout, the cheat sheet word for word, both cards) minus the marks and the QR; Scan-R's markup for the sheets, insets and states; today's print page (What to print, now with Scoresheets); the Download menu from Live-Final-Print; the decided Scholastic page (page 10); and the header and footer from the decided boards.\n\nK's feedback applied: one scanner in parts, with options per part. Scan-C is part 8 and this is option S (Scan-R is the other). The six numbered notes show where each part of Scan-C landed. Open for K: (1) the photo line on the cards: deleted once read, or kept 30 days unless saved (drawn: today's wording, in a dashed box); (2) a junior's full name on a printed sheet, or Priya S. with her US Chess ID (drawn: full name); (3) \"Scoresheet says 1-0 · Confirm\" in the Reported results queue, or left out (drawn: in the queue); (4) who may scan: an LCA account, 20 scans a day, as today, with the kit in Phase 5.",
+    "unresolved": [
+     "The legend sits at the top in the title strip, as on Scan-R and the decided boards, not in region G at the bottom where the spec placed it. Some legend and title-strip lines are slightly shortened from the spec wording so the board stays under 1960px.",
+     "The Sample data badge sits above the loop strip on the right of region A instead of inline after the lead, to save height.",
+     "The TD print-kit inset shows the What to print select closed on Scoresheets, without the other options listed, and its Download menu lists only the three Round 4 · Open rows the spec names. The Print button is labelled 'Print' because 'Print 30 scoresheets' did not fit at 590px.",
+     "The header and footer chrome in the three 590px browser insets is the decided 1440px header and footer scaled to 41%, so its text is very small. It is shown as page chrome only.",
+     "Sheets 2 and 3 have a dashed board-note chip, 'PDF · Scholastic page › For parents and coaches', on their top edge, and sheet 1 has one reading 'PDF · TD print kit › Scoresheets'. These are notes on the board, not printed content.",
+     "The official LCA logo on sheet 1 uses the blob from Scan-R (/_blob/670986b2f9e137948361309bea54fef8); the local renderer substituted the repo logo.",
+     "Rendered height is 1928px; declared height and $preview are 1950."
+    ]
+   },
+   "review": {
+    "file": "Scan-S.dc.html",
+    "height": 1950,
+    "second_height": 0,
+    "counts": "Single-frame board at 1960 x 1950. Rendered height is 1942, rounded up to 1950, which is under the 1960 limit. The root and $preview both declare 1950. There is no second part, so second_height is 0. Legend: 6 numbered notes, and badges 1 to 6 sit on the design (1 to 4 on sheet 1, 5 on sheet 2 and the Scholastic inset, 6 on the cut line, plus a second 3 on the print-kit select). Grey note: What, Built from, K's feedback applied and Open for K, with 4 open items (photo line, a junior's full name on a printed sheet, \"Scoresheet says\" in the queue, who may scan and phasing). Regions A to G are all there: the head with the Sample data badge and the loop strip; sheet 1 (no marks, no QR, the typed header, the Opera Game in blue to 17. Rd8#, the 1-0 box ticked, ML and PS initials, the back-side and blank insets); sheet 2 (the cheat sheet word for word, upside-down answers, the 44px QR); sheet 3 (cards A and B with \"the whole grid in the frame\" and \"the whole sheet inside the frame\", the photo line in a dashed box with K's alternative); E with 3 browser insets (print kit with the Scoresheets select, Download menu, checkbox, \"30 sheets\" preview and Print; the Scholastic resources with 3 PDF rows; /scanner/kit with two link lines and one Download); F with 9 state cards, each with its status in words. Overflow and clipping check: 0 elements clipped or spilling out, and the page is exactly 1960 wide with no horizontal scroll. Tags balance with no errors. Rule checks: 0 em or en dashes, 0 USCF, no .5 (only ½-½), 0 grade or birthdate asks, 0 {{holes}}, iframes or animations. Brand gold #c8a94a is used only as a fill behind navy text (the E and F section codes) and as an underline on the navy footer; gold-ink text is #866a1e. Every date carries its weekday and times read like 9:40 PM. The game is right: Marcus Landry 2014 (White) vs Priya Shah 1803 (Black), Louisiana State Championship 2026, Open, Round 4, Board 6, Sun, Sep 6, 2026, and the Opera Game moves are correct. The header matches the decided Tourn-List-Final header; the footer is the decided short footer plus the decided F1 Play column (Nav-Footer-Final).",
+    "changes": [
+     "The cheat sheet's footer QR was being squeezed by the flex row to about 25px. Added .cs-foot svg{flex:none} so it renders at the spec's 44px.",
+     "Added a caption above each Region E browser so the split by audience reads at a glance, as the spec names them: '1 · The TD's print kit · scoresheets beside pairings, for directors only', '2 · The Scholastic page › For parents and coaches · the cheat sheet and cards', '3 · /scanner/kit, a short page · links to both, one blank sheet'.",
+     "Loop strip: 'Scanner: photo, check, fix' became 'Scanner: Photo · Read · Check · Save & share' so the kit board carries the same step strip names as the other scanner parts.",
+     "Daily-limit state tag: '17 of 20 left today' became '17 of 20 scans left today', the flow's wording.",
+     "Tried the decided footer's full line ('US Chess state affiliate · Louisiana's chess community since 1915'). At this scale it wraps the footer and gets clipped, so I put back the short 'US Chess state affiliate · since 1915' that Scan-R also uses.",
+     "Cut the root gap from 9px to 7px to make room for the new captions. The rendered height is now 1942, and 1950 stays declared on the root and $preview.",
+     "The pre-review copy is kept at render/out/Scan-S.before-review.html."
+    ],
+    "remaining_concerns": [
+     "The sibling Scan-R loop strip still reads 'Scanner: photo, check, fix'. It should get the same 'Photo · Read · Check · Save & share' wording so R and S compare like for like.",
+     "The footer meta line inside the scaled browser frames is the short form 'US Chess state affiliate · since 1915', not the decided 'Louisiana's chess community since 1915'. The full line wraps and clips at 0.41 scale. Scan-R has the same short form, while Scan-D and Scan-P use the full line.",
+     "Live-Final-Print could not be found on disk, so the breadcrumb 'Print & QR kit' and the 'Print Round 4 set' button were checked only against Scan-R and today's TournamentPrintPage 'What to print' select, not against that decided board.",
+     "Priya, a junior, is printed with her full name on the pre-filled scoresheet, as the spec says. It is named as open for K in the grey note and in the Junior's sheet state.",
+     "The decoder contract and the Save/Export lock are not drawn on this board because the kit has no review step. Nothing on it contradicts them: the card says 'pick the one that was played', and note 4 keeps the result as a 'Scoresheet says 1-0 · Confirm' suggestion that nothing posts without the TD.",
+     "There is 8px of headroom (1942 rendered, 1950 declared). Any added content needs a matching trim to stay under the 1960 limit."
+    ]
+   }
+  }
+ ]
+}

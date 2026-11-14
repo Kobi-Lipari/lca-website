@@ -1,0 +1,285 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Membership · H · Member-H-2 · Renew first, phones and states (round 2)</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/6107adb451dbab26ee5d89f4189b81f8">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;background:#f7f4ea;font-family:Geist,system-ui,sans-serif;color:#1a2744}
+.h2-root{width:1440px;box-sizing:border-box;background:#f7f4ea;color:#1a2744}
+.h2-root *{box-sizing:border-box}
+.h2-strip{height:56px;display:flex;align-items:center;justify-content:space-between;gap:24px;padding:0 40px;border-bottom:1px solid #d9d8d1}
+.h2-strip-l{font-size:15px;font-weight:700;white-space:nowrap}
+.h2-strip-r{font-size:13.5px;font-weight:600;color:#866a1e;text-align:right;line-height:1.35}
+.h2-doc{padding:14px 28px 0;display:grid;grid-template-columns:minmax(0,1fr) 440px;gap:20px;align-items:start}
+.h2-meta{font-size:13.5px;line-height:1.5;color:#3d4556;margin:0}
+.h2-meta b{color:#1a2744;font-weight:600}
+.h2-lbox{background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:12px 16px;margin-top:10px}
+.h2-notes{list-style:none;margin:8px 0 0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px 20px}
+.h2-notes li{display:flex;gap:9px;align-items:flex-start;font-size:12.5px;line-height:1.45}
+.h2-notes .k-num-badge{width:22px;height:22px;font-size:11.5px}
+.h2-grey{background:#efefea;border:1px solid #dddcd4;border-radius:12px;padding:12px 16px;display:grid;grid-template-columns:1fr 1fr;gap:6px 16px}
+.h2-grey p{margin:0;font-size:12.5px;line-height:1.45;color:#2b3446}
+.h2-grey p b{display:block;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#555c6b}
+.h2-grey ol{margin:0;padding-left:16px;font-size:12.5px;line-height:1.45;color:#2b3446}
+.h2-stage{display:flex;gap:22px;padding:20px 28px 0;align-items:flex-start}
+.h2-fr{width:410px;flex:none;display:flex;flex-direction:column;gap:12px}
+.h2-cap{min-height:64px;background:#ffffff;border:1px solid #d9d8d1;border-radius:12px;padding:10px 14px;display:flex;flex-direction:column;gap:4px;overflow:hidden}
+.h2-oh{display:flex;align-items:center;gap:10px}
+.h2-oc{flex:none;display:inline-flex;align-items:center;justify-content:center;min-width:24px;height:24px;padding:0 8px;border-radius:6px;background:#1a2744;color:#ffffff;font-size:12px;font-weight:700}
+.h2-oh h3{font-size:16px;line-height:1.25;font-weight:700;margin:0}
+.h2-idea{font-size:12.5px;line-height:1.4;color:#2b3446;margin:0}
+
+/* phone chrome (decided phone boards, WS02) */
+.h2-phone{width:390px;height:844px;box-sizing:content-box !important;border:10px solid #10182b;border-radius:52px;background:#10182b;position:relative;box-shadow:0 24px 50px rgba(16,24,43,.2);flex:none}
+.h2-scr{position:absolute;inset:0;border-radius:42px;overflow:hidden;display:flex;flex-direction:column;background:#ffffff}
+.h2-status{flex:none;height:47px;background:#1a2744;color:#ffffff;display:flex;align-items:center;justify-content:space-between;padding:4px 30px 0 40px;font-size:15px;font-weight:600;position:relative}
+.h2-island{position:absolute;left:50%;top:11px;width:120px;height:34px;margin-left:-60px;border-radius:20px;background:#000000}
+.h2-statr{display:flex;align-items:center;gap:6px}
+.h2-sig{display:inline-flex;align-items:flex-end;gap:1.5px;height:11px}
+.h2-sig i{display:block;width:3px;background:currentColor;border-radius:1px}
+.h2-sig i:nth-child(1){height:4px}.h2-sig i:nth-child(2){height:6px}.h2-sig i:nth-child(3){height:8.5px}.h2-sig i:nth-child(4){height:11px}
+.h2-batt{display:inline-flex;width:24px;height:12px;border:1.5px solid currentColor;border-radius:4px;padding:1.5px}
+.h2-batt i{display:block;width:70%;background:currentColor;border-radius:1.5px}
+.h2-app{flex:none;height:56px;background:#1a2744;display:flex;align-items:center;gap:8px;padding:0 10px 0 14px;color:#ffffff;border-bottom:1px solid rgba(255,255,255,.12)}
+.h2-brand{display:flex;align-items:center;gap:8px;color:#ffffff;text-decoration:none;min-height:44px;min-width:0}
+.h2-mark{width:28px;height:28px;fill:#ffffff;flex:none}
+.h2-bname{display:flex;flex-direction:column;line-height:1.12}
+.h2-bname b{font-size:14px;font-weight:700;white-space:nowrap}
+.h2-bname span{font-size:11px;font-weight:500;color:rgba(255,255,255,.78)}
+.h2-sbtn{display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;border:1.5px solid rgba(255,255,255,.6);border-radius:9px;color:#ffffff;margin-left:auto;flex:none}
+.h2-main{flex:1;min-height:0;overflow:hidden;position:relative;background:#ffffff}
+.h2-tabs{flex:none;background:#ffffff;border-top:1px solid #d9d8d1;position:relative;z-index:5}
+.h2-tabs-in{display:grid;grid-template-columns:repeat(4,1fr);height:55px}
+.h2-tab{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;min-height:44px;padding:0;border:0;background:transparent;color:#1a2744;font:inherit;font-size:12px;font-weight:500;line-height:1.2;text-decoration:none}
+.h2-tab svg{width:20px;height:20px}
+.h2-count{position:absolute;top:5px;left:calc(50% + 5px);min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:#1a2744;color:#ffffff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 2px #ffffff}
+.h2-safe{height:34px;position:relative}
+.h2-homeind{position:absolute;left:50%;bottom:8px;width:134px;height:5px;margin-left:-67px;border-radius:3px;background:#10182b}
+.h2-mk{position:absolute;z-index:40;width:24px;height:24px;font-size:12px;box-shadow:0 0 0 3px #ffffff}
+
+/* phone content */
+.h2-band{background:#1a2744;padding:14px 14px 16px;display:flex;flex-direction:column;gap:10px}
+.h2-lab{font-size:11.5px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#e6cf86}
+.h2-hero{background:#1a2744;color:#ffffff;padding:12px 16px 12px;display:flex;flex-direction:column;gap:7px}
+.h2-h1{font-size:26px;line-height:1.15;font-weight:700;letter-spacing:-.015em;margin:0;color:#ffffff}
+.h2-lead{font-size:15px;line-height:1.5;color:#d5d9e3;margin:0}
+.h2-paths{display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+.h2-new{color:#ffffff;text-decoration:underline;text-underline-offset:4px;font-size:14px;font-weight:600;display:inline-flex;align-items:center;min-height:44px;padding:0 4px}
+.h2-card{background:#ffffff;color:#1a2744;border-radius:12px;padding:14px 14px 12px;display:flex;flex-direction:column;gap:8px}
+.h2-card .k-label{color:#555c6b}
+.h2-name{font-size:18px;line-height:1.25;font-weight:700;margin:0}
+.h2-cov{font-size:13.5px;line-height:1.4;margin:0}
+.h2-cov b{font-weight:600}
+.h2-ar{display:flex;gap:10px;align-items:flex-start;padding:8px 10px;border-radius:10px;background:#f5f5f2;font-size:13.5px;font-weight:600;line-height:1.35}
+.h2-ar input{width:20px;height:20px;margin:0;accent-color:#1a2744;flex:none}
+.h2-ar small{display:block;font-size:12px;font-weight:400;color:#555c6b;margin-top:2px}
+.h2-gbtn{min-height:44px;height:auto;padding:8px 10px;white-space:normal;text-align:center;line-height:1.3;color:#1a2744}
+.h2-sec{padding:14px 16px 0;display:flex;flex-direction:column;gap:8px}
+.h2-h2{font-size:21px;line-height:1.2;font-weight:700;margin:0}
+.h2-tier{border:1px solid #dddcd4;border-radius:12px;background:#ffffff;padding:12px 14px;display:flex;flex-direction:column;gap:9px}
+.h2-tier.pick{border:2px solid #1a2744}
+.h2-trow{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.h2-trow > div:last-child{white-space:nowrap;flex:none}
+.h2-trow h3{font-size:18px;line-height:1.25;font-weight:600;margin:0}
+.h2-price{font-size:30px;font-weight:700;line-height:1;font-variant-numeric:tabular-nums;white-space:nowrap}
+.h2-look{border:1px solid #dddcd4;border-radius:12px;padding:10px 14px;display:flex;flex-direction:column;gap:7px}
+.h2-help{font-size:12.5px;line-height:1.45;color:#3d4556;margin:0}
+
+/* insets */
+.h2-insets{display:grid;grid-template-columns:repeat(2,252px);gap:16px}
+.h2-in{display:flex;flex-direction:column;gap:8px}
+.h2-inh{display:flex;align-items:center;gap:8px;font-size:13.5px;font-weight:700}
+.h2-incap{font-size:12px;line-height:1.4;color:#3d4556;margin:0}
+.h2-box{background:#ffffff;border:1px solid #d9d8d1;border-radius:12px;overflow:hidden;box-shadow:0 8px 20px rgba(16,24,43,.07)}
+.h2-mhd{height:40px;background:#1a2744;color:#ffffff;display:flex;align-items:center;gap:6px;padding:0 10px;font-size:12.5px;font-weight:500}
+.h2-mhd svg.h2-mark{width:20px;height:20px}
+.h2-mhd .h2-push{margin-left:auto;display:flex;align-items:center;gap:10px}
+.h2-mini-btn{display:inline-flex;align-items:center;min-height:28px;padding:0 10px;border-radius:6px;background:#c8a94a;color:#1a2744;font-size:12px;font-weight:700}
+.h2-mini-count{display:inline-flex;align-items:center;justify-content:center;min-width:16px;height:16px;padding:0 4px;border-radius:8px;background:#fbfaf6;color:#1a2744;font-size:10.5px;font-weight:700;margin-left:4px}
+.h2-mbody{padding:10px 12px 12px;display:flex;flex-direction:column;gap:8px;font-size:12.5px;line-height:1.4}
+.h2-mbody b{font-size:14px}
+.h2-mbody .k-tag{align-self:flex-start}
+.h2-mbody .k-btn{min-height:36px;font-size:12.5px;padding:6px 8px;height:auto;white-space:normal;text-align:center;line-height:1.3}
+.h2-tag-x{background:#fbe4e2;color:#8a1f17}
+.h2-none{border-radius:8px;background:#f5f5f2;padding:8px 10px;font-size:12.5px;line-height:1.45;color:#2b3446}
+</style>
+</helmet>
+<div class="h2-root" style="width:1440px;height:1350px">
+
+<div class="h2-strip"><span class="h2-strip-l">Page 13 · Membership · H-2 · Renew first on phones, and the member states</span><span class="h2-strip-r">Axis: returning members first, with the status card; the join path second. Everything else is Member-B.</span></div>
+
+<section class="h2-doc" aria-label="About this board">
+<div>
+<p class="h2-meta"><b>Built from:</b> Member-B · Round 2 · <b>Axis:</b> who the first screen is for. Member-H part 1 on a phone; phone chrome from the decided phone boards (WS02). <b>Replaces:</b> nothing yet. <b>K's feedback applied (Tue, Oct 13):</b> service first, giving quiet. <b>Shown:</b> 390px phones on Mon, Jan 11, 2027, and four states for the build.</p>
+<div class="h2-lbox">
+<p class="k-label">Notes on this board</p>
+<ol class="h2-notes">
+<li><span class="k-num-badge">1</span><span><b>Status card first:</b> who is covered, when it ends, Renew with the new end date. The to-do count rides on the My LCA tab (WS02).</span></li>
+<li><span class="k-num-badge">2</span><span><b>Signed out, the same slot is the lookup:</b> first name, last initial, tier, status and the month it ends; 10 lookups an hour.</span></li>
+<li><span class="k-num-badge">3</span><span><b>The Family card</b> says "Your current plan" and renews; the other tiers keep Join only.</span></li>
+<li><span class="k-num-badge">4</span><span><b>Expired:</b> Renew takes the gold slot in the header (WS02); the tag says Expired in words, with the date.</span></li>
+<li><span class="k-num-badge">5</span><span><b>More than 30 days left:</b> Renew early adds a year; no to-do count until 30 days out.</span></li>
+<li><span class="k-num-badge">6</span><span><b>A child with their own login</b> sees who covers them, never a price or a Renew button. Nothing on these screens asks for a gift; on a phone, Donate sits in the Menu.</span></li>
+</ol>
+</div>
+</div>
+<aside class="h2-grey" aria-label="Board note">
+<p><b>What</b>Member-H on a phone, signed in 30 days out and signed out, plus four states: expired, early, a child's own login, no match.</p>
+<p><b>Built from</b>Member-H part 1 and Member-B's tier cards; WS02 phone chrome and the My LCA tab count.</p>
+<p><b>K's feedback applied</b>Service first: the first thing a member sees is their own membership. Giving quiet: nothing here asks for money beyond the renewal.</p>
+<div><p><b>Open for K</b></p><ol><li>On a phone, keep the "New to LCA?" cards under the status card, or behind a link?</li><li>Should the status card show the member card QR, or leave that to Member-D?</li></ol></div>
+</aside>
+</section>
+
+<div class="h2-stage">
+
+<div class="h2-fr">
+<div class="h2-cap"><div class="h2-oh"><span class="h2-oc">1</span><h3>Signed in, 30 days out</h3></div><p class="h2-idea">The status card first, then "New to LCA?" with the Family card marked as the current plan.</p></div>
+<div class="h2-phone" aria-label="Signed in, 30 days out">
+<div class="h2-scr">
+<div class="h2-status" aria-hidden="true"><span>10:12</span><span class="h2-island"></span><span class="h2-statr"><span class="h2-sig"><i></i><i></i><i></i><i></i></span><span class="h2-batt"><i></i></span></span></div>
+<div class="h2-app"><a class="h2-brand" href="#" aria-label="Louisiana Chess Association, home"><svg class="h2-mark" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span class="h2-bname"><b>Louisiana Chess</b><span>Association</span></span></a><a class="h2-sbtn" href="#" aria-label="Search"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg></a></div>
+<main class="h2-main">
+<div class="h2-band">
+<span class="h2-lab">Membership</span>
+<div class="h2-card">
+<div class="k-between"><span class="k-label">Your membership</span><span class="k-sample">Sample data</span></div>
+<div class="k-row k-row-sm" style="gap:8px"><p class="h2-name">Danielle Robichaux</p><span class="k-tag">Family</span></div>
+<span class="k-tag k-tag-soon" style="align-self:flex-start">Ends in 30 days · Wed, Feb 10, 2027</span>
+<p class="h2-cov"><b>Covered:</b> Danielle, Maya, Leo · 1 open spot</p>
+<a class="k-btn k-btn-gold k-btn-block h2-gbtn" href="#">Renew · $25 → ends Thu, Feb 10, 2028</a>
+<label class="h2-ar"><input type="checkbox"><span>Renew automatically from now on<small>We email a week before charging</small></span></label>
+</div>
+</div>
+<div class="h2-sec">
+<div class="k-between" style="align-items:baseline"><h2 class="h2-h2">New to LCA?</h2><a class="k-link k-small" href="#">Not sure? Two questions</a></div>
+<div class="h2-tier pick">
+<div class="k-row k-row-sm" style="gap:6px"><span class="k-tag k-tag-gold">Best value with 3 children</span><span class="k-tag k-tag-lca">Your current plan</span></div>
+<div class="h2-trow"><div><h3>Family</h3><div class="k-meta">You plus up to 3 children · covers up to 4 people</div></div><div><span class="h2-price">$25</span><span class="k-meta"> / year</span></div></div>
+<a class="k-btn k-btn-gold k-btn-block" href="#" style="color:#1a2744">Renew · $25</a>
+<div class="k-meta">Honest math: with 1 child, Adult + Scholastic ($20) costs less; with 2 it's a tie; with 3 Family saves $5.</div>
+</div>
+</div>
+</main>
+<nav class="h2-tabs" aria-label="Main"><div class="h2-tabs-in"><a class="h2-tab" href="#"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4.5" width="18" height="16" rx="2"></rect><path d="M3 9.5h18M8 2.5v4M16 2.5v4"></path></svg><span>Tournaments</span></a><a class="h2-tab" href="#"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"></path><circle cx="12" cy="9.5" r="2.5"></circle></svg><span>Clubs</span></a><a class="h2-tab" href="#" aria-label="My LCA, 1 thing to do"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4.5 21c1-4 4-6 7.5-6s6.5 2 7.5 6"></path></svg><span>My LCA</span><span class="h2-count" aria-hidden="true">1</span></a><button class="h2-tab" type="button" aria-expanded="false"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg><span>Menu</span></button></div><div class="h2-safe"><span class="h2-homeind"></span></div></nav>
+</div>
+<span class="k-num-badge h2-mk" style="left:-14px;top:150px">1</span>
+<span class="k-num-badge h2-mk" style="left:-14px;top:520px">3</span>
+</div>
+</div>
+
+<div class="h2-fr">
+<div class="h2-cap"><div class="h2-oh"><span class="h2-oc">2</span><h3>Signed out</h3></div><p class="h2-idea">The hero and its three paths, then the lookup in the status card's place, then the Adult card.</p></div>
+<div class="h2-phone" aria-label="Signed out">
+<div class="h2-scr">
+<div class="h2-status" aria-hidden="true"><span>10:12</span><span class="h2-island"></span><span class="h2-statr"><span class="h2-sig"><i></i><i></i><i></i><i></i></span><span class="h2-batt"><i></i></span></span></div>
+<div class="h2-app"><a class="h2-brand" href="#" aria-label="Louisiana Chess Association, home"><svg class="h2-mark" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span class="h2-bname"><b>Louisiana Chess</b><span>Association</span></span></a><a class="h2-sbtn" href="#" aria-label="Search"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg></a></div>
+<main class="h2-main">
+<div class="h2-hero">
+<span class="h2-lab">Membership</span>
+<h1 class="h2-h1">Already a member? Renew in one step</h1>
+<p class="h2-lead">300+ Louisiana players are members. Renewing adds a year on top of the time you have left.</p>
+<div class="h2-paths"><a class="k-btn k-btn-gold k-btn-sm" href="#" style="color:#1a2744">Renew</a><a class="k-btn k-btn-on-dark k-btn-sm" href="#">Am I a member?</a><a class="h2-new" href="#">New here? Pick a membership ↓</a></div>
+</div>
+<div class="h2-sec">
+<div class="h2-look">
+<span class="k-label">Am I a member?</span>
+<div class="k-field" style="gap:4px"><label for="h2-lk" style="font-size:13.5px">US Chess ID or email</label><input id="h2-lk" class="k-input" placeholder="e.g. 12345678 or name@example.com" style="font-size:15px"></div>
+<button class="k-btn k-btn-navy k-btn-block" type="button">Check status</button>
+<p class="h2-help">Shows first name, last initial, tier, status and the month it ends. Tournament directors see the same at check-in.</p>
+</div>
+<h2 class="h2-h2">New to LCA?</h2>
+<div class="h2-tier" style="padding:10px 14px;gap:8px">
+<div class="h2-trow"><div><h3>Adult</h3><div class="k-meta">18 and up · covers 1 player</div></div><div><span class="h2-price">$15</span><span class="k-meta"> / year</span></div></div>
+<a class="k-btn k-btn-navy k-btn-block" href="#">Join · $15</a>
+</div>
+</div>
+</main>
+<nav class="h2-tabs" aria-label="Main"><div class="h2-tabs-in"><a class="h2-tab" href="#"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4.5" width="18" height="16" rx="2"></rect><path d="M3 9.5h18M8 2.5v4M16 2.5v4"></path></svg><span>Tournaments</span></a><a class="h2-tab" href="#"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"></path><circle cx="12" cy="9.5" r="2.5"></circle></svg><span>Clubs</span></a><a class="h2-tab" href="#"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4.5 21c1-4 4-6 7.5-6s6.5 2 7.5 6"></path></svg><span>Log in</span></a><button class="h2-tab" type="button" aria-expanded="false"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg><span>Menu</span></button></div><div class="h2-safe"><span class="h2-homeind"></span></div></nav>
+</div>
+<span class="k-num-badge h2-mk" style="left:-14px;top:400px">2</span>
+</div>
+</div>
+
+<div class="h2-insets">
+
+<div class="h2-in">
+<div class="h2-inh"><span class="h2-oc">i</span>Expired<span class="k-num-badge" style="width:22px;height:22px;font-size:11px">4</span></div>
+<p class="h2-incap">Renew takes the header's gold slot, beside My LCA.</p>
+<div class="h2-box">
+<div class="h2-mhd"><svg class="h2-mark" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span class="h2-push"><span>Donate</span><span>My LCA<span class="h2-mini-count">1</span> ▾</span><span class="h2-mini-btn">Renew</span></span></div>
+<div class="h2-mbody">
+<span class="k-label" style="color:#555c6b">Your membership</span>
+<b>Jordan Lewis · Adult</b>
+<span class="k-tag h2-tag-x">Expired Thu, Jul 16, 2026</span>
+<span>LCA membership is required to enter the tournaments LCA runs.</span>
+<a class="k-btn k-btn-gold k-btn-block" href="#" style="color:#1a2744">Renew · $15 → ends one year from today</a>
+<span class="k-sample">Sample data</span>
+</div>
+</div>
+</div>
+
+<div class="h2-in">
+<div class="h2-inh"><span class="h2-oc">ii</span>More than 30 days left<span class="k-num-badge" style="width:22px;height:22px;font-size:11px">5</span></div>
+<p class="h2-incap">Active; no to-do count in the header yet.</p>
+<div class="h2-box">
+<div class="h2-mhd"><svg class="h2-mark" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span class="h2-push"><span>Donate</span><span>My LCA ▾</span></span></div>
+<div class="h2-mbody">
+<span class="k-label" style="color:#555c6b">Your membership</span>
+<b>Avery Thomas · Adult</b>
+<span class="k-tag k-tag-open">Active through Sun, Mar 14, 2027</span>
+<span>Covered: Avery</span>
+<a class="k-btn k-btn-line k-btn-block" href="#">Renew early · $15 · adds a year</a>
+<span class="k-sample">Sample data</span>
+</div>
+</div>
+</div>
+
+<div class="h2-in">
+<div class="h2-inh"><span class="h2-oc">iii</span>A child's own login<span class="k-num-badge" style="width:22px;height:22px;font-size:11px">6</span></div>
+<p class="h2-incap">A covered child, 13 or older, signed in to their own profile.</p>
+<div class="h2-box">
+<div class="h2-mhd"><svg class="h2-mark" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span class="h2-push"><span>Donate</span><span>My LCA ▾</span></span></div>
+<div class="h2-mbody">
+<span class="k-label" style="color:#555c6b">Your membership</span>
+<b>Maya · Family</b>
+<span class="k-tag k-tag-open">Active</span>
+<span>Covered by Danielle's Family plan through Wed, Feb 10, 2027.</span>
+<a class="k-link" href="#" style="font-size:12.5px;align-self:flex-start">Show my card</a>
+<span class="k-sample">Sample data</span>
+</div>
+</div>
+</div>
+
+<div class="h2-in">
+<div class="h2-inh"><span class="h2-oc">iv</span>Lookup, no match<span class="k-num-badge" style="width:22px;height:22px;font-size:11px">2</span></div>
+<p class="h2-incap">Signed out; the lookup found nothing for what was typed.</p>
+<div class="h2-box">
+<div class="h2-mbody">
+<span class="k-label" style="color:#555c6b">Am I a member?</span>
+<div class="k-field" style="gap:4px"><label for="h2-lk2" style="font-size:12.5px">US Chess ID or email</label><input id="h2-lk2" class="k-input" style="min-height:38px;font-size:13px" value="chessdad84@example.com"></div>
+<a class="k-btn k-btn-navy k-btn-block" href="#">Check status</a>
+<div class="h2-none">No membership found for that. You may have joined with a different email. Write to LouisianaChess@gmail.com.</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1350}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

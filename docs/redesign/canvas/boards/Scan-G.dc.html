@@ -1,0 +1,311 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Scanner · G · The reading job and its progress: Hand-off (round 2)</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/6107adb451dbab26ee5d89f4189b81f8">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;background:#ecebe6}
+.sg-root{box-sizing:border-box;background:#ecebe6;padding:20px 56px 12px;color:#1a2744;font-family:Geist,system-ui,sans-serif;overflow:hidden}
+.sg-root *{box-sizing:border-box}
+.sg-root p,.sg-root h1,.sg-root h2,.sg-root h3{margin:0}
+.sg-rel{position:relative}
+.sg-doc{background:#fbfaf6;border:1px solid #d9d8d1;border-radius:14px;padding:16px 22px 16px}
+.sg-doc-top{display:flex;justify-content:space-between;align-items:flex-start;gap:28px}
+.sg-title{font-size:32px;line-height:1.15;font-weight:700;letter-spacing:-.015em;margin:6px 0 0}
+.sg-ml{font-size:13px;line-height:1.42;color:#3d4556;margin:2px 0 0;max-width:1060px}
+.sg-ml b{color:#1a2744;font-weight:600}
+.sg-round{display:inline-flex;align-items:center;height:26px;padding:0 10px;border-radius:6px;background:#1a2744;color:#ffffff;font-size:12.5px;font-weight:700;letter-spacing:.04em}
+.sg-grey{flex:none;width:860px;background:#efefea;border:1px solid #dfded6;border-radius:10px;padding:12px 14px;display:grid;grid-template-columns:1fr 1fr 1.2fr;gap:10px 16px}
+.sg-grey > div > p + p{margin-top:8px}
+.sg-grey p{font-size:12px;line-height:1.4;color:#2b3446;margin:0}
+.sg-grey b{display:block;font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#555c6b;margin-bottom:2px}
+.sg-grey ol{margin:0;padding-left:16px;font-size:12px;line-height:1.4;color:#2b3446}
+.sg-grey li{margin-bottom:3px}
+.sg-lbox{background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:10px 16px 11px;margin-top:10px}
+.sg-notes{list-style:none;margin:10px 0 0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px 26px}
+.sg-notes li{display:flex;gap:8px;align-items:flex-start;font-size:12.5px;line-height:1.42;color:#2b3446}
+.sg-notes .k-num-badge{width:22px;height:22px;font-size:11.5px}
+.sg-notes b{font-weight:600;color:#1a2744}
+.sg-open{display:inline;font-weight:600;color:#664c0c;background:#f5ecd2;border-radius:4px;padding:0 4px}
+.sg-flab{display:flex;align-items:center;gap:12px;margin:9px 0 6px}
+.sg-flab h2{margin:0;font-size:19px;line-height:1.2;font-weight:600;letter-spacing:-.01em;white-space:nowrap}
+.sg-code{display:inline-flex;align-items:center;justify-content:center;min-width:28px;height:28px;padding:0 9px;border-radius:7px;background:#c8a94a;color:#1a2744;font-weight:700;font-size:13px;flex:none}
+.sg-mk{position:absolute;z-index:40;width:26px;height:26px;font-size:12.5px;box-shadow:0 0 0 3px #ffffff}
+.sg-dot{display:inline-block;width:10px;height:10px;border-radius:50%;flex:none}
+.sg-dot-s{width:8px;height:8px}
+.sg-meta{font-size:12.5px;line-height:1.4;color:#555c6b}
+.sg-body{font-size:13.5px;line-height:1.45;color:#2b3446}
+.sg-amber{color:#664c0c}
+.sg-red{color:#8f1d24}
+/* track */
+.sg-tbox{background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:12px 22px 10px}
+.sg-track{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:18px;position:relative}
+.sg-track::before{content:"";position:absolute;left:14px;right:calc(16.66% - 14px);top:14px;height:2px;background:#1a2744}
+.sg-track li{position:relative;display:flex;flex-direction:column;gap:3px}
+.sg-stop{position:relative;z-index:2;display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:50%;background:#1a2744;color:#ffffff;font-size:13px;font-weight:700;box-shadow:0 0 0 4px #ffffff;margin-bottom:3px}
+.sg-track b{font-size:14.5px;line-height:1.3;font-weight:600}
+.sg-track span:not(.sg-stop){font-size:12.5px;line-height:1.4;color:#555c6b}
+.sg-tlines{margin-top:10px;border-top:1px solid #ecebe5;padding-top:8px;display:flex;flex-direction:column;gap:5px}
+.sg-tlines p{display:flex;gap:8px;align-items:flex-start;font-size:12.5px;line-height:1.4;color:#555c6b}
+.sg-tlines .k-i-sm{margin-top:2px;color:#555c6b}
+.sg-tlines code,.sg-root code{font-family:"Geist Mono",ui-monospace,monospace;font-size:12px;color:#2b3446}
+/* phones */
+.sg-phones{display:flex;gap:64px;align-items:flex-start}
+.sg-pcol{width:414px;flex:none;display:flex;flex-direction:column;gap:6px}
+.sg-cap{height:52px}
+.sg-oh{display:flex;align-items:center;gap:10px}
+.sg-oc{flex:none;display:inline-flex;align-items:center;height:24px;padding:0 9px;border-radius:6px;background:#1a2744;color:#ffffff;font-size:12px;font-weight:700}
+.sg-oh h3{font-size:17px;line-height:1.25;font-weight:700}
+.sg-idea{font-size:13px;line-height:1.38;color:#3d4556;margin-top:3px}
+.sg-pcap{font-size:13px;line-height:1.42;color:#3d4556;padding:0 6px}
+.sg-ph{position:relative;width:414px;height:868px}
+.sg-phone{width:390px;height:844px;box-sizing:content-box !important;border:12px solid #10182b;border-radius:54px;background:#10182b;position:relative;box-shadow:0 24px 50px rgba(16,24,43,.2)}
+.sg-scr{position:absolute;inset:0;border-radius:42px;overflow:hidden;display:flex;flex-direction:column;background:#f5f5f2}
+.sg-status{flex:none;height:47px;background:#1a2744;color:#ffffff;display:flex;align-items:center;justify-content:space-between;padding:4px 28px 0 34px;font-size:14px;font-weight:600;position:relative}
+.sg-status-l{background:#ffffff;color:#10182b}
+.sg-island{position:absolute;left:50%;top:11px;width:120px;height:34px;margin-left:-60px;border-radius:20px;background:#000000}
+.sg-statr{display:flex;align-items:center;gap:6px}
+.sg-sig{display:inline-flex;align-items:flex-end;gap:1.5px;height:11px}
+.sg-sig i{display:block;width:3px;background:currentColor;border-radius:1px}
+.sg-sig i:nth-child(1){height:4px}.sg-sig i:nth-child(2){height:6px}.sg-sig i:nth-child(3){height:8.5px}.sg-sig i:nth-child(4){height:11px}
+.sg-batt{display:inline-flex;width:24px;height:12px;border:1.5px solid currentColor;border-radius:4px;padding:1.5px}
+.sg-batt i{display:block;width:70%;background:currentColor;border-radius:1.5px}
+.sg-app{flex:none;height:56px;background:#1a2744;display:flex;align-items:center;gap:8px;padding:0 10px 0 14px;color:#ffffff}
+.sg-brand{display:flex;align-items:center;gap:8px;color:#ffffff;text-decoration:none;min-height:44px;min-width:0}
+.sg-markw{display:flex;color:#ffffff}
+.sg-mark{width:28px;height:28px;fill:currentColor;flex:none}
+.sg-bname{display:flex;flex-direction:column;line-height:1.12}
+.sg-bname b{font-size:14px;font-weight:700;white-space:nowrap}
+.sg-bname span{font-size:11px;font-weight:500;color:rgba(255,255,255,.78)}
+.sg-sbtn{display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;border:1.5px solid rgba(255,255,255,.6);border-radius:9px;color:#ffffff;margin-left:auto;flex:none}
+.sg-main{flex:1;min-height:0;overflow:hidden;position:relative;background:#f5f5f2;padding:16px 16px 0;display:flex;flex-direction:column;gap:12px}
+.sg-main > *{flex-shrink:0}
+.sg-tabs{flex:none;background:#ffffff;border-top:1px solid #d9d8d1;position:relative;z-index:5}
+.sg-tabs-in{display:grid;grid-template-columns:repeat(4,1fr);height:55px}
+.sg-tab{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;min-height:44px;padding:0;border:0;background:transparent;color:#1a2744;font:inherit;font-size:12px;font-weight:500;line-height:1.2;text-decoration:none}
+.sg-tab svg{width:20px;height:20px}
+.sg-tab.on{font-weight:700}
+.sg-tab.on::before{content:"";position:absolute;top:0;left:22%;right:22%;height:3px;border-radius:0 0 3px 3px;background:#866a1e}
+.sg-safe{height:34px;position:relative}
+.sg-safe-w{flex:none;background:#ffffff}
+.sg-homeind{position:absolute;left:50%;bottom:8px;width:134px;height:5px;margin-left:-67px;border-radius:3px;background:#10182b}
+.sg-fade{position:absolute;left:0;right:0;bottom:0;height:46px;background:linear-gradient(rgba(245,245,242,0),#f5f5f2 75%);display:flex;align-items:flex-end;justify-content:center;padding-bottom:6px;z-index:3}
+.sg-fade span{font-size:11.5px;color:#555c6b;border:1px dashed #b9b7ad;border-radius:999px;padding:2px 10px;background:#ffffff}
+.sg-kick{font-size:11.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#866a1e}
+.sg-h1p{font-size:24px;line-height:1.2;font-weight:700;letter-spacing:-.01em}
+.sg-steps{display:flex;flex-wrap:nowrap;gap:5px;list-style:none;margin:0;padding:0;overflow:hidden}
+.sg-steps li{display:inline-flex;align-items:center;gap:6px;min-height:34px;padding:0 10px;border-radius:99px;border:1px solid #c9c8c0;font-size:13px;color:#3d4556;background:#ffffff;white-space:nowrap}
+.sg-steps li::before{content:"";width:6px;height:6px;border-radius:50%;background:#b9b7ad}
+.sg-steps li.sg-done{color:#2f6b45;border-color:#b9d3c1;background:#f1f7f2;font-weight:600}
+.sg-steps li.sg-done::before{display:none}
+.sg-steps li.sg-now{color:#ffffff;background:#1a2744;border-color:#1a2744;font-weight:600}
+.sg-steps li.sg-now::before{background:#c8a94a}
+.sg-count{display:flex;align-items:center;gap:7px;font-size:13.5px;font-weight:600;color:#1a2744}
+.sg-count .k-i-sm{color:#2f6b45}
+.sg-count span{font-weight:500;color:#555c6b}
+.sg-priv{display:flex;gap:8px;align-items:flex-start;font-size:12.5px;line-height:1.42;color:#3d4556;background:#ffffff;border:1px solid #e2e1da;border-radius:10px;padding:8px 11px}
+.sg-priv .k-i-sm{color:#1a2744;margin-top:2px}
+.sg-card{background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:14px}
+.sg-card h3{font-size:16px;line-height:1.3;font-weight:600}
+/* phone 1 */
+.sg-dim{display:flex;gap:14px;align-items:flex-end}
+.sg-tile{position:relative;width:135px;height:180px;border-radius:10px;background:#3b4150;overflow:hidden;opacity:.4;flex:none}
+.sg-paper{position:absolute;top:12px;left:12px;right:12px;bottom:12px;background:#e9e6da;border-radius:3px;transform:rotate(-2deg);padding:10px 9px;display:flex;flex-direction:column;gap:8px}
+.sg-paper span{display:block;height:1px;background:#a9a493}
+.sg-paper span.sg-ink{height:2px;width:62%;background:#3d4d7a;opacity:.55}
+.sg-pbadge{position:absolute;left:8px;bottom:8px;z-index:2;background:#1a2744;color:#ffffff;border-radius:6px;padding:3px 8px;font-size:12px;font-weight:700}
+.sg-dim-t{display:flex;flex-direction:column;gap:2px;padding-bottom:4px}
+.sg-dim-t b{font-size:14px;font-weight:600}
+.sg-dim-t span{font-size:12.5px;color:#555c6b}
+.sg-stages{list-style:none;margin:8px 0 0;padding:0}
+.sg-stages li{display:flex;gap:10px;align-items:flex-start;padding:5px 0;border-bottom:1px solid #ecebe4;font-size:15px;line-height:1.3;color:#1a2744}
+.sg-stages li:last-child{border-bottom:0}
+.sg-stages li > span{flex:1}
+.sg-stages small{display:block;color:#555c6b;font-size:12.5px;margin-top:1px}
+.sg-stages li.sg-cur{font-weight:600}
+.sg-stages li.sg-cur small{font-weight:400}
+.sg-sw{font-style:normal;font-size:11.5px;font-weight:600;border-radius:5px;padding:2px 6px;margin-top:1px}
+.sg-sw-g{background:#e1f0e7;color:#145b3a}
+.sg-sw-n{background:#eceef3;color:#1a2744}
+.sg-sw-w{background:#f1f0eb;color:#555c6b;font-weight:500}
+.sg-leave{font-size:14px;font-weight:700;line-height:1.4;color:#1a2744;margin-top:6px}
+/* phone 2 */
+.sg-ok{display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:50%;background:#e3f0e6;color:#2f6b45;flex:none}
+.sg-row{background:#ffffff;border:1px solid #dddcd4;border-left:4px solid #8a8f9a;border-radius:10px;padding:10px 12px;display:flex;flex-direction:column;gap:3px}
+.sg-row-k{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#555c6b}
+.sg-row-h{display:flex;align-items:center;gap:7px;font-size:14.5px}
+.sg-row-h b{font-weight:700}
+/* phone 3 */
+.sg-crumbs{display:flex;gap:6px;font-size:13px;color:#555c6b}
+.sg-crumbs a{color:#1a2744;font-weight:600}
+.sg-mgh{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.sg-ready{background:#ffffff;border:1px solid #e3c98a;border-left:4px solid #d49a1c;border-radius:12px;padding:11px 12px;display:flex;flex-direction:column;gap:9px}
+.sg-ready-in{display:flex;gap:12px;align-items:flex-start}
+.sg-ready-t{display:flex;flex-direction:column;gap:2px;min-width:0}
+.sg-ready-t b{font-size:14.5px;font-weight:600;line-height:1.3}
+.sg-ready-t span{font-size:12.5px;line-height:1.38;color:#555c6b}
+.sg-two{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.sg-thumb{width:84px;flex:none;border-width:1.5px;border-radius:3px}
+.sg-thumb > div{display:flex;align-items:center;justify-content:center}
+.pc{width:72%;height:72%;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;line-height:1;box-sizing:border-box;font-size:0}
+.pw{background:#ffffff;border:1.5px solid #1a2744}
+.pb{background:#1a2744;border:1.5px solid #1a2744}
+.pp{width:46%;height:46%}
+.lm{box-shadow:inset 0 0 0 2px #c8a94a}
+.sg-saved{list-style:none;margin:4px 0 0;padding:0}
+.sg-saved li{display:flex;flex-direction:column;gap:1px;padding:7px 0;border-bottom:1px solid #ecebe5}
+.sg-saved li:last-child{border-bottom:0}
+.sg-sv-t{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.sg-sv-t b{font-size:14px;font-weight:600}
+.sg-saved li > span{font-size:12.5px;color:#555c6b}
+.sg-chk{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:600;color:#145b3a}
+/* phone 4 mail */
+.sg-mbar{flex:none;height:48px;background:#ffffff;display:flex;align-items:center;justify-content:space-between;padding:0 12px 0 6px;border-bottom:1px solid #e6e5df}
+.sg-mback{display:inline-flex;align-items:center;gap:2px;min-height:44px;color:#1f5fbf;text-decoration:none;font-size:16px;font-weight:500}
+.sg-mic{display:inline-flex;gap:18px;color:#3d4556}
+.sg-mail{flex:1;min-height:0;overflow:hidden;background:#ffffff;padding:14px 16px 0;display:flex;flex-direction:column;gap:12px}
+.sg-msub{font-size:21px;line-height:1.25;font-weight:700;color:#10182b}
+.sg-from{display:flex;gap:10px;align-items:center}
+.sg-from b{display:block;font-size:14.5px;font-weight:600}
+.sg-from span{display:block;font-size:12.5px;color:#555c6b}
+.sg-av{display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;border-radius:50%;background:#1a2744;flex:none}
+.sg-avmark{width:20px;height:20px;fill:#ffffff}
+.sg-mbody{border:1px solid #e2e1da;border-radius:10px;overflow:visible;background:#fbfaf6}
+.sg-mhead{display:flex;align-items:center;gap:8px;background:#1a2744;color:#ffffff;padding:10px 14px;border-radius:9px 9px 0 0;border-bottom:3px solid #c8a94a}
+.sg-mhead b{font-size:14px;font-weight:700}
+.sg-mhrook{width:22px;height:22px;fill:#ffffff}
+.sg-mtext{padding:12px 14px 14px;display:flex;flex-direction:column;gap:10px}
+.sg-mtext p{font-size:14px;line-height:1.5;color:#2b3446}
+.sg-mtext p b{color:#1a2744}
+.sg-mfine{font-size:12.5px !important;color:#555c6b !important}
+.sg-mfoot{font-size:11.5px;line-height:1.4;color:#6b7080}
+.sg-todo{background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;gap:6px}
+.sg-todo-k{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#555c6b}
+.sg-todo-r{display:flex;gap:10px;align-items:center}
+.sg-todo-r > div{flex:1;display:flex;flex-direction:column;gap:1px}
+.sg-todo-r b{font-size:14px;font-weight:600;line-height:1.3}
+.sg-todo-r span{font-size:12.5px;color:#555c6b}
+.sg-todo-i{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:8px;background:#fdf1d6;color:#664c0c;flex:none}
+/* evening */
+.sg-even{display:flex;gap:28px;align-items:flex-start}
+.sg-lap{width:1100px;flex:none}
+.sg-lap .k-browser{box-shadow:0 14px 34px rgba(16,24,43,.12)}
+.sg-view{position:relative;background:#f5f5f2;overflow:hidden}
+.sg-hd-in{padding:0 20px;gap:12px;min-height:62px}
+.sg-hrook{width:28px;height:28px;fill:#ffffff;flex:none}
+.sg-nav{gap:0}
+.sg-nav a{padding:0 8px;white-space:nowrap;font-size:14px}
+.sg-navbtn{display:inline-flex;align-items:center;gap:4px;min-height:44px;padding:0 8px;border:0;background:transparent;color:#ffffff;font:inherit;font-size:14px;font-weight:500}
+.sg-hsb{display:inline-flex;align-items:center;gap:8px;width:140px;height:40px;padding:0 8px 0 12px;border-radius:8px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.45);color:#ffffff;text-decoration:none;font-size:14px;font-weight:500;flex:none}
+.sg-kbd{margin-left:auto;font-family:"Geist Mono",ui-monospace,monospace;font-size:12px;color:#e8ecf4;border:1px solid rgba(255,255,255,.4);border-radius:5px;padding:2px 6px;line-height:1.2}
+.sg-my{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 8px;border:0;border-radius:8px;background:transparent;color:#ffffff;font:inherit;font-size:14px;font-weight:500}
+.sg-my-on{color:#e6cf86;box-shadow:inset 0 -2px 0 #c8a94a;border-radius:0}
+.sg-lbody{padding:8px 32px 12px}
+.sg-lhead{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:10px}
+.sg-lh1{font-size:26px;line-height:1.2;font-weight:700;letter-spacing:-.01em;margin-top:2px !important}
+.sg-lhr{display:flex;align-items:center;gap:14px}
+.sg-lrows{list-style:none;margin:0;padding:0;background:#ffffff;border:1px solid #dddcd4;border-radius:12px;overflow:hidden}
+.sg-lr{display:grid;grid-template-columns:230px minmax(0,1fr) auto;gap:16px;align-items:center;padding:9px 16px;border-bottom:1px solid #ecebe5}
+.sg-lr:last-child{border-bottom:0}
+.sg-lr-on{background:#fffaf0;box-shadow:inset 4px 0 0 #d49a1c}
+.sg-lst{display:inline-flex;align-items:center;gap:7px;font-size:14px}
+.sg-lst b{font-weight:600}
+.sg-lst2{flex-direction:column;align-items:flex-start;gap:1px}
+.sg-lst2 small{font-size:12px;color:#555c6b;padding-left:17px}
+.sg-lmain{display:flex;flex-direction:column;gap:2px;min-width:0}
+.sg-lmain b{font-size:14.5px;font-weight:600}
+.sg-lmain span{font-size:12.5px;color:#555c6b}
+.sg-lact{display:inline-flex;gap:8px;align-items:center}
+.sg-lside{flex:1;min-width:0;display:flex;flex-direction:column;gap:10px;padding-top:168px;position:relative}
+.sg-arrow{position:absolute;left:-26px;top:191px;width:60px;height:14px}
+.sg-arrow i{position:absolute;left:10px;right:0;top:6px;height:2px;background:#1a2744}
+.sg-arrow em{position:absolute;left:0;top:1px;width:0;height:0;border-top:6px solid transparent;border-bottom:6px solid transparent;border-right:10px solid #1a2744}
+.sg-ptag{margin-left:40px;display:flex;gap:10px;align-items:flex-start;background:#ffffff;border:1.5px solid #1a2744;border-radius:12px;padding:10px 14px}
+.sg-ptag b{display:block;font-size:14.5px;font-weight:700;line-height:1.3}
+.sg-ptag span:not(.sg-code){display:block;font-size:12.5px;color:#555c6b;line-height:1.4;margin-top:2px}
+.sg-grey-l{margin-left:40px;display:flex;gap:8px;align-items:flex-start;font-size:13px;line-height:1.45;color:#555c6b}
+.sg-grey-l .k-i-sm{margin-top:3px;flex:none}
+/* states */
+.sg-sgrid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px 12px}
+.sg-st{background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:8px 11px 8px;display:flex;flex-direction:column;gap:4px}
+.sg-st-h{display:flex;align-items:center;gap:7px;font-size:13.5px;font-weight:700;color:#1a2744;line-height:1.3}
+.sg-st-w{font-size:11.5px;font-weight:600;color:#555c6b;margin-top:-4px !important}
+.sg-st-p{font-size:13px;line-height:1.4;color:#2b3446}
+.sg-st-m{font-size:12px;line-height:1.4;color:#555c6b}
+.sg-band{display:flex;gap:7px;align-items:flex-start;border-radius:8px;padding:7px 9px;font-size:12.5px;line-height:1.4}
+.sg-band .k-i-sm{margin-top:2px;flex:none}
+.sg-b-grey{background:#efefea;color:#2b3446}
+.sg-b-amber{background:#fdf1d6;color:#664c0c}
+.sg-b-red{background:#fbeaea;color:#8f1d24;border:1px solid #efc9c9}
+.sg-mini{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.sg-mini .k-btn{min-height:34px;padding:0 11px;font-size:13px}
+.sg-minicard{border:1px solid #e2e1da;border-radius:8px;padding:6px 9px;display:flex;flex-direction:column;gap:4px}
+.sg-mrow{display:flex;gap:7px;align-items:center;font-size:12.5px;line-height:1.35;color:#2b3446}
+.sg-mrow .k-i{width:18px;height:18px;flex:none}
+.sg-faint{color:#6b7080}
+.sg-minirow{display:flex;gap:7px;align-items:flex-start;font-size:12.5px;line-height:1.4;color:#2b3446;border:1px solid #e2e1da;border-radius:8px;padding:7px 9px}
+.sg-minirow .sg-dot{margin-top:4px}
+
+.sg-later{display:flex;align-items:center;gap:8px;margin-top:2px}
+.sg-later::before,.sg-later::after{content:"";flex:1;border-top:1px dashed #b9b7ad}
+.sg-later span{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#555c6b}
+.sg-mail .sg-todo{background:#f5f5f2}
+
+.sg-mini-n{flex-wrap:nowrap;align-items:center}
+.sg-mini-n .k-btn{flex:none}
+.sg-mini-n .sg-st-m{flex:1;min-width:0}
+.sg-foot-in{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:9px 32px 10px}
+.sg-foot .k-meta{color:rgba(255,255,255,.78);font-size:12.5px}
+.sg-foot nav a{font-size:13.5px}
+.sg-frook{width:22px;height:22px;fill:#ffffff;flex:none}
+.sg-lfade{position:absolute;left:0;right:0;bottom:0;height:22px;background:linear-gradient(rgba(245,245,242,0),#f5f5f2)}
+
+</style>
+</helmet>
+<div class="sg-root" style="width:1960px;height:2450px">
+<section class="sg-doc" aria-label="About this board">
+<div class="sg-doc-top">
+<div>
+<div class="k-row-sm" style="gap:10px"><p class="k-kicker">16 · Scoresheet scanner · members only · part 2 of 8 · option G</p><span class="sg-round">ROUND 2</span></div>
+<h1 class="sg-title">Scanner · G · The reading job and its progress: Hand-off</h1>
+<p class="sg-ml" style="margin-top:6px"><b>Built from:</b> Scan-B screen 2 (its stages and leave line), today's working stage in ScannerPage.tsx, WS15's async job and My games.</p>
+<p class="sg-ml"><b>Replaces:</b> Scan-B screen 2. Dropped: the streaming list, reading line and text strip, the "3 of 5" count, the hand-over to the review.</p>
+<p class="sg-ml"><b>Round 2 · K's feedback applied:</b> one scanner in parts, with options per part. The other pick for this part is Scan-F (moves stream in).</p>
+<p class="sg-ml"><b>Shown:</b> Sun, Sep 6, 2026, 3:40 PM at the venue. Marcus Landry (2014) has beaten Priya Shah (1803) on Board 6, Round 4, Open, Louisiana State Championship 2026. He taps Scan this sheet; the prize ceremony starts in five minutes.</p>
+<p class="sg-ml" style="margin-top:8px"><span class="k-sample">Sample data · players, round, board, scan count, times, email · moves are Morphy's Opera Game (1858)</span></p>
+</div>
+<aside class="sg-grey" aria-label="Board note">
+<p><b>What</b>Part 2, option G. One quiet card with four stage words; the moment the upload lands the job is a Reading row in My games, the page offers Scan the next sheet, and an email and a to-do say when it is ready.</p>
+<div><p><b>Built from</b>Scan-B screen 2's stages, dimmed photo and leave line; today's working and error copy; WS15's job and My games; Scan-A's strip and count.</p><p><b>K's feedback applied</b>One scanner in parts, with options per part; nothing from A, B or C is turned down. Pick F or G here.</p></div>
+<div><p><b>Open for K</b></p><ol><li>Photo retention: held for the job, or 30 days unless saved (drawn); today says never stored.</li><li>A failed read sends no email (drawn); confirm.</li><li>A junior's game: email to the guardian, first name only.</li><li>Pick F (moves stream in) or G (hand-off).</li></ol></div>
+</aside>
+</div>
+<div class="sg-lbox">
+<p class="k-label">Notes on this board</p>
+<ol class="sg-notes"><li><span class="k-num-badge">1</span><span><b>Hand-off.</b> The job is a Reading row in My games the moment the upload lands; an email and a My LCA to-do arrive when it finishes, so a player scans three sheets between rounds and checks them at home.</span></li><li><span class="k-num-badge">2</span><span><b>Nothing streams.</b> One card with Scan-B screen 2's four stage names, its dimmed photo and its leave line, and today's working copy (ScannerPage.tsx line 282); calmer for a child watching and less to render on a weak venue connection.</span></li><li><span class="k-num-badge">3</span><span><b>The contract holds.</b> Reading transcribes what is written and never corrects (RawScan, types.ts; SCANNER_SPEC.md section 2.3); legality runs in a Web Worker on whichever device opens the row (decoder.ts, decodeInBackground.ts).</span></li><li><span class="k-num-badge">4</span><span><b>A job, and a scan handed back.</b> POST /api/scan/jobs claims a scan, GET /api/scan/jobs/:id reports the stage (WS15); a failed read hands it back (releaseScan, scan/index.ts line 47).</span></li><li><span class="k-num-badge">5</span><span><b>Any device.</b> The email link opens the draft on any device; the laptop at 8:00 PM picks it up and part 3 (Scan-A's review, now Scan-H or Scan-I) opens from the row.</span></li><li><span class="k-num-badge">6</span><span><b><span class="sg-open">Open for K:</span> photo retention.</b> The email promises 30 days unless saved (WS15); today's page says never stored. The email line and the privacy line follow K's pick.</span></li></ol>
+</div>
+</section>
+<div class="sg-flab"><span class="sg-code">A</span><h2>The job as a track</h2><span class="k-meta">The same six stops as Scan-F, so the pair compares on the screens alone</span></div>
+<section class="sg-tbox sg-rel" aria-label="The job as a track"><ol class="sg-track" aria-label="The reading job, stop by stop"><li><span class="sg-stop">1</span><b>Sending</b><span>1 page · 0.9 MB after shrinking to 1568px (resizeImage.ts)</span></li><li><span class="sg-stop">2</span><b>Found the move grid</b><span>US Chess style sheet · 1 page</span></li><li><span class="sg-stop">3</span><b>Read the handwriting</b><span>17 moves · result 1-0 · exactly what is written, crossed-out moves and all</span></li><li><span class="sg-stop">4</span><b>Checking every move is legal</b><span>in your browser, move 9 of 17</span></li><li><span class="sg-stop">5</span><b>Matching names to the Round 4 pairings</b><span>only for an event in the system</span></li><li><span class="sg-stop">6</span><b>Ready to check · 2 moves</b><span>on any device, from the My games row or the email</span></li></ol><div class="sg-tlines"><p><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg><span><code>POST /api/scan/jobs</code> creates the job and claims one of your 20 scans · <code>GET /api/scan/jobs/:id</code> reports progress (WS15)</span></p><p class="sg-rel"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V6l7-3z"></path><path d="M9 12l2 2 4-4"></path></svg><span>The chess rules run on whichever device opens the job, in a Web Worker (decoder.ts, decodeInBackground.ts); the reading step never corrects a move (RawScan, types.ts; SCANNER_SPEC.md section 2.3); npm run scanner:check keeps passing.</span></p></div><span class="k-num-badge sg-mk" style="left:-13px;top:132px">3</span></section>
+<div class="sg-flab"><span class="sg-code">B</span><h2>Phone · the hand-off</h2><span class="k-meta">414px phones on the decided app bar and tab bar · Sun, Sep 6, 3:40 PM to 3:41 PM</span></div>
+<div class="sg-phones"><div class="sg-pcol"><div class="sg-cap"><div class="sg-oh"><span class="sg-oc">1</span><h3>One quiet card</h3></div><p class="sg-idea">Four stage words and today's working copy. No move list, no reading line, no progress bar.</p></div><div class="sg-ph"><div class="sg-phone" aria-label="Phone, reading your sheet in one quiet card"><div class="sg-scr"><div class="sg-status" aria-hidden="true"><span>3:40 PM</span><span class="sg-island"></span><span class="sg-statr"><span class="sg-sig"><i></i><i></i><i></i><i></i></span><span class="sg-batt"><i></i></span></span></div><div class="sg-app"><a class="sg-brand" href="#" aria-label="Louisiana Chess Association, home"><span class="sg-markw"><svg class="sg-mark" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg></span><span class="sg-bname"><b>Louisiana Chess</b><span>Association</span></span></a><a class="sg-sbtn" href="#" aria-label="Search"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg></a></div><main class="sg-main" style="gap:9px"><div><p class="sg-kick">Scoresheet scanner · members only</p></div><ol class="sg-steps" aria-label="Scanner steps"><li class="sg-done"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Photo</li><li class="sg-now" aria-current="step">Read</li><li>Check</li><li>Save &amp; share</li></ol><div class="sg-dim"><div class="sg-tile" role="img" aria-label="Your page, dimmed while it is read"><div class="sg-paper"><span></span><span class="sg-ink"></span><span></span><span class="sg-ink"></span><span></span><span class="sg-ink"></span><span></span><span class="sg-ink"></span><span></span><span class="sg-ink"></span><span></span><span class="sg-ink"></span><span></span><span class="sg-ink"></span><span></span><span class="sg-ink"></span><span></span><span class="sg-ink"></span></div><span class="sg-pbadge">Page 1</span></div><div class="sg-dim-t"><b>Page 1 of 1</b><span>Sent 3:40 PM · 0.9 MB</span></div></div><section class="sg-card sg-rel" role="status" aria-live="polite" aria-labelledby="sg-p1-h"><h3 id="sg-p1-h">Reading your sheet</h3><p class="sg-meta" style="margin-top:2px">Landry vs Shah · Louisiana State Championship 2026, Round 4</p><ol class="sg-stages"><li><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true" style="color:#2f6b45"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg><span>Found the move grid<small>US Chess style sheet · 1 page</small></span><em class="sg-sw sg-sw-g">Done</em></li><li class="sg-cur"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8" style="stroke:#e4e2d8"></circle><path d="M12 4a8 8 0 0 1 8 8" style="stroke:#c8a94a;stroke-width:2.6"></path></svg><span>Read the handwriting<small>Reading now</small></span><em class="sg-sw sg-sw-n">Now</em></li><li><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true" style="color:#8a8f9a"><circle cx="12" cy="12" r="8"></circle></svg><span>Checking every move is legal</span><em class="sg-sw sg-sw-w">Waiting</em></li><li><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true" style="color:#8a8f9a"><circle cx="12" cy="12" r="8"></circle></svg><span>Matching names to the Round 4 pairings</span><em class="sg-sw sg-sw-w">Waiting</em></li></ol><p class="sg-meta" style="margin-top:4px">This usually takes 10 to 30 seconds.</p><p class="sg-leave">You can leave this screen. The draft waits in My games.</p></section><p class="sg-count"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>16 of 20 scans left today <span>· resets at midnight</span></p></main><nav class="sg-tabs" aria-label="Main"><div class="sg-tabs-in"><a class="sg-tab on" href="#" aria-current="page"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4.5" width="18" height="16" rx="2"></rect><path d="M3 9.5h18M8 2.5v4M16 2.5v4"></path></svg><span>Tournaments</span></a><a class="sg-tab" href="#"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"></path><circle cx="12" cy="9.5" r="2.5"></circle></svg><span>Clubs</span></a><a class="sg-tab" href="#"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4.5 21c1-4 4-6 7.5-6s6.5 2 7.5 6"></path></svg><span>My LCA</span></a><button class="sg-tab" type="button" aria-expanded="false"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg><span>Menu</span></button></div><div class="sg-safe"><span class="sg-homeind"></span></div></nav></div></div><span class="k-num-badge sg-mk" style="left:-13px;top:500px">2</span></div><p class="sg-pcap">Nothing streams: calmer for a child watching, less to draw on a weak venue connection.</p></div><div class="sg-pcol"><div class="sg-cap"><div class="sg-oh"><span class="sg-oc">2</span><h3>Sent · scan the next sheet</h3></div><p class="sg-idea">The moment the upload lands (3:40 PM) the job is a Reading row and the page offers the next sheet.</p></div><div class="sg-ph"><div class="sg-phone" aria-label="Phone, sheet sent, offering the next sheet"><div class="sg-scr"><div class="sg-status" aria-hidden="true"><span>3:40 PM</span><span class="sg-island"></span><span class="sg-statr"><span class="sg-sig"><i></i><i></i><i></i><i></i></span><span class="sg-batt"><i></i></span></span></div><div class="sg-app"><a class="sg-brand" href="#" aria-label="Louisiana Chess Association, home"><span class="sg-markw"><svg class="sg-mark" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg></span><span class="sg-bname"><b>Louisiana Chess</b><span>Association</span></span></a><a class="sg-sbtn" href="#" aria-label="Search"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg></a></div><main class="sg-main"><div><p class="sg-kick">Scoresheet scanner · members only</p></div><ol class="sg-steps" aria-label="Scanner steps"><li class="sg-done"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Photo</li><li class="sg-now" aria-current="step">Read</li><li>Check</li><li>Save &amp; share</li></ol><section class="sg-card sg-rel" role="status" aria-labelledby="sg-p2-h"><div style="display:flex;gap:12px;align-items:flex-start"><span class="sg-ok"><svg class="k-i-lg" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span><div><h3 id="sg-p2-h" style="font-size:17px">Sheet sent · 3:40 PM</h3><p class="sg-body" style="margin-top:4px">Reading in the background. We'll email you when it is ready to check, and it will be in My games.</p></div></div></section><section class="sg-row" aria-label="Your draft in My games"><p class="sg-row-k">In My games now</p><div class="sg-row-h"><span class="sg-dot" style="background:#8a8f9a"></span><b>Reading</b><span class="sg-meta">· started 3:40 PM</span></div><p class="sg-body">Louisiana State Championship 2026, Round 4, Board 6 · Sun, Sep 6</p><p class="sg-meta">Only me · the moves appear here when reading ends</p></section><a class="k-btn k-btn-gold k-btn-block k-btn-lg" href="#"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8.5A1.5 1.5 0 0 1 5.5 7h2.3l1.4-2h5.6l1.4 2h2.3A1.5 1.5 0 0 1 20 8.5v9a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 17.5z"></path><circle cx="12" cy="13" r="3.5"></circle></svg>Scan the next sheet</a><a class="k-btn k-btn-line k-btn-block" href="#">Open My games</a><p class="sg-count"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>16 of 20 scans left today <span>· resets at midnight</span></p><p class="sg-priv"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V6l7-3z"></path><path d="M9 12l2 2 4-4"></path></svg><span>Only you see the draft. Photos are kept 30 days unless you save the game.</span></p></main><nav class="sg-tabs" aria-label="Main"><div class="sg-tabs-in"><a class="sg-tab on" href="#" aria-current="page"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4.5" width="18" height="16" rx="2"></rect><path d="M3 9.5h18M8 2.5v4M16 2.5v4"></path></svg><span>Tournaments</span></a><a class="sg-tab" href="#"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"></path><circle cx="12" cy="9.5" r="2.5"></circle></svg><span>Clubs</span></a><a class="sg-tab" href="#"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4.5 21c1-4 4-6 7.5-6s6.5 2 7.5 6"></path></svg><span>My LCA</span></a><button class="sg-tab" type="button" aria-expanded="false"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg><span>Menu</span></button></div><div class="sg-safe"><span class="sg-homeind"></span></div></nav></div></div><span class="k-num-badge sg-mk" style="left:-13px;top:215px">1</span></div><p class="sg-pcap">A player with three sheets photographs them all between rounds.</p></div><div class="sg-pcol"><div class="sg-cap"><div class="sg-oh"><span class="sg-oc">3</span><h3>My games · 3:41 PM</h3></div><p class="sg-idea">My LCA › My games at phone width: the row has turned from Reading to Ready to check.</p></div><div class="sg-ph"><div class="sg-phone" aria-label="Phone, My games with a game ready to check"><div class="sg-scr"><div class="sg-status" aria-hidden="true"><span>3:41 PM</span><span class="sg-island"></span><span class="sg-statr"><span class="sg-sig"><i></i><i></i><i></i><i></i></span><span class="sg-batt"><i></i></span></span></div><div class="sg-app"><a class="sg-brand" href="#" aria-label="Louisiana Chess Association, home"><span class="sg-markw"><svg class="sg-mark" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg></span><span class="sg-bname"><b>Louisiana Chess</b><span>Association</span></span></a><a class="sg-sbtn" href="#" aria-label="Search"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg></a></div><main class="sg-main" style="gap:11px"><nav class="sg-crumbs" aria-label="Breadcrumb"><a href="#">My LCA</a><span aria-hidden="true">›</span><span aria-current="page">My games</span></nav><div class="sg-mgh"><h2 class="sg-h1p">My games</h2><a class="k-btn k-btn-line k-btn-sm" href="#"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8.5A1.5 1.5 0 0 1 5.5 7h2.3l1.4-2h5.6l1.4 2h2.3A1.5 1.5 0 0 1 20 8.5v9a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 17.5z"></path><circle cx="12" cy="13" r="3.5"></circle></svg>Scan a sheet</a></div><p class="sg-count"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>16 of 20 scans left today <span>· resets at midnight</span></p><section class="sg-ready" aria-labelledby="sg-p3-r"><div class="sg-row-h"><span class="sg-dot" style="background:#d49a1c"></span><b id="sg-p3-r" class="sg-amber">Ready to check · 2 moves</b></div><div class="sg-ready-in"><div class="k-board sg-thumb" role="img" aria-label="Final position after 17. Rd8 checkmate. White: king c1, rook d8, bishop g5, pawns a2 b2 c2 e4 f2 g2 h2. Black: king e8, queen e6, bishop f8, knight b8, rook h8, pawns a7 e5 f7 g7 h7."><div class="k-sq-d"></div><div class="k-sq-l"><span class="pc pb">N</span></div><div class="k-sq-d"></div><div class="k-sq-l lm"><span class="pc pw">R</span></div><div class="k-sq-d"><span class="pc pb">K</span></div><div class="k-sq-l"><span class="pc pb">B</span></div><div class="k-sq-d"></div><div class="k-sq-l"><span class="pc pb">R</span></div><div class="k-sq-l"><span class="pc pb pp">P</span></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"><span class="pc pb pp">P</span></div><div class="k-sq-l"><span class="pc pb pp">P</span></div><div class="k-sq-d"><span class="pc pb pp">P</span></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"><span class="pc pb">Q</span></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"><span class="pc pb pp">P</span></div><div class="k-sq-d"></div><div class="k-sq-l"><span class="pc pw">B</span></div><div class="k-sq-d"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"><span class="pc pw pp">P</span></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-d"><span class="pc pw pp">P</span></div><div class="k-sq-l"><span class="pc pw pp">P</span></div><div class="k-sq-d"><span class="pc pw pp">P</span></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"><span class="pc pw pp">P</span></div><div class="k-sq-d"><span class="pc pw pp">P</span></div><div class="k-sq-l"><span class="pc pw pp">P</span></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"><span class="pc pw">K</span></div><div class="k-sq-d lm"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div></div><div class="sg-ready-t"><b>vs Priya Shah · 1-0 on the sheet</b><span>Louisiana State Championship 2026, Round 4, Board 6</span><span>read Sun, Sep 6, 3:41 PM · Only me</span></div></div><div class="sg-two"><a class="k-btn k-btn-gold" href="#">Check now</a><a class="k-btn k-btn-line" href="#">Later</a></div></section><section class="sg-card" style="padding:10px 14px" aria-labelledby="sg-p3-s"><h3 id="sg-p3-s" style="font-size:15px">Saved · 3</h3><ul class="sg-saved"><li><div class="sg-sv-t"><b>vs Sam Nguyen · drew</b><span class="sg-chk"><span class="sg-dot sg-dot-s" style="background:#2f6b45"></span>Checked</span></div><span>Houma Chess Club night · Mon, Aug 31 · Only me</span></li><li><div class="sg-sv-t"><b>vs Jordan Lee · won</b><span class="sg-chk"><span class="sg-dot sg-dot-s" style="background:#2f6b45"></span>Checked</span></div><span>State Championship, Round 2 · Sat, Sep 5 · Link</span></li><li><div class="sg-sv-t"><b>vs Camille Broussard · lost</b><span class="sg-chk"><span class="sg-dot sg-dot-s" style="background:#2f6b45"></span>Checked</span></div><span>State Championship, Round 1 · Sat, Sep 5 · Only me</span></li></ul></section><div class="sg-fade"><span>Scroll for Who can see it and Delete</span></div></main><nav class="sg-tabs" aria-label="Main"><div class="sg-tabs-in"><a class="sg-tab" href="#"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4.5" width="18" height="16" rx="2"></rect><path d="M3 9.5h18M8 2.5v4M16 2.5v4"></path></svg><span>Tournaments</span></a><a class="sg-tab" href="#"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"></path><circle cx="12" cy="9.5" r="2.5"></circle></svg><span>Clubs</span></a><a class="sg-tab on" href="#" aria-current="page"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4.5 21c1-4 4-6 7.5-6s6.5 2 7.5 6"></path></svg><span>My LCA</span></a><button class="sg-tab" type="button" aria-expanded="false"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg><span>Menu</span></button></div><div class="sg-safe"><span class="sg-homeind"></span></div></nav></div></div></div><p class="sg-pcap">The row reads Reading while the job runs, Ready to check when it ends, on any device.</p></div><div class="sg-pcol"><div class="sg-cap"><div class="sg-oh"><span class="sg-oc">4</span><h3>The ready email and the to-do</h3></div><p class="sg-idea">The phone's mail app, drawn plainly, and the line it adds to My LCA's Today list.</p></div><div class="sg-ph"><div class="sg-phone" aria-label="Phone, the ready email in the mail app"><div class="sg-scr"><div class="sg-status sg-status-l" aria-hidden="true"><span>3:41 PM</span><span class="sg-island"></span><span class="sg-statr"><span class="sg-sig"><i></i><i></i><i></i><i></i></span><span class="sg-batt"><i></i></span></span></div><div class="sg-mbar"><a class="sg-mback" href="#"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"></path></svg>Inbox</a><span class="sg-mic"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16v13H4zM2.5 4h19v3h-19zM10 11h4"></path></svg><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 7h14M10 7V4h4v3M7 7l1 13h8l1-13"></path></svg></span></div><main class="sg-mail"><h2 class="sg-msub">Your game is ready to check</h2><div class="sg-from"><span class="sg-av"><svg class="sg-avmark" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg></span><div><b>Louisiana Chess Association</b><span>to Marcus · Sun, Sep 6, 3:41 PM</span></div></div><div class="sg-mbody sg-rel"><div class="sg-mhead"><svg class="sg-mhrook" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><b>Louisiana Chess Association</b></div><div class="sg-mtext"><p><b>Marcus Landry vs Priya Shah</b><br>Louisiana State Championship 2026, Round 4, Board 6 · Sun, Sep 6</p><p>We read 17 moves; 2 need a look before the game can be saved.</p><a class="k-btn k-btn-navy k-btn-block" href="#">Check the game</a><p class="sg-mfine">Check the game: louisianachess.org/me/games (opens on any device).</p><p class="sg-mfine sg-rel">The draft and its photo wait 30 days unless you save the game.</p></div></div><p class="sg-mfoot">You get this email because you scanned a sheet. Turn scanner emails off in My LCA › Settings.</p><div class="sg-later"><span>Under the mail · louisianachess.org › My LCA</span></div><section class="sg-todo" aria-label="My LCA, Today list"><p class="sg-todo-k">Today · 1 to do</p><div class="sg-todo-r"><span class="sg-todo-i"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5h6v3H9zM7 6.5H5.5v14h13v-14H17"></path><path d="M8.5 13l2.5 2.5 4.5-4.5"></path></svg></span><div><b>To do · Check 2 moves in your Round 4 game</b><span>Louisiana State Championship 2026 · Sun, Sep 6</span></div><a class="k-btn k-btn-line k-btn-sm" href="#">Open</a></div></section></main><div class="sg-safe sg-safe-w"><span class="sg-homeind"></span></div></div></div><span class="k-num-badge sg-mk" style="left:401px;top:400px">5</span><span class="k-num-badge sg-mk" style="left:-13px;top:500px">6</span></div><p class="sg-pcap">The to-do count is computed from /api/me on load and focus, never polled (WS02).</p></div></div>
+<div class="sg-flab"><span class="sg-code">C</span><h2>That evening · My games on the laptop</h2><span class="k-meta">Signed in as Marcus Landry · Sun, Sep 6, 8:00 PM · 1100px</span></div>
+<div class="sg-even"><div class="sg-lap sg-rel"><div class="k-browser"><div class="k-browser-bar"><i></i><i></i><i></i><div class="k-browser-url">louisianachess.org/me/games</div></div><div class="sg-view"><header class="k-header sg-hd"><div class="k-header-in sg-hd-in"><a class="k-brand" href="#" aria-label="Louisiana Chess Association, home"><svg class="sg-hrook" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span class="k-brand-name" aria-hidden="true"><b>Louisiana Chess</b><span>Association</span></span></a><nav class="k-navlinks sg-nav" aria-label="Main"><a href="#">Tournaments</a><a href="#">Clubs</a><a href="#">Scholastic</a><a href="#">News</a><a href="#">Membership</a><button class="sg-navbtn" type="button" aria-expanded="false" aria-haspopup="true">About<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></button></nav><a class="sg-hsb" href="#"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg><span>Search</span><kbd class="sg-kbd" aria-hidden="true">&#8984;K</kbd></a><div class="k-utility"><a class="k-ulink" href="#">Donate</a><button class="sg-my sg-my-on" type="button" aria-haspopup="menu" aria-expanded="false"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4.5 21c1-4 4-6 7.5-6s6.5 2 7.5 6"></path></svg><span>My LCA</span><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></button></div></div></header><div class="sg-lbody"><div class="sg-lhead"><div><nav class="sg-crumbs" aria-label="Breadcrumb"><a href="#">My LCA</a><span aria-hidden="true">›</span><span aria-current="page">My games</span></nav><h1 class="sg-lh1">My games</h1></div><div class="sg-lhr"><span class="sg-meta">1 to check · 3 saved · newest first</span><a class="k-btn k-btn-line k-btn-sm" href="#"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8.5A1.5 1.5 0 0 1 5.5 7h2.3l1.4-2h5.6l1.4 2h2.3A1.5 1.5 0 0 1 20 8.5v9a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 17.5z"></path><circle cx="12" cy="13" r="3.5"></circle></svg>Scan a sheet</a></div></div><ul class="sg-lrows"><li class="sg-lr sg-lr-on"><span class="sg-lst sg-lst2"><span class="k-row-sm" style="gap:7px"><span class="sg-dot" style="background:#d49a1c"></span><b class="sg-amber">Ready to check · 2 moves</b></span><small>Save and Export open once checked</small></span><span class="sg-lmain"><b>vs Priya Shah</b><span>Louisiana State Championship 2026, Round 4, Board 6 · read Sun, Sep 6, 3:41 PM · Only me</span></span><span class="sg-lact"><a class="k-btn k-btn-gold k-btn-sm" href="#">Review</a><a class="k-btn k-btn-line k-btn-sm" href="#">Later</a></span></li><li class="sg-lr"><span class="sg-lst"><span class="sg-dot" style="background:#2f6b45"></span><b>Checked</b></span><span class="sg-lmain"><b>vs Sam Nguyen · drew</b><span>Houma Chess Club night · Mon, Aug 31 · Only me</span></span><span class="sg-lact"><a class="k-link k-small" href="#">Open</a></span></li></ul></div><footer class="k-footer sg-foot"><div class="sg-foot-in"><div class="k-row-sm" style="gap:10px"><svg class="sg-frook" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><b style="font-size:14px">Louisiana Chess Association</b></div><span class="k-meta">US Chess state affiliate · Louisiana's chess community since 1915</span><nav class="k-row" aria-label="Footer" style="gap:18px"><a href="#">Contact</a><a href="#">Website help</a><a href="#">Bylaws &amp; rules</a><a href="#">Donate</a></nav></div></footer></div></div><span class="k-num-badge sg-mk" style="left:-13px;top:190px">5</span></div><div class="sg-lside"><div class="sg-arrow" aria-hidden="true"><i></i><em></em></div><div class="sg-ptag"><span class="sg-code">3</span><div><b>Part 3 · Scan-H or Scan-I opens from here</b><span>Review: the photo, the moves and the board, with the game checks</span></div></div><p class="sg-grey-l"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.3-5.6M20 4v5h-5"></path></svg><span>The legality check runs again on the laptop from the saved reading (decodeInBackground.ts); the photo is shown beside the moves only if it is still kept.</span></p><p class="sg-grey-l"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5.5" width="18" height="13" rx="2"></rect><path d="M3.5 7l8.5 6.5L20.5 7"></path></svg><span>Marcus opens the row from the email link or from My LCA; the to-do clears once the game is checked and saved.</span></p></div></div>
+<div class="sg-flab"><span class="sg-code">D</span><h2>States</h2><span class="k-meta">Colour and the state in words · on the card while it is open, on the My games row after leaving</span><span class="k-sample">Sample data · guardian scan for Priya</span></div>
+<div class="sg-sgrid"><div class="sg-st "><p class="sg-st-h"><span class="sg-dot" style="background:#8a8f9a"></span>1 · Empty</p><p class="sg-st-w">Grey · nothing running</p><p class="sg-st-p">Nothing is being read right now.</p><div class="sg-mini"><a class="k-btn k-btn-gold" href="#"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8.5A1.5 1.5 0 0 1 5.5 7h2.3l1.4-2h5.6l1.4 2h2.3A1.5 1.5 0 0 1 20 8.5v9a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 17.5z"></path><circle cx="12" cy="13" r="3.5"></circle></svg>Scan a sheet</a></div></div><div class="sg-st "><p class="sg-st-h"><span class="sg-dot" style="background:#8a8f9a"></span>2 · In line</p><p class="sg-st-w">Grey · waiting its turn</p><div class="sg-minicard"><p class="sg-mrow"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8" style="stroke:#e4e2d8"></circle><path d="M12 4a8 8 0 0 1 8 8" style="stroke:#c8a94a;stroke-width:2.6"></path></svg><span><b>Your scan is next</b> · the reader is busy</span></p><p class="sg-mrow sg-faint"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true" style="color:#8a8f9a"><circle cx="12" cy="12" r="8"></circle></svg><span>Found the move grid</span></p><p class="sg-mrow sg-faint"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true" style="color:#8a8f9a"><circle cx="12" cy="12" r="8"></circle></svg><span>Read the handwriting</span></p></div></div><div class="sg-st sg-rel"><p class="sg-st-h"><span class="sg-dot" style="background:#d49a1c"></span>3 · Unreadable, still on the page</p><p class="sg-st-w">Amber · nothing counted</p><div class="sg-band sg-b-amber"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4l9 16H3z"></path><path d="M12 10v4M12 17.5v.01"></path></svg><span><b>We couldn't read this sheet</b><br>Page 2 couldn't be read. A shadow crosses rows 20 to 26.</span></div><div class="sg-mini sg-mini-n"><a class="k-btn k-btn-line" href="#">Try another photo</a><span class="sg-st-m">Nothing counted · 17 of 20 scans left today</span></div><span class="k-num-badge sg-mk" style="left:-13px;top:-12px">4</span></div><div class="sg-st "><p class="sg-st-h"><span class="sg-dot" style="background:#d49a1c"></span>4 · Unreadable, after leaving</p><p class="sg-st-w">Amber · in My games</p><div class="sg-minirow"><span class="sg-dot" style="background:#d49a1c"></span><span><b class="sg-amber">Couldn't read this sheet</b> · nothing counted · Sun, Sep 6, 3:41 PM</span></div><div class="sg-mini sg-mini-n"><a class="k-btn k-btn-line" href="#">Try another photo</a><span class="sg-st-m">No email for a failure <span class="sg-open">Open for K</span></span></div></div><div class="sg-st "><p class="sg-st-h"><span class="sg-dot" style="background:#b3202f"></span>5 · Busy</p><p class="sg-st-w">Red · try again soon</p><div class="sg-band sg-b-red"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4l9 16H3z"></path><path d="M12 10v4M12 17.5v.01"></path></svg><span>The scanner is busy. Please try again in a minute.</span></div><div class="sg-mini sg-mini-n"><a class="k-btn k-btn-gold" href="#">Try again</a><span class="sg-st-m">Keeps your photo · nothing counted</span></div></div><div class="sg-st "><p class="sg-st-h"><span class="sg-dot" style="background:#b3202f"></span>6 · Down</p><p class="sg-st-w">Red · unavailable</p><div class="sg-band sg-b-red"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4l9 16H3z"></path><path d="M12 10v4M12 17.5v.01"></path></svg><span>The scanner is unavailable right now. Please try again later.</span></div><p class="sg-st-m">Nothing counted · the photo stays on this phone</p></div><div class="sg-st "><p class="sg-st-h"><span class="sg-dot" style="background:#8a8f9a"></span>7 · Session expired</p><p class="sg-st-w">Grey · log in again</p><div class="sg-band sg-b-grey"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg><span>Your session has expired. Log in again to scan.</span></div><div class="sg-mini sg-mini-n"><a class="k-btn k-btn-navy" href="#">Log in</a><span class="sg-st-m">No retry until you do</span></div></div><div class="sg-st "><p class="sg-st-h"><span class="sg-dot" style="background:#d49a1c"></span>8 · Descriptive notation</p><p class="sg-st-w">Amber · not read</p><div class="sg-band sg-b-amber"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4l9 16H3z"></path><path d="M12 10v4M12 17.5v.01"></path></svg><span>This sheet is written in descriptive notation (P-K4). The scanner reads algebraic notation only.</span></div><p class="sg-st-m">detectDescriptive, decoder.ts · nothing counted</p></div><div class="sg-st "><p class="sg-st-h"><span class="sg-dot" style="background:#d49a1c"></span>9 · No legal game, or partly decoded</p><p class="sg-st-w">Red or amber · in My games</p><div class="sg-minirow"><span class="sg-dot" style="background:#b3202f"></span><span><b class="sg-red">Read · no legal game found</b></span></div><div class="sg-minirow"><span class="sg-dot" style="background:#d49a1c"></span><span><b class="sg-amber">Ready to check · stops at move 24</b></span></div><p class="sg-st-m">The review explains which moves would not fit (truncatedAtPly).</p></div><div class="sg-st "><p class="sg-st-h"><span class="sg-dot" style="background:#8a8f9a"></span>10 · Offline mid-job</p><p class="sg-st-w">Grey · still reading</p><div class="sg-band sg-b-grey"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3l18 18M8.5 16.5a5 5 0 0 1 7 0M5 13a10 10 0 0 1 5-2.7M14.5 10.4A10 10 0 0 1 19 13M2 9.5a15 15 0 0 1 4-2.5M12 5a15 15 0 0 1 10 4.5"></path><circle cx="12" cy="20" r="1"></circle></svg><span>Connection lost. The reading continues and the draft waits in My games.</span></div><p class="sg-st-m">The ready email still arrives.</p></div><div class="sg-st "><p class="sg-st-h"><span class="sg-dot" style="background:#d49a1c"></span>11 · Daily limit</p><p class="sg-st-w">Amber · 0 of 20 left</p><div class="sg-band sg-b-amber"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4l9 16H3z"></path><path d="M12 10v4M12 17.5v.01"></path></svg><span>You've used all 20 scans for today.</span></div><p class="sg-st-m">Refused before upload. A running job finishes and its email arrives.</p></div><div class="sg-st "><p class="sg-st-h"><span class="sg-dot" style="background:#8a8f9a"></span>12 · A junior's game</p><p class="sg-st-w">Grey · family only</p><div class="sg-minirow"><span class="sg-dot" style="background:#8a8f9a"></span><span><b>Priya · Reading</b> · started 3:40 PM · only you and your family</span></div><p class="sg-st-m">A guardian's scan: the email goes to the guardian, Priya by first name only. Private until her guardian allows sharing. <span class="sg-open">Open for K</span></p></div></div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1960,"height":2450}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

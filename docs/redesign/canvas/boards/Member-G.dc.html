@@ -1,0 +1,447 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Membership · G · Member-G · Family first (round 2)</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/6107adb451dbab26ee5d89f4189b81f8">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1a2744}
+.gm-root{width:1440px;box-sizing:border-box;background:#ecebe6;color:#1a2744}
+.gm-root *{box-sizing:border-box}
+.gm-strip{height:56px;display:flex;align-items:center;justify-content:space-between;gap:24px;padding:0 40px;background:#ecebe6;border-bottom:1px solid #d9d8d1}
+.gm-strip-l{font-size:15px;font-weight:700;letter-spacing:-.005em;white-space:nowrap}
+.gm-strip-r{font-size:14px;font-weight:600;color:#866a1e;text-align:right}
+.gm-doc{padding:10px 40px 12px;display:grid;grid-template-columns:minmax(0,1fr) 720px;gap:12px 20px;align-items:start}
+.gm-doc .gm-lbox{grid-column:1 / 3;margin-top:0}
+.gm-meta{font-size:14px;line-height:1.5;color:#3d4556;margin:0}
+.gm-meta b{color:#1a2744;font-weight:600}
+.gm-lbox{background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:10px 18px;margin-top:10px}
+.gm-notes{list-style:none;margin:8px 0 0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px 28px}
+.gm-notes li{display:flex;gap:10px;align-items:flex-start;font-size:13px;line-height:1.45}
+.gm-notes .k-num-badge{width:24px;height:24px;font-size:12px}
+.gm-grey{background:#efefea;border:1px solid #dddcd4;border-radius:12px;padding:10px 14px;display:grid;grid-template-columns:1fr 1fr;gap:6px 18px}
+.gm-grey p{margin:0;font-size:12.5px;line-height:1.4;color:#2b3446}
+.gm-grey p b{display:block;font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:#555c6b;margin-bottom:1px}
+.gm-grey ol{margin:0;padding-left:18px;font-size:12.5px;line-height:1.4;color:#2b3446}
+.gm-grey li{margin-bottom:0}
+.gm-page{background:#ffffff}
+
+/* decided header */
+.gm-hd-in{gap:0;position:relative}
+.gm-hd .k-brand{margin-right:16px}
+.gm-rook{width:30px;height:30px;fill:#ffffff;flex:none}
+.gm-rook-sm{width:24px;height:24px}
+.gm-nav{gap:0}
+.gm-nav a{padding:0 10px;white-space:nowrap}
+.gm-navbtn{display:inline-flex;align-items:center;gap:4px;min-height:44px;padding:0 10px;border:0;background:transparent;color:#ffffff;font:inherit;font-size:15px;font-weight:500;cursor:pointer}
+.gm-sbtn{display:inline-flex;align-items:center;gap:8px;width:220px;height:44px;padding:0 8px 0 12px;margin-right:16px;border-radius:8px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.45);color:#ffffff;text-decoration:none;font-size:14.5px;font-weight:500;flex:none}
+.gm-kbd{margin-left:auto;font-family:"Geist Mono",ui-monospace,monospace;font-size:12px;color:#e8ecf4;border:1px solid rgba(255,255,255,.4);border-radius:5px;padding:2px 6px;line-height:1.2}
+.gm-util{gap:12px;position:relative}
+.gm-util .k-ulink{padding:0 4px}
+.gm-mk{position:absolute;left:30px;top:-16px;width:22px;height:22px;font-size:11px;background:#c8a94a;color:#1a2744;box-shadow:0 0 0 2px #1a2744}
+
+/* hero */
+.gm-hero{padding:16px 24px 16px}
+.gm-inc.k-stack-sm{gap:6px}
+.gm-hero .k-h1{color:#ffffff;margin:0}
+.on-navy{color:#d5d9e3}
+.gm-lookup{color:#ffffff;text-decoration:underline;text-underline-offset:4px;font-size:15px;font-weight:600;display:inline-flex;align-items:center;min-height:44px;padding:0 8px}
+.gm-inc{color:#1a2744}
+.gm-inc .k-label{color:#555c6b}
+.gm-inc .k-meta{color:#555c6b}
+.gm-inc .gm-chk{display:flex;gap:10px;align-items:flex-start}
+.gm-inc .gm-chk svg{color:#145b3a;margin-top:2px}
+
+/* sections */
+.gm-sec{padding:18px 24px 20px}
+.gm-sec-rule{border-top:1px solid #e2e1da}
+.pick{border:2px solid #1a2744}
+
+/* THE AXIS: family panel + slim cards */
+.gm-cols{display:grid;grid-template-columns:62fr 38fr;gap:24px;align-items:start}
+.gm-fam{padding:16px 20px 16px;display:flex;flex-direction:column;gap:10px;border-radius:12px;background:#ffffff}
+.gm-famhd{display:flex;justify-content:space-between;align-items:flex-end;gap:16px}
+.gm-famhd .k-h3{margin:0;font-size:22px}
+.gm-p32{font-size:32px;font-weight:700;line-height:1;font-variant-numeric:tabular-nums;white-space:nowrap}
+.gm-p28{font-size:28px;font-weight:700;line-height:1;font-variant-numeric:tabular-nums;white-space:nowrap}
+.gm-who{padding:12px 14px 12px;display:flex;flex-direction:column;gap:7px}
+.gm-whohd{display:flex;align-items:center;gap:8px}
+.gm-whohd .k-sample{margin-left:auto;flex:none}
+.gm-help{margin:0 0 0 4px;font-size:13px;line-height:1.35;color:#3d4556}
+.gm-rows{background:#ffffff;border:1px solid #dddcd4;border-radius:10px}
+.gm-r{display:grid;grid-template-columns:76px minmax(0,1fr) minmax(0,1.1fr) 146px;gap:6px 12px;align-items:start;padding:9px 12px;border-top:1px solid #e4e1d8}
+.gm-r:first-child{border-top:0}
+.gm-rwho{display:flex;align-items:center;gap:8px;min-height:36px;margin-top:19px;font-size:14px;font-weight:600}
+.gm-av{width:30px;height:30px;flex:none;border-radius:50%;background:#f1efe7;color:#1a2744;display:flex;align-items:center;justify-content:center}
+.gm-av svg{width:17px;height:17px}
+.gm-f{display:flex;flex-direction:column;gap:3px;min-width:0}
+.gm-f label{font-size:12.5px;font-weight:600;line-height:1.25;color:#1a2744;white-space:nowrap}
+.gm-f label i{font-style:normal;font-weight:500;color:#555c6b}
+.gm-in{width:100%;height:36px;padding:0 10px;border:1px solid #858b99;border-radius:8px;background:#ffffff;color:#1a2744;font:inherit;font-size:14.5px}
+.gm-in::placeholder{color:#6b7180}
+.gm-found{align-self:flex-start;font-size:11.5px;padding:3px 7px;margin-top:2px}
+.gm-found svg{width:13px;height:13px}
+.gm-rst{display:flex;align-items:center;min-height:36px;margin-top:19px}
+.gm-rst .k-check{font-size:14px;font-weight:600;line-height:1.3;gap:8px}
+.gm-sub{grid-column:2 / 5;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.gm-sub .k-check{font-size:14px;gap:8px}
+.gm-sub .k-check input{width:18px;height:18px}
+.gm-add{display:flex;align-items:center;gap:14px;padding:8px 12px;border-top:1px solid #e4e1d8}
+.gm-addbtn{display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:0 14px;border:1.5px dashed #858b99;border-radius:8px;background:#ffffff;color:#1a2744;font:inherit;font-size:14px;font-weight:600;white-space:nowrap}
+.gm-count{display:flex;align-items:center;gap:10px;font-size:13.5px;line-height:1.4;color:#2b3446}
+.gm-pips{display:inline-flex;gap:4px;flex:none}
+.gm-pips i{display:block;width:22px;height:8px;border-radius:99px;background:#1a2744}
+.gm-pips i.o{background:#ffffff;border:1.5px solid #858b99}
+.gm-hint{display:flex;gap:8px;align-items:flex-start;font-size:13.5px;line-height:1.45;color:#3d4556;margin:0}
+.gm-hint svg{flex:none;margin-top:1px;color:#555c6b}
+.gm-pay{display:grid;grid-template-columns:minmax(0,1fr) 270px;gap:16px;align-items:stretch}
+.gm-total{background:#f7f3e6;border:1px solid #e6dfc7;border-radius:10px;padding:12px 16px;display:flex;flex-direction:column;gap:6px}
+.gm-total-top{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.gm-total-top b{font-size:17px}
+.gm-math{margin:0;font-size:14px;line-height:1.5;color:#2b3446}
+.gm-acts{display:flex;flex-direction:column;gap:8px;justify-content:center}
+.gm-slims{display:flex;flex-direction:column;gap:14px}
+.gm-slim{padding:16px 18px;display:flex;flex-direction:column;gap:12px}
+.gm-slim-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.gm-slim-top .k-h3{margin:0}
+.gm-slim-act{display:flex;align-items:center;gap:16px}
+.gm-slim-act .k-btn{min-width:140px}
+.gm-aside-note{border:1px dashed #b9b7ad;border-radius:12px;padding:12px 16px;font-size:13.5px;line-height:1.5;color:#3d4556;background:#fbfaf6}
+.gm-aside-note b{color:#1a2744}
+
+/* ledger (Member-B) */
+.frow{display:flex;gap:16px;align-items:center;padding:9px 18px;border-top:1px solid #e4e1d8}
+.frow:first-child{border-top:0}
+.frow .k-num{margin-left:auto;font-weight:600;white-space:nowrap}
+.ico{width:34px;height:34px;flex:0 0 34px;border-radius:10px;background:#f1efe7;color:#1a2744;display:flex;align-items:center;justify-content:center}
+.gm-empty{border:1px dashed #b9b7ad;border-radius:12px;padding:12px 14px;background:#ffffff;display:flex;flex-direction:column;gap:8px;font-size:13px;line-height:1.45;color:#3d4556}
+.gm-empty .frow{border:1px solid #e4e1d8;border-radius:8px;background:#f7f5ee;padding:10px 12px}
+
+/* questions */
+.gm-q{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;align-items:start}
+.gm-qh{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.gm-qh .k-h4{margin:0;text-wrap:pretty}
+.gm-qcard{display:flex;flex-direction:column;gap:8px;padding:14px 16px}
+
+/* give line, notes, footer */
+.gm-give{background:#fbfaf6;border-top:1px solid #e9e7df;border-bottom:1px solid #e9e7df}
+.gm-give-in{min-height:94px;display:flex;align-items:center;justify-content:space-between;gap:24px;position:relative}
+.gm-dn{padding:8px 24px 8px}
+.gm-dn-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px 24px;font-size:12.5px;line-height:1.4;color:#2b3446}
+.gm-dn-rm{margin:8px 0 0;padding-top:8px;border-top:1px solid #ecebe5;font-size:13.5px;line-height:1.45;color:#3d4556}
+.gm-dn-rm b{color:#1a2744}
+.gm-foot-in{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px;padding-top:22px;padding-bottom:24px}
+.gm-foot .k-meta{color:rgba(255,255,255,.78)}
+.gm-foot nav a{font-size:14px}
+.gm-bdg{width:24px;height:24px;font-size:12px}
+</style>
+</helmet>
+<div class="gm-root" style="width:1440px;height:3250px">
+
+<div class="gm-strip"><span class="gm-strip-l">Page 13 · Membership · G · Family first</span><span class="gm-strip-r">Axis: the Family path is the brief's Who's covered? screen, drawn inline; the single memberships are slim side cards. Everything else is Member-B.</span></div>
+
+<section class="gm-doc" aria-label="About this board">
+<div>
+<div class="k-row k-row-sm" style="gap:10px"><span class="k-kicker">13 · Membership · round 2 · option G</span><span class="k-tag k-tag-lca">Round 2</span></div>
+<h1 class="k-h2" style="margin:4px 0 6px">Membership · G · Member-G · Family first</h1>
+<p class="gm-meta"><b>Built from:</b> Member-B · Round 2 · <b>Axis:</b> the Family path drawn inline (the WS12 Who's covered? screen); Adult, Scholastic and Senior become slim cards. <b>Replaces:</b> nothing yet; one of six Member-B readings (E to J).</p>
+<p class="gm-meta"><b>K's feedback applied (Tue, Oct 13):</b> service first, giving quiet. <b>Shown:</b> /membership, signed out, from the LCA TOC Qualifier page; a parent filling in Family.</p>
+</div>
+<aside class="gm-grey" aria-label="Board note">
+<p><b>What</b>Member-B with one change: Family is the Who's covered? screen, filled in on the page.</p>
+<p><b>Built from</b>Member-B and WS12, minus club counts, member-price wording, the Nationals framing.</p>
+<p><b>K's feedback applied</b>Service first: joining is the main path. Giving quiet: one line near the end; Give goes to /give (Give-A).</p>
+<div><p><b>Open for K</b></p>
+<ol>
+<li>Fill in the family here, or in a checkout step?</li>
+<li>One child: offer the switch, or only state the math?</li>
+<li>Card fee and refund rule: still for the board.</li>
+</ol></div>
+</aside>
+<div class="gm-lbox">
+<p class="k-label">Notes on this board</p>
+<ol class="gm-notes">
+<li><span class="k-num-badge">1</span><span><b>The axis, Who's covered? on the page:</b> ticks decide coverage; a 4th child is offered Scholastic $5 in the same payment.</span></li>
+<li><span class="k-num-badge">2</span><span><b>One honest total:</b> You pay today and the math follow the household typed in, and say when Family is not cheapest.</span></li>
+<li><span class="k-num-badge">3</span><span><b>No child email, grade or birthdate.</b> The only age question is a yes or no for the Senior price.</span></li>
+<li><span class="k-num-badge">4</span><span><b>What your dues fund, as Member-B:</b> placeholders until the treasurer enters figures, one link to the report.</span></li>
+<li><span class="k-num-badge">5</span><span><b>The registration check states the rule</b> (membership required), never a price (D11).</span></li>
+<li><span class="k-num-badge">6</span><span><b>Giving stays quiet:</b> Donate in the header (WS02) and one line with a Give button near the end.</span></li>
+</ol>
+</div>
+</section>
+
+<div class="gm-page">
+
+<header class="k-header gm-hd"><div class="k-wrap-wide k-header-in gm-hd-in"><a class="k-brand" href="#" aria-label="Louisiana Chess Association, home"><svg class="gm-rook" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span class="k-brand-name" aria-hidden="true"><b>Louisiana Chess</b><span>Association</span></span></a><nav class="k-navlinks gm-nav" aria-label="Main"><a href="#">Tournaments</a><a href="#">Clubs</a><a href="#">Scholastic</a><a href="#">News</a><a class="k-nav-on" href="#" aria-current="page">Membership</a><button class="gm-navbtn" type="button" aria-expanded="false" aria-haspopup="true">About<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></button></nav><a class="gm-sbtn" href="/search" aria-keyshortcuts="Meta+K Control+K"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg><span>Search</span><kbd class="gm-kbd" aria-hidden="true">&#8984;K</kbd></a><div class="k-utility gm-util"><span class="k-num-badge gm-mk">6</span><a class="k-ulink" href="#">Donate</a><a class="k-ulink" href="#">Log in</a><a class="k-btn k-btn-gold k-btn-sm" href="#">Join LCA</a></div></div></header>
+
+<section class="k-navy">
+  <div class="k-wrap-wide gm-hero">
+    <div class="k-split" style="align-items:center">
+      <div class="k-main k-stack" style="flex:2 1 0">
+        <span class="k-label-gold" style="color:#e6cf86">Membership</span>
+        <h1 class="k-h1">Join 300+ Louisiana chess players</h1>
+        <p class="k-lead on-navy" style="margin:0;max-width:760px">From $5 a year. Every membership gets the same benefits; the price depends only on who it covers.</p>
+        <div class="k-row k-row-sm" style="gap:10px;margin-top:4px">
+          <a class="k-btn k-btn-gold" href="#tiers">See memberships</a>
+          <a class="k-btn k-btn-on-dark" href="#">Renew</a>
+          <a class="gm-lookup" href="#">Am I a member?</a>
+        </div>
+      </div>
+      <aside class="k-side" style="flex:1 1 0">
+        <div class="k-card k-card-pad k-stack-sm gm-inc" style="padding:14px 18px">
+          <div class="k-label">Every membership includes</div>
+          <div class="gm-chk"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg><div><div class="k-strong">Entry to the tournaments LCA runs</div><div class="k-meta">An LCA membership is required to enter them</div></div></div>
+          <div class="gm-chk"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg><div><div class="k-strong">A member profile</div><div class="k-meta">Your events, results and membership in one place</div></div></div>
+          <div class="gm-chk"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg><div><div class="k-strong">Voting rights</div><div class="k-meta">At the annual meeting, Labor Day weekend</div></div></div>
+          <div class="gm-chk"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg><div><div class="k-strong">Online registration</div><div class="k-meta">Sign up yourself and your kids together</div></div></div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<section id="tiers">
+<div class="k-wrap-wide gm-sec k-stack">
+  <div class="k-between">
+    <div class="k-row k-row-sm"><h2 class="k-h2">Pick by who it covers</h2><span class="k-num-badge">1</span></div>
+    <a class="k-link k-small k-row k-row-sm" href="#">Not sure? Answer two questions<svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a>
+  </div>
+  <div class="gm-cols">
+
+    <div class="k-card gm-fam pick" aria-label="Family membership">
+      <div class="gm-famhd">
+        <div class="k-stack-sm" style="gap:4px">
+          <div class="k-row k-row-sm" style="gap:10px"><h3 class="k-h3">Family</h3><span class="k-tag k-tag-gold">Best value with 3 children</span></div>
+          <div class="k-small k-muted">You plus up to 3 children. Everyone on the plan gets an LCA membership.</div>
+        </div>
+        <div><span class="gm-p32">$25</span><span class="k-meta"> / year</span></div>
+      </div>
+
+      <div class="k-panel gm-who">
+        <div class="gm-whohd"><span class="k-label">Who's covered?</span><span class="k-num-badge gm-bdg">3</span><span class="gm-help">You, plus up to 3 children in K–12. No grade, no birthdate, no child email.</span><span class="k-sample">Sample data</span></div>
+        <div class="gm-rows">
+          <div class="gm-r">
+            <div class="gm-rwho"><span class="gm-av"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4.5 21c1-4 4-6 7.5-6s6.5 2 7.5 6"></path></svg></span>You</div>
+            <div class="gm-f"><label for="gm-pn">Your name</label><input id="gm-pn" class="gm-in" value="Danielle Robichaux"></div>
+            <div class="gm-f"><label for="gm-pe">Email for your receipt and login</label><input id="gm-pe" class="gm-in" value="danielle@example.com"></div>
+            <div class="gm-rst"><span class="k-tag k-tag-open"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Covered</span></div>
+            <div class="gm-sub"><label class="k-check"><input type="checkbox"> I'm 65 or older</label><span class="k-meta" style="color:#555c6b">Only yes or no, so we can offer the Senior price</span></div>
+          </div>
+          <div class="gm-r">
+            <div class="gm-rwho"><span class="gm-av"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="3.2"></circle><path d="M6.5 20c.8-3 3-4.6 5.5-4.6s4.7 1.6 5.5 4.6"></path></svg></span>Child</div>
+            <div class="gm-f"><label for="gm-c1">Child's name</label><input id="gm-c1" class="gm-in" value="Maya Robichaux"></div>
+            <div class="gm-f"><label for="gm-c1id">US Chess ID, <i>if they have one</i></label><input id="gm-c1id" class="gm-in" value="30419873"><span class="k-tag k-tag-open gm-found"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>US Chess ID found · rating 1102</span></div>
+            <div class="gm-rst"><label class="k-check"><input type="checkbox" checked> Covered by this plan</label></div>
+          </div>
+          <div class="gm-r">
+            <div class="gm-rwho"><span class="gm-av"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="3.2"></circle><path d="M6.5 20c.8-3 3-4.6 5.5-4.6s4.7 1.6 5.5 4.6"></path></svg></span>Child</div>
+            <div class="gm-f"><label for="gm-c2">Child's name</label><input id="gm-c2" class="gm-in" value="Leo Robichaux"></div>
+            <div class="gm-f"><label for="gm-c2id">US Chess ID, <i>if they have one</i></label><input id="gm-c2id" class="gm-in" placeholder="None yet, that's fine"></div>
+            <div class="gm-rst"><label class="k-check"><input type="checkbox" checked> Covered by this plan</label></div>
+          </div>
+          <div class="gm-add">
+            <button class="gm-addbtn" type="button"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>Add a family member</button>
+            <span class="k-meta" style="color:#555c6b">First and last name, and a US Chess ID if they have one.</span>
+          </div>
+        </div>
+        <div class="gm-count"><span class="gm-pips" aria-hidden="true"><i></i><i></i><i class="o"></i></span><span><b>2 of 3 child spots used</b> · 1 open spot you can fill any time from My LCA.</span></div>
+        <p class="gm-hint"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 11v5M12 7.5v.5"></path></svg><span>Children don't need an email. Everything comes to you. Each child can get their own login at 13 or older from My LCA.</span></p>
+      </div>
+
+      <div class="gm-pay">
+        <div class="gm-total">
+          <div class="gm-total-top"><span class="k-row k-row-sm"><b>You pay today</b><span class="k-num-badge gm-bdg">2</span></span><span class="gm-p28">$25</span></div>
+          <p class="gm-math">With 2 children, Adult + 2 Scholastic is also $25. Family is one renewal instead of three, and a third child is free to add.</p>
+        </div>
+        <div class="gm-acts">
+          <a class="k-btn k-btn-gold k-btn-block" href="#">Continue to payment · $25</a>
+          <button class="k-btn k-btn-line k-btn-sm k-btn-block" type="button">Buy Adult + 2 Scholastic instead</button>
+          <a class="k-link k-small" href="#" style="align-self:center">Renew Family</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="gm-slims">
+      <div class="k-card k-card-pad gm-slim">
+        <div class="gm-slim-top"><div class="k-stack-sm" style="gap:4px"><h3 class="k-h3">Adult</h3><div class="k-small k-muted">For players 18 and up · covers 1 player</div></div><div><span class="gm-p28">$15</span><span class="k-meta"> / year</span></div></div>
+        <div class="gm-slim-act"><a class="k-btn k-btn-navy k-btn-sm" href="#">Join · $15</a><a class="k-link k-small" href="#">Renew</a></div>
+      </div>
+      <div class="k-card k-card-pad gm-slim">
+        <div class="gm-slim-top"><div class="k-stack-sm" style="gap:4px"><h3 class="k-h3">Scholastic</h3><div class="k-small k-muted">For K–12 students · covers 1 student · a parent buys it</div></div><div><span class="gm-p28">$5</span><span class="k-meta"> / year</span></div></div>
+        <div class="gm-slim-act"><a class="k-btn k-btn-navy k-btn-sm" href="#">Join · $5</a><a class="k-link k-small" href="#">Renew</a></div>
+      </div>
+      <div class="k-card k-card-pad gm-slim">
+        <div class="gm-slim-top"><div class="k-stack-sm" style="gap:4px"><h3 class="k-h3">Senior</h3><div class="k-small k-muted">For players 65 and up · covers 1 player</div></div><div><span class="gm-p28">$10</span><span class="k-meta"> / year</span></div></div>
+        <div class="gm-slim-act"><a class="k-btn k-btn-navy k-btn-sm" href="#">Join · $10</a><a class="k-link k-small" href="#">Renew</a></div>
+      </div>
+      <div class="gm-aside-note"><b>Two households?</b> Each parent's Family plan can cover the same child; the later end date wins.</div>
+      <p class="k-small k-muted" style="margin:0">Prices are per year. [Card fee: board to confirm whether it is added at checkout.] Renewing keeps your profile and history.</p>
+    </div>
+
+  </div>
+</div>
+</section>
+
+<section class="k-cream gm-sec-rule">
+  <div class="k-wrap-wide gm-sec">
+    <div class="k-split">
+      <div class="k-main k-stack">
+        <div class="k-stack-sm">
+          <div class="k-row k-row-sm"><span class="k-kicker">Where the money goes</span><span class="k-num-badge">4</span><span class="k-sample">Sample data</span></div>
+          <h2 class="k-h2">What your dues fund</h2>
+          <p class="k-body k-muted" style="margin:0;max-width:860px">LCA is run by a volunteer board. The treasurer fills in the real figures each year; until then the categories and amounts below are placeholders.</p>
+        </div>
+        <div class="k-card">
+          <div class="frow"><div class="ico"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 9.5L12 5l9.5 4.5L12 14zM6.5 11.5V16c1.5 1.5 3.5 2.2 5.5 2.2s4-.7 5.5-2.2v-4.5M21.5 9.5v5"></path></svg></div><div><div class="k-strong">Scholastic program</div><div class="k-small k-muted">K–12 events and the State Scholastic Championship</div></div><span class="k-num">[Amount]</span></div>
+          <div class="frow"><div class="ico"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 4h8v5a4 4 0 0 1-8 0V4zM8 6H4.5a3 3 0 0 0 3.5 4M16 6h3.5a3 3 0 0 1-3.5 4M12 13v4M8.5 20.5h7M10 17h4"></path></svg></div><div><div class="k-strong">State Championship</div><div class="k-small k-muted">Labor Day weekend: venue, trophies, the annual meeting</div></div><span class="k-num">[Amount]</span></div>
+          <div class="frow"><div class="ico"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 20.5h10M9 20.5c0-3 1.5-5 3-6.5-1.8.4-3.4-.2-4.5-1.5L9.5 9c.6-2.4 2.6-4.5 5.5-4.5 2.8 0 4.5 2.5 4.5 6.5v9.5"></path></svg></div><div><div class="k-strong">Equipment</div><div class="k-small k-muted">Sets, boards and clocks used at LCA events</div></div><span class="k-num">[Amount]</span></div>
+          <div class="frow"><div class="ico"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="12" rx="1.5"></rect><path d="M8 20h8M12 16v4"></path></svg></div><div><div class="k-strong">Website and online registration</div><div class="k-small k-muted">Hosting, card payments, email to members</div></div><span class="k-num">[Amount]</span></div>
+          <div class="frow"><div class="ico"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3H6.5A1.5 1.5 0 0 0 5 4.5v15A1.5 1.5 0 0 0 6.5 21h11a1.5 1.5 0 0 0 1.5-1.5V8l-5-5zM14 3v5h5M8.5 13h7M8.5 17h5"></path></svg></div><div><div class="k-strong">Affiliate and admin costs</div><div class="k-small k-muted">[Treasurer to list: affiliate fees, insurance, other]</div></div><span class="k-num">[Amount]</span></div>
+          <div class="frow" style="background:#f7f5ee"><div><div class="k-strong">Total dues collected, [fiscal year]</div><div class="k-small k-muted">From 300+ members</div></div><span class="k-num">[Amount]</span></div>
+        </div>
+      </div>
+      <aside class="k-side k-stack">
+        <div class="k-card k-card-pad k-stack-sm">
+          <div class="k-row k-row-sm"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3H6.5A1.5 1.5 0 0 0 5 4.5v15A1.5 1.5 0 0 0 6.5 21h11a1.5 1.5 0 0 0 1.5-1.5V8l-5-5zM14 3v5h5M8.5 13h7M8.5 17h5"></path></svg><h3 class="k-h4">Treasurer's report, [fiscal year]</h3></div>
+          <div class="k-meta">Last updated [date]</div>
+          <p class="k-small" style="margin:0">Income, spending and balances, published with the minutes as a web page with a PDF copy.</p>
+          <div class="k-row k-row-sm"><a class="k-btn k-btn-line k-btn-sm" href="#">Read the report</a><a class="k-link k-small" href="#">PDF</a></div>
+          <div class="k-meta">Treasurer's reports live on the Minutes page.</div>
+        </div>
+        <div class="gm-empty">
+          <span class="k-label">Empty state</span>
+          <span>Before the treasurer enters figures, the amounts are hidden and the total row reads:</span>
+          <div class="frow"><div><div class="k-strong k-small">Total dues collected</div><div class="k-meta" style="color:#555c6b">Figures follow the treasurer's report, [date]</div></div></div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<section class="gm-sec-rule">
+<div class="k-wrap-wide gm-sec k-stack">
+  <div class="k-stack-sm" style="max-width:780px">
+    <div class="k-row k-row-sm"><span class="k-tag k-tag-gold">New</span><span class="k-sample">Sample data</span></div>
+    <h2 class="k-h2">Membership that takes care of itself</h2>
+    <p class="k-body k-muted" style="margin:0">No more finding out at the check-in table that your membership ran out last week.</p>
+  </div>
+  <div class="k-grid-4">
+    <div class="k-card k-card-pad k-stack-sm" style="padding:16px">
+      <h3 class="k-h4">Auto-renew, if you want it</h3>
+      <p class="k-small k-muted" style="margin:0">Off by default. We email a week before charging.</p>
+      <div class="k-panel k-stack-sm" style="padding:12px;border-radius:10px">
+        <label class="k-check"><input type="checkbox" checked> Renew automatically each year</label>
+        <div class="k-meta">Family · $25 on Wed, Feb 10, 2027 · cancel any time in My LCA</div>
+      </div>
+    </div>
+    <div class="k-card k-card-pad k-stack-sm" style="padding:16px">
+      <h3 class="k-h4">Reminders before it ends</h3>
+      <p class="k-small k-muted" style="margin:0">Emails 30 days and 7 days before, with a one-tap renew link.</p>
+      <div class="k-panel k-stack-sm" style="padding:12px;border-radius:10px">
+        <div class="k-meta">To: danielle@example.com</div>
+        <div class="k-strong k-small">Your LCA membership ends in 30 days</div>
+        <div class="k-small">Your Family membership ends Wed, Feb 10, 2027. Renew in one tap, no password needed.</div>
+        <a class="k-btn k-btn-gold k-btn-sm" href="#">Renew · $25</a>
+      </div>
+    </div>
+    <div class="k-card k-card-pad k-stack-sm" style="padding:16px">
+      <div class="k-row k-row-sm"><h3 class="k-h4">A check when you register</h3><span class="k-num-badge">5</span></div>
+      <p class="k-small k-muted" style="margin:0">If it ends before the event, renew with your entry.</p>
+      <div class="k-panel k-stack-sm" style="padding:12px;border-radius:10px">
+        <div class="k-strong k-small">LCA TOC Qualifier · Sat, Feb 13, 2027</div>
+        <span class="k-tag k-tag-soon" style="align-self:flex-start">Membership ends Wed, Feb 10</span>
+        <div class="k-small">LCA membership is required to enter. Add a renewal with your entry.</div>
+        <div class="k-row k-row-sm"><button class="k-btn k-btn-navy k-btn-sm" type="button">Add renewal · $25</button><button class="k-btn k-btn-ghost k-btn-sm" type="button">Not now</button></div>
+      </div>
+    </div>
+    <div class="k-card k-card-pad k-stack-sm" style="padding:16px">
+      <h3 class="k-h4">Give one as a gift</h3>
+      <p class="k-small k-muted" style="margin:0">For a student, a new club player or a grandparent. They claim it by email.</p>
+      <div class="k-panel k-stack-sm" style="padding:12px;border-radius:10px">
+        <div class="k-field"><label for="gm-gift">Their email</label><input id="gm-gift" class="k-input" placeholder="name@example.com"></div>
+        <div class="k-row k-row-sm"><button class="k-chip k-chip-on" type="button">Scholastic · $5</button><button class="k-chip" type="button">Adult · $15</button></div>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+
+<section class="gm-sec-rule">
+<div class="k-wrap-wide gm-sec k-stack">
+  <div class="k-between">
+    <h2 class="k-h2">Questions</h2>
+    <a class="k-link k-small" href="#">Ask us: LouisianaChess@gmail.com</a>
+  </div>
+  <div class="gm-q">
+    <div class="k-card k-card-pad gm-qcard">
+      <div class="gm-qh"><h3 class="k-h4">Is this the same as US Chess membership?</h3><button class="k-iconbtn" type="button" aria-label="Hide answer" aria-expanded="true"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 15l7-7 7 7"></path></svg></button></div>
+      <p class="k-small" style="margin:0">No. US Chess membership lets you play rated games anywhere in the country, and you buy it from US Chess. LCA membership is Louisiana's state association: it supports chess here and is required to enter the tournaments LCA runs.</p>
+    </div>
+    <div class="k-card k-card-pad gm-qcard">
+      <div class="gm-qh"><h3 class="k-h4">When does my membership end?</h3><button class="k-iconbtn" type="button" aria-label="Hide answer" aria-expanded="true"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 15l7-7 7 7"></path></svg></button></div>
+      <p class="k-small" style="margin:0">One year from the day you join. Renewing early adds a year on top of the time you have left, so it never loses you time. We email you 30 days and 7 days before it ends.</p>
+    </div>
+    <div class="k-card k-card-pad gm-qcard">
+      <div class="gm-qh"><h3 class="k-h4">Do I need to be a member to play in LCA events?</h3><button class="k-iconbtn" type="button" aria-label="Show answer" aria-expanded="false"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"></path></svg></button></div>
+      <p class="k-small" hidden>For tournaments LCA runs, yes, unless the event says otherwise; club-run events set their own rule. If you aren't a member yet, it's added at checkout when you register.</p>
+    </div>
+    <div class="k-card k-card-pad gm-qcard">
+      <div class="gm-qh"><h3 class="k-h4">Who counts as a child on the Family membership?</h3><button class="k-iconbtn" type="button" aria-label="Show answer" aria-expanded="false"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"></path></svg></button></div>
+      <p class="k-small" hidden>A K–12 student you're the parent or guardian of. Family covers you and up to 3; a 4th is a Scholastic membership at $5 in the same payment. In two-household families each parent's plan can cover the child, and the later end date wins.</p>
+    </div>
+    <div class="k-card k-card-pad gm-qcard">
+      <div class="gm-qh"><h3 class="k-h4">Are there any fees on top of the price?</h3><button class="k-iconbtn" type="button" aria-label="Show answer" aria-expanded="false"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"></path></svg></button></div>
+      <p class="k-small" hidden>[Board to confirm the card fee.] Nothing else. Tournament entry fees are separate and the same for everyone.</p>
+    </div>
+    <div class="k-card k-card-pad gm-qcard">
+      <div class="gm-qh"><h3 class="k-h4">Can I get a refund?</h3><button class="k-iconbtn" type="button" aria-label="Show answer" aria-expanded="false"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"></path></svg></button></div>
+      <p class="k-small" hidden>[Board to confirm the refund rule.] If a payment went wrong, write to LouisianaChess@gmail.com and we'll put it right.</p>
+    </div>
+  </div>
+</div>
+</section>
+
+<section class="gm-give" aria-label="Giving">
+  <div class="k-wrap-wide gm-give-in" style="padding-left:48px;padding-right:48px">
+    <div class="k-stack-sm" style="gap:4px">
+      <div class="k-row k-row-sm"><h2 class="k-h4" style="margin:0">Want to give beyond your dues?</h2><span class="k-num-badge gm-bdg">6</span></div>
+      <p class="k-small k-muted" style="margin:0">Most people support LCA by joining and playing. If you'd like to give more, you can, once or monthly.</p>
+    </div>
+    <a class="k-btn k-btn-line k-btn-sm" href="/give">Give</a>
+  </div>
+</section>
+
+<section class="k-wrap-wide gm-dn">
+  <div class="k-card k-card-pad" style="padding:16px 20px">
+    <div class="k-label" style="margin-bottom:8px">Design notes</div>
+    <div class="gm-dn-grid">
+      <div>1 · The Who's covered? screen from WS12 sits on the page: ticks, not dates, decide coverage; the first 3 children tick, a 4th is offered Scholastic $5 in the same payment and is never silently left out.</div>
+      <div>2 · The total and the math are computed for the household typed in, and say when Family is not the cheapest.</div>
+      <div>3 · No child email, grade or birthdate; the only age question is a yes or no for the Senior price.</div>
+      <div>4 · Ledger placeholders until the treasurer enters figures.</div>
+      <div>5 · Registration check states the rule, not a price (D11).</div>
+      <div>6 · Giving is one line near the end; Donate stays in the header.</div>
+    </div>
+    <p class="gm-dn-rm"><b>Removed from Member-B:</b> club member counts; member-price wording; the Nationals fund framing; the four-equal-cards grid.</p>
+  </div>
+</section>
+
+<footer class="k-footer gm-foot"><div class="k-wrap-wide gm-foot-in"><div class="k-row-sm" style="gap:10px"><svg class="gm-rook gm-rook-sm" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><b style="font-size:15px">Louisiana Chess Association</b></div><span class="k-meta">US Chess state affiliate · Louisiana's chess community since 1915</span><nav class="k-row" aria-label="Footer" style="gap:18px"><a href="#">Contact</a><a href="#">Website help</a><a href="#">Bylaws &amp; rules</a><a href="#">Donate</a></nav></div></footer>
+
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":3250}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

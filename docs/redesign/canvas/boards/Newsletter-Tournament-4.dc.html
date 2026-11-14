@@ -1,0 +1,302 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Tournament send-out 4</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/6107adb451dbab26ee5d89f4189b81f8">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&amp;display=swap">
+<style>
+body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1a2744}
+.n4-root{width:1440px;margin:0 auto;box-sizing:border-box;padding:36px 72px 48px;background:#ecebe6;color:#1a2744;font-family:Geist,system-ui,sans-serif}
+.n4-root *{box-sizing:border-box}
+
+/* label strip */
+.n4-strip{display:flex;align-items:center;justify-content:space-between;gap:32px;padding:24px 30px 26px;background:#ffffff;border:1px solid #dddcd4;border-radius:16px}
+.n4-strip .k-kicker{margin:0}
+.n4-name{margin:8px 0 0;font-size:40px;line-height:1.1;font-weight:700;letter-spacing:-.015em;color:#1a2744}
+.n4-sent{margin:8px 0 0;font-size:18px;line-height:1.5;color:#3d4556}
+.n4-strip .k-sample{flex:none}
+
+/* layout */
+.n4-grid{display:grid;grid-template-columns:780px 390px;justify-content:space-between;align-items:start;margin-top:36px}
+.n4-col{display:flex;flex-direction:column;gap:14px}
+.n4-phones{display:flex;flex-direction:column;gap:48px}
+.n4-cap{margin:0;font-size:14px;line-height:1.4;color:#555c6b}
+
+/* computer mail window */
+.nm-win{background:#ffffff;border:1px solid #cfcec6;border-radius:14px;overflow:hidden;box-shadow:0 18px 40px rgba(16,24,43,.12)}
+.nm-top{display:flex;align-items:center;gap:8px;height:40px;padding:0 16px;background:#eeede8;border-bottom:1px solid #d9d8d1}
+.nm-top i{display:block;width:12px;height:12px;border-radius:50%;background:#cfcdc4}
+.nm-top span{flex:1;text-align:center;margin-right:52px;font-size:13px;font-weight:600;color:#3d4556}
+.nm-tools{display:flex;align-items:center;gap:6px;height:48px;padding:0 14px;border-bottom:1px solid #ecebe4}
+.nm-tools span{display:inline-flex;align-items:center;gap:7px;height:34px;padding:0 10px;border-radius:7px;font-size:13.5px;font-weight:600;color:#3d4556}
+.nm-tools .nm-gap{flex:1;padding:0}
+.nm-head{padding:20px 28px 18px;border-bottom:1px solid #ecebe4}
+.nm-head h3{margin:0;font-size:22px;line-height:1.25;font-weight:600;color:#1a2744}
+.nm-who{display:grid;grid-template-columns:42px minmax(0,1fr) auto;gap:12px;align-items:center;margin-top:14px}
+.nm-av{display:flex;align-items:center;justify-content:center;width:42px;height:42px;border-radius:50%;background:#1a2744}
+.nm-av svg{width:23px;height:23px;fill:#ffffff}
+.nm-who b{display:block;font-size:15px;line-height:1.3;color:#1a2744}
+.nm-who small{display:block;font-size:13px;line-height:1.4;color:#555c6b}
+.nm-when{font-size:13px;color:#3d4556;text-align:right}
+.nm-body{background:#f1efe8;padding:32px 0 36px}
+
+/* the email: the bulletin */
+.em{width:600px;margin:0 auto;background:#ffffff;padding:36px 40px 34px;font-family:"Source Serif 4",Georgia,"Times New Roman",serif;font-size:16.5px;line-height:1.65;color:#1f2a40;box-shadow:0 1px 0 #e3e0d4,0 0 0 1px #e8e5da}
+.em p,.np-em p{margin:0 0 12px}
+.em a,.np-em a{color:#1a2744;text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:1px}
+.em b,.np-em b{font-weight:700;color:#1a2744}
+.b-mast{border-top:4px solid #1a2744;padding-top:18px;text-align:center}
+.b-mrook{display:block;width:30px;height:30px;margin:0 auto;fill:#1a2744}
+.em .b-title,.np-em .b-title{margin:8px 0 0;font-family:"Source Serif 4",Georgia,serif;font-size:40px;line-height:1.1;font-weight:700;letter-spacing:-.01em;color:#1a2744;padding-bottom:14px;border-bottom:1px solid #1a2744}
+.em .b-line,.np-em .b-line{margin:0;padding:9px 0 8px;border-bottom:1px solid #1a2744;font-family:"Source Serif 4",Georgia,serif;font-size:13.5px;line-height:1.6;font-weight:700;letter-spacing:.12em;color:#1a2744}
+.bh{display:flex;align-items:center;justify-content:center;gap:14px;margin:36px 0 14px;font-family:"Source Serif 4",Georgia,serif;font-size:13px;line-height:1.3;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:#1a2744;text-align:center}
+.bh:before,.bh:after{content:"";display:block;width:44px;height:1px;background:#866a1e;flex:none}
+.b-mast+.bh{margin-top:30px}
+.b-dear{margin-bottom:8px !important}
+.em .b-lede{font-size:19.5px;line-height:1.5;color:#1a2744}
+.b-sign{margin-bottom:0 !important}
+.b-sc{font-size:13px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:#1a2744}
+.b-ev{margin:0 0 12px !important}
+.em .b-last,.np-em .b-last{margin-bottom:0 !important}
+.b-foot{margin-top:38px;padding-top:18px;border-top:1px solid #1a2744;font-size:14.5px;line-height:1.55;color:#3d4556;text-align:center}
+.b-foot p{margin:0 !important}
+.b-links{display:flex;flex-direction:column;align-items:center;gap:8px;margin-top:12px !important}
+.b-links a{color:#1a2744}
+.b-end{margin-top:18px}
+.b-ev a,.b-nw{white-space:nowrap}
+.b-foot .b-links{margin-top:14px !important}
+.np-em .b-foot .b-links{margin-top:12px !important}
+.b-end svg{display:block;width:20px;height:20px;margin:0 auto;fill:#1a2744}
+
+/* phones */
+.np-sb{display:flex;justify-content:space-between;align-items:center;height:46px;padding:0 28px;font-family:Geist,system-ui,sans-serif;font-size:15px;font-weight:600;color:#1a2744;flex:none}
+.np-sbi{display:flex;gap:6px;align-items:center}
+.np-sbi i{display:block;width:16px;height:10px;border-radius:2px;background:currentColor}
+.np-sbi i+i{width:23px;height:11px;border-radius:3px;border:1.5px solid currentColor;background:transparent}
+.np-nav{display:flex;justify-content:space-between;align-items:center;height:44px;padding:0 16px;font-family:Geist,system-ui,sans-serif;font-size:16px;color:#2d5fb5;flex:none}
+.np-nav span{display:inline-flex;align-items:center;gap:4px}
+.np-mh{padding:4px 20px 14px;border-bottom:1px solid #ecebe4;font-family:Geist,system-ui,sans-serif;flex:none}
+.np-mh h3{margin:0;font-size:20px;line-height:1.25;font-weight:600;color:#1a2744}
+.np-mh .nm-who{grid-template-columns:36px minmax(0,1fr);gap:10px;margin-top:12px}
+.np-mh .nm-av{width:36px;height:36px}
+.np-mh .nm-av svg{width:20px;height:20px}
+.np-mh .nm-who b{font-size:14.5px}
+.np-em{font-family:"Source Serif 4",Georgia,serif;font-size:16px;line-height:1.62;color:#1f2a40}
+.np-in{padding:22px 20px 16px}
+.np-em .b-mast{padding-top:16px}
+.np-em .b-mrook{width:26px;height:26px}
+.np-em .b-title{font-size:33px;padding-bottom:12px}
+.np-em .b-line{font-size:13px;letter-spacing:.1em;line-height:1.6;padding:8px 0 7px}
+.np-em .bh{margin:30px 0 12px;font-size:12px;letter-spacing:.15em;gap:10px;white-space:nowrap}
+.np-em .bh:before,.np-em .bh:after{width:24px}
+.np-em .b-mast+.bh{margin-top:26px}
+.np-em .b-lede{font-size:18.5px;line-height:1.5;color:#1a2744}
+.np-em .b-foot{margin-top:30px;padding-top:16px;font-size:14px}
+.np-bot{display:flex;justify-content:space-around;align-items:center;height:52px;border-top:1px solid #ecebe4;color:#2d5fb5;flex:none;background:#ffffff}
+.np-safe{flex:none;height:26px;display:flex;align-items:flex-end;justify-content:center;padding-bottom:8px;background:#ffffff}
+.np-safe i{display:block;width:124px;height:5px;border-radius:3px;background:#10182b}
+.np-scroll{position:relative}
+.np-end{position:absolute;left:0;right:0;top:0}
+.np-end .bh:first-child{margin-top:30px}
+
+/* dark setting */
+.np-dark{background:#151719}
+.np-dark .np-sb{color:#ffffff}
+.np-dark .np-nav,.np-dark .np-bot{color:#8fb0f0}
+.np-dark .np-nav{position:relative;z-index:2;background:#151719;border-bottom:1px solid #2b2e33}
+.np-dark .np-bot{background:#151719;border-top-color:#2b2e33}
+.np-dark .np-safe{background:#151719}
+.np-dark .np-safe i{background:#ffffff}
+.np-dark .np-em{color:#e4e5e8}
+.np-dark .np-em b,.np-dark .np-em .bh{color:#ffffff}
+.np-dark .np-em .bh:before,.np-dark .np-em .bh:after{background:#c8a94a}
+.np-dark .np-em a,.np-dark .b-links a{color:#c9d7f5}
+.np-dark .b-foot{color:#c4c7ce;border-top-color:#c9d7f5}
+.np-dark .b-end svg{fill:#e4e5e8}
+
+/* tournament send-out additions */
+.nm-who .nm-thru{font-weight:400;color:#555c6b;font-size:14px}
+.nm-av.t-club{background:#2f6b4f}
+.t-ini{font-family:Geist,system-ui,sans-serif;font-size:15px;font-weight:700;letter-spacing:.02em;color:#ffffff}
+.np-mh .t-ini{font-size:13px}
+.em .b-line.t-mline{font-size:13.5px}
+.t-box{margin-top:30px;border:1px solid #1a2744;background:#f8f6ef;padding:22px 30px 22px;text-align:center}
+
+.t-pair{display:grid;grid-template-columns:minmax(0,1fr) 1px minmax(0,1fr);gap:0 22px;align-items:start}
+.t-pair>i{display:block;align-self:stretch;background:#c9c4b2}
+.t-lab{display:block;font-family:"Source Serif 4",Georgia,serif;font-size:12.5px;line-height:1.3;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:#866a1e}
+.t-box .t-lab{font-size:18.5px;line-height:1.3;letter-spacing:.12em;color:#1a2744}
+.t-big{display:block;margin-top:6px;font-family:"Source Serif 4",Georgia,serif;font-size:26px;line-height:1.15;font-weight:700;color:#1a2744}
+.t-sub{display:block;margin-top:6px;font-size:15.5px;line-height:1.45;color:#3d4556}
+.t-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;height:56px;margin-top:14px;border-radius:4px;background:#1a2744;color:#ffffff !important;font-family:"Source Serif 4",Georgia,serif;font-size:18.5px;font-weight:700;letter-spacing:.01em;text-decoration:none !important}
+.t-alt{margin:12px 0 0 !important;font-size:12.5px;line-height:1.5;color:#555c6b}
+.t-alt a{display:inline-block;line-height:24px}
+.t-close{margin:14px 0 0 !important;padding-top:13px;border-top:1px solid #dcd7c6;font-size:16px;line-height:1.45;color:#1a2744}
+.t-facts{margin:0;padding:0}
+.t-row{display:grid;grid-template-columns:150px minmax(0,1fr);gap:18px;padding:12px 0 13px;border-top:1px solid #e1ddd0}
+.t-row:first-child{border-top:0;padding-top:2px}
+.t-row:last-child{padding-bottom:0}
+.t-row dt{padding-top:4px;font-size:12.5px;line-height:1.45;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#1a2744}
+.t-row dd{margin:0;font-size:16.5px;line-height:1.55;color:#1f2a40}
+.t-gtk{margin:0;padding:0;list-style:none}
+.t-gtk li{position:relative;padding-left:22px;margin:0 0 8px}
+.t-gtk li:last-child{margin-bottom:0}
+.t-gtk li:before{content:"";position:absolute;left:4px;top:.72em;width:7px;height:7px;background:#1a2744;transform:rotate(45deg)}
+.b-foot .t-sent{margin-top:16px !important;font-size:13.5px;line-height:1.5;color:#555c6b}
+.np-em .t-box{margin-top:24px;padding:18px 16px 18px}
+.np-em .t-close{font-size:15px}
+.np-em .t-pair{gap:0 14px}
+.np-em .t-big{font-size:21px}
+.np-em .t-lab{font-size:12px;letter-spacing:.13em}
+.np-em .t-box .t-lab{font-size:17px;letter-spacing:.1em}
+.np-em .t-sub{font-size:14.5px}
+.np-em .t-btn{height:52px;margin-top:18px;font-size:17px}
+.np-em .t-alt{font-size:12px;margin-top:10px !important}
+.np-em .t-row{grid-template-columns:1fr;gap:2px}
+.np-em .t-row dd{font-size:15.5px}
+.np-em .b-foot .t-sent{font-size:13px}
+.np-dark .t-gtk li:before{background:#e4e5e8}
+.np-dark .t-row dt{color:#ffffff}
+.np-dark .t-row dd{color:#e4e5e8}
+.np-dark .t-row{border-top-color:#2b2e33}
+.np-dark .b-foot .t-sent{color:#a9adb6}
+.np-end.t-bot{top:auto;bottom:-40px}
+.np-in.t-dk{padding-top:14px;padding-bottom:18px}
+.np-em .t-dk .t-box{margin-top:0;padding:16px 16px 14px}
+.np-em .t-dk .t-btn{margin-top:12px}
+.np-em .t-dk .bh{margin-top:24px}
+.np-em .t-dk .b-foot{margin-top:24px}
+.np-em .t-dk .b-end{margin-top:14px}
+.np-dark .t-box{background:#1d2024;border-color:#4a505b}
+.np-dark .t-lab{color:#e7cf7a}
+.np-dark .t-box .t-lab{color:#ffffff}
+.np-dark .np-em .t-btn{background:#2a3a63;color:#ffffff !important}
+.np-dark .t-alt{color:#a9adb6}
+</style>
+</helmet>
+<div class="n4-root" style="width:1440px;height:2350px">
+
+<header class="n4-strip" aria-label="About this board">
+<div><p class="k-kicker">LCA Newsletter · A tournament send-out · In the look of email option 4</p>
+<h1 class="n4-name">A club's tournament announcement</h1>
+<p class="n4-sent">A ready-made email a club can send through LCA to announce its tournament and open registration.</p></div>
+<span class="k-sample">Sample data</span>
+</header>
+
+<div class="n4-grid">
+<section class="n4-col" aria-label="On a computer">
+<div class="nm-win">
+<div class="nm-top"><i></i><i></i><i></i><span>Sample Winter&nbsp;Open&nbsp;· Sat,&nbsp;Jan&nbsp;9,&nbsp;2027&nbsp;· registration is open</span></div>
+<div class="nm-tools">
+<span><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 6L4 12l6 6"></path><path d="M4 12h10a6 6 0 0 1 6 6v1"></path></svg>Reply</span>
+<span><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 6l6 6-6 6"></path><path d="M20 12H10a6 6 0 0 0-6 6v1"></path></svg>Forward</span>
+<span class="nm-gap"></span>
+<span><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="5" rx="1"></rect><path d="M5 9v10h14V9"></path><path d="M10 13h4"></path></svg>Archive</span>
+<span><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16"></path><path d="M9 7V4h6v3"></path><path d="M6 7l1 13h10l1-13"></path></svg>Delete</span>
+</div>
+<div class="nm-head"><h3>Sample Winter&nbsp;Open&nbsp;· Sat,&nbsp;Jan&nbsp;9,&nbsp;2027&nbsp;· registration is open</h3>
+<div class="nm-who"><span class="nm-av t-club"><span class="t-ini">EC</span></span><span><b>Example Chess Club</b><small>through the Louisiana Chess Association</small><small>to me</small></span><span class="nm-when">Mon,&nbsp;Dec&nbsp;7,&nbsp;2026, 9:00&nbsp;AM</span></div></div>
+<div class="nm-body"><article class="em" aria-label="The Sample Winter Open announcement">
+<header class="b-mast"><svg class="b-mrook" viewBox="0 0 100 100" role="img" aria-label="LCA rook"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg>
+<p class="b-title">Sample Winter Open</p>
+<p class="b-line t-mline">A TOURNAMENT FROM EXAMPLE CHESS CLUB<br>SAT, JAN 9, 2027</p></header>
+<h4 class="bh"><span>From the club</span></h4>
+<p class="b-lede">Example Chess Club warmly invites you to the Sample Winter Open, a one-day rated tournament to start the new year.</p>
+<p>Players of every level are welcome, and young players have a section of their own. We hope to see you there.</p>
+<p class="b-sign"><span class="b-sc">Example Chess Club</span></p>
+<h4 class="bh"><span>The details</span></h4>
+<dl class="t-facts">
+<div class="t-row"><dt>When</dt><dd>Sat, Jan 9, 2027. Rounds at 9:00 AM, 11:30 AM, 2:00 PM and 4:30 PM.</dd></div>
+<div class="t-row"><dt>Where</dt><dd>Sample City; the exact place is on the registration page.</dd></div>
+<div class="t-row"><dt>Sections</dt><dd>Open, Under 1400, and <span class="b-nw">Scholastic (K to 12).</span></dd></div>
+<div class="t-row"><dt>Rounds and time control</dt><dd>Four rounds, game in 45 minutes with a 5&nbsp;second delay, US Chess rated.</dd></div>
+<div class="t-row"><dt>Entry fee</dt><dd>$25 through Sat, Jan 2, 2027, then $35.</dd></div>
+<div class="t-row"><dt>Registration</dt><dd>On King Registration, closes <span class="b-nw">Fri, Jan 8, 2027 at 8:00 PM</span>.</dd></div>
+</dl>
+<div class="t-box">
+<span class="t-lab">Registration is open</span>
+<a class="t-btn" href="#">Register on King Registration ↗</a>
+<p class="t-alt">If the button does not show, use this link:<br><a href="#">https://www.kingregistration.com/…</a></p>
+<p class="t-close">Registration closes <b class="b-nw">Fri, Jan 8, 2027 at 8:00 PM</b>.</p>
+</div>
+<h4 class="bh"><span>Good to know</span></h4>
+<ul class="t-gtk"><li>Bring a set and a clock if you have them.</li><li>A current US Chess membership is needed to play.</li></ul>
+<h4 class="bh"><span>Who runs it</span></h4>
+<p class="b-last">Run by Example Chess Club. Questions? Reply to this email and it reaches the club.</p>
+<footer class="b-foot"><p>You get tournament email from LCA because you are an LCA member.</p>
+<p class="b-links"><a href="#">Unsubscribe from tournament email</a><a href="#">Choose which LCA emails you get</a><a href="#">LCA on Facebook ↗</a></p>
+<p class="t-sent">Sent through the Louisiana Chess Association for Example Chess Club.</p>
+<div class="b-end"><svg viewBox="0 0 100 100" role="img" aria-label="LCA rook"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg></div></footer>
+</article></div>
+</div>
+<p class="n4-cap">On a computer</p>
+</section>
+
+<div class="n4-phones">
+<section class="n4-col" aria-label="On a phone">
+<div class="k-phone"><div class="k-phone-screen">
+<div class="np-sb"><span>9:04</span><span class="np-sbi"><i></i><i></i></span></div>
+<div class="np-nav"><span><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"></path></svg>Inbox</span><span><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 15l7-7 7 7"></path></svg><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"></path></svg></span></div>
+<div class="np-mh"><h3>Sample Winter&nbsp;Open&nbsp;· Sat,&nbsp;Jan&nbsp;9,&nbsp;2027&nbsp;· registration is open</h3><div class="nm-who"><span class="nm-av t-club"><span class="t-ini">EC</span></span><span><b>Example Chess Club</b><small>through the Louisiana Chess Association</small><small>to me · Mon,&nbsp;Dec&nbsp;7,&nbsp;2026, 9:00&nbsp;AM</small></span></div></div>
+<div class="k-phone-scroll np-em"><div class="np-in">
+<header class="b-mast"><svg class="b-mrook" viewBox="0 0 100 100" role="img" aria-label="LCA rook"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg>
+<p class="b-title">Sample Winter Open</p>
+<p class="b-line t-mline">A TOURNAMENT FROM<br>EXAMPLE CHESS CLUB<br>SAT, JAN 9, 2027</p></header>
+<h4 class="bh"><span>From the club</span></h4>
+<p class="b-lede">Example Chess Club warmly invites you to the Sample Winter Open, a one-day rated tournament to start the new year.</p>
+<p>Players of every level are welcome, and young players have a section of their own. We hope to see you there.</p>
+<p class="b-sign"><span class="b-sc">Example Chess Club</span></p>
+<h4 class="bh"><span>The details</span></h4>
+<dl class="t-facts">
+<div class="t-row"><dt>When</dt><dd>Sat, Jan 9, 2027. Rounds at 9:00 AM, 11:30 AM, 2:00 PM and 4:30 PM.</dd></div>
+<div class="t-row"><dt>Where</dt><dd>Sample City; the exact place is on the registration page.</dd></div>
+</dl>
+</div></div>
+<div class="np-bot"><svg class="k-i-lg" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="5" rx="1"></rect><path d="M5 9v10h14V9"></path><path d="M10 13h4"></path></svg><svg class="k-i-lg" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16"></path><path d="M9 7V4h6v3"></path><path d="M6 7l1 13h10l1-13"></path></svg><svg class="k-i-lg" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 6L4 12l6 6"></path><path d="M4 12h10a6 6 0 0 1 6 6v1"></path></svg><svg class="k-i-lg" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20l4-1L19 8l-3-3L5 16z"></path></svg></div>
+<div class="np-safe"><i></i></div>
+</div></div>
+<p class="n4-cap">On a phone</p>
+</section>
+
+<section class="n4-col" aria-label="On a phone, dark setting">
+<div class="k-phone" style="border-color:#000000"><div class="k-phone-screen np-dark">
+<div class="np-sb"><span>9:06</span><span class="np-sbi"><i></i><i></i></span></div>
+<div class="np-nav"><span><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"></path></svg>Inbox</span><span><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 15l7-7 7 7"></path></svg><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"></path></svg></span></div>
+<div class="k-phone-scroll np-em np-scroll"><div class="np-end t-bot"><div class="np-in t-dk">
+<div class="t-box">
+<span class="t-lab">Registration is open</span>
+<a class="t-btn" href="#">Register on King Registration ↗</a>
+<p class="t-alt">If the button does not show, use this link:<br><a href="#">https://www.kingregistration.com/…</a></p>
+</div>
+<h4 class="bh"><span>Good to know</span></h4>
+<ul class="t-gtk"><li>Bring a set and a clock if you have them.</li><li>A current US Chess membership is needed to play.</li></ul>
+<h4 class="bh"><span>Who runs it</span></h4>
+<p class="b-last">Run by Example Chess Club. Questions? Reply to this email and it reaches the club.</p>
+<footer class="b-foot"><p>You get tournament email from LCA because you are an LCA member.</p>
+<p class="b-links"><a href="#">Unsubscribe from tournament email</a><a href="#">Choose which LCA emails you get</a><a href="#">LCA on Facebook ↗</a></p>
+<p class="t-sent">Sent through the Louisiana Chess Association for Example Chess Club.</p>
+<div class="b-end"><svg viewBox="0 0 100 100" role="img" aria-label="LCA rook"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg></div></footer>
+</div></div></div>
+<div class="np-bot"><svg class="k-i-lg" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="5" rx="1"></rect><path d="M5 9v10h14V9"></path><path d="M10 13h4"></path></svg><svg class="k-i-lg" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16"></path><path d="M9 7V4h6v3"></path><path d="M6 7l1 13h10l1-13"></path></svg><svg class="k-i-lg" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 6L4 12l6 6"></path><path d="M4 12h10a6 6 0 0 1 6 6v1"></path></svg><svg class="k-i-lg" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20l4-1L19 8l-3-3L5 16z"></path></svg></div>
+<div class="np-safe"><i></i></div>
+</div></div>
+<p class="n4-cap">On a phone, dark setting</p>
+</section>
+</div>
+</div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":2350}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

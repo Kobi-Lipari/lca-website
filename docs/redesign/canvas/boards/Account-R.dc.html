@@ -1,0 +1,389 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>My LCA · R · LCA admin: one row (round 2)</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/6107adb451dbab26ee5d89f4189b81f8">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1a2744}
+.ar-root{width:1440px;box-sizing:border-box;padding:16px 0 24px;background:#ecebe6;color:#1a2744}
+.ar-root *{box-sizing:border-box}
+.ar-root p{margin:0}
+.ar-doc{margin:0 40px;background:#fbfaf6;border:1px solid #d9d8d1;border-radius:14px;padding:16px 22px 16px}
+.ar-doc-top{display:flex;justify-content:space-between;align-items:flex-start;gap:24px}
+.ar-title{font-size:30px;line-height:1.15;font-weight:700;letter-spacing:-.015em;margin:6px 0 0}
+.ar-round{display:inline-flex;align-items:center;height:26px;padding:0 10px;border-radius:6px;background:#1a2744;color:#ffffff;font-size:12.5px;font-weight:700;letter-spacing:.04em}
+.ar-ml{font-size:13px;line-height:1.45;color:#3d4556;margin:3px 0 0}
+.ar-ml b{color:#1a2744;font-weight:600}
+.ar-frameline{margin-top:10px;background:#fbf7e9;border:1px solid #866a1e;border-radius:8px;padding:8px 12px;font-size:13px;line-height:1.45;color:#1a2744}
+.ar-frameline b{font-weight:700}
+.ar-grey{flex:none;width:520px;background:#efefea;border:1px solid #dfded6;border-radius:10px;padding:12px 14px;display:grid;grid-template-columns:1fr 1fr;gap:10px 16px}
+.ar-grey p{font-size:12px;line-height:1.42;color:#2b3446;margin:0}
+.ar-grey p + p{margin-top:8px}
+.ar-grey b{display:block;font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#555c6b;margin-bottom:2px}
+.ar-grey ol{margin:0;padding-left:16px;font-size:12px;line-height:1.42;color:#2b3446}
+.ar-grey li{margin-bottom:4px}
+.ar-lbox{background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:12px 16px 12px;margin-top:12px}
+.ar-notes{list-style:none;margin:10px 0 0;padding:0;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:12px 18px}
+.ar-notes li{display:flex;gap:8px;align-items:flex-start;font-size:12px;line-height:1.42;color:#2b3446}
+.ar-notes .k-num-badge{width:22px;height:22px;font-size:11.5px}
+.ar-notes b{font-weight:600;color:#1a2744}
+.ar-flab{display:flex;align-items:center;gap:12px;margin:18px 40px 8px}
+.ar-flab h2{white-space:nowrap;margin:0;font-size:19px;line-height:1.2;font-weight:600;letter-spacing:-.01em}
+.ar-code{display:inline-flex;align-items:center;justify-content:center;min-width:28px;height:28px;padding:0 9px;border-radius:7px;background:#c8a94a;color:#1a2744;font-weight:700;font-size:13px}
+.ar-urlchip{white-space:nowrap;font-family:"Geist Mono",ui-monospace,monospace;font-size:12px;color:#3d4556;background:#ffffff;border:1px solid #d9d8d1;border-radius:7px;padding:4px 10px;margin-left:auto}
+.ar-frame{width:1440px;background:#ffffff;border-top:1px solid #cfcec6;border-bottom:1px solid #cfcec6;box-shadow:0 20px 50px rgba(16,24,43,.10)}
+.ar-page{background:#f5f5f2;position:relative}
+/* header */
+.ar-hd-in{gap:0;position:relative;min-height:64px;max-width:1440px;padding:0 40px}
+.ar-hd .k-brand{margin-right:16px}
+.ar-rook{width:30px;height:30px;fill:#ffffff;flex:none}
+.ar-rook-sm{width:24px;height:24px}
+.ar-nav{gap:0}
+.ar-nav a{padding:0 10px;white-space:nowrap}
+.ar-navbtn{display:inline-flex;align-items:center;gap:4px;min-height:44px;padding:0 10px;border:0;background:transparent;color:#ffffff;font:inherit;font-size:15px;font-weight:500}
+.ar-sbtn{display:inline-flex;align-items:center;gap:8px;width:220px;height:44px;padding:0 8px 0 12px;margin-right:16px;border-radius:8px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.45);color:#ffffff;text-decoration:none;font-size:14.5px;font-weight:500;flex:none}
+.ar-kbd{margin-left:auto;font-family:"Geist Mono",ui-monospace,monospace;font-size:12px;color:#e8ecf4;border:1px solid rgba(255,255,255,.4);border-radius:5px;padding:2px 6px;line-height:1.2}
+.ar-util{gap:12px}
+.ar-util .k-ulink{padding:0 4px}
+.ar-my{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 8px;border:0;border-radius:8px;background:transparent;color:#ffffff;font:inherit;font-size:14px;font-weight:600}
+.ar-count{display:inline-flex;align-items:center;justify-content:center;min-width:20px;height:20px;padding:0 6px;border-radius:999px;background:#fbfaf6;color:#1a2744;font-size:12px;font-weight:700}
+.ar-hb{display:inline-flex;margin-left:6px;background:#c8a94a;color:#1a2744}
+/* page head */
+.ar-band{background:#fbfaf6;border-bottom:1px solid #e6e3d8}
+.ar-in{width:1200px;margin:0 auto}
+.ar-head{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;padding:26px 0 22px}
+.ar-h1{font-size:38px;line-height:1.1;font-weight:700;letter-spacing:-.015em;margin:6px 0 0}
+.ar-roles{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;align-items:center}
+.ar-rchip{display:inline-flex;align-items:center;gap:8px;border-radius:999px;padding:6px 14px 6px 6px;font-size:14px;border:1px solid #d9d6cb;background:#ffffff;color:#1a2744;text-decoration:none;min-height:44px}
+.ar-role{display:inline-flex;align-items:center;border-radius:999px;padding:4px 10px;font-size:12px;font-weight:600;white-space:nowrap;line-height:1.2}
+.ar-r-member{background:#ecebe5;color:#1a2744}
+.ar-r-admin{background:#eef1f8;color:#1a2744;border:1px solid #c9d0df}
+.ar-r-you{background:#1a2744;color:#ffffff}
+/* layout */
+.ar-body{display:grid;grid-template-columns:232px 936px;gap:32px;align-items:start;padding:28px 0 32px}
+.ar-rail{display:flex;flex-direction:column;gap:12px}
+.ar-railnav{display:flex;flex-direction:column;gap:2px;margin-top:8px}
+.ar-railnav a{display:flex;justify-content:space-between;align-items:center;padding:10px 10px;border-radius:8px;color:#1a2744;text-decoration:none;font-size:14px;min-height:44px;border-left:3px solid transparent}
+.ar-railnav a.ar-on{background:#f3eedc;font-weight:600;border-left-color:#c8a94a}
+.ar-cnt{font-size:12px;font-weight:700;color:#1a2744;background:#eceef3;border-radius:999px;padding:2px 8px}
+.ar-col{display:flex;flex-direction:column;gap:20px;min-width:0}
+.ar-card{background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:22px 24px}
+.ar-sh{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;margin-bottom:6px}
+.ar-h2{font-size:24px;line-height:1.2;font-weight:700;letter-spacing:-.01em;margin:0;display:flex;align-items:center;gap:10px}
+.ar-sub{font-size:13px;color:#555c6b}
+.ar-today{list-style:none;margin:6px 0 0;padding:0}
+.ar-today li{display:grid;grid-template-columns:96px minmax(0,1fr) auto;gap:16px;align-items:center;min-height:64px;padding:11px 0;border-top:1px solid #eeede7}
+.ar-today li b{font-size:15px;font-weight:600;line-height:1.35}
+.ar-tline{font-size:13.5px;color:#555c6b;line-height:1.4;margin-top:2px}
+.ar-foot13{font-size:13px;line-height:1.45;color:#555c6b}
+.ar-fail{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:#b42318;background:#fdecea;border-radius:6px;padding:3px 8px;margin-right:6px;vertical-align:1px}
+.ar-fail i{display:block;width:8px;height:8px;border-radius:50%;background:#b42318}
+/* you section */
+.ar-mline{font-size:15px;color:#1a2744;margin-top:6px}
+.ar-two{display:grid;grid-template-columns:300px minmax(0,1fr);gap:28px;margin-top:16px;align-items:start}
+.ar-mcard{width:300px;height:180px;background:#fbf7e9;border:1px solid #e3d8b4;border-radius:14px;padding:14px 16px;display:flex;justify-content:space-between;gap:10px;position:relative}
+.ar-logo{width:30px;height:30px;display:block;object-fit:contain;border-radius:4px}
+.ar-mlab{font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#866a1e;margin-top:10px}
+.ar-mname{font-size:18px;font-weight:700;margin-top:2px}
+.ar-msm{font-size:12.5px;color:#3d4556;margin-top:3px}
+.ar-qr{align-self:flex-end;background:#ffffff;border-radius:6px;padding:4px;line-height:0;border:1px solid #e3d8b4}
+.ar-kv{display:grid;grid-template-columns:auto 1fr;gap:8px 16px;margin:8px 0 0;font-size:14px}
+.ar-kv dt{color:#555c6b}
+.ar-kv dd{margin:0;color:#1a2744}
+.ar-h3{font-size:16px;font-weight:700;margin:22px 0 10px;display:flex;align-items:center;gap:10px}
+.ar-entry .k-date,.ar-saved .k-date{align-self:start}
+.ar-entry{display:grid;grid-template-columns:64px minmax(0,1fr);gap:16px;padding:16px 18px;border:2px solid #1a2744;border-radius:12px}
+.ar-saved{display:grid;grid-template-columns:64px minmax(0,1fr) auto;gap:16px;align-items:center;padding:12px 18px;border:1px solid #e3e1d8;border-radius:12px;margin-top:10px}
+.ar-label{font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#555c6b}
+.ar-track{list-style:none;margin:14px 0 4px;padding:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr))}
+.ar-track li{position:relative;padding:32px 12px 0 0;font-size:12.5px;line-height:1.35;color:#555c6b}
+.ar-track li b{display:block;color:#1a2744;font-size:13px;font-weight:600}
+.ar-track li:before{content:"";position:absolute;top:11px;left:0;right:0;height:3px;background:#e3e1d8}
+.ar-track li.ar-done:before{background:#1a2744}
+.ar-track li:last-child:before{right:auto;width:25px}
+.ar-dot{position:absolute;top:0;left:0;width:25px;height:25px;border-radius:50%;background:#ffffff;border:2px solid #c9c6ba;display:flex;align-items:center;justify-content:center;z-index:1}
+.ar-done .ar-dot{background:#1a2744;border-color:#1a2744;color:#ffffff}
+.ar-now .ar-dot{background:#f6efd9;border-color:#866a1e;color:#866a1e}
+.ar-rc{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:center;padding:10px 0;border-top:1px solid #eeede7;font-size:14px}
+.ar-sets{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.ar-set{display:flex;gap:10px;align-items:flex-start;border:1px solid #e3e1d8;border-radius:10px;padding:12px;font-size:13px;line-height:1.4}
+.ar-set b{font-size:14px}
+.ar-ico{width:32px;height:32px;border-radius:9px;background:#f1efe8;display:flex;align-items:center;justify-content:center;flex:none;color:#1a2744}
+/* admin row */
+.ar-arow{display:flex;align-items:center;gap:18px;background:#ffffff;border:1px solid #dddcd4;border-left:5px solid #1a2744;border-radius:12px;padding:18px 22px;min-height:96px}
+.ar-arow-t{flex:1;min-width:0}
+.ar-asent{font-size:18px;font-weight:700;color:#1a2744;line-height:1.3}
+.ar-asub{font-size:15px;color:#555c6b;margin-top:3px;line-height:1.4}
+.ar-red{color:#b42318;font-weight:600}
+.ar-wk{display:inline-flex;align-items:center;font-size:12px;font-weight:700;color:#664c0c;background:#f5ecd2;border-radius:6px;padding:2px 8px;margin-right:8px;vertical-align:1px}
+/* footer */
+.ar-foot-in{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px;padding:18px 40px 20px}
+.ar-foot .k-meta{color:rgba(255,255,255,.78)}
+.ar-foot nav a{font-size:14px}
+/* states */
+.ar-states{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px;margin:0 40px;background:#f6f6f2;border:1px solid #dddcd4;border-radius:14px;padding:18px}
+.ar-st h3{font-size:14px;font-weight:700;margin:0 0 8px;display:flex;align-items:center;gap:8px}
+.ar-st .ar-arow{padding:14px 16px;min-height:120px;gap:14px;align-items:center}
+.ar-st .ar-asent{font-size:17px}
+.ar-st .ar-asub{font-size:13px}
+.ar-stmeta{font-size:12.5px;color:#3d4556;margin-top:8px;line-height:1.45}
+.ar-stmeta b{font-weight:600;color:#1a2744}
+.ar-over{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:#b42318;background:#fdecea;border-radius:6px;padding:3px 8px;margin-bottom:5px}
+.ar-over i{display:block;width:8px;height:8px;border-radius:50%;background:#b42318}
+/* way in */
+.ar-cgrid{display:grid;grid-template-columns:600px minmax(0,1fr);gap:20px;margin:0 40px}
+.ar-panel{background:#ffffff;border:1px solid #dddcd4;border-radius:14px;padding:16px 18px}
+.ar-panel h3{font-size:15px;font-weight:700;margin:0 0 10px;display:flex;align-items:center;gap:8px}
+.ar-thumb{width:100%;height:268px;border:1px solid #cfcec6;border-radius:10px;overflow:hidden;background:#f5f5f2;display:flex;flex-direction:column}
+.ar-thd{height:26px;background:#1a2744;display:flex;align-items:center;gap:6px;padding:0 10px;color:#ffffff;font-size:9.5px;font-weight:600}
+.ar-thd svg{width:14px;height:14px;fill:#ffffff}
+.ar-thd span:last-child{margin-left:auto;font-weight:500}
+.ar-tcrumb{display:flex;justify-content:space-between;align-items:center;padding:6px 10px;font-size:10.5px;color:#3d4556;background:#ffffff;border-bottom:1px solid #e3e2dc}
+.ar-tcrumb a{color:#1a2744;font-weight:600;text-decoration:underline;text-underline-offset:2px}
+.ar-tbody{display:grid;grid-template-columns:118px minmax(0,1fr);gap:8px;padding:8px;flex:1;min-height:0}
+.ar-tside{background:#ffffff;border:1px solid #e3e2dc;border-radius:6px;padding:5px;display:flex;flex-direction:column;gap:1px}
+.ar-tside span{font-size:10px;padding:2px 6px;border-radius:4px;color:#1a2744;display:flex;justify-content:space-between}
+.ar-tside .ar-ton{background:#1a2744;color:#ffffff;font-weight:600}
+.ar-ttab{background:#ffffff;border:1px solid #e3e2dc;border-radius:6px;overflow:hidden}
+.ar-ttab table{width:100%;border-collapse:collapse;font-size:9.5px}
+.ar-ttab th{text-align:left;font-size:8.5px;letter-spacing:.06em;text-transform:uppercase;color:#555c6b;padding:4px 6px;background:#fbfbf8;border-bottom:1px solid #ecebe5}
+.ar-ttab td{padding:4px 6px;border-bottom:1px solid #f0efe9;color:#1a2744;vertical-align:top}
+.ar-ttag{display:inline-block;font-size:8.5px;font-weight:600;border-radius:3px;padding:1px 4px;background:#eceef2;color:#2b3446}
+.ar-ttag-a{background:#f5ecd2;color:#664c0c}
+.ar-ttag-f{background:#fdecea;color:#8a1c12}
+.ar-tbtn{display:inline-block;font-size:8.5px;font-weight:600;border-radius:3px;padding:1px 5px;background:#1a2744;color:#ffffff}
+.ar-pnote{font-size:13px;line-height:1.45;color:#3d4556;margin-top:10px}
+.ar-mini li{grid-template-columns:72px minmax(0,1fr) auto;min-height:56px;padding:9px 0}
+/* insets */
+.ar-igrid{display:grid;grid-template-columns:300px 400px minmax(0,1fr);gap:20px;margin:0 40px;align-items:start}
+.ar-menu{background:#ffffff;border:1px solid #d9d8d1;border-radius:12px;box-shadow:0 18px 40px rgba(16,24,43,.16);padding:8px}
+.ar-mrow{display:flex;justify-content:space-between;align-items:center;gap:12px;min-height:44px;padding:4px 12px;border-radius:8px;color:#1a2744;font-size:15px;font-weight:500}
+.ar-mrow small{font-size:12.5px;color:#555c6b;font-weight:400}
+.ar-msub{display:block;font-size:12.5px;color:#555c6b;font-weight:400;margin-top:1px}
+.ar-mtodo{background:#fbf7e9;margin-bottom:4px}
+.ar-mlabel{font-size:11.5px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:#555c6b;padding:8px 12px 4px}
+.ar-msep{height:1px;background:#e3e2dc;margin:6px 4px}
+.ar-ring{box-shadow:0 0 0 2px #c8a94a;background:#fbf7e9}
+.ar-why{background:#ffffff;border:1px solid #dddcd4;border-radius:14px;padding:16px 18px;font-size:13px;line-height:1.5;color:#3d4556}
+.ar-why b{color:#1a2744;font-weight:600}
+.ar-why ul{margin:8px 0 0;padding-left:18px}
+.ar-why li{margin-bottom:6px}
+</style>
+</helmet>
+<div class="ar-root" style="width:1440px;height:2900px">
+<section class="ar-doc" aria-label="About this board">
+<div class="ar-doc-top">
+<div>
+<div class="k-row-sm" style="gap:10px"><p class="k-kicker">14 · My LCA · round 2 · option R</p><span class="ar-round">ROUND 2</span></div>
+<h1 class="ar-title">My LCA · R · LCA admin: one row (round 2)</h1>
+<p class="ar-ml" style="margin-top:8px"><b>Built from:</b> Account-C (worded chips, Today across your roles, the On this page rail, the section anatomy) and Account-A (the You section in full: card, tracker, reminders, receipts, Settings). The same admin and the same morning as Account-Q; Work-C's queue stays in Admin.</p>
+<p class="ar-ml"><b>Replaces:</b> Account-C's Shortcuts into Workspace block, the Daily digest toggle, the Open Workspace button and its "Admin in the header" line. <b>Removes from Account-Q:</b> the queue by source, Assigned to you, the Automations line, the Site banner line and the three shortcuts.</p>
+<p class="ar-ml"><b>Round 2 · Frame: Int-A, swappable.</b> <b>K's feedback applied (Tue, Oct 13):</b> a good default (the page is a member's page first), every section drawn in full, roles hosted in My LCA, options for each (Q and R for the admin), the screens joined to the whole (Open Admin and the way back).</p>
+<p class="ar-frameline"><b>Frame.</b> Drawn inside Int-A (My LCA as the hub, rooms open from each section). The frame is swappable: under Int-B this section is the page the left rail opens; under Int-C it is a card on Your work. The room itself does not change; only the breadcrumb, the way back and the menu row do. Pick the frame on Account-Int-A, B or C.</p>
+<p style="margin-top:8px"><span class="k-sample">Sample data · the admin's name, counts and times are invented; routes and roles are real</span></p>
+</div>
+<aside class="ar-grey" aria-label="Board note">
+<div>
+<p><b>What</b>Option R for the LCA admin section: an admin's My LCA is a member's page plus exactly one row, "12 need attention in Admin · Open Admin". Nothing of the queue renders here.</p>
+<p><b>Built from</b>Account-C and Account-A, with the decided header and footer; the sibling is Account-Q (the summary).</p>
+<p><b>K's feedback applied</b>Roles live in My LCA, only an admin ever opens Admin, and the default stays a member's page.</p>
+</div>
+<div>
+<p><b>Open for K</b></p>
+<ol>
+<li>The admin section as a summary (Account-Q) or as this one row?</li>
+<li>Today keeps the queue as one line plus the items assigned by name; or the top three queue items inline?</li>
+<li>The row's count waits for the second factor (drawn), or the row hides until it is confirmed?</li>
+</ol>
+</div>
+</aside>
+</div>
+<div class="ar-lbox">
+<p class="k-label">Notes on this board</p>
+<ol class="ar-notes">
+<li><span class="k-num-badge">1</span><span><b>The one difference from Account-Q:</b> the section is one row. The queue's shape, the assigned items, the automations and the banner show only in Admin (open question 8, the alternative).</span></li>
+<li><span class="k-num-badge">2</span><span><b>Otherwise a member's page:</b> You in full. Family and other sections appear only if held, so an admin who is also a parent or a TD gets them like anyone else.</span></li>
+<li><span class="k-num-badge">3</span><span><b>Today's five rows are identical to Account-Q,</b> so the admin's morning still starts here: her unpaid entry first, then her own admin items.</span></li>
+<li><span class="k-num-badge">4</span><span><b>The second factor gates the count itself;</b> the row has a "confirm it's you" state, so the page never shows a wrong zero.</span></li>
+<li><span class="k-num-badge">5</span><span><b>No other person's data</b> beyond the two items assigned to her by name; not even a count by source. Members, payments, email and the audit log live only in Admin.</span></li>
+<li><span class="k-num-badge">6</span><span><b>The header count stays personal (1);</b> the row's count never reaches the pill. The menu row reads "Admin · 12 need attention", never Admin panel.</span></li>
+</ol>
+</div>
+</section>
+
+<div class="ar-flab"><span class="ar-code">A</span><h2>My LCA at 1440 · Mon, Oct 5 · an admin's page: You open, Admin one row</h2><span class="k-meta">Rachel Boudreaux · lca_admin, second factor on · 8:40 AM · no family, event, region or seat</span><span class="ar-urlchip">/dashboard</span></div>
+<div class="ar-frame">
+<div class="ar-page">
+<header class="k-header ar-hd">
+<div class="k-header-in ar-hd-in">
+<a class="k-brand" href="#" aria-label="Louisiana Chess Association, home"><svg class="ar-rook" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span class="k-brand-name" aria-hidden="true"><b>Louisiana Chess</b><span>Association</span></span></a>
+<nav class="k-navlinks ar-nav" aria-label="Main"><a href="#">Tournaments</a><a href="#">Clubs</a><a href="#">Scholastic</a><a href="#">News</a><a href="#">Membership</a><button class="ar-navbtn" type="button" aria-expanded="false" aria-haspopup="true">About<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></button></nav>
+<a class="ar-sbtn" href="#"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg><span>Search</span><kbd class="ar-kbd" aria-hidden="true">&#8984;K</kbd></a>
+<div class="k-utility ar-util">
+<a class="k-ulink" href="#">Donate</a>
+<button class="ar-my" type="button" aria-haspopup="menu" aria-expanded="false" aria-label="My LCA, 1 thing to do"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4.5 21c1-4 4-6 7.5-6s6.5 2 7.5 6"></path></svg><span>My LCA</span><span class="ar-count" aria-hidden="true">1</span><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></button>
+<span class="k-num-badge ar-hb">6</span>
+</div>
+</div>
+</header>
+
+<section class="ar-band">
+<div class="ar-in ar-head">
+<div>
+<div class="k-row k-row-sm"><span class="k-kicker">My LCA</span><span class="k-sample">Sample data · Rachel's entry, IDs, counts and times</span></div>
+<h1 class="ar-h1">Rachel Boudreaux</h1>
+<div class="ar-roles" aria-label="Your roles">
+<a class="ar-rchip" href="#you"><span class="ar-role ar-r-member">Member</span>Adult</a>
+<a class="ar-rchip" href="#admin"><span class="ar-role ar-r-admin">LCA admin</span>Admin · 12</a>
+</div>
+<p class="k-small k-muted" style="margin:10px 0 0">Sections appear for the roles LCA has given you. There are no modes to switch. <a class="k-link" href="#">Role looks wrong?</a></p>
+</div>
+<a class="k-btn k-btn-line" href="#"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="3.5" width="7" height="7"></rect><rect x="13.5" y="3.5" width="7" height="7"></rect><rect x="3.5" y="13.5" width="7" height="7"></rect><path d="M13.5 13.5h3v3h-3zM18 18h2.5v2.5H18z"></path></svg>Show my card</a>
+</div>
+</section>
+
+<div class="ar-in ar-body">
+<aside class="ar-rail">
+<div class="k-card k-card-pad" style="padding:16px">
+<div class="k-label">On this page</div>
+<nav class="ar-railnav" aria-label="Sections">
+<a href="#today">Today <span class="ar-cnt">5</span></a>
+<a class="ar-on" href="#you" aria-current="true">You</a>
+<a href="#admin">Admin <span class="ar-cnt">12</span></a>
+</nav>
+</div>
+</aside>
+
+<div class="ar-col">
+<section class="ar-card" id="today" aria-labelledby="ar-today-h">
+<div class="ar-sh">
+<h2 class="ar-h2" id="ar-today-h"><span class="k-num-badge">3</span>Today across your roles</h2>
+<span class="ar-sub">Mon, Oct 5 · most urgent first</span>
+</div>
+<p class="ar-sub">5 things · 1 is yours</p>
+<ul class="ar-today">
+<li><span><span class="ar-role ar-r-you">You</span></span><div><b>Pay for The Baton Rouge Classic.</b><div class="ar-tline">U1800 section · $60 by Sat, Oct 17, $70 after · Payment pending</div></div><a class="k-btn k-btn-gold k-btn-sm" href="#">Pay $60</a></li>
+<li><span><span class="ar-role ar-r-admin">Admin</span></span><div><b>Support ticket assigned to you: "Can't add my son to our family account".</b><div class="ar-tline">Danielle Robichaux · waiting 2 days</div></div><a class="k-btn k-btn-line k-btn-sm" href="#">Reply</a></li>
+<li><span><span class="ar-role ar-r-admin">Admin</span></span><div><b>Approval assigned to you: Monroe Chess Club Quick Quads, a club event.</b><div class="ar-tline">Submitted by the North Louisiana representative · waiting 1 day</div></div><a class="k-btn k-btn-line k-btn-sm" href="#">Review</a></li>
+<li><span><span class="ar-role ar-r-admin">Admin</span></span><div><b><span class="ar-fail"><i></i>Failed</span>Daily emails: 2 of 43 failed at 6:00 AM.</b><div class="ar-tline">Membership receipt to n***@[domain], mailbox full · group email, 3 addresses bounced</div></div><a class="k-btn k-btn-line k-btn-sm" href="#">Check</a></li>
+<li><span><span class="ar-role ar-r-admin">Admin</span></span><div><b>12 items need attention in Admin.</b><div class="ar-tline">Oldest 9 days · 2 assigned to you</div></div><a class="k-btn k-btn-navy k-btn-sm" href="#">Open Admin</a></li>
+</ul>
+<p class="ar-foot13" style="margin-top:10px">The whole queue never shows here; only the line, your own items and a failed automation. Nothing from the queue counts in the header.</p>
+</section>
+
+<section class="ar-card" id="you" aria-labelledby="ar-you-h">
+<div class="ar-sh" style="align-items:flex-start">
+<div><span class="ar-role ar-r-member">Member</span><h2 class="ar-h2" id="ar-you-h" style="margin-top:8px"><span class="k-num-badge">2</span>You</h2></div>
+<a class="k-link k-small" href="#">Full player view</a>
+</div>
+<p class="ar-mline">Adult · <span class="k-mono">LCA-25-0931</span> · valid through Sun, Mar 14, 2027 · auto-renew on · <a class="k-link" href="#">Turn off auto-renew</a></p>
+<div class="ar-two">
+<div>
+<div class="ar-mcard">
+<div>
+<img class="ar-logo" alt="Official LCA logo" src="/_blob/670986b2f9e137948361309bea54fef8">
+<p class="ar-mlab">Member</p>
+<p class="ar-mname">Rachel Boudreaux</p>
+<p class="ar-msm">Adult · <span class="k-mono">LCA-25-0931</span></p>
+<p class="ar-msm">Valid through Sun, Mar 14, 2027</p>
+</div>
+<div class="ar-qr"><svg viewBox="0 0 25 25" width="68" height="68" shape-rendering="crispEdges" role="img" aria-label="Check-in QR code"><g transform="matrix(0 1 1 0 0 0)"><path fill="#1a2744" stroke="none" d="M0 0h7v1h-7zM8 0h1v1h-1zM11 0h1v1h-1zM14 0h1v1h-1zM18 0h7v1h-7zM0 1h1v1h-1zM6 1h1v1h-1zM9 1h3v1h-3zM14 1h1v1h-1zM18 1h1v1h-1zM24 1h1v1h-1zM0 2h1v1h-1zM2 2h3v1h-3zM6 2h1v1h-1zM10 2h2v1h-2zM13 2h4v1h-4zM18 2h1v1h-1zM20 2h3v1h-3zM24 2h1v1h-1zM0 3h1v1h-1zM2 3h3v1h-3zM6 3h1v1h-1zM8 3h2v1h-2zM15 3h2v1h-2zM18 3h1v1h-1zM20 3h3v1h-3zM24 3h1v1h-1zM0 4h1v1h-1zM2 4h3v1h-3zM6 4h1v1h-1zM12 4h4v1h-4zM18 4h1v1h-1zM20 4h3v1h-3zM24 4h1v1h-1zM0 5h1v1h-1zM6 5h1v1h-1zM8 5h1v1h-1zM10 5h1v1h-1zM13 5h2v1h-2zM16 5h1v1h-1zM18 5h1v1h-1zM24 5h1v1h-1zM0 6h7v1h-7zM8 6h1v1h-1zM10 6h1v1h-1zM12 6h1v1h-1zM14 6h1v1h-1zM16 6h1v1h-1zM18 6h7v1h-7zM9 7h2v1h-2zM13 7h3v1h-3zM1 8h4v1h-4zM6 8h2v1h-2zM9 8h2v1h-2zM12 8h1v1h-1zM14 8h4v1h-4zM20 8h1v1h-1zM22 8h2v1h-2zM1 9h1v1h-1zM3 9h2v1h-2zM7 9h4v1h-4zM12 9h1v1h-1zM14 9h2v1h-2zM20 9h2v1h-2zM24 9h1v1h-1zM0 10h1v1h-1zM3 10h1v1h-1zM6 10h1v1h-1zM8 10h3v1h-3zM12 10h1v1h-1zM14 10h1v1h-1zM17 10h2v1h-2zM20 10h2v1h-2zM0 11h1v1h-1zM2 11h4v1h-4zM7 11h3v1h-3zM11 11h2v1h-2zM18 11h3v1h-3zM24 11h1v1h-1zM3 12h1v1h-1zM5 12h2v1h-2zM14 12h1v1h-1zM18 12h1v1h-1zM23 12h1v1h-1zM1 13h1v1h-1zM7 13h1v1h-1zM10 13h1v1h-1zM12 13h1v1h-1zM14 13h1v1h-1zM17 13h1v1h-1zM22 13h3v1h-3zM1 14h2v1h-2zM5 14h2v1h-2zM8 14h1v1h-1zM10 14h2v1h-2zM15 14h1v1h-1zM17 14h2v1h-2zM24 14h1v1h-1zM0 15h5v1h-5zM8 15h1v1h-1zM11 15h3v1h-3zM15 15h1v1h-1zM18 15h1v1h-1zM20 15h4v1h-4zM0 16h3v1h-3zM4 16h1v1h-1zM6 16h1v1h-1zM11 16h1v1h-1zM13 16h2v1h-2zM16 16h5v1h-5zM22 16h3v1h-3zM12 17h1v1h-1zM15 17h2v1h-2zM20 17h1v1h-1zM23 17h2v1h-2zM0 18h7v1h-7zM10 18h1v1h-1zM15 18h2v1h-2zM18 18h1v1h-1zM20 18h1v1h-1zM22 18h1v1h-1zM0 19h1v1h-1zM6 19h1v1h-1zM10 19h1v1h-1zM16 19h1v1h-1zM20 19h2v1h-2zM24 19h1v1h-1zM0 20h1v1h-1zM2 20h3v1h-3zM6 20h1v1h-1zM8 20h2v1h-2zM13 20h1v1h-1zM15 20h6v1h-6zM22 20h2v1h-2zM0 21h1v1h-1zM2 21h3v1h-3zM6 21h1v1h-1zM8 21h2v1h-2zM17 21h2v1h-2zM20 21h1v1h-1zM0 22h1v1h-1zM2 22h3v1h-3zM6 22h1v1h-1zM9 22h2v1h-2zM13 22h1v1h-1zM18 22h1v1h-1zM22 22h1v1h-1zM0 23h1v1h-1zM6 23h1v1h-1zM8 23h1v1h-1zM13 23h1v1h-1zM15 23h1v1h-1zM18 23h1v1h-1zM20 23h2v1h-2zM0 24h7v1h-7zM8 24h2v1h-2zM12 24h1v1h-1zM14 24h3v1h-3zM18 24h2v1h-2zM21 24h1v1h-1zM23 24h1v1h-1z"></path></g></svg></div>
+</div>
+<div class="k-row k-row-sm" style="margin-top:10px;gap:16px"><a class="k-link k-small" href="#">Show at the desk</a><a class="k-link k-small" href="#">Print card</a></div>
+</div>
+<div>
+<div class="k-h4" style="margin:0">US Chess</div>
+<dl class="ar-kv">
+<dt>US Chess ID</dt><dd class="k-mono">30244190</dd>
+<dt>Regular rating</dt><dd>1688</dd>
+<dt>Membership</dt><dd>Through Wed, Mar 31, 2027</dd>
+<dt>Checked</dt><dd>Last night, 2:10 AM</dd>
+</dl>
+<a class="k-link k-small" href="#" style="display:inline-block;margin-top:10px">Your US Chess profile ↗</a>
+</div>
+</div>
+
+<h3 class="ar-h3">Next up</h3>
+<div class="ar-entry">
+<div class="k-date k-date-navy"><b>24</b><span>Oct</span></div>
+<div>
+<div class="k-between"><span class="ar-label">Sat–Sun, Oct 24–25 · Baton Rouge</span><div class="k-row k-row-sm"><span class="k-tag k-tag-open">Entered</span><span class="k-tag k-tag-soon">Payment pending</span></div></div>
+<div class="k-h3" style="margin-top:4px">The Baton Rouge Classic</div>
+<div class="k-small k-muted">U1800 section · 5 rounds · G/90+30 (90 min each + 30 sec per move)</div>
+<ol class="ar-track" aria-label="Entry status">
+<li class="ar-done"><span class="ar-dot"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span><b>Registered</b>Fri, Oct 2</li>
+<li class="ar-now"><span class="ar-dot"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg></span><b>Paid</b>Pending · $60 by Sat, Oct 17</li>
+<li><span class="ar-dot"></span><b>Pairings posted</b>At the event</li>
+<li><span class="ar-dot"></span><b>Results</b>Sun, Oct 25</li>
+</ol>
+<div class="k-row k-row-sm" style="margin-top:12px">
+<a class="k-btn k-btn-gold k-btn-sm" href="#">Pay $60</a>
+<a class="k-btn k-btn-line k-btn-sm" href="#">Change section</a>
+<a class="k-btn k-btn-ghost k-btn-sm" href="#">Byes</a>
+<a class="k-btn k-btn-ghost k-btn-sm" href="#">Withdraw</a>
+</div>
+</div>
+</div>
+<div class="ar-saved">
+<div class="k-date"><b>16</b><span>Jan</span></div>
+<div><span class="ar-label">Sat–Mon, Jan 16–18, 2027 · New Orleans</span><div class="k-h4" style="margin:2px 0 0">Ken Ferguson Memorial Open</div><div class="k-small k-muted">Saved · reminder: email me Fri, Jan 8</div></div>
+<div class="k-row k-row-sm"><span class="k-tag k-tag-closed">Saved</span><a class="k-btn k-btn-ghost k-btn-sm" href="#">Change</a><a class="k-btn k-btn-ghost k-btn-sm" href="#">Stop</a></div>
+</div>
+
+<div class="k-between" style="margin-top:22px;margin-bottom:8px"><h3 class="ar-h3" style="margin:0">Receipts</h3><a class="k-link k-small" href="#">All receipts</a></div>
+<div class="ar-rc"><span>Sat, Sep 5, 2026 · Louisiana State Championship · Open · <b>$70</b></span><a class="k-link k-small" href="#">Send me this receipt again</a></div>
+<div class="ar-rc"><span>Sun, Mar 15, 2026 · Adult membership · <b>$15</b></span><a class="k-link k-small" href="#">Send me this receipt again</a></div>
+
+<h3 class="ar-h3">Settings</h3>
+<div class="ar-sets">
+<div class="ar-set"><span class="ar-ico"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4.5 21c1-4 4-6 7.5-6s6.5 2 7.5 6"></path></svg></span><div><b>Profile</b><div class="k-muted">Name, email and phone</div><a class="k-link" href="#">Edit</a></div></div>
+<div class="ar-set"><span class="ar-ico"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l7.5 3v5.5c0 4.6-3.2 8.2-7.5 9.5-4.3-1.3-7.5-4.9-7.5-9.5V6L12 3z"></path></svg></span><div><b>US Chess ID</b><div class="k-muted"><span class="k-mono">30244190</span> · verified Fri, Oct 2</div><a class="k-link" href="#">Change</a></div></div>
+<div class="ar-set"><span class="ar-ico"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 11v6M12 7.5v.01"></path></svg></span><div><b>Privacy</b><label class="k-check" style="font-size:13px;margin-top:2px"><input type="checkbox" checked> Show me on "Who's coming" lists</label></div></div>
+<div class="ar-set"><span class="ar-ico"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3H6.5A1.5 1.5 0 0 0 5 4.5v15A1.5 1.5 0 0 0 6.5 21h11a1.5 1.5 0 0 0 1.5-1.5V8l-5-5zM14 3v5h5M8.5 13h7M8.5 17h5"></path></svg></span><div><b>Payments and receipts</b><div class="k-muted">Card ending 4242</div><a class="k-link" href="#">Manage</a></div></div>
+<div class="ar-set"><span class="ar-ico"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="M3.5 6.5L12 13l8.5-6.5"></path></svg></span><div><b style="display:flex;align-items:center;gap:6px">Sign-in <span class="k-num-badge" style="width:20px;height:20px;font-size:11px">4</span></b><div class="k-muted">Email link or Google · two-factor on (required for Admin)</div><a class="k-link" href="#">Manage at /account/security</a></div></div>
+<div class="ar-set"><span class="ar-ico"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.5"></circle><path d="M2.5 20c.8-3.6 3.4-5.5 6.5-5.5s5.7 1.9 6.5 5.5M16 4.6a3.5 3.5 0 0 1 0 6.8M18 14.8c2 .7 3.2 2.4 3.6 5.2"></path></svg></span><div><b>Family</b><div class="k-muted">Children don't need a login.</div><a class="k-link" href="#">Add a family member</a></div></div>
+</div>
+</section>
+
+<section id="admin" aria-label="LCA admin">
+<div class="ar-arow">
+<span class="k-num-badge">1</span>
+<span class="ar-role ar-r-admin">Admin</span>
+<div class="ar-arow-t">
+<p class="ar-asent">12 need attention in Admin <span class="ar-wk" style="margin:0 0 0 8px;vertical-align:3px">More than a week</span></p>
+<p class="ar-asub">oldest 9 days · 2 assigned to you · 1 automation <span class="ar-red">failed</span> (Daily emails, 2 of 43)</p>
+</div>
+<a class="k-btn k-btn-navy" href="#">Open Admin</a>
+</div>
+<p class="ar-foot13" style="margin-top:10px;display:flex;gap:8px;align-items:flex-start"><span class="k-num-badge" style="width:22px;height:22px;font-size:11.5px">5</span><span>Everything else is in Admin: the queue, members, tournaments, clubs, content, board seats, email, site settings, the audit log. Nothing of it renders on My LCA.</span></p>
+</section>
+</div>
+</div>
+
+<footer class="k-footer ar-foot">
+<div class="ar-foot-in">
+<div class="k-row-sm" style="gap:10px;display:flex;align-items:center"><svg class="ar-rook ar-rook-sm" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><b style="font-size:15px">Louisiana Chess Association</b></div>
+<span class="k-meta">US Chess state affiliate · Louisiana's chess community since 1915</span>
+<nav class="k-row" aria-label="Footer" style="gap:18px"><a href="#">Contact</a><a href="#">Website help</a><a href="#">Bylaws &amp; rules</a><a href="#">Donate</a></nav>
+</div>
+</footer>
+</div>
+</div>
+
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":2900}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

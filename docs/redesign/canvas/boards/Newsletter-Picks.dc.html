@@ -1,0 +1,356 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Newsletter · Your picks</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/6107adb451dbab26ee5d89f4189b81f8">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1a2744}
+.np-root{width:1440px;margin:0 auto;box-sizing:border-box;padding:28px 40px 28px;background:#ecebe6;color:#1a2744;font-family:Geist,system-ui,sans-serif}
+.np-root *{box-sizing:border-box}
+.np-vh{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+.np-doc{background:#fbfaf6;border:1px solid #d9d8d1;border-radius:14px;padding:24px 32px 26px}
+.np-title{font-size:44px;line-height:1.1;font-weight:700;letter-spacing:-.02em;margin:8px 0 0}
+.np-meta{font-size:14.5px;line-height:1.5;color:#3d4556;margin:4px 0 0;max-width:1180px}
+.np-meta b{color:#1a2744;font-weight:600}
+.np-intro{margin:18px 0 0;padding:18px 0 0;border-top:1px solid #e2e1da;display:flex;flex-direction:column;gap:10px}
+.np-intro p{margin:0;font-size:24px;line-height:1.4;color:#1a2744;max-width:1240px}
+.np-intro p b{font-weight:700}
+.np-reply{display:inline-block;margin-top:4px;padding:12px 18px;border-radius:10px;background:#1a2744;color:#ffffff;font-size:22px;line-height:1.4;font-weight:500}
+.np-reply b{color:#ffffff;font-weight:700}
+
+.np-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;margin-top:20px}
+.np-card{background:#ffffff;border:1px solid #d9d8d1;border-radius:14px;padding:16px 24px 16px;display:flex;flex-direction:column;gap:8px}
+.np-head{display:flex;gap:18px;align-items:flex-start}
+.np-n{flex:none;display:inline-flex;align-items:center;justify-content:center;width:56px;height:56px;border-radius:12px;background:#1a2744;color:#ffffff;font-size:30px;font-weight:700;line-height:1}
+.np-q{margin:0;font-size:24px;line-height:1.3;font-weight:700;letter-spacing:-.01em;padding-top:8px}
+.np-opts{display:grid;gap:14px}
+.np-opts-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.np-opts-3{grid-template-columns:minmax(0,1.45fr) minmax(0,1fr) minmax(0,1fr)}
+.np-opt{border:1px solid #c9c8c0;border-radius:12px;padding:11px 13px 12px;display:flex;flex-direction:column;gap:7px;background:#ffffff}
+.np-rec{border:3px solid #1a2744;padding:9px 11px 10px;background:#f6f7fa}
+.np-otop{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.np-let{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:8px;border:2px solid #1a2744;color:#1a2744;font-size:17px;font-weight:700;line-height:1;flex:none}
+.np-rec .np-let{background:#1a2744;color:#ffffff}
+.np-chip{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;background:#1a2744;color:#ffffff;font-size:13px;font-weight:700;line-height:1.1;letter-spacing:.02em}
+.np-chip svg{width:14px;height:14px;fill:none;stroke:#ffffff;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+.np-alt{font-size:13px;font-weight:600;color:#555c6b}
+.np-otext{margin:0;font-size:17px;line-height:1.4;font-weight:600;color:#1a2744}
+.np-opt:not(.np-rec) .np-otext{font-weight:500}
+.np-why,.np-look{margin:0;font-size:17px;line-height:1.5;color:#2b3446}
+.np-why b,.np-look b{color:#1a2744;font-weight:700}
+.np-look{padding-top:10px;border-top:1px solid #e8e7e0}
+
+/* tiny pictures */
+.np-pic{height:60px;padding:6px 8px;border-radius:8px;background:#f1f0eb;border:1px solid #e2e1da;display:flex;align-items:center;justify-content:center;padding:10px;overflow:hidden}
+.np-btn{display:inline-flex;align-items:center;justify-content:center;min-height:38px;padding:0 14px;border-radius:8px;background:#1a2744;color:#ffffff;font-size:14px;font-weight:600;white-space:nowrap}
+.np-clock{display:flex;align-items:center;gap:10px;font-size:16px;font-weight:700;color:#1a2744}
+.np-clock svg{width:40px;height:40px;fill:none;stroke:#1a2744;stroke-width:1.8;stroke-linecap:round}
+.np-page{width:52px;height:62px;background:#ffffff;border:1px solid #c9c8c0;border-radius:4px;padding:6px;display:flex;flex-direction:column;gap:3px}
+.np-hbar{height:5px;width:70%;border-radius:2px;background:#9aa1b0}
+.np-line{height:3px;width:100%;border-radius:2px;background:#c9ccd4}
+.np-line.s{width:72%}
+.np-typed{font-size:12.5px;line-height:1.45;color:#1a2744;background:#ffffff;border:1px solid #d9d8d1;border-radius:6px;padding:8px 9px;width:100%}
+.np-typed u{text-decoration-thickness:1.5px;text-underline-offset:2px;font-weight:600}
+.np-form{display:grid;grid-template-columns:1fr 1fr;gap:5px 6px;width:100%}
+.np-f{background:#ffffff;border:1px solid #9aa1b0;border-radius:4px;height:26px;font-size:11px;color:#555c6b;padding:0 6px;display:flex;align-items:center}
+.np-band{width:100%;border-radius:6px;background:#1a2744;color:#ffffff;padding:10px 12px;display:flex;align-items:center;gap:10px}
+.np-band svg{width:26px;height:26px;fill:#ffffff;flex:none}
+.np-band b{display:block;font-size:15px;line-height:1.15}
+.np-band span{display:block;font-size:11px;color:rgba(255,255,255,.82)}
+.np-plain{width:100%;border-radius:6px;background:#ffffff;border:1px solid #d9d8d1;padding:10px 12px;display:flex;align-items:center;gap:10px}
+.np-plain svg{width:24px;height:24px;fill:#1a2744;flex:none}
+.np-plain b{display:block;font-size:13.5px;line-height:1.2;color:#1a2744}
+.np-plain span{display:block;font-size:11.5px;color:#3d4556}
+.np-mail{width:116px;height:64px;background:#ffffff;border:1px solid #c9c8c0;border-radius:4px;padding:7px;display:flex;flex-direction:column;gap:4px}
+.np-photo{height:20px;border-radius:3px;background-color:#d9d8d0;background-image:repeating-linear-gradient(135deg,rgba(26,39,68,.12) 0 1px,transparent 1px 7px);font-size:9.5px;font-weight:600;color:#3d4556;display:flex;align-items:center;justify-content:center}
+
+.np-quiet{background:#f6f5f0;border:1px dashed #a9a79c}
+.np-quiet .np-n{background:#ffffff;color:#1a2744;border:2px solid #1a2744}
+.np-chipq{display:inline-flex;align-self:flex-start;align-items:center;padding:6px 12px;border-radius:999px;border:1.5px solid #555c6b;background:#ffffff;color:#3d4556;font-size:13px;font-weight:700;letter-spacing:.02em}
+.np-sugg{margin:0;font-size:16.5px;line-height:1.45;color:#2b3446}
+.np-sugg b{color:#1a2744}
+
+.np-panels{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px;margin-top:22px}
+.np-panel{background:#fbfaf6;border:1px solid #d9d8d1;border-radius:14px;padding:20px 26px 22px}
+.np-panel h2{margin:0 0 12px;font-size:20px;line-height:1.25;font-weight:700}
+.np-panel ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
+.np-panel li{display:flex;gap:10px;align-items:flex-start;font-size:16px;line-height:1.45;color:#2b3446}
+.np-panel li::before{content:"";flex:none;width:7px;height:7px;border-radius:50%;background:#1a2744;margin-top:8px}
+.np-end{margin:20px 0 0;padding:16px 24px;border-radius:12px;background:#ffffff;border:1px solid #d9d8d1;font-size:18px;line-height:1.5;color:#1a2744}
+
+.np-page{width:40px;height:46px;padding:4px 5px;gap:2.5px}
+.np-hbar{height:4px}
+.np-line{height:2.5px}
+.np-typed{font-size:11px;line-height:1.35;padding:4px 8px}
+.np-f{height:20px;font-size:10.5px}
+.np-form{gap:4px 6px}
+.np-band{padding:5px 12px}
+.np-band svg{width:24px;height:24px}
+.np-plain{padding:5px 12px}
+.np-mail{width:100px;height:46px;padding:5px 6px;gap:3px}
+.np-photo{height:14px;font-size:9px}
+.np-clock svg{width:34px;height:34px}
+.np-root{padding-top:24px;padding-bottom:24px}
+.np-quote{padding:12px 20px 13px}
+.np-whead{display:flex;align-items:baseline;gap:18px;flex-wrap:wrap}
+.np-whead .np-where-sub{margin:0}
+.np-rows .np-row:last-child{flex:1.25}
+.np-n{width:48px;height:48px;font-size:26px;border-radius:10px}
+.np-q{font-size:23px;padding-top:6px}
+.np-why,.np-look{font-size:16.5px;line-height:1.45}
+.np-panel{padding:16px 24px 18px}
+.np-panel h2{margin:0 0 10px}
+.np-panel ul{gap:6px}
+.np-panels{margin-top:18px}
+.np-end{margin-top:16px;padding:14px 22px}
+.np-intro{margin-top:14px;padding-top:14px}
+.np-intro2{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:32px;align-items:center}
+.np-ic{display:flex;flex-direction:column;gap:12px}
+.np-look{padding-top:0;border-top:0}
+
+.np-titlerow{display:flex;align-items:center;gap:18px;flex-wrap:wrap;margin-top:8px}
+.np-titlerow .np-title{margin:0}
+.np-decided{display:inline-flex;align-items:center;gap:8px;padding:8px 16px;border-radius:999px;background:#1a2744;color:#ffffff;font-size:17px;font-weight:700;line-height:1.1}
+.np-decided svg{width:16px;height:16px;fill:none;stroke:#ffffff;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+.np-quote{margin:2px 0 0;padding:14px 22px 16px;border-left:6px solid #1a2744;background:#f3f2ec;border-radius:0 12px 12px 0;max-width:1240px}
+.np-quote q{display:block;font-size:31px;line-height:1.25;font-weight:600;letter-spacing:-.01em;color:#1a2744;quotes:"\201C" "\201D"}
+.np-quote cite{display:block;margin-top:6px;font-style:normal;font-size:15px;font-weight:600;color:#555c6b}
+.np-off{background:#faf9f6;border:1.5px dashed #b4b2a8}
+.np-off .np-let{border-color:#8a8f9c;color:#555c6b}
+.np-off .np-otext{color:#3d4556}
+.np-off .np-pic{opacity:.78}
+.np-tagopt{display:inline-flex;align-items:center;padding:3px 9px;border-radius:999px;background:#e6e5df;color:#3d4556;font-size:12.5px;font-weight:700;letter-spacing:.02em}
+.np-tagno{font-size:13px;font-weight:600;color:#555c6b}
+.np-still{margin:0;padding:8px 13px;border-radius:10px;background:#f3f2ec;border-left:4px solid #1a2744;font-size:16.5px;line-height:1.45;color:#2b3446}
+.np-still b{color:#1a2744;font-weight:700}
+.np-where{margin-top:20px;background:#ffffff;border:2px solid #1a2744;border-radius:14px;padding:18px 26px 18px}
+.np-where h2{margin:0;font-size:26px;line-height:1.25;font-weight:700;letter-spacing:-.01em}
+.np-where-sub{margin:4px 0 0;font-size:17px;line-height:1.45;color:#3d4556}
+.np-rows{margin-top:12px;display:grid;grid-template-columns:minmax(0,0.95fr) minmax(0,1fr) minmax(0,1.4fr);gap:16px}
+.np-row{display:flex;flex-direction:column;gap:10px;padding:14px 16px 16px;border:1px solid #e2e1da;border-radius:12px;background:#fbfaf6}
+
+.np-ctlpic{height:50px;background-color:#f1f0eb;border-radius:8px;background:#f1f0eb;border:1px solid #e2e1da;display:flex;align-items:center;justify-content:center;padding:0 12px}
+.np-ctlname{margin:0;font-size:20px;line-height:1.3;font-weight:700;color:#1a2744}
+.np-ctlname span{display:block;font-size:15px;font-weight:500;color:#555c6b;margin-top:2px}
+.np-holds{margin:0;display:flex;flex-wrap:wrap;gap:7px}
+.np-holds span{display:inline-flex;align-items:center;padding:6px 10px;border-radius:8px;border:1px solid #c9c8c0;background:#ffffff;font-size:15.5px;font-weight:600;color:#1a2744}
+.np-closed{margin:12px 0 0;font-size:18px;line-height:1.4;font-weight:700;color:#1a2744}
+.np-tools{display:flex;align-items:center;gap:4px;background:#ffffff;border:1px solid #c9c8c0;border-radius:7px;padding:4px}
+.np-tool{display:inline-flex;align-items:center;justify-content:center;min-width:26px;height:26px;padding:0 6px;border-radius:5px;font-size:13px;font-weight:700;color:#1a2744}
+.np-tool.add{border:1.5px solid #1a2744;gap:4px;padding:0 8px;margin-left:4px}
+.np-chev{width:12px;height:12px;fill:none;stroke:currentColor;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.np-split{display:inline-flex;align-items:stretch;border-radius:8px;overflow:hidden;background:#1a2744;color:#ffffff;font-size:14px;font-weight:600;min-height:38px}
+.np-split span{display:inline-flex;align-items:center;padding:0 14px;white-space:nowrap}
+.np-split span+span{padding:0 11px;border-left:1.5px solid rgba(255,255,255,.55)}
+.np-morerow{display:flex;align-items:center;gap:8px;width:100%;background:#ffffff;border:1px solid #c9c8c0;border-radius:7px;padding:9px 12px;font-size:14px;font-weight:700;color:#1a2744}
+.np-card{gap:6px}
+.np-grid{gap:14px}
+.np-where{margin-top:16px}
+.np-panels{margin-top:14px}
+.np-end{margin-top:14px}
+.np-where{padding:15px 26px 14px}
+.np-closed{margin-top:9px}
+.np-rows{margin-top:10px}
+</style>
+</helmet>
+<div class="np-root" style="width:1440px;height:2850px">
+
+<section class="np-doc" aria-label="About this board">
+<p class="k-kicker">18 · Newsletter · Start here</p>
+<div class="np-titlerow"><h1 class="np-title">Your picks</h1><span class="np-decided"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12l5 5 9-10"></path></svg>Decided Tue, Nov 10, 2026</span></div>
+<p class="np-meta" style="margin-top:10px"><b>Built from:</b> your answer of Tue, Nov 10, 2026 · Newsletter-E (the simple one, for now) and its part 2 · round 1's Newsletter-A to Newsletter-D</p>
+<p class="np-meta"><b>Replaces:</b> this board's first version, which asked the eight picks as open questions before you answered</p>
+<div class="np-intro np-intro2">
+<div class="np-ic">
+<p>You picked the recommended answer on 1 to 7. <b>Thank you.</b></p>
+<blockquote class="np-quote"><q>allowing for choice ... an option but not default</q><cite>Your words, Tue, Nov 10, 2026</cite></blockquote>
+</div>
+<div class="np-ic">
+<p>So the page opens simple, and the extras wait in menus until someone wants them.</p>
+<p><span class="np-reply">To change one, reply with its number and letter, like <b>“2B”</b>.</span></p>
+</div>
+</div>
+</section>
+
+<div class="np-grid">
+
+<!-- 1 -->
+<article class="np-card" aria-labelledby="np-q1">
+<div class="np-head"><span class="np-n" aria-hidden="true">1</span><h2 class="np-q" id="np-q1">Which newsletter do we build first?</h2></div>
+<div class="np-opts np-opts-2">
+<div class="np-opt np-rec"><div class="np-otop"><span class="np-let">A</span><span class="np-chip"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12l5 5 9-10"></path></svg>Your pick</span></div>
+<p class="np-otext">E, the simple one</p></div>
+<div class="np-opt np-off"><div class="np-otop"><span class="np-let">B</span><span class="np-tagno">Not chosen</span></div>
+<p class="np-otext">one of round 1's four (A, B, C or D)</p></div>
+</div>
+<p class="np-why"><b>Why:</b> E needs nothing the site does not have yet, a volunteer can use it the first time, and it can be on the live site first.</p>
+<p class="np-still"><b>Still there when you want it:</b> Round 1's A to D stay on this page, further right, as ideas for later.</p>
+<p class="np-look"><b>Look at:</b> Newsletter-E, frame A.</p>
+</article>
+<!-- 2 -->
+<article class="np-card" aria-labelledby="np-q2">
+<div class="np-head"><span class="np-n" aria-hidden="true">2</span><h2 class="np-q" id="np-q2">How does it go out?</h2></div>
+<div class="np-opts np-opts-2">
+<div class="np-opt np-rec"><div class="np-otop"><span class="np-let">A</span><span class="np-chip"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12l5 5 9-10"></path></svg>Your pick</span></div>
+<div class="np-pic"><span class="np-btn">Send to 243 members</span></div>
+<p class="np-otext">A person presses Send, after a test and one confirm step</p></div>
+<div class="np-opt np-off"><div class="np-otop"><span class="np-let">B</span><span class="np-tagno">Not chosen</span></div>
+<div class="np-pic"><span class="np-clock"><svg viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="16"></circle><path d="M20 10v10l7 4"></path></svg>1st · 8:00 AM</span></div>
+<p class="np-otext">It goes out by itself on the 1st at 8:00 AM once someone marks it ready</p></div>
+</div>
+<p class="np-why"><b>Why:</b> nothing unfinished can go out by accident, and it works the way Group email already does; “Send later” still lets a person pick the 1st at 8:00 AM.</p>
+<p class="np-still"><b>Still there when you want it:</b> Send later is under the arrow on Send (frame B2). Going out by itself every month is not built for now.</p>
+<p class="np-look"><b>Look at:</b> Newsletter-E, frame A step 3, and frames B1 and B2.</p>
+</article>
+<!-- 3 -->
+<article class="np-card" aria-labelledby="np-q3">
+<div class="np-head"><span class="np-n" aria-hidden="true">3</span><h2 class="np-q" id="np-q3">What does a new month start from?</h2></div>
+<div class="np-opts np-opts-3">
+<div class="np-opt np-rec"><div class="np-otop"><span class="np-let">A</span><span class="np-chip"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12l5 5 9-10"></path></svg>Your pick</span></div>
+<div class="np-pic"><div class="np-page" aria-hidden="true"><i class="np-hbar"></i><i class="np-hbar" style="width:55%"></i><i class="np-hbar" style="width:80%"></i><i class="np-hbar" style="width:60%"></i><i class="np-hbar" style="width:75%"></i><i class="np-hbar" style="width:50%"></i></div></div>
+<p class="np-otext">The usual six headings, ready to fill or delete</p></div>
+<div class="np-opt np-off"><div class="np-otop"><span class="np-let">B</span><span class="np-tagopt">Optional</span></div>
+<div class="np-pic"><div class="np-page" aria-hidden="true"><i class="np-hbar"></i><i class="np-line"></i><i class="np-line s"></i><i class="np-hbar" style="width:55%"></i><i class="np-line"></i><i class="np-line"></i><i class="np-line s"></i><i class="np-hbar" style="width:65%"></i><i class="np-line"></i><i class="np-line s"></i></div></div>
+<p class="np-otext">A copy of last month's issue</p></div>
+<div class="np-opt np-off"><div class="np-otop"><span class="np-let">C</span><span class="np-tagopt">Optional</span></div>
+<div class="np-pic"><div class="np-page" aria-hidden="true"></div></div>
+<p class="np-otext">A blank page</p></div>
+</div>
+<p class="np-why"><b>Why:</b> nobody faces an empty page or sends last month's news by mistake.</p>
+<p class="np-still"><b>Still there when you want it:</b> The other two starts are in the same drop-down (frame B5).</p>
+<p class="np-look"><b>Look at:</b> Newsletter-E, frame B5.</p>
+</article>
+<!-- 4 -->
+<article class="np-card" aria-labelledby="np-q4">
+<div class="np-head"><span class="np-n" aria-hidden="true">4</span><h2 class="np-q" id="np-q4">How do tournaments get in?</h2></div>
+<div class="np-opts np-opts-2">
+<div class="np-opt np-rec"><div class="np-otop"><span class="np-let">A</span><span class="np-chip"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12l5 5 9-10"></path></svg>Your pick</span></div>
+<div class="np-pic"><p class="np-typed" style="margin:0">Sat, Dec 5, 2026 · New Orleans Youth Chess December Meet · New Orleans · <u>Register on King Registration ↗</u></p></div>
+<p class="np-otext">Type the line and paste the King Registration link yourself</p></div>
+<div class="np-opt np-off"><div class="np-otop"><span class="np-let">B</span><span class="np-tagopt">Optional</span></div>
+<div class="np-pic"><div class="np-form" aria-hidden="true"><span class="np-f">Event</span><span class="np-f">Day</span><span class="np-f">City</span><span class="np-f">Link</span></div></div>
+<p class="np-otext">A small Add an event form that writes the line for you</p></div>
+</div>
+<p class="np-why"><b>Why:</b> it is exactly what leaders do in an email today and needs nothing built; the form can come when the site holds tournaments.</p>
+<p class="np-still"><b>Still there when you want it:</b> “Add a photo, event or line”, then An event line (frames B6 and B6b).</p>
+<p class="np-look"><b>Look at:</b> Newsletter-E, frame A's Coming up, and frames B6 and B6b.</p>
+</article>
+<!-- 5 -->
+<article class="np-card" aria-labelledby="np-q5">
+<div class="np-head"><span class="np-n" aria-hidden="true">5</span><h2 class="np-q" id="np-q5">What does the top of the email look like?</h2></div>
+<div class="np-opts np-opts-2">
+<div class="np-opt np-rec"><div class="np-otop"><span class="np-let">A</span><span class="np-chip"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12l5 5 9-10"></path></svg>Your pick</span></div>
+<div class="np-pic"><div class="np-band"><svg viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><div><span>LCA Newsletter</span><b>December 2026</b></div></div></div>
+<p class="np-otext">A navy band with the rook and the month</p></div>
+<div class="np-opt np-off"><div class="np-otop"><span class="np-let">B</span><span class="np-tagopt">Optional</span></div>
+<div class="np-pic"><div class="np-plain"><svg viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><div><b>LCA Newsletter</b><span>December 2026</span></div></div></div>
+<p class="np-otext">Plain: the rook and the name in text</p></div>
+</div>
+<p class="np-why"><b>Why:</b> it looks like LCA at a glance and costs the leaders nothing, because the site writes the month.</p>
+<p class="np-still"><b>Still there when you want it:</b> More options, then Top of the email (frame B7); the plain top is frame C2 on part 2.</p>
+<p class="np-look"><b>Look at:</b> Newsletter-E part 2, frames C1 and C2; Newsletter-E, frame B7.</p>
+</article>
+<!-- 6 -->
+<article class="np-card" aria-labelledby="np-q6">
+<div class="np-head"><span class="np-n" aria-hidden="true">6</span><h2 class="np-q" id="np-q6">Photos?</h2></div>
+<div class="np-opts np-opts-2">
+<div class="np-opt np-rec"><div class="np-otop"><span class="np-let">A</span><span class="np-chip"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12l5 5 9-10"></path></svg>Your pick</span></div>
+<div class="np-pic"><div class="np-mail" aria-hidden="true"><i class="np-hbar"></i><i class="np-line"></i><i class="np-line"></i><i class="np-line s"></i><i class="np-hbar" style="width:55%"></i><i class="np-line"></i><i class="np-line"></i><i class="np-line s"></i></div></div>
+<p class="np-otext">None for now, words and links only</p></div>
+<div class="np-opt np-off"><div class="np-otop"><span class="np-let">B</span><span class="np-tagopt">Optional</span></div>
+<div class="np-pic"><div class="np-mail" aria-hidden="true"><i class="np-hbar"></i><span class="np-photo">Photo</span><i class="np-line"></i><i class="np-line"></i><i class="np-line s"></i></div></div>
+<p class="np-otext">One photo per issue</p></div>
+</div>
+<p class="np-why"><b>Why:</b> the site's text box does not take photos today, so this is the one option that adds real building; photos can follow.</p>
+<p class="np-still"><b>Still there when you want it:</b> “Add a photo, event or line”, then A photo (frames B6 and B6a); an email with a photo is frame C3 on part 2. Never required.</p>
+<p class="np-look"><b>Look at:</b> Newsletter-E part 2, frames C1 and C3; Newsletter-E, frames B6 and B6a.</p>
+</article>
+<!-- 7 -->
+<article class="np-card" aria-labelledby="np-q7">
+<div class="np-head"><span class="np-n" aria-hidden="true">7</span><h2 class="np-q" id="np-q7">Can anyone read an issue on the site?</h2></div>
+<div class="np-opts np-opts-3">
+<div class="np-opt np-rec"><div class="np-otop"><span class="np-let">A</span><span class="np-chip"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12l5 5 9-10"></path></svg>Your pick</span></div>
+<p class="np-otext">Not in the first version; add a page per issue right after</p></div>
+<div class="np-opt np-off"><div class="np-otop"><span class="np-let">B</span><span class="np-tagno">Not chosen</span></div>
+<p class="np-otext">In the first version</p></div>
+<div class="np-opt np-off"><div class="np-otop"><span class="np-let">C</span><span class="np-tagno">Not chosen</span></div>
+<p class="np-otext">Never, email only</p></div>
+</div>
+<p class="np-why"><b>Why:</b> the email is what members asked for; a page per issue is worth adding next because its link can be posted on LCA's Facebook page.</p>
+<p class="np-still"><b>Still there when you want it:</b> A page for each issue is added right after the first version.</p>
+<p class="np-look"><b>Look at:</b> the Picks board only (nothing is drawn for it yet).</p>
+</article>
+
+<!-- 8 -->
+<article class="np-card np-quiet" aria-labelledby="np-q8">
+<div class="np-head"><span class="np-n" aria-hidden="true">8</span><h2 class="np-q" id="np-q8">Later, when the site holds tournaments and results, which way should it grow?</h2></div>
+<span class="np-chipq">No need to decide now</span>
+<p class="np-sugg"><b>The lead's suggestion:</b> keep the simple letter, then let the site fill in Coming up and Results as round 1's option C does, and add option D's Position of the month if someone wants to keep it up.</p>
+<p class="np-why"><b>Why:</b> the first version needs none of it; the site has to hold tournaments and results before it can fill anything in.</p>
+<p class="np-still"><b>Still there when you want it:</b> Round 1's Newsletter-C and Newsletter-D stay on this page, further right, as ideas for later.</p>
+<p class="np-look"><b>Look at:</b> round 1's boards, Newsletter-C and Newsletter-D.</p>
+</article>
+
+</div>
+
+<section class="np-where" aria-labelledby="np-wh">
+<div class="np-whead"><h2 id="np-wh">Where the extras live</h2><p class="np-where-sub">Three controls on the Newsletter page, each with its name as it reads there.</p></div>
+<div class="np-rows">
+<div class="np-row">
+<div class="np-ctlpic" aria-hidden="true"><span class="np-tools"><span class="np-tool" style="color:#555c6b">Undo</span><span class="np-tool add"><svg class="np-chev" viewBox="0 0 12 12" aria-hidden="true"><path d="M6 2v8M2 6h8"></path></svg>Add a photo, event or line<svg class="np-chev" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.5L6 8l3.5-3.5"></path></svg></span></span></div>
+<p class="np-ctlname">Add a photo, event or line<span>at the end of the writing tools</span></p>
+<p class="np-holds"><span>A photo</span><span>An event line</span><span>A dividing line</span></p>
+</div>
+<div class="np-row">
+<div class="np-ctlpic" aria-hidden="true"><span class="np-split"><span>Send to 243 members</span><span><svg class="np-chev" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.5L6 8l3.5-3.5"></path></svg></span></span></div>
+<p class="np-ctlname">The arrow on Send<span>labelled Other ways to send</span></p>
+<p class="np-holds"><span>Send later</span><span>Send the test to someone else</span></p>
+</div>
+<div class="np-row">
+<div class="np-ctlpic" aria-hidden="true"><span class="np-morerow">More options<svg class="np-chev" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.5L6 8l3.5-3.5"></path></svg></span></div>
+<p class="np-ctlname">More options<span>closed until you open it</span></p>
+<p class="np-holds"><span>Top of the email</span><span>Who gets it</span><span>Words shown in the inbox</span><span>Where replies go</span></p>
+</div>
+</div>
+<p class="np-closed">Closed when the page opens, every time.</p>
+</section>
+
+<div class="np-panels">
+<section class="np-panel" aria-labelledby="np-p1">
+<h2 id="np-p1">Drawn this way unless you say otherwise</h2>
+<ul>
+<li>One person writes at a time and the others can read.</li>
+<li>Opens and clicks are not tracked.</li>
+<li>The weekly Monday “News by email” on the decided News page waits, so the newsletter is the only regular email for now.</li>
+<li>It is sent from an address at news.louisianachess.org and replies go to LouisianaChess@gmail.com.</li>
+</ul>
+</section>
+<section class="np-panel" aria-labelledby="np-p2">
+<h2 id="np-p2">Already decided by you</h2>
+<ul>
+<li>LCA admins, the president and the media manager write and send it.</li>
+<li>Every LCA member with an email address gets it unless they unsubscribe.</li>
+<li>Unsubscribing stops the newsletter only.</li>
+<li>No postal address in any email.</li>
+</ul>
+</section>
+</div>
+
+<p class="np-end">Round 1's four fuller directions, A to D, are further right on this page. They are ideas for later (pick 8), not something to choose between today.</p>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":2850}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>My LCA · I-2 · Family, one card per child: empty, busy, phone and the way in (round 2)</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/6107adb451dbab26ee5d89f4189b81f8">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1a2744}
+.ai-root{box-sizing:border-box;padding:24px 40px 16px;background:#ecebe6;color:#1a2744;overflow:hidden}
+.ai-root *{box-sizing:border-box}
+.ai-title{display:block;background:#1a2744;color:#ffffff;border-radius:14px;padding:18px 24px 18px;border-bottom:4px solid #c8a94a}
+.ai-title .k-kicker{color:#e6cf86;margin:0}
+.ai-title h1{font-size:28px;line-height:1.15;font-weight:600;letter-spacing:-.015em;margin:6px 0 10px}
+.ai-tmeta{display:grid;grid-template-columns:100px 1fr;gap:3px 14px;font-size:12.5px;line-height:1.4;margin:0}
+.ai-tmeta dt{font-weight:600;color:#e6cf86}
+.ai-tmeta dd{margin:0;color:#ffffff}
+.ai-tag-r2{display:inline-flex;align-items:center;height:26px;padding:0 10px;border-radius:6px;background:#c8a94a;color:#1a2744;font-size:12.5px;font-weight:700;letter-spacing:.04em}
+.ai-tag-frame{display:inline-flex;align-items:center;height:26px;padding:0 10px;border-radius:6px;border:1px solid rgba(255,255,255,.6);color:#ffffff;font-size:12.5px;font-weight:600}
+.ai-tbody{display:flex;justify-content:space-between;align-items:flex-start;gap:28px}
+.ai-tbody > div{flex:1;min-width:0}
+.ai-grey{flex:none;width:560px;background:#efefea;border:1px solid #dfded6;border-radius:12px;padding:12px 14px;display:grid;grid-template-columns:1fr 1fr;gap:8px 16px;align-content:start;color:#2b3446}
+.ai-grey p{font-size:12px;line-height:1.4;color:#2b3446;margin:0}
+.ai-grey p + p{margin-top:7px}
+.ai-grey b.ai-gh{display:block;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#555c6b;margin-bottom:2px}
+.ai-grey ol{margin:0;padding-left:16px;font-size:12px;line-height:1.4;color:#2b3446}
+.ai-grey li{margin-bottom:3px}
+.ai-legend{margin-top:12px;background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:14px 18px}
+.ai-notes{list-style:none;margin:10px 0 0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px 24px}
+.ai-notes li{display:flex;gap:9px;align-items:flex-start;font-size:12px;line-height:1.4;color:#2b3446}
+.ai-notes .k-num-badge{width:22px;height:22px;font-size:11.5px}
+.ai-notes b{font-weight:600;color:#1a2744}
+.ai-flab{display:flex;align-items:center;gap:12px;margin:16px 0 10px;flex-wrap:nowrap}
+.ai-flab h2{margin:0;font-size:18px;line-height:1.2;font-weight:600;letter-spacing:-.01em;white-space:nowrap}
+.ai-code{display:inline-flex;align-items:center;justify-content:center;min-width:28px;height:28px;padding:0 9px;border-radius:7px;background:#c8a94a;color:#1a2744;font-weight:700;font-size:13px;flex:none}
+.ai-url{white-space:nowrap;font-family:"Geist Mono",ui-monospace,monospace;font-size:12px;color:#3d4556;background:#ffffff;border:1px solid #d9d8d1;border-radius:6px;padding:3px 8px}
+.ai-fmeta{font-size:13px;color:#555c6b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ai-frame{position:relative;margin:0 -40px;width:1440px;border-top:1px solid #cfcec6;border-bottom:1px solid #cfcec6;overflow:hidden;background:#fbfaf6;box-shadow:0 14px 34px rgba(16,24,43,.10)}
+.ai-box{position:relative;border:1px solid #cfcec6;border-radius:12px;overflow:hidden;background:#fbfaf6;box-shadow:0 14px 34px rgba(16,24,43,.10)}
+/* decided header */
+.ai-hd-in{display:flex;align-items:center;height:68px;padding:0 40px}
+.ai-brand{margin-right:16px}
+.ai-rook{width:30px;height:30px;fill:#ffffff;flex:none}
+.ai-rook-sm{width:22px;height:22px;fill:#ffffff;flex:none}
+.ai-nav{gap:0}
+.ai-nav a{padding:0 9px !important;white-space:nowrap}
+.ai-navbtn{display:inline-flex;align-items:center;gap:4px;min-height:44px;padding:0 9px;border:0;background:transparent;color:#ffffff;font:inherit;font-size:15px;font-weight:500}
+.ai-search{display:inline-flex;align-items:center;gap:8px;width:220px;height:44px;padding:0 8px 0 12px;margin-right:16px;border-radius:8px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.45);color:#ffffff;text-decoration:none;font-size:14.5px;font-weight:500;flex:none}
+.ai-kbd{margin-left:auto;font-family:"Geist Mono",ui-monospace,monospace;font-size:12px;color:#e8ecf4;border:1px solid rgba(255,255,255,.4);border-radius:5px;padding:2px 6px;line-height:1.2}
+.ai-util{gap:12px}
+.ai-util .k-ulink{padding:0 4px}
+.ai-my{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 8px;border:0;border-radius:8px;background:transparent;color:#ffffff;font:inherit;font-size:14px;font-weight:500}
+.ai-count{display:inline-flex;align-items:center;justify-content:center;min-width:20px;height:20px;padding:0 6px;border-radius:999px;background:#fbfaf6;color:#1a2744;font-size:12px;font-weight:700}
+.ai-foot-in{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:18px 40px 20px}
+.ai-foot .k-meta{color:rgba(255,255,255,.78)}
+.ai-foot nav a{font-size:14px}
+/* hub band */
+.ai-band{background:#fbfaf6;border-bottom:1px solid #e6e3d8;padding:16px 40px 14px}
+.ai-band-half{padding:8px 40px}
+.ai-band-top{display:flex;justify-content:space-between;align-items:flex-end;gap:20px}
+.ai-name{font-size:32px;line-height:1.1;font-weight:600;letter-spacing:-.015em;margin:4px 0 0}
+.ai-name-sm{font-size:20px;font-weight:600}
+.ai-roles{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;align-items:center}
+.ai-rchip{display:inline-flex;align-items:center;gap:8px;border-radius:999px;padding:5px 14px 5px 5px;font-size:14px;border:1px solid #d9d6cb;background:#ffffff;color:#1a2744;text-decoration:none;min-height:44px}
+.ai-rchip-on{border-color:#1a2744;box-shadow:inset 0 0 0 1px #1a2744}
+.ai-role{display:inline-flex;align-items:center;border-radius:999px;padding:4px 10px;font-size:12px;font-weight:600;white-space:nowrap;line-height:1.2}
+.ai-r-parent{background:#e3efe6;color:#1f4d33}
+.ai-r-member{background:#ecebe5;color:#1a2744}
+/* layout */
+.ai-layout{display:grid;grid-template-columns:250px 1070px;gap:40px;align-items:start;padding:20px 40px 28px}
+.ai-rail{position:sticky;top:16px}
+.ai-railcard{background:#ffffff;border:1px solid #e6e3d8;border-radius:12px;padding:14px 10px}
+.ai-rnav{display:flex;flex-direction:column;gap:2px;margin-top:8px}
+.ai-rnav a{display:flex;justify-content:space-between;align-items:center;padding:0 12px;border-radius:8px;color:#1a2744;text-decoration:none;font-size:15px;min-height:44px}
+.ai-rnav a.ai-on{background:#efede6;font-weight:600;box-shadow:inset 3px 0 0 #1a2744}
+.ai-rc{font-size:12px;font-weight:700;color:#3d4556;background:#eceef2;border-radius:999px;padding:1px 8px}
+.ai-col{display:flex;flex-direction:column;gap:8px;min-width:0}
+.ai-coll{display:flex;align-items:center;gap:12px;height:48px;padding:0 16px;background:#f5f5f2;border:1px solid #e6e3d8;border-radius:10px;font-size:14.5px}
+.ai-coll b{font-weight:600}
+.ai-coll .ai-cm{color:#555c6b}
+.ai-coll .ai-show{margin-left:auto;font-size:13.5px;font-weight:600;color:#1a2744}
+/* the section */
+.ai-sec{border-top:2px solid #1a2744;padding:18px 0 6px;margin:10px 0 6px}
+.ai-sh{display:flex;justify-content:space-between;align-items:flex-start;gap:20px}
+.ai-sh h2{margin:0;font-size:28px;line-height:1.2;font-weight:600;letter-spacing:-.01em;display:flex;align-items:center;gap:12px}
+.ai-anchor{font-family:"Geist Mono",ui-monospace,monospace;font-size:12px;font-weight:400;color:#555c6b;letter-spacing:0}
+.ai-subl{font-size:15px;line-height:1.45;color:#555c6b;margin:4px 0 0}
+.ai-shb{display:flex;align-items:center;gap:10px;flex:none}
+.ai-sent{font-size:15px;line-height:1.5;color:#555c6b;margin:12px 0 0;max-width:820px}
+.ai-chiprow{display:flex;align-items:center;gap:8px;margin:14px 0 14px;flex-wrap:wrap}
+.ai-kchip{display:inline-flex;align-items:center;gap:8px;height:44px;padding:0 16px 0 10px;border-radius:999px;border:1px solid #c4c3bb;background:#ffffff;color:#1a2744;font-size:15px;font-weight:500;text-decoration:none;white-space:nowrap}
+.ai-kchip-on{background:#1a2744;border-color:#1a2744;color:#ffffff;padding-left:16px}
+.ai-chipnote{font-size:13px;color:#555c6b;margin-left:8px}
+.ai-chipnote code{font-family:"Geist Mono",ui-monospace,monospace;font-size:12px;color:#1a2744;background:#efede6;border-radius:5px;padding:2px 6px}
+.ai-av{display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;border-radius:50%;background:#1a2744;color:#ffffff;font-size:14px;font-weight:600;flex:none;line-height:1}
+.ai-av-24{width:24px;height:24px;font-size:10px}
+.ai-av-32{width:32px;height:32px;font-size:12px}
+.ai-av-line{background:#ffffff;color:#1a2744;border:2px solid #1a2744}
+.ai-av-soft{background:#e4e9f3;color:#1a2744}
+/* cards */
+.ai-cards{display:grid;grid-template-columns:515px 515px;gap:40px;align-items:start}
+.ai-card{background:#ffffff;border:1px solid #e6e3d8;border-radius:12px;padding:18px 20px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.ai-ch{display:flex;align-items:center;gap:12px}
+.ai-ch .ai-cn{flex:1;min-width:0}
+.ai-ch b{display:block;font-size:18px;line-height:1.25;font-weight:600}
+.ai-ch span.ai-cs{font-size:14px;color:#555c6b}
+.ai-cardbtn{display:inline-flex;align-items:center;gap:6px;height:36px;padding:0 12px;border:1px solid #c9c8c0;border-radius:8px;background:#ffffff;color:#1a2744;font-size:13.5px;font-weight:600;text-decoration:none;flex:none}
+.ai-facts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:2px;background:#f5f5f2;border-radius:10px;padding:4px}
+.ai-fact{padding:8px 10px;border-radius:8px}
+.ai-fact small{display:block;font-size:12px;line-height:1.3;color:#555c6b}
+.ai-fact b{display:block;font-size:15px;line-height:1.35;font-weight:600;margin-top:2px}
+.ai-fact-amber{background:#f6efd9}
+.ai-fact-amber small,.ai-fact-amber b{color:#5e4a12}
+.ai-ent{display:grid;grid-template-columns:56px minmax(0,1fr);gap:14px;padding:10px 0 0;border-top:1px solid #eeede7}
+.ai-ent-b{display:flex;flex-direction:column;gap:8px;min-width:0}
+.ai-ent-b > b{font-size:16px;line-height:1.3;font-weight:600}
+.ai-ent-b .ai-em{font-size:14px;line-height:1.4;color:#555c6b;margin-top:-4px}
+.ai-date{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;width:56px;min-height:62px;border:1px solid #d6d5cd;border-radius:10px;background:#ffffff;line-height:1;text-align:center;align-self:start}
+.ai-date b{font-size:22px;font-weight:600;letter-spacing:-.02em}
+.ai-date span{font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#555c6b;white-space:nowrap}
+.ai-date-navy{background:#1a2744;border-color:#1a2744;color:#ffffff}
+.ai-date-navy span{color:#e6cf86}
+.ai-trk{list-style:none;margin:2px 0 0;padding:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr))}
+.ai-trk li{position:relative;display:flex;flex-direction:column;align-items:center;text-align:center;gap:4px}
+.ai-trk li + li::before{content:"";position:absolute;top:13px;right:50%;width:100%;height:2px;background:#cfcdc4;z-index:0}
+.ai-trk li.ai-st-done::before{background:#1a2744}
+.ai-node{position:relative;z-index:1;display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;border:2px solid #9aa1b0;background:#ffffff;color:#ffffff;font-size:14px;font-weight:700}
+.ai-node-done{background:#1a2744;border-color:#1a2744}
+.ai-trk b{font-size:12.5px;line-height:1.2;font-weight:600}
+.ai-trk li:not(.ai-st-done) b{color:#555c6b;font-weight:500}
+.ai-trk small{font-size:11.5px;line-height:1.2;color:#555c6b;margin-top:-2px}
+.ai-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.ai-say{display:flex;gap:8px;align-items:flex-start;background:#f6efd9;color:#5e4a12;border-radius:8px;padding:8px 10px;font-size:13.5px;line-height:1.4}
+.ai-say b{font-weight:700}
+.ai-links{display:flex;flex-wrap:wrap;align-items:center;gap:4px 14px;font-size:14px}
+.ai-links a{color:#1a2744;font-weight:600;text-decoration:underline;text-decoration-color:#c8a94a;text-decoration-thickness:2px;text-underline-offset:4px}
+.ai-links span{color:#9aa1b0}
+.ai-line{font-size:14px;line-height:1.45;color:#555c6b;margin:0}
+.ai-login{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:14px;line-height:1.4;padding:10px 12px;border-radius:8px;background:#f5f5f2}
+.ai-login b{font-weight:600}
+.ai-cfoot{margin-top:auto;display:flex;align-items:center;justify-content:space-between;gap:12px;padding-top:12px;border-top:1px solid #eeede7}
+.ai-mutedlink{font-size:13px;color:#555c6b;text-decoration:underline;text-decoration-color:#c9c8c0;text-underline-offset:3px}
+.ai-mutedlink-off{font-size:13px;color:#6b7180;text-decoration:none;cursor:not-allowed}
+/* guardians */
+.ai-guard{margin-top:20px;background:#ffffff;border:1px solid #e6e3d8;border-radius:12px;padding:18px 20px;display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:4px 28px}
+.ai-gt{display:flex;align-items:center;justify-content:space-between;gap:12px;grid-column:1 / 2}
+.ai-gt h3{margin:0;font-size:18px;font-weight:600;display:flex;align-items:center;gap:10px}
+.ai-grow{display:flex;align-items:center;gap:12px;min-height:48px;border-top:1px solid #eeede7;font-size:14.5px}
+.ai-grow:first-of-type{border-top:0}
+.ai-grow .ai-gw{flex:1;min-width:0}
+.ai-grow .ai-gw b{font-weight:600}
+.ai-plan{grid-column:2 / 3;grid-row:1 / 5;background:#f5f5f2;border-radius:10px;padding:14px 16px;font-size:14px;line-height:1.5}
+.ai-plan b{font-weight:600}
+.ai-plan .ai-pk{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
+.ai-glast{grid-column:1 / 3;font-size:13px;color:#555c6b;margin:10px 0 0;padding-top:10px;border-top:1px solid #eeede7}
+.ai-glast a{color:#1a2744;font-weight:600;text-decoration:underline;text-underline-offset:3px;text-decoration-color:#c8a94a}
+.ai-sw{display:inline-flex;align-items:center;gap:8px;font-size:14px;font-weight:500;white-space:nowrap}
+.ai-sw i{position:relative;display:inline-block;width:38px;height:22px;border-radius:999px;background:#1a2744;flex:none}
+.ai-sw i::after{content:"";position:absolute;top:3px;right:3px;width:16px;height:16px;border-radius:50%;background:#ffffff}
+.ai-sw-off{color:#555c6b}
+.ai-sw-off i{background:#aeb3bf}
+.ai-help{font-size:13px;line-height:1.45;color:#555c6b;margin:-4px 0 6px}
+.ai-t{display:inline-flex;align-items:center;gap:6px;padding:4px 9px;border-radius:6px;font-size:12.5px;font-weight:600;line-height:1.2;white-space:nowrap}
+.ai-t-green{background:#e3efe6;color:#1f4d33}
+.ai-t-amber{background:#f6efd9;color:#5e4a12}
+.ai-t-navy{background:#e4e9f3;color:#1a2744}
+.ai-t-grey{background:#ecebe5;color:#3d4555}
+.ai-t-red{background:#ff4757;color:#070b14}
+.ai-btn-off{background:#ffffff;border:1px solid #c9c8c0;color:#5d6371;cursor:not-allowed}
+.ai-req{display:flex;align-items:center;gap:12px;min-height:56px;padding:8px 12px;border-radius:10px;background:#f6efd9;color:#5e4a12;font-size:14px;line-height:1.4;margin:6px 0}
+.ai-req .ai-gw{flex:1;min-width:0}
+.ai-req .k-btn{min-height:40px}
+.ai-done{display:inline-flex;align-items:center;gap:8px;padding:5px 10px;border-radius:8px;background:#e3efe6;color:#1f4d33;font-size:13px;font-weight:600}
+.ai-done u{color:#1a2744;text-underline-offset:2px}
+/* event day */
+.ai-strip{display:flex;align-items:center;gap:12px;height:52px;padding:0 6px 0 40px;background:#fbf7e9;border-bottom:1px solid #e9dfba;color:#1a2744;font-size:14.5px;white-space:nowrap}
+.ai-strip b{font-weight:600}
+.ai-strip .ai-sdot{color:#9aa1b0}
+.ai-strip a.ai-sl{color:#1a2744;font-weight:600;text-decoration:underline;text-decoration-color:#c8a94a;text-decoration-thickness:2px;text-underline-offset:4px}
+.ai-hide{margin-left:auto;margin-right:34px;display:inline-flex;align-items:center;justify-content:center;min-width:44px;height:44px;padding:0 10px;border-radius:8px;border:1px solid #c9c8c0;background:#ffffff;color:#1a2744;font-size:13.5px;font-weight:600;text-decoration:none}
+.ai-day{background:#ffffff;border:1px solid #e6e3d8;border-top:2px solid #c8a94a;border-radius:12px;padding:18px 20px 16px;margin-top:14px}
+.ai-dt{display:flex;justify-content:space-between;align-items:flex-start;gap:16px}
+.ai-dt h3{margin:0;font-size:18px;line-height:1.3;font-weight:600;display:flex;align-items:center;gap:10px}
+.ai-dgrid{display:grid;grid-template-columns:160px repeat(2,minmax(0,1fr)) 96px repeat(2,minmax(0,1fr)) 112px;gap:8px;margin-top:14px}
+.ai-dh{font-size:12px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:#555c6b;padding:0 4px 2px;align-self:end;line-height:1.3}
+.ai-dc{border-radius:10px;padding:9px 11px;font-size:13px;line-height:1.4;background:#f5f5f2;min-height:64px;color:#1a2744}
+.ai-dc b{font-weight:700}
+.ai-day-d .ai-dc{min-height:54px}
+.ai-dc-won{background:#e3efe6;color:#1f4d33}
+.ai-dc-lost{background:#ecebe5;color:#3d4555}
+.ai-dc-live{background:#ffffff;border:2px solid #1a2744}
+.ai-dc-next{background:transparent;border:1px dashed #c9c6ba;color:#555c6b}
+.ai-dc-break{background:#efede6;color:#555c6b;text-align:center;display:flex;align-items:center;justify-content:center}
+.ai-dc-span{background:#f5f5f2;border:1px dashed #c9c6ba;display:flex;align-items:center;gap:10px;flex-wrap:wrap;color:#3d4556}
+.ai-who{display:flex;gap:10px;align-items:center;font-size:14px;line-height:1.3}
+.ai-who b{display:block;font-size:15px;font-weight:600}
+.ai-who small{font-size:12.5px;color:#555c6b}
+.ai-colw{display:inline-flex;align-items:center;gap:5px}
+.ai-dnow{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-top:14px;padding-top:12px;border-top:1px solid #eeede7;font-size:14px;line-height:1.45}
+.ai-dgreyl{font-size:13px;color:#555c6b;margin:8px 0 0}
+.ai-fade{height:40px;background:linear-gradient(#fbfaf6,#efede6);border-top:1px dashed #c9c6ba;margin-top:14px;display:flex;align-items:center;justify-content:center;font-size:13px;color:#555c6b}
+/* insets, phone */
+.ai-inset{background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:12px 14px}
+.ai-ilab{font-size:11.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#555c6b;margin:0 0 8px}
+.ai-mrow{display:flex;justify-content:space-between;align-items:center;gap:10px;min-height:34px;padding:3px 10px;border-radius:7px;font-size:14px;font-weight:500}
+.ai-mrow-todo{background:#fbf7e9}
+.ai-mrow-cur{background:#f3eedc;font-weight:600}
+.ai-mrow-ev{font-weight:600}
+.ai-msep{height:1px;background:#e3e2dc;margin:4px 2px}
+.ai-msub{font-size:12px;color:#555c6b;font-weight:400}
+.ai-cap{font-size:13px;line-height:1.45;color:#3d4556;margin:8px 0 0}
+.ai-cap b{color:#1a2744;font-weight:600}
+.ai-phone{width:360px;height:720px;flex:none;border-radius:34px;border:10px solid #10182b;background:#fbfaf6;overflow:hidden;position:relative;box-shadow:0 20px 44px rgba(16,24,43,.2)}
+.ai-pbar{display:flex;align-items:center;justify-content:space-between;height:56px;padding:0 14px;background:#1a2744;color:#ffffff;font-size:16px;font-weight:600}
+.ai-pbody{padding:10px 12px 0;display:flex;flex-direction:column;gap:8px}
+.ai-pblk{background:#ffffff;border:1px solid #e6e3d8;border-radius:10px;padding:9px 11px;font-size:13px;line-height:1.4}
+.ai-pblk b{font-weight:600}
+.ai-pev{position:absolute;left:0;right:0;bottom:56px;min-height:46px;background:#fbf7e9;border-top:1px solid #e9dfba;padding:6px 12px;font-size:12.5px;line-height:1.4}
+.ai-pev a{color:#1a2744;font-weight:600;text-decoration:underline;text-decoration-color:#c8a94a;text-decoration-thickness:2px;text-underline-offset:3px}
+.ai-ptabs{position:absolute;left:0;right:0;bottom:0;height:56px;background:#ffffff;border-top:1px solid #dddcd4;display:grid;grid-template-columns:repeat(4,1fr);font-size:11.5px;font-weight:600;color:#555c6b;text-align:center;align-items:center}
+.ai-ptabs .ai-pon{color:#1a2744;box-shadow:inset 0 2px 0 #1a2744;height:100%;display:flex;align-items:center;justify-content:center}
+.ai-sheet{background:#ffffff;border:1px solid #dddcd4;border-radius:14px;padding:14px 16px 14px;box-shadow:0 12px 28px rgba(16,24,43,.10);display:flex;flex-direction:column;gap:8px}
+.ai-sheet h4{margin:0;font-size:17px;font-weight:600}
+.ai-sheet .k-input{min-height:40px;font-size:14px;display:flex;align-items:center;color:#6b7180}
+.ai-sheet .k-field label{font-size:13px}
+.ai-sheet .k-check{font-size:13.5px;line-height:1.4}
+.ai-mini{font-size:13px;line-height:1.45;color:#555c6b;margin:0}
+</style>
+</helmet>
+<div class="ai-root" style="width:1440px;height:3000px">
+<section class="ai-title" aria-label="About this board"><div class="k-row-sm" style="gap:10px"><p class="k-kicker">14 · My LCA · round 2 · option I · part 2 of 2</p><span class="ai-tag-r2">ROUND 2</span><span class="ai-tag-frame">Frame: Int-A, swappable</span><span class="k-sample">Sample data · co-guardian, third child, request dates, times, venue and room names</span></div><h1>My LCA · I-2 · Family, one card per child: empty, busy, phone and the way in (round 2)</h1><div class="ai-tbody"><div><dl class="ai-tmeta"><dt>Built from</dt><dd>Account-B&#8217;s cards, day view and guardians; Account-C&#8217;s hub; WS13, WS06; the decided menu (Nav-Header-Final).</dd><dt>Replaces</dt><dd>Account-B&#8217;s Add a child form and &#8220;Share this view&#8221;; Account-C&#8217;s Family card for Chris.</dd><dt>Shown</dt><dd>D: three children, Sat, Nov 14, 2026, 11:04 AM. C: a Family plan with no one added, Mon, Oct 5, 2026. E: the phone that day, rail and menu rows, Chris, the sheets. Part 1 is Account-I.</dd><dt>Differs</dt><dd>From Account-J: the same states arranged by child (one card each); on J they read as one family timeline by date.</dd><dt>Frame</dt><dd>Int-A: Family is a section of My LCA, reached from the rail row and the menu row &#8220;Family&#8221;.</dd><dt>K&#8217;s feedback applied</dt><dd>A good default, every section drawn in full, roles hosted in My LCA, options for each (Tue, Oct 13).</dd></dl></div><aside class="ai-grey" aria-label="Board note"><div><p><b class="ai-gh">What</b>Part 2 of option I: busy and empty, the phone, the rail and menu rows, Chris and the sheets.</p><p><b class="ai-gh">Built from</b>Account-B, WS13, WS06, replan 7.3, Nav-Header-Final.</p></div><div><p><b class="ai-gh">K&#8217;s feedback applied</b>Every state drawn, so the section never looks foolish empty or crowded.</p><p><b class="ai-gh">Open for K</b></p><ol><li>Show Noah&#8217;s &#8220;Not playing today&#8221; row, or hide him?</li><li>One-tap Approve with ten-second Undo: confirm.</li></ol></div></aside></div></section><div class="ai-legend"><p class="k-label" style="margin:0">Notes on this board</p><ol class="ai-notes" style="grid-template-columns:repeat(4,minmax(0,1fr)) minmax(0,1.6fr)"><li><span class="k-num-badge">1</span><span><b>Busy day:</b> the day view adds a row per child; Noah, not playing, gets one line with his next event and Register. Cards go three across; the plan reads full.</span></li><li><span class="k-num-badge">2</span><span><b>Guardians, busy:</b> Marc R. with Remove (owner only; a co-guardian sees Leave); a request on the amber tint with one-tap Approve or Decline and ten seconds of Undo.</span></li><li><span class="k-num-badge">3</span><span><b>A claimed teen&#8217;s card:</b> &#8220;Has her own login · since Sat, Oct 10&#8221;, Send me copies now switchable, Remove her login, and the 18 link live. Her own page is on Account-D to F.</span></li><li><span class="k-num-badge">4</span><span><b>Empty and adding:</b> no chips, no guardians, no count anywhere. The sheet asks a first name, a last name and an optional US Chess ID; never a grade, a birthdate or a child&#8217;s email.</span></li><li><span class="k-num-badge">5</span><span><b>Drawn inside Int-A</b> (My LCA as the hub, rooms open from each section). The frame is swappable: under Int-B this section is the page the left rail opens; under Int-C it is a card on Your work. The room itself does not change; only the breadcrumb, the way back and the menu row do. Pick the frame on Account-Int-A, B or C.</span></li></ol></div><div><div class="ai-flab"><span class="ai-code">D</span><h2>Busy · Sat, Nov 14, 2026 · 11:04 AM</h2><span class="ai-fmeta">three children, two in the same event, one with her own login</span><span class="k-row-sm" style="gap:6px;flex:none"><span class="k-num-badge">5</span><span class="ai-fmeta">Int-A, swappable</span></span><span class="k-sample">Sample data · Noah, Marc R., the request, Leo&#8217;s ID, the Ken Ferguson entry</span></div><div class="ai-box" style="padding:18px 20px 20px"><div class="ai-sh"><div><h2 style="font-size:24px">Family <span class="ai-anchor">#family</span></h2><p class="ai-subl" style="font-size:14px">Family membership · valid through Sun, Mar 14, 2027 · covers you, Maya, Leo and Noah · full</p></div><div class="ai-shb"><a class="k-btn k-btn-gold k-btn-sm" href="#">Register all</a><a class="k-btn k-btn-line k-btn-sm" href="#"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>Add a family member</a></div></div><section class="ai-day ai-day-d" style="padding:14px 14px 12px" aria-label="Today, the family day view"><div class="ai-dt"><div><h3>Today · New Orleans Youth Chess November Meet <span class="k-num-badge">1</span></h3><p class="ai-line" style="margin-top:2px">[Venue name], New Orleans · Updated 11:04 AM</p></div><span class="k-sample">Sample data · times, venue, rooms</span></div><div class="ai-dgrid"><span></span><span class="ai-dh">Round 1 · 9:30 AM</span><span class="ai-dh">Round 2 · 11:00 AM</span><span class="ai-dh">Lunch · 12:15–1:15 PM</span><span class="ai-dh">Round 3 · 1:30 PM</span><span class="ai-dh">Round 4 · 3:00 PM</span><span class="ai-dh">Awards · about 4:30 PM</span><div class="ai-who"><span class="ai-av ai-av-32">MR</span><span><b>Maya</b><small>K–8 · 1 / 1</small></span></div><div class="ai-dc ai-dc-won"><b>Won</b> · Board 6 · <span class="ai-colw"><i class="k-color-b"></i>Black</span> · vs Rosa Mendez</div><div class="ai-dc ai-dc-live"><span class="ai-t ai-t-red">Playing now</span><div style="margin-top:5px">Board 4 · <span class="ai-colw"><i class="k-color-w"></i>White</span> · vs Elise Fontenot · [Room name]</div></div><div class="ai-dc ai-dc-break">Lunch</div><div class="ai-dc ai-dc-next">Paired after round 2</div><div class="ai-dc ai-dc-next">Paired after round 3</div><div class="ai-dc ai-dc-break">About 4:30 PM</div><div class="ai-who"><span class="ai-av ai-av-32 ai-av-line">LR</span><span><b>Leo</b><small>K–3 · 0 / 1</small></span></div><div class="ai-dc ai-dc-lost"><b>Lost</b> · Board 9 · <span class="ai-colw"><i class="k-color-w"></i>White</span> · first rated game</div><div class="ai-dc ai-dc-live"><span class="ai-t ai-t-red">Playing now</span><div style="margin-top:5px">Board 12 · <span class="ai-colw"><i class="k-color-b"></i>Black</span> · [Room name]</div></div><div class="ai-dc ai-dc-break">Lunch</div><div class="ai-dc ai-dc-next">Paired after round 2</div><div class="ai-dc ai-dc-next">Paired after round 3</div><div class="ai-dc ai-dc-break">About 4:30 PM</div><div class="ai-who"><span class="ai-av ai-av-32 ai-av-soft">NR</span><span><b>Noah</b><small>Not playing today</small></span></div><div class="ai-dc ai-dc-span" style="grid-column:2 / 8;min-height:52px"><span class="ai-t ai-t-grey">Not playing today</span><span>Next: Ken Ferguson Memorial Scholastic, Sun, Jan 17, 2027 · not entered yet</span><a class="k-link" href="#" style="margin-left:auto">Register</a></div></div></section><div class="ai-chiprow" style="margin:14px 0 12px"><a class="ai-kchip ai-kchip-on" href="#">Everyone</a><a class="ai-kchip" href="#"><span class="ai-av ai-av-24">MR</span>Maya</a><a class="ai-kchip" href="#"><span class="ai-av ai-av-24 ai-av-line">LR</span>Leo</a><a class="ai-kchip" href="#"><span class="ai-av ai-av-24 ai-av-soft">NR</span>Noah</a></div><div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px"><article class="ai-card" style="padding:14px;gap:9px"><div class="ai-ch" style="gap:10px"><span class="ai-av ai-av-32 ">MR</span><div class="ai-cn"><b style="font-size:15.5px">Maya Robichaux</b><span class="ai-cs" style="font-size:12.5px">Scholastic · on your Family plan</span></div></div><p class="ai-line" style="font-size:13px">US Chess ID 30522917 · 1102 · through Sun, Jan 31, 2027</p><p class="ai-line" style="font-size:13px"><b style="color:#1a2744">Today:</b> November Meet · K–8 · <span class="ai-t ai-t-green">Paid</span></p><p class="ai-line" style="font-size:13px"><b style="color:#1a2744">Next:</b> Ken Ferguson Memorial Scholastic, Sun, Jan 17, 2027 · <span class="ai-t ai-t-amber">Unpaid</span> · Maya asked you to pay · <a class="k-link" href="#">Pay $25</a></p><div class="ai-login" style="font-size:13px;padding:8px 10px;flex-direction:column;align-items:flex-start;gap:6px"><span style="display:flex;gap:6px;align-items:center"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="8" cy="15" r="4"></circle><path d="M11 12l9-9M17 6l3 3M14.5 8.5l2.5 2.5"></path></svg><b>Has her own login</b> · since Sat, Oct 10 <span class="k-num-badge">3</span></span><span class="ai-sw" style="font-size:13px"><i></i>Send me copies · On</span><a class="k-link" href="#" style="font-size:13px">Remove Maya&#8217;s login</a></div><div class="ai-cfoot" style="padding-top:9px;flex-wrap:wrap;gap:6px"><a class="k-btn k-btn-line k-btn-sm" href="#">Open Maya&#8217;s page</a><a class="ai-mutedlink" href="#">Maya is 18: hand over her profile</a></div></article><article class="ai-card" style="padding:14px;gap:9px"><div class="ai-ch" style="gap:10px"><span class="ai-av ai-av-32 ai-av-line">LR</span><div class="ai-cn"><b style="font-size:15.5px">Leo Robichaux</b><span class="ai-cs" style="font-size:12.5px">Scholastic · on your Family plan</span></div></div><p class="ai-line" style="font-size:13px">US Chess ID 31208844 · added Fri, Oct 9 · unrated until today&#8217;s results post <span class="k-sample" style="padding:2px 7px;font-size:11px">Sample data</span></p><p class="ai-line" style="font-size:13px"><b style="color:#1a2744">Today:</b> November Meet · K–3 · <span class="ai-t ai-t-green">Paid</span></p><div class="ai-login" style="font-size:13px;padding:8px 10px"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="8" cy="15" r="4"></circle><path d="M11 12l9-9M17 6l3 3M14.5 8.5l2.5 2.5"></path></svg><b>No login</b> · emails come to you</div><a class="k-link" href="#" style="font-size:13px">Give Leo his own login</a><div class="ai-cfoot" style="padding-top:9px;flex-wrap:wrap;gap:6px"><a class="k-btn k-btn-line k-btn-sm" href="#">Open Leo&#8217;s page</a><span class="ai-mutedlink-off">Give Leo his own login first</span></div></article><article class="ai-card" style="padding:14px;gap:9px"><div class="ai-ch" style="gap:10px"><span class="ai-av ai-av-32 ai-av-soft">NR</span><div class="ai-cn"><b style="font-size:15.5px">Noah Robichaux</b><span class="ai-cs" style="font-size:12.5px">Scholastic · on your Family plan</span></div></div><p class="ai-line" style="font-size:13px">US Chess ID 30744120 · rating 611 <span class="k-sample" style="padding:2px 7px;font-size:11px">Sample data</span></p><p class="ai-line" style="font-size:13px"><b style="color:#1a2744">Next:</b> Ken Ferguson Memorial Scholastic, Sun, Jan 17, 2027 · <span class="ai-t ai-t-grey">Not entered yet</span></p><div class="ai-login" style="font-size:13px;padding:8px 10px"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="8" cy="15" r="4"></circle><path d="M11 12l9-9M17 6l3 3M14.5 8.5l2.5 2.5"></path></svg><b>No login</b> · emails come to you</div><a class="k-link" href="#" style="font-size:13px">Give Noah his own login</a><div class="ai-cfoot" style="padding-top:9px;flex-wrap:wrap;gap:6px"><a class="k-btn k-btn-line k-btn-sm" href="#">Open Noah&#8217;s page</a><span class="ai-mutedlink-off">Give Noah his own login first</span></div></article></div><section class="ai-guard" style="margin-top:16px" aria-label="Guardians, busy"><div class="ai-gt"><h3>Guardians <span class="k-num-badge">2</span></h3><a class="k-btn k-btn-line k-btn-sm" href="#"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>Invite a guardian</a></div><div class="ai-plan" style="font-size:13px;grid-row:1 / 4"><div class="k-label" style="margin-bottom:6px">Family plan</div><b>$25 a year · you + up to 3 children</b><br><span class="ai-t ai-t-green" style="margin:6px 0 2px">Auto-renew on</span><br>Renews Sun, Mar 14, 2027<div class="ai-pk"><span class="ai-t ai-t-green">Maya ✓ covered</span><span class="ai-t ai-t-green">Leo ✓ covered</span><span class="ai-t ai-t-green">Noah ✓ covered</span><span class="ai-t ai-t-grey">Full</span></div><a class="k-link" href="#" style="font-size:13.5px">Change who&#8217;s covered at renewal</a></div><div><div class="ai-grow" style="font-size:14px"><span class="ai-av ai-av-32">DR</span><span class="ai-gw"><b>Danielle Robichaux</b> · owner · you</span><a class="ai-mutedlink" href="#">Hand ownership to another guardian</a></div><div class="ai-grow" style="font-size:14px"><span class="ai-av ai-av-32 ai-av-soft">MR</span><span class="ai-gw"><b>Marc R.</b> · guardian · since Sun, Oct 11 · copies for Maya, Leo and Noah</span><a class="k-btn k-btn-line k-btn-sm" href="#">Remove</a></div><div class="ai-req"><span class="ai-t ai-t-amber" style="background:#ffffff">Waiting 7 days</span><span class="ai-gw">A parent or guardian asks to be added for Leo · Sat, Nov 7</span><a class="k-btn k-btn-gold k-btn-sm" href="#">Approve</a><a class="k-btn k-btn-line k-btn-sm" href="#">Decline</a></div><div class="k-row-sm" style="gap:8px;font-size:12.5px;color:#555c6b;margin:4px 0 2px"><span>After Approve, for ten seconds:</span><span class="ai-done">Approved · they now see Leo · <u>Undo</u></span><span>A co-guardian sees Leave instead of Remove.</span></div></div><p class="ai-glast">Need a profile moved between households, or two profiles merged? <a href="#">Website help</a>.</p></section></div></div><div style="display:flex;gap:28px;align-items:flex-start;margin-top:18px"><div style="width:520px;flex:none"><div class="ai-flab" style="margin-top:0"><span class="ai-code">C</span><h2>Empty · Mon, Oct 5, 2026</h2><span class="ai-fmeta">no one added yet</span></div><div class="ai-box" style="padding:20px 22px 22px"><div class="ai-sh"><div><h2 style="font-size:26px">Family <span class="ai-anchor">#family</span></h2><p class="ai-subl">Family membership · valid through Sun, Mar 14, 2027 · 3 spots open</p></div></div><div style="border:1.5px dashed #b9b6aa;border-radius:12px;padding:18px 20px;margin-top:16px;background:#ffffff"><p style="font-size:18px;font-weight:600;margin:0">No one else on your account yet.</p><p style="font-size:15px;line-height:1.5;color:#3d4556;margin:6px 0 14px">Children don&#8217;t need an email or a login. You register and pay for them and get their emails.</p><a class="k-btn k-btn-gold" href="#"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>Add a family member</a></div><p class="ai-mini" style="margin-top:12px;display:flex;gap:8px;align-items:flex-start"><span class="k-num-badge">4</span><span>No chips and no guardians panel until someone is added. Shown to a Family plan holder; a member with no plan and no children never sees a Family section.</span></p></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px"><div class="ai-inset"><p class="ai-ilab">Rail row</p><div class="ai-rnav" style="margin:0"><a class="ai-on" href="#"><span>Family</span></a></div><p class="ai-mini" style="margin-top:6px">No count: nothing is due.</p></div><div class="ai-inset"><p class="ai-ilab">Header</p><div style="background:#1a2744;border-radius:8px;padding:4px 8px;display:flex;justify-content:flex-end"><span class="ai-my"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4.5 21c1-4 4-6 7.5-6s6.5 2 7.5 6"></path></svg><span>My LCA</span><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"></path></svg></span></div><p class="ai-mini" style="margin-top:6px">Count 0: no number shows.</p></div></div></div><div><div class="ai-flab" style="margin-top:0"><span class="ai-code">E</span><h2>Phone · Sat, Nov 14</h2><span class="ai-url">360 × 720</span></div><div class="ai-phone"><div class="ai-pbar"><span>My LCA</span><span style="font-size:13px;font-weight:500">Family</span></div><div class="ai-pbody"><div><b style="font-size:16px">Today · November Meet</b><div class="ai-mini" style="font-size:12.5px">[Venue name], New Orleans · Updated 11:04 AM</div></div><div class="ai-pblk"><div style="display:flex;align-items:center;gap:8px"><span class="ai-av ai-av-24">MR</span><b>Maya · K–8 · 1 / 1</b></div><div style="margin-top:6px"><span class="ai-t ai-t-red">Playing now</span> Board 4 · White · vs Elise Fontenot · [Room name]</div><div style="margin-top:4px;color:#555c6b">Round 1 · <b style="color:#1f4d33">Won</b> · Board 6 · Black</div></div><div class="ai-pblk"><div style="display:flex;align-items:center;gap:8px"><span class="ai-av ai-av-24 ai-av-line">LR</span><b>Leo · K–3 · 0 / 1</b></div><div style="margin-top:6px"><span class="ai-t ai-t-red">Playing now</span> Board 12 · Black</div></div><div style="display:flex;gap:6px;overflow:hidden;white-space:nowrap;margin-right:-12px"><span class="ai-kchip ai-kchip-on" style="height:40px">Everyone</span><span class="ai-kchip" style="height:40px">Maya</span><span class="ai-kchip" style="height:40px">Leo</span></div><div class="ai-pblk" style="padding:10px 11px"><div class="ai-ch" style="gap:8px"><span class="ai-av ai-av-32">MR</span><div class="ai-cn"><b style="font-size:15px">Maya Robichaux</b><span class="ai-cs" style="font-size:12px">Scholastic · on your Family plan</span></div></div><dl style="display:grid;grid-template-columns:1fr 1fr;gap:2px 10px;margin:8px 0;font-size:12.5px"><dt style="color:#555c6b">US Chess ID</dt><dd style="margin:0" class="k-mono">30522917</dd><dt style="color:#555c6b">Rating</dt><dd style="margin:0">1102</dd><dt style="color:#555c6b">US Chess through</dt><dd style="margin:0">Sun, Jan 31, 2027</dd></dl><a class="k-btn k-btn-line k-btn-block" href="#" style="min-height:44px">Open Maya&#8217;s page</a></div></div><div class="ai-pev"><b>Today</b> · November Meet · Maya: Board 4 · Leo: Board 12 · <a href="#">Pairings</a></div><div class="ai-ptabs"><span>Tournaments</span><span>Clubs</span><span class="ai-pon">My LCA</span><span>Menu</span></div></div></div><div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:12px"><div class="ai-flab" style="margin:0"><span class="ai-code">E</span><h2>Rail and menu rows</h2></div><div class="ai-inset"><p class="ai-ilab">On this page · the section&#8217;s row</p><div class="ai-rnav" style="margin:0"><a class="ai-on" href="#"><span>Family</span><span class="ai-rc">1</span></a></div><p class="ai-mini" style="margin-top:6px">The count is the Today items Family feeds: Leo&#8217;s US Chess ID.</p></div><div class="ai-inset"><p class="ai-ilab">My LCA ▾ menu · Mon, Oct 5</p><div class="ai-mrow ai-mrow-todo"><span>To do · Leo needs a US Chess ID before Sat, Nov 14</span></div><div class="ai-msep"></div><div class="ai-mrow"><span>My LCA</span></div><div class="ai-mrow ai-mrow-cur"><span>Family</span><span class="ai-msub">You are here</span></div><div class="ai-mrow"><span>Membership card</span></div><div class="ai-msep"></div><div class="ai-mrow"><span>Log out</span></div><p class="ai-mini" style="margin-top:6px">No event line outside event mode.</p></div><div class="ai-inset"><p class="ai-ilab">My LCA ▾ menu · Sat, Nov 14</p><div class="ai-mrow"><span>To do · nothing today</span></div><div class="ai-msep"></div><div class="ai-mrow"><span>My LCA</span></div><div class="ai-mrow ai-mrow-ev"><span>November Meet · Maya and Leo&#8217;s boards</span></div><div class="ai-mrow"><span>Family</span></div><div class="ai-mrow"><span>Membership card</span></div><div class="ai-msep"></div><div class="ai-mrow"><span>Log out</span></div></div></div></div><div class="ai-flab"><span class="ai-code">E</span><h2>Chris&#8217;s page (one child, no chips), and the two sheets</h2><span class="ai-fmeta">Add a family member and Give Maya her own login open as sheets over the section.</span></div><div style="display:grid;grid-template-columns:520px minmax(0,1fr) minmax(0,1fr);gap:28px;align-items:start"><div class="ai-inset" style="padding:14px 16px"><div class="k-row" style="gap:12px;align-items:baseline"><h2 style="font-size:20px;margin:0;font-weight:600">Family</h2><span class="ai-subl" style="font-size:14px;margin:0">Ella · Scholastic membership · through Sun, Mar 14, 2027</span></div><div class="ai-card" style="margin-top:8px;padding:12px 14px;gap:8px"><div class="ai-ch" style="gap:10px"><span class="ai-av ai-av-32">EA</span><div class="ai-cn"><b style="font-size:15.5px">Ella Arceneaux</b><span class="ai-cs" style="font-size:13px">Scholastic · US Chess ID 30611208 · rating 734</span></div><a class="ai-cardbtn" href="#"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="3.5" width="7" height="7"></rect><rect x="13.5" y="3.5" width="7" height="7"></rect><rect x="3.5" y="13.5" width="7" height="7"></rect><path d="M13.5 13.5h3v3h-3zM18 18h2.5v2.5H18z"></path></svg>Card</a></div><div class="ai-ent" style="padding-top:8px"><div class="ai-date"><span>Sat</span><b>14</b><span>Nov</span></div><div class="ai-ent-b" style="gap:6px"><b style="font-size:15px">New Orleans Youth Chess November Meet</b><span class="ai-em" style="font-size:13px">Sat, Nov 14, 2026 · K–5</span><div class="k-row-sm" style="gap:8px"><span class="ai-t ai-t-green">Registered ✓</span><span class="ai-t ai-t-amber">Paid · not yet</span><a class="k-btn k-btn-gold k-btn-sm" href="#">Pay $20</a></div></div></div><div class="ai-cfoot" style="padding-top:9px"><span class="ai-mini" style="display:flex;gap:6px;align-items:center"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="8" cy="15" r="4"></circle><path d="M11 12l9-9M17 6l3 3M14.5 8.5l2.5 2.5"></path></svg>No login · emails come to you</span><a class="k-btn k-btn-line k-btn-sm" href="#">Open Ella&#8217;s page</a></div></div><div class="ai-grow" style="margin-top:6px;border:1px solid #eeede7;border-radius:10px;padding:0 12px;font-size:14px"><span class="ai-gw"><b>Guardians</b> · you</span><a class="k-link" href="#">Invite a guardian</a></div></div><div class="ai-sheet" role="dialog" aria-label="Add a family member"><div class="k-row-sm" style="justify-content:space-between"><h4>Add a family member</h4><span class="k-num-badge">4</span></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><div class="k-field"><label>First name</label><span class="k-input">Leo</span></div><div class="k-field"><label>Last name</label><span class="k-input">Robichaux</span></div></div><div class="k-field"><div class="k-between" style="gap:8px"><label>US Chess ID (optional)</label><a class="k-link" href="#" style="font-size:13px">Look up by name</a></div><span class="k-input">8-digit ID</span></div><p class="ai-mini">Leo gets his own player profile. He doesn&#8217;t need an email. You can give him his own login when he is 13 or older. <b style="color:#1a2744;font-weight:600">Your Family plan covers 3 children · 1 spot left.</b></p><div class="k-row-sm" style="gap:8px"><a class="k-btn k-btn-gold" href="#">Add Leo</a><a class="k-btn k-btn-ghost" href="#">Cancel</a></div></div><div class="ai-sheet" role="dialog" aria-label="Give Maya her own login"><h4>Give Maya her own login</h4><div class="k-field"><label>Maya&#8217;s email</label><span class="k-input">name@example.com</span></div><label class="k-check"><input type="checkbox" checked="checked"> <span>Maya is 13 or older</span></label><label class="k-check"><input type="checkbox" checked="checked"> <span>I&#8217;m Maya&#8217;s parent or guardian and I agree she can have her own LCA login</span></label><p class="ai-mini">She keeps all her history. You stay her guardian until she turns 18.</p><div class="k-row-sm" style="gap:8px"><a class="k-btn k-btn-gold" href="#">Send Maya an invite</a><a class="k-btn k-btn-line" href="#">Copy invite link</a></div></div></div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":3000}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

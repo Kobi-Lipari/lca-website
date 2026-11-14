@@ -1,0 +1,517 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Scanner · I-2 · Review, Sheet as the list: the phone and every state (round 2)</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/6107adb451dbab26ee5d89f4189b81f8">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500;600&amp;display=swap">
+<style>
+body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1a2744}
+.si-root{box-sizing:border-box;padding:14px 0 16px;background:#ecebe6;color:#1a2744}
+.si-root *{box-sizing:border-box}
+.si-rel{position:relative}
+.si-mk{width:24px;height:24px;font-size:12px;box-shadow:0 0 0 2px #ffffff}
+.si-abs{position:absolute;z-index:6}
+.si-doc{margin:0 40px;background:#fbfaf6;border:1px solid #d9d8d1;border-radius:14px;padding:18px 22px 18px}
+.si-doc-top{display:flex;justify-content:space-between;align-items:flex-start;gap:28px}
+.si-title{font-size:29px;line-height:1.15;font-weight:700;letter-spacing:-.015em;margin:6px 0 0}
+.si-ml{font-size:13.5px;line-height:1.45;color:#3d4556;margin:2px 0 0;max-width:720px}
+.si-ml b{color:#1a2744;font-weight:600}
+.si-round{display:inline-flex;align-items:center;height:26px;padding:0 10px;border-radius:6px;background:#1a2744;color:#ffffff;font-size:12.5px;font-weight:700;letter-spacing:.04em}
+.si-grey{flex:none;width:610px;background:#efefea;border:1px solid #dfded6;border-radius:10px;padding:12px 14px;display:grid;grid-template-columns:1fr 1fr 1.35fr;gap:10px 16px}
+.si-grey > div > p + p{margin-top:8px}
+.si-grey p{font-size:12px;line-height:1.4;color:#2b3446;margin:0}
+.si-grey b{display:block;font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#555c6b;margin-bottom:2px}
+.si-grey ol{margin:0;padding-left:16px;font-size:12px;line-height:1.4;color:#2b3446}
+.si-grey li{margin-bottom:3px}
+.si-lbox{background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:12px 16px 14px;margin-top:14px}
+.si-notes{list-style:none;margin:10px 0 0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px 24px}
+.si-notes li{display:flex;gap:8px;align-items:flex-start;font-size:12px;line-height:1.4;color:#2b3446}
+.si-notes .k-num-badge{width:22px;height:22px;font-size:11.5px}
+.si-notes b{font-weight:600;color:#1a2744}
+.si-from{display:block;margin-top:3px;font-size:11px;color:#555c6b}
+.si-flab{display:flex;align-items:center;gap:12px;margin:14px 40px 8px}
+.si-flab h2{white-space:nowrap;margin:0;font-size:19px;line-height:1.2;font-weight:600;letter-spacing:-.01em}
+.si-code{display:inline-flex;align-items:center;justify-content:center;min-width:28px;height:28px;padding:0 9px;border-radius:7px;background:#c8a94a;color:#1a2744;font-weight:700;font-size:13px}
+.si-urlchip{white-space:nowrap;font-family:"Geist Mono",ui-monospace,monospace;font-size:12px;color:#3d4556;background:#ffffff;border:1px solid #d9d8d1;border-radius:7px;padding:4px 10px;margin-left:auto}
+.si-frame{width:1440px;background:#ffffff;border-top:1px solid #cfcec6;border-bottom:1px solid #cfcec6;box-shadow:0 20px 50px rgba(16,24,43,.10)}
+.si-frame .k-browser-url{max-width:760px}
+.si-page{background:#f5f5f2;position:relative}
+.si-hd{position:relative;z-index:20}
+.si-hd-in{padding:0 24px;gap:0;height:68px;min-height:68px}
+.si-brand{margin-right:16px}
+.si-rook{width:30px;height:30px;fill:#ffffff;flex:none}
+.si-nav{gap:0}
+.si-nav a,.si-navbtn{padding:0 8px !important;white-space:nowrap}
+.si-navbtn{display:inline-flex;align-items:center;gap:4px;min-height:44px;border:0;background:transparent;color:#ffffff;font-size:15px;font-weight:500;cursor:pointer}
+.si-search{display:inline-flex;align-items:center;gap:8px;width:220px;height:44px;padding:0 8px 0 12px;margin-right:16px;border-radius:8px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.45);color:#ffffff;text-decoration:none;font-size:14.5px;font-weight:500;flex:none}
+.si-search span{color:rgba(255,255,255,.9)}
+.si-kbd{margin-left:auto;font-family:"Geist Mono",ui-monospace,monospace;font-size:12px;color:#e8ecf4;border:1px solid rgba(255,255,255,.4);border-radius:5px;padding:2px 6px;line-height:1.2}
+.si-util .k-ulink{padding:0 4px}
+.si-my{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 8px;border:0;border-radius:8px;background:transparent;color:#ffffff;font-size:14px;font-weight:500;cursor:pointer}
+.si-band{background:#ffffff;border-bottom:1px solid #dddcd4}
+.si-band-in{padding:20px 24px 12px}
+.si-stepper{display:flex;flex-wrap:nowrap;white-space:nowrap;gap:8px;list-style:none;margin:0;padding:0}
+.si-stepper li{display:inline-flex;align-items:center;gap:6px;min-height:34px;padding:0 12px;border-radius:99px;border:1px solid #dddcd4;font-size:14px;color:#555c6b;background:#ffffff}
+.si-stepper li.si-done{color:#2f6b45;border-color:#b9d3c1;background:#f1f7f2}
+.si-stepper li.si-now{color:#ffffff;background:#1a2744;border-color:#1a2744;font-weight:600}
+.si-stepper li.si-off{background:#f3f3f0;color:#555c6b}
+.si-tdbtn{background:#f3f3f0 !important;border-color:#dddcd4 !important;color:#6b7180 !important;cursor:not-allowed}
+.si-opened{display:flex;align-items:center;gap:8px;margin-top:8px;font-size:13.5px;color:#555c6b}
+.si-main{padding:16px 24px 20px;display:flex;flex-direction:column;gap:14px}
+.si-details{display:flex;justify-content:space-between;align-items:center;gap:24px;padding:12px 16px}
+.si-gl{font-size:16px;color:#1a2744}
+.si-gl b{font-weight:600}
+.si-gsub{font-size:13.5px;color:#555c6b;margin-top:2px}
+.si-chips{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:10px}
+.si-chips .k-chip{min-height:36px;padding:0 12px;font-size:13.5px;gap:7px}
+.si-ctl{display:flex;flex-direction:column;align-items:flex-end;gap:8px;flex:none}
+.si-pressed{background:#eef0f5 !important;border-color:#1a2744 !important;box-shadow:inset 0 0 0 1px #1a2744}
+.si-sw2{display:inline-flex;align-items:center;gap:8px;font-size:14px;font-weight:500;color:#1a2744;border:0;background:transparent;padding:0;min-height:36px}
+.si-sw2 i{display:block;width:36px;height:20px;border-radius:99px;background:#1a2744;position:relative;flex:none;opacity:.6}
+.si-sw2 i::after{content:"";position:absolute;top:3px;right:3px;width:14px;height:14px;border-radius:50%;background:#ffffff}
+.si-sw2 small{font-size:12px;color:#555c6b;font-weight:400}
+.si-work{display:grid;grid-template-columns:880px 380px;justify-content:space-between;align-items:start}
+.si-card{padding:14px 18px 14px}
+.si-chead{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:10px}
+/* the photo */
+.si-ground{background:#3b4150;padding:14px 14px 0;border-radius:10px 10px 0 0}
+.si-ground2{background:#3b4150;padding:0 14px 14px;border-radius:0 0 10px 10px}
+.si-sheet{background:#fbfaf3;box-shadow:0 10px 22px rgba(0,0,0,.35);padding:8px 14px 0;border-radius:3px 3px 0 0}
+.si-sheet2{background:#fbfaf3;box-shadow:0 10px 22px rgba(0,0,0,.35);padding:0 14px 8px;border-radius:0 0 3px 3px}
+.si-sh-h{display:flex;justify-content:space-between;gap:8px;font-size:12px;color:#6b6f78;border-bottom:1px solid #cfccbd;padding:5px 2px}
+.si-sh-h i{font-family:'Geist Mono',monospace;font-style:italic;font-size:16px;color:#2b3a67}
+.si-r{display:grid;grid-template-columns:40px 1fr 1fr;height:44px;align-items:stretch;border-bottom:1px solid #dcd9cb}
+.si-r > b{font-size:12px;color:#8b8a80;font-weight:500;display:flex;align-items:center;justify-content:center}
+.si-cell{position:relative;display:flex;align-items:center;justify-content:space-between;gap:8px;height:44px;padding:0 8px 0 14px;border:0;border-left:1px solid #dcd9cb;background:transparent;font:inherit;text-align:left;cursor:pointer;color:#2b3a67}
+.si-empty{cursor:default}
+.si-hw{position:relative;font-family:'Geist Mono',monospace;font-style:italic;font-size:19px;color:#2b3a67;white-space:nowrap}
+.si-smudge{position:absolute;left:-4px;top:1px;width:46px;height:22px;border-radius:50%;background:rgba(60,62,72,.38);filter:blur(4px)}
+.si-plate{display:inline-flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:1px;padding:2px 7px;min-height:22px;border-radius:5px;background:rgba(255,255,255,.9);border:1px solid #d3d6de;line-height:1.2}
+.si-plate b{font-family:'Geist Mono',monospace;font-size:11px;font-weight:500;color:#1a2744}
+.si-tw{display:inline-flex;align-items:center;gap:4px;font-family:Geist,sans-serif;font-size:10.5px;font-weight:600;white-space:nowrap}
+.si-tw-auto{color:#1a2744}
+.si-tw-ok{color:#24573a}
+.si-tw-look{color:#5c450f}
+.si-sw{display:inline-block;width:9px;height:9px;border-radius:2px;flex:none}
+.si-sw-auto{border:1.5px dashed #1a2744}
+.si-sw-ok{background:#d7ead9;border:1.5px solid #2f6b45}
+.si-sw-look{background:#f6e7b8;border:1.5px solid #9a7a1c}
+.si-c-auto{outline:2px dashed #1a2744;outline-offset:-4px}
+.si-c-ok{outline:2px solid #2f6b45;outline-offset:-3px;background:rgba(215,234,217,.55)}
+.si-c-look{background:#f6e7b8}
+.si-sel{z-index:2;box-shadow:inset 0 0 0 1.5px #1a2744,inset 0 0 0 4.5px #c8a94a,inset 0 0 0 6px #1a2744}
+.si-wash{background:rgba(120,124,136,.22)}
+.si-notch{position:relative;height:0}
+.si-notch::before{content:"";position:absolute;right:178px;top:-9px;width:18px;height:18px;background:#ffffff;border-left:2px solid #1a2744;border-top:2px solid #1a2744;transform:rotate(45deg);z-index:3}
+.si-strip{position:relative;margin:0 -4px;border:2px solid #1a2744;border-radius:10px;background:#ffffff;padding:14px 16px 14px;display:grid;grid-template-columns:226px 300px minmax(0,1fr);gap:18px;align-items:start;box-shadow:0 8px 22px rgba(16,24,43,.18)}
+.si-close{position:absolute;right:10px;top:10px}
+.si-crop{position:relative;height:96px;background:#fbfaf3;border:1px solid #d6d2c2;border-radius:8px;display:flex;align-items:center;padding-left:18px;overflow:hidden;box-shadow:inset 0 0 0 2px #f6e7b8}
+.si-crop .si-hw{font-size:40px}
+.si-crop .si-smudge{left:-10px;top:4px;width:120px;height:46px;filter:blur(9px)}
+.si-crop small{position:absolute;left:8px;top:6px;font-size:11px;color:#8b8a80}
+.si-readas{font-family:'Geist Mono',monospace;font-size:20px;font-weight:600;color:#1a2744}
+.si-pill{display:inline-flex;align-items:center;gap:6px;height:28px;padding:0 10px;border-radius:99px;font-size:13px;font-weight:600;white-space:nowrap}
+.si-pill-look{background:#f6e7b8;color:#4a380b;border:1px solid #d9bf6a}
+.si-pill-ok{background:#e1f0e7;color:#145b3a;border:1px solid #b9d3c1}
+.si-pill-auto{background:#ffffff;color:#1a2744;border:1.5px dashed #1a2744}
+.si-pill-grey{background:#eceef2;color:#2b3446;border:1px solid #d6d9e0}
+.si-pill-now{background:#1a2744;color:#ffffff;border:1px solid #1a2744}
+.si-pill-red{background:#f6e3e3;color:#5e1218;border:1px solid #e8c1c1}
+.si-bwrap{display:grid;grid-template-columns:14px minmax(0,1fr);grid-template-rows:auto 16px;column-gap:4px}
+.si-ranks{display:grid;grid-template-rows:repeat(8,1fr);align-items:center;text-align:center;font-size:11px;color:#555c6b}
+.si-files{grid-column:2;display:grid;grid-template-columns:repeat(8,1fr);text-align:center;font-size:11px;color:#555c6b;padding-top:2px}
+.si-bd > div{display:flex;align-items:center;justify-content:center}
+.pc{width:74%;height:74%;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;line-height:1;box-sizing:border-box;font-size:15px}
+.pw{background:#ffffff;color:#1a2744;border:2px solid #1a2744}
+.pb{background:#1a2744;color:#ffffff;border:2px solid #1a2744}
+.pp{width:54%;height:54%;font-size:10px}
+.si-tl{background:#f1dc98 !important}
+.si-td{background:#c7ae62 !important}
+.si-ring{box-shadow:inset 0 0 0 3px #c8a94a,inset 0 0 0 4.5px #1a2744}
+.si-bd-m .pc{font-size:10px;border-width:1.5px}
+.si-bd-m .pp{font-size:7px}
+.si-bd-m .si-ring{box-shadow:inset 0 0 0 2px #c8a94a,inset 0 0 0 3px #1a2744}
+.si-bd-xs .pc{font-size:6.5px;border-width:1px}
+.si-bd-xs .pp{font-size:4.5px}
+.si-bd-xs .si-ring{box-shadow:inset 0 0 0 1.5px #c8a94a}
+.si-navbtns{display:flex;gap:6px}
+.si-tagnote{display:inline-flex;align-items:center;gap:5px;padding:3px 8px;border-radius:6px;background:#eceef2;color:#2b3446;font-size:11.5px;font-weight:600;white-space:nowrap}
+.si-capfoot{margin-top:10px;font-size:13.5px;color:#555c6b}
+/* drawer */
+.si-drawer{background:#ffffff;border:1px solid #cfcec6;border-left:3px solid #1a2744;border-radius:12px;box-shadow:-14px 10px 34px rgba(16,24,43,.16);padding:14px 16px 16px}
+.si-dt{width:100%;border-collapse:collapse;font-size:14px}
+.si-dt th{text-align:left;font-size:11.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#555c6b;padding:6px 8px;border-bottom:1px solid #d6d5cd;background:#fbfbf8}
+.si-dt td{padding:0 8px;height:31px;border-bottom:1px solid #ecebe5;font-family:'Geist Mono',monospace;font-weight:500;color:#1a2744;vertical-align:middle}
+.si-dt td.si-no{font-family:Geist,sans-serif;font-size:12px;color:#555c6b;width:30px;text-align:center}
+.si-dt td.si-tg{height:42px;line-height:1.15}
+.si-dt td.si-dauto{outline:2px dashed #1a2744;outline-offset:-4px}
+.si-dt td.si-dok{background:#e6f1e8}
+.si-dt td.si-dlook{background:#f6e7b8;box-shadow:inset 0 0 0 1.5px #1a2744,inset 0 0 0 4px #c8a94a}
+.si-dt .si-tw{display:flex;margin-top:2px}
+.si-btn-off,.k-btn[disabled]{background:#e6e5df !important;border-color:#e6e5df !important;color:#6b7180 !important;cursor:not-allowed}
+/* checks and bar */
+.si-checks{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 28px}
+.si-checks li{display:flex;gap:8px;align-items:flex-start;font-size:14px;line-height:1.45;color:#1a2744}
+.si-ok{color:#2f6b45}
+.si-warn{color:#5c450f;font-weight:600}
+.si-warnic{color:#866a1e}
+.si-bar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;background:#ebeae5;border:1px solid #dddcd4;border-radius:12px;padding:12px 16px}
+/* footer */
+.si-foot{background:#1a2744;color:#ffffff;border-top:3px solid #c8a94a}
+.si-foot a{color:#ffffff;text-decoration:none}
+.si-din{padding:22px 48px 0}
+.si-dgrid{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr) minmax(0,1fr) minmax(0,1fr) minmax(0,1.2fr);gap:36px}
+.si-fbrand{display:flex;align-items:center;gap:12px}
+.si-plate2{display:flex;flex-direction:column;align-items:center;justify-content:center;width:44px;height:44px;border-radius:8px;background:#fbfaf6;color:#1a2744;flex:none;line-height:1}
+.si-plate2 b{font-size:14px;font-weight:700;letter-spacing:.02em;color:#1a2744}
+.si-plate2 small{font-size:7.5px;font-weight:600;color:#555c6b;margin-top:3px;white-space:nowrap}
+.si-bname{font-size:17px;font-weight:700;line-height:1.25;color:#ffffff}
+.si-bp{font-size:14px;line-height:1.45;color:rgba(255,255,255,.82);margin:10px 0 12px;max-width:270px}
+.si-btns{display:flex;gap:10px}
+.si-foot a.k-btn-gold{color:#1a2744}
+.si-dh{font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#e6cf86;margin:4px 0 8px}
+.si-dl{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.si-dl li{display:flex;align-items:center;gap:8px;min-height:27px}
+.si-dl a{display:inline-flex;align-items:center;gap:7px;font-size:14.5px;line-height:1.3}
+.si-dbase{display:flex;justify-content:space-between;align-items:center;gap:24px;margin-top:14px;padding:12px 0 14px;border-top:1px solid rgba(255,255,255,.18)}
+.si-trust{font-size:13.5px;line-height:1.5;color:rgba(255,255,255,.82);margin:0}
+.si-trust a{color:#ffffff;text-decoration:underline;text-underline-offset:3px;text-decoration-color:rgba(255,255,255,.55)}
+.si-app{display:flex;align-items:center;gap:10px;flex:none}
+.si-applab{font-size:13.5px;color:rgba(255,255,255,.82)}
+.si-seg{display:inline-flex;border:1px solid rgba(255,255,255,.45);border-radius:9px;overflow:hidden}
+.si-seg button{display:inline-flex;align-items:center;gap:5px;min-height:36px;padding:0 13px;border:0;background:transparent;color:#ffffff;font:inherit;font-size:13.5px;font-weight:500;cursor:pointer}
+.si-seg button + button{border-left:1px solid rgba(255,255,255,.25)}
+.si-seg button[aria-checked="true"]{background:#c8a94a;color:#1a2744;font-weight:600}
+.si-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+/* board 2: states and phone */
+.si-bandx{display:grid;grid-template-columns:minmax(0,1fr) 414px;gap:36px;margin:0 40px;align-items:start}
+.si-blab{display:flex;align-items:center;gap:10px;margin:0 0 10px;white-space:nowrap}
+.si-blab h2{margin:0;font-size:17px;line-height:1.2;font-weight:600}
+.si-sgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px 16px}
+.si-cap{display:flex;align-items:center;gap:7px;font-size:13px;font-weight:600;color:#1a2744;margin:0 0 6px;min-height:19px;white-space:nowrap}
+.si-cap span{font-weight:400;color:#555c6b;font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.si-dot{display:inline-block;width:10px;height:10px;border-radius:50%;flex:none}
+.si-dot-green{background:#2f6b45}.si-dot-amber{background:#c99a1e}.si-dot-grey{background:#858b99}.si-dot-red{background:#b3202f}
+.si-fr{background:#ffffff;border:1px solid #cfcec6;border-radius:12px;overflow:hidden;box-shadow:0 8px 22px rgba(16,24,43,.07);position:relative}
+.si-st{height:312px;padding:11px 12px;display:flex;flex-direction:column;gap:7px}
+.si-ms{background:#3b4150;border-radius:7px;padding:6px}
+.si-ms-in{background:#fbfaf3;border-radius:2px;padding:0 6px}
+.si-ms .si-r{grid-template-columns:22px 1fr 1fr;height:30px}
+.si-ms .si-r > b{font-size:10px}
+.si-ms .si-cell{height:30px;padding:0 4px 0 7px;gap:4px}
+.si-ms .si-hw{font-size:13px}
+.si-ms .si-smudge{width:30px;height:14px;filter:blur(3px)}
+.si-ms .si-plate{padding:1px 5px;min-height:18px}
+.si-ms .si-plate b{font-size:10px}
+.si-ms .si-tw{font-size:9.5px}
+.si-ms .si-sw{width:8px;height:8px}
+.si-ms .si-r.si-tall{height:38px}
+.si-ms .si-tall .si-cell{height:38px}
+.si-ms .si-cell > .si-tw{flex-basis:100%;margin-top:-3px}
+.si-ms .si-c-auto,.si-ms .si-c-ok,.si-ms .si-c-look{flex-wrap:wrap;align-content:center;row-gap:0}
+.si-ms .si-sh-h{font-size:10px;padding:3px 1px}
+.si-ms .si-sh-h i{font-size:12px}
+.si-ms .si-sel{box-shadow:inset 0 0 0 1px #1a2744,inset 0 0 0 3.5px #c8a94a,inset 0 0 0 4.5px #1a2744}
+.si-msg{border-radius:9px;padding:8px 10px;font-size:12.5px;line-height:1.4}
+.si-msg-green{background:#e1f0e7;color:#145b3a;font-weight:600}
+.si-msg-gold{background:#f5ecd2;color:#4a380b}
+.si-msg-grey{background:#efefea;color:#2b3446}
+.si-msg-red{background:#f6e3e3;color:#5e1218}
+.si-tiny{font-size:12px;line-height:1.4;color:#555c6b}
+.si-tinyb{font-size:12.5px;line-height:1.4;color:#1a2744}
+.si-mbtn{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:34px;padding:0 11px;border-radius:8px;font-size:12.5px;font-weight:600;border:1px solid #1a2744;background:#ffffff;color:#1a2744;white-space:nowrap}
+.si-mbtn-gold{background:#c8a94a;border-color:#c8a94a;color:#1a2744}
+.si-mbtn-off{background:#e6e5df;border-color:#e6e5df;color:#6b7180}
+.si-mbtn-ghost{border-color:transparent;background:transparent;text-decoration:underline;text-decoration-color:#9aa1b0;text-underline-offset:3px;padding:0 4px}
+.si-mchip{display:inline-flex;align-items:center;gap:5px;height:28px;padding:0 9px;border-radius:99px;border:1px solid #c4c3bb;background:#ffffff;font-size:12px;font-weight:500;color:#1a2744;white-space:nowrap}
+.si-mchip-on{background:#1a2744;border-color:#1a2744;color:#ffffff}
+.si-mchip-next{border-color:#1a2744;box-shadow:inset 0 0 0 1px #1a2744}
+.si-mcl{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px}
+.si-mcl li{display:flex;gap:6px;align-items:flex-start;font-size:12px;line-height:1.35;color:#1a2744}
+.si-mcl .k-i-sm{width:13px;height:13px;margin-top:1px}
+.si-field{display:flex;flex-direction:column;gap:2px;font-size:10.5px;font-weight:600;color:#555c6b}
+.si-field span{display:flex;align-items:center;height:26px;padding:0 7px;border:1px solid #858b99;border-radius:6px;background:#ffffff;font-size:12px;font-weight:500;color:#1a2744}
+.si-field span.si-ph{color:#6b7180;font-weight:400}
+.si-fgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px 7px}
+.si-pager{display:flex;border:1px solid #858b99;border-radius:8px;overflow:hidden}
+.si-pager span{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:40px;font-size:12px;font-weight:600;color:#1a2744;line-height:1.2;text-align:center;padding:2px 4px}
+.si-pager span + span{border-left:1px solid #c4c3bb}
+.si-pager span.on{background:#1a2744;color:#ffffff}
+.si-pager small{font-size:10.5px;font-weight:600;color:#5c450f;display:inline-flex;align-items:center;gap:3px}
+.si-split{display:grid;grid-template-columns:1fr 1fr;gap:10px;height:100%}
+.si-split > div + div{border-left:1px solid #ecebe5;padding-left:10px}
+.si-nophoto{display:flex;align-items:center;gap:8px;height:34px;padding:0 10px;border-radius:7px;background:#e4e3dd;color:#2b3446;font-size:12.5px;font-weight:600}
+.si-ml2{display:grid;grid-template-columns:22px 1fr 1fr;align-items:center;height:28px;border-bottom:1px solid #ecebe5;font-size:12.5px}
+.si-ml2 b{font-size:10.5px;font-weight:500;color:#555c6b;text-align:center}
+.si-ml2 span{font-family:'Geist Mono',monospace;font-weight:500;padding-left:6px}
+.si-ml2 .si-tw{font-family:Geist,sans-serif;padding-left:0;font-size:10px}
+.si-ml2 .si-sw{padding:0}
+.si-fail{display:flex;align-items:center;gap:14px;padding:12px 14px}
+/* phone */
+.si-phone{width:414px;height:896px}
+.si-pstatus{flex:none;height:44px;background:#1a2744;color:#ffffff;display:flex;align-items:center;justify-content:space-between;padding:4px 30px 0 36px;font-size:14px;font-weight:600;position:relative}
+.si-island{position:absolute;left:50%;top:9px;width:110px;height:30px;margin-left:-55px;border-radius:18px;background:#000000}
+.si-papp{flex:none;height:54px;background:#1a2744;display:flex;align-items:center;gap:8px;padding:0 10px 0 14px;color:#ffffff}
+.si-pbname{display:flex;flex-direction:column;line-height:1.12;color:#ffffff}
+.si-pbname b{font-size:14px;font-weight:700;white-space:nowrap}
+.si-pbname span{font-size:11px;font-weight:500;color:rgba(255,255,255,.78)}
+.si-psbtn{display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;border:1.5px solid rgba(255,255,255,.6);border-radius:9px;color:#ffffff;margin-left:auto;flex:none}
+.si-pbody{flex:1;position:relative;background:#f5f5f2;overflow:hidden}
+.si-phead{padding:8px 12px 8px;background:#ffffff;border-bottom:1px solid #dddcd4;display:flex;flex-direction:column;gap:7px}
+.si-pphoto{background:#3b4150;padding:8px 8px 0}
+.si-pphoto .si-ms-in{border-radius:2px 2px 0 0}
+.si-pphoto .si-r{grid-template-columns:26px 1fr 1fr;height:44px}
+.si-pphoto .si-cell{height:44px;padding:0 6px 0 9px}
+.si-pphoto .si-hw{font-size:15px}
+.si-pphoto .si-plate b{font-size:10.5px}
+.si-pphoto .si-tw{font-size:10px}
+.si-pphoto .si-sel{box-shadow:inset 0 0 0 1.5px #1a2744,inset 0 0 0 4.5px #c8a94a,inset 0 0 0 6px #1a2744}
+.si-psheet{position:absolute;left:0;right:0;bottom:0;height:60%;background:#ffffff;border-radius:18px 18px 0 0;display:flex;flex-direction:column;box-shadow:0 -10px 30px rgba(16,24,43,.28);border-top:2px solid #1a2744}
+.si-grab{width:40px;height:5px;border-radius:3px;background:#c9c8c0;margin:7px auto 3px;flex:none}
+.si-pscroll{flex:1;overflow:hidden;padding:2px 14px 6px;display:flex;flex-direction:column;gap:8px}
+.si-pact{flex:none;display:grid;grid-template-columns:1.25fr 1fr;gap:10px;padding:9px 14px 10px;border-top:1px solid #e3e2dc;background:#ffffff}
+.si-pcrop{position:relative;width:118px;height:52px;flex:none;background:#fbfaf3;border:1px solid #d6d2c2;border-radius:7px;display:flex;align-items:center;padding-left:10px;overflow:hidden;box-shadow:inset 0 0 0 2px #f6e7b8}
+.si-pcrop .si-hw{font-size:22px}
+.si-pcrop .si-smudge{left:-6px;top:2px;width:70px;height:26px;filter:blur(6px)}
+.si-bd-p{width:176px;flex:none}
+.si-tabbar{flex:none;background:#ffffff;border-top:1px solid #d9d8d1}
+.si-tabbar-in{display:grid;grid-template-columns:repeat(4,1fr);height:54px}
+.si-tab{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:#1a2744;font-size:12px;font-weight:500;line-height:1.2;text-decoration:none}
+.si-tab svg{width:20px;height:20px}
+.si-tab.on{font-weight:700}
+.si-tab.on::before{content:"";position:absolute;top:0;left:22%;right:22%;height:3px;border-radius:0 0 3px 3px;background:#866a1e}
+.si-safe{height:22px;position:relative}
+.si-homeind{position:absolute;left:50%;bottom:7px;width:134px;height:5px;margin-left:-67px;border-radius:3px;background:#10182b}
+.si-pcap{font-size:13px;line-height:1.45;color:#3d4556;margin:10px 0 0}
+</style>
+</helmet>
+<div class="si-root" style="width:1440px;height:1750px">
+<section class="si-doc" aria-label="About this board">
+<div class="si-doc-top">
+<div>
+<div class="k-row-sm" style="gap:10px"><p class="k-kicker" style="margin:0">16 · Scanner · part 3 of 8 · option 2 of 2 · board 2 of 2</p><span class="si-round">ROUND 2</span></div>
+<h1 class="si-title">Scanner · I-2 · Review, Sheet as the list: the phone and every state</h1>
+<p class="si-ml" style="margin-top:6px"><b>Built from:</b> Scan-A panels 1 and 4, its labels and chips, the board of panel 3; today&#39;s MoveCell in ScannerPage.tsx; decided chrome.</p>
+<p class="si-ml"><b>Replaces:</b> Scan-A panels 1 to 4. Option 1 for this part is Scan-H, Three panes.</p>
+<p class="si-ml"><b>K&#39;s feedback applied:</b> one scanner in parts, with options per part (Tue, Oct 13, 2026).</p>
+<p class="si-ml"><b>Shown:</b> the same draft on a phone, nine states and a failure. Board 1, Scan-I, is the laptop at 8:00 PM.</p>
+</div>
+<aside class="si-grey" aria-label="Board note">
+<p><b>What</b>Part 3, option 2: the scoresheet photo is the list. Each cell shows the read move beside the handwriting, a flagged cell carries a word, and a tapped cell opens the board in a strip under its row.</p>
+<div>
+<p><b>Built from</b>Scan-A panels 1 and 4, the board of panel 3, today&#39;s MoveCell and its legend.</p>
+<p><b>K&#39;s feedback applied</b>One scanner in parts, with options per part.</p>
+</div>
+<div>
+<p><b>Open for K</b></p>
+<ol>
+<li>Pick this, Scan-H, or each by width.</li>
+<li>Photo retention: drawn kept 30 days (to Tue, Oct 6). This option needs the photo; without it the list is the page.</li>
+<li>A junior&#39;s game: the guardian&#39;s OK once per child or once per game.</li>
+<li>The daily limit resets at midnight UTC or Central.</li>
+</ol>
+</div>
+</aside>
+</div>
+<div class="si-lbox">
+<div class="k-between"><p class="k-label" style="margin:0">Notes on this board</p><span class="k-sample">Sample data · players, ratings, round, board, scan count, times · moves are Morphy&#39;s Opera Game (1858)</span></div>
+<ol class="si-notes"><li><span class="k-num-badge">1</span><span><b>The photo is the list:</b> the read moves typed over each cell with a word per cell, so a parent compares the reading with the handwriting in place and the photo stays large on a phone.<span class="si-from">From Scan-A panel 1: Show what we read, now always on</span></span></li><li><span class="k-num-badge">2</span><span><b>Tapping a cell opens the strip under its row</b> on a laptop, a bottom sheet on a phone, with the crop, the board at that move (fenBefore in types.ts) and First, Back, Forward, Last; the typed list is a drawer.<span class="si-from">From Scan-A panel 3&#39;s board · Scan-B screen 3&#39;s crop</span></span></li><li><span class="k-num-badge">3</span><span><b>Worse for a long game</b> (three pages become a pager) and without a kept photo the drawer list becomes the page, so this option leans on WS15&#39;s 30-day retention (open for K).<span class="si-from">From Scan-A panel 2&#39;s list, now the drawer</span></span></li><li><span class="k-num-badge">4</span><span><b>Three labels in words beside their colour</b> (Check this · Fixed automatically · You checked), mapped from today&#39;s legend in ScannerPage.tsx; the candidates and Confirm belong to part 4.<span class="si-from">From Scan-A labels and chips · today&#39;s MoveCell</span></span></li><li><span class="k-num-badge">5</span><span><b>Game checks in words:</b> legal order, no threefold repetition, the written result against the final position; Save and Export closed until every Check this is resolved (WS15 acceptance 3).<span class="si-from">From Scan-A panel 4</span></span></li><li><span class="k-num-badge">6</span><span><b>Review and fixes run in the browser</b> (decoder.ts in a Web Worker), so the sheet view works offline; the laptop at 8:00 PM opens the draft from My games.<span class="si-from">From Scan-B screen 2&#39;s hand-off · the decoder contract</span></span></li></ol>
+</div>
+</section>
+
+<div class="si-bandx" style="margin-top:18px">
+<div>
+<div class="si-blab"><span class="si-code">B</span><h2>Every state, as cuts of the sheet view</h2><span class="k-meta">title in words beside its colour</span></div>
+<div class="si-sgrid">
+<div class="si-rel">
+<p class="si-cap"><i class="si-dot si-dot-green" aria-hidden="true"></i>1 · All clear <span>nothing to fix</span></p>
+<div class="si-fr si-st">
+<div class="k-row-sm"><span class="si-pill si-pill-ok"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Check · done</span><span class="si-mchip">Needs a look 0</span></div>
+<div class="si-ms"><div class="si-ms-in"><div class="si-r si-tall"><b>7</b><button class="si-cell si-c-auto" type="button" aria-label="7. Qb3, fixed automatically. Change this move"><span class="si-hw">Qb8</span><span class="si-plate"><b>Qb3</b></span><span class="si-tw si-tw-auto"><i class="si-sw si-sw-auto" aria-hidden="true"></i>Fixed automatically</span></button><button class="si-cell" type="button" aria-label="Qe7. Change this move"><span class="si-hw">Qe7</span><span class="si-plate"><b>Qe7</b></span></button></div><div class="si-r si-tall"><b>9</b><button class="si-cell" type="button" aria-label="Bg5. Change this move"><span class="si-hw">Bg5</span><span class="si-plate"><b>Bg5</b></span></button><button class="si-cell si-c-ok" type="button" aria-label="9… b5, you checked it. Change this move"><span class="si-hw"><em class="si-smudge" aria-hidden="true"></em>b5</span><span class="si-plate"><b>b5</b></span><span class="si-tw si-tw-ok"><i class="si-sw si-sw-ok" aria-hidden="true"></i>You checked</span></button></div></div></div>
+<div class="si-msg si-msg-green k-row-sm" style="gap:6px"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Every move checked. Nothing to fix.</div>
+<span class="si-tiny"><b class="si-ok">4 of 4 checks passed:</b> legal order · no threefold · 17. Rd8# matches 1-0 · every move checked</span>
+<div class="k-row-sm" style="margin-top:auto"><span class="si-mbtn si-mbtn-gold">Save to My games</span><span class="si-mbtn">Open in lichess</span><span class="si-mbtn">Download PGN</span></div>
+</div>
+
+</div>
+<div class="si-rel">
+<p class="si-cap"><i class="si-dot si-dot-amber" aria-hidden="true"></i>2 · Flags open <span>the drawn moment</span></p>
+<div class="si-fr si-st">
+<div class="k-row-sm"><span class="si-pill si-pill-now">Check · 1 move left</span></div>
+<div class="k-row-sm"><span class="si-mchip si-mchip-next"><i class="si-sw si-sw-look" aria-hidden="true"></i>Needs a look 1 · Next to check</span></div>
+<span class="si-tiny">The chip jumps to the cell and opens its strip.</span>
+<div class="si-ms"><div class="si-ms-in"><div class="si-r"><b>12</b><button class="si-cell" type="button" aria-label="O-O-O. Change this move"><span class="si-hw">O-O-O</span><span class="si-plate"><b>O-O-O</b></span></button><button class="si-cell" type="button" aria-label="Rd8. Change this move"><span class="si-hw">Rd8</span><span class="si-plate"><b>Rd8</b></span></button></div><div class="si-r si-tall"><b>13</b><button class="si-cell" type="button" aria-label="Rxd7. Change this move"><span class="si-hw">Rxd7</span><span class="si-plate"><b>Rxd7</b></span></button><button class="si-cell si-c-look si-sel" type="button" aria-label="13… Rxd7, needs a look. Change this move"><span class="si-hw"><em class="si-smudge" aria-hidden="true"></em>Rxd7</span><span class="si-plate"><b>Rxd7</b></span><span class="si-tw si-tw-look"><i class="si-sw si-sw-look" aria-hidden="true"></i>Check this</span></button></div></div></div>
+<div class="k-row-sm" style="margin-top:auto;flex-wrap:nowrap;gap:8px"><span class="si-mbtn si-mbtn-off"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2"></rect><path d="M8 11V8a4 4 0 0 1 8 0v3"></path></svg>Save</span><span class="si-warn si-tiny" style="color:#5c450f;line-height:1.25">Resolve 1 flagged move to save</span></div>
+</div>
+<span class="si-abs" style="right:-10px;top:14px"><span class="k-num-badge si-mk">5</span></span>
+</div>
+<div class="si-rel">
+<p class="si-cap"><i class="si-dot si-dot-grey" aria-hidden="true"></i>3 · Loading <span>opened from a Reading row</span></p>
+<div class="si-fr si-st">
+<div class="si-msg si-msg-grey k-row-sm" role="status" style="gap:8px"><span style="width:16px;height:16px;border-radius:50%;border:3px solid #d6d5cd;border-top-color:#1a2744;flex:none"></span>Still reading · 12 of 17 moves</div>
+<div class="si-ms"><div class="si-ms-in"><div class="si-r"><b>11</b><button class="si-cell" type="button" aria-label="Bxb5+. Change this move"><span class="si-hw">Bxb5+</span><span class="si-plate"><b>Bxb5+</b></span></button><button class="si-cell" type="button" aria-label="Nbd7. Change this move"><span class="si-hw">Nbd7</span><span class="si-plate"><b>Nbd7</b></span></button></div><div class="si-r"><b>12</b><button class="si-cell" type="button" aria-label="O-O-O. Change this move"><span class="si-hw">O-O-O</span><span class="si-plate"><b>O-O-O</b></span></button><button class="si-cell" type="button" aria-label="Rd8. Change this move"><span class="si-hw">Rd8</span><span class="si-plate"><b>Rd8</b></span></button></div><div class="si-r"><b>13</b><button class="si-cell" type="button" aria-label="Rxd7. Change this move"><span class="si-hw">Rxd7</span></button><button class="si-cell" type="button" aria-label="Rxd7. Change this move"><span class="si-hw"><em class="si-smudge" aria-hidden="true"></em>Rxd7</span></button></div><div class="si-r"><b>14</b><button class="si-cell" type="button" aria-label="Rd1. Change this move"><span class="si-hw">Rd1</span></button><button class="si-cell" type="button" aria-label="Qe6. Change this move"><span class="si-hw">Qe6</span></button></div></div></div>
+<span class="si-tiny">The photo shows at once; each row is typed in as it is read. Nothing to tap until the reading ends.</span>
+</div>
+
+</div>
+<div class="si-rel">
+<p class="si-cap"><i class="si-dot si-dot-amber" aria-hidden="true"></i>4 · Game cut short <span>a longer game</span></p>
+<div class="si-fr si-st">
+<div class="k-row-sm"><span class="k-sample" style="font-size:11px;padding:2px 8px">Sample data · moves 23 to 25</span></div>
+<div class="si-ms"><div class="si-ms-in"><div class="si-r"><b>24</b><button class="si-cell" type="button" aria-label="Rf1. Change this move"><span class="si-hw">Rf1</span><span class="si-plate"><b>Rf1</b></span></button><button class="si-cell" type="button" aria-label="Kg7. Change this move"><span class="si-hw">Kg7</span><span class="si-plate"><b>Kg7</b></span></button></div></div></div>
+<div class="si-msg si-msg-gold" style="border:2px solid #1a2744;padding:7px 9px">We could follow the game to move 24. Keep the first 24 moves, or fix move 25.<div class="k-row-sm" style="margin-top:6px"><span class="si-mbtn">Keep 24 moves</span><span class="si-mbtn si-mbtn-gold">Fix move 25</span></div></div>
+<div class="si-ms"><div class="si-ms-in"><div class="si-r"><b>25</b><button class="si-cell si-wash" type="button" aria-label="25. not followed. Fix this move"><span class="si-hw">Nxh6</span></button><button class="si-cell si-wash" type="button" aria-label="25… not followed"><span class="si-hw">Kxh6</span></button></div></div></div>
+</div>
+
+</div>
+<div class="si-rel">
+<p class="si-cap"><i class="si-dot si-dot-amber" aria-hidden="true"></i>5 · Result mismatch <span>the sheet&#39;s result</span></p>
+<div class="si-fr si-st">
+<div class="si-ms"><div class="si-ms-in"><div class="si-sh-h" style="border-bottom:0;padding:6px 2px"><span style="outline:2px solid #c99a1e;outline-offset:3px;border-radius:2px">Result <i>1-0</i></span><span class="si-tw si-tw-look"><i class="si-sw si-sw-look"></i>Check this</span></div></div></div>
+<ul class="si-mcl">
+<li><svg class="k-i k-i-sm si-ok" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg><span><b class="si-ok">Passed:</b> legal order · no threefold</span></li>
+<li class="si-warn"><svg class="k-i k-i-sm si-warnic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7.5v5.5M12 16.5v.5"></path></svg><span>The sheet says 1-0, and the last move isn&#39;t checkmate. Resignations happen.</span></li>
+</ul>
+<div class="k-row-sm"><span class="si-mbtn si-mbtn-gold">Keep 1-0 as written</span><span class="si-mbtn">Change the result</span></div>
+<span class="si-tiny" style="margin-top:auto;border-top:1px solid #ecebe5;padding-top:6px"><b style="color:#1a2744">Its twin, a draw written:</b> "The sheet says ½-½ but the last move is checkmate; check the result."</span>
+</div>
+
+</div>
+<div class="si-rel">
+<p class="si-cap"><i class="si-dot si-dot-grey" aria-hidden="true"></i>6 · No header read <span>names left for the player</span></p>
+<div class="si-fr si-st">
+<div class="si-ms"><div class="si-ms-in"><div class="si-sh-h" style="border-bottom:0;padding:6px 2px;outline:2px solid #858b99;outline-offset:-1px"><span>White <i style="opacity:.35">~~~~</i> · Black <i style="opacity:.35">~~~</i></span><span class="si-tw" style="color:#2b3446"><i class="si-sw" style="background:#d6d9e0;border:1.5px solid #858b99"></i>Names not read</span></div></div></div>
+<b class="si-tinyb" style="font-weight:600">Edit game details</b>
+<div class="si-fgrid">
+<label class="si-field">White<span class="si-ph">Name</span></label>
+<label class="si-field">Black<span class="si-ph">Name</span></label>
+<label class="si-field">Result<span>1-0</span></label>
+<label class="si-field" style="grid-column:span 2">Event<span>Club night</span></label>
+<label class="si-field">Round<span>1</span></label>
+<label class="si-field">Board<span>3</span></label>
+<label class="si-field" style="grid-column:span 2">Date<span>Wed, Sep 9</span></label>
+</div>
+<span class="si-tiny">Sample data: a club night, filled by hand.</span>
+</div>
+
+</div>
+<div class="si-rel">
+<p class="si-cap"><i class="si-dot si-dot-grey" aria-hidden="true"></i>7 · No photo <span>expired or never kept</span></p>
+<div class="si-fr si-st">
+<div class="si-nophoto"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="M3 3l18 18"></path></svg>Photo not kept · the list is the page</div>
+<div style="display:grid;grid-template-columns:1fr 92px;gap:10px;align-items:start">
+<div>
+<div class="si-ml2"><b>12</b><span>O-O-O</span><span>Rd8</span></div>
+<div class="si-ml2" style="height:40px"><b>13</b><span>Rxd7</span><span style="background:#f6e7b8;box-shadow:inset 0 0 0 1px #1a2744,inset 0 0 0 3.5px #c8a94a;height:100%;display:flex;flex-direction:column;justify-content:center">Rxd7<span class="si-tw si-tw-look" style="padding:0"><i class="si-sw si-sw-look"></i>Check this</span></span></div>
+<div class="si-ml2"><b>14</b><span>Rd1</span><span>Qe6</span></div>
+</div>
+<div class="k-board si-bd si-bd-xs" role="img" aria-label="Position after 13...Rxd7, as on the laptop board"><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d si-td"></div><div class="k-sq-l"><span class="pc pb">K</span></div><div class="k-sq-d"><span class="pc pb">B</span></div><div class="k-sq-l"></div><div class="k-sq-d"><span class="pc pb">R</span></div><div class="k-sq-d"><span class="pc pb pp">P</span></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l si-tl si-ring"><span class="pc pb">R</span></div><div class="k-sq-d"><span class="pc pb">Q</span></div><div class="k-sq-l"><span class="pc pb pp">P</span></div><div class="k-sq-d"><span class="pc pb pp">P</span></div><div class="k-sq-l"><span class="pc pb pp">P</span></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"><span class="pc pb">N</span></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-d"></div><div class="k-sq-l"><span class="pc pw">B</span></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"><span class="pc pb pp">P</span></div><div class="k-sq-l"></div><div class="k-sq-d"><span class="pc pw">B</span></div><div class="k-sq-l"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"><span class="pc pw pp">P</span></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-d"></div><div class="k-sq-l"><span class="pc pw">Q</span></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-l"><span class="pc pw pp">P</span></div><div class="k-sq-d"><span class="pc pw pp">P</span></div><div class="k-sq-l"><span class="pc pw pp">P</span></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"><span class="pc pw pp">P</span></div><div class="k-sq-l"><span class="pc pw pp">P</span></div><div class="k-sq-d"><span class="pc pw pp">P</span></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"><span class="pc pw">K</span></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"><span class="pc pw">R</span></div></div>
+</div>
+<span class="si-tiny">No cell to tap and no crop: the list&#39;s labels stand in for the word tags.</span>
+<span class="si-tagnote" style="margin-top:auto;align-self:flex-start;background:#f5ecd2;color:#4a380b;white-space:normal;line-height:1.3">The reason photo retention matters more here (open for K)</span>
+</div>
+<span class="si-abs" style="right:-10px;top:14px"><span class="k-num-badge si-mk">3</span></span>
+</div>
+<div class="si-rel">
+<p class="si-cap"><i class="si-dot si-dot-amber" aria-hidden="true"></i>8 · Long game · 3 pages <span>one sheet at a time</span></p>
+<div class="si-fr si-st">
+<div class="si-pager" role="tablist" aria-label="Pages">
+<span class="on" role="tab" aria-selected="true">Page 1 of 3</span>
+<span role="tab" aria-selected="false">Page 2<small><i class="si-sw si-sw-look"></i>1 to check</small></span>
+<span role="tab" aria-selected="false">Page 3</span>
+</div>
+<div class="k-row-sm"><span class="si-mchip si-mchip-next"><i class="si-sw si-sw-look" aria-hidden="true"></i>Needs a look 2 · on page 2</span></div>
+<div class="si-ms"><div class="si-ms-in"><div class="si-r"><b>1</b><button class="si-cell" type="button" aria-label="e4. Change this move"><span class="si-hw">e4</span><span class="si-plate"><b>e4</b></span></button><button class="si-cell" type="button" aria-label="c5. Change this move"><span class="si-hw">c5</span><span class="si-plate"><b>c5</b></span></button></div><div class="si-r"><b>2</b><button class="si-cell" type="button" aria-label="Nf3. Change this move"><span class="si-hw">Nf3</span><span class="si-plate"><b>Nf3</b></span></button><button class="si-cell" type="button" aria-label="d6. Change this move"><span class="si-hw">d6</span><span class="si-plate"><b>d6</b></span></button></div></div></div>
+<span class="si-tiny">Sample data: a 112-move game on three pages.</span>
+<span class="si-tiny" style="margin-top:auto;color:#5c450f;font-weight:600">Worse than Scan-H for a long game: the player pages through sheets.</span>
+</div>
+
+</div>
+<div class="si-rel">
+<p class="si-cap"><i class="si-dot si-dot-grey" aria-hidden="true"></i>9 · Offline · A junior&#39;s private game <span>two cuts</span></p>
+<div class="si-fr si-st">
+<div class="si-split">
+<div class="k-stack-sm" style="gap:7px">
+<span class="si-pill si-pill-grey" style="align-self:flex-start"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3l18 18"></path><path d="M8.5 16.5a5 5 0 0 1 7 0M5 12.5a10 10 0 0 1 4.2-2.4M19 12.5a10 10 0 0 0-2.6-1.9M2 9a15 15 0 0 1 4.6-2.8M22 9a15 15 0 0 0-9.2-3.9"></path><circle cx="12" cy="20" r=".8"></circle></svg>Offline</span>
+<span class="si-tinyb">You&#39;re offline. Checking and fixing work here; Save waits for a connection.</span>
+<span class="si-tiny">The decoder runs in this browser.</span>
+</div>
+<div class="k-stack-sm" style="gap:7px">
+<span class="si-pill si-pill-grey" style="align-self:flex-start"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2"></rect><path d="M8 11V8a4 4 0 0 1 8 0v3"></path></svg>Family only</span>
+<span class="si-tinyb"><b>Priya&#39;s game</b> · only you and your family can see it</span>
+<div class="k-stack-sm" style="gap:4px"><span class="si-mbtn si-mbtn-off" style="justify-content:flex-start">Anyone with the link</span><span class="si-mbtn si-mbtn-off" style="justify-content:flex-start">Public</span></div>
+<span class="si-tiny">Sharing a junior&#39;s game needs a guardian&#39;s OK</span>
+</div>
+</div>
+</div>
+<span class="si-abs" style="right:-10px;top:14px"><span class="k-num-badge si-mk">6</span></span>
+</div>
+</div>
+<div style="margin-top:16px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px">
+<div style="grid-column:span 2">
+<p class="si-cap"><i class="si-dot si-dot-red" aria-hidden="true"></i>10 · Failure <span>the draft would not open</span></p>
+<div class="si-fr si-fail"><span class="si-pill si-pill-red"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7.5v5.5M12 16.5v.5"></path></svg>Failed</span><span class="si-tinyb" style="flex:1">Couldn&#39;t load this game</span><span class="si-mbtn">Try again</span></div>
+</div>
+</div>
+</div>
+<div>
+<div class="si-blab"><span class="si-code">C</span><h2>The phone, 414px</h2><span class="k-meta">13...Rxd7 tapped</span></div>
+<div class="si-rel">
+<span class="si-abs" style="left:-12px;top:330px"><span class="k-num-badge si-mk">1</span></span>
+<span class="si-abs" style="left:-12px;top:560px"><span class="k-num-badge si-mk">2</span></span>
+<div class="k-phone si-phone"><div class="k-phone-screen">
+<div class="si-pstatus" aria-hidden="true"><span>8:02</span><span class="si-island"></span><span>5G</span></div>
+<div class="si-papp"><a class="k-row-sm" href="#" style="gap:8px;text-decoration:none" aria-label="Louisiana Chess Association, home"><svg class="si-rook" viewBox="0 0 100 100" aria-hidden="true" style="width:28px;height:28px"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span class="si-pbname"><b>Louisiana Chess</b><span>Association</span></span></a><a class="si-psbtn" href="#" aria-label="Search"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg></a></div>
+<div class="si-pbody">
+<div class="si-phead">
+<div class="k-row-sm" style="justify-content:space-between;flex-wrap:nowrap"><span class="si-pill si-pill-now">Check · 1 move left</span><button class="k-btn k-btn-line k-btn-sm" type="button" aria-expanded="false" style="min-height:44px;padding:0 12px"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6h11M9 12h11M9 18h11"></path><circle cx="4.5" cy="6" r="1"></circle><circle cx="4.5" cy="12" r="1"></circle><circle cx="4.5" cy="18" r="1"></circle></svg>Moves list</button></div>
+<div class="k-row-sm" style="gap:5px"><span class="si-mchip si-mchip-on">All moves 17</span><span class="si-mchip"><i class="si-sw si-sw-look"></i>Needs a look 1</span><span class="si-mchip"><i class="si-sw si-sw-auto"></i>Fixed automatically 1</span><span class="si-mchip"><i class="si-sw si-sw-ok"></i>You checked 1</span></div>
+<span class="k-meta" style="font-size:12px">16 of 20 scans left today · Landry vs Shah · Round 4 · Board 6</span>
+</div>
+<div class="si-pphoto"><div class="si-ms-in"><div class="si-r"><b>12</b><button class="si-cell" type="button" aria-label="O-O-O. Change this move"><span class="si-hw">O-O-O</span><span class="si-plate"><b>O-O-O</b></span></button><button class="si-cell" type="button" aria-label="Rd8. Change this move"><span class="si-hw">Rd8</span><span class="si-plate"><b>Rd8</b></span></button></div><div class="si-r"><b>13</b><button class="si-cell" type="button" aria-label="Rxd7. Change this move"><span class="si-hw">Rxd7</span><span class="si-plate"><b>Rxd7</b></span></button><button class="si-cell si-c-look si-sel" type="button" aria-label="13… Rxd7, needs a look. Change this move"><span class="si-hw"><em class="si-smudge" aria-hidden="true"></em>Rxd7</span><span class="si-plate"><b>Rxd7</b><span class="si-tw si-tw-look"><i class="si-sw si-sw-look" aria-hidden="true"></i>Check this</span></span></button></div><div class="si-r"><b>14</b><button class="si-cell" type="button" aria-label="Rd1. Change this move"><span class="si-hw">Rd1</span><span class="si-plate"><b>Rd1</b></span></button><button class="si-cell" type="button" aria-label="Qe6. Change this move"><span class="si-hw">Qe6</span><span class="si-plate"><b>Qe6</b></span></button></div></div></div>
+<div class="si-psheet" role="dialog" aria-label="Move 13, Black: Rxd7, check this">
+<div class="si-grab"></div>
+<div class="si-pscroll">
+<div class="k-row-sm" style="justify-content:space-between;flex-wrap:nowrap"><b style="font-size:16px">13...Rxd7 · Move 13 · Black</b><button class="k-iconbtn" type="button" aria-label="Close" style="width:40px;height:40px"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></button></div>
+<div class="k-row-sm" style="gap:10px;flex-wrap:nowrap">
+<div class="si-pcrop" role="img" aria-label="Black&#39;s move 13 cut from your photo, smudged"><span class="si-hw"><em class="si-smudge"></em>Rxd7</span></div>
+<div class="k-stack-sm" style="gap:4px"><span class="si-tinyb"><b style="font-family:'Geist Mono',monospace">Rxd7</b> · smudged on the sheet</span><span class="si-pill si-pill-look" style="align-self:flex-start;height:26px;font-size:12.5px"><i class="si-sw si-sw-look"></i>Check this</span></div>
+</div>
+<div class="k-row-sm" style="gap:12px;flex-wrap:nowrap;align-items:flex-start">
+<div class="k-board si-bd si-bd-p si-bd-m" role="img" aria-label="Position after 13...Rxd7. White: king c1, queen b3, rook h1, bishops b5 and g5, pawns a2 b2 c2 e4 f2 g2 h2. Black: king e8, queen e7, rooks d7 and h8, knight f6, bishop f8, pawns a7 e5 f7 g7 h7. The move's squares d8 and d7 are tinted; d7 carries the gold ring."><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d si-td"></div><div class="k-sq-l"><span class="pc pb">K</span></div><div class="k-sq-d"><span class="pc pb">B</span></div><div class="k-sq-l"></div><div class="k-sq-d"><span class="pc pb">R</span></div><div class="k-sq-d"><span class="pc pb pp">P</span></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l si-tl si-ring"><span class="pc pb">R</span></div><div class="k-sq-d"><span class="pc pb">Q</span></div><div class="k-sq-l"><span class="pc pb pp">P</span></div><div class="k-sq-d"><span class="pc pb pp">P</span></div><div class="k-sq-l"><span class="pc pb pp">P</span></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"><span class="pc pb">N</span></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-d"></div><div class="k-sq-l"><span class="pc pw">B</span></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"><span class="pc pb pp">P</span></div><div class="k-sq-l"></div><div class="k-sq-d"><span class="pc pw">B</span></div><div class="k-sq-l"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"><span class="pc pw pp">P</span></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-d"></div><div class="k-sq-l"><span class="pc pw">Q</span></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-l"><span class="pc pw pp">P</span></div><div class="k-sq-d"><span class="pc pw pp">P</span></div><div class="k-sq-l"><span class="pc pw pp">P</span></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"><span class="pc pw pp">P</span></div><div class="k-sq-l"><span class="pc pw pp">P</span></div><div class="k-sq-d"><span class="pc pw pp">P</span></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"><span class="pc pw">K</span></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"><span class="pc pw">R</span></div></div>
+<div class="k-stack-sm" style="gap:8px">
+<span class="k-meta">After 13...Rxd7</span>
+<div class="k-row-sm"><button class="k-iconbtn" type="button" aria-label="Previous move"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"></path></svg></button><button class="k-iconbtn" type="button" aria-label="Next move"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></button></div>
+<a class="k-link" href="#" style="font-size:13px;line-height:1.5">Show the position before this move</a>
+</div>
+</div>
+</div>
+<div class="si-pact"><button class="k-btn k-btn-gold" type="button">Check this move</button><button class="k-btn k-btn-line" type="button">Skip for now</button></div>
+</div>
+</div>
+<nav class="si-tabbar" aria-label="Main"><div class="si-tabbar-in">
+<a class="si-tab on" href="#" aria-current="page"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4.5" width="18" height="16" rx="2"></rect><path d="M3 9.5h18M8 2.5v4M16 2.5v4"></path></svg><span>Tournaments</span></a>
+<a class="si-tab" href="#"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"></path><circle cx="12" cy="9.5" r="2.5"></circle></svg><span>Clubs</span></a>
+<a class="si-tab" href="#"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4.5 21c1-4 4-6 7.5-6s6.5 2 7.5 6"></path></svg><span>My LCA</span></a>
+<button class="si-tab" type="button" aria-expanded="false" style="border:0;background:transparent;font:inherit;font-size:12px"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg><span>Menu</span></button>
+</div><div class="si-safe"><span class="si-homeind"></span></div></nav>
+</div></div>
+</div>
+<p class="si-pcap">The photo stays large on a phone; the board comes up under the tapped cell. <b>Moves list</b>, top right, opens the typed list as a full-screen sheet.</p>
+</div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1750}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,145 @@
+{
+ "label": "r3-clubs",
+ "results": [
+  {
+   "board": {
+    "file": "Clubs-H.dc.html",
+    "title": "Clubs · H · Clubs-H · One list, always whole (round 3)",
+    "width": 1440,
+    "page": "clubs",
+    "name": "Clubs-H · One list, always whole",
+    "idea": "The drawer is the whole directory from the first paint, all 25 clubs A to Z beside a map with every pin, and Near me only reorders that list and zooms the map, so nothing is ever hidden and the map and the list can never disagree.",
+    "differs": "A visitor who never presses Near me simply scrolls: the drawer already holds all 25 clubs in A to Z order beside the map at Louisiana zoom with every pin, and the list is never trimmed to what the map happens to show. Hovering a card lifts its pin; clicking a pin scrolls the list to its card and selects it. The page has one state, the order of the list: A to Z, or Nearest once a place is known, with a thin 'Farther than 75 miles' divider as the only thing separating near from far."
+   },
+   "drawn": {
+    "file": "Clubs-H.dc.html",
+    "title": "Clubs · H · Clubs-H · One list, always whole (round 3)",
+    "width": 1440,
+    "height": 2800,
+    "second_file": "Clubs-H-2.dc.html",
+    "second_title": "Clubs · H · Clubs-H-2 · Phones, forms and states (round 3)",
+    "second_height": 2000,
+    "note": "What: Round-3 option H for the Clubs directory. On first load the drawer lists all 25 clubs A to Z, next to a map at Louisiana zoom that shows every pin. Near me changes the order to nearest first and zooms the map. It never removes clubs from the list. A thin \"Farther than 75 miles\" divider is the only thing that separates near clubs from far ones. To get back, tap the ✕ on the location pill (A to Z at state zoom) or press All of Louisiana (zooms out and keeps the nearest order). Phones, the two forms and seven states are on Clubs-H-2.\n\nBuilt from: Clubs-E only, with the decided header and footer. Kept: the 460 + 980 split, the base map, the City, ZIP or club name field, hollow pins for clubs with no listed schedule, count circles and the gold selected card. Removed: the drawer that only listed what the map showed, the count chips, the toggle, the three sorts and the region menu, Search this area, the regions inset, the legend panel, the popovers, pin numbers, every Next: and tonight state, Checked months, and the forms on the first screen.\n\nK's feedback applied (Fri, Oct 9 and Tue, Oct 13): no calendar or week grid; the map is central and answers near me; plainly simpler than E; every club can be browsed without pressing anything; nothing is worked out week by week, and each card shows the club's own meeting line or \"Schedule not listed\". Open for K: 1. Keep the 75 mile divider, or set it at 60? 2. Road miles (cached) or straight line? 3. Knight Light Chess and Strategic Thoughts NOLA: one approximate pin in New Orleans, or list only? On part 2: should the phone's low sheet show the first card, and do you want \"Scholastic friendly\" as a filter?",
+    "unresolved": []
+   },
+   "review": {
+    "file": "Clubs-H.dc.html (second part: Clubs-H-2.dc.html)",
+    "height": 2800,
+    "second_height": 2000,
+    "counts": "First screen (frame A), controls: 1 text field ('City, ZIP or club name'), 1 Near me button, 1 sort control (segmented 'A to Z | Nearest', with Nearest greyed until a place is known), 1 Filters button with its chips hidden, and the map's zoom (+, − and the greyed 'All of Louisiana' fit button, which is part of the zoom). That is 4 controls plus zoom, within budget. On the drawn state: 0 popovers and 1 selected card (Bunkie in A, Baton Rouge Chess Club in B). There is no inset map and no legend panel; pin meaning is one caption chip. Cards: 25 of 25 in frame A (A to Z) and 25 of 25 in frame B (nearest first, 'Farther than 75 miles' divider after Marrero). Each card is 3 lines at most. 7 cards read 'Schedule not listed · Know when they meet? Suggest an update': Casa de Ajedrez, Gonzales, Knight Light, Lafayette, Metairie Chess Academy, North Kenner, Strategic Thoughts NOLA. Weekly claims: none. There are no computed dates, no Tonight or Meets today, no count of clubs meeting, no Meets soonest and no freshness badge. Tonight, Next and Checked appear only in the notes that say they were removed. Map: 17 marks for 25 clubs (15 pins and count circles '2' and '8'). Legend: 6 numbered notes on Clubs-H and 4 on Clubs-H-2, with badges 1 to 6 placed on the design. Em dashes: 0 in both files. Gold as text on a light ground: 0 (gold is used only for the selected pin, the selected card's bar, link underlines and the Join LCA button). Sample data badges: in the doc header, on the representatives strip, on frame B's road miles, and on Clubs-H-2's flags and miles. Rendered content height: 2780px on the main board (declared 2800) and 1989px on the second (declared 2000). Tags are balanced, all attributes are quoted, there is one style block, and support.js and the kit link are present in both files.",
+    "changes": [
+     "Clubs-H frame B: added a second dashed annotation on the empty upper-right of the map, 'Scroll on: the same 25, never trimmed.' It shows a small excerpt of the drawer just past the fold: Marrero about 75 mi, the 'Farther than 75 miles' divider, North Kenner about 78 mi, Mandeville about 80 mi, a gap mark, and 'Shreveport-Bossier Chess Club · 25th of 25 · about 250 mi'. Before this, frame B only showed cards 1 to 7, so the board's main idea (the list is reordered, never trimmed, and only a thin divider separates near from far) was not visible at a glance. It covers no pins, and the drawer and controls are unchanged.",
+     "Clubs-H frame A: the greyed 'All of Louisiana' button's text went from #8a8f9c to #5f6576 and its border was darkened slightly. The old text on #f6f6f3 was about 3.2:1 contrast; it now reads clearly while still looking disabled.",
+     "Clubs-H note 3: '?near=70808' is now kept on one line. It had broken as '(?' / 'near=70808)'.",
+     "Heights checked against the render: Clubs-H content is 2780px, declared and $preview 2800 (budget 2800). Clubs-H-2 content is 1989px, declared and $preview 2000 (budget 2000). No change was needed.",
+     "No edits to Clubs-H-2. Its phones, the two forms (one text box each, no day picker), states S1 to S7 and the rules note all match the spec, and nothing in it overlaps or clips. A pre-review copy of Clubs-H was saved at rvtools/Clubs-H.before.html."
+    ],
+    "remaining_concerns": [
+     "The main board sits at the 2800px budget limit. Content ends at 2780 because the required doc header (three lines, grey note, six notes) runs about 520px instead of the spec's 240. Anything added to Clubs-H later has to be offset by trimming the doc header.",
+     "Clubs-H-2 S4 (Filters open): the explanation beside the 300-wide panel is squeezed into a column about 100px wide. It is legible but reads choppily. There is no vertical room to move it under the panel inside the 2000px budget.",
+     "Meeting lines use the house time format, so a few differ slightly from the clubs' raw text: '10 AM' is drawn as '10:00 AM', '4–6 PM' as '4:00–6:00 PM', and 'Arrive by 6:30' as 'Arrive by 6:30 PM'. Several long lines (Baton Rouge Chess Club, Picayune, Monroe) are cut to two rows with an ellipsis, as the spec asks.",
+     "clubMapData.ts puts Heart of Worship Church near Bunkie and Marksville (30.97, -91.80), but the pin is drawn at Opelousas as the spec says. The data coordinate still needs checking.",
+     "Frame B's map also shows Mandeville, which is inside the roughly 75-mile view although the spec's list of pins in view leaves it out. Frame B's two callouts sit on the map rather than beside the frame, because the frame is the full board width.",
+     "'All of Louisiana' appears on the first screen as a separate outline button at bottom-right, as the spec keeps it from Clubs-E. I counted it as part of the map's zoom. If K counts it as a fifth control, it could move into the +/− stack the way Clubs-I does."
+    ]
+   }
+  },
+  {
+   "board": {
+    "file": "Clubs-I.dc.html",
+    "title": "Clubs · I · Clubs-I · Pick a town (round 3)",
+    "width": 1440,
+    "page": "clubs",
+    "name": "Clubs-I · Pick a town",
+    "idea": "The map is the picker and the drawer is its index: 21 towns A to Z, each with its club count, each opening to its clubs, so you browse Louisiana by town the way you read the map, and Near me puts the towns in distance order and opens the nearest.",
+    "differs": "A visitor who never presses Near me reads a short index of towns that holds the whole state in one glance, and opens any town to see its clubs; the map's pins wear the same 21 town names, so clicking a town on the map and clicking it in the drawer are the same act. 'Show all 25 clubs' opens every row and turns the index into the full list under town headers."
+   },
+   "drawn": {
+    "file": "Clubs-I.dc.html",
+    "title": "Clubs · I · Clubs-I · Pick a town (round 3)",
+    "width": 1440,
+    "height": 2750,
+    "second_file": "Clubs-I-2.dc.html",
+    "second_title": "Clubs · I-2 · Clubs-I-2 · Show all, phones, forms (round 3)",
+    "second_height": 1950,
+    "note": "What: Round 3 option I for the Clubs directory. The map does the picking. Every pin wears its town name as a button, and the drawer is a one-screen index of the 21 towns that have a club, A to Z, each with its club count. Open a town on the map or in the index to see its clubs, or press \"Show all 25 clubs\" to get the full list under town headers. Near me sorts the towns by distance and opens the nearest one. Clubs-I-2 holds the Show all state, two phones, the two forms and the small states.\n\nBuilt from: Clubs-E only. It reuses E's 460 + 980 first screen, its Louisiana base map, the zoom stack (Fit all clubs is now the ⌂ All of Louisiana button), the one text field, Near me with its pill and ✕, solid and hollow pins, the count circles, the gold selection, Schedule not listed, the phone map-plus-sheet pattern and the 25 real clubs with their own meeting lines. It also uses the decided header and footer. Nothing comes from Clubs-F, Clubs-G or round 1.\n\nK's feedback applied: it is simpler than E. The first screen has one field, Near me, Filters with its chips hidden, one view link and the zoom; no sort, popover, inset map or legend panel. Cards are at most three lines. Every club can be browsed without Near me, and all 25 are one tap away. Nothing is computed weekly: there are no Next: lines, no tonight state and no freshness badges. Each listing is written by the club's own representative, with the region's representative as backstop, said once below the fold. Open for K: is a town the right unit (Casa de Ajedrez, Shreveport-Bossier)? Should the multi-site programs pin at New Orleans or appear in the index only? Should miles be by road or straight line? On the phone, should a one-club town open the club page directly?",
+    "unresolved": []
+   },
+   "review": {
+    "file": "Clubs-I.dc.html (second part: Clubs-I-2.dc.html; originals backed up in revI/)",
+    "height": 2750,
+    "second_height": 1950,
+    "counts": "First-screen controls on Clubs-I frame A: 4 plus zoom. They are 1 text field ('City, ZIP or club name'), 1 Near me, 1 Filters button with its chips hidden, 1 view control (the 'Show all 25 clubs' link) and the map's zoom stack (+, −, ⌂ All of Louisiana). There is no sort control, toggle, region menu, Search this area or Show regions. Open state: one town row (Houma) with one selected card. There are 0 popovers, 0 inset maps and no legend panel; pin meaning is one caption chip line. Cards are at most 3 lines (name; the club's own meeting line clamped to 2, or Schedule not listed plus a grey description). Frame B has the same count, with Near me shown as 'Located'. Weekly claims found: 0. There are no Next: lines, Tonight or Meets today states, counts of who meets today, Meets soonest sort, freshness badges or Checked months; those words appear only in the 'Replaces' list. Schedule not listed: 7 clubs (Gonzales, North Kenner Library, Lafayette, Metairie Chess Academy, Knight Light, Strategic Thoughts NOLA, Casa de Ajedrez). Reach: the index holds all 21 towns and 25 clubs without a location. The map at state zoom shows 17 marks for 25 clubs (15 town pins plus 'Baton Rouge · 2' and 'New Orleans area · 8'). 'Show all 25 clubs' gives the full list under town headers (Clubs-I-2 A). After Near me, ✕ on the pill or ⌂ goes back. Region filter counts add up to 25 (3+2+3+8+5+2+2). Legend notes: 5 on Clubs-I and 6 on Clubs-I-2. Rendered heights: Clubs-I content ends at 2748 (declared 2750). Clubs-I-2 ends at 1913 (declared 1950). Both are under their limits.",
+    "changes": [
+     "Clubs-I frame A: the open Houma card is now drawn selected, with the gold bar and aria-current, to match the gold Houma pin. Its height went from 84 to 72, so the scrolled index now ends on a whole row (Shreveport-Bossier) instead of cutting one in half.",
+     "Clubs-I frame A: note badge 2 moved off the map. It sat beside the Houma pin and read as a navy '2' count circle ('Houma · 2'); it is now on the Houma row in the drawer. Note badge 1 moved off the caption text, where it covered the word 'each', onto the Baton Rouge row.",
+     "Clubs-I and Clubs-I-2 phone 1: the state-zoom count circle 'New Orleans · 8' is relabelled 'New Orleans area · 8', with a wider chip. The index row 'New Orleans' holds only 4 clubs; the 8 span five towns (New Orleans, Kenner, Metairie, Gretna, Marrero). Without this, map and index disagreed about the same name.",
+     "Clubs-I frame B: the zoomed map now splits the New Orleans area into its index towns, as the spec asks: Kenner (hollow), Metairie (hollow), 'New Orleans · 4' count circle, Gretna and Marrero, each with its town label and no collisions. Before, it still showed one 'New Orleans · 8' circle while the drawer listed those towns separately by distance. The map title now reads 'Map zoomed to about 75 miles around 70808'.",
+     "Clubs-I note 2 rewritten for the area circle and kept short enough that the legend, and so the board, stays at 2750.",
+     "Clubs-I-2 phone 2: removed the Directions ↗ and Club page buttons from the selected card. They made it a 4-line card, over the 3-line budget. The card itself is the link to the club page, and note 2 now says so.",
+     "Both boards: 15 paraphrased meeting lines restored to the clubs' own words as in Clubs-H, changing only the time format. Examples: 'Skittles chess/games' instead of 'Casual'; Bluebonnet 'Meets bi-weekly at Bluebonnet Library on the 1st and 3rd Sunday of the month, 4:30–5:30 PM.'; Baton Rouge 'G/90+30. Casual meets Wednesdays 6:00 PM'; Pineville 'Must be a CCHSA homeschool group member.'; Casa de Ajedrez 'Leisure and casual play ... Sulphur / Lake Charles area.'; Mandeville 'Meets Mondays at 5:00 PM'; Strategic Thoughts NOLA's full description.",
+     "Checked with no change needed: skeleton (doctype, title, support.js, kit blob link, helmet with Geist link and one style block, data-dc-script $preview); tags balanced and every attribute quoted; no em dashes, USCF, .5, AI references, holes, iframes or animation; gold #c8a94a is never text on a light ground; the decided signed-out header (Tournaments, Clubs, Scholastic, News, Membership, About, Search ⌘K, Donate, Log in, Join LCA) and footer match Tourn-List-Final; the Sample data badge covers representative names, road miles and the weekend and scholastic flags; no text overflow detected in drawer, cards, labels or buttons."
+    ],
+    "remaining_concerns": [
+     "Clubs-I-2 section F (small states) is drawn at CSS zoom 0.72, so its text is about 9px. It reads at 1x, but it is small on the canvas. Drawing it larger would push the board past the 2000px limit for a second board.",
+     "Frame B labels the split Baton Rouge pair by club name ('Baton Rouge Chess Club' in gold, 'Bluebonnet Chess Club'), not 'Baton Rouge' as the spec says. Two pins in one town need telling apart, so I kept the club names, but it is a small break from 'pins wear town names'.",
+     "The spec's sixth legend note (the data model: clubs.city, clubs.meeting_text, club_distances, zip_regions) is not on Clubs-I. Adding it would push the board to the 2800 limit. Notes 1 to 5 and the Clubs-I-2 notes carry the behaviour.",
+     "The base maps are schematic, not to scale; New Orleans sits roughly where the drawing allows. Fine for a board, but miles and positions should not be read off it.",
+     "Clubs-I-2 'Suggest an update' uses one 'What has changed?' text box, without the spec's 'What changed?' chips. That is simpler and in K's direction, but it departs from the spec, and K may want the chips back.",
+     "The canvas sticky text in round3-specs.json ('drawn' → note) still says the Frame B map shows 'New Orleans · 8' (in its unresolved list) and describes the phone card with buttons. Whoever posts the sticky should drop those two points. Sticky note text to use: 'What: Round 3 option I for the Clubs directory. The drawer is an index of the 21 towns with a club, A to Z, each with its club count; every map pin wears the same town name, so clicking a town on the map or in the drawer opens the same row. Show all 25 clubs turns the index into the full list under town headers; Near me sorts the towns by distance and opens the nearest; ✕ or All of Louisiana goes back. Built from: Clubs-E only, with the decided header and footer. K's feedback applied: simpler than E (one field, Near me, Filters, one view link, zoom), every club browsable without a location, no weekly claims, the club's representative writes each listing with the region's representative as backstop. Open for K: is a town the right unit (Casa de Ajedrez, Shreveport-Bossier)? Where do multi-site programs pin? Miles by road or straight line? On the phone, should a one-club town open the club page directly?'"
+    ]
+   }
+  },
+  {
+   "board": {
+    "file": "Clubs-J.dc.html",
+    "title": "Clubs · J · Clubs-J · Map on top, directory below (round 3)",
+    "width": 1440,
+    "page": "clubs",
+    "name": "Clubs-J · Map on top, directory below",
+    "idea": "There is no side list: the map takes the whole first screen at full width under one slim bar and answers near me, and the complete directory of 25 cards sits directly beneath it in three columns, so the page scrolls as one and every club is on it at once.",
+    "differs": "A visitor who is not looking for the nearest club scrolls down: the heading 'All 25 clubs, A to Z' and the first row of cards already peek above the fold, and below them the whole directory is a 3 by 9 grid of three-line cards with no panel to scroll inside and nothing to open. Near me keeps that shape: the map zooms to you and the grid reorders under two headings, 'Near you' and 'The rest of Louisiana', with miles."
+   },
+   "drawn": {
+    "file": "Clubs-J.dc.html",
+    "title": "Clubs · J · Clubs-J · Map on top, directory below (round 3)",
+    "width": 1440,
+    "height": 2800,
+    "second_file": "Clubs-J-2.dc.html",
+    "second_title": "Clubs · J · Clubs-J-2 · Near me, phones, forms and states (round 3)",
+    "second_height": 2800,
+    "note": "What: Option J for the Clubs directory (round 3). There is no drawer. A full-width map at state zoom fills the first screen under one slim bar, and all 25 clubs sit right under it as a three-column grid of three-line cards, A to Z. The first row shows above the fold. Near me zooms the map and puts the nearest clubs first, with miles. Board 2 (Clubs-J-2) holds the Near me frame, two phones, the Suggest an update and Start a club forms, and seven small states.\n\nBuilt from: Clubs-E only, using its Louisiana base map, its pins and count circles, the one text field, Near me, a single popover and the decided header and footer. Nothing comes from Clubs-F, Clubs-G or round 1. Removed from E: the drawer and everything in it, Search this area, the regions inset, the legend panel, the second popover, the rings, the pin numbers, every Next or tonight line, the Checked months, and the forms on the first screen.\n\nK's feedback applied: simpler than E, with no panel inside the page. Every club can be browsed without pressing anything. Nothing is computed weekly: cards show the club's own meeting line or \"Schedule not listed\". Each region's representative is named once, below the grid. Open for K: three columns of cards (drawn) or four? Keep the map 500 tall (drawn), or make it shorter so more of the directory shows on the first screen? Miles by road (drawn) or straight line?",
+    "unresolved": []
+   },
+   "review": {
+    "file": "Clubs-J.dc.html (1440 x 2750) and Clubs-J-2.dc.html (1440 x 1950)",
+    "height": 2750,
+    "second_height": 1950,
+    "counts": "Clubs-J first screen (1440 x 900), not counting the decided header: 1 text field ('City, ZIP or club name'), 1 Near me button, 1 sort control (the 'A to Z | Nearest' segment, with Nearest greyed), 1 Filters button with its chips hidden, and the map's zoom stack (+, -, and the greyed All of Louisiana button). That is 4 controls plus zoom, which is within the budget. There is also one in-page link in the title strip, 'All 25 clubs ↓', which the spec asks for. Open overlays: one popover (Monroe), and its card in the grid shows the same selection in gold. No inset map, no legend panel (pin meaning is one caption chip), no rings, no pin numbers. All 25 cards are at most three lines. Weekly claims on cards or popovers: 0 computed dates, 0 Tonight or Meets today states, 0 meets-today counts, no Meets soonest sort, 0 freshness badges. The 7 clubs without a schedule (Casa de Ajedrez, Gonzales, Knight Light, Lafayette, Metairie Chess Academy, North Kenner Library, Strategic Thoughts NOLA) read 'Schedule not listed · Know when they meet? Suggest an update'. Both jobs: all 25 cards are on the page with no location, as a 3 by 9 grid sorted A to Z. The heading and the first row show above the fold. After Near me, the pill's ✕ and the ⌂ All of Louisiana button both lead back to all clubs. Legend: 5 notes on Clubs-J and 6 on Clubs-J-2. Rule checks on both files: 0 em dashes, 0 USCF, 0 holes, 0 iframes, 0 animations. Every time uses the 7:00 PM form, and every element is balanced and closed.",
+    "changes": [
+     "Clubs-J-2 was 2800 tall, over the 2000 limit for a second board. I re-laid it out to 1949 rendered and declared 1950 (root and $preview). Row 1 is the doc block with the two phones at 80%. Row 2 is frame B at 62%, with a note column beside it and S1 and S3. Row 3 holds the two forms at 80% with S6 and S5 under them, then S2 with a compact S7, then S4.",
+     "Clubs-J-2: the separate 'Rules and data' column became legend note 6. That note now says clubs.meeting_text, as the spec does, where the board had clubs.schedule_text.",
+     "Clubs-J-2 frame B now follows the spec. The grid heading reads 'Near you · within 75 miles of 70808', not 'All 25 clubs · nearest first'. The greyed 'Located' button is now Near me in solid navy with a check. The popover gains 'As the club states it'. The two annotation boxes drawn over the map moved into a side note that lists the grid under 'Near you' and 'The rest of Louisiana'. It drops the old line 'No divider, no farther-than heading', which contradicted the spec, and keeps the 'Back to everything' callout. Badge 1 moved inside the frame so it is no longer clipped.",
+     "Clubs-J-2 phone 2: the bar heading reads 'Near you · within 75 miles' instead of '25 clubs · nearest first'.",
+     "Clubs-J-2 S2 (Natchitoches) now uses the Near you heading, then a 'The rest of Louisiana' heading with Shreveport-Bossier at about 80 mi (sample miles). S4's caption adds the one-filter heading '5 clubs match · Clear filters'. S5 and S7 were compacted. Shorter captions on D1 and P2 stop them wrapping.",
+     "Clubs-J-2 doc block was shortened to fit beside the phones: the title is smaller, the lines are tighter, the notes sit in two columns and the grey note has three columns. Notes 1 and 6 were rewritten to describe the two headings and the data rules.",
+     "Clubs-J: added the spec's quiet 'All 25 clubs ↓' link at the far right of the title strip, and 'As the club states it' under the Monroe popover's meeting line.",
+     "Clubs-J: note 3 and the grey What line now say that Near me zooms to about 75 miles and splits the grid under 'Near you · within 75 miles' and 'The rest of Louisiana'. The old text said 'five nearest, nearest first'.",
+     "Clubs-J: the fold label now reads 'first screen ends here · 1440 × 900'.",
+     "Clubs-J: removed the rook from the footer so it matches the decided Tourn-List-Final footer.",
+     "Clubs-J: tightened the band padding, the directory heading row, the 'Missing a club?' line and the representatives table rows. It renders at 2737 and is declared 2750 (was 2800, rendering 2781)."
+    ],
+    "remaining_concerns": [
+     "Note for the canvas sticky (Clubs-J): What: Option J for the Clubs directory (round 3). There is no drawer. A full-width map at state zoom fills the first screen under one slim bar, and all 25 clubs sit right under it in a three-column grid of three-line cards, A to Z. The heading and the first row show above the fold. Near me zooms the map to about 75 miles around you and splits the grid under 'Near you' and 'The rest of Louisiana', with miles. ✕ puts A to Z back. Built from: Clubs-E only, with the decided header and footer. Clubs-J-2 holds the Near me frame, two phones, both forms and seven small states. K's feedback applied: simpler than E, with no panel inside the page. Every club can be browsed without pressing anything. Nothing is computed weekly. Each region's representative is named once, below the grid. Open for K: three columns of cards or four? A 500px map or a shorter one? Miles by road or straight line?",
+     "The Clubs-J map is 500 tall, not the spec's 560. The 560 would not fit the 2800 budget. The Open for K question asks '500 as drawn or shorter', where the spec asked '560 or 480'.",
+     "On Clubs-J, the legend has 5 notes. The spec's note 6 (data) appears only on Clubs-J-2, because adding it to the main board's five-column legend would push the board past its budget.",
+     "On Clubs-J-2, frame B is drawn at 62% and the forms and phones at 80%. Text in frame B is about 8 to 9px when the canvas is at 100%. This was the only way to keep frame B, two phones, two forms and S1 to S7 under 2000px in one file.",
+     "In frame B, New Orleans is still a single '8' count circle. The spec wanted Kenner, Metairie, a '4' circle and Gretna at the eastern edge. The selected Baton Rouge pin has no town label because the popover covers it.",
+     "The spec contradicts itself on S2: its heading reads 'no club within 75 miles of Natchitoches' while its own notice lists Pineville at about 50 mi. I drew 'Near you · within 75 miles of Natchitoches' instead.",
+     "The Clubs-J base map carries a 'Houston, TX' label but not the spec's Lake Charles, Hammond and Thibodaux labels. They would collide with the Sulphur, Baton Rouge and Mandeville labels at state zoom.",
+     "The fold line crosses the second row of cards on purpose, at y 900. Card text under the dashed line is still readable."
+    ]
+   }
+  }
+ ]
+}

@@ -1,0 +1,207 @@
+{
+ "label": "newsletter-round-4-page",
+ "set": "page",
+ "results": [
+  {
+   "board": {
+    "n": 2,
+    "name": "Write beside the email",
+    "file": "Newsletter-Page-2.dc.html"
+   },
+   "drawn": {
+    "file": "Newsletter-Page-2.dc.html",
+    "height": 3950,
+    "changes": [
+     "Label strip line now reads \"LCA Newsletter · The page · Option 2\" (\"of 5\" removed). The name, the sentence and the one Sample data tag are unchanged.",
+     "Columns are now unequal: \"Your letter\" is 740px wide (62% of the page area) and \"What members will get\" is about 38%. The email preview is drawn at 65% size, has a \"Hide\" button in its header, and the Computer/Phone switch sits under that header. The slim steps bar across the top stays.",
+     "Note A: a full-width \"Start from a template or a past newsletter\" bar above the subject. It has a navy outline, a copy icon in a navy chip, the grey line \"Saves time: pick one, then change the words.\" and a chevron, and it appears on the computer, the tablet and the phone.",
+     "Note B: the writing area is 528px tall with letter text at 17px and headings at 19px. There is a \"Make bigger\" button (expand icon) at the top right of Your letter and a full-width \"Pull to make taller\" grab handle at the bottom edge. Every tool is now a bordered 44px button with 8px gaps, and the subject field is 48px tall at 17px.",
+     "Note C: the line under the steps bar now reads \"255 people will get it: 243 members and 12 you added\", with an \"Add or review people\" outline button beside it.",
+     "New row of three smaller pictures with captions. First, the Start from chooser: four Pinned templates and two Your last newsletters, each with a tiny layout picture, a grey line and \"Use this\", plus the two grey lines underneath. Second, a small Make bigger window with \"Make smaller\", \"Send a test to me\", \"Send to 255 people\" and \"Show the email\". Third, the Add or review people panel: the total, three tabs with counts (Added by you · 12 chosen), three example.com rows with Remove and where each came from, the type/paste and Import a list options side by side, the import result line, the ticked consent box, \"Add these people\", and the two grey lines about the email bank and unsubscribing.",
+     "New tablet frame drawn at a true 820 wide, about 580 tall, top part only. It shows the steps, the Start from bar, 48px tools, the letter filling the width at 18px, and a \"See the email\" button. The word \"Sulphur\" is selected with finger-sized handles and a Bold / Link / Copy bar above it.",
+     "Phones: the page phone gains the Start from bar, \"Make bigger\", 44px tools with 8px gaps and 17px letter text. The preview phone keeps \"Back to writing\".",
+     "Email header text (email option 1's look) in both previews: \"LCA NEWSLETTER\" is now 17px on the computer preview and 15px on the phone, weight 700, 0.08em letter spacing, in light gold #efd98a (matching the revised Email-1 board). \"December 2026\" is still the largest text.",
+     "The email preview now also shows the Bunkie and Baton Rouge club lines so it fills the taller column. The declared height went from 2250 to 3950 (rendered 3941)."
+    ],
+    "note": "Option 2, Write beside the email: the letter takes the larger left part of the page and a smaller live preview of the email sits on the right, with a slim steps bar across the top. For K's notes it adds a large Start from bar, a 528px writing box with Make bigger and Pull to make taller, 44px touch tools, and \\\"255 people will get it\\\" with Add or review people, plus a clearer \\\"LCA NEWSLETTER\\\" header line and new pictures of the chooser, the bigger window, the people panel and a tablet.",
+    "unresolved": [
+     "The gold Send button now reads \"Send to 255 people\" instead of \"Send to 243 members\". With 12 added people, 243 would contradict the 255 total. K should confirm this wording, and the sibling boards (Page-4, Page-5) should say the same.",
+     "The Make bigger picture is a scaled-down window (about 43%), so its text is small. A true-size window would not fit in a third of the row. The space under it in the middle column is filled by centring it vertically.",
+     "The Add or review people panel adds an \"Add these people\" button under the consent tick box. The revision implies an add action but does not name it.",
+     "The board is at 3950 against the under-4000 limit, so any later addition will need something else trimmed."
+    ]
+   },
+   "review": {
+    "file": "Newsletter-Page-2.dc.html",
+    "height": 3950,
+    "counts": "Rendered at 1440 wide, scale 1. The content is 3940px tall, so the declared height is 3950 (root and $preview both say 3950, under the 4000 limit). Before this review the content was 3961px tall against a declared 3950, so the phone captions were cut off at the bottom; that is fixed.\n\nWriting area on the computer page: the \"Your letter\" column is 752px wide on a 1198px page, 62.8 percent (62.7 percent of the 1200px browser frame). It was 740px, 61.8 percent. The column is 915px tall, the message box (tools, text, handle) is 631px and the text area alone is 528px. The letter's text is 17px.\n\nSmallest writing tool: 44px on the computer (7 tools, 8px between each), 48px on the tablet (8px between), 44px on the phone (9px between). The tablet screen is a true 820 wide (844 with its 12px bezels) and 580 tall.\n\nWhat I counted:\n- (A) The Start from bar is 710 x 60, navy outline, copy icon, exact words, at the top of the writing area before Subject. The chooser shows \"Pinned templates\" with 4 cards and \"Your last newsletters\" with 2 cards, each with a tiny layout picture, a grey line and \"Use this\", then both grey lines.\n- (B) \"Make bigger\", the \"Pull to make taller\" handle, and \"Hide\" on the preview are all present, plus the \"After pressing Make bigger\" picture with \"Make smaller\", \"Send a test to me\", \"Send to 255 people\" with its arrow, and \"Show the email\".\n- (C) \"255 people will get it: 243 members and 12 you added\" with the \"Add or review people\" button. The panel shows the total, the tabs \"Members · 243\", \"Added by you · 12\" (chosen) and \"Left out · 3\", 3 address rows each with where it came from and \"Remove\", the two ways to add, the exact result line, the tick, and both grey lines. Addresses: pat@, jordan.b@, casey.r@, sam@ and lee.t@, all example.com.\n- (D) \"LCA NEWSLETTER\" in the email header: 17px in the email's own style, raised to 20px in the side preview so it shows at about 12.8px at 64 percent scale; 15px in the phone preview; colour #efd98a, weight 700, letter spacing 0.08em.\n- (F) The strip's small line reads \"LCA NEWSLETTER · THE PAGE · OPTION 2\". There is one \"Sample data\" tag.\n\nEvery date and its weekday: Mon, Nov 23, 2026 (3 times); Mon, Nov 16, 2026; Sat, Dec 5, 2026 (4); Mon, Dec 7, 2026; Sat to Mon, Jan 16 to 18, 2027 (2); Sat, May 8, 2027 (2); Sat to Mon, Sep 5 to 7, 2026 (2).\n\nCopy checks: no em or en dashes, no USCF, no {{holes}}, no iframes, no animation, every element closed. \"of 5\" appears only in the score \"4½ of 5\".",
+    "changes": [
+     "Made the writing area wider to meet the 62 percent minimum: the left column went from 740px to 752px and the gap between columns from 20px to 16px. It is now 62.8 percent of the page (it was 61.8 percent).",
+     "Kept the side preview fitting the narrower column: changed the grey ground's padding from 7px to 6px and the preview's size from 65 to 64 percent of real size (384px wide), so nothing is clipped.",
+     "Made 'LCA NEWSLETTER' easier to read in the computer's side preview: raised it to 20px inside the scaled preview only, so it shows at about 12.8px. The month stays much larger.",
+     "Shortened the 'Add or review people' panel by about 21px (address rows 46 to 44px, smaller margins around 'Add people', the result line, the tick and the button, paste box 62 to 56px). The whole board now fits under 3950, and the phone captions are no longer cut off at the bottom.",
+     "Stopped the result line from breaking in the middle of a phrase: each part ('14 found', '12 added', '1 is already a member', '1 unsubscribed earlier, so left out') now stays on one line, so it wraps only at the dots.",
+     "Re-rendered and checked every picture in close crops. Declared height and $preview height stay at 3950 (content is 3940px)."
+    ],
+    "remaining_concerns": [
+     "On the phone, only about 125px of the letter shows above the 'See the email' bar, because the steps, the saved line, the two-line Start from bar, the 'Your letter' heading and the Subject come first. It is the top of a scrolling page and 'Make bigger' is there, but K may feel the phone letter still looks squeezed.",
+     "The 'After pressing Make bigger' picture is a 43 percent thumbnail (tools draw at about 19px), so its words are hard to read, though its caption explains it. The spec asks for this picture to be small.",
+     "The 20px 'LCA NEWSLETTER' in the side preview is a little larger, compared with the month, than in email option 1's own 17px. I did this on purpose so it reads at preview size. It could be reverted to 17px if the side preview must match email option 1 exactly.",
+     "The Send button reads 'Send to 255 people' instead of the earlier 'Send to 243 members', following note C's new count. The other page boards (4 and 5) should use the same words.",
+     "The tablet frame is 580 tall, a little under the spec's 'about 620'. I left it so the board stays under its height limit.",
+     "The two event ranges are written 'Sat to Mon, Jan 16 to 18, 2027' and 'Sat to Mon, Sep 5 to 7, 2026', as the spec words them, so the end day has a weekday but no repeated month."
+    ]
+   }
+  },
+  {
+   "board": {
+    "n": 4,
+    "name": "The letter on the desk",
+    "file": "Newsletter-Page-4.dc.html"
+   },
+   "drawn": {
+    "file": "Newsletter-Page-4.dc.html",
+    "height": 3950,
+    "changes": [
+     "Label strip: the small line now reads 'LCA Newsletter · The page · Option 4' with no 'of 5'. The name, the sentence and the single 'Sample data' tag are unchanged.",
+     "Email header text (note 1): 'LCA NEWSLETTER' in the navy band is now 17px on the computer sheet, tablet sheet and make-bigger view, and 15px in the phone sheet, side mini preview and phone preview. It is weight 700, letter spacing 0.08em, in light gold #efd98a to match the revised Email-1. 'December 2026' is still the largest text.",
+     "Page-specific change: the writing column grows to 750 of the 1200 page width (62.5 percent) and the letter sheet stays the hero. The phone-shaped preview on the right shrinks to 250 wide and gains a 'Hide' button beside 'On a phone / It changes as you type.'",
+     "Note A: a 48px navy-outlined 'Start from a template or a past newsletter' bar with a copy icon and the grey line 'Saves time: pick one, then change the words.' sits on the desk directly above the floating tools. The same bar appears on the tablet and on the phone (two lines there).",
+     "Note A picture: the chooser panel. 'Pinned templates' has four cards (Monthly newsletter, Tournament announcement, Results and thanks, Short notice) and 'Your last newsletters' has two (November 2026, sent Mon, Nov 16, 2026 to 243 members; December 2026, as it is now, Draft). Each card has a tiny layout picture, its grey line and a 'Use this' button. Under the groups are the two grey lines, worded exactly as the spec gives them.",
+     "Note B: every desktop tool is 44px tall with 8px gaps, and the letter text is 17px. 'Make bigger' with an expand icon sits at the top right of the writing area. The sheet has a fixed scroll area of 528px (the sheet is 676px tall in all) with a quiet scrollbar, then a full-width 'Pull to make taller' grab handle. The window height and dock were reworked so the handle clears the fixed bottom bar.",
+     "Note B pictures: 'After pressing Make bigger' is an 800-wide window drawn at 0.44 scale. The tools and letter fill it, with 'Make smaller', 'Show the email', 'Send a test to me' and 'Send to 255 people' still in reach. 'On a tablet, by touch' is a true 820-wide tablet showing the top part only, cropped at 660px with a fade. It has the Start from bar, 48px labelled tools, the letter across the full width, a 'See the email' button at the top, and 'president' selected with finger-sized round handles and a Bold / Italic / Link pop-up.",
+     "Note C: the bottom bar now reads '255 people will get it:' with '243 members and 12 you added' beneath, plus an 'Add or review people' button. 'More options' is still closed, and the numbers 2 and 3 stay beside 'Send a test to me' and the gold Send button with its arrow.",
+     "Note C picture: the 'Who gets it' panel. It shows the total '255 people will get it' and the tabs 'Members · 243', 'Added by you · 12' (chosen) and 'Left out · 3'. Below are two example.com rows with where each came from and 'Remove', 'Show all 12', and 'Add people' with the two ways side by side (a type-or-paste box, and 'Import a list' with 'Choose a file'). Then come the import result line in exact words, the ticked 'These people asked to get email from LCA.', and the two grey lines.",
+     "Board layout now follows the revision: label strip, computer page, a row of three captioned pictures (Start from, Make bigger, Add or review people), the tablet with a caption column, then the two phones. Phone tools grew to 48px and the phone letter text to 17px. 'Send asks once to confirm' moved into the computer caption to free room in the bar.",
+     "Self-check: rendered at 0.5 and at 1 with PIL crops over 4 rounds. Fixed the tool bar overflowing the 750 sheet, the pull handle hidden under the bar, the make-bigger window clipping, the tablet pop-up covering the heading, the people-panel tab touching the edge, and the box hint clipping. Content ends at 3938, so the root and $preview are declared at 3950. Tags are balanced, there are no em or en dashes, and the skeleton, kit link and data-dc-script block are kept."
+    ],
+    "note": "Option 4, The letter on the desk: you type straight onto the letter as members will read it, now on a wider 750px sheet with a small phone preview beside it that can be hidden. For K's notes it adds the clearer gold 'LCA NEWSLETTER', a prominent 'Start from a template or a past newsletter' bar, 'Make bigger' and 'Pull to make taller' for touch editing, and '255 people will get it' with 'Add or review people', each shown in its own picture alongside a tablet and the two phones.",
+    "unresolved": [
+     "The Send button now reads 'Send to 255 people', where the flow had 'Send to 243 members'. The revision changes the total to 255, so the old label would be wrong, but Page-2 and Page-5 still say 'Send to 243 members'. The lead should pick one wording for all three.",
+     "The 'After pressing Make bigger' picture is an 800-wide window drawn at 0.44 scale, so its type is not true size (the letter text shows at about 7.5px). The revision asked for a small picture, and a true-size one would not fit the row or the 4000 limit.",
+     "The side phone preview is drawn at 0.59 scale (its 'LCA NEWSLETTER' line shows at about 9px). This keeps it the small part beside the 62.5 percent writing area, as K asked; the phone preview at the bottom of the board shows it at true size.",
+     "Height is 3950, only 50 under the 4000 limit, so any later addition needs a matching cut. The tablet crop and the panel spacing are where the slack is."
+    ]
+   },
+   "review": {
+    "file": "Newsletter-Page-4.dc.html",
+    "height": 3950,
+    "counts": "Final size 1440 x 3950. The board renders at 3938px, so the root and $preview stay at 3950, under 4000.\n\nWriting area on the computer page: the letter sheet is 750px wide on a 1198px page, 62.6 percent. The sheet is 677px tall, made of the navy band, the subject line and a 528px writing body. The \"Pull to make taller\" handle (46px) sits under it. The letter's text is 17px.\n\nSmallest writing tool:\n- Computer: 44px (Bold, Italic, Heading, List, Link, Undo, \"Add a photo, event or line\"), 8px apart.\n- Tablet: 48px, 8px apart, inside a 820px screen (852px including the 16px bezel).\n- Phone: the six icon tools are 48px tall, about 47px wide and now 8px apart. \"Add a photo, event or line\" is 44px.\n\nEvery date, each with its weekday:\n- Mon, Nov 23, 2026 (computer caption, and \"From the list imported Mon, Nov 23, 2026\")\n- Mon, Nov 16, 2026 (\"Sent Mon, Nov 16, 2026 to 243 members\")\n- Sat, Dec 5, 2026 (Coming up)\n- Sat to Mon, Jan 16 to 18, 2027 (the partner event, \"Registers on the organizer's site ↗\")\n- Months on their own: December 2026 and November 2026\n\nTimes read \"2:15 PM\".\n\nChecks that passed:\n- Copy: no em or en dashes, no USCF, no .5, only example.com addresses (pat@example.com, coach.r@example.com), no AI references.\n- Furniture: exactly one \"Sample data\" tag. The strip's small line reads \"LCA NEWSLETTER · THE PAGE · OPTION 4\" (set in capitals by CSS), with no \"OF 5\".\n- File: the skeleton is intact, there are no {{holes}}, no iframe and no animation, and every element is closed.",
+    "changes": [
+     "Phone writing tools: added an 8px gap between the six icon tools, and a little more room inside the tool bar. They were touching edge to edge.",
+     "Phone page heading: 'Saved at 2:15 PM' now reads 'Saved automatically at 2:15 PM', as the spec words it. 'December 2026 · Draft' sits on the first line and the tick with 'Saved automatically at 2:15 PM' on its own line, kept together, with no stray separator dot.",
+     "The tablet heading's tick and 'Saved automatically at 2:15 PM' are now held together on one line. It looks the same in this render.",
+     "Checked and left as they were, because they meet the brief:",
+     "A: the 48px navy-outlined Start from bar spans the writing column with the exact words. The chooser picture has its two groups: four pinned templates and two last newsletters, each with 'Use this', and both grey lines.",
+     "B: Make bigger, Pull to make taller, Hide on the side preview, the 'After pressing Make bigger' picture (with Make smaller, Show the email and the Send buttons), and the 820 tablet with 48px tools, 'See the email' and the selection handles.",
+     "C: the dock reads '255 people will get it:' with '243 members and 12 you added' under it, plus 'Add or review people'. The panel has the total, the three tabs with counts, the added rows with where each came from and Remove, both ways to add, the exact result line, the tick box and both grey lines.",
+     "D: the 'LCA NEWSLETTER' band text is 17px on the computer and 15px on the phone, weight 700, 0.08em spacing, colour #efd98a, in the sheet, the side preview, both phones, the tablet and the Make bigger picture.",
+     "E: the three steps, the closed 'Add a photo, event or line', the arrow on Send, the closed More options, the side phone preview, and the two phones with See the email and Back to writing are all kept.",
+     "I: the declared height of 3950 matches the 3938px render."
+    ],
+    "remaining_concerns": [
+     "In the row of three smaller pictures, the 'After pressing Make bigger' picture is about 414px tall, while the two panels beside it are about 790px. That leaves an empty patch under the middle caption, and the three captions do not line up. I kept the window in proportion rather than stretch it into a tall, phone-shaped window.",
+     "The pictures drawn at reduced scale (the mini phone preview at about 0.59 and the Make bigger window at 0.44) have small type. 'LCA NEWSLETTER' there is about 9px and 7.5px. It is in proportion and clearly bigger than before, but it will not read as 17px in those thumbnails.",
+     "The dock splits the count line in two: '255 people will get it:' in bold, then '243 members and 12 you added' smaller under it. The words are exact but not on one line.",
+     "The Send button reads 'Send to 255 people', where the earlier spec had 'Send to 243 members'. I kept it because it matches the new total of 255.",
+     "On the phone page the writing tools are icons without words, as in the earlier version. They are 48px tall and 8px apart."
+    ]
+   }
+  },
+  {
+   "board": {
+    "n": 5,
+    "name": "Everything on one screen",
+    "file": "Newsletter-Page-5.dc.html"
+   },
+   "drawn": {
+    "file": "Newsletter-Page-5.dc.html",
+    "height": 3950,
+    "changes": [
+     "Label strip line now reads 'LCA Newsletter · The page · Option 5' (dropped 'of 5'); name, sentence and the single Sample data tag kept word for word.",
+     "Email header text in both previews (side mini preview and the phone preview) made clearly readable: 'LCA NEWSLETTER' at 17px on the computer email and 15px on the phone, weight 700, letter spacing 0.08em, light gold #ecd68a on navy; 'December 2026' stays the largest line.",
+     "Note A: added a 48px navy-outlined 'Start from a template or a past newsletter' bar with a bookmark icon, the grey line 'Saves time: pick one, then change the words.' and '4 pinned · 2 recent'. It runs the full desk width above the subject strip, and the same bar appears on the tablet and the phone.",
+     "Page-specific: the panel tabs are now only 'Preview' (chosen) and 'Who gets it' with a 255 count. 'Past newsletters' left the tabs.",
+     "Note B: columns changed to 66 / 34. The letter box has a 'Your letter' header with a 'Make bigger' button at its top right, writing tools 44px tall with 8px gaps and words, letter text at 17px in a 540px-tall box, and a wide 'Pull to make taller' grab handle along the bottom edge. The side preview gained 'Hide', and Phone/Computer moved to its own row. The page no longer has to fit one screen exactly.",
+     "Note C: the strip gained a second row reading '255 people will get it: 243 members and 12 you added', with an 'Add or review people' button and 'Kept in LCA's email bank for next time'. The Send button now reads 'Send to 255 people'.",
+     "New row of three captioned pictures. First, the Start-from chooser: 4 pinned templates and 2 recent newsletters, each with a layout thumbnail and 'Use this', plus the two grey lines. Second, a Make bigger thumbnail showing Make smaller, Send a test and Send in reach. Third, the 'Who gets it' tab opened in place: the 255 total, Members · 243 / Added by you · 12 / Left out · 3, example.com addresses with where each came from and Remove, the paste box, Import a list, the import result line, the required tick box, Add to the list, and the two email-bank lines.",
+     "New tablet picture, true 820 wide and 640 tall. It shows See the email as a button, the Start from bar, '1 Write' with the subject and Add or review people, 48px tools, 18px letter text, and a selected word with large drag handles and a Bold / Italic / Link bubble.",
+     "Phones reworked: Start from bar first, then the subject and a taller letter box with 46px tools and a Make bigger button. See the email stays at the foot. The preview phone's tabs are Preview / Who gets it, with the larger header text.",
+     "The computer caption was rewritten for the new layout. The broken past-newsletters tab was removed. The tags were checked as balanced. The board was rendered at scale 1 and checked crop by crop. It has no em or en dashes."
+    ],
+    "note": "Option 5 keeps everything in one compact view: a single strip for Subject, Test and Send, the letter on the left and a small tabbed panel (Preview, Who gets it) on the right. For K's notes it gains a wide 'Start from a template or a past newsletter' bar, a letter box at two thirds of the width with Make bigger and Pull to make taller, a clearer 'LCA NEWSLETTER' in the email header, and '255 people will get it' with Add or review people, which opens in the Who gets it tab.",
+    "unresolved": [
+     "The label sentence kept word for word still says 'Everything fits on one screen with no scrolling', but the revision lets the page grow past one laptop screen because the letter box is now at least 520px tall. The page is about 1,040px tall on a computer. K may want to reword that sentence.",
+     "On the page phone, Check and Send now sit under the letter, below the visible part of the screen, so the letter box gets more room. Only step 1 and See the email show in that picture.",
+     "The tablet picture shows only the top part, as the spec asks, so steps 2 and 3 are not drawn there. Its strip shows '1 Write', the subject and Add or review people.",
+     "The Make bigger thumbnail is drawn at 45 percent scale to fit the middle of the three-picture row, so its text is small. Its caption explains what it shows."
+    ]
+   },
+   "review": {
+    "file": "Newsletter-Page-5.dc.html",
+    "height": 3950,
+    "counts": "Rendered height 3928px with the root set to auto, so the declared root height and the $preview height stay at 3950, which is under 4000. The page is 1440 wide with a 1200 column. On the computer page, the browser view is 1198 wide and the writing area (\"Your letter\") is 754 wide, which is 62.9 percent of the page. The writing area is 697px tall, and the text box inside it is 540px tall with the letter at 17px. The side panel is 388 wide (32 percent). Smallest writing tool: 44px on the computer (all 8 controls, including Make bigger, now 44px, with 8px gaps), 48px on the tablet (all 8 controls), and 44px on the phone (the six tool buttons are 46px; Add a photo and Make bigger are 44px). The tablet screen is a true 820 wide inside 12px bezels (844 outside) and 640 tall. The two phones are 390 wide. The chooser has 2 groups, 4 pinned templates and 2 last newsletters, each card with \"Use this\", and both grey lines. The Who gets it panel shows \"255 people will get it\", 3 tabs (Members · 243, Added by you · 12 (chosen), Left out · 3), 3 added rows with where each came from and \"Remove\", \"Show all 12\", the 2 ways to add, the result line, the tick and both grey lines. Addresses: 5, all at example.com. \"LCA NEWSLETTER\" is 17px, weight 700, letter spacing 0.08em, in #ecd68a in the computer email; it shows at about 9.7px because the side preview is scaled to 0.568. On the phone preview it is 15px. Em dashes 0, en dashes 0, USCF 0, \".5\" in the copy 0. Dates, each with its weekday: Mon, Nov 16, 2026 (November issue sent); Mon, Nov 23, 2026 (twice, the import notes); Sat, Dec 5, 2026 (3 times); Sat to Mon, Jan 16 to 18, 2027 (3 times); Sat, May 8, 2027 (twice); Sat to Mon, Sep 5 to 7, 2026; Mon, Dec 7, 2026 (Picayune first Monday, at 6:00 PM). Times: 2:15 PM (3 times) and 6:00 PM. The label strip's small line is \"LCA NEWSLETTER · THE PAGE · OPTION 5\", with no \"OF 5\" and one \"Sample data\" tag. No overflow or clipping was found by the measuring script or in close crops at scale 1.",
+    "changes": [
+     "Made Make bigger (computer) and Hide (preview) 44px tall instead of 40, so every writing control on the computer is at least 44px.",
+     "On the tablet, the Make bigger button now shows the words 'Make bigger' beside its icon, as the notes ask, not the icon alone.",
+     "Template and newsletter names in the chooser now wrap evenly ('December 2026, / as it is now' instead of leaving 'now' alone on a line).",
+     "On the phone, the Start from button's title and grey line now wrap evenly, so no word sits alone on a line.",
+     "The import result line now breaks only between its four parts, so '1 unsubscribed earlier, so left out' stays together.",
+     "The More options summary is now two clean lines ('Top of the email · Who gets it' / 'Words shown in the inbox · Where replies go') with no dot left at a line end.",
+     "Moved the Bold / Italic / Link pop-up on the tablet up 6px so it clears the selection handle.",
+     "Checked and left alone: the skeleton, kit link, support.js, one style block, $preview 1440 x 3950, and the root height 3950, which matches the 3928 render rounded up."
+    ],
+    "remaining_concerns": [
+     "The label strip sentence is kept word for word ('Everything fits on one screen with no scrolling...'), but the revision lets the page grow past one screen to make room for the 540px writing box. K may want to change the sentence to match.",
+     "In the computer side preview, 'LCA NEWSLETTER' is 17px in the email itself, but the preview is scaled to 0.568, so it shows at about 9.7px. It is in proportion and clearly readable in light gold on navy, but it is still small in absolute terms.",
+     "The 'After pressing Make bigger' picture is a 0.45 scale of an 840-wide window, so its text is only a few pixels tall. It shows the layout (tools, Make smaller, Send buttons) but the words cannot be read.",
+     "On the tablet, the Bold / Italic / Link pop-up covers the end of the line above the selected word. This is how a real touch selection looks, but someone could read it as an overlap.",
+     "On the phone, Make bigger is an icon-only button (with a spoken label for screen readers) because the words do not fit beside 'Add a photo, event or line'.",
+     "The Send button and the Make bigger picture say 'Send to 255 people', not the original 'Send to 243 members'. This follows the new count, but K should confirm it."
+    ]
+   }
+  }
+ ],
+ "setCheck": {
+  "per_file": [
+   {
+    "file": "Newsletter-Page-2.dc.html",
+    "height": 4000,
+    "verdict": "Handles all of K's notes: the full-width Start from bar sits at the top of 'Your letter', the letter column is now 63.5 percent of the page beside a 'What members will get' preview with Hide, the count line reads in full with 'Add or review people', and the chooser and people pictures are word for word the same as on 4 and 5; with the gaps between sections widened it looks as finished as the other two."
+   },
+   {
+    "file": "Newsletter-Page-4.dc.html",
+    "height": 4000,
+    "verdict": "Still clearly the letter lying on a desk: a 750 wide sheet with the small phone-shaped preview (Hide) and the fixed bottom bar. It now has the same Start from bar, chooser and people panel as 2 and 5, and the bottom bar reads '255 people will get it: 243 members and 12 you added' with 'Add or review people'. Its finish matches the set."
+   },
+   {
+    "file": "Newsletter-Page-5.dc.html",
+    "height": 4000,
+    "verdict": "Still the compact strip-and-tabs layout: the writing box is 62.8 percent wide and its text area is 540px tall, and the 'Who gets it' tab opens the shared people panel in place. The Start from bar now uses the exact words on computer, tablet and phone, and the Make bigger picture now shows 'Show the email' with nothing clipped. It is as finished as 2 and 4."
+   }
+  ],
+  "changes": [
+   "All three: replaced each board's own 'After pressing Start from a template or a past newsletter' chooser with one shared chooser (same cx-* CSS block added to each file). It has the same markup: title, the grey line 'Saves time: pick one, then change the words.', the groups 'Pinned templates' (pin icon, four cards) and 'Your last newsletters' (clock icon, two cards), a layout thumbnail and a 'Use this' button on each card, and the two grey lines. The caption is the same on all three: 'Pinned templates first, then the last ones you sent.' Before this, P2's subtitle read 'Pick one, then change the words.', P4 had no group icons and used cream cards, and P5 had a gold dot by 'Draft' and a different caption.",
+   "All three: replaced each board's own 'After pressing Add or review people' panel with one shared panel. It shows 'Add or review people', the total '255 people will get it', '243 members and 12 you added', the tabs 'Members · 243', 'Added by you · 12' (chosen) and 'Left out · 3', and the rows pat@example.com (Typed in today), coach.rivers@example.com and chessparent@example.com (both 'From the list imported Mon, Nov 23, 2026'), each with 'Remove'. Under them: 'and 9 more · Show all 12', the two ways to add (box filled with sam@example.com and lee@example.com, and 'Choose a file'), the result line, the tick, the button 'Add these people' and the two grey lines. Before this, the addresses, buttons ('Add' vs 'Add to the list' vs none), tab styles (pills on P5) and Remove styles all differed. P5 keeps its Preview / Who gets it 255 tab head in place of the close header because it opens in place, and its caption says so.",
+   "All three: the three-picture row now uses the same column widths (384 | rest | 404). The Make bigger thumbnails on P2 and P5 use the same scale (.4333).",
+   "Start from bar made identical on computer and tablet: one line, 48px tall (52 on the tablet), white with a 1.5px navy outline, a 30px navy square with a bookmark icon, 15.5px bold words, 14px grey words, chevron. P2 had a cream two-line 60px bar with a copy icon. P4 had a bare copy icon. P5 had extra text '4 pinned · 2 recent', and its tablet bar was cut to 'Saves time'.",
+   "Phones: the Start from bar on all three uses the same two-line form with the navy square bookmark and the same sizes (15px / 13px). P4 gained the square, and P5 lost the chevron and its text-wrap balancing so its wording breaks the same way as 2 and 4.",
+   "P2: the letter column widened from 752 to 762 (63.5 percent of the page) with 16px side padding so the one-line Start from bar fits. The preview email is now at .625 scale in a 375 wide frame. The preview note 'Changes as you type. / Shown smaller than real size.' is kept to two lines (it had wrapped to three).",
+   "P2: count line weight set to 700 to match. 'Add or review people' is now a full 44px button with the person-plus icon (it was a 36px small button with the group icon). The gaps between the board's sections went from 20 to 32px so the tablet and phones no longer crowd each other.",
+   "P4: 'Make bigger' picture's bottom bar now reads '255 people will get it:' with the colon, like the main bottom bar. The phone-shaped side preview's 'LCA NEWSLETTER' was raised from 15 to 21px, which shows at about 12.5px after scaling.",
+   "P5: 'Add or review people' buttons (count line and tablet) use the same person-plus icon at 44px. The side preview's 'LCA NEWSLETTER' was raised to 22px (about 12.5px after scaling), and the header gold changed from #ecd68a to the shared #efd98a. The phone writing tools' gap went from 6 to 8px.",
+   "P5: the 'After pressing Make bigger' picture gained 'Show the email' (the set's way back from Hide). Its top bar is now split into [Show the email][Make smaller] and [Send a test to me][Send to 255 people ▾]. Before, the Send button was clipped at the right edge.",
+   "P5 tablet: the selected word moved from 'youth' to 'Sulphur', and the Bold / Italic / Link pop-up now sits over empty space instead of covering 'weekend in Sulphur.'",
+   "All three: declared root height and $preview set to 4000. The natural renders are P2 3994, P4 3986 and P5 3954, so each rounds up to 4000, which is the limit. All three were rendered at scale 1 after every change and checked side by side and in close crops. Tags balance, and there are no em or en dashes, {{holes}}, iframes or animation."
+  ],
+  "measurements": "Computer frames are 1200 wide. Writing area share of page width, then its height:\n- P2: letter column 762 wide, 63.5 percent. The column is 903px tall, the message box (tools, text and pull handle) is 631px, and the text area is 528px.\n- P4: writing column 750 wide, 62.5 percent. The column is 911px tall, and the sheet with the pull handle is 677px.\n- P5: writing box 754 wide, 62.8 percent. The box is 697px tall, and the text area is 540px.\nPreviews: P2 388 wide, P4 290 wide, P5 388 wide.\nThe letter text is 17px on all three. The Start from bar is 48px tall on all three computers (P2 728 wide, P4 750, P5 1158 full width above the strip) and 52px on the tablets.\nSmallest tool height, with the smallest gap between tools:\n- Computer: 44px on all three, with 8px gaps.\n- Tablet: 48px on all three, with 8px gaps.\n- Phone: 44px on P2 (9px gaps), 44px on P4 (8px gaps), 46px on P5 (8px gaps, was 6).\nTablets are a true 820 inside the bezel on all three. Their visible heights are P2 580, P4 about 644 (in a 660 crop) and P5 640.",
+  "remaining_concerns": [
+   "All three boards are now at the 4000 height limit (natural 3954 to 3994). Anything added later must be paid for by cutting something else.",
+   "The people panel's head differs on purpose on P5. It opens in place under the 'Preview / Who gets it 255' tabs, so it has no 'Add or review people' line and no close button. Its caption explains this. Everything below the head matches 2 and 4 word for word.",
+   "P4 shows the count on two lines ('255 people will get it:' then '243 members and 12 you added') because its single bottom bar cannot fit one line beside four buttons. The words and figures match the other two exactly.",
+   "The P2 tablet is cropped at 580 tall, a little under the spec's 'about 620'. I left it to stay under the height limit.",
+   "The tablet text-selection pop-up still differs: P2 shows Bold / Link / Copy, while P4 and P5 show Bold / Italic / Link. It is not one of the shared pieces, so I left it as each option drew it.",
+   "Small-text readability inside the scaled 'After pressing Make bigger' thumbnails (about 7px body text) is the same on all three. It works as a picture of the layout, not as readable text."
+  ]
+ }
+}

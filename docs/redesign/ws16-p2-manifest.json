@@ -1,0 +1,829 @@
+{
+ "slices": [
+  {
+   "name": "ws16-p2-01-the-letters-rules-and-its-cleaner",
+   "order": 1,
+   "brief": "Checkpoint P's first step: the rules of a newsletter letter, written once for the page and the server, and the cleaner every saved letter passes through. Two new files that nothing imports yet, so the step can be built in the free days before K's switch-on day without touching a file that the five-spot fix or WS16 steps 9 to 11 change. It adds no switch and no migration. What it leaves unchanged: everything. Nothing imports either file, so every page, every email and the worker's bundle are byte for byte as on main. Built on the branch redesign/ws16-page, cut from main, in its own working copy. About six files; the lead's scout composes the brief from this entry.\n\n1. domain/mail/letter.ts (new, pure, no import outside domain/): letterParts(html) reads the h2 headings of a cleaned letter in order and answers [{ title, name }]; a name is the heading's words in lower case with letters and digits kept and every other run turned into one hyphen, and a second heading with the same words gets \"-2\", a third \"-3\"; a heading with no words is skipped. withAnchors(html, parts) writes an empty named anchor just before each part's heading (<a name=\"results\"></a>), the form part one's build notes ask for, since a target with only an id fails in Gmail and classic Outlook. STARTERS: 'blank' (the month's band and an empty page), 'monthly' (\"Monthly newsletter\": A note from the president, Coming up, Results, From the clubs, Scholastic, Board business, in that order), 'results-and-thanks' and 'short-notice', each holding headings only, and the prompts of the empty parts as the board words them (\"Write your opening here\", \"Add what is coming up\", \"Add results or club news\"). defaultSubject(month) answers \"LCA Newsletter · December 2026\" for December 2026. LETTER_MAX_BYTES = 80000.\n2. functions/utils/mail/letterClean.ts (new): export async function cleanLetterHtml(html), which answers the cleaned letter, or null for a letter it cannot make clean. It uses the method of sanitizePostHtml in functions/utils/posts.ts (the Workers runtime's HTML rewriter with an allow list), narrowed to what the editor makes and with that method's blind spot closed. Kept: p, br, strong, em, h2, h3, ul, ol, li, hr and a. Every attribute is removed. A link keeps its href only when it starts with https://, http:// or mailto: and holds no quote mark, angle bracket, backtick, space or control character; any other link loses its tag and keeps its words; a site path is refused, since an email has no page to be relative to. Removed with everything they hold: script, style, iframe, object, embed, img, svg and math, and the tags whose inside the rewriter hands on as raw text: textarea, title, noscript, xmp, noembed, noframes, plaintext and template. That second group is the blind spot: sanitizePostHtml removes only script, style, iframe, object and embed with what they hold and unwraps every other tag that is not on its list (functions/utils/posts.ts lines 68 to 75), so <textarea><img src=x onerror=alert(1)></textarea> would leave a live img behind once the textarea's own tags are gone. Any other tag is removed and its words kept; comments are removed. Last, the cleaner cleans its own result once more and answers it only when that second pass changes nothing; otherwise it answers null and the caller refuses the letter in words. So a saved letter is always one the cleaner would leave alone.\n3. Tests. test/unit/mail-letter.test.ts (new): the parts and their names, two same headings, an empty heading, the anchors, the six headings in order, the default subject, and that every sample word in the file is plainly made up (decision 39). test/integration/mail-letter-clean.test.ts (new, in the integration suite because that suite runs inside the Workers runtime): script, style, img, iframe, onclick, a javascript: link, a data: link, a comment and broken markup are gone or made safe; one case for each of textarea, title, noscript, xmp, noembed, noframes, plaintext, template, svg and math, each holding an img with an onerror and a link with an onclick, and nothing of either is left; a single-quoted link that holds a double quote (href='https://x\" onclick=\"y') comes out with no onclick and no href; the allowed tags come out as they went in; cleaning twice changes nothing; a result the second pass would change is answered as null; a letter over LETTER_MAX_BYTES is the caller's to refuse, not the cleaner's. The scout also runs the same inputs once through sanitizePostHtml, in the same runtime and without changing it, and the record states what it lets through: mending the News posts' cleaner is a small change of its own, put to K, and not part of this half.\n4. The record: the page half's part of REDESIGN_STATUS.md is opened in WS16 part two step 3, with the switch. This step's block is written then, from the notes kept here.\n\nCovers the design scout's P7 (the usual six headings; the list made from the headings and not typed).",
+   "files": [
+    "domain/mail/letter.ts (new: the parts, their names, the anchors, the starters, the default subject, the cap)",
+    "functions/utils/mail/letterClean.ts (new: cleanLetterHtml)",
+    "test/unit/mail-letter.test.ts (new)",
+    "test/integration/mail-letter-clean.test.ts (new)"
+   ],
+   "acceptance": [
+    "Gate green: npm run lint (13 errors and 13 warnings, unchanged, none in a file the step touches), npm run build, npm run typecheck:functions, npm run check:bundle, npm run test:all, and one run of npm run test:a11y with test/a11y/baseline.json unchanged. Record line: the block's \"- Checks:\" line gives each figure once, and its \"Worker\" line gives the daily-emails worker's dry-run upload against the base, measured first.",
+    "The parts: a letter's headings give the list and the names, in order, with a number on a repeat, and an anchor before each part (test/unit/mail-letter.test.ts). Record line: the block's \"The letter's rules\" part.",
+    "The cleaner: nothing but p, br, strong, em, h2, h3, ul, ol, li, hr and safe links leaves it; every tag whose inside is raw text is removed with what it holds; a link with a quote mark in its address is dropped; and the result is one the cleaner would leave alone (test/integration/mail-letter-clean.test.ts). Record line: the block's \"The cleaner\" part, and one sentence on what the same inputs do to the News posts' cleaner.",
+    "Nothing imports either file: test/unit/mail-worker-closure.test.ts and test/unit/mail-seam-bytes.test.ts are unchanged and green, and the worker's dry-run upload equals the base. Record line: \"What ships with every switch off: Nothing a visitor or a member meets.\""
+   ],
+   "verify_items": [
+    {
+     "item": "Where the cleaner can be tested",
+     "finding": "Confirmed on 1cf41c2: vitest.integration.config.ts runs test/integration inside the Workers runtime, so the runtime's HTML rewriter class is there; the unit suite runs in node, where it is not. sanitizePostHtml (functions/utils/posts.ts line 63) uses that class, and no file under test/ names sanitizePostHtml."
+    },
+    {
+     "item": "What the editor writes",
+     "finding": "Confirmed on 1cf41c2: src/areas/governance/components/RichTextEditor.tsx offers bold, italic, heading level 2, bullet list, ordered list and link. Not checked: which other tags the editor kit's typing shortcuts can make (a quote, a code block); the scout lists them, and the cleaner keeps their words and drops the tag."
+    },
+    {
+     "item": "The starters' headings",
+     "finding": "Not checked: the headings the board gives \"Results and thanks\" and \"Short notice\"; the scout reads them on Newsletter-Page-4's chooser picture first. \"LCA tournament announcement\" and \"Club tournament announcement\" are not starters of this half."
+    },
+    {
+     "item": "The News posts' cleaner and raw-text tags",
+     "finding": "Confirmed by reading on 1cf41c2, not run: functions/utils/posts.ts lines 68 to 71 remove with what they hold only script, style, iframe, object and embed, and lines 72 to 75 unwrap any other tag that is not on the list, so textarea, title, noscript, xmp, noembed, noframes, plaintext and template are unwrapped and their inside is kept as it was typed. Not checked: what the runtime's rewriter hands on for the inside of each; this step's tests settle it for the letter's cleaner and the scout's one run settles it for News posts. Not checked: that a second pass over a cleaned letter is the same byte for byte for the allowed tags; the scout proves it first, since the cleaner's last check rests on it."
+    }
+   ],
+   "flags": [
+    "none (no switch is added or read)"
+   ],
+   "migrations": [],
+   "tests": [
+    "test/unit/mail-letter.test.ts (new)",
+    "test/integration/mail-letter-clean.test.ts (new)",
+    "test/unit/mail-worker-closure.test.ts (unchanged)"
+   ],
+   "risks": [
+    "A cleaner that lets something through: every tag whose inside is raw text is removed with what it holds, a link with a quote mark in its address is dropped, the result must be one the cleaner would leave alone, and the tests name each such tag. The preview is a closed frame (WS16 part two step 4), so a miss cannot run in an admin's page, and each issue's public page (step 11) cleans the words again when it reads them.",
+    "A heading's name that changes when its words change breaks nothing: the list and the anchors are made together at each send."
+   ],
+   "estimated_size": "small"
+  },
+  {
+   "name": "ws16-p2-02-the-navy-look",
+   "order": 2,
+   "brief": "Checkpoint P's second step: the email's navy look, the LCA president's pick (decision 53), board Newsletter-Email-6, \"The navy band, with In this issue\". One pure function in domain/, so the server sends with it and the page's side preview draws with it, and one image. functions/utils/emailLayout.ts is not edited. It adds no switch and no migration. What it leaves unchanged: every email the site sends, byte for byte, since nothing imports the new layout until WS16 part two step 6; the one line it adds to a file already on main, a constant in domain/mail/footer.ts, is read by nothing else, and the worker's bundle is the same, measured. About seven files; the lead's scout composes the brief from this entry and reads the board's picture first.\n\n1. domain/mail/newsletterLayout.ts (new, pure; imports domain/mail/letter.ts alone): export function renderNewsletter({ siteUrl, month, subject, preheader, bodyHtml, footerHtml }) answers the whole email. In order: the hidden inbox preview line when one is given; the band, navy #1a2744, with the rook at its left (siteUrl + '/email-rook.png', alt \"\"), \"LCA NEWSLETTER\" in gold on the navy, set larger as decision 33 asks, the month in white under it, and a thin gold rule; the \"In this issue\" strip on cream #f8f4e8, its label in the board's dark bronze #866a1e, the parts as underlined links in two columns, one column under about 340px, each link tall enough to press, each pointing at its part's named anchor; the strip is left out when the letter has fewer than two parts; the body, serif reading text, sans headings each with a short gold rule above, links underlined, with withAnchors applied; the footer on cream: footerHtml exactly as given, then the newsletter's follow line from domain/mail/footer.ts when that file holds one, \"LCA on Facebook\" (K's choice 6), and nothing after it. The line \"Louisiana Chess Association\" with the site's name, which today's layout writes under every email, is not on the board and is not drawn here: the band already names LCA. 600px wide at most. Light and dark, as the board's phone pictures draw them. month, subject and preheader are escaped here; bodyHtml is a cleaned letter and footerHtml is listMailParts' own.\n2. domain/mail/footer.ts: one new constant, NEWSLETTER_FOLLOW_LINE = { label: 'LCA on Facebook', url: the page's address }, so the footer's words stay in their one place (decision 23); it is added only if K's choice 6 keeps the line. Nothing else in that file changes, and listMailParts and emailListFooter are not touched, so the footer of every email sent today is the same bytes.\n3. public/email-rook.png (new): the rook mark cut from the approved board, on the band's navy so it needs no see-through ground, with its width and height written in the tag.\n4. Tests. test/unit/mail-newsletter-layout.test.ts (new) with test/unit/fixtures/newsletter-navy.html (new): the bytes of one made-up issue; month, subject and preheader escaped; the footer comes out as it went in, with the follow line after it and nothing after that; no postal address and no slot for one (decision 23); the list equals letterParts and each link has its anchor; a letter with one part has no strip; the whole email is under 102,000 bytes with the letter at LETTER_MAX_BYTES; gold is text on the navy alone, and the label on cream is #866a1e. test/unit/mail-seam-bytes.test.ts and test/unit/mail-worker-closure.test.ts unchanged.\n5. A picture of the built email, light and dark, on a computer and a phone, for K (optional for K to look at).\n\nCovers the design scout's look E2 (the band), E3 (the strip), E4 (the body), E5 (the footer, with the built words) and E6 (the rules of an issue and the size).",
+   "files": [
+    "domain/mail/newsletterLayout.ts (new: renderNewsletter)",
+    "domain/mail/footer.ts (one new constant, NEWSLETTER_FOLLOW_LINE, only if K's choice 6 keeps the line; nothing else reads it)",
+    "public/email-rook.png (new)",
+    "test/unit/mail-newsletter-layout.test.ts (new)",
+    "test/unit/fixtures/newsletter-navy.html (new: the bytes of one made-up issue)"
+   ],
+   "acceptance": [
+    "Gate green: npm run lint (13 errors and 13 warnings, unchanged, none in a file the step touches), npm run build, npm run typecheck:functions, npm run check:bundle, npm run test:all, and one run of npm run test:a11y with test/a11y/baseline.json unchanged. Record line: the block's \"- Checks:\" line gives each figure once, and its \"Worker\" line gives the daily-emails worker's dry-run upload against the base, measured first.",
+    "The look: the built email matches Newsletter-Email-6 part for part (band, strip, body, footer), in light and dark (the fixture and the lead's picture beside the board). Record line: the block's \"The navy look\" part.",
+    "What must not change: the footer's words, its two links and no postal address, with the follow line from the footer's own file and nothing after it (test/unit/mail-newsletter-layout.test.ts). Record line: the block's \"The footer\" part.",
+    "Size: the whole email stays under 102,000 bytes at the letter's cap, so Gmail does not cut it. Record line: the figure as text.",
+    "Nothing imports the layout and nothing else reads the new constant: test/unit/mail-seam-bytes.test.ts unchanged, and the worker's dry-run upload equals the base. Record line: \"What ships with every switch off: Nothing a visitor or a member meets.\""
+   ],
+   "verify_items": [
+    {
+     "item": "What the footer builder hands back",
+     "finding": "Confirmed on 1cf41c2: listMailParts (functions/utils/mail/footer.ts line 49) answers footerHtml and headers; footerHtml is emailListFooter's two paragraphs with their own ink (functions/utils/emailLayout.ts line 140). So the navy layout takes the footer whole and sets it on its own ground; listMailParts is not changed."
+    },
+    {
+     "item": "The Facebook page's address, and where the line lives",
+     "finding": "Confirmed on 1cf41c2: the site's own footer links https://www.facebook.com/LouisianaChessAssociation (src/components/layout/Footer.tsx line 74), and REDESIGN_SPEC.md line 170 says to keep every Facebook link, so the board's \"LCA on Facebook\" line needs no fact from K. Confirmed on the board: Newsletter-Email-6's footer is the reason line, the unsubscribe link, the email choices link and \"LCA on Facebook\", with no line naming LCA and the site under them. Confirmed on 1cf41c2: domain/mail/footer.ts is the one place the footer's words live, and no step of checkpoint N lists it among its files, so one added constant there meets nothing."
+    },
+    {
+     "item": "The layout's weight in the worker",
+     "finding": "Not checked: the layout's own bundled size. Measure it here with a one-file bundle, against the 19.39 KiB (gzip 7.47 KiB) left under part one's ceiling of 96 KiB (REDESIGN_STATUS.md, checkpoint M's worker line), so WS16 part two step 6 knows before it imports it. If it does not fit, the lead records a higher ceiling for the page half, as WS16 step 3 did; the ceiling is the plan's own tripwire, not a limit of the host's."
+    },
+    {
+     "item": "Where the rook comes from",
+     "finding": "Not checked: public/ holds email-logo.jpg and lca-logo.jpg and no rook mark on navy; the scout reads how the board draws its rook and cuts the image from it."
+    }
+   ],
+   "flags": [
+    "none (no switch is added or read)"
+   ],
+   "migrations": [],
+   "tests": [
+    "test/unit/mail-newsletter-layout.test.ts (new)",
+    "test/unit/mail-seam-bytes.test.ts (unchanged)",
+    "test/unit/mail-worker-closure.test.ts (unchanged)"
+   ],
+   "risks": [
+    "Mail apps differ: some phone apps ignore jump links, and dark mode varies. The list reads as a plain contents list where a tap does nothing, and K's inbox checks come as K's first act once the page's switch is on.",
+    "The label \"IN THIS ISSUE\" is a dark bronze on cream, 4.66 to 1. K and the president approved it on the board; the bright gold stays off light grounds, which the test holds.",
+    "One added constant in a file the worker bundles: nothing reads it until step 6, and the worker's dry-run upload is measured against the base to show it."
+   ],
+   "estimated_size": "medium"
+  },
+  {
+   "name": "ws16-p2-03-the-letters-storage-and-saving",
+   "order": 3,
+   "brief": "Checkpoint P's third step: where a letter lives while it is written, and the page half's switch. Migration 0061 adds one table; four endpoint methods read, save, start and list letters; mailPage with MAIL_PAGE_ON is the pair the whole page ships under. What it leaves unchanged with the switch off: the four methods answer 404 and read nothing, the new table is empty, and nothing a visitor or a member meets changes; the newsletter tab, its endpoints and every email are as on main. This step may be built before K's switch-on day. It adds lines to files WS16 steps 9 to 11 also add lines to (the two switch files and their tests, the contracts' registry and index, src/areas/admin/api.ts and its fixture); the page branch is rebased once onto main after checkpoint N has merged, and the live figures below are measured again then. It does not touch src/pages/AdminEmailPage.tsx, src/pages/AdminPage.tsx, functions/utils/mail/lists.ts or functions/utils/admin/campaigns.ts. About twenty-three files, most of them one-line pins.\n\n1. functions/db/schema.ts and migrations/0061_newsletter_issues.sql (new, written by npm run db:generate and staged under drizzle/ with its snapshot and journal): one table, newsletter_issues: id, list_id, month_label, subject, preheader, body_html, version (starting at 1), created_by, created_at, updated_by, updated_at, campaign_id (set when the letter is sent), set_aside_at (set when a new letter replaces it), tested_at (set when a test of the letter as it stands has gone, and emptied by the next save that changes it; WS16 part two step 6 reads it for K's choice 4), and the columns checkpoint Q reads, which stay empty until then, so Q carries no migration: send_at, scheduled_by, scheduled_at, link_check, held_reason, pinned_at, pinned_name. One unique index: one open letter for a list (campaign_id IS NULL AND set_aside_at IS NULL). No CHECK is written, no table is rebuilt and no other table changes. A letter's state is read from these columns and never stored as a status.\n2. src/lib/features.ts: after mailLists (after mailTools once rebased), a comment line saying what it shows and \"  mailPage: false,\". functions/utils/mail/switches.ts: a comment block starting \"/**\\n * Set: \" that names mailPage and test/unit/mail-switches.test.ts, and exactly one line export const MAIL_PAGE_ON = false. test/unit/features.test.ts's WS16 list gains mailPage; test/unit/mail-switches.test.ts holds the pair the same four ways and adds one case: MAIL_PAGE_ON is on only with MAIL_LISTS_ON on. test/unit/redesign-status-ws02-step2.test.ts's count is a live figure: 43 to 44 on the branch, 45 after the rebase, since WS16 step 9 reads 44 as its entry says.\n3. functions/utils/mail/issues.ts (new): openIssue(db, listId); saveIssue(db, { id, version, monthLabel, subject, preheader, bodyHtml, by }), one statement with WHERE id = ? AND version = ? AND campaign_id IS NULL AND set_aside_at IS NULL, which moves the version by one, empties tested_at, and answers the new version or tells who saved last and when; startIssue(db, { listId, from, by }), one batch that sets the open letter aside, if it holds any words, and inserts the new one, from a starter, from a past letter, or from a newsletter sent from the plain tab, whose words are cleaned when copied; lastIssues(db, listId), at most 20, newest first: sent letters, letters set aside, and sends on the list that have no letter.\n4. Endpoints, each with onRequestOptions, requireListMailer (the LCA admins with a second factor, the president, the media manager with one, an officer who holds the seat among them), and 404 unless MAIL_PAGE_ON: functions/api/admin/mail/newsletter/issue.ts (new): GET answers { issue | null, state, lastSavedBy, lastSavedAt }; PUT takes { version, monthLabel, subject, preheader, bodyHtml } through parseBody, refuses a letter over LETTER_MAX_BYTES in words, cleans the letter with cleanLetterHtml and refuses in words a letter the cleaner answers null for, makes the open letter when there is none, and answers 409 { changedBy, changedAt } on an old version. functions/api/admin/mail/newsletter/issue/start.ts (new): POST { from: 'blank' | a starter's name | { issueId } | { campaignId }, monthLabel }. functions/api/admin/mail/newsletter/issues.ts (new): GET the last letters, without their words.\n5. domain/contracts/newsletter.ts (new) with its schemas; domain/contracts/index.ts and domain/contracts/registry.ts gain the three paths and four methods. test/unit/contracts-pending.ts is not touched: a new endpoint never goes on the pending list.\n6. src/areas/admin/api.ts: getNewsletterIssue, saveNewsletterIssue, startNewsletterIssue, getLastNewsletters, their types by hand; the barrel src/lib/api.ts already exports that file whole (its line 16) and is not edited; test/unit/fixtures/api-added-since-split.json gains the three paths and the names.\n7. REDESIGN_STATUS.md: the page half's part of the record, inside the WS16 section under a heading of its own (\"### WS16 part two: the newsletter's own page\"), with its own status line, steps 1 and 2's blocks from their notes, and this step's block; WS16's own Status line prefix stays as written. test/unit/redesign-status-ws16-p2-step3.test.ts (new) reads only that part.\n8. Tests: test/unit/migration-0061-newsletter-issues.test.ts (new, in the shape of the 0060 model test: 0001 to 0060 with rows, then 0061, on real SQLite, run twice; the columns; no rebuild; the journal and the snapshot). test/integration/newsletter-issues.test.ts (new; MAIL_PAGE_ON and MAIL_LISTS_ON through getters): who may and who may not (an officer without the seat, a media manager without a second factor, a plain member and a club rep are refused); a save cleans the letter and empties tested_at; a letter the cleaner cannot make clean is refused in words and nothing is written; a save with an old version is refused with the other person's name and time and changes nothing; two saves at once make one winner; start sets the old letter aside and deletes nothing; an empty open letter is replaced without being kept; with the constant unset each method answers 404 and reads nothing. test/integration/contracts/newsletter-issues.test.ts (new).",
+   "files": [
+    "functions/db/schema.ts (newsletter_issues)",
+    "migrations/0061_newsletter_issues.sql (new)",
+    "drizzle/ (the staged copy, the snapshot and the journal, as npm run db:generate writes them)",
+    "src/lib/features.ts (mailPage: false)",
+    "functions/utils/mail/switches.ts (MAIL_PAGE_ON = false)",
+    "test/unit/features.test.ts (mailPage in the WS16 list)",
+    "test/unit/mail-switches.test.ts (the pair, and on only with MAIL_LISTS_ON)",
+    "test/unit/redesign-status-ws02-step2.test.ts (the switch count, a live figure)",
+    "functions/utils/mail/issues.ts (new)",
+    "functions/api/admin/mail/newsletter/issue.ts (new: GET, PUT)",
+    "functions/api/admin/mail/newsletter/issue/start.ts (new: POST)",
+    "functions/api/admin/mail/newsletter/issues.ts (new: GET)",
+    "domain/contracts/newsletter.ts (new)",
+    "domain/contracts/index.ts (the new file)",
+    "domain/contracts/registry.ts (three paths, four methods)",
+    "src/areas/admin/api.ts (four wrappers)",
+    "test/unit/fixtures/api-added-since-split.json (three paths, the names)",
+    "test/unit/schema-drift.test.ts, test/unit/drizzle-baseline.test.ts, test/unit/db-generate-guard.test.ts, test/unit/db-generate-real-kit.test.ts, test/unit/seed-fixtures.test.ts (live figures: the columns, the files and tables, the next number, the entries, 0001 to 0061)",
+    "test/unit/migration-0061-newsletter-issues.test.ts (new)",
+    "test/integration/newsletter-issues.test.ts (new)",
+    "test/integration/contracts/newsletter-issues.test.ts (new)",
+    "REDESIGN_STATUS.md (the page half's part of the WS16 section, steps 1 to 3)",
+    "test/unit/redesign-status-ws16-p2-step3.test.ts (new)"
+   ],
+   "acceptance": [
+    "Gate green: npm run lint (13 errors and 13 warnings, unchanged, none in a file the step touches), npm run build, npm run typecheck:functions, npm run check:bundle, npm run test:all, and one run of npm run test:a11y with test/a11y/baseline.json unchanged. Record line: the block's \"- Checks:\" line gives each figure once, and its \"Worker\" line gives the daily-emails worker's dry-run upload against the base, measured first.",
+    "The table: 0061 runs after 0001 to 0060 with rows on real SQLite, twice, adds one table and one index, rebuilds nothing and changes no other table (test/unit/migration-0061-newsletter-issues.test.ts). Record line: the block's \"The migration\" part.",
+    "Saving: a letter is cleaned on every save; an old version is refused with who and when, and nothing is lost (test/integration/newsletter-issues.test.ts). Record line: the block's \"Saving\" part.",
+    "Who may: the people requireListMailer lets send the newsletter, and nobody else. Record line: the block's \"Who may\" part.",
+    "The switch pair: test/unit/mail-switches.test.ts holds MAIL_PAGE_ON equal to mailPage four ways and on only with MAIL_LISTS_ON; test/unit/features.test.ts holds mailPage off. With it off each method answers 404. Record line: the block's \"The switch\" part and \"What ships with every switch off\".",
+    "The contracts: four methods with contracts and a contract test; test/unit/contracts-status.test.ts green with PENDING_COUNT unchanged. Record line: the figures as text."
+   ],
+   "verify_items": [
+    {
+     "item": "The next migration number",
+     "finding": "Confirmed on 1cf41c2: migrations/ ends at 0060_mail_lists.sql, and the manifest of WS16 part one names no migration in steps 9 to 12, so 0061 is free until WS09."
+    },
+    {
+     "item": "One open letter for a list",
+     "finding": "Confirmed on 1cf41c2: functions/db/schema.ts already writes unique indexes with a WHERE (lines 154 and 173), so the schema generator can write this one. The insert also carries its own NOT EXISTS, as createListCampaign's does."
+    },
+    {
+     "item": "Where the page half's record goes",
+     "finding": "Confirmed on 1cf41c2: test/unit/preview-database.test.ts line 196 holds one block per workstream, WS01 to WS16, so a second top-level block for WS16 would turn it red. Not checked: how WS16's step record tests cut their section; the scout reads one of them first, and keeps WS16's Status line prefix (\"twelve steps in three checkpoints\") as written."
+    },
+    {
+     "item": "The pins a migration moves",
+     "finding": "Not checked on this base: the figures in schema-drift, drizzle-baseline, db-generate-guard, db-generate-real-kit and seed-fixtures; part one's plan notes give them after WS16 step 2 (343 columns; 61 files and 36 tables; 0061 next; 10 entries; 0001 to 0060). Measure each first."
+    },
+    {
+     "item": "The preview database",
+     "finding": "Not checked here, and not run in the planning: npm run db:migrate:preview applies 0061 to lca-db-preview from the page branch before checkpoint P's own preview is opened. That preview shows today's site with every switch off, and nothing more: a preview cannot be signed into (ws16-k-checklist.md, \"Before checkpoint M merges\", item 3), so K's look at the page is by pictures of the real page. 0061 only adds a table, so previews of other branches read that database as before."
+    }
+   ],
+   "flags": [
+    "mailPage (new, off)",
+    "MAIL_PAGE_ON (new; read by the four new methods; false)",
+    "mailLists and MAIL_LISTS_ON (as main has them: off on the branch, as the switch-on change leaves them after the rebase)"
+   ],
+   "migrations": [
+    "migrations/0061_newsletter_issues.sql (new): one table, newsletter_issues, and one unique index (one open letter for a list); no CHECK, no table rebuilt, no data statement, no other table changed"
+   ],
+   "tests": [
+    "test/unit/migration-0061-newsletter-issues.test.ts (new)",
+    "test/integration/newsletter-issues.test.ts (new)",
+    "test/integration/contracts/newsletter-issues.test.ts (new)",
+    "test/unit/mail-switches.test.ts (the pair)",
+    "test/unit/features.test.ts (mailPage off)",
+    "test/unit/redesign-status-ws16-p2-step3.test.ts (new)"
+   ],
+   "risks": [
+    "The rebase onto main after checkpoint N has merged: the shared files each gain a few lines from both sides; the count of switches, the contracts' figures and the fixture are measured again there. It is the page's cost, about 2 hours with its gate (estimate; range 1 to 4).",
+    "A letter holds what an officer wrote, not members' records: the table stores the letter, who saved it and when, and nothing else (collect only what is needed)."
+   ],
+   "estimated_size": "medium"
+  },
+  {
+   "name": "ws16-p2-04-the-page-writing-and-the-side-preview",
+   "order": 4,
+   "brief": "Checkpoint P's fourth step: the approved page itself, Newsletter-Page-4 as it stands after round 15 (decision 51), for writing: the head, From and Subject, the tools, the letter you click and type on, saving by itself, and the side preview, on a computer, a tablet and a phone. The bar's contents come in WS16 part two step 5 and sending in step 6. Large; the build may split it in two, the computer first, then tablet and phone. What it leaves unchanged with the switch off: the route is not registered, so /admin/newsletter leads where it leads today (Admin's own redirect); no link leads to the page; test/a11y/baseline.json is unchanged; no other page changes. With the switch on and before step 6, the page is reached by its address alone. It may be started before K's switch-on day; it is parked at its last green commit on K's days. It does not touch src/pages/AdminEmailPage.tsx or src/pages/AdminPage.tsx. About nineteen files.\n\n1. src/App.tsx: a lazy AdminNewsletterPage and, only with FEATURES.mailPage, the route /admin/newsletter inside RoleProtectedRoute with roles={ADMIN_PANEL_ROLES}, fallbackToToolsHome and allowMediaManager, as /admin/:section has. test/unit/app-routes.test.tsx's count of lazy pages moves 35 to 36.\n2. src/pages/AdminNewsletterPage.tsx (new) with its parts under src/areas/admin/newsletter/ (new). The page lets in whoever the server lets send: the LCA admins, the president, and the media manager on the route's own answer; an officer without the seat is sent to Admin. An officer who holds the seat sees no \"View only\" badge here.\n3. The head (P1): the crumb \"Admin / Newsletter\", the title, the month with the letter's state in words (Draft, and the states of step 6 and checkpoint Q later), the saved line, and Help and \"Admin sections\" at the right. The saved line's states, in words beside any colour: \"Saving\", \"Saved automatically at 2:15 PM\", \"Could not save\" with \"Try again\", and \"Player Two changed this letter at 2:17 PM\" with \"Show their letter\" when a save is refused for an old version.\n4. From and Subject (P2, P4): side by side on a computer, stacked on a phone, each an email's own labelled box. From shows the one sender, \"Louisiana Chess Association · LCA Newsletter\", a name and never an address, with no list to open until there is a second sender. Subject is a field with its pencil mark, an outline and a count (\"30 of 60 letters\") when clicked; the count is a guide and the server's limit stays 200.\n5. The tools (P5): Bold, Italic, Heading, List, Link and Undo, and the Add menu, which the approved board names \"Add a photo, event or line\". By K's choice 5 as recommended it reads \"Add an event or line\" in checkpoint P: it holds a line here, the event form joins it in WS16 part two step 5, and the photo joins it, with the board's own name, in step 12. Each at least 44px.\n6. The letter (P6): the navy band with the rook, \"LCA NEWSLETTER\" and the month, which has a \"Click to edit\" chip; the \"In this issue\" list, made from the headings as they are typed (letterParts) and never typed itself; then the parts. One editing surface, the site's editor kit, with the kit's own placeholder piece for the prompts of the empty parts and \"Click here to write the next part\" at the end. A heading shows its dashed outline and \"Click to edit\" chip; the part being typed in shows an outline and the \"Editing\" chip. No separate edit mode.\n7. Size (P8): \"Pull to make taller\" and \"Make bigger\" under the letter; Make bigger fills the window, with \"Make smaller\" at its foot and the bar in reach.\n8. Saving: a PUT about two seconds after a pause in typing and before the page is left, carrying the letter's version. A reload keeps the letter.\n9. The side column (P9): \"What members will get\", with Phone and Computer and Hide; the preview is renderNewsletter's own HTML, with a sample footer in the real words (LIST_FOOTER_WORDS, and the follow line when the footer's file holds one), in a frame that runs no script and keeps a jump link inside itself; it changes as the person types (decision 29). Under it the count card, \"155 people will get it\", from GET /api/admin/mail/newsletter's count; the added people and \"Add or review people\" come with checkpoint R.\n10. Tablet (P19) and phone (P20): the letter full width with big tools; on a tablet \"See the email\" at the top; on a phone From and Subject stacked, and \"See the email\" opens a sheet with the preview and \"Back to writing\"; the test and Send join the sheet's foot in step 6. The states the board draws (P21): empty, typed, saved, editing a field.\n11. Focus (WCAG 2.2 AA): each thing that opens, the Add menu, the Subject's field, the phone's sheet and Make bigger, takes focus when it opens and gives it back to the control that opened it when it closes; Escape closes it; the sheet keeps focus inside itself while it is open; and no focused control is hidden under the bar at the foot or under the site's own header (Focus Not Obscured), so a control reached by Tab is scrolled clear of both.\n12. Tests: test/unit/admin-newsletter-page.test.tsx (new, jsdom): the route only with the switch on; who is let in; each state of the saved line in words; the list follows the headings; the count card. test/unit/admin-newsletter-save.test.tsx (new): the pause, the version, the refusal and \"Show their letter\". test/unit/admin-newsletter-focus.test.tsx (new, jsdom): where focus goes when each thing opens and closes. One browser accessibility run on a throwaway build with mailLists and mailPage on (the automated check, the keyboard path through every control, each control at least 44px at a phone's width, reduced motion, and at a computer's, a tablet's and a phone's width that every control reached by Tab is in view and clear of the bar at the foot), its figures in the record; the shipped builds keep the switch off.",
+   "files": [
+    "src/App.tsx (the lazy page and the route, behind mailPage)",
+    "src/pages/AdminNewsletterPage.tsx (new)",
+    "src/areas/admin/newsletter/NewsletterHead.tsx (new)",
+    "src/areas/admin/newsletter/FromSubjectRow.tsx (new)",
+    "src/areas/admin/newsletter/LetterEditor.tsx (new: the tools and the letter)",
+    "src/areas/admin/newsletter/InThisIssue.tsx (new)",
+    "src/areas/admin/newsletter/SidePreview.tsx (new: the closed frame, Phone and Computer, Hide, the phone's sheet)",
+    "src/areas/admin/newsletter/CountCard.tsx (new)",
+    "src/areas/admin/newsletter/useIssue.ts (new: reading, saving by itself, the version)",
+    "package.json and package-lock.json (the editor kit's extensions package listed by name at the exact version the lock already holds, 3.28.0 on 1cf41c2 and measured again on the base; the lock's change is that one line in the root's own list, and no package's version moves)",
+    "test/unit/app-routes.test.tsx (35 to 36 lazy pages)",
+    "test/unit/route-audit.test.ts (the new route, if it lists routes; measured first)",
+    "test/unit/admin-newsletter-page.test.tsx (new)",
+    "test/unit/admin-newsletter-save.test.tsx (new)",
+    "test/unit/admin-newsletter-focus.test.tsx (new)",
+    "REDESIGN_STATUS.md (the step 4 block)",
+    "test/unit/redesign-status-ws16-p2-step4.test.ts (new)"
+   ],
+   "acceptance": [
+    "Gate green: npm run lint (13 errors and 13 warnings, unchanged, none in a file the step touches), npm run build, npm run typecheck:functions, npm run check:bundle, npm run test:all, and one run of npm run test:a11y with test/a11y/baseline.json unchanged. Record line: the block's \"- Checks:\" line gives each figure once, and its \"Worker\" line gives the daily-emails worker's dry-run upload against the base, measured first.",
+    "The page matches Newsletter-Page-4 on a computer, a tablet and a phone: the head, From and Subject, the tools, the letter, the size controls and the side column (the lead's pictures beside the board). Record line: the block's \"The page\" part.",
+    "Saving: by itself after a pause, never over another person's newer letter, and a reload keeps the words (test/unit/admin-newsletter-save.test.tsx). Record line: the block's \"Saving\" part.",
+    "The preview is the function the server sends with, in a frame that runs no script. Record line: the block's \"The preview\" part.",
+    "WCAG 2.2 AA: status in words beside colour, every control by keyboard, at least 44px on a phone, gold never as text on a light ground; each thing that opens takes focus and gives it back, and no focused control is hidden under the bar at the foot (test/unit/admin-newsletter-focus.test.tsx and the browser run at three widths); the browser run on a build with the switch on finds nothing new. Record line: the run's figures, and the block's \"Focus\" part.",
+    "With mailPage off the route is not registered and test/a11y/baseline.json is unchanged; npm run check:bundle passes, the page importing types alone from domain/contracts. Record line: \"What ships with every switch off\".",
+    "The editor kit's package: listed at the exact version the lock already holds, the lock's change is that one line, and with the package listed and nothing importing it yet every file the build writes equals the base byte for byte, so today's governance editor is the same. Record line: the block's \"The editor kit\" part, with the files' bytes."
+   ],
+   "verify_items": [
+    {
+     "item": "The editor kit's placeholder piece",
+     "finding": "Confirmed on 1cf41c2: the editor kit's extensions package is installed under node_modules, beside the kit's other packages, and holds a placeholder folder; package.json lists the kit's react, starter-kit and link packages and not this one, and package-lock.json holds this one at 3.28.0 (its line 6464). So the package is listed first, alone, at that exact version, and the build is measured then, before anything imports it: a moved lock entry for any other package would change today's governance editor with the switch off. Not checked: whether a prompt can differ part by part; the scout tries it first, and the fallback is one prompt at the letter's end."
+    },
+    {
+     "item": "A static route beside /admin/:section",
+     "finding": "Confirmed on 1cf41c2: src/App.tsx lines 244 and 245 route /admin and /admin/:section to AdminPage, and the router is react-router-dom 7, which ranks a fixed path over a parameter. With the route not registered, /admin/newsletter reaches AdminPage, which sends an unknown section to /admin (src/pages/AdminPage.tsx line 140)."
+    },
+    {
+     "item": "The accessibility builds and a new switch",
+     "finding": "Confirmed on 1cf41c2: test/a11y/builds.spec.ts holds that the a11y-on build turns on seven switches and every other switch is off in both builds. So the page's own browser run is made on a throwaway build with the switch on, as the pictures of the real pages were for checkpoint M. Not checked: whether a later spec for this page should join the shipped suite; part one added none."
+    },
+    {
+     "item": "The page's chrome",
+     "finding": "Not checked: the board draws the page under the new site menu (newNav, off in production). The page is built to sit under today's menu and under the new one; the scout reads how AdminPage draws its hero and uses the same."
+    }
+   ],
+   "flags": [
+    "mailPage (read by src/App.tsx; off)",
+    "MAIL_PAGE_ON (unchanged, false)"
+   ],
+   "migrations": [],
+   "tests": [
+    "test/unit/admin-newsletter-page.test.tsx (new, jsdom)",
+    "test/unit/admin-newsletter-save.test.tsx (new, jsdom)",
+    "test/unit/admin-newsletter-focus.test.tsx (new, jsdom)",
+    "test/unit/app-routes.test.tsx (the count)",
+    "test/unit/redesign-status-ws16-p2-step4.test.ts (new)"
+   ],
+   "risks": [
+    "The largest step, and the one most likely to be under way on K's switch-on day: it is parked at its last green commit, and may be split in two commits, the computer first.",
+    "A letter typed on by two people: the second save is refused and nothing is lost, but the second person's unsaved words stay only on their screen until they copy them; the page says so in words. Live co-writing is K's choice 3.",
+    "The page's script weight: the editor kit is already in the site; the page is its own lazy chunk, and the bundle check holds that no schema library reaches it.",
+    "A bar fixed at the foot can hide the control a keyboard user has reached: the page keeps room under its last control and scrolls a focused control clear of the bar, and the browser run checks it at three widths."
+   ],
+   "estimated_size": "large"
+  },
+  {
+   "name": "ws16-p2-05-the-bar-the-chooser-help-and-more-options",
+   "order": 5,
+   "brief": "Checkpoint P's fifth step: the bar at the foot of the page and what opens from it: the chooser of templates and past newsletters, More options, and the Help walkthrough. The test and Send, steps 2 and 3 on the bar, are drawn here and wired in WS16 part two step 6. What it leaves unchanged with the switch off: as step 4, the route is not registered and nothing anyone meets changes. It adds no endpoint and no migration. It does not touch src/pages/AdminEmailPage.tsx or src/pages/AdminPage.tsx. About twelve files.\n\n1. The bar (P11, decisions 48 and 50): from the left, a bordered \"More options\" with its sliders mark, then \"1 Pick a template to start from\" in K's words, \"2 Send a test to me\" and \"3 Send to 155 people\" in gold with navy words; the marks 1, 2 and 3 about 32px; the four spread across the bar's width with even gaps. On a tablet the same bar. On a phone the bar holds \"Pick a template\" and \"See the email\", and More options sits at the end of the page (decision 52).\n2. The chooser (P12), opening upward, which takes focus when it opens, closes on Escape and gives focus back to its button: \"Blank letter\" first; \"Pinned templates\", which in this version are LCA's starters (Monthly newsletter, Results and thanks, Short notice); \"Your last newsletters\" from GET /api/admin/mail/newsletter/issues: sent letters, letters set aside, and newsletters sent from the plain tab, each with its month, its state and its date with a weekday, and \"Use this\". If the open letter holds words, the page asks once before it replaces it (\"Replace this letter? Your words are kept under Your last newsletters.\"), and startIssue sets the old one aside. Pinning a letter comes in checkpoint Q.\n3. The wiggle (P13, decision 47): the first button moves once, for about a second, only when the page opens on a letter with nothing written; it is still once something is written; with reduced motion it does not move and shows a ring for a moment.\n4. More options (P14, decisions 26 and 27), closed when the page opens: the inbox preview line, a field saved with the letter; who gets it, in words (\"Active LCA members: 155\", and how many are left out and why, from today's count); where replies go, shown and not changed here. Decision 37 asks for a link to where a sender or a reply mailbox is managed wherever one is shown; no such place exists yet, since the sender and the reply address are lines of domain/mail/addresses.ts, so the row carries no link until the senders page comes with clubs' sending in WS09, and that is recorded as a deviation. The plain top of the email comes with step 12, after its board (K's choice 5).\n5. Help (P18, decisions 40 and 43): a six-step walkthrough with Skip, Back and Next, which opens by itself once, the first time a person uses the page on that browser, and from Help after that. It holds every explaining sentence: by decision 40, a standing rule, the sentences the approved board still shows beside a control (\"Made from your headings. Updates by itself.\" and the two lines under the chooser among them) live here and not on the page. It takes focus when it opens, keeps it inside while open, closes on Escape and gives focus back to Help.\n6. The Add menu's event form (decision 27; K's choice 5 as recommended): \"Add an event\" opens a small form, the event's name, its day or days, its place, and a link with its words, and writes one line into the letter in the form the approved email draws under \"Coming up\" (\"Sat, Jan 9, 2027 · Sample Winter Open · Sample City · Register on King Registration\"), the day through the site's own date formatter, which keeps a weekday. It writes plain words and one link, so the cleaner needs no new rule and nothing new is stored. The form takes focus when it opens and gives it back to the Add menu. If K picks 5 (c), this item is not built and the menu reads \"Add a line\".\n7. Tests: test/unit/admin-newsletter-bar.test.tsx (new, jsdom): the bar's order and words; where focus goes when the chooser, More options, Help and the event form open and close; the event form's line, with a weekday on its day; the chooser's three groups; the question before a written letter is replaced; the wiggle only on an empty letter and the ring with reduced motion; More options closed at first; Help opening once and then from its button. The browser run of step 4 is made again with these controls, each at least 44px on a phone, and with the same check that no focused control is hidden under the bar at the foot, the opened chooser among them.",
+   "files": [
+    "src/areas/admin/newsletter/FootBar.tsx (new)",
+    "src/areas/admin/newsletter/TemplateChooser.tsx (new)",
+    "src/areas/admin/newsletter/MoreOptions.tsx (new)",
+    "src/areas/admin/newsletter/HelpWalkthrough.tsx (new)",
+    "src/areas/admin/newsletter/AddEventForm.tsx (new: the event's name, day, place and link)",
+    "src/areas/admin/newsletter/LetterEditor.tsx (the Add menu's event row)",
+    "src/pages/AdminNewsletterPage.tsx (the bar and its panels)",
+    "src/areas/admin/newsletter/useIssue.ts (start from a template or a past letter)",
+    "test/unit/admin-newsletter-bar.test.tsx (new)",
+    "REDESIGN_STATUS.md (the step 5 block)",
+    "test/unit/redesign-status-ws16-p2-step5.test.ts (new)"
+   ],
+   "acceptance": [
+    "Gate green: npm run lint (13 errors and 13 warnings, unchanged, none in a file the step touches), npm run build, npm run typecheck:functions, npm run check:bundle, npm run test:all, and one run of npm run test:a11y with test/a11y/baseline.json unchanged. Record line: the block's \"- Checks:\" line gives each figure once, and its \"Worker\" line gives the daily-emails worker's dry-run upload against the base, measured first.",
+    "The bar and the chooser match Newsletter-Page-4 on a computer, a tablet and a phone (the lead's pictures beside the board). Record line: the block's \"The bar\" and \"The chooser\" parts.",
+    "Replacing a written letter asks first and keeps the old words under \"Your last newsletters\" (test/unit/admin-newsletter-bar.test.tsx and step 3's integration test). Record line: the block's \"Nothing is lost\" part.",
+    "Help opens by itself once and holds the explaining sentences; the wiggle obeys reduced motion. Record line: the block's \"Help\" part.",
+    "Focus: the chooser, More options, Help and the event form each take focus when they open and give it back when they close, and no focused control is hidden under the bar at the foot (test/unit/admin-newsletter-bar.test.tsx and the browser run). Record line: the block's \"Focus\" part.",
+    "The event form writes one line in the form the approved email draws, with a weekday on its day, and needs no new rule in the cleaner. Record line: the block's \"Add an event\" part.",
+    "With mailPage off nothing changes. Record line: \"What ships with every switch off\"."
+   ],
+   "verify_items": [
+    {
+     "item": "How Help remembers a first use",
+     "finding": "Confirmed on 1cf41c2: the newsletter tab keeps its Help flag in the browser (src/pages/AdminEmailPage.tsx lines 94 and 102), and nothing else of the page is stored there. The walkthrough does the same, so nothing about a person's use is stored on the server."
+    },
+    {
+     "item": "More options has no picture",
+     "finding": "Not checked against a board, since none draws it (the design scout's board note E7): its three rows come from decision 27's list. By decision 44 no separate design round is run for a state only senders meet, so it is built in plain words and K sees it in checkpoint P's pictures of the real page before the merge; a preview cannot be signed into."
+    },
+    {
+     "item": "The chooser's footer lines",
+     "finding": "Not checked: the board's two lines under the chooser (\"Like one you sent? Pin it as a template from its menu.\" and the line about History) explain a control; by decision 40 they go to Help, and the first belongs to checkpoint Q."
+    },
+    {
+     "item": "The event line's form",
+     "finding": "Confirmed on the board: Newsletter-Email-6 draws each line under \"Coming up\" as the day, the event's name, the place and a link with its own words. Not checked: the fields' own words and whether two days are one field or two; the scout words them, and K sees the form in checkpoint P's pictures."
+    }
+   ],
+   "flags": [
+    "mailPage (unchanged, off)",
+    "MAIL_PAGE_ON (unchanged, false)"
+   ],
+   "migrations": [],
+   "tests": [
+    "test/unit/admin-newsletter-bar.test.tsx (new, jsdom)",
+    "test/unit/redesign-status-ws16-p2-step5.test.ts (new)"
+   ],
+   "risks": [
+    "A person replaces a letter by mistake: the page asks once, and the old letter is one press away under \"Your last newsletters\".",
+    "Words from a newsletter sent from the plain tab were never cleaned: they are cleaned when copied into a letter (step 3).",
+    "The Add menu's name differs from the approved board until the photo is built: it reads \"Add an event or line\" so that it names only what it holds, and K is told in choice 5."
+   ],
+   "estimated_size": "medium"
+  },
+  {
+   "name": "ws16-p2-06-test-and-send-from-the-page-and-the-ways-in",
+   "order": 6,
+   "brief": "Checkpoint P's last step, and the only step of checkpoint P that changes the live send path: a test and a real send of a saved letter in the navy look, the page's sending states on a computer, a tablet and a phone, and the ways in to the page. Built only after checkpoint N has merged, on main at N's merge commit, after the page branch's one rebase: it edits functions/utils/mail/lists.ts, functions/utils/admin/campaigns.ts, src/pages/AdminEmailPage.tsx and src/pages/AdminPage.tsx, which the five-spot fix and WS16 steps 9 to 11 change and which a checkpoint's own review and fix round can change again, as checkpoint M's did. What it leaves unchanged with the switch off: the send and the test ignore a letter and take subject and words as today, in today's layout, byte for byte; a plain send's batch is today's four statements and names no new table, so it works on a database migration 0061 has not reached; a campaign with no look key is wrapped by today's layout whatever the switch says; no Newsletter row, no link, and the newsletter tab as the switch-on left it. About twenty-three files. The step also writes checkpoint P's section and runs the page's switch-on change green on a throwaway branch.\n\n1. functions/utils/admin/campaigns.ts: listMessage takes an optional look; with 'navy' it builds the page with renderNewsletter (the month and the preview line beside it) and listMailParts' footer and headers as today; without one it calls wrapBrandedEmail as today. The rules path reads the look, the month and the preview line from the campaign's filter_json, which it already reads for the link key's check. A campaign's look is read from its own row and never from the switch, so everyone on one send gets one look, whatever is switched on or off while it sends.\n2. functions/utils/mail/lists.ts: createListCampaign takes an optional issue { id, version }. Without one the batch is today's four statements, unchanged: the statements that read or write the letter are added only when an issue is given, and a test holds that a plain send's batch names no newsletter_issues table, the lesson of checkpoint M's member delete. With one: the campaign's insert also requires that letter open, unsent, at that version and, by K's choice 4 as recommended, tested as it stands (tested_at set); subject and words are the letter's; filter_json gains look, month, preheader and issue; and one more statement in the same batch writes the campaign's id on the letter and empties its send time. That statement carries the batch's own condition that the first statement made the campaign (the made clause, line 260, which the contacts' and the recipients' statements carry), so a send refused because another newsletter is still sending leaves the letter open. The batch is one transaction, so a letter is sent once or not at all.\n3. functions/api/admin/mail/newsletter.ts: with MAIL_PAGE_ON, POST takes { issueId, version } and refuses a body that carries words without a letter (400, in words); today's refusals come first, in today's order (Resend still sends, no link key, nobody to send to, one already sending), then 409 when the letter changed since the page read it, and 409 with \"Send a test of this letter first\" when no test of the letter as it stands has gone. With the constant unset the handler is today's. functions/api/admin/mail/newsletter/test.ts: with MAIL_PAGE_ON, { issueId, version } sends the saved letter to the signed-in person's own address, \"[TEST]\" on the subject, in the navy look with the real footer and both headers; when the test has gone, markTested in functions/utils/mail/issues.ts sets tested_at on the letter only if it is still at that version, and does not move the version, so a test of older words never marks newer words as tested. The choice to test through Amazon SES stays on the plain tab alone.\n4. domain/contracts/mail.ts and newsletter.ts: the two requests with a letter; the registry's methods are the same.\n5. The page on a computer and a tablet: step 2 on the bar (P15) saves, then sends the test, and says \"Test sent to your address\" or \"The test could not be sent\" with the reason. Step 3 (P16) asks once, \"Send to 155 people?\" with \"Send\" and \"Not now\"; then the head and the bar read \"Sending, 40 of 155\" with \"Stop sending\" (today's stop endpoint), then \"Sent to 155 people\" with the day and time, or \"Stopped. 40 of 155 were sent.\" A save after the send is refused and offered as a new letter. While Send cannot go, the button is inactive with the reason in words beside it: today's reasons, and \"Send a test of this letter first\" until a test of the letter as it stands has gone (K's choice 4; if K picks 4 (c), that reason and the server's 409 for it are not built).\n6. The page on a phone (decision 52, item 4): \"Send a test to me\" and \"Send to 155 people\" sit at the foot of the \"See the email\" sheet, above \"Back to writing\", each at least 48px tall, with the same words, the same one question and the same states. The sending-later board draws Send there and draws no test; the test is added so that a person on a phone can do what Send asks for, and K sees it in checkpoint P's pictures. WS16 part two step 8 then adds \"Send later\" beside Send and nothing else.\n7. Focus: the confirm takes focus when it opens, keeps it inside while open, closes on Escape and gives focus back to Send; the test's result and each sending state are announced as a status; on a phone the sheet's foot never covers a focused control.\n8. The ways in, each behind FEATURES.mailPage: src/pages/AdminPage.tsx gains \"Newsletter\" in Communications and in the media manager's groups, leading to /admin/newsletter; src/components/layout/Navbar.tsx gains the media manager's \"Newsletter\" link beside \"Group email\"; in src/pages/AdminEmailPage.tsx the newsletter tab keeps its count, its recent sends and Stop sending, and its writing box, preview and test box give way to one link, \"Write the newsletter\". Turning mailPage off brings the plain box back.\n9. The email as received (look E1): the subject as the letter holds it and the sender part one decided, Louisiana Chess Association, from domain/mail/addresses.ts; a recent send made from the page shows in the tab's list like any other.\n10. Tests: test/integration/newsletter-page-send.test.ts (new; MAIL_PAGE_ON and MAIL_LISTS_ON through getters, MAIL_SENDER 'ses', WORKERS_PLAN 'paid'): a letter is sent once under two presses at once, two tabs, and a plain send under way; another newsletter is sending, and the letter stays open with no campaign id; the refusals in order; a letter with no test of its present words is refused, a test lets it go, and a save after the test asks for a test again; a test built from an older version does not mark the letter; the sent email is the navy layout with the person's own footer and both headers; the test goes to the person's own address only; a body without a letter is refused; with the constant unset the send and the test are today's; a plain send's batch names no newsletter_issues table and passes on a database without that table. test/unit/mail-list-message-bytes.test.ts (new) with test/unit/fixtures/newsletter-plain.html (new): the bytes of a list message made with no look, written from main's code before this step changes it, so the proof that the plain tab's email is the same lives in a file of its own and outlives test/unit/mail-seam-bytes.test.ts, which WS16 step 12 deletes and which holds no list message. test/unit/admin-newsletter-send.test.tsx (new): the confirm, the states, the reasons, where focus goes, and the phone's sheet with the test and Send at its foot. test/unit/admin-email-newsletter.test.tsx: the link with the switch on, the box with it off. test/unit/admin-media-manager.test.tsx and test/unit/signed-in-header.test.tsx: the new row and link. test/unit/mail-worker-closure.test.ts: the layout joins the worker's closure, with no package. The browser run on a throwaway build with the switches on, at a phone's width among the three: the test and Send on the sheet, each at least 48px, and focus.\n11. REDESIGN_STATUS.md: the step 6 block; \"### Checkpoint P: WS16 part two steps 1 to 6\"; the switch-on change for mailPage and MAIL_PAGE_ON, run green on a throwaway branch with one browser run; and K's list for that switch-on: checkpoint P's two runs green (\"Apply database migrations\" and \"Deploy scheduled-jobs worker\"), the worker's deployment checkpoint P's or later, and no newsletter sending when the switch-on change, or its rollback, is merged.",
+   "files": [
+    "functions/utils/admin/campaigns.ts (listMessage's optional look; the rules path reads it from filter_json)",
+    "functions/utils/mail/lists.ts (createListCampaign's optional letter, in the same batch, its statements added only when a letter is given)",
+    "functions/utils/mail/issues.ts (markTested: the test's mark, at the tested version only)",
+    "functions/api/admin/mail/newsletter.ts (a letter, behind MAIL_PAGE_ON)",
+    "functions/api/admin/mail/newsletter/test.ts (a letter, behind MAIL_PAGE_ON)",
+    "domain/contracts/mail.ts and domain/contracts/newsletter.ts (the two requests with a letter)",
+    "src/areas/admin/api.ts (sendNewsletterIssue, sendNewsletterIssueTest)",
+    "src/areas/admin/newsletter/SendSteps.tsx (new: the test's result, the confirm, Sending, Sent, Stopped)",
+    "src/areas/admin/newsletter/SidePreview.tsx (the phone's sheet: the test and Send at its foot)",
+    "src/pages/AdminNewsletterPage.tsx (the states in the head and the bar)",
+    "src/pages/AdminPage.tsx (Newsletter in Communications and in the media manager's groups)",
+    "src/components/layout/Navbar.tsx (the media manager's Newsletter link)",
+    "src/pages/AdminEmailPage.tsx (the tab's writing box gives way to one link, behind mailPage)",
+    "test/integration/newsletter-page-send.test.ts (new)",
+    "test/unit/mail-list-message-bytes.test.ts (new) and test/unit/fixtures/newsletter-plain.html (new: the bytes of a message with no look)",
+    "test/unit/admin-newsletter-send.test.tsx (new)",
+    "test/unit/admin-email-newsletter.test.tsx (the link and the box)",
+    "test/unit/admin-media-manager.test.tsx and test/unit/signed-in-header.test.tsx (the row and the link)",
+    "test/unit/mail-worker-closure.test.ts (the layout in the closure)",
+    "REDESIGN_STATUS.md (the step 6 block and checkpoint P's section)",
+    "test/unit/redesign-status-ws16-p2-step6.test.ts (new)"
+   ],
+   "acceptance": [
+    "Gate green: npm run lint (13 errors and 13 warnings, unchanged, none in a file the step touches), npm run build, npm run typecheck:functions, npm run check:bundle, npm run test:all, and one run of npm run test:a11y with test/a11y/baseline.json unchanged. Record line: the block's \"- Checks:\" line gives each figure once, and its \"Worker\" line gives the daily-emails worker's dry-run upload against the base, measured first.",
+    "A letter is never sent twice, and a send is today's send: the same refusals in the same order, the same footer, links, headers and From, in the navy layout; a send refused because another newsletter is sending leaves the letter open (test/integration/newsletter-page-send.test.ts). Record line: the block's \"Sending a letter\" part.",
+    "A test before Send (decision 26, pick 2; K's choice 4 as recommended): Send is refused, with its reason in words, until a test of the letter as it stands has gone, and a save after the test asks for a test again (the integration test and test/unit/admin-newsletter-send.test.tsx). Record line: the block's \"A test first\" part.",
+    "With MAIL_PAGE_ON unset both endpoints are today's; a plain send's batch is today's four statements and names no new table; and a message with no look keeps today's layout byte for byte (test/unit/mail-list-message-bytes.test.ts, new; test/unit/mail-seam-bytes.test.ts unchanged; the integration test's off cases). Record line: \"What ships with every switch off\".",
+    "The page says each state in words: the test's result, the one confirm, Sending with Stop sending, Sent, Stopped, and why Send waits (test/unit/admin-newsletter-send.test.tsx). Record line: the block's \"The states\" part.",
+    "On a phone a person can test and send: \"Send a test to me\" and \"Send to 155 people\" sit at the foot of the \"See the email\" sheet, each at least 48px tall (the unit test and the browser run at a phone's width). Record line: the block's \"On a phone\" part, with the run's figures.",
+    "Focus: the confirm takes focus, keeps it and gives it back to Send; each state is announced; no focused control is hidden under the bar or the sheet's foot (the unit test and the browser run). Record line: the block's \"Focus\" part.",
+    "The ways in show only with mailPage on, and the tab's plain box returns with it off (test/unit/admin-email-newsletter.test.tsx). Record line: the block's \"The ways in\" part.",
+    "The worker: its dry-run upload with the layout in it, against the ceiling. Record line: the \"Worker\" line.",
+    "Checkpoint P: its section, the switch-on change run green on a throwaway branch, and K's list for the switch-on (the two runs green, the worker's deployment checkpoint P's or later, no newsletter sending). Record line: \"### Checkpoint P: WS16 part two steps 1 to 6\"."
+   ],
+   "verify_items": [
+    {
+     "item": "One batch, one transaction",
+     "finding": "Confirmed on 1cf41c2: createListCampaign (functions/utils/mail/lists.ts lines 254 to 295) is one db.batch whose first statement is one INSERT with a SELECT and a WHERE, so more conditions on the letter join it at no cost, and whose later statements write only when the first made the campaign (the made clause of line 260, on lines 272 and 281, and the last statement by the campaign's own id); its comment says the database runs the batch as one transaction. The letter's mark joins that batch under the same clause."
+    },
+    {
+     "item": "Where the look is read",
+     "finding": "Confirmed on 1cf41c2: the rules path reads subject, body_html, list_id and filter_json of the campaign and calls listMessage for each person (functions/utils/admin/campaigns.ts lines 369 and 742); linkCheckOf already parses filter_json. Not checked: the exact line numbers on main after checkpoint N has merged; measure them first."
+    },
+    {
+     "item": "A test before the switch",
+     "finding": "Confirmed by the step's own rule: with MAIL_PAGE_ON unset the test endpoint ignores a letter, so a test in the navy look can only be sent once the switch is on. K's inbox checks are therefore K's first act after the switch-on change, as K's first test was in part one."
+    },
+    {
+     "item": "The worker's size",
+     "finding": "Confirmed on 1cf41c2 by the record: 76.61 KiB, gzip 20.53 KiB, against part one's ceiling of 96 KiB, gzip 28 KiB. Not checked: the figure with the layout; step 2 measured the layout alone."
+    },
+    {
+     "item": "The media manager's menu after checkpoint N",
+     "finding": "Not checked: WS16 step 10 gives the media manager News posts and Site banners in src/pages/AdminPage.tsx; the scout reads its groups on main after checkpoint N has merged, before adding the row."
+    },
+    {
+     "item": "What a checkpoint's fix round changes",
+     "finding": "Confirmed in the handoff (HANDOFF.md line 5): after checkpoint M's step 8 was committed, its merge-safety review and one fix round changed src/areas/admin/useMediaManager.ts, the guard, the run's claim in functions/utils/admin/campaigns.ts and the newsletter tab, and a second small pass changed the tab again. So this step waits for checkpoint N's merge, not for step 11's commit, and the page branch is rebased once, onto main at that merge."
+    },
+    {
+     "item": "Where a plain message's bytes are proved",
+     "finding": "Confirmed on 1cf41c2: test/unit/mail-seam-bytes.test.ts holds the two Resend requests with the rules off (its header, lines 1 to 21) and no list message, and WS16 step 12's entry deletes that file. So the proof that a message with no look is the same is a test of its own, which step 12 keeps."
+    },
+    {
+     "item": "Two workflows on a merge",
+     "finding": "Confirmed on 1cf41c2: .github/workflows/migrate-db.yml runs on a push to main that touches migrations/, and deploy-worker.yml on one that touches workers/, functions/utils/ or domain/, each apart from the site's own deploy. If the worker's run failed, a page send's first rows would go in the navy look from the site and the rest in today's look from the old worker; so K checks both runs and the worker's deployment before the page's switch-on, as before part one's."
+    }
+   ],
+   "flags": [
+    "mailPage (read by AdminPage, Navbar and AdminEmailPage; off)",
+    "MAIL_PAGE_ON (read by the send and the test; false)",
+    "mailLists, MAIL_LISTS_ON, MAIL_SENDER, WORKERS_PLAN, mailTools and MAIL_TOOLS_ON (as their own changes left them)"
+   ],
+   "migrations": [],
+   "tests": [
+    "test/integration/newsletter-page-send.test.ts (new)",
+    "test/unit/mail-list-message-bytes.test.ts (new)",
+    "test/unit/admin-newsletter-send.test.tsx (new, jsdom)",
+    "test/unit/admin-email-newsletter.test.tsx (the link and the box)",
+    "test/unit/mail-seam-bytes.test.ts (unchanged)",
+    "test/unit/mail-worker-closure.test.ts (the closure)",
+    "test/unit/redesign-status-ws16-p2-step6.test.ts (new)"
+   ],
+   "risks": [
+    "The live send path: one optional argument on each of two functions, both unused until the switch is on, and the letter's statements added to the batch only when a letter is given; a plain message's bytes are held by a test of their own; the step lands after the first newsletter and after checkpoint N has merged; the merge redeploys the worker, so it never goes on a day a newsletter is sending.",
+    "The site and the worker deploy apart: if the worker's run fails after the merge, one send could go in two looks. K checks both runs and the worker's deployment before the page's switch-on, and the switch-on change, or its rollback, is never merged while a newsletter is sending.",
+    "A member's inbox shows the look badly: K's own inbox checks are the first act after the switch, and the switch goes off again the same day if they fail; no member has seen it by then.",
+    "With the switch on, the plain box is gone and the send takes a saved letter only, so no uncleaned words reach an email; with it off the plain box is as today, uncleaned, as part one built it."
+   ],
+   "estimated_size": "medium"
+  },
+  {
+   "name": "ws16-p2-07-sending-later-the-engine-side",
+   "order": 7,
+   "brief": "Checkpoint Q's first step: the server side of \"Send later\" (decision 51, board Newsletter-Page-4-Schedule): a letter can be given a day and a time in Central time, the time can be changed or cleared, and a phase of the worker's five-minute run sends the letter when the time comes. No migration: the columns came with 0061. No new status, no new cron and no change to the campaign tables. What it leaves unchanged with the switch off: the two new methods answer 404; the worker's phase returns at its first line and reads nothing, so each five-minute run makes the same queries as today; a save is today's, since no letter holds a time; the page shows no arrow on Send; the audit log's new labels are never written. Built on checkpoint P's head, after checkpoint N has merged, while P waits for K's word; checkpoint Q opens once P has merged. About twenty-one files.\n\n1. src/lib/features.ts mailLater: false and functions/utils/mail/switches.ts MAIL_LATER_ON = false, with its \"Set: \" comment; the pair held four ways, and on only with MAIL_PAGE_ON; the switch count moves by one (a live figure).\n2. domain/mail/sendLater.ts (new, pure): toInstant(day, time) turns a Central day and time into an instant with lcaTimeToMs (domain/format/centralTime.ts) and reads it back: a time that does not exist (2:00 AM to 2:59 AM on Sunday, March 14, 2027) is refused; a time that comes twice (1:00 AM to 1:59 AM on Sunday, November 7, 2027) means the first; a past day or time is refused. LATE_AFTER_MS, the limit of K's choice 8 (6 hours as recommended). The words for the head: \"Scheduled for Tuesday, December 1, 2026 at 9:00 AM\" through the site's own date and time formatters, \"Sending now\" from the letter's time until a run has picked it up, and \"Changed since the last test\".\n3. The version rule. Every write to a letter's schedule moves its version by one, as a save does: setting a time, changing it, clearing it (\"Do not send it\"), and the worker's own write when it holds a letter. So whatever read the letter before such a write holds an old version and is refused. The test's mark alone does not move it.\n4. functions/api/admin/mail/newsletter/issue/schedule.ts (new): POST { version, day, time } sets or changes the time, behind requireListMailer and 404 unless MAIL_LATER_ON. It refuses, with \"Send a test of this letter first\", a letter with no test of its present words (K's choice 4 as recommended). It writes send_at (an instant in UTC, in the form the table's other times use, so two compare as text), scheduled_by, scheduled_at and link_check, the 16 characters of the site's link key at that moment (linkKeyCheck), clears held_reason, moves the version, and answers 409 on an old version; 503 without the link key. DELETE { version } is \"Do not send it\": it empties send_at and moves the version, the letter is a draft again and nothing is deleted. \"Send now\" is the page's own send of step 6, whose batch also empties the time.\n5. Saving a scheduled letter (functions/utils/mail/issues.ts): saveIssue's WHERE gains \"send_at is empty or still to come\", against the server's clock. Until its time a scheduled letter is saved like any other and can be tested (decision 51). From its time on a save is refused in words (\"This newsletter is sending now\"), so what goes out is the letter as it stood at its time, whichever five-minute run picks it up, and no run can lose a race with a save. To write on it again a person chooses \"Change the day or time\" or \"Do not send it\".\n6. functions/utils/mail/later.ts (new): sendDueLetter(env). It returns at once unless MAIL_LATER_ON. One query reads the one open letter whose send_at has come, with its version. Then, in this order. Later than LATE_AFTER_MS: the letter goes back to a draft with held_reason in words (\"Not sent: more than 6 hours late\"), by one write that requires the version just read and a time still set, so it never overwrites a time a person has changed in between, and one activity row is written in the scheduler's name. The scheduler may no longer send: the phase reads the scheduler's member row, which the activity row needs in any case, and holds the letter the same way, with \"Not sent: the person who scheduled it may no longer send the newsletter\", unless that person is still an LCA admin, the president or a holder of the Media manager seat now (holdsMediaManagerSeat in functions/utils/admin/mediaManager.ts, a file that imports nothing, so the worker's closure gains no package). A second factor belongs to a signed-in session and cannot be checked from the worker; the record says so. While Resend sends, or without the link key: nothing is written and the next run tries again. Otherwise createListCampaign with the letter { id, version } as read, its stored link_check, and due set: the campaign's insert then also requires, in the same statement, that the letter still holds a time and that the time has come (send_at IS NOT NULL AND send_at <= now), beside open, unsent and at that version. A \"Do not send it\" or a new time that lands between the phase's read and its batch has moved the version, so the insert makes nothing and nothing is sent. The phase's send does not ask for tested_at: by decision 51 a scheduled letter goes as it stands at its time (K's choice 4 (b) would add that condition and hold the letter). If another newsletter is still sending, createListCampaign answers null and the next run tries again. When it makes the campaign: one activity row, today's group_email_sent with detail { by: 'schedule', scheduled_by, last_saved_by, month }, in the scheduler's name, and the sweep in the same run starts the sending. People are counted at that moment (S7).\n7. workers/daily-emails/src/index.ts: in the five-minute branch of scheduled(), before the sweep, await phase('newsletter send later', () => sendDueLetter(env)); the sweep's phase follows as today.\n8. GET /api/admin/mail/newsletter/issue: its state gains scheduled, with the time, who scheduled it and when; \"sending now\" once the time has come and no campaign is made yet, with why it waits (Resend still sends; no link key; another newsletter is sending); \"changed since the last test\" for a scheduled letter whose tested_at is empty; and held, with its reason. Each is computed at the read.\n9. functions/utils/admin/audit.ts: four actions, newsletter_scheduled, newsletter_time_changed, newsletter_unscheduled and newsletter_held; src/areas/admin/components/AuditLogPanel.tsx: their labels (\"Scheduled the newsletter\", \"Changed the newsletter's time\", \"Chose not to send the newsletter\", \"The newsletter was not sent\") and the Group email filter; each row's detail carries the month, the day and time, and for a held letter its reason. test/unit/goldText.test.ts's line pin for AuditLogPanel moves by the lines added (measured).\n10. Who (S8): everyone who may send the newsletter may schedule, change, send now and choose \"Do not send it\".\n11. Contracts, the wrappers in src/areas/admin/api.ts and the fixture for the one new path and its two methods.\n12. Tests: test/unit/mail-send-later.test.ts (new): the two daylight saving days, a past time, the late limit. test/integration/newsletter-later.test.ts (new; the constants through getters): who may; a stale version; a letter with no test of its present words cannot be scheduled; the phase with nothing due makes one query; a due letter is sent once under two runs at once; \"Do not send it\" lands between the phase's read and its batch, and nothing is sent; a changed time lands there, and nothing is sent at the old time and the letter goes at the new one; a person's change lands before the worker's held write, which then writes nothing; a save before the time goes out as saved, and a save at or after the time is refused; a scheduler who has lost the seat, and one whose role has changed, each hold the letter with the reason and a log row, while an LCA admin, the president and a seat holder each send; another newsletter sending, Resend sending and no link key each leave it scheduled with its reason; the late limit; send now empties the time; a campaign made by the phase carries the site's link key check, so a worker with another key sends nothing; each action's activity row, the sent row naming the scheduler and the last saver; with the constant unset the methods answer 404, the phase reads nothing and a save is today's. test/integration/contracts/newsletter-later.test.ts (new). test/unit/mail-worker-closure.test.ts: later.ts, sendLater.ts and mediaManager.ts in the closure, no package.",
+   "files": [
+    "src/lib/features.ts (mailLater: false)",
+    "functions/utils/mail/switches.ts (MAIL_LATER_ON = false)",
+    "test/unit/features.test.ts, test/unit/mail-switches.test.ts, test/unit/redesign-status-ws02-step2.test.ts (the pair and the count)",
+    "domain/mail/sendLater.ts (new)",
+    "functions/utils/mail/later.ts (new: sendDueLetter, with the late limit and the check that the scheduler may still send)",
+    "functions/utils/mail/issues.ts (the schedule's writes, each moving the version; a save refused from the letter's time on; the state)",
+    "functions/utils/mail/lists.ts (createListCampaign takes the letter's stored link check and, for the phase, the condition that its time is set and has come)",
+    "functions/api/admin/mail/newsletter/issue/schedule.ts (new: POST, DELETE)",
+    "functions/api/admin/mail/newsletter/issue.ts (the scheduled state)",
+    "workers/daily-emails/src/index.ts (the phase, before the sweep)",
+    "functions/utils/admin/audit.ts (four actions)",
+    "src/areas/admin/components/AuditLogPanel.tsx (their labels)",
+    "test/unit/goldText.test.ts (the AuditLogPanel line number, a live pin)",
+    "domain/contracts/newsletter.ts and domain/contracts/registry.ts (one path, two methods)",
+    "src/areas/admin/api.ts and test/unit/fixtures/api-added-since-split.json (the wrappers, the path, the names)",
+    "test/unit/mail-send-later.test.ts (new)",
+    "test/integration/newsletter-later.test.ts (new)",
+    "test/integration/contracts/newsletter-later.test.ts (new)",
+    "test/unit/mail-worker-closure.test.ts (the closure)",
+    "REDESIGN_STATUS.md (the step 7 block)",
+    "test/unit/redesign-status-ws16-p2-step7.test.ts (new)"
+   ],
+   "acceptance": [
+    "Gate green: npm run lint (13 errors and 13 warnings, unchanged, none in a file the step touches), npm run build, npm run typecheck:functions, npm run check:bundle, npm run test:all, and one run of npm run test:a11y with test/a11y/baseline.json unchanged. Record line: the block's \"- Checks:\" line gives each figure once, and its \"Worker\" line gives the daily-emails worker's dry-run upload against the base, measured first.",
+    "A scheduled letter is sent once, at the first five-minute run at or after its time, to the people counted then, with the words it held at its time (test/integration/newsletter-later.test.ts). Record line: the block's \"The phase\" part.",
+    "A stop or a change always wins: \"Do not send it\" and a changed time each move the version, the phase's insert requires the version it read and a time that is set and has come, and the worker's own held write requires that version too; with either landing between the phase's read and its batch, nothing is sent (the integration test's three race cases). Record line: the block's \"A stop and a change\" part.",
+    "Who scheduled may still send: at the letter's time the phase holds it, with the reason in words and a log row, unless the scheduler is still an LCA admin, the president or a holder of the Media manager seat. Record line: the block's \"Who may still send\" part, with the sentence that a second factor cannot be checked from the worker.",
+    "Each edge has a test: two people, a save before the time and one after it, a stop, a changed time, another newsletter sending, Resend sending, no link key, a worker with another key, the late limit, a scheduler who may no longer send, both daylight saving days. Record line: the block's \"The edges\" part, one sentence each.",
+    "Every action is in the activity log with who did it, the month and the day and time; the row of a send made by the schedule names the scheduler and the person who saved the letter last. Record line: the block's \"The log\" part.",
+    "With MAIL_LATER_ON unset the methods answer 404, the phase reads nothing and a save is today's: a five-minute run's query count is today's. Record line: \"What ships with every switch off\".",
+    "The worker's dry-run upload against the ceiling. Record line: the \"Worker\" line."
+   ],
+   "verify_items": [
+    {
+     "item": "Where the phase goes",
+     "finding": "Confirmed on 1cf41c2: workers/daily-emails/src/index.ts line 381 is the five-minute branch (SWEEP_CRON, line 104), which runs the sweep in its own phase and returns; phase(name, fn) keeps one phase's failure from the next (line 95). The sweep reads only campaigns whose status is 'sending'."
+    },
+    {
+     "item": "No automation_runs",
+     "finding": "Confirmed on 1cf41c2: git grep finds no automation_runs in migrations, functions, workers or domain; the handoff places it inside WS09. The letter's own row is the check; WS09 wraps this phase when it builds the table. This differs from part one's notes (\"its own automation_runs row\") and is written as the page half's own deviation."
+    },
+    {
+     "item": "Central time to an instant",
+     "finding": "Confirmed on 1cf41c2: lcaTimeToMs (domain/format/centralTime.ts line 35) answers an instant for any wall time and does not refuse one that does not exist, so sendLater reads the instant back with zonedParts and compares."
+    },
+    {
+     "item": "The link key's check",
+     "finding": "Confirmed on 1cf41c2: a list campaign stores the check of the key it was made with, and a deployment whose key differs sends nothing (functions/utils/admin/campaigns.ts, linkCheckOf). A campaign made by the worker must therefore carry the site's check, stored when the person scheduled, or a worker with a mistyped key would send links the site cannot open."
+    },
+    {
+     "item": "An activity row from the worker, and who may still send",
+     "finding": "Confirmed on 1cf41c2: recordAdminAction (functions/utils/admin/audit.ts line 78) takes the actor's member row and writes its id and address, so the phase reads the scheduler's member row when a letter is due. requireListMailer (functions/utils/auth.ts lines 245 to 264) lets in the president, an LCA admin with a second factor and, through sendsAsMediaManager, whoever holds the Media manager seat now, read at each request; holdsMediaManagerSeat is in functions/utils/admin/mediaManager.ts (line 32), whose header says the file imports nothing. So the phase can ask the same question of the scheduler, apart from the second factor, which only a signed-in session carries."
+    },
+    {
+     "item": "The insert takes more conditions",
+     "finding": "Confirmed on 1cf41c2: createListCampaign's first statement is one INSERT with a SELECT and a WHERE (functions/utils/mail/lists.ts lines 262 to 268), so the letter's version and its time join that WHERE and are checked in the same transaction as the insert. Not checked: the form the table's times are stored in on that day; send_at is written in the same form so that two times compare as text, and the scout measures it first."
+    }
+   ],
+   "flags": [
+    "mailLater (new, off)",
+    "MAIL_LATER_ON (new; read by the two methods and by the worker's phase; false)",
+    "mailPage and MAIL_PAGE_ON (as their switch-on change left them)"
+   ],
+   "migrations": [],
+   "tests": [
+    "test/unit/mail-send-later.test.ts (new)",
+    "test/integration/newsletter-later.test.ts (new)",
+    "test/integration/contracts/newsletter-later.test.ts (new)",
+    "test/unit/mail-switches.test.ts (the pair)",
+    "test/unit/mail-worker-closure.test.ts (the closure)",
+    "test/unit/goldText.test.ts (the line number)",
+    "test/unit/redesign-status-ws16-p2-step7.test.ts (new)"
+   ],
+   "risks": [
+    "A newsletter sent twice, or sent after a person stopped it: one batch makes the campaign and marks the letter; the insert requires the version the phase read and a time that is set and has come; every schedule write moves the version; the one-at-a-time rule stands; the first scheduled send is a real one and the lead watches that run.",
+    "A newsletter sent in the name of someone who may no longer send: the phase asks at the letter's time, and holds the letter with the reason if not. The second factor cannot be asked from the worker.",
+    "The worker deploys apart from the site: the phase reads its own constant, and with it unset reads nothing, so a worker that deploys first or last changes nothing.",
+    "A person is not told when a scheduled newsletter is held: the page and the activity log say so, and no email is sent about it. If K wants a notice, it is a small later change."
+   ],
+   "estimated_size": "medium"
+  },
+  {
+   "name": "ws16-p2-08-sending-later-on-the-page",
+   "order": 8,
+   "brief": "Checkpoint Q's second step: \"Send later\" on the page, as Newsletter-Page-4-Schedule draws it, on a computer, a tablet and a phone. What it leaves unchanged with the switch off: Send has no arrow, the phone's sheet holds the test and Send as checkpoint P left them and no \"Send later\", and the page is as checkpoint P left it. No endpoint and no migration. About nine files.\n\n1. The arrow on Send (S1) opens two rows, each at least 44px: \"Send now\" and \"Send later\".\n2. The panel (S2): the title \"Send later\"; Day, a calendar on which a past day cannot be chosen and is told apart by more than colour; Time, with \"Central time\" beside it; \"Schedule it\" in gold and \"Not now\". No explaining sentence in the panel.\n3. Scheduled (S3): the head reads the month and \"Scheduled for Tuesday, December 1, 2026 at 9:00 AM\" with a clock mark; the saved line stays; one confirmation line, \"Scheduled. It sends Tuesday, December 1, 2026 at 9:00 AM Central time.\"; step 3 on the bar becomes a navy-bordered \"Sends Tuesday, December 1 at 9:00 AM\" with its arrow.\n4. While scheduled (S4): steps 1 and 2 and More options stay; the letter can be written on and a test sent until its time, and nothing more is shown before then, since a change saved before the time always goes out. If the letter changed after its last test, the head reads \"Changed since the last test\" beside the scheduled line. From its time until a run has picked it up, the head reads \"Sending now\", with the reason when it waits (another newsletter is sending; Amazon SES is not sending yet; the link key is missing); the letter cannot be written on then, a save is refused with that state in words, and the arrow still offers \"Change the day or time\" and \"Do not send it\".\n5. The arrow on a scheduled letter (S5): \"Change the day or time\", \"Send now\", \"Do not send it\", and a quiet line, \"Scheduled by Player One on Monday, November 23, 2026\".\n6. \"Change the day or time\" (S6): the same panel with that title, \"Save the new time\" and \"Not now\".\n7. Phone (S9): \"Send later\" joins Send at the foot of the \"See the email\" sheet, where step 6 put the test and Send, each at least 48px; when scheduled, the time on its own line in the head, a full-width \"Sends ...\" button where Send was, and the same line above the bar's two buttons.\n8. The states the board leaves out (S10): \"Send now\" on a scheduled letter asks the same one question as Send; the moment it goes, the page reads the sending state of step 6; a time that passed while the page was closed shows what happened when the page opens (sent, with the count and the time, or not sent, with the reason); a second person sees the scheduled state and who set it, and a stale action is refused with that person's name.\n9. Focus: the arrow's menu, the panel and the three-row menu each take focus when they open, close on Escape and give focus back to the arrow; the calendar is worked by keyboard alone; no focused control is hidden under the bar at the foot or the sheet's foot.\n10. Tests: test/unit/admin-newsletter-later.test.tsx (new, jsdom): each state in words, \"Changed since the last test\" and \"Sending now\" with its reasons among them; where focus goes when each menu and the panel open and close; a past day not choosable and named as past; the menus' rows; the phone's sheet; the refusal of a stale action; no arrow with the switch off. The browser run on a throwaway build with the three switches on: each new control at least 44px on a phone, the calendar by keyboard, and no focused control hidden under the bar.",
+   "files": [
+    "src/areas/admin/newsletter/SendMenu.tsx (new: the arrow and its rows)",
+    "src/areas/admin/newsletter/SendLaterPanel.tsx (new: the day, the time, Central time)",
+    "src/areas/admin/newsletter/SendSteps.tsx (the scheduled button and the states)",
+    "src/areas/admin/newsletter/NewsletterHead.tsx (the scheduled line, Changed since the last test, Sending now)",
+    "src/areas/admin/newsletter/SidePreview.tsx (the phone's sheet: Send later beside Send)",
+    "src/areas/admin/newsletter/useIssue.ts (schedule, change, do not send)",
+    "test/unit/admin-newsletter-later.test.tsx (new)",
+    "REDESIGN_STATUS.md (the step 8 block)",
+    "test/unit/redesign-status-ws16-p2-step8.test.ts (new)"
+   ],
+   "acceptance": [
+    "Gate green: npm run lint (13 errors and 13 warnings, unchanged, none in a file the step touches), npm run build, npm run typecheck:functions, npm run check:bundle, npm run test:all, and one run of npm run test:a11y with test/a11y/baseline.json unchanged. Record line: the block's \"- Checks:\" line gives each figure once, and its \"Worker\" line gives the daily-emails worker's dry-run upload against the base, measured first.",
+    "The page matches Newsletter-Page-4-Schedule on a computer and a phone: the menu, the panel, the scheduled state, the three-row menu, changing the time (the lead's pictures beside the board). Record line: the block's \"Sending later on the page\" part.",
+    "Every state is said in words, the ones the board leaves out among them (test/unit/admin-newsletter-later.test.tsx). Record line: the block's \"The states\" part.",
+    "Nothing is shown before the letter's time that is not true: no warning before it; \"Sending now\", with its reason, from the time until a run has picked the letter up; a save then is refused in words (test/unit/admin-newsletter-later.test.tsx and step 7's integration test). Record line: the block's \"At the letter's time\" part.",
+    "A past day cannot be chosen and is told apart in words; each row is at least 44px, and 48px on the phone's sheet; each menu and the panel take focus and give it back, the calendar works by keyboard, and no focused control is hidden under the bar. Record line: the browser run's figures and the block's \"Focus\" part.",
+    "With mailLater off Send has no arrow. Record line: \"What ships with every switch off\"."
+   ],
+   "verify_items": [
+    {
+     "item": "A calendar the site already has",
+     "finding": "Not checked: whether the site holds a day picker that meets the keyboard and 44px rules; the scout looks first, and a plain date field with the day's name written beside it is the fallback."
+    },
+    {
+     "item": "The board's short dates",
+     "finding": "Not checked: the board writes its dates short; the page uses the site's own formatters (domain/format/date.ts and clock.ts), which keep a weekday on every date and \"9:00 AM\" for a time."
+    }
+   ],
+   "flags": [
+    "mailLater (read by the page; off)",
+    "MAIL_LATER_ON (unchanged, false)"
+   ],
+   "migrations": [],
+   "tests": [
+    "test/unit/admin-newsletter-later.test.tsx (new, jsdom)",
+    "test/unit/redesign-status-ws16-p2-step8.test.ts (new)"
+   ],
+   "risks": [
+    "A person thinks the letter is frozen once scheduled: it can be written on until its time, as the board says, and the head gives the time; from that time the page says \"Sending now\" and why a save is refused.",
+    "Two people act on one scheduled letter: every action carries the version, and the loser is told who and when."
+   ],
+   "estimated_size": "medium"
+  },
+  {
+   "name": "ws16-p2-09-pinned-templates",
+   "order": 9,
+   "brief": "Checkpoint Q's last step: a sent letter can be pinned as a template, as K asked (decision 33: a pinned template or one of the last newsletters saves time). The chooser's \"Pinned templates\" then holds LCA's starters and the pinned letters. No migration: pinned_at and pinned_name came with 0061. What it leaves unchanged with the switch off: no pin control is drawn, the method answers 404, and the chooser is as checkpoint P left it. It ships under checkpoint Q's pair, mailLater with MAIL_LATER_ON. About nine files. The step also writes checkpoint Q's section and runs Q's switch-on change green on a throwaway branch.\n\n1. functions/api/admin/mail/newsletter/issues/[id]/pin.ts (new): POST { name } pins a sent letter under a name of at most 60 characters; DELETE unpins it; requireListMailer; 404 unless MAIL_LATER_ON. GET /api/admin/mail/newsletter/issues lists pinned letters first, with their names.\n2. The chooser: each of \"Your last newsletters\" that was sent has a small menu with \"Pin as a template\", which takes focus when it opens and gives it back, as the page's other menus do; a pinned letter shows under \"Pinned templates\" with \"Use this\" and \"Unpin\". \"Use this\" copies its headings and words into a new letter, after the same one question.\n3. Contracts, the wrappers and the fixture for the one new path and its two methods.\n4. Tests: test/integration/newsletter-pins.test.ts (new): who may; only a sent letter can be pinned; unpinning; the list's order; 404 with the constant unset. test/unit/admin-newsletter-pins.test.tsx (new). The contract test.\n5. REDESIGN_STATUS.md: the step 9 block and \"### Checkpoint Q: WS16 part two steps 7 to 9\".",
+   "files": [
+    "functions/api/admin/mail/newsletter/issues/[id]/pin.ts (new: POST, DELETE)",
+    "functions/utils/mail/issues.ts (pin, unpin, the list's order)",
+    "domain/contracts/newsletter.ts and domain/contracts/registry.ts (one path, two methods)",
+    "src/areas/admin/api.ts and test/unit/fixtures/api-added-since-split.json",
+    "src/areas/admin/newsletter/TemplateChooser.tsx (the menu, Pinned templates)",
+    "test/integration/newsletter-pins.test.ts (new)",
+    "test/integration/contracts/newsletter-pins.test.ts (new)",
+    "test/unit/admin-newsletter-pins.test.tsx (new)",
+    "REDESIGN_STATUS.md (the step 9 block and checkpoint Q's section)",
+    "test/unit/redesign-status-ws16-p2-step9.test.ts (new)"
+   ],
+   "acceptance": [
+    "Gate green: npm run lint (13 errors and 13 warnings, unchanged, none in a file the step touches), npm run build, npm run typecheck:functions, npm run check:bundle, npm run test:all, and one run of npm run test:a11y with test/a11y/baseline.json unchanged. Record line: the block's \"- Checks:\" line gives each figure once, and its \"Worker\" line gives the daily-emails worker's dry-run upload against the base, measured first.",
+    "A sent letter can be pinned and unpinned by everyone who may send, and a pinned one starts a new letter (the two tests). Record line: the block's \"Pinned templates\" part.",
+    "With mailLater off no pin control is drawn and the method answers 404. Record line: \"What ships with every switch off\".",
+    "Checkpoint Q: its section, and its switch-on change run green on a throwaway branch. Record line: \"### Checkpoint Q: WS16 part two steps 7 to 9\"."
+   ],
+   "verify_items": [
+    {
+     "item": "A file and a folder of the same name",
+     "finding": "Confirmed on 1cf41c2: functions/api/admin/mail/newsletter.ts sits beside the folder newsletter/ (stop.ts and test.ts), so issues.ts beside issues/[id]/pin.ts routes the same way."
+    }
+   ],
+   "flags": [
+    "mailLater (read by the chooser; off)",
+    "MAIL_LATER_ON (read by the pin method; false)"
+   ],
+   "migrations": [],
+   "tests": [
+    "test/integration/newsletter-pins.test.ts (new)",
+    "test/integration/contracts/newsletter-pins.test.ts (new)",
+    "test/unit/admin-newsletter-pins.test.tsx (new, jsdom)",
+    "test/unit/redesign-status-ws16-p2-step9.test.ts (new)"
+   ],
+   "risks": [
+    "A pinned letter carries last month's news: \"Use this\" copies it into a draft a person reads before sending, and the one confirm stands."
+   ],
+   "estimated_size": "small"
+  },
+  {
+   "name": "ws16-p2-10-add-or-review-people",
+   "order": 10,
+   "brief": "Checkpoint R's first step of three, built after checkpoint O: \"Add or review people\" (decisions 33 and 36; the design scout's P10), so a sender can add people to the newsletter by typing, pasting or importing addresses, see the members, the added people, those left out and the total, and keep added people in LCA's email bank for next time. It widens who the newsletter reaches beyond active members, which K allowed for added people (decision 36), so the engine's audience learns them. It waits for the clean days after the cutover because imported addresses are the usual cause of bounces and spam reports, which Amazon watches on a new account. What it leaves unchanged with the switch off: the newsletter's audience is today's, active members alone; the count card shows members only; the new methods answer 404; no address is stored. Its own pair, mailPeople with MAIL_PEOPLE_ON. No new table: an added person is a row of mail_contacts and a row of mail_list_choices with choice 'in' and source 'added', both from migration 0060. About eighteen files; the entry is an outline, and the lead's scout plans it again on the tree of that day.\n\n1. functions/utils/mail/lists.ts: with MAIL_PEOPLE_ON, the newsletter's audience is the active members' addresses and the contacts with an 'in' choice of source 'added' on the newsletter, each address once; the rest of createListCampaign's rules stand (an 'out', a stop-all and the do-not-send list keep an address off). The counts gain the added people and those left out.\n2. Endpoints behind requireListMailer and MAIL_PEOPLE_ON: read the people (members, added by you, left out, with their totals; every address masked for the media manager, as part one's lists do); add addresses (typed, pasted or read from a file in the browser; the answer says how many were found, added, already members, and left out because they unsubscribed, bounced or reported spam); remove an added person. Each add and remove writes an activity row with the count, never the addresses.\n3. The page: the count card's \"155 members and 12 you added\" and \"Add or review people\"; the panel's three tabs, its rows with Remove, \"Show all\", the box for typed or pasted addresses and \"Import a list\"; no \"they asked\" tick (decision 36). By decision 40 the panel's explaining sentences go to Help. The panel takes focus when it opens and gives it back to \"Add or review people\". Every control at least 44px on a phone, which the board's small links are not.\n4. Tests: the audience with and without the constant; duplicates dropped; a member, a person who unsubscribed, a dead address and a spam report each left out and counted in words; the count shown equals the rows a send makes; masked addresses for the media manager; 404 with the constant unset.\n\nCovers the design scout's P10 and the added people's part of the count card.",
+   "files": [
+    "src/lib/features.ts, functions/utils/mail/switches.ts and their tests (mailPeople, MAIL_PEOPLE_ON)",
+    "functions/utils/mail/lists.ts (the audience with added people; the counts)",
+    "functions/api/admin/mail/newsletter/people.ts (new: GET, POST, DELETE)",
+    "domain/contracts/newsletter.ts and domain/contracts/registry.ts",
+    "functions/utils/admin/audit.ts and src/areas/admin/components/AuditLogPanel.tsx (two actions and their labels)",
+    "src/areas/admin/api.ts and test/unit/fixtures/api-added-since-split.json",
+    "src/areas/admin/newsletter/PeoplePanel.tsx (new)",
+    "src/areas/admin/newsletter/CountCard.tsx (the added people and the button)",
+    "test/integration/newsletter-people.test.ts (new)",
+    "test/integration/contracts/newsletter-people.test.ts (new)",
+    "test/unit/admin-newsletter-people.test.tsx (new)",
+    "REDESIGN_STATUS.md (the step 10 block)",
+    "test/unit/redesign-status-ws16-p2-step10.test.ts (new)"
+   ],
+   "acceptance": [
+    "Gate green: npm run lint (13 errors and 13 warnings, unchanged, none in a file the step touches), npm run build, npm run typecheck:functions, npm run check:bundle, npm run test:all, and one run of npm run test:a11y with test/a11y/baseline.json unchanged. Record line: the block's \"- Checks:\" line gives each figure once, and its \"Worker\" line gives the daily-emails worker's dry-run upload against the base, measured first.",
+    "Added people get the newsletter only with mailPeople on, and the engine's own rules still leave out anyone who unsubscribed, bounced or reported spam (test/integration/newsletter-people.test.ts). Record line: the block's \"Who gets it\" part.",
+    "The total shown equals the rows a send makes. Record line: the block's \"The count\" part.",
+    "The media manager reads every address masked, and the activity log holds counts, never addresses. Record line: the block's \"What is stored\" part.",
+    "With mailPeople off the audience is today's and nothing is stored. Record line: \"What ships with every switch off\"."
+   ],
+   "verify_items": [
+    {
+     "item": "Today's rule on choices",
+     "finding": "Confirmed on 1cf41c2: functions/utils/mail/lists.ts says a choice never adds an address to the newsletter (its header, and createListCampaign's comment, K's decision 28). This step changes that rule for source 'added' alone, behind its switch; a sign-up never adds anyone to the newsletter."
+    },
+    {
+     "item": "The tables",
+     "finding": "Confirmed on 1cf41c2: migration 0060's mail_list_choices has contact_id, list_id, choice, source and updated_at, and mail_contacts has one row for an address. No new table is needed."
+    },
+    {
+     "item": "Reading a spreadsheet",
+     "finding": "Not checked: the board says \"a spreadsheet or CSV file with an Email column\". A CSV is read in the browser with no package. A spreadsheet file would need one; the scout weighs it, and CSV alone is the fallback, said plainly on the page."
+    },
+    {
+     "item": "The clean days",
+     "finding": "Not checked, since they have not happened: Amazon reviews an account at a 5% bounce rate and a 0.1% complaint rate (part one's notes). K says the clean days went well before this step's switch goes on."
+    }
+   ],
+   "flags": [
+    "mailPeople (new, off)",
+    "MAIL_PEOPLE_ON (new; read by the audience and the new methods; false)"
+   ],
+   "migrations": [],
+   "tests": [
+    "test/integration/newsletter-people.test.ts (new)",
+    "test/integration/contracts/newsletter-people.test.ts (new)",
+    "test/unit/admin-newsletter-people.test.tsx (new, jsdom)",
+    "test/unit/redesign-status-ws16-p2-step10.test.ts (new)"
+   ],
+   "risks": [
+    "Old or mistyped addresses bounce and count against LCA at Amazon: the step waits for the clean days, the answer of an import says what was left out, and the alarms K set in part one tell K early.",
+    "The newsletter reaches people who are not active members: K decided it for added people (decision 36); every email carries the one-click unsubscribe, and the footer's reason line must be true for them too, which the scout words with K.",
+    "It changes who the engine sends to: one clause behind its own switch, with the off case tested as today's."
+   ],
+   "estimated_size": "large"
+  },
+  {
+   "name": "ws16-p2-11-each-issues-page-on-the-site",
+   "order": 11,
+   "brief": "Checkpoint R's second step of three: a page on the site for each issue, which K placed right after the first version (decision 26, pick 7; the design scout's D4), and the always-working \"Read this issue on the website\" link under the email's \"In this issue\" list, which part one's build notes ask for and no board draws. Visitors meet this page, so it gets a design board first (decision 44) and K's yes on it; the entry is an outline until then. What it leaves unchanged with the switch off: no page is routed, no link is added to any email, and the navy layout's bytes are checkpoint P's. Its own pair, mailIssues with MAIL_ISSUES_ON. About fourteen files.\n\n1. A public read of one sent issue (the month, the subject, the cleaned words, the day it was sent) and of the list of issues, each with a contract; the read passes the stored words through cleanLetterHtml once more before it answers, so a public page never rests on one cleaning alone; an issue that was stopped, or a letter never sent, has no page.\n2. The page in the site's look, with the same part names as ids, so each line of the list jumps to its part, and a list of past issues.\n3. renderNewsletter gains the link under the list when the send carries its address; a test holds the bytes without it.\n4. Open for K, asked with the board: whether an issue's page is open to everyone or to signed-in members; and where the site's menu links it.\n5. Tests: the read's contract; an unsent letter and a stopped send have no page; the words on the page are cleaned words, cleaned again at the read; the link in the email opens the page; with the constant unset, no route and no link.\n\nCovers the design scout's D4.",
+   "files": [
+    "src/lib/features.ts, functions/utils/mail/switches.ts and their tests (mailIssues, MAIL_ISSUES_ON)",
+    "functions/api/newsletter/[issue].ts and functions/api/newsletter.ts (new: the public reads)",
+    "domain/contracts/newsletter.ts and domain/contracts/registry.ts",
+    "domain/mail/newsletterLayout.ts (the link under the list)",
+    "functions/utils/admin/campaigns.ts (the issue's address passed to the layout)",
+    "src/App.tsx (the routes, behind mailIssues)",
+    "src/pages/NewsletterIssuePage.tsx and src/pages/NewsletterIssuesPage.tsx (new)",
+    "test/integration/newsletter-issue-pages.test.ts (new) and its contract test",
+    "test/unit/newsletter-issue-page.test.tsx (new)",
+    "REDESIGN_STATUS.md (the step 11 block)",
+    "test/unit/redesign-status-ws16-p2-step11.test.ts (new)"
+   ],
+   "acceptance": [
+    "Gate green: npm run lint (13 errors and 13 warnings, unchanged, none in a file the step touches), npm run build, npm run typecheck:functions, npm run check:bundle, npm run test:all, and one run of npm run test:a11y with test/a11y/baseline.json unchanged. Record line: the block's \"- Checks:\" line gives each figure once, and its \"Worker\" line gives the daily-emails worker's dry-run upload against the base, measured first.",
+    "Each sent issue has a page that matches its board, and the email's link opens it (the tests and the lead's pictures beside the board). Record line: the block's \"The issue's page\" part.",
+    "A stopped send and an unsent letter have no page. Record line: the block's \"What has a page\" part.",
+    "With mailIssues off there is no route and no link, and the email's bytes are checkpoint P's. Record line: \"What ships with every switch off\"."
+   ],
+   "verify_items": [
+    {
+     "item": "The board",
+     "finding": "Not checked, since it does not exist: no board draws an issue's page (the design scout's D4 and board note E6). A design round draws it and K approves it before this step is built."
+    },
+    {
+     "item": "The site's News pages",
+     "finding": "Not checked: whether an issue's page should sit beside the site's News posts or under an address of its own; the design round answers it."
+    }
+   ],
+   "flags": [
+    "mailIssues (new, off)",
+    "MAIL_ISSUES_ON (new; read by the public reads and by the layout's link; false)"
+   ],
+   "migrations": [],
+   "tests": [
+    "test/integration/newsletter-issue-pages.test.ts (new)",
+    "test/unit/newsletter-issue-page.test.tsx (new, jsdom)",
+    "test/unit/redesign-status-ws16-p2-step11.test.ts (new)"
+   ],
+   "risks": [
+    "A newsletter written for members becomes a page anyone may read: K decides who may open it, with the board, before the step is built.",
+    "Words on a public page must be clean: the page shows only what cleanLetterHtml saved, and the read cleans it again. Step 1's tests name every tag whose inside is raw text."
+   ],
+   "estimated_size": "medium"
+  },
+  {
+   "name": "ws16-p2-12-the-add-menus-photo-and-the-plain-top",
+   "order": 12,
+   "brief": "Checkpoint R's third step of three, built after checkpoint O and after a board: the two extras of the approved page that a member would see and that no board draws (decisions 26 and 27; K's choice 5). A photo under the Add menu, which then takes the approved board's own name, \"Add a photo, event or line\"; and \"the plain top of the email\" in More options, a choice for one issue to open without the navy band. Each is an option that is off until a sender asks for it and never part of the default path. Members meet both in their inbox, so a design round draws a photo in the navy email and the plain top first, and K says yes to each (decision 44); the entry is an outline until then, and the lead's scout plans it again on the tree of that day. It needs no clean days: it sits in checkpoint R so that nothing more goes ahead of WS09, and K can ask for it sooner once its board is approved. What it leaves unchanged with the switch off: the Add menu holds an event and a line, More options has no row for the top, the upload answers 404, and the cleaner's and the navy layout's bytes are checkpoint P's. Its own pair, mailPhoto with MAIL_PHOTO_ON. About sixteen files.\n\n1. A photo's upload, behind requireListMailer and MAIL_PHOTO_ON: the browser shrinks the picture first, as a News post's picture is shrunk today (functions/api/admin/posts/[id]/image.ts), the method stores it in the site's own bucket under a key of the letter's, and a public read serves it, since a mail app loads a picture without signing in. A photo cannot be added without words that describe it, or a mark that it is decoration.\n2. The cleaner keeps one more form behind the switch: an img whose address is the site's own picture read and nothing else, with its describing words and a width; any other img is removed with what it holds, as today. The navy layout draws it as the board gives.\n3. The plain top: one field of the letter, saved with it and read by renderNewsletter, which then opens as the board gives in place of the band; the \"In this issue\" list, the body and the footer are the same.\n4. The page: the Add menu's photo row and its form; More options' row for the top of the email; each takes focus when it opens and gives it back; each control at least 44px on a phone.\n5. Tests: who may upload; a file that is not a picture, or is too large, is refused in words; a photo cannot be added without its words; an img from anywhere else is removed; the whole email stays under 102,000 bytes; an issue with no photo and the navy band has checkpoint P's bytes; with the constant unset the upload answers 404 and the cleaner is checkpoint P's.\n6. Open for K, asked with the board: how long a letter's pictures are kept after its issue is sent.\n\nCovers the photo of the approved board's Add menu and decision 27's plain top.",
+   "files": [
+    "src/lib/features.ts, functions/utils/mail/switches.ts and their tests (mailPhoto, MAIL_PHOTO_ON)",
+    "migrations/ (an outline: one column on newsletter_issues for the plain top, at the next free number on that day, with its staged copy)",
+    "functions/api/admin/mail/newsletter/issue/photo.ts (new: POST, DELETE)",
+    "functions/api/newsletter-images/[key].ts (new: the public read of one picture)",
+    "functions/utils/mail/letterClean.ts (the one img form, behind the switch)",
+    "functions/utils/mail/issues.ts (the letter's top)",
+    "domain/mail/newsletterLayout.ts (a photo as the board gives it; the plain top)",
+    "domain/contracts/newsletter.ts and domain/contracts/registry.ts",
+    "src/areas/admin/api.ts and test/unit/fixtures/api-added-since-split.json",
+    "src/areas/admin/newsletter/LetterEditor.tsx (the Add menu's photo row and the menu's name)",
+    "src/areas/admin/newsletter/AddPhotoForm.tsx (new)",
+    "src/areas/admin/newsletter/MoreOptions.tsx (the top of the email)",
+    "test/integration/newsletter-photo.test.ts (new) and its contract test",
+    "test/integration/mail-letter-clean.test.ts (the one img form, and every other img still removed)",
+    "test/unit/admin-newsletter-photo.test.tsx (new)",
+    "REDESIGN_STATUS.md (the step 12 block and checkpoint R's section)",
+    "test/unit/redesign-status-ws16-p2-step12.test.ts (new)"
+   ],
+   "acceptance": [
+    "Gate green: npm run lint (13 errors and 13 warnings, unchanged, none in a file the step touches), npm run build, npm run typecheck:functions, npm run check:bundle, npm run test:all, and one run of npm run test:a11y with test/a11y/baseline.json unchanged. Record line: the block's \"- Checks:\" line gives each figure once, and its \"Worker\" line gives the daily-emails worker's dry-run upload against the base, measured first.",
+    "A photo is an option, never a default: it can be added only with its describing words, it is stored in the site's own bucket, and the email shows it as its board gives (the tests and the lead's pictures beside the board). Record line: the block's \"A photo\" part.",
+    "The cleaner keeps only an img from the site's own picture read; every other img is removed (test/integration/mail-letter-clean.test.ts). Record line: the block's \"The cleaner\" part.",
+    "The plain top is one issue's choice, saved with the letter, and an issue without it has checkpoint P's bytes. Record line: the block's \"The plain top\" part.",
+    "With mailPhoto off the menu holds an event and a line, the upload answers 404 and the email's bytes are checkpoint P's. Record line: \"What ships with every switch off\"."
+   ],
+   "verify_items": [
+    {
+     "item": "Where a picture can be stored",
+     "finding": "Confirmed on 1cf41c2: a News post's picture is shrunk in the browser and stored in the site's bucket (functions/api/admin/posts/[id]/image.ts, env.CLUB_LOGOS.put, with a limit of 3 MB), and wrangler.toml binds that bucket for production and for previews. So a newsletter photo needs no new service: it needs its own upload method, a public read, its describing words and one more rule in the cleaner."
+    },
+    {
+     "item": "The boards",
+     "finding": "Not checked, since they do not exist: Newsletter-Email-6 draws no photo and no board draws the plain top. A design round draws both and K approves them before this step is built."
+    },
+    {
+     "item": "Pictures in mail apps",
+     "finding": "Not checked: some mail apps hold pictures back until a person asks for them. The letter must read whole without its photo, which the board shows."
+    }
+   ],
+   "flags": [
+    "mailPhoto (new, off)",
+    "MAIL_PHOTO_ON (new; read by the upload, the cleaner's one img form and the page; false)"
+   ],
+   "migrations": [
+    "an outline, numbered on that day: one column on newsletter_issues for the plain top; a column added, no CHECK, no table rebuilt, no data statement"
+   ],
+   "tests": [
+    "test/integration/newsletter-photo.test.ts (new)",
+    "test/integration/mail-letter-clean.test.ts (the one img form)",
+    "test/unit/admin-newsletter-photo.test.tsx (new, jsdom)",
+    "test/unit/redesign-status-ws16-p2-step12.test.ts (new)"
+   ],
+   "risks": [
+    "The cleaner is widened by one tag: only an img from the site's own picture read is kept, behind its switch, and step 1's tests keep every other img out.",
+    "A mail app that holds pictures back shows a gap: the letter reads whole without the photo, and the describing words stand in its place.",
+    "Pictures add up in the bucket: K decides with the board how long they are kept."
+   ],
+   "estimated_size": "medium"
+  }
+ ],
+ "sequencing_rationale": "K asked for the newsletter's own page as early as possible without throwing anything off (decision 54). The order answers both halves. As early as possible: the lead's queue holds only the five-spot fix until K's switch-on day, because checkpoint M merged on Thursday, November 12, 2026, five days before its planned Tuesday, November 17, 2026, and WS16 step 9 is written against main after the switch-on change has merged. So the page's steps 1 to 5 are built in those free days, on their own branch, redesign/ws16-page, in their own working copy. Throwing nothing off: nothing of the page half merges into main until the switch-on change, the cutover change and checkpoint N have merged and the first newsletter has finished sending; on K's days, and while checkpoint N's steps, its merge-safety review or its fix round are under way, no page step is started and one under way is parked at its last green commit; checkpoint N starts on its day from main whatever the page's state; four files (src/pages/AdminEmailPage.tsx, src/pages/AdminPage.tsx, functions/utils/mail/lists.ts and functions/utils/admin/campaigns.ts) are not touched by the page branch until checkpoint N has merged, since N's steps change three of them and a checkpoint's fix round changed the fourth in checkpoint M; the page branch is then rebased once onto main at N's merge commit, at its own cost; checkpoint O keeps its day, and its one step is scouted again on main after checkpoint Q has merged. Merging the page sooner is not safe even though its first five steps fit in the free days: checkpoint N's three entries are written against main as the switch-on leaves it, the switch-on patch, gated green today, changes two of the same switch files and their test, any merge redeploys the worker and adds a migration in the week of K's own days, and N, which brings \"Groups of members\" back, would have to start over on a changed base. Within checkpoint P the steps go from what nothing imports to what the live path reads. Steps 1 and 2 are new files that nothing imports (the letter's rules, the cleaner, the navy layout) and one constant that nothing else reads. Step 3 adds the table, the switch and four methods; it shares nine files with steps 9 to 11, a few added lines in each, which the one rebase settles. Steps 4 and 5 are the page, in new files and one route. Step 6 is the only step of checkpoint P that changes the live send path and the first that edits the four waiting files, so it is built after checkpoint N has merged, after the first newsletter has proved the engine. Checkpoint Q follows P because sending later rides on the page's send: step 7 is the engine side (the schedule's methods, the worker's phase, the log), step 8 the page side, step 9 the pinned templates K asked for; they are built on P's head while P waits for K's word. Q needs no migration, since 0061 carries its columns, and no new status or cron, since a phase of the five-minute run makes the campaign through createListCampaign when the time comes. Checkpoint R comes after checkpoint O. Adding and importing people is best switched on only after the clean days that follow the cutover, since imported addresses are the usual cause of bounces and spam reports; each issue's page on the site is met by visitors and has no board yet; a photo and the plain top are met by members and have no board yet. Sizes come from part one's measured pace, not from calendar days: its eight steps were committed between about 6:00 AM UTC on Wednesday, November 11, 2026 and 8:25 AM UTC on Thursday, November 12, 2026, each 3 to 5 hours after the one before, the lead building through K's night, and checkpoint M's review, fix round and pictures took about 7 hours more before K's word. So small is about 3 hours (range 2 to 5), medium about 4 (range 3 to 7), large about 8 (range 6 to 14), and a checkpoint's close about 7 hours for six steps (range 5 to 14) and about 6 for three (range 4 to 12). The late end of every range is the redesign's long-run pace of 1.2 steps a calendar day with its idle days, the handoff's figure. The dates count the lead building through K's nights and through Thanksgiving (Thursday, November 26, 2026) on the page's own branch, as decision 42 allows, and count nothing merged or switched on without K's own word, each of K's words on the next day K is likely there, with Thursday, November 26 to Sunday, November 29, 2026 taken as days K may be away. Estimates, each with its range, taking K's switch-on day as Wednesday, November 18, 2026 and checkpoint N's merge as Monday, November 23, 2026, part one's planned days: steps 1 to 5 are about 23 hours (range 16 to 40) and are built by about Sunday, November 15, 2026 (range Saturday, November 14 to Tuesday, November 17, 2026); after N's merge the rebase, step 6 and checkpoint P's close are about 13 hours (range 9 to 25), so checkpoint P is ready for K's look about Tuesday, November 24, 2026 (range Tuesday, November 24 to Friday, November 27, 2026) and merges on K's word about Wednesday, November 25, 2026 (range Tuesday, November 24 to Tuesday, December 1, 2026); checkpoint Q is about 11 hours of steps (range 8 to 19) and about 6 to close (range 4 to 12), and merges on K's word about Monday, November 30, 2026 (range Friday, November 27 to Friday, December 4, 2026); WS09 starts about Thursday, November 26, 2026 (range Wednesday, November 25 to Monday, November 30, 2026) in place of Tuesday, November 24, 2026, about 2 days later (range 1 to 6); checkpoint R is about 16 hours of steps (range 12 to 30) and about 6 to close (range 4 to 12), after its boards. Every date moves with K's switch-on day and with checkpoint N's merge. Where the build's own notes later differ from this manifest, the build's notes win, as in part one.",
+ "deviations_from_brief": [
+  "The page half of WS16 part two is planned and built ahead of WS09, by K's decision 54; part one's notes outlined part two whole and placed it after the president's pick. Clubs' and representatives' sending, sign-ups and other lists stay with WS09 and their own workstreams (all steps).",
+  "The page half's switches, mailPage, mailLater, mailPeople, mailIssues and mailPhoto, each with its server constant in functions/utils/mail/switches.ts, are not in brief 1.4's flag table; each step that adds one moves only the count of the switches declared in src/lib/features.ts (steps 3, 7, 10, 11 and 12).",
+  "No automation_runs row for the send-later phase. Part one's notes say the phase has \"its own automation_runs row\"; that table does not exist until WS09 builds it, so the letter's own row is the check that a send was made once, and WS09 wraps the phase when it builds the table (step 7).",
+  "Send later ships under a switch pair of its own, mailLater with MAIL_LATER_ON, as checkpoint Q, after the page's own pair. K approved the page together with sending later (decision 51); when the second pair goes on is K's choice 7 (steps 7 to 9).",
+  "Each issue's page on the site comes after checkpoint O, as checkpoint R. Decision 26, pick 7, places it right after the first version; it is met by visitors, so it waits for a board K has not seen (decision 44), and the always-working \"Read this issue on the website\" link that part one's build notes ask for under the \"In this issue\" list comes with it (step 11).",
+  "Adding and importing people comes after checkpoint O, as checkpoint R. Decisions 33 and 36 ask for it on the page; it waits for the clean days after the cutover, since imported addresses are the usual cause of bounces and spam reports, and until then the count card shows members alone (step 10).",
+  "The Add menu ships as \"Add an event or line\" in checkpoint P, not as the approved board's \"Add a photo, event or line\"; the photo, and decision 27's plain top of the email, come in step 12 after a board, since a member would see each and no board draws either. This is K's choice 5 as recommended (steps 4, 5 and 12).",
+  "The From row shows the one sender and no list to open, and neither it nor the reply address in More options carries decision 37's link to where a sender is managed: there is one sender, and no place manages senders yet, the sender and the reply address being lines of domain/mail/addresses.ts. The opened list and \"Manage senders and where replies go\" come with clubs' sending in WS09 (steps 4 and 5).",
+  "The explaining sentences the approved board still shows beside a control are built behind Help, by decision 40's standing rule, so the built page differs from the board there (steps 5 and 10).",
+  "The states no board draws (saving, the test's result, the one confirm, sending, sent, stopped, More options, the event form) are built in plain words with no design round, by decision 44, since only senders meet them; K sees them in the checkpoint's pictures (steps 4 to 8).",
+  "On a phone, \"Send a test to me\" sits with Send at the foot of the \"See the email\" sheet from checkpoint P. The sending-later board draws Send and Send later there and no test (decision 52, item 4); the test is added so a person on a phone can do what Send asks for (step 6).",
+  "A test before Send is held by the server, not only drawn as step 2 of three: Send, Send now and \"Schedule it\" are refused until a test of the letter as it stands has gone (decision 26, pick 2; K's choice 4 as recommended). A scheduled letter changed after its test still goes at its time, by decision 51 (steps 3, 6 and 7).",
+  "A scheduled letter can be written on until its time, and from its time on a save is refused. Decision 51 says \"until it sends\"; the plan reads that as the time the person set, so that what goes out does not depend on which five-minute run picks the letter up (step 7).",
+  "At a scheduled letter's time the worker asks whether the person who scheduled it may still send, and holds the letter if not; it cannot ask for that person's second factor, which only a signed-in session carries (step 7).",
+  "The footer under the navy look keeps part one's built words and both links, and the \"LCA on Facebook\" line is added from the footer's own file; the board's words differ, and the line naming LCA and the site that today's layout writes under every email is not drawn. This is K's choice 6 as recommended (step 2).",
+  "Migration 0061 carries, ahead of their steps, the columns checkpoint Q reads and the test's mark, so checkpoints P and Q hold one migration between them (step 3).",
+  "The page half's record sits inside the WS16 section of REDESIGN_STATUS.md under a heading of its own, not in a block of its own, since test/unit/preview-database.test.ts holds one block for each workstream (step 3).",
+  "The plain tab's writing box gives way to one link while mailPage is on, and goes for good only with WS08's admin home; part one's notes named the page as the box's later home without a date (step 6).",
+  "Pinned templates ship under checkpoint Q's pair, not with the page: in checkpoint P the chooser's \"Pinned templates\" holds LCA's starters alone, and the board's line about pinning a sent letter is not shown until then (steps 5 and 9).",
+  "The letter's cleaner does not copy the News posts' cleaner as it is: it also removes, with what they hold, the tags whose inside is raw text, drops a link with a quote mark in its address, and refuses a result it would itself change. Whether the News posts' cleaner needs the same is recorded by step 1 as a follow-up put to K, outside this half (step 1).",
+  "Sizes are given in hours from part one's measured pace, with the redesign's long-run pace as the late end of each range; part one's own manifest gave no hours (all steps).",
+  "WS16 step 12's entry, checkpoint O, was written before the page half: it is scouted again on main after checkpoint Q has merged, keeps listMessage's look branch and the worker's \"newsletter send later\" phase, and leaves test/unit/mail-list-message-bytes.test.ts in place when it deletes test/unit/mail-seam-bytes.test.ts (steps 6 and 7)."
+ ],
+ "open_questions_for_k": [
+  "Choice 1, the go and the slot. Recommended: (a) start now, on the page's own branch, with nothing merged until checkpoint N has; the days are otherwise empty and nothing K has dated is touched. Other option: (b) build nothing until N merges; the page and WS09 each come about 1 day later (estimate; range 1 to 4). Look at: the plan's section 1.",
+  "Choice 2, how much goes ahead of WS09, and one fact: the date of December's board meeting, which the documents do not hold. Recommended: (a) the page and sending later, checkpoints P and Q; it is the page K approved with the scheduling K asked for by name (decision 51), and WS09 starts about Thursday, November 26, 2026 (estimate; range Wednesday, November 25 to Monday, November 30, 2026), about 2 days later than planned. Other options: (b) the page only, with WS09 starting about Wednesday, November 25, 2026 (estimate; range Tuesday, November 24 to Friday, November 27, 2026) and sending later at WS09's first checkpoint boundary; (c) all three checkpoints, with WS09 starting about Friday, November 27, 2026 (estimate; range Thursday, November 26 to Friday, December 4, 2026) and two boards needed first. Look at: the plan's sections 1 and 3.",
+  "Choice 3, one writer at a time or live co-writing (open since part one, Q49). Recommended: (a) one at a time, nothing overwritten silently, the other person named; the board draws it and it needs no new service. Other option: (b) live co-writing, a much larger build that is not in this half. Look at: the states in the plan's section 2.",
+  "Choice 4, a test before Send (decision 26, pick 2). Recommended: (a) Send, \"Send now\" and \"Schedule it\" stay inactive, with the reason \"Send a test of this letter first\", until a test of the letter as it stands has gone; a scheduled letter changed later still goes at its time, as decision 51 says, with \"Changed since the last test\" in the head and the last person to save it named in the log. It holds K's pick at the press and never holds a scheduled newsletter back by surprise. Other options: (b) the same, and a scheduled letter changed after its last test is not sent at its time and goes back to a draft with the reason; (c) the three numbers are a guide only and nothing is refused. Look at: the bar on Newsletter-Page-4, and the plan's section 6.",
+  "Choice 5, the \"Add a photo, event or line\" menu and the plain top of the email (decisions 26 and 27). Recommended: (a) a line and \"Add an event\" in checkpoint P, with the button reading \"Add an event or line\"; the photo and the plain top in step 12, after a board for each, since members would see them and no board draws either; the event line is already drawn on the approved email and costs about 2 hours in the free days. Other options: (b) all of it in checkpoint P, the photo and the plain top built from words and first seen by K in the pictures, about 6 more hours in the free days and no date moved; (c) a line only now, the button reading \"Add a line\", and the rest in step 12. Look at: the tools row on Newsletter-Page-4, and \"Coming up\" on Newsletter-Email-6.",
+  "Choice 6, the footer's words. Recommended: (a) today's words and both links, which were reviewed and are true for a family's shared address, with the board's \"LCA on Facebook\" line under them, since it is on the look the president picked and the site's own footer already links that page. Other options: (b) today's words and links with no Facebook line; (c) the board's words throughout (\"You get this newsletter because you are an LCA member.\", \"Unsubscribe from the newsletter\", \"Choose which LCA emails you get\"). Look at: the footer on Newsletter-Email-6 on the canvas.",
+  "Choice 7, when sending later is switched on. Recommended: (a) after one newsletter has gone out from the page; the page's send is then proven on real members before a timed send rests on it, and December's issue is sent by a press. Other option: (b) as soon as checkpoint Q has merged, about Monday, November 30, 2026 (estimate; range Friday, November 27 to Friday, December 4, 2026), so December's issue can be scheduled; the first timed send is then also the first send from the page, and the lead watches that run. Look at: the plan's section 4, and Newsletter-Page-4-Schedule on the canvas.",
+  "Choice 8, a scheduled newsletter that cannot go at its time. Recommended: (a) it keeps trying for 6 hours, then goes back to a draft and says so; a short outage does not lose the send, and a long one does not send it at an odd hour much later. Other options: (b) the same with 1 hour; (c) it sends however late. Look at: Newsletter-Page-4-Schedule on the canvas and the plan's section 6.",
+  "Decided already, told to K and not asked: the navy look is board Newsletter-Email-6, \"The navy band, with In this issue\" (decision 53, which says the plan names the board).",
+  "Decided already, told to K and not asked: the explaining sentences the approved board still shows beside a control go behind Help (decision 40, a standing rule for every page). They are \"Made from your headings. Updates by itself.\", the two lines under the chooser, the two club sentences in the From list, and the people panel's sentences.",
+  "Decided already, told to K and not asked: the states and More options that no board draws are built in plain words with no design round (decision 44), and K sees them in checkpoint P's pictures of the real page before the merge.",
+  "Told to K, not asked: the opened From list and \"Manage senders and where replies go\" wait for a second sender and a senders page, with clubs' sending in WS09; the page shows the one sender.",
+  "Open and not blocking: where replies go (the address map's choice 6); the page shows today's reply address.",
+  "Open and not blocking, asked with its board in checkpoint R: whether each issue's page on the site is open to everyone or to signed-in members; and how long a letter's pictures are kept.",
+  "Open with the five-spot fix, not this half: what an officer who holds the Media manager seat reads in place of the \"View only\" badge on the plain tab (recommended: \"View only, except the newsletter\").",
+  "A follow-up put to K by step 1, outside this half: whether the News posts' cleaner lets through what the letter's cleaner now removes; if it does, mending it is one small change of its own."
+ ],
+ "k_answers": {
+  "given": "Thursday, November 12, 2026 (decision 56)",
+  "words": "all recommended. on 3 (make sure that everyone with access to the newsletter can see and edit the actively shceduled one so we dont have multiple copiies going out). 4, do not force a test everytime, they will eventually know and trust it works how they want. 7 B (no need to restrict this feature).",
+  "answers": [
+   "1 (a): start now, on the page's own branch",
+   "2 (a): checkpoints P and Q ahead of WS09; the December board meeting's date is not given and blocks nothing",
+   "3 (a): one writer at a time, on one letter that everyone who may send sees and edits, a scheduled one included; no second letter can be started or scheduled while one is scheduled or sending",
+   "4 (c): no test is forced; the three numbers are a guide; Send keeps its one confirm",
+   "5 (a): a line and Add an event in checkpoint P; the photo and the plain top in step 12 after their boards",
+   "6 (a): today's footer words and links with the LCA on Facebook line",
+   "7 (b): sending later is switched on as soon as checkpoint Q has merged",
+   "8 (a): a late scheduled newsletter tries for 6 hours, then goes back to a draft and says so"
+  ],
+  "how_to_read": "A step's scout composes its brief from the step's entry as amended here; where an entry and an amendment differ, the amendment holds, and the step's record names it as a deviation from the entry.",
+  "amendments": {
+   "ws16-p2-03-the-letters-storage-and-saving": "newsletter_issues holds no mark of a test (no tested_at column or the like) and no save touches one: answer 4 asks for none, and nothing else would read it (collect only what is needed).",
+   "ws16-p2-06-test-and-send-from-the-page-and-the-ways-in": "The send requires the letter open, unsent and at the version the page read; it does not require a test, and a test changes nothing on the letter. No 'Send a test of this letter first' words and no inactive Send for lack of a test.",
+   "ws16-p2-07-sending-later-the-engine-side": "Setting a time and sending now need no test. While a letter is scheduled or sending, starting a new letter and scheduling another are refused in words that name the scheduled letter, who scheduled it and for when (answer 3).",
+   "ws16-p2-08-sending-later-on-the-page": "No 'Changed since the last test' state. Everyone who may send sees the one scheduled letter on opening the page and may write on it, change its time, send it now or choose 'Do not send it'; the chooser cannot replace it while it is scheduled (answer 3). The switch-on change for mailLater is prepared with checkpoint Q and merged on K's word as soon as Q has merged (answer 7)."
+  }
+ }
+}

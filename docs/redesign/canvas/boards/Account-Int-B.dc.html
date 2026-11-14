@@ -1,0 +1,592 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Integration · Int-B · My LCA as an area with a left rail (round 2)</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/6107adb451dbab26ee5d89f4189b81f8">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;font-family:"Geist",system-ui,sans-serif;color:#1a2744;background:#ecebe6}
+.ib-root{width:1440px;box-sizing:border-box;padding:40px 48px 40px;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1a2744}
+.ib-title{display:flex;justify-content:space-between;align-items:flex-start;gap:28px;background:#1a2744;color:#ffffff;border-radius:14px;padding:20px 24px;border-bottom:4px solid #c8a94a}
+.ib-title .k-kicker{color:#e6cf86;font-size:12px}
+.ib-title h1{font-size:32px;line-height:1.1;font-weight:700;letter-spacing:-.015em;margin:4px 0 10px}
+.ib-tmeta{display:grid;grid-template-columns:auto 1fr;gap:4px 14px;font-size:13.5px;line-height:1.42;max-width:990px;margin:0}
+.ib-tmeta dt{font-weight:600;color:#e6cf86}
+.ib-tmeta dd{margin:0;color:#ffffff}
+.ib-tside{display:flex;flex-direction:column;align-items:flex-end;gap:10px;flex:none}
+.ib-tside .k-meta{color:rgba(255,255,255,.82);text-align:right;max-width:290px}
+.ib-c{font-family:"Geist Mono",ui-monospace,monospace;font-size:.9em}
+.ib-about{display:grid;grid-template-columns:1.4fr 1fr 1.25fr 1fr;gap:22px;margin-top:12px;padding:13px 18px;background:#e3e2dc;border:1px solid #cfcec6;border-radius:12px;font-size:13px;line-height:1.45;color:#2f3748}
+.ib-about b{display:block;color:#1a2744;font-weight:600;font-size:11.5px;letter-spacing:.07em;text-transform:uppercase;margin-bottom:3px}
+.ib-legend{display:grid;grid-template-columns:minmax(0,1fr) 440px;gap:20px;margin-top:12px}
+.ib-lbox{background:#fbfaf6;border:1px solid #d9d8d1;border-radius:12px;padding:16px 18px}
+.ib-lgrid{display:grid;grid-template-columns:1fr 1fr;gap:9px 22px;margin-top:10px}
+.ib-li{display:flex;gap:10px;align-items:flex-start;font-size:13px;line-height:1.4}
+.ib-li code{font-family:"Geist Mono",ui-monospace,monospace;font-size:.9em}
+.ib-h{font-size:14px;font-weight:600;margin:0 0 4px}
+.ib-p{font-size:12.5px;line-height:1.42;color:#2f3748;margin:0}
+.ib-q{display:flex;gap:10px;align-items:flex-start;font-size:12.5px;line-height:1.42;margin-top:8px}
+.ib-qn{display:inline-flex;align-items:center;justify-content:center;min-width:30px;height:22px;padding:0 6px;border-radius:6px;background:#c8a94a;color:#1a2744;font-size:12px;font-weight:700;flex:none}
+.ib-def{color:#145b3a;font-weight:600}
+.ib-it{font-style:italic;font-size:12.5px;line-height:1.45;color:#3d4556;margin:10px 0 0}
+.ib-key{display:grid;grid-template-columns:1fr 1fr;gap:8px 22px;margin-top:10px}
+.ib-key > div{display:flex;align-items:center;gap:10px;font-size:12.5px;line-height:1.35;color:#3d4556}
+.ib-key .ib-t{min-width:150px;flex:none}
+.ib-t{display:inline-flex;align-items:center;justify-content:center;padding:3px 8px;border-radius:6px;font-size:11.5px;font-weight:600;line-height:1.2;white-space:nowrap;border:1px solid transparent;flex:none}
+.ib-t-today{border-color:#145b3a;color:#145b3a;background:#ffffff}
+.ib-t-dec{background:#1a2744;color:#ffffff}
+.ib-t-new{background:#c8a94a;color:#1a2744}
+.ib-t-moved{background:#dcdbd4;color:#262e3f}
+.ib-t-prop{border-color:#8a5a00;color:#8a5a00;background:#ffffff}
+.ib-t-admin{border-color:#a12d2d;color:#a12d2d;background:#ffffff}
+.ib-t-role{border-color:#858b99;color:#3d4556;background:#ffffff}
+.ib-t-redir{background:#eceef2;color:#3d4556}
+.ib-t-unpaid{background:#fdebd6;color:#7a3d00}
+.ib-t-soon{background:#f5ecd2;color:#664c0c}
+.ib-t-live{background:#b3202f;color:#ffffff}
+.ib-sec{margin-top:26px}
+.ib-lab{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:0 0 12px}
+.ib-lab h2{margin:0;font-size:20px;line-height:1.2;font-weight:600;letter-spacing:-.01em}
+.ib-code{display:inline-flex;align-items:center;justify-content:center;min-width:28px;height:28px;padding:0 9px;border-radius:7px;background:#c8a94a;color:#1a2744;font-weight:700;font-size:13px;box-sizing:border-box}
+.ib-rel{position:relative}
+.ib-mk{position:absolute;z-index:30;box-shadow:0 0 0 3px #ffffff}
+.ib-grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;align-items:stretch}
+.ib-cell{position:relative;background:#fbfaf6;border:1px solid #d9d8d1;border-radius:12px;padding:12px 14px 14px;min-width:0}
+.ib-who{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;margin-bottom:8px}
+.ib-who b{display:block;font-size:13.5px;font-weight:600;line-height:1.3}
+.ib-who .ib-whom{display:block;font-size:11.5px;line-height:1.38;color:#555c6b}
+.ib-who .k-sample{position:absolute;top:-11px;right:14px;font-size:11px;padding:3px 8px;z-index:25}
+.ib-bar{display:flex;flex-direction:column;justify-content:space-between;height:68px;box-sizing:border-box;padding:8px 10px 7px;background:#1a2744;border-radius:8px 8px 0 0;border-bottom:3px solid #c8a94a}
+.ib-brow1{display:flex;align-items:center;gap:7px;color:rgba(255,255,255,.9);font-size:10.5px;font-weight:500;white-space:nowrap}
+.ib-brow1 svg{width:18px;height:18px;fill:#ffffff;flex:none;margin-right:2px}
+.ib-brow2{display:flex;align-items:center;gap:10px}
+.ib-bsearch{flex:1;height:24px;box-sizing:border-box;border:1px solid rgba(255,255,255,.4);border-radius:6px;background:rgba(255,255,255,.08);color:rgba(255,255,255,.92);font-size:11px;display:flex;align-items:center;padding:0 8px;gap:6px}
+.ib-bsearch svg{width:12px;height:12px;fill:none;stroke:#ffffff;stroke-width:2}
+.ib-rook{width:24px;height:24px;fill:#ffffff;flex:none}
+.ib-don{font-size:12px;font-weight:500;color:#ffffff}
+.ib-trig{display:inline-flex;align-items:center;gap:5px;height:26px;padding:0 8px;border-radius:6px;background:rgba(255,255,255,.16);color:#ffffff;font:600 12.5px Geist,system-ui,sans-serif}
+.ib-cnt{display:inline-flex;align-items:center;justify-content:center;min-width:18px;height:18px;padding:0 5px;border-radius:999px;background:#c8a94a;color:#1a2744;font-size:11px;font-weight:700;box-sizing:border-box}
+.ib-slice{position:relative;display:grid;grid-template-columns:150px minmax(0,1fr);height:266px;border:1px solid #d9d8d1;border-top:0;border-radius:0 0 8px 8px;background:#f1f0eb}
+.ib-slice-one{grid-template-columns:minmax(0,1fr)}
+.ib-rail{background:#ffffff;border-right:1px solid #e3e2dc;padding:6px 0;display:flex;flex-direction:column;border-radius:0 0 0 8px}
+.ib-re{display:flex;align-items:center;justify-content:space-between;gap:6px;min-height:25px;padding:0 10px 0 12px;font-size:12.5px;color:#1a2744;line-height:1.2}
+.ib-re small{font-size:12px;color:#555c6b;white-space:nowrap}
+.ib-re-on{background:#f3eedc;box-shadow:inset 3px 0 0 #c8a94a;font-weight:600}
+.ib-rail-tight{padding:3px 0}
+.ib-rail-tight .ib-re{min-height:23px}
+.ib-re-2{flex-direction:column;align-items:flex-start;justify-content:center;gap:3px;padding-top:5px;padding-bottom:5px}
+.ib-railnote{font-size:12px;line-height:1.35;color:#555c6b;padding:8px 12px 0}
+.ib-page{display:flex;flex-direction:column;justify-content:flex-end;gap:6px;padding:10px 12px;min-width:0}
+.ib-page-top{justify-content:flex-start}
+.ib-plab{font-size:10.5px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:#6b7180}
+.ib-ptitle{font-size:13px;font-weight:600;color:#3d4556;line-height:1.3}
+.ib-gl{height:7px;border-radius:4px;background:#dfded8}
+.ib-ptabs{display:flex;gap:4px;flex-wrap:wrap}
+.ib-ptabs span{font-size:11.5px;padding:3px 7px;border-radius:5px;background:#ffffff;border:1px solid #d9d8d1;color:#3d4556}
+.ib-ptabs span.ib-pt-on{border-color:#1a2744;color:#1a2744;font-weight:600}
+.ib-menu{position:absolute;top:5px;right:7px;width:240px;background:#ffffff;border:1px solid #d9d8d1;border-radius:10px;box-shadow:0 14px 30px rgba(16,24,43,.22);padding:5px;z-index:10;box-sizing:border-box}
+.ib-ml{font-size:10.5px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:#555c6b;padding:3px 8px 2px}
+.ib-mr{display:block;padding:4px 8px;border-radius:6px;font-size:12px;line-height:1.28;color:#1a2744}
+.ib-mr-in{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.ib-mr-in .ib-ms0{font-size:11.5px;color:#555c6b;white-space:nowrap}
+.ib-ms{display:flex;justify-content:space-between;align-items:center;gap:6px;font-size:11px;color:#555c6b;margin-top:1px;line-height:1.28}
+.ib-ms .ib-t{font-size:10.5px;padding:2px 6px}
+.ib-mr-todo{background:#fbf7e9;margin-bottom:2px}
+.ib-mr-ev{font-weight:600}
+.ib-mr-ev .ib-ms{font-weight:400}
+.ib-msep{height:1px;background:#e3e2dc;margin:3px 2px}
+.ib-route{font-family:"Geist Mono",ui-monospace,monospace;font-size:10.5px;color:#555c6b}
+.ib-cap{font-size:12px;line-height:1.42;color:#2f3748;margin:8px 0 0}
+.ib-phone{width:390px;box-sizing:border-box;border:8px solid #10182b;border-radius:28px;overflow:hidden;background:#ffffff;margin:0 auto}
+.ib-appbar{display:flex;align-items:center;gap:9px;height:46px;padding:0 6px 0 12px;background:#1a2744}
+.ib-appbar .ib-rook{width:22px;height:22px}
+.ib-bname{display:flex;flex-direction:column;line-height:1.1;color:#ffffff}
+.ib-bname b{font-size:13px;font-weight:700}
+.ib-bname span{font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:#d9c27c;font-weight:600}
+.ib-ibtn{display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;border-radius:8px;border:1px solid rgba(255,255,255,.45);color:#ffffff;margin-left:auto}
+.ib-ptb{display:flex;align-items:center;gap:8px;height:40px;padding:0 12px;border-bottom:1px solid #e3e2dc;background:#ffffff}
+.ib-ptb span.ib-ptbb{display:inline-flex;align-items:center;gap:5px;height:30px;padding:0 10px;border:1px solid #1a2744;border-radius:8px;font-size:13.5px;font-weight:600;color:#1a2744}
+.ib-scrim{background:#8c919c;padding-top:8px}
+.ib-sheet{background:#ffffff;border-radius:14px 14px 0 0;padding:6px 0 6px}
+.ib-handle{width:40px;height:4px;border-radius:2px;background:#c9c8c0;margin:2px auto 6px}
+.ib-sheet .ib-re{min-height:29px;font-size:13.5px;padding:0 16px}
+.ib-ptabs4{display:grid;grid-template-columns:repeat(4,1fr);height:44px;background:#ffffff;border-top:1px solid #d9d8d1}
+.ib-tab{position:relative;display:flex;align-items:center;justify-content:center;gap:4px;font-size:12px;font-weight:500;color:#3d4556}
+.ib-tab-on{color:#1a2744;font-weight:700}
+.ib-tab-on::before{content:"";position:absolute;top:-1px;left:14px;right:14px;height:3px;background:#866a1e;border-radius:0 0 2px 2px}
+.ib-tab .ib-cnt{background:#1a2744;color:#ffffff}
+.ib-card{background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:14px 16px;min-width:0}
+.ib-chead{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding-bottom:9px;border-bottom:1px solid #ecebe5}
+.ib-pill{display:inline-flex;align-items:center;height:28px;padding:0 11px;border-radius:7px;background:#1a2744;color:#ffffff;font-size:13.5px;font-weight:600;line-height:1;white-space:nowrap}
+.ib-rt{font-family:"Geist Mono",ui-monospace,monospace;font-size:11.5px;color:#2f3748;background:#f0efe9;border-radius:4px;padding:0 5px;white-space:nowrap}
+.ib-pages{list-style:none;margin:0;padding:0}
+.ib-pages li{padding:5px 0;border-bottom:1px solid #f0efea}
+.ib-pages li:last-child{border-bottom:0;padding-bottom:2px}
+.ib-l1{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
+.ib-l1 b{font-size:13.5px;font-weight:600;line-height:1.3}
+.ib-l2{font-size:12px;line-height:1.38;color:#4b5263;margin-top:2px}
+.ib-cfoot{font-size:12px;line-height:1.42;color:#4b5263;margin-top:6px;padding-top:6px;border-top:1px solid #ecebe5}
+.ib-tcard{background:#ffffff;border:1px solid #dddcd4;border-radius:10px;padding:14px 16px}
+.ib-rules{list-style:none;margin:6px 0 0;padding:0}
+.ib-rules li{position:relative;padding:5px 0 5px 16px;font-size:12.5px;line-height:1.42;color:#2f3748}
+.ib-rules li::before{content:"";position:absolute;left:2px;top:12px;width:6px;height:6px;border-radius:50%;background:#1a2744}
+.ib-was{width:100%;border-collapse:collapse;font-size:12.5px;line-height:1.4;margin-top:8px}
+.ib-was th{text-align:left;font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#555c6b;padding:6px 8px;background:#f7f6f1;border-bottom:1px solid #d6d5cd}
+.ib-was td{padding:7px 8px;border-bottom:1px solid #ecebe5;vertical-align:top}
+.ib-was tr:last-child td{border-bottom:0}
+.ib-was s{text-decoration-color:#8f1d24}
+.ib-grid4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;align-items:start}
+.ib-redir{margin-top:14px;background:#fbfaf6;border:1px solid #d9d8d1;border-radius:12px;padding:11px 18px}
+.ib-rgrid{display:grid;grid-template-columns:1fr 1fr;gap:5px 28px;margin-top:8px}
+.ib-rrow{display:flex;gap:10px;align-items:flex-start;font-size:12.5px;line-height:1.45;color:#2f3748}
+.ib-pstrip{position:absolute;left:150px;right:0;bottom:0;padding:6px 12px 8px;display:flex;flex-direction:column;gap:3px}
+.ib-lgrid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px 22px;margin-top:10px}
+.ib-keyrow{display:flex;flex-wrap:wrap;gap:8px 18px;margin-top:10px;font-size:12.5px;color:#3d4556}
+.ib-keyrow > span{display:inline-flex;align-items:center;gap:8px}
+.ib-rule{font-size:13.5px;line-height:1.45;color:#2f3748;margin:0 0 12px;max-width:1200px}
+.ib-tbl{width:100%;border-collapse:separate;border-spacing:0;font-size:12.5px;line-height:1.42;background:#ffffff;border:1px solid #d9d8d1;border-radius:12px;overflow:hidden;table-layout:fixed}
+.ib-tbl th{text-align:left;font-size:11.5px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:#ffffff;background:#1a2744;padding:9px 12px;vertical-align:middle}
+.ib-tbl th .ib-t{margin-left:6px;text-transform:none;letter-spacing:0}
+.ib-tbl td{padding:9px 12px;border-bottom:1px solid #ecebe5;vertical-align:top;color:#2f3748}
+.ib-tbl tr:nth-child(even) td{background:#fbfaf6}
+.ib-tbl tr:last-child td{border-bottom:0}
+.ib-tbl td:first-child{font-weight:600;color:#1a2744}
+.ib-tbl td:first-child small{display:block;font-weight:400;color:#555c6b;font-size:11.5px;margin-top:2px}
+.ib-ov{display:block;background:#ffffff;border:1px solid #dddcd4;border-radius:8px;padding:6px 9px;color:#1a2744}
+.ib-ov + .ib-ov{margin-top:5px}
+.ib-ov .ib-act{font-weight:600;text-decoration:underline;text-decoration-color:#c8a94a;text-decoration-thickness:2px;text-underline-offset:3px}
+.ib-fld{display:flex;align-items:center;gap:6px;height:30px;padding:0 9px;border:1px solid #858b99;border-radius:7px;background:#ffffff;color:#6b7180;font-size:12px;margin-top:4px}
+.ib-grey td{color:#6b7180 !important;background:repeating-linear-gradient(135deg,#f7f6f2 0 8px,#f2f1ec 8px 16px) !important}
+.ib-grey td:first-child{color:#555c6b !important}
+.ib-four{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+.ib-sl{min-width:0}
+.ib-sll{font-size:11.5px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:#3d4556;margin:0 0 6px}
+.ib-sll .ib-rt{text-transform:none;letter-spacing:0;font-weight:500}
+.ib-frame{height:206px;border:1px solid #cfcec6;border-radius:10px;overflow:hidden;background:#f1f0eb;display:flex;flex-direction:column}
+.ib-mhead{height:22px;flex:none;background:#1a2744;border-bottom:2px solid #c8a94a;display:flex;align-items:center;gap:6px;padding:0 8px}
+.ib-mhead .ib-rook{width:13px;height:13px}
+.ib-mhead span{font-size:10px;color:#c9d0de}
+.ib-mhead span.ib-mr8{margin-left:auto;color:#ffffff}
+.ib-mini{display:grid;grid-template-columns:132px minmax(0,1fr);flex:1;min-height:0}
+.ib-mini .ib-rail{padding:4px 0;border-radius:0}
+.ib-mini .ib-re{min-height:20px;font-size:11.5px;padding:0 8px 0 10px}
+.ib-mini .ib-re small{font-size:11px}
+.ib-mpage{padding:10px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.ib-band{display:flex;align-items:center;gap:8px;min-height:40px;padding:0 10px;background:#1a2744;color:#ffffff;font-size:12px;flex:none}
+.ib-band .ib-cr{flex:1;min-width:0;line-height:1.3}
+.ib-band .ib-cr b{font-weight:600;text-decoration:underline;text-decoration-color:rgba(255,255,255,.5);text-underline-offset:3px}
+.ib-exit{display:inline-flex;align-items:center;height:30px;padding:0 10px;border:1px solid rgba(255,255,255,.75);border-radius:7px;font-size:11.5px;font-weight:600;white-space:nowrap}
+.ib-cbtns{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;padding:10px}
+.ib-cbtn{display:flex;align-items:center;justify-content:center;text-align:center;min-height:48px;border-radius:7px;font-size:11px;font-weight:600;padding:0 4px;line-height:1.2}
+.ib-cb-gold{background:#c8a94a;color:#1a2744}
+.ib-cb-navy{background:#1a2744;color:#ffffff}
+.ib-ttabs{display:flex;gap:2px;background:#ffffff;border-bottom:1px solid #d9d8d1;padding:0 6px;flex:none;overflow:hidden;position:relative}
+.ib-ttab{position:relative;display:inline-flex;align-items:center;height:34px;padding:0 8px;font-size:11.5px;color:#3d4556;white-space:nowrap}
+.ib-ttab-on{color:#1a2744;font-weight:700}
+.ib-ttab-on::after{content:"";position:absolute;left:6px;right:6px;bottom:0;height:3px;background:#866a1e;border-radius:2px 2px 0 0}
+.ib-fade{position:absolute;right:0;top:0;bottom:0;width:34px;background:linear-gradient(90deg,rgba(255,255,255,0),#ffffff)}
+.ib-sph{width:228px;margin:0 auto;border:6px solid #10182b;border-bottom:0;border-radius:22px 22px 0 0;overflow:hidden;background:#ffffff;height:200px;display:flex;flex-direction:column}
+.ib-sph .ib-appbar{height:36px;padding:0 8px}
+.ib-sph .ib-appbar .ib-rook{width:16px;height:16px}
+.ib-sph .ib-bname b{font-size:11px}
+.ib-sph .ib-bname span{font-size:8px}
+.ib-sph .ib-ptb{height:36px;padding:0 8px}
+.ib-sph .ib-ptb span.ib-ptbb{height:26px;font-size:12px;padding:0 8px}
+.ib-btabs{display:flex;gap:4px;padding:8px 8px 4px;flex-wrap:wrap}
+.ib-btabs span{font-size:11px;padding:3px 7px;border-radius:5px;border:1px solid #d9d8d1;color:#3d4556}
+.ib-btabs span.ib-pt-on{border-color:#1a2744;color:#1a2744;font-weight:600}
+.ib-lines{font-size:13px;line-height:1.5;color:#2f3748;margin:14px 0 0;display:flex;flex-direction:column;gap:4px}
+.ib-lines b{color:#1a2744;font-weight:600}
+.ib-two{display:grid;grid-template-columns:640px minmax(0,1fr);gap:24px;align-items:start}
+.ib-rails{display:flex;gap:18px;align-items:flex-start}
+.ib-railbox{border:1px solid #d9d8d1;border-radius:10px;overflow:hidden;background:#ffffff}
+.ib-railhd{font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:#555c6b;padding:8px 12px 4px}
+.ib-railbox .ib-re{min-height:24px;font-size:12.5px}
+.ib-strip{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:9px 14px;background:#fbf7e9;border:1px solid #866a1e;border-radius:10px 10px 0 0;color:#1a2744;font-size:13px;line-height:1.4}
+.ib-strip b{font-weight:600}
+.ib-strip .ib-back{margin-left:auto;font-weight:600;text-decoration:underline;text-decoration-color:#866a1e;text-underline-offset:3px}
+.ib-dots{list-style:none;margin:0;padding:0}
+.ib-dots li{position:relative;padding:4px 0 4px 16px;font-size:13px;line-height:1.45;color:#2f3748}
+.ib-dots li::before{content:"";position:absolute;left:2px;top:11px;width:6px;height:6px;border-radius:50%;background:#1a2744}
+</style>
+</helmet>
+<div class="ib-root" style="width:1440px;min-height:3350px">
+
+<div class="ib-title">
+  <div>
+    <div class="k-kicker">Integration · Round 2 · Option Int-B · part 1 of 2</div>
+    <h1>My LCA as an area with a left rail</h1>
+    <dl class="ib-tmeta">
+      <dt>Built from</dt><dd>Account-C&#8217;s sections and Today list, re-cut as rail pages under <span class="ib-c">/my</span>; Nav-IA-Final&#8217;s bar and menu, with the role rows moved out of the menu and into the rail.</dd>
+      <dt>Replaces</dt><dd>Nothing yet: an option beside Int-A and Int-C. The section and screen boards are drawn inside Int-A; under Int-B each section becomes the page its rail entry opens.</dd>
+      <dt>Round</dt><dd>Round 2 · The frame is swappable: the section and screen boards are drawn inside Int-A; this board draws Int-B.</dd>
+      <dt>K&#8217;s feedback applied</dt><dd>A good default (a plain member sees no rail at all) · every section drawn in full (each rail page is a whole section and its working screen) · roles hosted in My LCA, so nobody but lca_admin sees Admin · options for each (Int-A, Int-B, Int-C).</dd>
+      <dt>Source</dt><dd>K, Tue, Oct 13, 2026 (pages 14 and 15) · WS02, WS08, WS13 · replan 4.2, 4.6, 4.8 · routes checked against <span class="ib-c">src/App.tsx</span> lines 113 to 133.</dd>
+    </dl>
+  </div>
+  <div class="ib-tside">
+    <span class="k-sample">Sample data</span>
+    <span class="k-meta">Counts, sub-lines, the three named volunteers in cells A4 to A6 and their seats are invented. Every route under /my is new in this option; every role rule is real.</span>
+  </div>
+</div>
+
+<div class="ib-about" aria-label="About this board">
+  <div><b>What</b>Option Int-B for pages 14 and 15: My LCA is an area under /my with a left rail, its rooms are pages inside it, Admin stays separate. Against Int-A: short rail pages, not one long page. Against Int-C: one home, not two.</div>
+  <div><b>Built from</b>Account-A, B and C and Work-A to D (round 1); Nav-Header-Final and Nav-IA-Final (the decided chrome); the frame&#8217;s role inventory and Today rules.</div>
+  <div><b>K&#8217;s feedback applied</b>Account-C is the base, not the default: a plain member sees no rail and keeps On this page (A1); from the first grant the rail does that job. Each role is a rail page with its room; only lca_admin sees Admin.</div>
+  <div><b>Open for K</b>Q1 pick the frame · Q2 the redirects from /workspace and /board/inbox · Q3 the Board page in place of the view-only admin panel. Part 2 holds sections C to E.</div>
+</div>
+
+<div class="ib-legend">
+  <div class="ib-lbox">
+    <div class="k-label">Notes on this board</div>
+    <div class="ib-lgrid">
+      <div class="ib-li"><span class="k-num-badge">1</span><span>My LCA is an area, <code>/my</code>, with a persistent 240px left rail: Overview · You · Family · the event you direct (by name) · Events · My region · Board · Member lookup · Settings, one entry per grant the person holds, in that fixed order.</span></div>
+      <div class="ib-li"><span class="k-num-badge">2</span><span>Overview is the Today list plus one short card per rail page (one or two lines each). Each rail entry is a full page; the working screens are pages in the same shell, so a representative is in My region the moment the rail entry is current.</span></div>
+      <div class="ib-li"><span class="k-num-badge">3</span><span>A plain member sees no rail at all: with no grant there is nothing to move between, so Overview, You and Settings stay one page, the default page of Account-D to F. The rail appears with the first grant, a child or an admin role included.</span></div>
+      <div class="ib-li"><span class="k-num-badge">4</span><span>The My LCA &#9662; menu shrinks: to-dos, My LCA (<code>/my</code>), the event line, Family (<code>/my/family</code>), Membership card, Admin (<code>/admin</code>) for lca_admin, Log out. The role rows leave the menu because the rail carries them; the trigger keeps the personal count and the rail&#8217;s Overview row shows the across-roles count in words.</span></div>
+      <div class="ib-li"><span class="k-num-badge">5</span><span>Admin stays separate at <code>/admin</code> with its own sidebar. The rail never shows an Admin row; admins reach /admin from the header only, and an admin backstopping an event lands on <code>/my/events/:id/live</code> with the strip You&#8217;re here as an LCA admin, the one place the two areas meet.</span></div>
+      <div class="ib-li"><span class="k-num-badge">6</span><span>Every decided <code>/workspace</code> and <code>/board</code> path moves under <code>/my</code> with redirects. The most rebuilt of the three options: WS08, WS09 and WS14 text and Nav-IA-Final&#8217;s route table change.</span></div>
+    </div>
+    <div class="k-label" style="margin-top:18px">Key</div>
+    <div class="ib-key">
+      <div><span class="ib-t ib-t-today">Route today</span><span>exists in src/App.tsx now</span></div>
+      <div><span class="ib-t ib-t-dec">Decided · WS08 / WS09 / WS14</span><span>the path the brief already builds to</span></div>
+      <div><span class="ib-t ib-t-new">New in Int-B</span><span>this option adds it</span></div>
+      <div><span class="ib-t ib-t-moved">Moved · was /workspace</span><span>the decided path, re-homed under /my</span></div>
+      <div><span class="ib-t ib-t-prop">Proposed · open for K</span><span>drawn as the default, alternative named</span></div>
+      <div><span class="ib-t ib-t-admin">Admin only</span><span>lca_admin with a second factor; never under /my</span></div>
+      <div><span class="ib-t ib-t-role">By role</span><span>shown only to people who hold it</span></div>
+      <div><span class="ib-t ib-t-redir">Redirect</span><span>an old URL that lands somewhere sensible</span></div>
+    </div>
+    <p class="ib-it">The section boards (Account-D to S) and screen boards (Work-E to L) are drawn inside Int-A and say in their legends that the frame is swappable: under this option a section is the page its rail entry opens and a screen board&#8217;s crumb reads My LCA rail &#8250; ...; the room itself does not change.</p>
+  </div>
+  <div class="ib-lbox">
+    <div class="ib-h">Trade-off</div>
+    <p class="ib-p">Two rails on the site that look alike (the My LCA rail and the admin sidebar), which is what K wanted to get away from. The rail costs 240px that the console and the checklist cannot spare at 1024px, so they fold it, and the same-shell promise weakens exactly where Chris works hardest. A person-centred home and task-centred screens share one URL space, so an admin backstopping an event lands under My something that is not theirs. Every decided route moves. The single-role member gets no rail, so the area looks different for different people. In return the volunteer with five roles never scrolls a long page, and each role&#8217;s work has a stable URL.</p>
+    <div class="ib-h" style="margin-top:14px">Open for K</div>
+    <div class="ib-q"><span class="ib-qn">Q1</span><span>Pick the frame: Int-A, Int-B (this board) or Int-C. The pick changes only the breadcrumb, the way back and the menu row on every section and screen board. <span class="ib-def">Default: Int-A is the baseline; Int-B is the pick if short pages matter more than one home page.</span></span></div>
+    <div class="ib-q"><span class="ib-qn">Q2</span><span>Under Int-B the word Workspace goes with the page: the prefix is /my. Confirm the redirects from /workspace/* and /board/inbox.</span></div>
+    <div class="ib-q"><span class="ib-qn">Q3</span><span>Officers and the president: the Board rail page holds Inbox · Documents · Tickets (and Email for the president) as tabs, in place of the view-only admin panel. <span class="ib-def">Default: withdrawn.</span></span></div>
+  </div>
+</div>
+
+<!-- A -->
+<section class="ib-sec" aria-labelledby="ib-a">
+  <div class="ib-lab"><span class="ib-code">A</span><h2 id="ib-a">The header, the shorter My LCA &#9662; menu, and the rail, six people</h2><span class="k-meta">The bar does not change. The menu loses its room rows; the rail under the bar gains them.</span></div>
+  <div class="ib-grid3">
+
+    <!-- A1 Avery -->
+    <div class="ib-cell">
+      <span class="k-num-badge ib-mk" style="top:-12px;left:-12px">3</span>
+      <div class="ib-who"><div><b>A1 · Member · Avery Thibodeaux</b><span class="ib-whom">Mon, Oct 5, 2026 · 9:10 AM · on /my</span></div></div>
+      <div class="ib-bar"><div class="ib-brow1"><svg viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span>Tournaments</span><span>Clubs</span><span>Scholastic</span><span>News</span><span>Membership</span><span>About&nbsp;&#9662;</span></div><div class="ib-brow2"><span class="ib-bsearch"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg>Search</span><span class="ib-don">Donate</span><span class="ib-trig" role="button" aria-expanded="true" aria-label="My LCA, 3 things to do">My LCA&nbsp;&#9662;<span class="ib-cnt" aria-hidden="true">3</span></span></div></div>
+      <div class="ib-slice ib-slice-one" style="height:274px">
+        <div class="ib-page ib-page-top" style="padding-right:286px">
+          <span class="ib-plab">Page</span>
+          <span class="ib-ptitle">My LCA</span>
+          <span class="ib-route">/my · no rail</span>
+          <span class="ib-gl" style="width:90%"></span><span class="ib-gl" style="width:70%"></span>
+          <span class="ib-plab" style="margin-top:6px">On this page</span>
+          <span class="ib-ptitle" style="font-weight:500;font-size:12px">Today · Membership · Entries · Receipts · Settings</span>
+          <span class="ib-gl" style="width:80%"></span><span class="ib-gl" style="width:60%"></span><span class="ib-gl" style="width:85%"></span>
+        </div>
+        <div class="ib-menu" style="width:272px" role="menu" aria-label="My LCA">
+          <div class="ib-ml">To do · 3</div>
+          <div class="ib-mr ib-mr-todo">Finish payment · The Baton Rouge Classic<div class="ib-ms"><span>$60 · Open section · by Sat, Oct 17</span><span class="ib-t ib-t-unpaid">Unpaid</span></div></div>
+          <div class="ib-mr ib-mr-todo">Renew US Chess before the Ken Ferguson Memorial Open<div class="ib-ms"><span>Ends Thu, Dec 31</span><span class="ib-t ib-t-soon">Ends first</span></div></div>
+          <div class="ib-mr ib-mr-todo">Renew membership<div class="ib-ms"><span>Ends Mon, Oct 26</span><span class="ib-t ib-t-soon">Due soon</span></div></div>
+          <div class="ib-msep"></div>
+          <div class="ib-mr"><div class="ib-mr-in"><span>My LCA</span><span class="ib-ms0">Your dashboard · /my</span></div></div>
+          <div class="ib-mr"><div class="ib-mr-in"><span>Membership card</span><span class="ib-ms0">/my#card</span></div></div>
+          <div class="ib-msep"></div>
+          <div class="ib-mr">Log out</div>
+        </div>
+      </div>
+      <p class="ib-cap">The empty state of the rail: with no grant there is none. Overview, You and Settings are one page, the default page for the 300+ members. The menu is Int-A&#8217;s row for row; only the paths read /my.</p>
+    </div>
+
+    <!-- A2 Danielle -->
+    <div class="ib-cell">
+      <div class="ib-who"><div><b>A2 · Parent · Danielle Robichaux</b><span class="ib-whom">Sat, Nov 14, 2026 · 11:10 AM · event day</span></div></div>
+      <div class="ib-bar"><div class="ib-brow1"><svg viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span>Tournaments</span><span>Clubs</span><span>Scholastic</span><span>News</span><span>Membership</span><span>About&nbsp;&#9662;</span></div><div class="ib-brow2"><span class="ib-bsearch"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg>Search</span><span class="ib-don">Donate</span><span class="ib-trig" role="button" aria-expanded="true" aria-label="My LCA, nothing to do">My LCA&nbsp;&#9662;</span></div></div>
+      <div class="ib-slice">
+        <nav class="ib-rail" aria-label="My LCA">
+          <span class="ib-re">Overview</span>
+          <span class="ib-re">You</span>
+          <span class="ib-re ib-re-on" aria-current="page">Family<small>2 playing</small></span>
+          <span class="ib-re">Settings</span>
+        </nav>
+        <div></div><div class="ib-pstrip"><span class="ib-plab">Page</span><span class="ib-ptitle">Family · the day view first</span><span class="ib-gl" style="width:80%"></span></div>
+        <div class="ib-menu" role="menu" aria-label="My LCA">
+          <div class="ib-mr"><div class="ib-mr-in"><span>My LCA</span><span class="ib-ms0">Your dashboard</span></div></div>
+          <div class="ib-mr ib-mr-ev">New Orleans Youth Chess November Meet · Maya and Leo&#8217;s boards<div class="ib-ms"><span>Today · both playing round 2 · Updated 11:04 AM</span></div><div class="ib-ms"><span class="ib-t ib-t-live">Live · Round 2</span><span class="ib-route">/my/family</span></div></div>
+          <div class="ib-mr"><div class="ib-mr-in"><span>Family</span><span class="ib-ms0">Maya and Leo</span></div></div>
+          <div class="ib-mr">Membership card</div>
+          <div class="ib-msep"></div>
+          <div class="ib-mr">Log out</div>
+        </div>
+      </div>
+      <p class="ib-cap">Four entries, so the rail shows. The event line opens the Family page, where the day view sits first on the day. No count on the trigger: nothing unpaid, nothing ending.</p>
+    </div>
+
+    <!-- A3 Chris -->
+    <div class="ib-cell">
+      <span class="k-num-badge ib-mk" style="top:150px;left:-12px">1</span>
+      <span class="k-num-badge ib-mk" style="top:96px;right:-12px">4</span>
+      <div class="ib-who"><div><b>A3 · Many roles · Chris Arceneaux</b><span class="ib-whom">Sun, Oct 25, 2026 · 9:14 AM · day 2 of The Baton Rouge Classic</span><span class="ib-whom">member · parent of Ella · director of The Baton Rouge Classic · South Central Louisiana representative · treasurer with the lca_officer role</span></div><span class="k-sample">Sample data</span></div>
+      <div class="ib-bar"><div class="ib-brow1"><svg viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span>Tournaments</span><span>Clubs</span><span>Scholastic</span><span>News</span><span>Membership</span><span>About&nbsp;&#9662;</span></div><div class="ib-brow2"><span class="ib-bsearch"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg>Search</span><span class="ib-don">Donate</span><span class="ib-trig" role="button" aria-expanded="true" aria-label="My LCA, 1 thing to do">My LCA&nbsp;&#9662;<span class="ib-cnt" aria-hidden="true">1</span></span></div></div>
+      <div class="ib-slice">
+        <nav class="ib-rail ib-rail-tight" aria-label="My LCA">
+          <span class="ib-re">Overview<small>6 things</small></span>
+          <span class="ib-re">You</span>
+          <span class="ib-re">Family<small>1</small></span>
+          <span class="ib-re ib-re-on ib-re-2" aria-current="page"><span>The Baton Rouge Classic</span><span class="ib-t ib-t-live" style="font-size:10.5px;padding:2px 6px">Live · Round 4 at 9:30 AM</span></span>
+          <span class="ib-re">Events<small>2</small></span>
+          <span class="ib-re">My region<small>4</small></span>
+          <span class="ib-re">Board<small>7</small></span>
+          <span class="ib-re">Member lookup</span>
+          <span class="ib-re">Settings</span>
+        </nav>
+        <div></div>
+        <div class="ib-menu" role="menu" aria-label="My LCA">
+          <div class="ib-ml">To do · 1</div>
+          <div class="ib-mr ib-mr-todo">Finish payment · Ella · New Orleans Youth Chess November Meet<div class="ib-ms"><span>$20 · K&#8211;5 section · Sat, Nov 14</span><span class="ib-t ib-t-unpaid">Unpaid</span></div></div>
+          <div class="ib-msep"></div>
+          <div class="ib-mr">My LCA</div>
+          <div class="ib-mr ib-mr-ev">The Baton Rouge Classic · Open event day<div class="ib-ms"><span>Today · Round 4 pairs at 9:30 AM</span><span class="ib-route">/my/events/:id/live</span></div></div>
+          <div class="ib-mr"><div class="ib-mr-in"><span>Family</span><span class="ib-ms0">Ella</span></div></div>
+          <div class="ib-mr">Membership card</div>
+          <div class="ib-msep"></div>
+          <div class="ib-mr">Log out</div>
+        </div>
+      </div>
+      <p class="ib-cap">Six menu rows instead of Int-A&#8217;s eleven: the rail carries the roles. A live event is pinned as its own entry under Family for the day; Board · 7 counts the Treasurer inbox (3) and the LCA office (4 tickets). The trigger still says 1.</p>
+    </div>
+
+    <!-- A4 Priya -->
+    <div class="ib-cell">
+      <div class="ib-who"><div><b>A4 · Representative · Priya Shah</b><span class="ib-whom">the North Louisiana seat · members.role is member · Mon, Oct 5, 2026 · 9:10 AM</span></div><span class="k-sample">Sample data</span></div>
+      <div class="ib-bar"><div class="ib-brow1"><svg viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span>Tournaments</span><span>Clubs</span><span>Scholastic</span><span>News</span><span>Membership</span><span>About&nbsp;&#9662;</span></div><div class="ib-brow2"><span class="ib-bsearch"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg>Search</span><span class="ib-don">Donate</span><span class="ib-trig" role="button" aria-expanded="true" aria-label="My LCA, 1 thing to do">My LCA&nbsp;&#9662;<span class="ib-cnt" aria-hidden="true">1</span></span></div></div>
+      <div class="ib-slice">
+        <nav class="ib-rail" aria-label="My LCA">
+          <span class="ib-re">Overview<small>2 things</small></span>
+          <span class="ib-re">You</span>
+          <span class="ib-re ib-re-on" aria-current="page">My region<small>1</small></span>
+          <span class="ib-re">Board<small>1</small></span>
+          <span class="ib-re">Settings</span>
+        </nav>
+        <div></div><div class="ib-pstrip"><span class="ib-plab">Page</span><span class="ib-ptitle">My region · North Louisiana · 3 clubs</span><span class="ib-gl" style="width:90%"></span><span class="ib-gl" style="width:65%"></span><span class="ib-gl" style="width:80%"></span></div>
+        <div class="ib-menu" role="menu" aria-label="My LCA">
+          <div class="ib-ml">To do · 1</div>
+          <div class="ib-mr ib-mr-todo">Finish payment · The Baton Rouge Classic<div class="ib-ms"><span>$60 · Open section · by Sat, Oct 17</span><span class="ib-t ib-t-unpaid">Unpaid</span></div></div>
+          <div class="ib-msep"></div>
+          <div class="ib-mr">My LCA</div>
+          <div class="ib-mr">Membership card</div>
+          <div class="ib-msep"></div>
+          <div class="ib-mr">Log out</div>
+        </div>
+      </div>
+      <p class="ib-cap">Nothing in the menu says she is a representative; the rail does, from getMySeats (AuthContext.tsx lines 51 to 55). The My region page is Work-G or H itself, inside the shell.</p>
+    </div>
+
+    <!-- A5 Camille -->
+    <div class="ib-cell">
+      <div class="ib-who"><div><b>A5 · Officer · Camille Broussard</b><span class="ib-whom">the Secretary seat with the lca_officer role · Mon, Oct 5, 2026 · 9:10 AM</span></div><span class="k-sample">Sample data</span></div>
+      <div class="ib-bar"><div class="ib-brow1"><svg viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span>Tournaments</span><span>Clubs</span><span>Scholastic</span><span>News</span><span>Membership</span><span>About&nbsp;&#9662;</span></div><div class="ib-brow2"><span class="ib-bsearch"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg>Search</span><span class="ib-don">Donate</span><span class="ib-trig" role="button" aria-expanded="true" aria-label="My LCA, nothing to do">My LCA&nbsp;&#9662;</span></div></div>
+      <div class="ib-slice">
+        <nav class="ib-rail" aria-label="My LCA">
+          <span class="ib-re">Overview<small>6 things</small></span>
+          <span class="ib-re">You</span>
+          <span class="ib-re ib-re-on" aria-current="page">Board<small>6</small></span>
+          <span class="ib-re">Member lookup</span>
+          <span class="ib-re">Settings</span>
+          <span class="ib-railnote">the president&#8217;s Board page adds an Email tab</span>
+        </nav>
+        <div></div><div class="ib-pstrip"><span class="ib-plab">Page</span><span class="ib-ptitle">Board · Secretary</span><span class="ib-ptabs"><span class="ib-pt-on">Inbox · 2</span><span>Documents</span><span>Tickets · 4</span></span><span class="ib-gl" style="width:90%"></span><span class="ib-gl" style="width:70%"></span></div>
+        <div class="ib-menu" role="menu" aria-label="My LCA">
+          <div class="ib-mr">My LCA</div>
+          <div class="ib-mr">Membership card</div>
+          <div class="ib-msep"></div>
+          <div class="ib-mr">Log out</div>
+        </div>
+      </div>
+      <p class="ib-cap">No Admin anywhere for an officer (Q3): the inbox, the documents she keeps and the tickets are tabs of one Board page. Member lookup comes with the role (auth.ts line 257).</p>
+    </div>
+
+    <!-- A6 Renee -->
+    <div class="ib-cell">
+      <span class="k-num-badge ib-mk" style="top:96px;right:-12px">5</span>
+      <div class="ib-who"><div><b>A6 · Admin · Ren&#233;e Ortego</b><span class="ib-whom">lca_admin · second factor on · Mon, Oct 5, 2026 · 9:10 AM</span></div><span class="k-sample">Sample data</span></div>
+      <div class="ib-bar"><div class="ib-brow1"><svg viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span>Tournaments</span><span>Clubs</span><span>Scholastic</span><span>News</span><span>Membership</span><span>About&nbsp;&#9662;</span></div><div class="ib-brow2"><span class="ib-bsearch"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg>Search</span><span class="ib-don">Donate</span><span class="ib-trig" role="button" aria-expanded="true" aria-label="My LCA, nothing to do">My LCA&nbsp;&#9662;</span></div></div>
+      <div class="ib-slice">
+        <nav class="ib-rail" aria-label="My LCA">
+          <span class="ib-re ib-re-on" aria-current="page">Overview<small>3 things</small></span>
+          <span class="ib-re">You</span>
+          <span class="ib-re">Settings</span>
+          <span class="ib-railnote">No Admin row, ever.</span>
+        </nav>
+        <div></div><div class="ib-pstrip"><span class="ib-plab">Page</span><span class="ib-ptitle">Overview · last card: Needs attention · 12 · Open Admin</span><span class="ib-gl" style="width:85%"></span></div>
+        <div class="ib-menu" role="menu" aria-label="My LCA">
+          <div class="ib-mr">My LCA</div>
+          <div class="ib-mr">Membership card</div>
+          <div class="ib-mr ib-mr-ev">Admin · 12 need attention<div class="ib-ms"><span>oldest 3 days · 2 assigned to you</span><span class="ib-route">/admin</span></div></div>
+          <div class="ib-msep"></div>
+          <div class="ib-mr">Log out</div>
+        </div>
+      </div>
+      <p class="ib-cap">No Admin row in the rail, ever; Admin is in the header menu only. Her Overview holds the Needs attention card, so the rail shows; its 3 things are the queue line and the two items assigned to her. A seat or a directed event adds its entry like anyone&#8217;s.</p>
+    </div>
+
+    <!-- A7 phone -->
+    <div class="ib-cell">
+      <div class="ib-who" style="min-height:0"><div><b>A7 · Phones · /my/region · Priya · Mon, Oct 5</b></div><span class="k-sample">Sample data</span></div>
+      <div class="ib-phone">
+        <div class="ib-appbar"><svg class="ib-rook" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span class="ib-bname"><b>Louisiana Chess</b><span>Association</span></span><span class="ib-ibtn" aria-label="Search"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg></span></div>
+        <div class="ib-ptb"><span class="ib-ptbb" role="button" aria-expanded="true">My LCA &#9662; · My region</span></div>
+        <div class="ib-scrim">
+          <div class="ib-sheet" role="dialog" aria-label="My LCA pages">
+            <div class="ib-handle"></div>
+            <span class="ib-re">Overview<small>2 things</small></span>
+            <span class="ib-re">You</span>
+            <span class="ib-re ib-re-on" aria-current="page">My region<small>1</small></span>
+            <span class="ib-re">Board<small>1</small></span>
+            <span class="ib-re">Settings</span>
+          </div>
+        </div>
+        <div class="ib-ptabs4">
+          <span class="ib-tab">Tournaments</span>
+          <span class="ib-tab">Clubs</span>
+          <span class="ib-tab ib-tab-on" aria-current="page">My LCA<span class="ib-cnt">1</span></span>
+          <span class="ib-tab">Menu</span>
+        </div>
+      </div>
+      <p class="ib-cap">On phones the rail is a sheet behind the page title; the Menu sheet keeps its sections, Donate · My LCA, Admin for lca_admin, and no role rows.</p>
+    </div>
+
+    <!-- A8 text -->
+    <div class="ib-cell">
+      <div class="ib-tcard">
+        <div class="ib-h">Two more people, no cell</div>
+        <p class="ib-p"><b>Auditor:</b> no rail entry but one, so the rail shows Overview · You · Member lookup · Settings (four entries) and the lookup page is <span class="ib-rt">/my/lookup</span>.</p>
+        <p class="ib-p" style="margin-top:6px"><b>Club representative</b>, only if K keeps the role (question 20): a rail entry Your club &#8594; <span class="ib-rt">/my/region/clubs/:id</span> scoped to Houma Chess Club; retired under P2.18 the entry does not exist.</p>
+      </div>
+      <div class="ib-tcard" style="margin-top:12px">
+        <div class="ib-h">Rules of the rail</div>
+        <ul class="ib-rules">
+          <li>Entries only for grants held, in the fixed order.</li>
+          <li>The current entry carries aria-current, bold type and the 3px gold bar.</li>
+          <li>Counts in words, never colour alone.</li>
+          <li>A live event is pinned as its own entry for the day and leaves after 48 hours.</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- A9 table -->
+    <div class="ib-cell">
+      <div class="ib-h">What changed from Nav-IA-Final frame B</div>
+      <table class="ib-was">
+        <thead><tr><th scope="col">Was</th><th scope="col">Is</th></tr></thead>
+        <tbody>
+          <tr><td>My LCA · <span class="ib-rt">/dashboard</span></td><td><span class="ib-rt">/my</span> (the old path redirects) <span class="ib-t ib-t-new">New in Int-B</span></td></tr>
+          <tr><td>Family · <span class="ib-rt">/dashboard</span></td><td><span class="ib-rt">/my/family</span></td></tr>
+          <tr><td><s>Workspace</s> · <span class="ib-rt">/workspace</span></td><td>gone; the rail carries the rooms</td></tr>
+          <tr><td>Board inbox · <span class="ib-rt">/board/inbox</span></td><td>the Board rail page, <span class="ib-rt">/my/board</span> (redirect)</td></tr>
+          <tr><td>My region&#8217;s clubs · <span class="ib-rt">/dashboard</span></td><td>My region, <span class="ib-rt">/my/region</span></td></tr>
+          <tr><td>Admin · <span class="ib-rt">/admin</span></td><td>unchanged</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+</section>
+
+<!-- B -->
+<section class="ib-sec" aria-labelledby="ib-b">
+  <div class="ib-lab"><span class="ib-code">B</span><h2 id="ib-b">The route map: one area under /my, Admin unchanged, and where old URLs land</h2></div>
+  <div class="ib-grid4">
+
+    <div class="ib-card ib-rel">
+      <span class="k-num-badge ib-mk" style="top:-12px;right:-10px">2</span>
+      <div class="ib-chead"><span class="ib-pill">My LCA · the area</span><span class="ib-rt">/my</span><span class="ib-t ib-t-new">New in Int-B</span></div>
+      <ul class="ib-pages">
+        <li><div class="ib-l1"><b>Overview</b><span class="ib-t ib-t-new">New in Int-B</span></div><div class="ib-l2"><span class="ib-rt">/my</span> the Today list and one short card per rail page</div></li>
+        <li><div class="ib-l1"><b>You</b><span class="ib-t ib-t-new">New in Int-B</span></div><div class="ib-l2"><span class="ib-rt">/my/you</span> the membership line, the card, Next up, reminders, receipts, History</div></li>
+        <li><div class="ib-l1"><b>Family</b><span class="ib-t ib-t-moved">Moved</span></div><div class="ib-l2"><span class="ib-rt">/my/family</span> the child cards, guardians panel, day view; was /dashboard</div></li>
+        <li><div class="ib-l1"><b>A child&#8217;s page</b><span class="ib-t ib-t-moved">Moved</span></div><div class="ib-l2"><span class="ib-rt">/my/family/:memberId</span> the view Maya would see, with the strip you manage this profile (WS06&#8217;s /me/players/:memberId re-homed)</div></li>
+        <li><div class="ib-l1"><b>Member lookup</b><span class="ib-t ib-t-moved">Moved</span></div><div class="ib-l2"><span class="ib-rt">/my/lookup</span> was /workspace?tab=lookup</div></li>
+        <li><div class="ib-l1"><b>Settings</b><span class="ib-t ib-t-new">New in Int-B</span></div><div class="ib-l2"><span class="ib-rt">/my/settings</span> profile, US Chess ID, privacy, sign-in; two-factor stays at <span class="ib-rt">/account/security</span> <span class="ib-t ib-t-today">Route today</span></div></li>
+      </ul>
+      <div class="ib-cfoot">Overview to any page in one click and back in one; the current entry carries the bar.</div>
+    </div>
+
+    <div class="ib-card">
+      <div class="ib-chead"><span class="ib-pill">Events inside the area</span><span class="ib-t ib-t-role">By role</span></div>
+      <ul class="ib-pages">
+        <li><div class="ib-l1"><b>Events</b><span class="ib-t ib-t-new">New in Int-B</span></div><div class="ib-l2"><span class="ib-rt">/my/events</span> the directing list, each row with its counts, flags and next step</div></li>
+        <li><div class="ib-l1"><b>New event</b><span class="ib-t ib-t-moved">Moved</span></div><div class="ib-l2"><span class="ib-rt">/my/events/new</span> admins and the region&#8217;s representative (P2.19)</div></li>
+        <li><div class="ib-l1"><b>Setup</b><span class="ib-t ib-t-moved">Moved</span></div><div class="ib-l2"><span class="ib-rt">/my/events/:id/setup</span> was /workspace/tournaments/:id/setup (WS08); the event&#8217;s page, <span class="ib-rt">/my/events/:id</span>, opens here</div></li>
+        <li><div class="ib-l1"><b>Event day</b><span class="ib-t ib-t-moved">Moved</span></div><div class="ib-l2"><span class="ib-rt">/my/events/:id/live</span> tablet-first; the rail folds here</div></li>
+        <li><div class="ib-l1"><b>Recap</b><span class="ib-t ib-t-moved">Moved</span></div><div class="ib-l2"><span class="ib-rt">/my/events/:id/recap</span> replan 4.6</div></li>
+      </ul>
+      <div class="ib-cfoot">The event page is the checklist with the counts at its top; there is no summary-then-room step.</div>
+    </div>
+
+    <div class="ib-card">
+      <div class="ib-chead"><span class="ib-pill">Region and Board inside the area</span></div>
+      <ul class="ib-pages">
+        <li><div class="ib-l1"><b>My region</b><span class="ib-t ib-t-moved">Moved</span></div><div class="ib-l2"><span class="ib-rt">/my/region</span> was /workspace/region (WS09, replan 4.2)</div></li>
+        <li><div class="ib-l1"><b>A club</b><span class="ib-t ib-t-moved">Moved</span></div><div class="ib-l2"><span class="ib-rt">/my/region/clubs/:id</span> Listing · Tonight · News · Events</div></li>
+        <li><div class="ib-l1"><b>Board</b><span class="ib-t ib-t-moved">Moved</span></div><div class="ib-l2"><span class="ib-rt">/my/board</span> was /board/inbox (BoardInboxPage.tsx); tabs Inbox · Documents · Tickets, plus Email for the president</div></li>
+        <li><div class="ib-l1"><b>Support tickets</b><span class="ib-t ib-t-prop">Proposed</span></div><div class="ib-l2"><span class="ib-rt">/my/tickets</span> today /admin/support</div></li>
+        <li><div class="ib-l1"><b>Email the members</b><span class="ib-t ib-t-prop">Proposed</span></div><div class="ib-l2"><span class="ib-rt">/my/board/email</span> today /admin/email</div></li>
+      </ul>
+      <div class="ib-cfoot">The seat filter in the inbox stays for admins; a seat is a grant, not a role (auth.ts line 329).</div>
+    </div>
+
+    <div class="ib-card">
+      <div class="ib-chead"><span class="ib-pill">Admin</span><span class="ib-rt">/admin</span><span class="ib-t ib-t-admin">Admin only</span></div>
+      <ul class="ib-pages">
+        <li><div class="ib-l1"><b>Needs attention</b><span class="ib-t ib-t-dec">Decided · WS08</span></div><div class="ib-l2"><span class="ib-rt">/admin</span> the merged queue over six sources</div></li>
+        <li><div class="ib-l1"><b>Sections</b><span class="ib-t ib-t-dec">Decided · WS08</span></div><div class="ib-l2"><span class="ib-rt">/admin/:section</span> Members · Tournaments · Clubs · Content · Board · Email · Site · Audit (today four groups, AdminPage.tsx lines 68 to 87)</div></li>
+        <li><div class="ib-l1"><b>A club</b><span class="ib-t ib-t-today">Route today</span></div><div class="ib-l2"><span class="ib-rt">/admin/clubs/:id</span></div></li>
+        <li><div class="ib-l1"><b>An event</b><span class="ib-t ib-t-today">Route today</span></div><div class="ib-l2"><span class="ib-rt">/admin/tournaments/:id</span> TournamentManagePage.tsx</div></li>
+        <li><div class="ib-l1"><b>Season</b><span class="ib-t ib-t-dec">Decided · WS11</span></div><div class="ib-l2"><span class="ib-rt">/admin/season</span> replan 4.6</div></li>
+        <li><div class="ib-l1"><b>News and Festivals</b><span class="ib-t ib-t-dec">Decided · WS10, WS05</span></div><div class="ib-l2"><span class="ib-rt">/admin/news</span> <span class="ib-rt">/admin/festivals</span></div></li>
+      </ul>
+      <div class="ib-cfoot">Unchanged. The only crossing: /admin &#8250; Tournaments or Clubs opens <span class="ib-rt">/my/events/:id/live</span> or <span class="ib-rt">/my/region/clubs/:id</span> with the strip You&#8217;re here as an LCA admin.</div>
+    </div>
+
+  </div>
+
+  <div class="ib-redir ib-rel">
+    <span class="k-num-badge ib-mk" style="top:-12px;right:-10px">6</span>
+    <div class="k-label">Redirects and retirements</div>
+    <div class="ib-rgrid">
+      <div class="ib-rrow"><span class="ib-t ib-t-redir">Redirect</span><span><span class="ib-rt">/dashboard</span> &#8594; <span class="ib-rt">/my</span></span></div>
+      <div class="ib-rrow"><span class="ib-t ib-t-redir">Redirect</span><span><span class="ib-rt">/board/inbox</span> &#8594; <span class="ib-rt">/my/board</span></span></div>
+      <div class="ib-rrow"><span class="ib-t ib-t-redir">Redirect</span><span><span class="ib-rt">/workspace</span> &#8594; <span class="ib-rt">/my</span> · <span class="ib-rt">/workspace?tab=events</span> &#8594; <span class="ib-rt">/my/events</span> · <span class="ib-rt">/workspace?tab=lookup</span> &#8594; <span class="ib-rt">/my/lookup</span></span></div>
+      <div class="ib-rrow"><span class="ib-t ib-t-redir">Redirect</span><span><span class="ib-rt">/admin/tournaments/:id</span> for a non-admin &#8594; <span class="ib-rt">/my/events/:id/setup</span> · <span class="ib-rt">/admin/clubs/:id</span> for a non-admin &#8594; <span class="ib-rt">/my/region/clubs/:id</span></span></div>
+      <div class="ib-rrow"><span class="ib-t ib-t-redir">Redirect</span><span><span class="ib-rt">/workspace/tournaments/:id/setup</span>, <span class="ib-rt">/live</span>, <span class="ib-rt">/recap</span> &#8594; <span class="ib-rt">/my/events/:id/setup</span>, <span class="ib-rt">/live</span>, <span class="ib-rt">/recap</span> · <span class="ib-rt">/workspace/region</span> &#8594; <span class="ib-rt">/my/region</span></span></div>
+      <div class="ib-rrow"><span class="ib-t ib-t-redir">Redirect</span><span><span class="ib-rt">/manage/club</span> goes with club_rep (P2.18), or &#8594; <span class="ib-rt">/my/region/clubs/:id</span> scoped to the one club if K keeps the role</span></div>
+    </div>
+    <p class="ib-p" style="margin-top:8px">Nav-IA-Final&#8217;s route table changes in five rows (My LCA, Family, Workspace, Board inbox, My region&#8217;s clubs). WS08, WS09 and WS14 are edited to the /my paths before they build.</p>
+  </div>
+</section>
+
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":3350}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

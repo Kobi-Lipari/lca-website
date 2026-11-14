@@ -1,0 +1,656 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Club-Final-Bare-2 · the basics, a phone, the rep invitation, the page as it fills</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/6107adb451dbab26ee5d89f4189b81f8">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1a2744}
+.cg-root{box-sizing:border-box;padding:16px 0 16px;background:#ecebe6;color:#1a2744}
+.cg-root *{box-sizing:border-box}
+.cg-doc{margin:0 40px;background:#fbfaf6;border:1px solid #d9d8d1;border-radius:14px;padding:14px 22px 14px}
+.cg-doc-top{display:flex;justify-content:space-between;align-items:flex-start;gap:26px}
+.cg-title{font-size:32px;line-height:1.15;font-weight:700;letter-spacing:-.015em;margin:6px 0 0}
+.cg-ml{font-size:12.5px;line-height:1.4;color:#3d4556;margin:2px 0 0}
+.cg-ml b{color:#1a2744;font-weight:600}
+.cg-round{display:inline-flex;align-items:center;height:26px;padding:0 10px;border-radius:6px;background:#1a2744;color:#ffffff;font-size:12.5px;font-weight:700;letter-spacing:.04em}
+.cg-grey{flex:none;width:600px;background:#efefea;border:1px solid #dfded6;border-radius:10px;padding:12px 14px;display:grid;grid-template-columns:1fr 1fr;gap:10px 16px}
+.cg-grey > div > p + p{margin-top:8px}
+.cg-grey p{font-size:11.5px;line-height:1.4;color:#2b3446;margin:0}
+.cg-grey b{display:block;font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#555c6b;margin-bottom:2px}
+.cg-grey ol{margin:0;padding-left:16px;font-size:11.5px;line-height:1.4;color:#2b3446}
+.cg-grey li{margin-bottom:4px}
+.cg-lbox{background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:10px 16px 10px;margin-top:10px}
+.cg-notes{list-style:none;margin:6px 0 0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px 22px}
+.cg-notes li{display:flex;gap:8px;align-items:flex-start;font-size:11.5px;line-height:1.4;color:#2b3446}
+.cg-notes .k-num-badge{width:20px;height:20px;font-size:11px}
+.cg-notes b{font-weight:600;color:#1a2744}
+.cg-data{margin:10px 0 0;padding-top:8px;border-top:1px solid #ecebe5;font-size:12px;line-height:1.45;color:#555c6b}
+.cg-data b{color:#1a2744}
+.cg-data code,.cg-mono{font-family:"Geist Mono",ui-monospace,monospace;font-size:11.5px;color:#2b3446}
+.cg-flab{display:flex;align-items:center;gap:12px;margin:16px 40px 8px}
+.cg-flab h2{white-space:nowrap;margin:0;font-size:19px;line-height:1.2;font-weight:600;letter-spacing:-.01em}
+.cg-code{display:inline-flex;align-items:center;justify-content:center;min-width:28px;height:28px;padding:0 9px;border-radius:7px;background:#c8a94a;color:#1a2744;font-weight:700;font-size:13px}
+.cg-urlchip{white-space:nowrap;font-family:"Geist Mono",ui-monospace,monospace;font-size:12px;color:#3d4556;background:#ffffff;border:1px solid #d9d8d1;border-radius:7px;padding:4px 10px;margin-left:auto}
+.cg-frame{width:1440px;background:#ffffff;border-top:1px solid #cfcec6;border-bottom:1px solid #cfcec6;box-shadow:0 20px 50px rgba(16,24,43,.10)}
+.cg-frame .k-browser-url{max-width:760px}
+.cg-nb{width:24px;height:24px;font-size:12px}
+.cg-nbs{width:20px;height:20px;font-size:10.5px;vertical-align:middle}
+.cg-anno{display:flex;gap:8px;align-items:flex-start;border:1px dashed #b9b7ad;border-radius:10px;background:#fbfbf8;padding:7px 11px;font-size:12.5px;line-height:1.45;color:#3d4556;margin:0}
+.cg-anno b{color:#1a2744;font-weight:600}
+.cg-anno svg{flex:none;margin-top:2px}
+/* decided header and footer */
+.cg-hd-in{gap:0;position:relative}
+.cg-hd .k-brand{margin-right:16px}
+.cg-rook{width:30px;height:30px;fill:#ffffff;flex:none}
+.cg-rook-sm{width:24px;height:24px}
+.cg-nav{gap:0}
+.cg-nav a{padding:0 10px;white-space:nowrap}
+.cg-navbtn{display:inline-flex;align-items:center;gap:4px;min-height:44px;padding:0 10px;border:0;background:transparent;color:#ffffff;font:inherit;font-size:15px;font-weight:500;cursor:pointer}
+.cg-sbtn{display:inline-flex;align-items:center;gap:8px;width:220px;height:44px;padding:0 8px 0 12px;margin-right:16px;border-radius:8px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.45);color:#ffffff;text-decoration:none;font-size:14.5px;font-weight:500;flex:none}
+.cg-kbd{margin-left:auto;font-family:"Geist Mono",ui-monospace,monospace;font-size:12px;color:#e8ecf4;border:1px solid rgba(255,255,255,.4);border-radius:5px;padding:2px 6px;line-height:1.2}
+.cg-util{gap:12px}
+.cg-util .k-ulink{padding:0 4px}
+.cg-foot-in{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px;padding-top:22px;padding-bottom:24px}
+.cg-foot .k-meta{color:rgba(255,255,255,.78)}
+.cg-foot nav a{font-size:14px}
+/* club page, as Club-G, with navy standing in for the club colour */
+.cg-band{height:8px;background:#1a2744}
+.cg-crumbs{display:flex;flex-wrap:wrap;gap:8px;font-size:13px;color:#555c6b;padding:8px 0 8px}
+.cg-crumbs a{color:#1a2744}
+.cg-cover-in{position:absolute;left:0;right:0;bottom:0}
+.cg-cover-row{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;padding-bottom:26px}
+.cg-idrow{display:flex;align-items:flex-end;gap:22px}
+.cg-h1{font-size:44px;line-height:1.05;font-weight:700;letter-spacing:-.02em;color:#ffffff;margin:0}
+.cg-city{font-size:18px;line-height:1.4;color:#ffffff;margin:8px 0 0}
+.cg-cbtns{display:flex;gap:10px;align-items:center}
+.cg-btn-wline{background:transparent;color:#ffffff;border-color:#ffffff}
+.cg-btn-wghost{background:transparent;color:#ffffff;border-color:transparent;padding:0 10px}
+.cg-author{background:#fbfaf6;border-bottom:1px solid #ecebe6}
+.cg-author-in{display:flex;align-items:center;gap:12px;min-height:44px;font-size:13.5px;color:#3d4556;flex-wrap:nowrap}
+.cg-author-in b{color:#1a2744;font-weight:600}
+.cg-sep{width:1px;height:16px;background:#d6d5cd;flex:none}
+.cg-snav{background:#ffffff;border-bottom:1px solid #e4e2db;box-shadow:0 4px 12px rgba(16,24,43,.05)}
+.cg-snav-in{display:flex;align-items:center;justify-content:space-between;gap:20px}
+.cg-sl{display:flex;gap:2px}
+.cg-sl a{display:inline-flex;align-items:center;gap:6px;min-height:50px;padding:4px 14px 0;font-size:15px;font-weight:600;color:#555c6b;text-decoration:none;border-bottom:3px solid transparent;white-space:nowrap}
+.cg-sl a.on{color:#1a2744;border-bottom-color:#1a2744}
+.cg-sec{padding:18px 0 20px}
+.cg-frame .k-h2{font-size:25px}
+.cg-cream{background:#fbfaf6;border-top:1px solid #ecebe6;border-bottom:1px solid #ecebe6}
+.cg-h{display:flex;align-items:center;gap:10px;margin:0}
+.cg-bar{width:6px;height:24px;border-radius:3px;background:#1a2744;flex:none}
+.cg-two{display:grid;grid-template-columns:760px 420px;justify-content:space-between;align-items:start}
+.cg-side{display:flex;flex-direction:column;gap:10px}
+.cg-sc{background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:11px 16px;display:flex;flex-direction:column;gap:4px}
+.cg-say{background:#ffffff;border:1px solid #dddcd4;border-left:5px solid #1a2744;border-radius:12px;padding:16px 22px 16px}
+.cg-say p{font-size:19px;line-height:1.5;color:#1a2744;margin:6px 0 0}
+.cg-told{display:flex;align-items:center;gap:8px;font-size:13px;color:#555c6b;margin:0}
+.cg-road{position:absolute;background:#ffffff;border:1px solid #d9dee5}
+.cg-river{position:absolute;border-radius:40px;background:#cfe0ea}
+.cg-mpin{position:absolute;width:30px;height:30px;margin:-15px 0 0 -15px;border-radius:50%;background:#1a2744;color:#ffffff;border:2px solid #ffffff;box-shadow:0 2px 6px rgba(26,39,68,.35);font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center}
+.cg-mlab{position:absolute;background:#ffffff;border:1px solid #e4e2db;border-radius:6px;padding:2px 7px;font-size:11.5px;font-weight:600;color:#1a2744;white-space:nowrap}
+.cg-venue{display:grid;grid-template-columns:24px minmax(0,1fr);gap:10px;align-items:start;padding:10px 0 6px;font-size:13px;line-height:1.45;color:#3d4556}
+.cg-venue b{color:#1a2744;font-weight:600;font-size:14px}
+.cg-vno{width:24px;height:24px;border-radius:50%;background:#1a2744;color:#ffffff;font-size:11.5px;font-weight:700;display:flex;align-items:center;justify-content:center}
+.cg-ts{display:flex;align-items:center;gap:12px;width:250px;height:46px;padding:0 14px;border:1px solid #d6d5cd;border-radius:6px;background:#fafaf7;font-size:13.5px;color:#3d4556}
+.cg-ts i{display:block;width:22px;height:22px;border:2px solid #858b99;border-radius:4px;background:#ffffff;flex:none}
+.cg-ts span{margin-left:auto;font-size:11px;color:#555c6b;text-align:right;line-height:1.25}
+.cg-near{display:flex;flex-direction:column;gap:0;padding:7px 0;border-bottom:1px solid #ecebe6;font-size:12.5px;line-height:1.4;color:#3d4556}
+.cg-near a{font-weight:600;color:#1a2744;font-size:14.5px}
+.cg-sitefoot-in{display:flex;align-items:center;gap:12px;min-height:56px;font-size:13.5px;color:#3d4556}
+.cg-sitefoot-in b{color:#1a2744}
+/* search and sharing panel */
+.cg-panel{margin:14px 40px 0;background:#ffffff;border:1px solid #dddcd4;border-radius:14px;padding:14px 18px 16px}
+.cg-pgrid{display:grid;grid-template-columns:236px 296px 424px minmax(0,1fr);gap:14px;margin-top:10px;align-items:start}
+.cg-tile{border:1px solid #e4e2db;border-radius:10px;padding:10px 12px;background:#fbfbf8;display:flex;flex-direction:column;gap:7px}
+.cg-tl{font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#555c6b;margin:0}
+.cg-tile p{margin:0;font-size:12px;line-height:1.45;color:#3d4556}
+.cg-tile p b{color:#1a2744;font-weight:600}
+.cg-codebox{font-family:"Geist Mono",ui-monospace,monospace;font-size:11px;overflow-wrap:anywhere;line-height:1.45;color:#1a2744;background:#ffffff;border:1px solid #e4e2db;border-radius:7px;padding:6px 9px;margin:0}
+.cg-tile p.cg-codebox{font-size:11px;color:#1a2744}
+.cg-serp{background:#ffffff;border:1px solid #e4e2db;border-radius:8px;padding:10px 12px;font-family:Arial,Helvetica,sans-serif}
+.cg-serp-src{display:flex;align-items:center;gap:8px}
+.cg-fav{width:26px;height:26px;border-radius:50%;background:#1a2744;display:flex;align-items:center;justify-content:center;flex:none}
+.cg-fav svg{width:15px;height:15px;fill:#ffffff}
+.cg-serp-site{font-size:13px;color:#202124;line-height:1.25}
+.cg-serp-url{font-size:12px;color:#4d5156;line-height:1.25}
+.cg-serp .cg-serp-t{font-size:16px;line-height:1.3;color:#1a0dab;margin:6px 0 3px}
+.cg-serp .cg-serp-d{font-size:12.5px;line-height:1.45;color:#4d5156}
+.cg-bub{display:flex;gap:10px;align-items:center;background:#e9e9eb;border-radius:16px;padding:6px 12px 6px 6px;width:300px}
+.cg-bub b{display:block;font-size:13px;color:#111111;line-height:1.25}
+.cg-bub small{display:block;font-size:11.5px;color:#6b6b70}
+.cg-checks{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.cg-checks li{display:grid;grid-template-columns:20px minmax(0,1fr);gap:7px;font-size:12px;line-height:1.4;color:#3d4556}
+.cg-checks li b{color:#1a2744;font-weight:600}
+.cg-tick{width:20px;height:20px;border-radius:50%;background:#e1f0e7;color:#145b3a;display:flex;align-items:center;justify-content:center;margin-top:1px}
+/* the bare state */
+.cb-cover{position:relative;height:260px;overflow:hidden;background:#22325a}
+.cb-squares{position:absolute;top:0;right:0;bottom:0;width:640px;background-image:conic-gradient(rgba(255,255,255,.06) 0 25%,transparent 0 50%,rgba(255,255,255,.06) 0 75%,transparent 0);background-size:64px 64px;-webkit-mask-image:linear-gradient(90deg,transparent 0,#000000 55%);mask-image:linear-gradient(90deg,transparent 0,#000000 55%)}
+.cb-shade{position:absolute;left:0;top:0;right:0;bottom:0;background:linear-gradient(180deg,rgba(26,39,68,0) 30%,rgba(26,39,68,.6) 75%,#1a2744 100%)}
+.cb-covnote{position:absolute;right:24px;top:14px;max-width:450px}
+.cb-tile{position:relative;width:96px;height:96px;border-radius:18px;background:#ffffff;color:#1a2744;font-size:40px;font-weight:700;letter-spacing:.01em;line-height:1;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 24px rgba(10,16,30,.35);flex:none}
+.cb-tile .k-num-badge{position:absolute;right:-10px;top:-10px;box-shadow:0 0 0 2px #ffffff}
+.cb-meet{display:flex;align-items:center;gap:8px;font-size:16px;line-height:1.4;color:#ffffff;margin:6px 0 0;white-space:nowrap}
+.cb-wwl{color:#e6cf86;font-weight:600;font-size:15px;text-decoration:underline;text-decoration-color:#e6cf86;text-underline-offset:3px;white-space:nowrap;margin-left:8px}
+.cb-info{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:#e4e9f3;color:#1a2744;flex:none}
+.cb-sug{font-size:14px;font-weight:600;color:#866a1e;text-decoration:underline;text-decoration-thickness:1.5px;text-underline-offset:3px;white-space:nowrap}
+.cb-ask{font-size:13px;font-weight:600;color:#1a2744;text-decoration:underline;text-decoration-color:#9aa1b0;text-underline-offset:3px;white-space:nowrap}
+.cb-leadrow{display:flex;justify-content:space-between;align-items:center;gap:40px}
+.cb-lead{font-size:21px;line-height:1.5;color:#1a2744;margin:0;max-width:1200px}
+.cb-toldrow{display:flex;align-items:flex-start;gap:16px;margin-top:12px}
+.cb-toldrow .cg-told{flex:none;margin-top:6px}
+.cb-map{position:relative;height:260px;border-radius:12px;overflow:hidden}
+.cb-mtext{position:absolute;font-size:11.5px;font-weight:600;color:#3d4556;white-space:nowrap}
+.cb-ood{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:10px 14px;font-size:13px;line-height:1.45;color:#3d4556;margin:0}
+.cb-ood b{color:#1a2744;font-weight:600}
+.cb-ood .cb-sug{font-size:13px}
+.cb-sitefoot{background:#eef0f4;border-top:1px solid #dcdfe6}
+.cb-minitile{width:30px;height:30px;border-radius:8px;background:#1a2744;color:#ffffff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex:none}
+.cb-og{width:400px;border:1px solid #d6d5cd;border-radius:8px;overflow:hidden;background:#ffffff}
+.cb-og-img{position:relative;width:400px;height:210px;background:#22325a;overflow:hidden}
+.cb-og-img .cb-squares{width:250px;background-size:40px 40px}
+.cb-og-img .cb-shade{background:linear-gradient(180deg,rgba(26,39,68,0) 40%,#1a2744 100%)}
+.cb-og-url{position:absolute;left:22px;top:18px;font-size:12px;font-weight:600;letter-spacing:.04em;color:#e6cf86}
+.cb-og-in{position:absolute;left:22px;right:22px;bottom:20px;display:flex;align-items:flex-end;gap:14px}
+.cb-og-tile{width:64px;height:64px;border-radius:13px;background:#ffffff;color:#1a2744;font-size:26px;font-weight:700;display:flex;align-items:center;justify-content:center;flex:none}
+.cb-og-in b{display:block;font-size:21px;line-height:1.15;color:#ffffff}
+.cb-og-in .cb-og-city{display:block;font-size:13px;line-height:1.35;color:#ffffff;margin-top:3px}
+.cb-og-meta{padding:7px 12px;background:#f0f2f5;font-family:Arial,Helvetica,sans-serif}
+.cb-og-meta small{display:block;font-size:11px;color:#606770;text-transform:uppercase;letter-spacing:.02em}
+.cb-og-meta b{display:block;font-size:14px;color:#1d2129;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cb-bubtile{width:40px;height:40px;border-radius:9px;background:#1a2744;color:#ffffff;font-size:15px;font-weight:700;display:flex;align-items:center;justify-content:center;flex:none}
+/* part 2: admin frame, editor, previews */
+.cf-my{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 8px;border:0;border-radius:8px;background:transparent;color:#ffffff;font:inherit;font-size:14px;font-weight:500}
+.cf-admin{display:grid;grid-template-columns:200px minmax(0,1fr);gap:26px;align-items:start;padding:14px 24px 16px;background:#f5f5f2}
+.wj-side{background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:10px 6px 10px}
+.wj-side-h{padding:2px 8px 8px;border-bottom:1px solid #ecebe4;margin-bottom:4px;display:flex;flex-direction:column;gap:4px}
+.wj-side-h a{display:inline-flex;align-items:center;gap:4px;font-size:13px;font-weight:600;color:#1a2744;text-decoration:underline;text-decoration-color:#9aa1b0;text-underline-offset:3px}
+.wj-side-h b{display:block;font-size:16px}
+.wj-srow{display:flex;align-items:center;gap:8px;min-height:28px;padding:3px 8px;line-height:1.25;border-radius:7px;color:#1a2744;text-decoration:none;font-size:13px;font-weight:500;border-left:3px solid transparent}
+.wj-srow.wj-on{background:#f3eedc;border-left-color:#866a1e;font-weight:700}
+.wj-scnt{margin-left:auto;font-size:11.5px;font-weight:700;background:#1a2744;color:#ffffff;border-radius:99px;padding:1px 7px;line-height:1.3}
+.wj-sgroup{font-size:10.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#555c6b;padding:9px 8px 2px}
+.wj-sfoot{margin:8px 4px 0;padding:8px 4px 0;border-top:1px solid #ecebe4;font-size:12px;line-height:1.4;color:#555c6b;display:flex;gap:7px;align-items:flex-start}
+.wj-sfoot svg{flex:none;margin-top:1px}
+.cf-crumb{display:flex;align-items:center;gap:8px;margin:0;font-size:13.5px;color:#555c6b}
+.cf-crumb a{color:#1a2744;font-weight:500;text-decoration:underline;text-decoration-color:#9aa1b0;text-underline-offset:3px}
+.cf-crumb span[aria-current]{color:#1a2744;font-weight:600}
+.cf-h1{display:flex;align-items:center;gap:10px;font-size:30px;line-height:1.15;font-weight:700;letter-spacing:-.015em;margin:4px 0 4px}
+.cf-sub{font-size:12px;line-height:1.5;color:#3d4556;margin:0;display:flex;flex-wrap:nowrap;gap:2px 7px;align-items:center;white-space:nowrap}
+.cf-sub .k-link{text-underline-offset:3px}
+.cf-sub b{color:#1a2744;font-weight:600}
+.cf-cols{display:grid;grid-template-columns:700px 440px;gap:26px;align-items:start;margin-top:12px}
+.cf-form{display:flex;flex-direction:column;gap:10px}
+.ce-toast{display:flex;gap:10px;align-items:flex-start;background:#e1f0e7;border:1px solid #b9dcc6;border-radius:10px;padding:9px 13px;font-size:13px;line-height:1.4;color:#145b3a;margin:0}
+.ce-toast b{color:#145b3a}
+.cf-basics{background:#ffffff;border:1px solid #dddcd4;border-left:5px solid #1a2744;border-radius:12px;padding:12px 18px 14px;display:flex;flex-direction:column;gap:11px}
+.cf-bh{display:flex;align-items:center;gap:10px;margin:0;font-size:20px;line-height:1.2;font-weight:700;color:#1a2744}
+.cf-bsub{margin:3px 0 0;font-size:13px;color:#3d4556}
+.cf-field{display:flex;flex-direction:column;gap:5px}
+.cf-lab{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:600;color:#1a2744}
+.cf-fn{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:6px;background:#1a2744;color:#ffffff;font-size:11.5px;font-weight:700;flex:none}
+.ce-f{display:flex;flex-direction:column;gap:3px}
+.ce-f label{font-size:12.5px;font-weight:600;color:#1a2744}
+.ce-in{display:block;width:100%;min-height:38px;padding:8px 11px;border:1px solid #858b99;border-radius:8px;background:#ffffff;color:#1a2744;font-size:14px;line-height:1.45}
+.ce-in-ph{color:#6b7180}
+.ce-help{font-size:12px;line-height:1.45;color:#555c6b;margin:0}
+.ce-count{display:flex;justify-content:space-between;font-size:12px;color:#555c6b;margin:0}
+.cf-where{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:16px;align-items:start}
+.cf-wcol{display:flex;flex-direction:column;gap:9px}
+.cf-wmap{position:relative;width:300px;height:160px;border-radius:10px;overflow:hidden}
+.cf-g2{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}
+.cf-more{display:flex;gap:10px;align-items:flex-start;background:#efefea;border:1px solid #dfded6;border-radius:12px;padding:11px 14px;font-size:13px;line-height:1.5;color:#3d4556;margin:0}
+.cf-more b{color:#1a2744;font-weight:700}
+.cf-more svg{flex:none;margin-top:2px}
+.ce-save{display:flex;align-items:center;gap:12px;background:#ffffff;border:1px solid #cfcec6;border-radius:12px;padding:9px 12px;box-shadow:0 -6px 18px rgba(16,24,43,.06)}
+.ce-save p{margin:0;font-size:13px;line-height:1.4;color:#3d4556}
+.cf-prev{display:flex;flex-direction:column;gap:10px}
+.ce-pc{background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:10px 14px 12px;display:flex;flex-direction:column;gap:8px}
+.ce-pc h3{font-size:15px;font-weight:700;margin:0;color:#1a2744}
+.ce-help b{color:#1a2744}
+/* the thumbnail of frame A's top */
+.cf-th{position:relative;width:400px;height:360px;border:1px solid #d6d5cd;border-radius:8px;overflow:hidden;background:#ffffff}
+.cf-th-hd{display:flex;align-items:center;gap:6px;height:22px;padding:0 8px;background:#1a2744;color:#ffffff;font-size:8.5px;font-weight:700}
+.cf-th-hd svg{width:11px;height:11px;fill:#ffffff;flex:none}
+.cf-th-hd i{display:block;width:22px;height:3px;border-radius:2px;background:rgba(255,255,255,.55)}
+.cf-th-band{height:3px;background:#1a2744}
+.cf-th-crumb{font-size:8px;color:#555c6b;padding:3px 10px}
+.cf-th-cov{position:relative;height:96px;background:#22325a;overflow:hidden}
+.cf-th-id{position:absolute;left:10px;right:10px;bottom:9px;display:flex;align-items:flex-end;gap:8px}
+.cf-th-tile{width:34px;height:34px;border-radius:7px;background:#ffffff;color:#1a2744;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;flex:none}
+.cf-th-id b{display:block;font-size:15px;line-height:1.1;color:#ffffff}
+.cf-th-id small{display:block;font-size:8.5px;line-height:1.35;color:#ffffff;margin-top:2px}
+.cf-th-btns{position:absolute;right:10px;bottom:10px;display:flex;gap:4px}
+.cf-th-btns span{display:inline-flex;align-items:center;height:15px;padding:0 6px;border-radius:4px;font-size:7.5px;font-weight:700;border:1px solid #ffffff;color:#ffffff}
+.cf-th-btns span.g{background:#c8a94a;border-color:#c8a94a;color:#1a2744}
+.cf-th-auth{background:#fbfaf6;border-bottom:1px solid #ecebe6;padding:4px 10px;font-size:8.5px;line-height:1.3;color:#3d4556}
+.cf-th-nav{display:flex;gap:10px;padding:5px 10px 4px;border-bottom:1px solid #e4e2db;font-size:9px;font-weight:600;color:#555c6b}
+.cf-th-nav b{color:#1a2744;border-bottom:2px solid #1a2744;padding-bottom:2px}
+.cf-th-sec{padding:7px 10px 6px}
+.cf-th-h{display:flex;align-items:center;gap:5px;font-size:11px;font-weight:700;color:#1a2744;margin:0 0 4px}
+.cf-th-h i{display:block;width:3px;height:11px;border-radius:2px;background:#1a2744}
+.cf-th-lead{font-size:10px;line-height:1.4;color:#1a2744;margin:0}
+.cf-th-cream{background:#fbfaf6;border-top:1px solid #ecebe6}
+.cf-th-two{display:grid;grid-template-columns:minmax(0,1fr) 120px;gap:10px}
+.cf-th-say{background:#ffffff;border:1px solid #dddcd4;border-left:3px solid #1a2744;border-radius:5px;padding:5px 7px;font-size:9.5px;line-height:1.4;color:#1a2744}
+.cf-th-map{position:relative;height:72px;border-radius:5px;overflow:hidden}
+/* phone */
+.cf-row{display:grid;grid-template-columns:430px 880px;justify-content:space-between;margin:0 40px;align-items:start}
+.cf-lab2{display:flex;align-items:center;gap:10px;margin:0 0 8px}
+.cf-lab2 h2{margin:0;font-size:17px;line-height:1.2;font-weight:600;white-space:nowrap}
+.cf-lab2 .k-meta{font-size:11.5px;line-height:1.35;white-space:nowrap}
+.ce-ph-app{flex:none;display:flex;align-items:center;justify-content:space-between;gap:8px;height:56px;padding:0 10px 0 16px;background:#1a2744;color:#ffffff}
+.ce-brand{display:flex;align-items:center;gap:9px;color:#ffffff;text-decoration:none}
+.ce-bn{display:flex;flex-direction:column;line-height:1.12}
+.ce-bn b{font-size:14px;font-weight:700}
+.ce-bn span{font-size:11px;font-weight:500;color:rgba(255,255,255,.8)}
+.ce-ibtn{display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;border:1.5px solid rgba(255,255,255,.55);border-radius:9px;color:#ffffff}
+.ce-i20{width:20px;height:20px;flex:none;fill:none;stroke:currentColor;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round}
+.cf-pcov{position:relative;height:200px;overflow:hidden;background:#22325a;flex:none}
+.cf-pid{position:absolute;left:14px;right:14px;bottom:12px;display:flex;flex-direction:column;gap:5px}
+.cf-prow{display:flex;align-items:center;gap:10px}
+.cf-ptile{width:56px;height:56px;border-radius:12px;background:#ffffff;color:#1a2744;font-size:22px;font-weight:700;display:flex;align-items:center;justify-content:center;flex:none}
+.ce-ph1{font-size:22px;line-height:1.1;font-weight:700;color:#ffffff;margin:0}
+.cf-pcity{font-size:12.5px;line-height:1.4;color:#ffffff;margin:2px 0 0}
+.cf-pmeet{display:flex;gap:6px;align-items:flex-start;font-size:12.5px;line-height:1.4;color:#ffffff;margin:0}
+.cf-pmeet svg{flex:none;margin-top:1px}
+.cf-pbtns{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px}
+.ce-iauth{background:#fbfaf6;border-bottom:1px solid #ecebe6;padding:8px 14px;font-size:12px;line-height:1.45;color:#3d4556;flex:none}
+.ce-iauth b{color:#1a2744}
+.cf-sug12{font-size:12px;font-weight:600;color:#1a2744;text-decoration:underline;text-decoration-color:#c8a94a;text-decoration-thickness:2px;text-underline-offset:3px;white-space:nowrap}
+.ce-pills{display:flex;gap:6px;overflow:hidden;padding:7px 14px;background:#ffffff;border-bottom:1px solid #e4e2db;white-space:nowrap;flex:none}
+.ce-pill{display:inline-flex;align-items:center;min-height:32px;padding:0 12px;border-radius:999px;border:1px solid #c4c3bb;background:#ffffff;font-size:13.5px;font-weight:600;color:#1a2744;flex:none}
+.ce-pill-on{background:#1a2744;border-color:#1a2744;color:#ffffff}
+.ce-pscroll{flex:1;min-height:0;overflow:hidden;background:#ffffff;padding:12px 14px;display:flex;flex-direction:column;gap:8px}
+.ce-ih2{display:flex;align-items:center;gap:8px;margin:0;font-size:17px;line-height:1.3;font-weight:700;color:#1a2744}
+.ce-p{font-size:13px;line-height:1.45;color:#3d4556;margin:0}
+.ce-pbar{flex:none;display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:8px 14px;background:#ffffff;border-top:1px solid #dddcd4;box-shadow:0 -6px 18px rgba(16,24,43,.08)}
+.ce-tabs{flex:none;display:grid;grid-template-columns:repeat(4,1fr);height:56px;background:#ffffff;border-top:1px solid #d9d8d1}
+.ce-tab{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:#555c6b;text-decoration:none;font-size:12px;font-weight:500;line-height:1.1}
+.ce-tab-on{color:#1a2744;font-weight:700}
+.ce-safe{flex:none;height:22px;background:#ffffff;display:flex;align-items:flex-end;justify-content:center;padding-bottom:6px}
+.ce-safe i{display:block;width:124px;height:5px;border-radius:3px;background:#10182b}
+.ce-cap{font-size:12.5px;line-height:1.45;color:#3d4556;margin:10px 0 0}
+/* D: ask to be its named rep */
+.cf-d{display:flex;flex-direction:column;gap:12px}
+.cf-dp{display:grid;grid-template-columns:176px minmax(0,1fr);gap:18px;background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:12px 16px 12px}
+.ce-stl{font-size:11.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#555c6b;margin:0}
+.cf-dnote{font-size:12.5px;line-height:1.45;color:#3d4556;margin:6px 0 0}
+.cf-sheet{position:relative;background:#ffffff;border:1px solid #c9c8c0;border-radius:12px;box-shadow:0 14px 34px rgba(16,24,43,.12);padding:14px 18px 14px;display:flex;flex-direction:column;gap:10px}
+.cf-sheet h3{margin:0;font-size:17px;line-height:1.3;font-weight:700;color:#1a2744;padding-right:36px}
+.cf-x{position:absolute;right:10px;top:9px;display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:8px;color:#1a2744}
+.cf-p14{font-size:14px;line-height:1.5;color:#1a2744;margin:0}
+.ce-chips{display:flex;flex-wrap:wrap;gap:6px}
+.ce-chip{display:inline-flex;align-items:center;gap:6px;min-height:32px;padding:0 11px;border-radius:999px;border:1px solid #c4c3bb;font-size:13px;font-weight:600;color:#1a2744;background:#ffffff}
+.ce-chip-on{background:#1a2744;border-color:#1a2744;color:#ffffff}
+.cf-ro{display:flex;align-items:center;min-height:36px;padding:0 11px;border:1px solid #d6d5cd;border-radius:8px;background:#f5f5f2;font-size:14px;color:#1a2744}
+.cf-ro small{margin-left:6px;font-size:12.5px;color:#555c6b}
+.cf-grey13{font-size:13px;line-height:1.45;color:#555c6b;margin:0}
+.ce-done{background:#e1f0e7;border:1px solid #b9dcc6;border-radius:10px;padding:12px 14px;font-size:14px;line-height:1.5;color:#145b3a;margin:0}
+.ce-done b{color:#145b3a}
+.cf-d3{display:grid;grid-template-columns:236px minmax(0,1fr);gap:14px;align-items:start}
+.cf-q{background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:10px 14px 12px}
+.cf-qh{display:flex;justify-content:space-between;align-items:center;gap:8px;padding-bottom:6px;border-bottom:1px solid #ecebe4;font-size:12.5px;font-weight:700;color:#1a2744}
+.cf-qrow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 14px;align-items:center;padding:10px 0 4px}
+.wj-qt{margin:0;font-size:15px;line-height:1.35;font-weight:600;color:#1a2744}
+.wj-qs{margin:2px 0 0;font-size:13px;line-height:1.4;color:#555c6b}
+.wj-qm{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;margin-top:6px;font-size:12.5px;color:#3d4556}
+.wj-tag-club{background:#e3eef0;color:#1f4d57}
+.cf-qact{display:flex;flex-direction:column;align-items:stretch;gap:6px}
+/* E: the page as it fills */
+.cf-erow{display:grid;grid-template-columns:repeat(5,256px);justify-content:space-between;margin:0 40px}
+.cf-ec{position:relative;width:256px;min-height:340px;background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:10px 10px 12px;display:flex;flex-direction:column;gap:6px}
+.cf-eh{display:flex;justify-content:space-between;align-items:center;gap:6px}
+.cf-el{display:inline-flex;align-items:center;justify-content:center;min-width:28px;height:22px;padding:0 6px;border-radius:6px;background:#1a2744;color:#ffffff;font-size:11.5px;font-weight:700}
+.cf-ec h3{margin:0;font-size:15px;line-height:1.3;font-weight:700;color:#1a2744}
+.cf-ed{margin:-4px 0 0;font-size:12px;color:#555c6b}
+.cf-small{margin:0;font-size:12px;line-height:1.45;color:#3d4556}
+.cf-small b{color:#1a2744}
+.cf-mini{border:1px solid #e4e2db;border-radius:8px;overflow:hidden;background:#ffffff}
+.cf-mauth{display:flex;gap:6px;align-items:flex-start;background:#fbfaf6;border:1px solid #ecebe6;border-radius:7px;padding:6px 8px;font-size:11.5px;line-height:1.45;color:#3d4556}
+.cf-mauth b{color:#1a2744;font-weight:600}
+.cf-ok{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:50%;background:#1a2744;color:#ffffff;flex:none;margin-top:1px}
+.cf-ban{display:flex;justify-content:space-between;align-items:center;gap:8px;border-radius:7px;padding:6px 8px;background:#e1f0e7;border:1px solid #b9dcc6;color:#145b3a;font-size:12px;line-height:1.35}
+.cf-ban b{font-weight:700}
+.cf-mbtn{display:inline-flex;align-items:center;height:24px;padding:0 9px;border-radius:6px;border:1px solid #1a2744;background:#ffffff;color:#1a2744;font-size:11.5px;font-weight:700}
+.cf-mrail{width:150px;background:#ffffff;border:1px solid #cfcec6;border-radius:9px;padding:7px 0 6px;box-shadow:0 4px 12px rgba(16,24,43,.06)}
+.cf-mrail p{font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#555c6b;padding:0 10px 4px 11px;margin:0}
+.cf-mrail span{display:flex;align-items:center;min-height:22px;padding:0 9px 0 11px;font-size:12px;color:#1a2744}
+.cf-mrail span.on{background:#f3eedc;box-shadow:inset 3px 0 0 #866a1e;font-weight:700}
+.cf-mcov{position:relative;height:96px;overflow:hidden;background:#1a2744}
+.cf-mcov img{position:absolute;left:0;top:0;width:100%;height:100%;object-fit:cover;display:block}
+.cf-mcov .cb-shade{background:linear-gradient(180deg,rgba(16,24,43,.05) 20%,rgba(16,24,43,.85) 100%)}
+.cf-mcov-id{position:absolute;left:8px;right:8px;bottom:7px;display:flex;align-items:center;gap:7px}
+.cf-mtile{width:28px;height:28px;border-radius:6px;background:#ffffff;color:#1a2744;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex:none}
+.cf-mcov-id b{font-size:13px;line-height:1.15;color:#ffffff}
+.cf-mnav{display:flex;flex-wrap:nowrap;gap:6px;padding:5px 6px;border-bottom:1px solid #e4e2db;font-size:10px;font-weight:600;color:#555c6b;white-space:nowrap}
+.cf-mnav b{color:#1a2744;border-bottom:2px solid #1a2744}
+.cf-mnav em{font-style:normal;color:#1a2744;background:#e1f0e7;border-radius:4px;padding:0 4px}
+.cf-msec{padding:7px 8px 8px;display:flex;flex-direction:column;gap:5px}
+.cf-mh{display:flex;align-items:center;gap:5px;margin:0;font-size:11.5px;line-height:1.3;font-weight:700;color:#1a2744}
+.cf-mh i{display:block;width:3px;height:12px;border-radius:2px;background:#1a2744;flex:none}
+.cf-mbars{display:flex;flex-direction:column;gap:4px}
+.cf-mbars i{display:block;height:5px;border-radius:3px;background:#d9d8d1}
+.cf-mcards{display:grid;grid-template-columns:1fr 1fr;gap:5px}
+.cf-mcards span{border:1px solid #dddcd4;border-radius:5px;padding:4px 5px;font-size:9px;font-weight:700;letter-spacing:.04em;color:#555c6b;display:flex;flex-direction:column;gap:3px;white-space:nowrap}
+.cf-mcards span i{display:block;height:4px;border-radius:2px;background:#e1e0d9}
+.cf-mtold{font-size:11px;line-height:1.4;color:#555c6b;margin:0}
+.cf-mev{padding:7px 8px 8px;display:flex;flex-direction:column;gap:6px}
+.cf-mev-top{display:grid;grid-template-columns:38px minmax(0,1fr);gap:8px;align-items:start}
+.cf-evt b{display:block;font-size:12.5px;line-height:1.3;color:#1a2744}
+.cf-mev .k-tag{padding:2px 6px;font-size:10.5px}
+.cf-fill{display:inline-block;width:60px;height:5px;border-radius:3px;background:#e6e5de;overflow:hidden;vertical-align:middle}
+.cf-fill i{display:block;height:100%;width:25%;background:#1a2744}
+.cf-cap{margin:10px 40px 0;font-size:13px;line-height:1.45;color:#3d4556}
+.cf-cap b{color:#1a2744}
+.cf-shrow{display:grid;grid-template-columns:224px minmax(0,1fr);gap:12px;align-items:center}
+.cf-ogs{position:relative;width:224px;height:118px;border-radius:7px;overflow:hidden;background:#22325a;border:1px solid #d6d5cd}
+.cf-ogs .cb-squares{width:150px;background-size:24px 24px}
+.cf-ogs .cb-shade{background:linear-gradient(180deg,rgba(26,39,68,0) 40%,#1a2744 100%)}
+.cf-ogs-url{position:absolute;left:12px;top:10px;font-size:9.5px;font-weight:600;letter-spacing:.04em;color:#e6cf86}
+.cf-ogs-in{position:absolute;left:12px;right:12px;bottom:11px;display:flex;align-items:flex-end;gap:8px}
+.cf-ogs-tile{width:38px;height:38px;border-radius:8px;background:#ffffff;color:#1a2744;font-size:15px;font-weight:700;display:flex;align-items:center;justify-content:center;flex:none}
+.cf-ogs-in b{display:block;font-size:13px;line-height:1.15;color:#ffffff}
+.cf-ogs-in .cf-ogs-city{display:block;font-size:9.5px;line-height:1.35;color:#ffffff;margin-top:2px}
+.cf-prev .cg-serp{padding:8px 11px}
+.cf-prev .cg-serp .cg-serp-t{margin:5px 0 2px}
+.cf-prev .cg-serp .cg-serp-d{font-size:12px;line-height:1.42}
+</style>
+</helmet>
+<div class="cg-root" style="width:1440px;height:2950px">
+
+<section class="cg-doc" aria-label="About this board">
+<div class="cg-doc-top">
+<div>
+<div class="k-row-sm" style="gap:10px"><p class="k-kicker" style="margin:0">9 · Club page · final · Club-G bare · part 2 of 2</p><span class="cg-round">FINAL</span></div>
+<h1 class="cg-title">Club page · the basics, a phone, the rep invitation, the page as it fills</h1>
+<p class="cg-ml" style="margin-top:5px"><b>Built from:</b> Club-G-2's editor (the same form, its basics first), its phone and its states strip; Account-S's Your club card.</p>
+<p class="cg-ml"><b>Replaces:</b> Club-G-2 frame C's thin club and its line "Do you run this club? Ask Camille to make you its rep". The editor, its preview column, the phone and the states stay as Club-G-2 decided.</p>
+<p class="cg-ml"><b>K's feedback applied:</b> Thu, Oct 15 "I can input the basics of what is necessary if you see fit".</p>
+<p class="cg-ml"><b>Shown:</b> B the basics as an LCA admin enters them on Mon, Oct 19, 2026; C the bare page on a phone; D Ask to be its named rep, signed out, signed in and sent; E the page as it fills.</p>
+<p class="cg-ml" style="margin-top:6px"><span class="k-sample">Sample data: the admin, Ray A., Ray Aucoin, Theo Guidry, the one sentence, the later photo, words and event</span></p>
+</div>
+<aside class="cg-grey" aria-label="Board note">
+<div><p><b>What</b>Part 2 of the bare club page: the five basics in the club's own editor, the page on a phone, how a rep is invited and named, and how the page changes as each block fills.</p><p><b>Built from</b>Club-G-2's editor, preview column, phone and states; Account-S's Your club for the named rep's My LCA.</p><p><b>K's feedback applied</b>The basics take one short form per club, so K can do all 25 listed clubs in a sitting; once named, the club's rep fills the rest.</p></div>
+<div><p><b>Open for K</b></p><ol><li>The basics are five fields: one sentence, how the club meets, where, a contact name, a contact email kept private. Enough?</li><li>A rep request reaches the region's representative and the LCA admins, and an LCA admin names the rep, as today. May the region's representative name one too, as they can now name a one-event director?</li><li>Basics an admin typed read As told to LCA, October 2026 until the club's rep rewrites them. OK?</li><li>Settled Mon, Oct 19: a named rep's My LCA gains Your club, and with it the rail (Account-Final-Hub).</li></ol></div>
+</aside>
+</div>
+<div class="cg-lbox">
+<p class="k-label" style="margin:0">Notes on this board</p>
+<ol class="cg-notes">
+<li><span class="k-num-badge">1</span><span><b>One editor for everyone who keeps a club page:</b> an LCA admin, the region's representative, the club's rep. The basics come first; everything else is an open field in the editor and absent on the page.</span></li>
+<li><span class="k-num-badge">2</span><span><b>The five basics:</b> one sentence, how the club meets (in words), where (a place and its pin), a contact name, a contact email that stays private.</span></li>
+<li><span class="k-num-badge">3</span><span><b>Save publishes at once,</b> as Club-G-2 decided; the region's representative gets an email naming what changed.</span></li>
+<li><span class="k-num-badge">4</span><span><b>Ask to be its named rep is a short form behind Log in.</b> It reaches the region's representative and the LCA admins; an LCA admin names the rep (today only admins can: functions/api/admin/members/[id]/club.ts line 19). No self-serve claim.</span></li>
+<li><span class="k-num-badge">5</span><span><b>Once named,</b> the rep's My LCA gains Your club, so the rail appears (Account-Final-Hub), and the author line names them.</span></li>
+<li><span class="k-num-badge">6</span><span><b>Each block appears the first time it has something:</b> a photo turns the cover into the 340 photo cover; news, events and photos add their links to the section nav.</span></li>
+</ol>
+</div>
+</section>
+
+<div class="cg-flab"><span class="cg-code">B</span><h2>The basics · Mon, Oct 19, 2026 · signed in as an LCA admin</h2><span class="k-meta">Route today: /admin/clubs/:id</span><span class="k-sample">Sample data: the admin, Theo Guidry</span><span class="cg-urlchip">/admin/clubs/morgan-city-chess-club</span></div>
+<div class="cg-frame">
+<div class="k-browser-bar"><i></i><i></i><i></i><div class="k-browser-url">louisianachess.org/admin/clubs/morgan-city-chess-club</div></div>
+<header class="k-header cg-hd">
+<div class="k-wrap-wide k-header-in cg-hd-in">
+<a class="k-brand" href="#" aria-label="Louisiana Chess Association, home"><svg class="cg-rook" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span class="k-brand-name" aria-hidden="true"><b>Louisiana Chess</b><span>Association</span></span></a>
+<nav class="k-navlinks cg-nav" aria-label="Main"><a href="#">Tournaments</a><a href="#">Clubs</a><a href="#">Scholastic</a><a href="#">News</a><a href="#">Membership</a><button class="cg-navbtn" type="button" aria-expanded="false" aria-haspopup="true">About<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></button></nav>
+<a class="cg-sbtn" href="#"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg><span>Search</span><kbd class="cg-kbd" aria-hidden="true">&#8984;K</kbd></a>
+<div class="k-utility cg-util"><a class="k-ulink" href="#">Donate</a><button class="cf-my" type="button" aria-haspopup="menu" aria-expanded="false" aria-label="My LCA, nothing to do"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4.5 21c1-4 4-6 7.5-6s6.5 2 7.5 6"></path></svg><span>My LCA</span><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></button></div>
+</div>
+</header>
+<div class="cf-admin">
+<nav class="wj-side" aria-label="Admin sections">
+<div class="wj-side-h"><a href="#"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6"></path></svg>Back to My LCA</a><b>Admin</b></div>
+<a class="wj-srow" href="#">Home</a>
+<a class="wj-srow" href="#">Needs attention<span class="wj-scnt">4</span></a>
+<div class="wj-sgroup">Members</div>
+<a class="wj-srow" href="#">Members &amp; export</a>
+<a class="wj-srow" href="#">Roles &amp; access</a>
+<a class="wj-srow" href="#">Log in as a member</a>
+<div class="wj-sgroup">Tournaments</div>
+<a class="wj-srow" href="#">Tournaments</a>
+<a class="wj-srow" href="#">New tournament</a>
+<a class="wj-srow" href="#">Season schedule</a>
+<div class="wj-sgroup">Clubs</div>
+<a class="wj-srow wj-on" href="#" aria-current="page">Clubs</a>
+<div class="wj-sgroup">Content</div>
+<a class="wj-srow" href="#">News</a>
+<a class="wj-srow" href="#">Site banner</a>
+<a class="wj-srow" href="#">Festivals</a>
+<div class="wj-sgroup">Board</div>
+<a class="wj-srow" href="#">Board seats &amp; regions</a>
+<a class="wj-srow" href="#">Board inbox (every seat)</a>
+<div class="wj-sgroup">Email</div>
+<a class="wj-srow" href="#">Group email &amp; history</a>
+<div class="wj-sgroup">Site</div>
+<a class="wj-srow" href="#">Membership required for all</a>
+<a class="wj-srow" href="#">Automations &amp; health</a>
+<div class="wj-sgroup">Audit</div>
+<a class="wj-srow" href="#">Audit log</a>
+<p class="wj-sfoot"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l7.5 3v5.5c0 4.6-3.2 8.2-7.5 9.5-4.3-1.3-7.5-4.9-7.5-9.5V6L12 3z"></path></svg><span>Signed in with your second factor · Denise Fontenot</span></p>
+</nav>
+<div>
+<p class="cf-crumb"><a href="#">Admin</a><span aria-hidden="true">›</span><a href="#">Clubs</a><span aria-hidden="true">›</span><span aria-current="page">Morgan City Chess Club</span></p>
+<h1 class="cf-h1">Morgan City Chess Club <span class="k-num-badge cg-nb">1</span></h1>
+<p class="cf-sub"><span class="cg-mono" style="font-size:11.5px">louisianachess.org/clubs/morgan-city-chess-club</span><a class="k-link" href="#">See the page ↗</a><span aria-hidden="true">·</span><b>No rep named yet</b><span aria-hidden="true">·</span><span>Kept by Theo Guidry, the Bayou Region representative</span><span aria-hidden="true">·</span><span>Last saved Mon, Oct 19, 2026, 4:40&nbsp;PM</span></p>
+<div class="cf-cols">
+<div class="cf-form">
+<p class="ce-toast" role="status"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true" style="flex:none;margin-top:1px"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg><span><b>Saved</b> · live at louisianachess.org/clubs/morgan-city-chess-club · search results may take a few days to update</span></p>
+<section class="cf-basics" aria-labelledby="cf-bh">
+<div class="k-between" style="align-items:flex-start"><div><h2 id="cf-bh" class="cf-bh">The basics <span class="k-num-badge cg-nbs">2</span></h2><p class="cf-bsub">Enough for a whole page. Five fields.</p></div><span class="k-sample">Sample data: the sentence, Ray A., the email</span></div>
+<div class="cf-field"><span class="cf-lab"><span class="cf-fn">1</span>One sentence about the club</span><span class="ce-in">A friendly club for casual and rated games in Morgan City, open to every level.</span><p class="ce-count"><span>79 characters · shown as About and at the start of search results</span></p></div>
+<div class="cf-field"><span class="cf-lab"><span class="cf-fn">2</span>How the club meets, in words</span><span class="ce-in">1st, 3rd and 5th Tuesday evenings at 5:30&nbsp;PM at First Baptist Church.</span><p class="ce-help">Days, time and place as the club says them. The page shows them as words and never turns them into dates.</p></div>
+<div class="cf-field"><span class="cf-lab"><span class="cf-fn">3</span>Where</span>
+<div class="cf-where">
+<div class="cf-wcol">
+<div class="ce-f"><label>Place name</label><span class="ce-in">First Baptist Church</span></div>
+<div class="ce-f"><label>Street address</label><span class="ce-in ce-in-ph">Street, if you know it</span></div>
+<p class="ce-help">Morgan City and the Bayou Region come from LCA's club list. The pin is geocoded once on Save; drag it if it's off.</p>
+</div>
+<div class="k-map cf-wmap" role="img" aria-label="Map with the pin already on First Baptist Church in Morgan City">
+<span class="cg-river" style="left:-56px;top:-40px;width:110px;height:260px;transform:rotate(14deg)"></span>
+<span class="cg-road" style="left:0;top:40px;width:300px;height:7px"></span>
+<span class="cg-road" style="left:168px;top:0;width:7px;height:160px"></span>
+<span class="cg-road" style="left:80px;top:112px;width:220px;height:6px"></span>
+<span class="cg-mpin" style="left:192px;top:86px">1</span>
+<span class="cg-mlab" style="left:58px;top:56px">First Baptist Church</span>
+<span class="cg-mlab" style="left:8px;top:132px;font-size:11px">Drag the pin if it's off</span>
+</div>
+</div>
+</div>
+<div class="cf-g2">
+<div class="cf-field"><span class="cf-lab"><span class="cf-fn">4</span>Contact name shown on the page</span><span class="ce-in">Ray A.</span></div>
+<div class="cf-field"><span class="cf-lab"><span class="cf-fn">5</span>Email for messages</span><span class="ce-in">r•••@gmail.com</span><p class="ce-help">never shown; the Contact form relays to it</p></div>
+</div>
+</section>
+<p class="cf-more"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"></path></svg><span><b>For the club's rep, once named</b> · Photos · The club in its own words · Cost · Who is welcome · Links · Logo and colour · Club news · Club events<br>These stay off the public page until someone fills them.</span></p>
+<div class="ce-save"><button class="k-btn k-btn-gold" type="button">Save and publish</button><p>Theo Guidry, the Bayou Region representative, gets an email of what changed.</p><span class="k-num-badge cg-nbs" style="margin-left:auto">3</span></div>
+</div>
+<aside class="cf-prev" aria-label="Previews">
+<div class="ce-pc">
+<div class="k-between"><h3>The page with these basics</h3><span class="k-meta" style="font-size:12px">sticks, updates as you type</span></div>
+<div class="cf-th" role="img" aria-label="Thumbnail of the top of the bare Morgan City Chess Club page">
+<div class="cf-th-hd"><svg viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span>Louisiana Chess</span><i style="margin-left:18px"></i><i></i><i></i><i></i><i></i><i style="margin-left:auto;width:30px;background:#c8a94a"></i></div>
+<div class="cf-th-band"></div>
+<div class="cf-th-crumb">Clubs / Bayou Region / Morgan City Chess Club</div>
+<div class="cf-th-cov"><div class="cb-squares" style="width:190px;background-size:24px 24px"></div><div class="cb-shade"></div><div class="cf-th-id"><span class="cf-th-tile">MC</span><span style="max-width:250px"><b>Morgan City Chess Club</b><small>Chess club in Morgan City, Louisiana · Bayou Region</small><small>1st, 3rd and 5th Tuesday evenings at 5:30&nbsp;PM at First Baptist Church</small></span></div><div class="cf-th-btns"><span class="g">Follow</span><span>Contact</span></div></div>
+<div class="cf-th-auth">This club hasn't named a rep yet · Kept by Theo Guidry, the Bayou Region representative · Suggest an update</div>
+<div class="cf-th-nav"><b>About</b><span>When and where</span><span>Contact</span></div>
+<div class="cf-th-sec"><p class="cf-th-h"><i></i>About Morgan City Chess Club</p><p class="cf-th-lead">A friendly club for casual and rated games in Morgan City, open to every level.</p></div>
+<div class="cf-th-sec cf-th-cream"><p class="cf-th-h"><i></i>When and where Morgan City Chess Club meets</p><div class="cf-th-two"><div class="cf-th-say">1st, 3rd and 5th Tuesday evenings at 5:30&nbsp;PM at First Baptist Church.</div><div class="k-map cf-th-map"><span class="cg-river" style="left:-30px;top:-20px;width:50px;height:120px;transform:rotate(14deg)"></span><span class="cg-road" style="left:0;top:20px;width:120px;height:4px"></span><span class="cg-mpin" style="left:76px;top:44px;width:16px;height:16px;margin:-8px 0 0 -8px;font-size:8px;border-width:1.5px">1</span></div></div></div>
+</div>
+</div>
+<div class="ce-pc">
+<h3>How it shows up in a search</h3>
+<div class="cg-serp">
+<div class="cg-serp-src"><span class="cg-fav"><svg viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg></span><span><span class="cg-serp-site" style="display:block">Louisiana Chess Association</span><span class="cg-serp-url">louisianachess.org › clubs › morgan-city-chess-club</span></span></div>
+<p class="cg-serp-t">Morgan City Chess Club · Chess club in Morgan City, Louisi…</p>
+<p class="cg-serp-d" style="margin:0">A friendly club for casual and rated games in Morgan City, open to every level. Meets 1st, 3rd and 5th Tuesday evenings at 5:30&nbsp;PM at First Baptist Church.</p>
+</div>
+</div>
+<div class="ce-pc">
+<h3>When someone shares it</h3>
+<div class="cf-shrow">
+<div class="cf-ogs" role="img" aria-label="Share card: MC initials on navy, Morgan City Chess Club, Chess club in Morgan City, Louisiana"><div class="cb-squares" aria-hidden="true"></div><div class="cb-shade" aria-hidden="true"></div><span class="cf-ogs-url">louisianachess.org</span><div class="cf-ogs-in"><span class="cf-ogs-tile" aria-hidden="true">MC</span><div><b>Morgan City Chess Club</b><span class="cf-ogs-city">Chess club in Morgan City, Louisiana</span></div></div></div>
+<p class="ce-help">No photo and no logo yet, so the initials card on navy. The first photo becomes the share image.</p>
+</div>
+</div>
+</aside>
+</div>
+</div>
+</div>
+</div>
+
+<div style="height:14px"></div>
+<div class="cf-row">
+<div>
+<div class="cf-lab2"><span class="cg-code">C</span><h2>Phone · 390 × 844</h2><span class="k-meta">Tue, Oct 20, 2026 · 6:10&nbsp;PM · signed out</span></div>
+<div class="k-phone">
+<div class="k-phone-screen">
+<header class="ce-ph-app"><a class="ce-brand" href="#" aria-label="Louisiana Chess Association, home"><svg class="cg-rook" style="width:28px;height:28px" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span class="ce-bn" aria-hidden="true"><b>Louisiana Chess</b><span>Association</span></span></a><span class="ce-ibtn" aria-label="Search"><svg class="ce-i20" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg></span></header>
+<div class="cf-pcov">
+<div class="cb-squares" style="width:230px;background-size:36px 36px" aria-hidden="true"></div>
+<div class="cb-shade" aria-hidden="true"></div>
+<div class="cf-pid">
+<div class="cf-prow"><span class="cf-ptile" aria-hidden="true">MC</span><h1 class="ce-ph1">Morgan City Chess Club</h1></div>
+<p class="cf-pcity">Chess club in Morgan City, Louisiana · Bayou Region</p>
+<p class="cf-pmeet"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg><span>1st, 3rd and 5th Tuesday evenings at 5:30&nbsp;PM at First Baptist Church</span></p>
+<div class="cf-pbtns"><a class="k-btn k-btn-gold k-btn-sm" href="#">Follow</a><a class="k-btn k-btn-sm cg-btn-wline" href="#">Contact</a></div>
+</div>
+</div>
+<div class="ce-iauth">This club hasn't named a rep yet · kept by <b>Theo Guidry</b>, the Bayou Region representative · <a class="cf-sug12" href="#">Suggest an update</a><br><a class="cf-sug12" href="#">Is this your club? Ask to be its named rep</a></div>
+<div class="ce-pills"><span class="ce-pill ce-pill-on">About</span><span class="ce-pill">When and where</span><span class="ce-pill">Contact</span></div>
+<div class="ce-pscroll">
+<h2 class="ce-ih2"><span class="cg-bar" style="height:18px"></span>About Morgan City Chess Club</h2>
+<p class="ce-p" style="font-size:14.5px;color:#1a2744">A friendly club for casual and rated games in Morgan City, open to every level.</p>
+<h2 class="ce-ih2" style="margin-top:4px"><span class="cg-bar" style="height:18px"></span>When and where</h2>
+<div class="cg-say" style="padding:8px 12px;border-left-width:4px"><p style="font-size:15px;margin:0;line-height:1.45">1st, 3rd and 5th Tuesday evenings at 5:30&nbsp;PM at First Baptist Church.</p></div>
+<p class="ce-p" style="font-size:12px;color:#555c6b">As told to LCA, October 2026</p>
+<div class="k-map" style="position:relative;height:180px;flex:none;border-radius:10px" role="img" aria-label="Map with pin 1 on First Baptist Church"><span class="cg-river" style="left:-60px;top:-50px;width:120px;height:300px;transform:rotate(14deg)"></span><span class="cg-road" style="left:0;top:22px;width:340px;height:7px"></span><span class="cg-road" style="left:196px;top:0;width:7px;height:180px"></span><span class="cg-mpin" style="left:226px;top:52px">1</span><span class="cg-mlab" style="left:76px;top:41px">First Baptist Church</span></div>
+</div>
+<div class="ce-pbar"><a class="k-btn k-btn-navy k-btn-sm" href="#">Directions</a><a class="k-btn k-btn-line k-btn-sm" href="#">Message the club</a></div>
+<nav class="ce-tabs" aria-label="Main"><a class="ce-tab" href="#"><svg class="ce-i20" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4.5" width="18" height="16" rx="2"></rect><path d="M3 9.5h18M8 2.5v4M16 2.5v4"></path></svg><span>Tournaments</span></a><a class="ce-tab ce-tab-on" href="#"><svg class="ce-i20" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"></path><circle cx="12" cy="9.5" r="2.5"></circle></svg><span>Clubs</span></a><a class="ce-tab" href="#"><svg class="ce-i20" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4.5 21c1-4 4-6 7.5-6s6.5 2 7.5 6"></path></svg><span>Log in</span></a><span class="ce-tab"><svg class="ce-i20" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg><span>Menu</span></span></nav>
+<div class="ce-safe" aria-hidden="true"><i></i></div>
+</div>
+</div>
+<p class="ce-cap" style="max-width:430px">Three sections fill two screens; the club bar keeps Directions and Message the club in reach. <span class="k-sample" style="padding:2px 8px;vertical-align:middle">Sample data</span></p>
+</div>
+
+<div>
+<div class="cf-lab2"><span class="cg-code">D</span><h2>Ask to be its named rep</h2><span class="k-num-badge cg-nb">4</span><span class="k-meta">signed out, signed in and sent · from the author line</span></div>
+<div class="cf-d">
+<div class="cf-dp">
+<div><p class="ce-stl">D1 · Signed out</p><p class="cf-dnote">Is this your club? opens this sheet over the page; on a phone it rises from the bottom.</p></div>
+<div class="cf-sheet" role="dialog" aria-label="Ask to be Morgan City Chess Club's named rep">
+<h3>Ask to be Morgan City Chess Club's named rep</h3>
+<span class="cf-x" aria-label="Close"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></span>
+<p class="cf-p14">The named rep keeps the club's page: its photos, its own words, news and events. Log in first so LCA can link the page to your account.</p>
+<div class="k-row" style="gap:8px"><button class="k-btn k-btn-navy" type="button">Log in to ask</button><button class="k-btn k-btn-ghost" type="button">Not now</button></div>
+</div>
+</div>
+<div class="cf-dp">
+<div><p class="ce-stl">D2 · Signed in · Ray Aucoin</p><p class="cf-dnote">The same sheet once he has logged in. Nothing about his age, school or money is asked.</p><span class="k-sample" style="margin-top:8px">Sample data: Ray Aucoin</span></div>
+<div class="cf-sheet">
+<h3>Ask to be Morgan City Chess Club's named rep</h3>
+<span class="cf-x" aria-label="Close"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></span>
+<div style="display:grid;grid-template-columns:220px minmax(0,1fr);gap:14px;align-items:start">
+<div class="ce-f"><label>Your name</label><span class="cf-ro">Ray Aucoin<small>from your account</small></span></div>
+<div class="ce-f"><label>Anything the representative should know? (optional)</label><span class="ce-in ce-in-ph" style="min-height:36px;padding:7px 11px">e.g. I've run the Tuesday nights since spring</span></div>
+</div>
+<div class="ce-f"><label>How are you connected to the club?</label><div class="ce-chips" role="radiogroup"><span class="ce-chip ce-chip-on">I run it</span><span class="ce-chip">I help run it</span><span class="ce-chip">I'd keep the page for the club</span><span class="ce-chip">Something else</span></div></div>
+<div style="display:flex;align-items:center;gap:14px"><button class="k-btn k-btn-navy k-btn-sm" type="button" style="flex:none">Send request</button><p class="cf-grey13">Goes to Theo Guidry, the Bayou Region representative, and the LCA admins. An LCA admin names the rep after checking with the club.</p></div>
+</div>
+</div>
+<div class="cf-dp">
+<div><p class="ce-stl">D3 · Sent</p><p class="cf-dnote">His side on the left; the admin's side on the right, a row in Needs attention as Work-J draws it.</p></div>
+<div class="cf-d3">
+<p class="ce-done"><b>Request sent.</b> Theo Guidry and the LCA admins have it, and you'll get an email when you're named. The page doesn't change until then.</p>
+<div class="cf-q">
+<div class="cf-qh"><span>Needs attention</span><span class="k-sample" style="font-weight:600">Sample data</span></div>
+<div class="cf-qrow">
+<div><p class="wj-qt">Rep request · Morgan City Chess Club</p><p class="wj-qs">Ray Aucoin · I run it · Tue, Oct 20</p><div class="wj-qm"><span class="k-tag wj-tag-club">Rep request</span><span>Also sent to Theo Guidry</span></div></div>
+<div class="cf-qact"><button class="k-btn k-btn-gold k-btn-sm" type="button">Name as rep</button><button class="k-btn k-btn-line k-btn-sm" type="button">Decline</button></div>
+</div>
+<p class="ce-help" style="margin-top:4px">Name as rep sets the club on his account, today's club rep designation (/admin › Members).</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<div style="height:18px"></div>
+<div class="cg-flab" style="margin-top:0"><span class="cg-code">E</span><h2>The page as it fills</h2><span class="k-meta"><b style="color:#1a2744">States the two boards show:</b> bare, signed out (A, C) · being filled in (B) · a rep invited and named (D, E1) · filling block by block (E2 to E4) · a seat open (E5)</span></div>
+<div class="cf-erow">
+<article class="cf-ec">
+<div class="cf-eh"><span class="cf-el">E1</span><span class="k-row-sm" style="gap:6px"><span class="k-num-badge cg-nbs">5</span><span class="k-sample">Sample data</span></span></div>
+<h3>Named, nothing added yet</h3>
+<p class="cf-ed">Wed, Oct 21, 2026</p>
+<p class="cf-small" style="font-size:11.5px;color:#555c6b">Signed in as Ray, on the public page:</p>
+<div class="cf-ban"><b>This is your club's page</b><span class="cf-mbtn">Edit</span></div>
+<div class="cf-mauth"><span class="cf-ok" aria-hidden="true"><svg class="k-i-sm" style="width:11px;height:11px" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span><span><b>Kept by the club's rep, Ray A.</b> · As told to LCA, October 2026 · Suggest an update</span></div>
+<div class="k-row" style="gap:10px;align-items:flex-start;flex-wrap:nowrap"><div class="cf-mrail" style="width:112px;flex:none"><p>My LCA</p><span>Today</span><span class="on">You</span><span>Your club</span></div><p class="cf-small" style="font-size:11.5px">The Is this your club? line is gone. His My LCA gains Your club, and with it the rail. Today is empty, so it opens on You.</p></div>
+</article>
+<article class="cf-ec">
+<div class="cf-eh"><span class="cf-el">E2</span><span class="k-row-sm" style="gap:6px"><span class="k-num-badge cg-nbs">6</span><span class="k-sample">Sample data</span></span></div>
+<h3>The first photo</h3>
+<div class="cf-mini">
+<div class="cf-mcov"><img src="/_blob/31327c563c905dc86de6c8fa4018ecd0" alt="Tuesday evening games at First Baptist Church"><div class="cb-shade"></div><div class="cf-mcov-id"><span class="cf-mtile">MC</span><b>Morgan City Chess Club</b></div></div>
+<div class="cf-mnav"><b>About</b><span>When and where</span><em>Photos</em><span>Contact</span></div>
+</div>
+<p class="cf-small"><b>alt:</b> Tuesday evening games at First Baptist Church, his caption.</p>
+<p class="cf-small">The cover becomes the photo at 340, and the meeting line leaves the cover for When and where. Photos and its nav link appear (tinted here as new); the share card becomes the photo.</p>
+</article>
+<article class="cf-ec">
+<div class="cf-eh"><span class="cf-el">E3</span><span class="k-sample">Sample data</span></div>
+<h3>The club's own words</h3>
+<div class="cf-mini">
+<div class="cf-msec">
+<p class="cf-mh"><i></i>About Morgan City Chess Club</p>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:7px"><div class="cf-mbars"><i style="width:100%"></i><i style="width:94%"></i><i style="width:98%"></i><i style="width:76%"></i><i style="width:90%"></i></div><div class="cf-mcards" style="grid-template-columns:1fr"><span>COST<i></i><i style="width:70%"></i></span><span>WHO IS WELCOME<i></i><i style="width:80%"></i></span></div></div>
+</div>
+<div class="cf-msec" style="background:#fbfaf6;border-top:1px solid #ecebe6">
+<p class="cf-mh"><i></i>When and where</p>
+<p class="cf-mtold">As told by the club, updated November 2026</p>
+</div>
+</div>
+<p class="cf-small">About gains its paragraphs, with the Cost and Who is welcome cards beside them. The When and where line reads As told by the club, updated November 2026.</p>
+</article>
+<article class="cf-ec">
+<div class="cf-eh"><span class="cf-el">E4</span><span class="k-sample">Sample data</span></div>
+<h3>A club event</h3>
+<div class="cf-mini">
+<div class="cf-mnav"><b>About</b><span>When and where</span><em>Events 1</em><span>Contact</span></div>
+<div class="cf-mev">
+<div class="cf-mev-top"><span class="k-date k-date-navy" style="width:38px;min-height:42px;border-radius:7px"><b style="font-size:16px">17</b><span style="font-size:9.5px;margin-top:2px">Nov</span></span><div class="cf-evt"><b>Morgan City Tuesday Quads</b><span class="cf-small" style="font-size:11.5px">Tue, Nov 17, 2026 · Club event</span></div></div>
+<span class="k-row-sm" style="gap:6px;flex-wrap:nowrap"><span class="k-tag k-tag-open">Registration open</span><span class="cf-small" style="font-size:11.5px;white-space:nowrap"><b>3 of 12</b> registered</span></span>
+<span class="k-row-sm" style="gap:6px;flex-wrap:nowrap"><span class="cf-small" style="font-size:11.5px;white-space:nowrap">$10 entry</span><span class="k-btn k-btn-gold" style="min-height:26px;padding:0 9px;font-size:11.5px;border-radius:6px">Register</span><span class="k-link" style="font-size:11.5px;text-underline-offset:3px;white-space:nowrap">Add to calendar</span></span>
+</div>
+</div>
+<p class="cf-small">Events appears with Register and the count, and the nav gains Events 1 (tinted here as new).</p>
+<p class="cf-small" style="font-size:12px;color:#555c6b">Club reps may set an entry fee (K, Mon, Oct 19).</p>
+</article>
+<article class="cf-ec">
+<div class="cf-eh"><span class="cf-el">E5</span></div>
+<h3>The Bayou Region seat opens, no rep named</h3>
+<div class="cf-mauth"><span class="cb-info" style="width:16px;height:16px" aria-hidden="true"><svg class="k-i-sm" style="width:11px;height:11px" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"></circle><path d="M12 11v6M12 7.5v.5"></path></svg></span><span><b>This club hasn't named a rep yet</b> · kept by LCA admins until the Bayou Region seat is filled · Suggest an update</span></div>
+<p class="cf-small">Suggest an update and rep requests reach the LCA admins while the seat is open, as open seats do in Work-J's Needs attention.</p>
+</article>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":2950}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>
