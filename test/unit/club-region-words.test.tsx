@@ -123,10 +123,10 @@ describe('a club card on the public Clubs page', () => {
 
     // A club with no region has the city alone on that line.
     expect(screen.getByText('Example Town, LA').className.split(' ')).toContain('break-words')
-    // The meeting line still keeps to one line, and the links are as before.
+    // The meeting line wraps as this line does since K's decision 4 (clubs-page-narrow.test.tsx holds it), and the links are as before.
     const meeting = screen.getByText('Tuesdays at 7:00 PM')
-    expect(meeting.className).toBe('truncate')
-    expect(meeting.parentElement?.className).toBe('flex items-center gap-1.5')
+    expect(meeting.className).toBe('min-w-0 break-words')
+    expect(meeting.parentElement?.className).toBe('flex items-start gap-1.5')
     expect(screen.getAllByRole('link', { name: 'Visit club' })).toHaveLength(2)
   })
 })
