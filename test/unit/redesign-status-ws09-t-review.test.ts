@@ -156,8 +156,8 @@ describe('REDESIGN_STATUS.md, WS09 checkpoint T: the review of the whole and its
     expect(ws09.split(`\n${BLOCK}\n`)).toHaveLength(2)
     const headings = ws09.split('\n').filter((l) => l.startsWith('### '))
     expect(headings[headings.indexOf(CHECKPOINT) + 1]).toBe(BLOCK)
-    // A later step writes its block before checkpoint T's section's successor, so the next heading is read only while WS09 step 9 is the latest.
-    if (latestStep === 9) expect(headings[headings.indexOf(BLOCK) + 1]).toBe('### WS09 decisions')
+    // A later step writes its block before checkpoint T's section's successor, so the next heading is read only while WS09 step 9 is the latest, passing over the merge of checkpoint S's Clubs page fix.
+    if (latestStep === 9) expect(headings.slice(headings.indexOf(BLOCK) + 1).find((h) => h !== '### WS09 checkpoint T: the Clubs page fix brought in')).toBe('### WS09 decisions')
     expect(headings.indexOf(STEP9)).toBeLessThan(headings.indexOf(BLOCK))
   })
 
@@ -239,7 +239,7 @@ describe('REDESIGN_STATUS.md, WS09 checkpoint T: the review of the whole and its
     ]) expect(pins, piece).toContain(piece)
     expect(read('test/unit/redesign-status-ws09-step4.test.ts')).toContain('if (latestStep === 4 || file !== \'test/unit/club-tables-lagging-run.test.ts\') expect(writtenCount(files, file), file).toBe(casesIn(file))')
     const step9 = read('test/unit/redesign-status-ws09-step9.test.ts')
-    expect(step9).toContain('.find((h) => h !== \'### WS09 checkpoint T: the review of the whole and its fixes\')).toBe(LISTS[0])')
+    expect(step9).toContain('.find((h) => h !== \'### WS09 checkpoint T: the review of the whole and its fixes\' && h !== \'### WS09 checkpoint T: the Clubs page fix brought in\')).toBe(LISTS[0])')
     expect(step9).toContain('focusBox.current = bare.inputId')
     expect(read('test/unit/club-editor.test.tsx').match(/toldUpdatedAt/g)).toHaveLength(4)
     expect(read('test/unit/club-editor-edges.test.tsx').match(/toldUpdatedAt: null/g)).toHaveLength(1)

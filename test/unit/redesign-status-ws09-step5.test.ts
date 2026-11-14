@@ -75,6 +75,8 @@ const statusLine = ws09.split('\n').find((l) => l.startsWith('**Status:**')) ?? 
 const checksLine = block.split('\n').find((l) => l.startsWith('- Checks:')) ?? ''
 const mapItem = (id: string) => entries(map).find((l) => l.startsWith(`- **${id}.**`)) ?? ''
 const latestStep = Math.max(0, ...[...ws09.matchAll(/^### WS09 step (\d+): /gm)].map((m) => Number(m[1])))
+/** The section's latest block: the heading straight before the four lists. */
+const latestBlock = ((h) => h[h.indexOf(LISTS[0]) - 1] ?? '')(ws09.split('\n').filter((l) => l.startsWith('### ')))
 
 const SEED = 'migrations/0067_club_pages_seed.sql'
 const SHEET = 'scripts/db/club-seed-sheet.ts'
@@ -152,13 +154,13 @@ describe('REDESIGN_STATUS.md, WS09 step 5: the block and the Status line', () =>
     expect([...at].sort((a, b) => a - b)).toEqual(at)
     const headings = ws09.split('\n').filter((l) => l.startsWith('### '))
     expect(headings[headings.indexOf(STEP_4) + 1]).toBe(STEP)
-    if (latestStep === 5) expect(headings.slice(headings.indexOf(STEP) + 1).find((h) => !h.startsWith('### WS09 checkpoint S, after K\'s answers: '))).toBe(LISTS[0])
+    if (latestStep === 5) expect(headings.slice(headings.indexOf(STEP) + 1).find((h) => !h.startsWith('### WS09 checkpoint S, after K\'s answers: ') && !h.startsWith('### WS09 checkpoint S, after K\'s second answer: '))).toBe(LISTS[0])
   })
 
   it('gives the Status line this step\'s tail while this step is the latest', () => {
     expect(latestStep).toBeGreaterThanOrEqual(5)
     const tail = statusLine.slice(statusLine.indexOf('checkpoint Z for steps 36 to 38); ') + 'checkpoint Z for steps 36 to 38); '.length)
-    if (latestStep === 5) expect(tail).toBe('checkpoint S waits for its pull request; steps 1 to 5 and K\'s answers to its review are built.')
+    if (latestStep === 5 && latestBlock.startsWith('### WS09 checkpoint S, after K\'s answers: ')) expect(tail).toBe('checkpoint S waits for its pull request; steps 1 to 5 and K\'s answers to its review are built.')
     expect(tail).toMatch(/\bbuilt\.$/)
   })
 

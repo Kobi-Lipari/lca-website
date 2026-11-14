@@ -73,6 +73,8 @@ const followUps = ws09.slice(ws09.indexOf(`\n${LISTS[3]}\n`) + 1)
 const statusLine = ws09.split('\n').find((l) => l.startsWith('**Status:**')) ?? ''
 const checksLine = block.split('\n').find((l) => l.startsWith('- Checks:')) ?? ''
 const latestStep = Math.max(0, ...[...ws09.matchAll(/^### WS09 step (\d+): /gm)].map((m) => Number(m[1])))
+/** The section's latest block: the heading straight before the four lists. */
+const latestBlock = ((h) => h[h.indexOf(LISTS[0]) - 1] ?? '')(ws09.split('\n').filter((l) => l.startsWith('### ')))
 
 const MARK = 'Changed after K\'s answers: '
 /** The sentences this block added to a line: from the mark to the line's end. */
@@ -126,7 +128,7 @@ describe('REDESIGN_STATUS.md, WS09 checkpoint S after K\'s answers: the block an
     expect(ws09.split(`\n${BLOCK}\n`)).toHaveLength(2)
     const headings = ws09.split('\n').filter((l) => l.startsWith('### '))
     expect(headings[headings.indexOf(STEP_5) + 1]).toBe(BLOCK)
-    if (latestStep === 5) expect(headings[headings.indexOf(BLOCK) + 1]).toBe(LISTS[0])
+    if (latestStep === 5 && latestBlock === BLOCK) expect(headings[headings.indexOf(BLOCK) + 1]).toBe(LISTS[0])
     // Step 5's own block still holds the review and its last bullet.
     expect(step5).toContain('- **Checkpoint S\'s merge-safety review.**')
     expect(step5).toContain('- **Checks after the review\'s fixes.**')
@@ -134,7 +136,7 @@ describe('REDESIGN_STATUS.md, WS09 checkpoint S after K\'s answers: the block an
 
   it('gives the Status line its tail while WS09 step 5 is the latest step', () => {
     const tail = statusLine.slice(statusLine.indexOf('checkpoint Z for steps 36 to 38); ') + 'checkpoint Z for steps 36 to 38); '.length)
-    if (latestStep === 5) expect(tail).toBe('checkpoint S waits for its pull request; steps 1 to 5 and K\'s answers to its review are built.')
+    if (latestStep === 5 && latestBlock === BLOCK) expect(tail).toBe('checkpoint S waits for its pull request; steps 1 to 5 and K\'s answers to its review are built.')
     expect(tail).toMatch(/\bbuilt\.$/)
   })
 
@@ -234,7 +236,7 @@ describe('REDESIGN_STATUS.md, WS09 checkpoint S after K\'s answers: its claims a
     expect(flat(SEATS)).not.toContain(SEATS_OLD)
     const card = read(CARD)
     expect(card).toContain('<p className="flex items-start gap-1.5">\n            <MapPin className="mt-0.5 size-3 flex-shrink-0 text-gold-ink" />\n            <span className="min-w-0 break-words">')
-    expect(card).toContain('<span className="truncate">{club.meeting_schedule}</span>')
+    if (latestBlock === BLOCK) expect(card).toContain('<span className="truncate">{club.meeting_schedule}</span>')
     if (latestStep !== 5) return
     const line = (file: string, n: number) => read(file).split('\n')[n - 1] ?? ''
     expect(line(DASHBOARD, 340)).toContain(DASHBOARD_NEW)

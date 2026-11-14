@@ -139,15 +139,15 @@ describe('REDESIGN_STATUS.md, WS09 step 9: the block and the Status line', () =>
     const headings = ws09.split('\n').filter((l) => l.startsWith('### '))
     expect(headings[headings.indexOf(MERGE) + 1]).toBe(STEP)
     expect(headings[headings.indexOf(STEP) + 1]).toBe(CHECKPOINT)
-    // Checkpoint T's review writes its block between checkpoint T's section and the lists, so the heading after the section passes over it.
-    if (latestStep === 9) expect(headings.slice(headings.indexOf(CHECKPOINT) + 1).find((h) => h !== '### WS09 checkpoint T: the review of the whole and its fixes')).toBe(LISTS[0])
+    // Checkpoint T's review and the merge of checkpoint S's Clubs page fix write their blocks between checkpoint T's section and the lists, so the heading after the section passes over them.
+    if (latestStep === 9) expect(headings.slice(headings.indexOf(CHECKPOINT) + 1).find((h) => h !== '### WS09 checkpoint T: the review of the whole and its fixes' && h !== '### WS09 checkpoint T: the Clubs page fix brought in')).toBe(LISTS[0])
   })
 
   it('gives the Status line this step\'s tail while this step is the latest', () => {
     expect(latestStep).toBeGreaterThanOrEqual(9)
     const tail = statusLine.slice(statusLine.indexOf('checkpoint Z for steps 36 to 38); ') + 'checkpoint Z for steps 36 to 38); '.length)
     if (latestStep === 9) {
-      expect(tail).toBe('checkpoint S waits for its pull request; checkpoint T, steps 6 to 9, has had the review of the whole with its fixes and waits on its own branch for K\'s look at the pictures and K\'s own word; steps 1 to 9 and K\'s answers to checkpoint S\'s review are built.')
+      expect(tail).toBe('checkpoint S waits for its pull request; checkpoint T, steps 6 to 9, has had the review of the whole with its fixes and waits on its own branch for K\'s look at the pictures and K\'s own word; steps 1 to 9, K\'s answers to checkpoint S\'s review and K\'s second answer, the Clubs page on a narrow phone, are built.')
     }
     expect(tail).toMatch(/\bbuilt\.$/)
   })
