@@ -3,8 +3,8 @@
 // list; an admin manages any. Officers must belong to the club: their name
 // is published on the club page, so a rep can list only people who are
 // actually on their roster. A person admitted by a regional seat alone gets
-// the officers without their emails, and adds none: 403 in words
-// (functions/utils/clubs/memberView.ts).
+// the officers without their emails, and adds or removes none: 403 in
+// words (functions/utils/clubs/memberView.ts).
 import type { Env } from '../../../../types'
 import { isResponse, requireClubRep, requireClubView } from '../../../../utils/auth'
 import {

@@ -64,10 +64,15 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
        FROM members m WHERE m.club_id = ? AND m.role != 'guest' ORDER BY m.full_name`,
     ).bind(clubId).all()
 
-  // Unlike the public club endpoint, this includes hidden drafts: the people
-  // allowed here are exactly the people who manage those drafts.
-  const tournaments = await context.env.DB.prepare(
-    `SELECT id, name, date, end_date, status, is_visible, registration_status
+  // Unlike the public club endpoint, this includes hidden drafts for an LCA
+  // admin, an observer and the club's own rep, the people who manage those
+  // drafts. A person admitted by a regional seat alone gets the visible
+  // events only, as GET /api/tournaments/[id] answers them a draft with 404
+  // unless they direct it.
+  const tournaments = await context.env.DB.prepare(regionAlone
+    ? `SELECT id, name, date, end_date, status, is_visible, registration_status
+     FROM tournaments WHERE club_id = ? AND is_visible = 1 ORDER BY date DESC`
+    : `SELECT id, name, date, end_date, status, is_visible, registration_status
      FROM tournaments WHERE club_id = ? ORDER BY date DESC`,
   ).bind(clubId).all()
 
@@ -75,6 +80,8 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
     club,
     officers: regionAlone ? officersWithoutEmail(officers.results) : officers.results,
     roster: roster.results,
+    // Says the empty roster above is held back, not empty, so the admin club page can say so.
+    ...(regionAlone ? { rosterKeptBack: true } : {}),
     tournaments: tournaments.results,
   })
 }

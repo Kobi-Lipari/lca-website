@@ -372,13 +372,13 @@ describe('the roster stays back from a region\'s representative', () => {
       roster: unknown[]
       tournaments: Array<{ id: string }>
     }>()
-    expect(Object.keys(body)).toEqual(['club', 'officers', 'roster', 'tournaments'])
+    expect(Object.keys(body)).toEqual(['club', 'officers', 'roster', 'rosterKeptBack', 'tournaments'])
     expect(body.club).toMatchObject({ id: clubId, region: REGION, contact_email: 'club@example.org' })
     expect(body.roster).toEqual([])
     expect(body.officers).toHaveLength(1)
     expect(Object.keys(body.officers[0])).toEqual(['id', 'member_id', 'role', 'full_name'])
     expect(body.officers[0]).toMatchObject({ member_id: one, role: 'President', full_name: 'Player One' })
-    expect(body.tournaments.map((t) => t.id)).toEqual([draft])
+    expect(body.tournaments.map((t) => t.id), draft).toEqual([])
     holdsNoMemberData(await text(res))
 
     // The listing stays theirs to keep, and the news to read.

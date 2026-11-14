@@ -128,6 +128,8 @@ export async function adminGetClub(id: string): Promise<{
   club: ApiClubDetail
   officers: ApiAdminClubOfficer[]
   roster: ApiAdminMember[]
+  /** Set only for a person a regional seat alone admits: the empty roster is held back, not empty. */
+  rosterKeptBack?: true
   tournaments: ApiAdminClubTournament[]
 }> {
   const response = await fetch(`/api/admin/clubs/${id}`, {

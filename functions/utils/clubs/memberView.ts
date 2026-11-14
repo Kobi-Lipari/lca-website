@@ -19,8 +19,8 @@
 import { isObserver } from '../auth'
 
 /**
- * The 403 the roster endpoint, and the officers endpoint's POST, answer a
- * person admitted by the region alone.
+ * The 403 the roster endpoint, the officers endpoint's POST and the removal
+ * of an officer answer a person admitted by the region alone.
  */
 export const ROSTER_KEPT_BACK = 'A club\'s roster is kept for LCA admins and the club\'s own rep.'
 

@@ -51,7 +51,7 @@ export function AdminClubPage() {
   const [params, setParams] = useSearchParams()
 
   const [club, setClub] = useState<ApiClubDetail | null>(null)
-  const [roster, setRoster] = useState<ApiAdminMember[]>([])
+  const [roster, setRoster] = useState<ApiAdminMember[] | null>([]) // null: the roster is kept back from this person
   const [tournaments, setTournaments] = useState<ApiAdminClubTournament[]>([])
   const [officers, setOfficers] = useState<ApiAdminClubOfficer[]>([])
   const [officerForm, setOfficerForm] = useState({ memberId: '', title: '' })
@@ -114,7 +114,7 @@ export function AdminClubPage() {
           imageUrl: c.image_url ?? '',
           region: c.region ?? '',
         })
-        setRoster(clubData.roster ?? [])
+        setRoster(clubData.rosterKeptBack ? null : clubData.roster ?? [])
         setNews(newsData)
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to load club')
@@ -255,7 +255,7 @@ export function AdminClubPage() {
   const tabs: { id: ClubTab; label: string; icon: typeof Users }[] = [
     { id: 'details',     label: 'Club details',  icon: Building2  },
     { id: 'news',        label: 'News',           icon: Newspaper  },
-    { id: 'roster',      label: `Roster & officers (${roster.length})`, icon: Users },
+    { id: 'roster',      label: roster === null ? 'Roster & officers' : `Roster & officers (${roster.length})`, icon: Users },
     ...(showTournaments ? [{ id: 'tournaments' as const, label: 'Tournaments', icon: Trophy }] : []),
   ]
 
@@ -556,8 +556,47 @@ export function AdminClubPage() {
           </ViewOnlyFieldset>
         )}
 
+        {/* ── Roster & officers tab, for a person a regional seat alone admits ── */}
+        {/* The server keeps the roster and the officers' emails from them, and
+            they add and remove no officer, so the tab says so in words in
+            place of an empty roster, and lists the officers by name and role. */}
+        {tab === 'roster' && roster === null && (
+          <div className="space-y-6">
+            <div className="rounded-xl border bg-card p-6 shadow-sm">
+              <div className="mb-1 flex items-center gap-2">
+                <EyeOff className="size-5 text-muted-foreground" />
+                <h2 className="text-base font-semibold text-ink">Club roster</h2>
+              </div>
+              <p className="text-sm text-muted-foreground">
+                {'A club\'s roster is kept for LCA admins and the club\'s own rep. To add or remove an officer, ask an LCA admin or the club\'s own rep.'}
+              </p>
+            </div>
+
+            <div className="rounded-xl border bg-card p-6 shadow-sm">
+              <div className="mb-1 flex items-center gap-2">
+                <Users className="size-5 text-muted-foreground" />
+                <h2 className="text-base font-semibold text-ink">Officers</h2>
+              </div>
+              <p className="mb-4 text-sm text-muted-foreground">
+                {'Listed on the club\'s public page by name and role.'}
+              </p>
+              {officers.length > 0 ? (
+                <ul className="divide-y rounded-lg border">
+                  {officers.map((o) => (
+                    <li key={o.id} className="px-3 py-2.5">
+                      <p className="text-sm font-medium">{o.full_name} <span className="font-normal text-muted-foreground">· {o.role}</span></p>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="text-sm text-muted-foreground">No officers are listed for this club.</p>
+              )}
+            </div>
+          </div>
+        )}
+
         {/* ── Roster & officers tab ── */}
-        {tab === 'roster' && (
+        {tab === 'roster' && roster !== null && (
           <ViewOnlyFieldset>
           <div className="space-y-6">
             <div className="rounded-xl border bg-card p-6 shadow-sm">
@@ -649,7 +688,9 @@ export function AdminClubPage() {
           </ViewOnlyFieldset>
         )}
 
-        {/* ── Tournaments tab (includes hidden drafts) ── */}
+        {/* ── Tournaments tab (includes hidden drafts, except for a person a
+            regional seat alone admits, roster === null, whom the server
+            answers the published ones only) ── */}
         {tab === 'tournaments' && (
           <div className="space-y-4">
             <div className="flex flex-wrap items-center justify-between gap-2">
@@ -667,7 +708,9 @@ export function AdminClubPage() {
                 <Trophy className="mx-auto mb-3 size-8 text-muted-foreground" />
                 <p className="font-medium text-ink">No tournaments yet</p>
                 <p className="mt-1 text-sm text-muted-foreground">
-                  Tournaments you create for {club.name} will show up here, including drafts.
+                  {roster === null
+                    ? `Published tournaments of ${club.name} show up here. Drafts stay with LCA admins and the club's own rep.`
+                    : `Tournaments you create for ${club.name} will show up here, including drafts.`}
                 </p>
               </div>
             ) : (
