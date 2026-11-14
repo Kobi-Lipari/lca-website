@@ -340,7 +340,8 @@ describe('REDESIGN_STATUS.md, WS09 step 6: the Checks line', () => {
   it('counts as many cases for each new test and each changed test as the file holds', () => {
     const files = bullet(block, '- **Files.**')
     for (const file of [...NEW_TESTS, ...NEW_INTEGRATION]) expect(writtenCount(files, file), file).toBe(casesIn(file))
-    for (const [file, n] of CHANGED_TESTS) expect(casesIn(file), file).toBe(n)
+    // WS09 step 9 adds cases to club-permissions, which its own record test counts, so that count is read only while this step is the latest.
+    for (const [file, n] of CHANGED_TESTS) if (latestStep === 6 || file !== 'test/integration/club-permissions.test.ts') expect(casesIn(file), file).toBe(n)
   })
 
   it('gives unit counts that add up: the base\'s, the new file\'s and the changed files\'', () => {

@@ -7,10 +7,10 @@
 // a visible label tied to its control, and an error is words under the
 // field, tied to it. No explaining sentence sits beside a control: those
 // are behind Help (EditorHelp.tsx). While a save runs every box is read
-// only (`waiting`), and the form's status says so in words; the two ticks
-// and the colour's swatch, which cannot be read only, are marked shut
-// instead (aria-disabled, a click stopped), never disabled, so they keep the
-// focus.
+// only (`waiting`), and the form's status says so in words; the two ticks,
+// the colour's swatch and, from WS09 step 9, the region's list, which cannot
+// be read only, are marked shut instead (aria-disabled, a press stopped),
+// never disabled, so they keep the focus.
 //
 // The email's label follows clubEmailHidden. With it on, the only state
 // clubKeepers may be on in (test/unit/club-pages-switch.test.ts), it says
@@ -174,9 +174,9 @@ export function EditorBasics({
   )
 }
 
-/** A select of the editor: as tall and as ringed as its boxes. */
+/** A select of the editor: as tall and as ringed as its boxes, and shut by its aria-disabled mark as by disabled. */
 const SELECT =
-  'min-h-11 w-full rounded-md border border-input bg-background px-3 text-base ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm'
+  'min-h-11 w-full rounded-md border border-input bg-background px-3 text-base ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 aria-disabled:cursor-not-allowed aria-disabled:opacity-50 md:text-sm'
 
 /** A tick: the box with its words in one row 44px tall, the whole row its target. */
 const TICK_ROW = 'flex min-h-11 cursor-pointer items-center gap-3 text-sm text-ink'
@@ -285,7 +285,24 @@ export function EditorRest({
         {showAdminFields ? (
           <div className="space-y-1.5">
             <Label htmlFor="editor-region" className="leading-snug">Region</Label>
-            <select id="editor-region" className={SELECT} value={values.region} disabled={waiting} onChange={(e) => onChange('region', e.target.value)}>
+            {/*
+              Marked shut rather than disabled while a save runs, as the ticks
+              are: a press held for a logo's upload can start the save while
+              the list holds the focus, and a disabled list would drop it to
+              the page. A list opens on the mouse's press and changes its
+              choice by key without opening, so while a save runs the press
+              and every key but Tab are cancelled, and a choice that still
+              arrives is not taken; the editor puts the list back to the
+              region it holds. It has no state of its own to undo, so it needs
+              no stop on the way in, as a tick does. In an observer's shut
+              fieldset it is disabled as before.
+            */}
+            <select
+              id="editor-region" className={SELECT} value={values.region} aria-disabled={waiting || undefined}
+              onMouseDown={(e) => { if (waiting) e.preventDefault() }}
+              onKeyDown={(e) => { if (waiting && e.key !== 'Tab') e.preventDefault() }}
+              onChange={(e) => { if (!waiting) onChange('region', e.target.value) }}
+            >
               <option value="">No region</option>
               {REGIONS.map((r) => <option key={r} value={r}>{r}</option>)}
             </select>

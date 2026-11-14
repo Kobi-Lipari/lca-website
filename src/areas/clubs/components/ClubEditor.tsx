@@ -28,10 +28,11 @@
 // words, emptied the club's only place or removed the pin, since the save's
 // copy into today's fields never clears one; and where place 1 is emptied
 // and a second place moves up, today's pin goes with the place it belonged
-// to. While the save runs every box is read only (the pins, which cannot be
-// read only, are shut, and the ticks, the swatch and the logo are marked shut
-// without being disabled, so none of them drops the focus) and the status
-// says so in words, so nothing typed during it can be lost. Once it has saved the whole
+// to. While the save runs every box is read only, the pins' boxes too, and
+// the controls that cannot be read only (the region's list, the ticks, the
+// swatch, the logo, the pins' buttons, Remove place 2 and Add another place)
+// are marked shut without being disabled, so none of them drops the focus;
+// and the status says so in words, so nothing typed during it can be lost. Once it has saved the whole
 // form, place and pin included, is filled again from what the answer says
 // was stored, so the next press sends back exactly that. A failure is said in
 // words beside the form, keeps everything the person typed, and never shows
@@ -461,7 +462,7 @@ export function ClubEditor({
                       point={point}
                       point2={point2}
                       pickerKey={saves}
-                      disabled={viewOnly || busy}
+                      disabled={viewOnly}
                       waiting={busy}
                       second={second}
                       onChange={change}

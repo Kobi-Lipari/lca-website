@@ -371,16 +371,20 @@ describe('the club editor: Save and publish', () => {
     press()
     await waitFor(() => expect(calls()).toEqual([`PATCH ${CLUB_URL}`]))
     expect(status().textContent).toBe('Saving. The form is read only until the save is done.')
-    // The pins' boxes are shut rather than read only, from WS09 step 8 two pins. The two ticks and the colour's swatch,
-    // which a read only mark does not hold, are marked shut and not disabled, as the logo's box is, so each keeps the focus.
+    // The pins' boxes, from WS09 step 8 two pins, are read only and, from WS09 step 9, marked shut and not disabled. The two
+    // ticks and the colour's swatch, which a read only mark does not hold, are marked shut and not disabled, as the logo's
+    // box is, so each keeps the focus.
     const SHUT = 'input[id^="editor-point"]'
     const MARKED = 'input[type="checkbox"], input[type="color"], input[type="file"]'
     for (const box of form.querySelectorAll<HTMLInputElement>('input, textarea')) {
-      if (!box.matches(SHUT) && !box.matches(MARKED)) expect(box.readOnly, box.id).toBe(true)
+      if (!box.matches(MARKED)) expect(box.readOnly, box.id).toBe(true)
     }
     const shut = [...form.querySelectorAll<HTMLInputElement>(SHUT)]
     expect(shut.map((box) => box.id)).toEqual(['editor-point', 'editor-point-2'])
-    for (const box of shut) expect(box.disabled, box.id).toBe(true)
+    for (const box of shut) {
+      expect(box.disabled, box.id).toBe(false)
+      expect(box.getAttribute('aria-disabled'), box.id).toBe('true')
+    }
     const marked = [...form.querySelectorAll<HTMLInputElement>(MARKED)]
     expect(marked.map((box) => box.id)).toEqual(['editor-weekendPlay', 'editor-scholasticFriendly', 'editor-logo', 'editor-color'])
     for (const box of marked) {
@@ -390,9 +394,14 @@ describe('the club editor: Save and publish', () => {
       expect(fireEvent.click(box), box.id).toBe(false)
     }
     expect([tick('The club plays on weekends').checked, tick('Scholastic friendly').checked]).toEqual([false, false])
-    expect((screen.getByLabelText('Region') as HTMLSelectElement).disabled).toBe(true)
-    expect(field('Pin: coordinates or a Google Maps link').matches(':disabled')).toBe(true)
-    expect(screen.getByRole('button', { name: 'Remove pin' }).matches(':disabled')).toBe(true)
+    // From WS09 step 9 the region's list and the buttons of Where are marked shut, not disabled, so each keeps the focus.
+    const region = screen.getByLabelText('Region') as HTMLSelectElement
+    expect([region.disabled, region.getAttribute('aria-disabled')]).toEqual([false, 'true'])
+    expect(field('Pin: coordinates or a Google Maps link').matches(':disabled')).toBe(false)
+    for (const name of ['Remove pin', 'Remove place 2']) {
+      const button = screen.getByRole('button', { name })
+      expect([button.matches(':disabled'), button.getAttribute('aria-disabled')], name).toEqual([false, 'true'])
+    }
     // A change that still reaches a box while the save runs is not taken, so nothing is swapped for the answer unseen.
     type('One sentence about the club', 'Words typed during the save.')
     type('Place name', 'Example Annex')
@@ -1181,5 +1190,73 @@ describe('the club editor: the rest of the listing, in the one call (WS09 step 8
     await act(async () => finishSave(json(server.patch(sent))))
     await saved()
     expect(tick('The club plays on weekends').checked).toBe(true)
+  })
+
+  it('keeps the focus on the region\'s list, the pin\'s box and buttons and the second place\'s button when a press held for the logo starts its save, and none of them takes a press until it ends', async () => {
+    let finishLogo: (r: Response) => void = () => {}
+    let finishSave: (r: Response) => void = () => {}
+    let sent: Record<string, unknown> = {}
+    const server = clubSaveServer(CLUB, [PLACE_1, PLACE_2])
+    routes[`POST ${CLUB_URL}/logo`] = () => new Promise<Response>((done) => { finishLogo = done })
+    routes[`PATCH ${CLUB_URL}`] = (body) => {
+      sent = body as Record<string, unknown>
+      return new Promise<Response>((done) => { finishSave = done })
+    }
+    await openEditor('admin')
+    const pinBox = field('Pin: coordinates or a Google Maps link')
+    fireEvent.change(pinBox, { target: { value: '30.5, -91.5' } })
+    fireEvent.change(field('Logo'), { target: { files: [new File(['example'], 'logo.png', { type: 'image/png' })] } })
+    await waitFor(() => expect(calls()).toEqual([`POST ${CLUB_URL}/logo`]))
+    // A press while the logo uploads is held; the person then moves on to the region's list.
+    press()
+    const region = screen.getByLabelText('Region') as HTMLSelectElement
+    region.focus()
+    await act(async () => finishLogo(json({ imageUrl: `/api/clubs/${ID}/logo?v=7` })))
+    await waitFor(() => expect(calls()).toEqual([`POST ${CLUB_URL}/logo`, `PATCH ${CLUB_URL}`]))
+    expect(status().textContent).toContain('Saving. The form is read only until the save is done.')
+    // The list keeps the focus; its press and its keys are cancelled, but Tab, and a choice that still arrives is not taken.
+    expect(document.activeElement).toBe(region)
+    expect([region.disabled, region.getAttribute('aria-disabled')]).toEqual([false, 'true'])
+    expect(fireEvent.mouseDown(region)).toBe(false)
+    expect(fireEvent.keyDown(region, { key: 'ArrowDown' })).toBe(false)
+    expect(fireEvent.keyDown(region, { key: 'Tab' })).toBe(true)
+    fireEvent.change(region, { target: { value: 'North Louisiana' } })
+    expect(region.value).toBe('Bayou Region')
+    expect(document.activeElement).toBe(region)
+    // The pin's box keeps the focus and is read only; Enter in it, Use this and Remove pin each do nothing.
+    const pinLine = () => screen.getByText(/^Pin at /).textContent
+    expect(pinLine()).toBe('Pin at 30.10000, -91.20000')
+    pinBox.focus()
+    expect([pinBox.disabled, pinBox.readOnly, pinBox.getAttribute('aria-disabled')]).toEqual([false, true, 'true'])
+    expect(fireEvent.keyDown(pinBox, { key: 'Enter' })).toBe(false)
+    for (const name of ['Use this', 'Remove pin']) {
+      const button = screen.getByRole('button', { name }) as HTMLButtonElement
+      button.focus()
+      expect([button.disabled, button.getAttribute('aria-disabled')], name).toEqual([false, 'true'])
+      fireEvent.click(button)
+      expect(document.activeElement, name).toBe(button)
+    }
+    expect(pinLine()).toBe('Pin at 30.10000, -91.20000')
+    // Remove place 2 keeps the focus and the second place stays drawn.
+    const removePlace = screen.getByRole('button', { name: 'Remove place 2' }) as HTMLButtonElement
+    removePlace.focus()
+    expect([removePlace.disabled, removePlace.getAttribute('aria-disabled')]).toEqual([false, 'true'])
+    fireEvent.click(removePlace)
+    expect(document.activeElement).toBe(removePlace)
+    expect(field('Place 2 name').value).toBe('Example Hall')
+    await act(async () => finishSave(json(server.patch(sent))))
+    await saved()
+    // The one save sent the region and the pin as they were when it was pressed.
+    expect(patches()).toHaveLength(1)
+    expect(patches()[0].region).toBe('Bayou Region')
+    expect(placesSent()).toHaveLength(2)
+    expect(placesSent()[0].point).toEqual({ lat: 30.1, lng: -91.2 })
+    // Once the save ends the button takes a press again, and the focus never left it.
+    expect(document.activeElement).toBe(removePlace)
+    expect(removePlace.hasAttribute('aria-disabled')).toBe(false)
+    expect((screen.getByLabelText('Region') as HTMLSelectElement).hasAttribute('aria-disabled')).toBe(false)
+    fireEvent.click(removePlace)
+    expect(screen.queryByLabelText('Place 2 name')).toBeNull()
+    expect(document.activeElement).toBe(screen.getByRole('button', { name: 'Add another place' }))
   })
 })

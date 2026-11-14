@@ -316,10 +316,11 @@ describe('REDESIGN_STATUS.md, WS09 step 8: the parts', () => {
     expect(editor).toContain('const afterLogo = heldNow.current')
     const basics = codeOf(BASICS)
     expect(basics).not.toMatch(/readOnly=\{waiting \|\| undefined\}|aria-readonly/)
-    // The ticks and the swatch are marked shut, never disabled, so they keep the focus; the region's select alone stays disabled.
-    expect(basics.match(/aria-disabled=\{waiting \|\| undefined\}/g)?.length).toBe(2)
-    expect(basics.match(/ disabled=\{waiting\}/g)?.length).toBe(1)
-    expect(basics).toContain('<select id="editor-region" className={SELECT} value={values.region} disabled={waiting}')
+    // The ticks and the swatch are marked shut, never disabled, so they keep the focus; from WS09 step 9 the region's select is
+    // marked shut the same way, so it is the third such mark and nothing in the basics is disabled while a save runs.
+    expect(basics.match(/aria-disabled=\{waiting \|\| undefined\}/g)?.length).toBe(3)
+    expect(basics.match(/ disabled=\{waiting\}/g)).toBeNull()
+    expect(basics).toContain('id="editor-region" className={SELECT} value={values.region} aria-disabled={waiting || undefined}')
     expect(basics).toContain('onClick={(e) => { if (waiting) e.preventDefault() }}')
     expect(basics).toMatch(/onClickCapture=\{\(e\) => \{\n\s*if \(!waiting\) return\n\s*e\.preventDefault\(\)\n\s*e\.stopPropagation\(\)\n/)
     expect(read(META)).toContain('export const ABOUT_ROOM_MIN = 60')

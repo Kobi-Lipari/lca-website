@@ -48,6 +48,7 @@ const TournamentManagePage = lazy(() => import('@/pages/TournamentManagePage').t
 const TournamentPairingsPage = lazy(() => import('@/pages/TournamentPairingsPage').then(m => ({ default: m.TournamentPairingsPage })))
 const TournamentPrintPage = lazy(() => import('@/pages/TournamentPrintPage').then(m => ({ default: m.TournamentPrintPage })))
 const WorkspacePage = lazy(() => import('@/pages/WorkspacePage').then(m => ({ default: m.WorkspacePage })))
+const YourClubPage = lazy(() => import('@/pages/YourClubPage').then(m => ({ default: m.YourClubPage })))
 const TournamentsPage = lazy(() => import('@/pages/TournamentsPage').then(m => ({ default: m.TournamentsPage })))
 // The accessibility test build's fixture page (vite build --mode a11y, see
 // test/a11y). The build replaces import.meta.env.MODE with the mode's name,
@@ -226,7 +227,10 @@ function App() {
             {/* ProtectedRoute, not RoleProtectedRoute: an admin who has not
                 enrolled yet must be able to reach the page that fixes that. */}
             <Route path="/account/security" element={<ProtectedRoute><AccountSecurityPage /></ProtectedRoute>} />
-            <Route path="/manage/club" element={<RoleProtectedRoute roles={['club_rep']}><ManageClubPage /></RoleProtectedRoute>} />
+            {/* With clubKeepers on, /manage/club also lets an LCA admin in, to be sent to the Clubs list. */}
+            <Route path="/manage/club" element={<RoleProtectedRoute roles={FEATURES.clubKeepers ? ['club_rep', 'lca_admin'] : ['club_rep']}><ManageClubPage /></RoleProtectedRoute>} />
+            {/* Your club's page, the one club editor for whoever keeps the club (WS09 step 9); with clubKeepers off it sends everyone to the dashboard. */}
+            <Route path="/my/club/:slug" element={FEATURES.clubKeepers ? <RoleProtectedRoute keepsAClub><YourClubPage /></RoleProtectedRoute> : <Navigate to="/dashboard" replace />} />
             {/*
               ProtectedRoute, not RoleProtectedRoute: holding a board seat is an
               assignment, not a role, so there's no role value to gate on. The

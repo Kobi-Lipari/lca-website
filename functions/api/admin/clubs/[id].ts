@@ -9,7 +9,9 @@
 // editor, the club's places, saved in one batch with the keepers' stamps
 // (functions/utils/clubs/save.ts), so one press of the editor is one save
 // and one notice. With it unset both answer and write exactly what they did
-// before, and a body carrying a new field or places is refused 403.
+// before, and a body carrying a new field or places is refused 403. With it
+// set the GET also finds a club by its page address (WS09 step 9), under the
+// same check as by its id; the PATCH takes the id alone.
 import type { Env, MemberRow } from '../../../types'
 import { isResponse, requireClubRep, requireAdmin, requireClubView } from '../../../utils/auth'
 import {
@@ -61,8 +63,28 @@ export const SAVE_CLASHED = 'The page address clashed with one already kept, so 
 
 export const onRequestOptions: PagesFunction<Env> = async () => handleOptions()
 
+/**
+ * The club a GET names, while CLUB_KEEPERS_ON is set: the club whose id the
+ * value is, else the club whose page address it is now, so that Your club's
+ * page can ask by the address it shows. An id is read first, and an old
+ * address is not followed. A value that names no club comes back as it
+ * came, so the check below answers it exactly as it answers any unknown id:
+ * not found for an LCA admin or an observer, 403 for everyone else, and no
+ * person learns from the answer whether an address is in use. It reads the
+ * slug column of migration 0066, which the constant needs in any case.
+ */
+async function clubNamedBy(db: D1Database, value: string): Promise<string> {
+  const byId = await db.prepare('SELECT id FROM clubs WHERE id = ?').bind(value).first<{ id: string }>()
+  if (byId) return byId.id
+  const bySlug = await db.prepare('SELECT id FROM clubs WHERE slug = ?').bind(value).first<{ id: string }>()
+  return bySlug?.id ?? value
+}
+
 export const onRequestGet: PagesFunction<Env> = async (context) => {
-  const clubId = context.params.id as string
+  // With CLUB_KEEPERS_ON unset the value is the club's id alone, as before.
+  const clubId = CLUB_KEEPERS_ON
+    ? await clubNamedBy(context.env.DB, context.params.id as string)
+    : context.params.id as string
   const authResult = await requireClubView(context.request, context.env, clubId)
   if (isResponse(authResult)) return authResult
 

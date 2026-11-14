@@ -712,3 +712,174 @@ describe('who may save a listing and its places (criterion 9)', () => {
     expect(await places(clubId)).toEqual([])
   })
 })
+
+// WS09 step 9: Your club's page asks GET /api/admin/clubs/[id] for a club by
+// the address it shows. With CLUB_KEEPERS_ON set the GET finds a club by its
+// id or by its page address now, under the same check as by its id, and an
+// old address finds no club; with it unset a page address that is not an id,
+// and an old address, name no club, as at the base. seedClub writes no
+// slug, so each case sets one, and its old address, by hand.
+
+/** Gives the club a page address that is not its id, and an old one, as migration 0067 gives six clubs; answers both. */
+async function addresses(clubId: string): Promise<{ slug: string; old: string }> {
+  const slug = `example-chess-${clubId}`
+  const old = `example-old-${clubId}`
+  await env.DB.prepare('UPDATE clubs SET slug = ? WHERE id = ?').bind(slug, clubId).run()
+  await env.DB.prepare('INSERT INTO club_slug_history (old_slug, club_id) VALUES (?, ?)').bind(old, clubId).run()
+  return { slug, old }
+}
+
+/** Asks the GET for the value as the person, and answers its status and its text. */
+async function getAs(who: string | undefined, aal: 'aal1' | 'aal2', value: string): Promise<{ status: number; body: string }> {
+  const res = await invoke(adminClubGet, { ...(who ? { as: who } : {}), aal, params: { id: value } })
+  return { status: res.status, body: await text(res) }
+}
+
+describe('Your club\'s page asks for a club by its page address (WS09 step 9)', () => {
+  it('with CLUB_KEEPERS_ON unset, a page address that is not the club\'s id and an old address name no club, as at the base: not found for an LCA admin and an observer, 403 for the rest', async () => {
+    const { clubId, rep, admin } = await exampleClub()
+    const { slug, old } = await addresses(clubId)
+    const holder = await seedMember()
+    await regionalSeat(holder)
+    const observer = await seedMember({ role: 'lca_observer' })
+    for (const value of [slug, old]) {
+      for (const [who, aal, status, error] of [
+        [admin, 'aal2', 404, 'Club not found'], [observer, 'aal1', 404, 'Club not found'], [rep, 'aal2', 403, 'Forbidden'], [holder, 'aal1', 403, 'Forbidden'],
+      ] as const) {
+        const asked = await getAs(who, aal, value)
+        // The base's answer to such a value is its answer to an id no club has.
+        expect(asked, `${who} ${value}`).toEqual(await getAs(who, aal, `no-club-${clubId}`))
+        expect([asked.status, JSON.parse(asked.body)], `${who} ${value}`).toEqual([status, { error }])
+      }
+    }
+    // By the id each of them gets the answer they got before this step.
+    expect((await getAs(admin, 'aal2', clubId)).body).toBe(await todaysClubAnswer(clubId))
+    expect((await getAs(rep, 'aal2', clubId)).body).toBe(await todaysClubAnswer(clubId))
+    expect((await getAs(holder, 'aal1', clubId)).body).toBe(await baseRegionAloneAnswer(clubId))
+  })
+
+  it('with CLUB_KEEPERS_ON set, an LCA admin, the club\'s rep and the region\'s representative find the club by its page address, with the answer they get by its id', async () => {
+    flags.keepersOn = true
+    // Read here rather than at the top, so that every line above keeps the place the earlier record tests pin it at.
+    const { adminClubResponseSchema } = await import('../../domain/contracts')
+    const { clubId, rep, admin } = await exampleClub()
+    const { slug } = await addresses(clubId)
+    const holder = await seedMember()
+    await regionalSeat(holder)
+    for (const [who, aal] of [[admin, 'aal2'], [rep, 'aal2'], [holder, 'aal1']] as const) {
+      const byId = await getAs(who, aal, clubId)
+      const bySlug = await getAs(who, aal, slug)
+      expect(bySlug.status, who).toBe(200)
+      expect(bySlug, who).toEqual(byId)
+      const answer = JSON.parse(bySlug.body) as { club: { id: string; slug: string } }
+      expect([answer.club.id, answer.club.slug], who).toEqual([clubId, slug])
+      expect(adminClubResponseSchema.safeParse(answer).success, who).toBe(true)
+    }
+  })
+
+  it('with CLUB_KEEPERS_ON set, an observer and an LCA officer read the club by its page address as by its id', async () => {
+    flags.keepersOn = true
+    const { clubId } = await exampleClub()
+    const { slug } = await addresses(clubId)
+    for (const role of ['lca_observer', 'lca_officer']) {
+      const who = await seedMember({ role })
+      const bySlug = await getAs(who, 'aal1', slug)
+      expect(bySlug.status, role).toBe(200)
+      expect(bySlug, role).toEqual(await getAs(who, 'aal1', clubId))
+    }
+  })
+
+  it('with CLUB_KEEPERS_ON set, by its page address as by its id the GET refuses 403 another region\'s representative, another club\'s rep, a one-event director, a member, a seat holder whose term has ended, a guest and a child account', async () => {
+    flags.keepersOn = true
+    const { clubId, rep, draft } = await exampleClub()
+    const { slug } = await addresses(clubId)
+    const elsewhere = await seedMember()
+    await regionalSeat(elsewhere, ['North Louisiana'])
+    const otherRep = (await exampleClub()).rep
+    const director = await seedMember()
+    await seedTournamentDirector(draft, director)
+    const member = await seedMember({ clubId })
+    const ended = await seedMember()
+    const seat = await regionalSeat(ended)
+    await env.DB.prepare('UPDATE board_seat_assignments SET ended_at = \'2026-10-01 00:00:00\' WHERE seat_id = ?').bind(seat).run()
+    const guest = await seedMember({ role: 'guest', clubId })
+    const child = await seedMember({ clubId, fullName: 'Player Junior' })
+    await env.DB.prepare('UPDATE members SET guardian_id = ? WHERE id = ?').bind(rep, child).run()
+    for (const [label, who] of [
+      ['another region\'s representative', elsewhere], ['another club\'s rep', otherRep], ['a one-event director', director], ['a member', member],
+      ['a seat holder whose term has ended', ended], ['a guest', guest], ['a child account', child],
+    ] as const) {
+      const bySlug = await getAs(who, 'aal1', slug)
+      expect(bySlug, label).toEqual({ status: 403, body: JSON.stringify({ error: 'Forbidden' }) })
+      expect(bySlug, label).toEqual(await getAs(who, 'aal1', clubId))
+    }
+  })
+
+  it('with CLUB_KEEPERS_ON set, an old address finds no club and never another: not found for an LCA admin, 403 for the club\'s rep and the region\'s representative', async () => {
+    flags.keepersOn = true
+    const { clubId, rep, admin } = await exampleClub()
+    const { old } = await addresses(clubId)
+    const other = await exampleClub()
+    await addresses(other.clubId)
+    const holder = await seedMember()
+    await regionalSeat(holder)
+    for (const [who, aal, status, error] of [[admin, 'aal2', 404, 'Club not found'], [rep, 'aal2', 403, 'Forbidden'], [holder, 'aal1', 403, 'Forbidden']] as const) {
+      const asked = await getAs(who, aal, old)
+      expect([asked.status, JSON.parse(asked.body)], who).toEqual([status, { error }])
+      expect(asked, who).toEqual(await getAs(who, aal, `no-club-${clubId}`))
+      for (const id of [clubId, other.clubId]) expect(asked.body, `${who} ${id}`).not.toContain(id)
+    }
+  })
+
+  it('with CLUB_KEEPERS_ON set, a value is read as an id before a page address, so it never leads past the club whose id it is', async () => {
+    flags.keepersOn = true
+    const { clubId, admin } = await exampleClub()
+    const other = (await exampleClub()).clubId
+    // No save writes this (slugLeadsElsewhere refuses it); it is written here to hold the order of the two reads.
+    await env.DB.prepare('UPDATE clubs SET slug = ? WHERE id = ?').bind(clubId, other).run()
+    const asked = await getAs(admin, 'aal2', clubId)
+    expect(asked.status).toBe(200)
+    expect((JSON.parse(asked.body) as { club: { id: string } }).club.id).toBe(clubId)
+  })
+
+  it('with CLUB_KEEPERS_ON set, a person admitted by the region alone gets no roster, no officer\'s email and no hidden draft by the page address, and is still refused adding or removing an officer', async () => {
+    flags.keepersOn = true
+    const { clubId, draft, two } = await exampleClub()
+    const { slug } = await addresses(clubId)
+    const holder = await seedMember()
+    await regionalSeat(holder)
+    const bySlug = await getAs(holder, 'aal1', slug)
+    expect(bySlug).toEqual(await getAs(holder, 'aal1', clubId))
+    holdsNoMemberData(bySlug.body)
+    const body = JSON.parse(bySlug.body) as {
+      roster: unknown[]; rosterKeptBack?: true; officers: Array<Record<string, unknown>>; tournaments: Array<{ id: string }>
+    }
+    expect([body.roster, body.rosterKeptBack]).toEqual([[], true])
+    expect(body.officers).toHaveLength(1)
+    for (const officer of body.officers) expect(officer).not.toHaveProperty('email')
+    expect(body.tournaments.map((t) => t.id)).not.toContain(draft)
+    const officerRows = async () => (await env.DB.prepare('SELECT id FROM club_officers WHERE club_id = ?').bind(clubId).all<{ id: string }>()).results
+    const [officer] = await officerRows()
+    // The officers' endpoints take the club's id alone, so the page asks them by the id the GET answers; by either value they refuse.
+    for (const value of [clubId, slug]) {
+      const added = await invoke(officersPost, { method: 'POST', as: holder, aal: 'aal1', params: { id: value }, body: { memberId: two, title: 'Secretary' } })
+      expect(added.status, value).toBe(403)
+      const removed = await invoke(officerDelete, { method: 'DELETE', as: holder, aal: 'aal1', params: { id: value, officerId: officer.id } })
+      expect(removed.status, value).toBe(403)
+    }
+    expect(await officerRows()).toEqual([officer])
+  })
+
+  it('role safety: signed out, the GET by a page address answers 401, with CLUB_KEEPERS_ON set and unset', async () => {
+    const { clubId } = await exampleClub()
+    const { slug, old } = await addresses(clubId)
+    for (const on of [false, true]) {
+      flags.keepersOn = on
+      for (const value of [slug, old, clubId]) {
+        const asked = await getAs(undefined, 'aal2', value)
+        expect(asked.status, `${on} ${value}`).toBe(401)
+        expect(asked.body, `${on} ${value}`).not.toContain(clubId)
+      }
+    }
+  })
+})

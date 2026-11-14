@@ -135,7 +135,13 @@ export type ApiClubListing = ApiClubDetail & Partial<Omit<AdminClubResponse['clu
 /** One of the club's places, first place first, as the admin endpoints answer it. */
 export type ApiClubPlace = ClubPlace
 
-/** GET /api/admin/clubs/:id: club reps (own club), the region's representative and admins. */
+/**
+ * GET /api/admin/clubs/:id: club reps (own club), the region's representative
+ * and admins. While CLUB_KEEPERS_ON is set on the server the value may be the
+ * club's page address as well as its id (Your club's page asks by it). The
+ * value is sent as one part of the path, so a typed address never reaches
+ * another endpoint.
+ */
 export async function adminGetClub(id: string): Promise<{
   club: ApiClubListing
   officers: ApiAdminClubOfficer[]
@@ -146,7 +152,7 @@ export async function adminGetClub(id: string): Promise<{
   /** Answered only while CLUB_KEEPERS_ON is set on the server. */
   places?: ApiClubPlace[]
 }> {
-  const response = await fetch(`/api/admin/clubs/${id}`, {
+  const response = await fetch(`/api/admin/clubs/${encodeURIComponent(id)}`, {
     headers: await authHeaders(),
   })
   return handleResponse(response)

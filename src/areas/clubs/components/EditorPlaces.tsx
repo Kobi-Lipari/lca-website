@@ -10,7 +10,9 @@
 // this place empties it and folds it away, the focus going back to Add
 // another place. Both go with the rest on every save (ClubEditor.tsx), since
 // the save replaces every place the club has. While a save runs the boxes
-// are read only and the pickers are shut (`waiting`, `disabled`).
+// are read only, and the pickers' boxes and buttons, Remove place 2 and Add
+// another place are marked shut (`waiting`), never disabled, so none of them
+// drops the focus (WS09 step 9); `disabled` is the observer's shut form.
 import { useEffect, useRef } from 'react'
 
 import { Button } from '@/components/ui/button'
@@ -18,6 +20,14 @@ import { ClubLocationPicker } from '@/areas/clubs/components/ClubLocationPicker'
 import { EditorField, type Differs } from '@/areas/clubs/components/EditorBasics'
 import type { EditorField as FieldName, EditorValues } from '@/areas/clubs/editor'
 import type { LatLng } from '@/areas/clubs/mapLocation'
+
+/**
+ * A button of Where: 44px tall, and shut by its aria-disabled mark as by
+ * disabled. While a save runs it is marked shut, not disabled, as the ticks
+ * are, so it keeps the focus; a press then does nothing. A button has no
+ * state of its own to undo, so the press is refused in its own handler.
+ */
+const SHUT_BUTTON = 'min-h-11 aria-disabled:cursor-not-allowed aria-disabled:opacity-50'
 
 export function EditorPlaces({
   clubName, values, errors, differs, point, point2, pickerKey, disabled, waiting, second, onChange, onPoint, onPoint2, onSecond,
@@ -33,8 +43,9 @@ export function EditorPlaces({
   point2: LatLng | null
   /** Changes after each save, so the pickers are drawn afresh from the points the save stored; the boxes keep their focus. */
   pickerKey: number
+  /** The observer's shut form: every control disabled. */
   disabled?: boolean
-  /** A save is under way: the boxes are read only until it ends. */
+  /** A save is under way: the boxes are read only and the rest marked shut until it ends. */
   waiting?: boolean
   /** Whether the second place is drawn. */
   second: boolean
@@ -82,6 +93,7 @@ export function EditorPlaces({
         latitude={point?.lat}
         longitude={point?.lng}
         disabled={disabled}
+        waiting={waiting}
         bare={{ inputId: 'editor-point', onChange: onPoint }}
       />
       {second ? (
@@ -108,19 +120,28 @@ export function EditorPlaces({
             latitude={point2?.lat}
             longitude={point2?.lng}
             disabled={disabled}
+            waiting={waiting}
             bare={{ inputId: 'editor-point-2', onChange: onPoint2, place: 'place 2' }}
           />
           <Button
-            type="button" variant="outline" className="min-h-11" disabled={disabled}
-            onClick={() => { focusNext.current = 'add'; onSecond(false) }}
+            type="button" variant="outline" className={SHUT_BUTTON} disabled={disabled} aria-disabled={waiting || undefined}
+            onClick={() => {
+              if (waiting) return
+              focusNext.current = 'add'
+              onSecond(false)
+            }}
           >
             Remove place 2
           </Button>
         </fieldset>
       ) : (
         <Button
-          ref={addButton} type="button" variant="outline" className="min-h-11" disabled={disabled}
-          onClick={() => { focusNext.current = 'name'; onSecond(true) }}
+          ref={addButton} type="button" variant="outline" className={SHUT_BUTTON} disabled={disabled} aria-disabled={waiting || undefined}
+          onClick={() => {
+            if (waiting) return
+            focusNext.current = 'name'
+            onSecond(true)
+          }}
         >
           Add another place
         </Button>

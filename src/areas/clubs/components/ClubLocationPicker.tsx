@@ -10,7 +10,11 @@
 // same map and pasted coordinates bare: no heading, no words and no save of
 // its own, with each new point handed to the form, which saves it with the
 // rest on Save and publish. A second place's picker names its place in its
-// label, its buttons and its line, so each of the two reads apart.
+// label, its buttons and its line, so each of the two reads apart. While
+// the editor saves, the bare picker is marked shut (`waiting`) and not
+// disabled, so its box and its buttons keep the focus: the box is read
+// only, a press of a button or Enter in the box does nothing, and the map
+// takes no click or drag (WS09 step 9).
 import { useEffect, useRef, useState } from 'react'
 import { MapPin } from 'lucide-react'
 
@@ -40,13 +44,18 @@ export interface BarePicker {
   place?: string
 }
 
+/** A control of the bare picker, shut by its aria-disabled mark as by disabled. */
+const SHUT = 'min-h-11 aria-disabled:cursor-not-allowed aria-disabled:opacity-50'
+
 export function ClubLocationPicker({
-  clubName, latitude, longitude, disabled, onSave, bare,
+  clubName, latitude, longitude, disabled, waiting, onSave, bare,
 }: {
   clubName: string
   latitude: number | null | undefined
   longitude: number | null | undefined
   disabled?: boolean
+  /** The editor's save is under way: the bare picker is marked shut, never disabled, and takes no new point. */
+  waiting?: boolean
   /** Saves the location (null removes it); resolves once saved. Today's card alone calls it. */
   onSave?: (location: LatLng | null) => Promise<void>
   /** Draws the map and the coordinates box alone, for the club editor's form. */
@@ -69,10 +78,11 @@ export function ClubLocationPicker({
   const markerRef = useRef<google.maps.Marker | null>(null)
   // The map's click listener reads this, so it sees the latest value without
   // the map being made again. Updated after each render, not during one.
-  const disabledRef = useRef(disabled)
+  const shut = !!disabled || !!waiting
+  const disabledRef = useRef(shut)
   useEffect(() => {
-    disabledRef.current = disabled
-  }, [disabled])
+    disabledRef.current = shut
+  }, [shut])
 
   // The editor hears of each new point after the render that draws it.
   const onChange = useRef(bare?.onChange)
@@ -131,7 +141,7 @@ export function ClubLocationPicker({
         optimized: false,
         map: mapRef.current,
         position: draft,
-        draggable: !disabled,
+        draggable: !shut,
         icon: { url: PIN, scaledSize: new g.Size(34, 45), anchor: new g.Point(17, 45) },
         title: 'Drag to adjust',
       })
@@ -143,10 +153,11 @@ export function ClubLocationPicker({
     } else {
       markerRef.current.setPosition(draft)
     }
-    markerRef.current.setDraggable(!disabled)
-  }, [loaded, draft, disabled])
+    markerRef.current.setDraggable(!shut)
+  }, [loaded, draft, shut])
 
   function applyPasted() {
+    if (waiting) return
     const parsed = parseLocation(paste)
     if (!parsed) {
       setPasteError('Couldn’t find coordinates in that. Paste something like 30.4515, -91.1871 or a Google Maps link.')
@@ -198,13 +209,20 @@ export function ClubLocationPicker({
               id={bare.inputId}
               value={paste}
               disabled={disabled}
-              onChange={(e) => setPaste(e.target.value)}
+              readOnly={waiting}
+              aria-disabled={waiting || undefined}
+              onChange={(e) => { if (!waiting) setPaste(e.target.value) }}
               onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); applyPasted() } }}
               aria-invalid={pasteError ? true : undefined}
               aria-describedby={pasteError ? errorId : undefined}
-              className="min-h-11"
+              className={SHUT}
             />
-            <Button type="button" variant="outline" className="min-h-11" disabled={disabled || !paste.trim()} onClick={applyPasted}>{`Use this${of}`}</Button>
+            <Button
+              type="button" variant="outline" className={SHUT} disabled={disabled || !paste.trim()} aria-disabled={waiting || undefined}
+              onClick={applyPasted}
+            >
+              {`Use this${of}`}
+            </Button>
           </div>
           {pasteError && <p id={errorId} className="text-sm text-destructive">{pasteError}</p>}
         </div>
@@ -213,7 +231,12 @@ export function ClubLocationPicker({
             {draft ? `Pin${of} at ${draft.lat.toFixed(5)}, ${draft.lng.toFixed(5)}` : `No pin set${of}`}
           </p>
           {draft && (
-            <Button type="button" variant="outline" className="min-h-11" disabled={disabled} onClick={() => setDraft(null)}>{`Remove pin${of}`}</Button>
+            <Button
+              type="button" variant="outline" className={SHUT} disabled={disabled} aria-disabled={waiting || undefined}
+              onClick={() => { if (!waiting) setDraft(null) }}
+            >
+              {`Remove pin${of}`}
+            </Button>
           )}
         </div>
       </div>
