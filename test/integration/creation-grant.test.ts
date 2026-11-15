@@ -25,10 +25,20 @@
 //   request writing nothing; and a creator who holds no director row and has
 //   lost the grant that let them create is refused the event's setup, since
 //   canManageTournament never reads created_by.
+// - with REGION_EVENTS_ON unset, a regional seat holder's person carries no
+//   region's clubs and the grant is what it was, with no statement read for
+//   the seat; once it is set, with CREATION_ROLES_ON unset, the seat gives
+//   regional_rep to a member with no stronger grant and fills regionClubIds
+//   with the clubs of the seat's regions, its added regions among them, for
+//   a club rep, a director and an LCA admin as well; an ended term, a seat
+//   made inactive, a seat nobody holds and a guest's seat give nothing (WS09
+//   step 16).
 // CREATION_ROLES_ON is false in the tree. It is read here through a getter on
 // the mocked module and held unset, so once a handler reads it, as the trim's
 // handlers read theirs, the comparison still asks the handler and the rules
-// the same question.
+// the same question. REGION_EVENTS_ON is false in the tree too, read through
+// a getter on its own mocked module, functions/utils/clubs/pages.ts, and set
+// only in the cases that say so.
 import { env } from 'cloudflare:test'
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 import { canAssignDirectors, canChargeFees, canCreate, canDeleteDraft, type CreationGrant } from '../../domain/events/creation'
@@ -40,7 +50,7 @@ import { onRequestPost as assignDirector } from '../../functions/api/admin/tourn
 import { seedAdmin, seedClub, seedMember, seedTournament, seedTournamentDirector } from './factories'
 import { invoke, resetHarness } from './harness'
 
-const flags = vi.hoisted(() => ({ rolesOn: false }))
+const flags = vi.hoisted(() => ({ rolesOn: false, regionOn: false }))
 vi.mock('../../functions/utils/events/creation', async (importOriginal) => {
   const real = await importOriginal<typeof import('../../functions/utils/events/creation')>()
   return {
@@ -50,10 +60,20 @@ vi.mock('../../functions/utils/events/creation', async (importOriginal) => {
     },
   }
 })
+vi.mock('../../functions/utils/clubs/pages', async (importOriginal) => {
+  const real = await importOriginal<typeof import('../../functions/utils/clubs/pages')>()
+  return {
+    ...real,
+    get REGION_EVENTS_ON() {
+      return flags.regionOn
+    },
+  }
+})
 
 beforeEach(resetHarness)
 afterEach(() => {
   flags.rolesOn = false
+  flags.regionOn = false
 })
 
 let seq = 0
@@ -455,5 +475,157 @@ describe('with CREATION_ROLES_ON unset, the rules answer what today\'s handlers 
       const row = await env.DB.prepare('SELECT venue FROM tournaments WHERE id = ?').bind(event).first<{ venue: string }>()
       expect(row?.venue).toBe('Hall A')
     }
+  })
+})
+
+describe('the regional seat, REGION_EVENTS_ON set and unset, CREATION_ROLES_ON unset in both', () => {
+  // Each case has regions of its own, since the clubs of the cases before it stay in the database.
+  let REGION = ''
+  let ADDED = ''
+  beforeEach(() => {
+    REGION = `Example Bayou Region ${++seq}`
+    ADDED = `Example Prairie Region ${++seq}`
+  })
+
+  /** A regional seat covering the regions, its own and any added, and the term that gives it to the member; returns the seat's and the term's ids. */
+  async function regionalSeat(memberId: string | null, regions: readonly string[] = [REGION]): Promise<{ seat: string; term: string | null }> {
+    const seat = `seat-${++seq}-region`
+    await env.DB.prepare(
+      `INSERT INTO board_members (id, role, name, sort_order, slug, category, is_active)
+       VALUES (?, 'Example Region Representative', '', 99, ?, 'regional_rep', 1)`,
+    ).bind(seat, seat).run()
+    for (const region of regions) await env.DB.prepare('INSERT INTO seat_regions (seat_id, region) VALUES (?, ?)').bind(seat, region).run()
+    if (memberId === null) return { seat, term: null }
+    const term = `term-${++seq}`
+    await env.DB.prepare('INSERT INTO board_seat_assignments (id, seat_id, member_id) VALUES (?, ?, ?)').bind(term, seat, memberId).run()
+    return { seat, term }
+  }
+
+  /** A made-up club in the region. */
+  async function clubIn(region: string, name: string): Promise<string> {
+    const id = await seedClub({ name })
+    await env.DB.prepare('UPDATE clubs SET region = ? WHERE id = ?').bind(region, id).run()
+    return id
+  }
+
+  const sorted = (ids: readonly string[] | undefined) => [...(ids ?? [])].sort()
+
+  it('reads the region constant unset, and the roles constant unset', async () => {
+    const pages = await import('../../functions/utils/clubs/pages')
+    expect(pages.REGION_EVENTS_ON).toBe(false)
+    expect(creation.CREATION_ROLES_ON).toBe(false)
+  })
+
+  it('with REGION_EVENTS_ON unset, a seat holder\'s regionClubIds are empty and the grant is what it was, for every role, with no statement read for the seat', async () => {
+    const own = await clubIn(REGION, 'Example Chess Club')
+    for (const role of ['member', 'lca_observer', 'lca_officer', 'tournament_director', 'club_rep', 'lca_admin']) {
+      const id = await seedMember({ role, clubId: role === 'club_rep' ? own : null })
+      const member = await memberRow(id)
+      const before = await creationPerson(env.DB, member, creation.CREATION_ROLES_ON)
+      await regionalSeat(id)
+      const asked = counting()
+      const person = await creationPerson(asked.db, member, creation.CREATION_ROLES_ON)
+      expect(person, role).toEqual(before)
+      expect(person.regionClubIds ?? [], role).toEqual([])
+      expect(person.grant, role).toBe(role === 'lca_admin' ? 'admin' : role === 'club_rep' ? 'club_rep' : 'none')
+      expect(asked.asked, role).toEqual([])
+      expect(await creationGrant(env.DB, member, creation.CREATION_ROLES_ON), role).toBe(person.grant)
+    }
+  })
+
+  it('with REGION_EVENTS_ON set, a member whose only standing is the seat holds regional_rep, with the clubs of the seat\'s regions', async () => {
+    const inside = [await clubIn(REGION, 'Example Chess Club'), await clubIn(REGION, 'Example Knights Club')]
+    await clubIn('Example Far Region', 'Example Rooks Club')
+    const id = await seedMember({ fullName: 'Player One', email: 'player.one@example.org' })
+    await regionalSeat(id)
+    flags.regionOn = true
+    const member = await memberRow(id)
+    expect(await creationGrant(env.DB, member, creation.CREATION_ROLES_ON)).toBe('regional_rep')
+    const person = await creationPerson(env.DB, member, creation.CREATION_ROLES_ON)
+    expect({ ...person, regionClubIds: sorted(person.regionClubIds) }).toEqual({ grant: 'regional_rep', memberId: id, repClubId: null, regionClubIds: [...inside].sort() })
+  })
+
+  it('counts a seat\'s added regions as the region', async () => {
+    const first = await clubIn(REGION, 'Example Chess Club')
+    const added = await clubIn(ADDED, 'Example Prairie Club')
+    const id = await seedMember()
+    await regionalSeat(id, [REGION, ADDED])
+    flags.regionOn = true
+    const person = await creationPerson(env.DB, await memberRow(id), creation.CREATION_ROLES_ON)
+    expect(sorted(person.regionClubIds)).toEqual([first, added].sort())
+    expect(person.grant).toBe('regional_rep')
+  })
+
+  it('gives nothing for an ended term, a seat made inactive, a seat nobody holds, or a guest\'s seat', async () => {
+    await clubIn(REGION, 'Example Chess Club')
+    flags.regionOn = true
+    const ended = await seedMember()
+    const { term } = await regionalSeat(ended)
+    await endTerm(term!)
+    const inactive = await seedMember()
+    const { seat } = await regionalSeat(inactive)
+    await env.DB.prepare('UPDATE board_members SET is_active = 0 WHERE id = ?').bind(seat).run()
+    await regionalSeat(null)
+    const nobody = await seedMember()
+    const guest = await seedMember({ role: 'guest' })
+    await regionalSeat(guest)
+    for (const [who, id] of [['an ended term', ended], ['a seat made inactive', inactive], ['a member beside a seat nobody holds', nobody], ['a guest', guest]] as const) {
+      const person = await creationPerson(env.DB, await memberRow(id), creation.CREATION_ROLES_ON)
+      expect(person, who).toEqual({ grant: 'none', memberId: id, repClubId: null, regionClubIds: [] })
+    }
+  })
+
+  it('keeps the stronger grant for a club rep, an LCA admin and a standing director who hold a seat, the region\'s clubs beside it', async () => {
+    const own = await clubIn(REGION, 'Example Chess Club')
+    const other = await clubIn(REGION, 'Example Knights Club')
+    flags.regionOn = true
+    const rows: ReadonlyArray<readonly [string, string, string | null, CreationGrant]> = [
+      ['a club rep of a club in the region', 'club_rep', own, 'club_rep'],
+      ['an LCA admin', 'lca_admin', null, 'admin'],
+      ['a standing director, the roles constant unset', 'tournament_director', null, 'regional_rep'],
+    ]
+    for (const [who, role, clubId, grant] of rows) {
+      const id = await seedMember({ role, clubId })
+      await regionalSeat(id)
+      const person = await creationPerson(env.DB, await memberRow(id), creation.CREATION_ROLES_ON)
+      expect(person.grant, who).toBe(grant)
+      expect(person.repClubId, who).toBe(role === 'club_rep' ? own : null)
+      expect(sorted(person.regionClubIds), who).toEqual([own, other].sort())
+    }
+  })
+
+  it('reads the seat\'s clubs in one statement with the constant set, and creationGrant reads none for an LCA admin or a club rep', async () => {
+    const own = await clubIn(REGION, 'Example Chess Club')
+    flags.regionOn = true
+    const plain = await memberRow(await seedMember())
+    const person = counting()
+    await creationPerson(person.db, plain, creation.CREATION_ROLES_ON)
+    expect(person.asked).toHaveLength(1)
+    expect(person.asked[0]).toContain('FROM board_seat_assignments a JOIN board_members s ON s.id = a.seat_id JOIN seat_regions r ON r.seat_id = s.id')
+    const grant = counting()
+    await creationGrant(grant.db, plain, creation.CREATION_ROLES_ON)
+    expect(grant.asked).toHaveLength(1)
+    for (const member of [await memberRow(await seedAdmin()), await memberRow(await seedMember({ role: 'club_rep', clubId: own }))]) {
+      const asked = counting()
+      await creationGrant(asked.db, member, creation.CREATION_ROLES_ON)
+      expect(asked.asked, member.role).toEqual([])
+    }
+  })
+
+  it('with REGION_EVENTS_ON unset, a seat holder\'s create, director naming and fee save answer as today\'s handlers do', async () => {
+    const club = await clubIn(REGION, 'Example Chess Club')
+    const id = await seedMember()
+    await regionalSeat(id)
+    const title = `Region probe ${++seq}`
+    const created = await invoke(createTournament, { method: 'POST', as: id, body: { name: title, location: 'Kenner, LA', date: '2026-12-12', entryFee: 0, clubId: club } })
+    expect(created.status).toBe(403)
+    expect(await count('SELECT COUNT(*) AS n FROM tournaments WHERE name = ?', title)).toBe(0)
+    const event = await seedTournament({ clubId: club, entryFee: 0, isVisible: false })
+    await setCreator(event, id)
+    const director = await seedMember()
+    expect((await invoke(assignDirector, { method: 'POST', as: id, params: { id: event }, body: { memberId: director } })).status).toBe(403)
+    expect(await count('SELECT COUNT(*) AS n FROM tournament_directors WHERE tournament_id = ?', event)).toBe(0)
+    expect((await invoke(patchTournament, { method: 'PATCH', as: id, params: { id: event }, body: { entryFee: 35 } })).status).toBe(403)
+    expect(await count('SELECT entry_fee AS n FROM tournaments WHERE id = ?', event)).toBe(0)
   })
 })

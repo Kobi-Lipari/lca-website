@@ -15,6 +15,9 @@ export const CLUB_REFERENCES_UNCLEARED_LOG = 'member delete: the club tables of 
 /** The one log line for the run record of migration 0068 the delete could not clear; it names no member. */
 export const RUN_MARKS_UNCLEARED_LOG = 'member delete: the run record of migration 0068 could not be read; the delete goes on without it'
 
+/** The one log line for the approval column of migration 0070 the delete could not clear; it names no member. */
+export const APPROVALS_UNCLEARED_LOG = 'member delete: the approval column of migration 0070 could not be read; the delete goes on without it'
+
 export const onRequestOptions: PagesFunction<Env> = async () => handleOptions()
 
 export const onRequestDelete: PagesFunction<Env> = async (context) => {
@@ -56,6 +59,17 @@ export const onRequestDelete: PagesFunction<Env> = async (context) => {
   } catch (err) {
     if (!isMissingTableOrColumn(err)) throw err
     console.warn(RUN_MARKS_UNCLEARED_LOG)
+  }
+  // Migration 0070's one reference to a member, tournaments.approved_by, with
+  // no delete action: an event this member approved keeps its approved_at
+  // and loses the name. It runs on its own, as 0068's does, so a database
+  // that has 0068 and not yet 0070 still clears the run record; before 0070
+  // has run the column is not there, and the delete goes on with one log line.
+  try {
+    await context.env.DB.prepare('UPDATE tournaments SET approved_by = NULL WHERE approved_by = ?').bind(memberId).run()
+  } catch (err) {
+    if (!isMissingTableOrColumn(err)) throw err
+    console.warn(APPROVALS_UNCLEARED_LOG)
   }
   // Migration 0066's references to a member, none with a delete action: the
   // club pages' last save and last check keep their dates and lose the name,

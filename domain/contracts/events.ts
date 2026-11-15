@@ -238,6 +238,14 @@ const managedTournamentListItemSchema = z.strictObject({
   keep_apart: keepApartSchema,
   report_settings: storedJsonTextSchema.nullable(),
   is_state_championship: flagSchema,
+  /** 1: a regional representative's club event that waits for an LCA admin's approval before it lists (0070); 0 for every other. */
+  needs_lca_approval: flagSchema,
+  /** When the approval was asked for; null until then. */
+  approval_requested_at: storedTimestampSchema.nullable(),
+  /** When an LCA admin approved the event; null until then. */
+  approved_at: storedTimestampSchema.nullable(),
+  /** The LCA admin who approved it; null until then. */
+  approved_by: idSchema.nullable(),
   /** 1: entering needs a current LCA membership (domain/membership/requirement.ts). */
   requires_lca_membership: flagSchema,
   /** When the D22 notice went to the LCA admins, at the event's first publish; null until then. */
@@ -251,11 +259,16 @@ const managedTournamentListItemSchema = z.strictObject({
  * /api/tournaments and GET /api/tournaments/[id], carry only for the people
  * who manage the event (an LCA admin, an observer, the organizing club's rep
  * and an assigned director): created_by, keep_apart and report_settings
- * since the Phase 0 trim, and review_notified_at since WS08 step 2. For
- * anyone else, signed out included, the answer leaves these keys out rather
- * than sending them empty. The admin answers always carry them.
+ * since the Phase 0 trim, review_notified_at since WS08 step 2, and the
+ * four columns of the approval wait since WS09 step 16, approved_by a
+ * member's id among them. For anyone else, signed out included, the answer
+ * leaves these keys out rather than sending them empty. The admin answers
+ * always carry them.
  */
-export const MANAGER_ONLY_TOURNAMENT_KEYS = ['created_by', 'keep_apart', 'report_settings', 'review_notified_at'] as const
+export const MANAGER_ONLY_TOURNAMENT_KEYS = [
+  'created_by', 'keep_apart', 'report_settings', 'review_notified_at',
+  'needs_lca_approval', 'approval_requested_at', 'approved_at', 'approved_by',
+] as const
 
 /** The same keys as the mask zod's partial() takes. */
 const managerOnly = Object.fromEntries(MANAGER_ONLY_TOURNAMENT_KEYS.map((key) => [key, true])) as {
@@ -520,8 +533,9 @@ export const prizeAwardSchema = z.strictObject({
  * the live sections from the table (archived ones are not offered for
  * entry), round_schedule and the schedules from the schedule tables,
  * custom_details read into an array, and how many players wait for a spot.
- * created_by, keep_apart, report_settings and review_notified_at are there
- * only when the viewer manages the event (MANAGER_ONLY_TOURNAMENT_KEYS).
+ * created_by, keep_apart, report_settings, review_notified_at and the four
+ * columns of the approval wait are there only when the viewer manages the
+ * event (MANAGER_ONLY_TOURNAMENT_KEYS).
  */
 export const tournamentDetailSchema = adminTournamentSchema
   .partial(managerOnly)

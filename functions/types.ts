@@ -137,6 +137,14 @@ export interface TournamentRow {
   requires_lca_membership: number
   /** When the D22 notice went to the LCA admins, at the first publish; null until then (0059). */
   review_notified_at: string | null
+  /** 1 while a regional representative's club event waits for an LCA admin's approval (0070). */
+  needs_lca_approval: number
+  /** When the approval was asked for; null until then (0070). */
+  approval_requested_at: string | null
+  /** When an LCA admin approved the event; null until then (0070). */
+  approved_at: string | null
+  /** The LCA admin who approved it, a members id; null until then (0070). */
+  approved_by: string | null
 }
 
 export interface RegistrationRow {
