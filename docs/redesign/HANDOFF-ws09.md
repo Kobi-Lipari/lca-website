@@ -2,7 +2,19 @@
 
 Written on Saturday, November 14, 2026, for whoever takes this stream over. The whole project's handoff is `HANDOFF.md`; the rules where the two streams meet are `STREAMS.md`. This file holds only what is the clubs stream's own.
 
-## Where it stands (Saturday, November 14, 2026, about 10:30 PM UTC)
+## Where it stands (Sunday, November 15, 2026, about 12:50 AM UTC)
+
+- **Checkpoints S and T are merged and live.** K's word, Sunday, November 15, 2026, about 12:15 AM UTC: "You can merge." (decision 5), with clubs going ahead of the mail stream's checkpoint P by K's choice; the mail stream said no merge of its own and no fence day stood in the way, and it takes the second place.
+  - Checkpoint S: pull request 130, merged as `bd808c5` (parents `f914d8f` and `402f7f0`), build first. K turned "Apply database migrations" off, the lead merged, the Pages build went live at 12:25 AM UTC, K turned the workflow on, and on K's plain word ("Recommended", the one exception to the rule that no session changes the production database, for this run only) the lead started run 25 on `main`, green at 12:27 AM UTC: 0065, 0066 and 0067 applied. The workflow is on. Live check passed; the one read-only check of production K allowed matches the rehearsal exactly (outputs in the lead's scratch folder, not in the repository): 25 clubs with a region and a distinct short address, 18 statements, 7 About texts, 26 places all pinned, 6 old addresses, no doubled apostrophe, the ledger ending 0067. Seats and their clubs: New Orleans Metro 8, Lafayette / South Central 5, North Louisiana 3, Lake Charles / Southwestern 2, and the Baton Rouge / East Central seat with no region yet.
+  - Checkpoint T: pull request 131, merged as `9293e2f` (parents `bd808c5` and `bc13162`) once S's live check had passed. No migration. Live at 12:43 AM UTC, live check passed. Every clubs switch is off.
+  - The lead cannot turn a workflow off or on (its GitHub access lists, reads, starts, reruns and cancels runs, and merges). A later merge that carries a migration and must go build first needs K for those two clicks, or a merge message carrying `[skip actions]` and a hand start, which K was offered and did not need.
+- **Checkpoint U is building** on `redesign/ws09-clubs-u` (cut from T at `bc13162`). Step 10, `db332ab`: My region's answer and Still accurate, behind `CLUB_KEEPERS_ON`. Step 11, the My region page, is in its build. At U's pull request: bring `main` in (its tree is `bc13162`'s, so nothing changes), run the gate again, base `main`.
+- **K's standing word for the end of the stream** (decision 6): when the clubs work is done, the lead sends the first lead's session a summary written for whoever directs the whole project and asks it for the next directed work.
+- **Open with K:** the Baton Rouge seat's region in Admin, Board seats; how often a save emails the regional representatives (T10); what a first save does to today's page (P9); whether Still accurate leaves a row in the activity log (recommended: none); whether an LCA admin needs the second sign-in factor for My region (recommended: no, as the club's save). None holds up the building; the first two before `clubKeepers` goes on.
+
+What follows was written on Saturday, November 14, 2026, before the merges, and is kept for the detail it holds.
+
+## Where it stood on Saturday, November 14, 2026, about 10:30 PM UTC
 
 - **K's answers.** Decision 1 (Friday, November 13, 2026): "All recommendations are good", option (a) of all nine choices; the manifest's `k_answers` holds them, with two amendments (choice 9 moves the preview bucket's binding from step 2 to step 36). Decision 3 (Saturday): "All recommended" on checkpoint S's six choices. Decision 4 (Saturday): "Recommend is fine for everything", the scroll fix now and a slow pace from Monday, November 16, 2026. All in `ws09-k-decisions.md`.
 - **Checkpoint S is built and waits for its merge.** Branch `redesign/ws09-clubs`, draft pull request 130, cut from `main` at `af4a21c`. Steps 1 to 5, each gated and reviewed, then main brought in, the merge-safety review's fixes, and K's answers built:
@@ -92,5 +104,6 @@ As in `HANDOFF.md` ("Standing rules", "Security", "How a slice is built") and `S
 
 1. K's answers on the two choices above; build the answer to the first (the save notice's limit) at the start of checkpoint U, behind `clubKeepers`.
 2. Checkpoint U from step 10 (My region and the monthly check), at the slow pace from Monday, November 16, 2026: one run at a time, no wide panels. After the mail stream's merge, read the `src/App.tsx` count and block again as its note says.
-3. Checkpoint S's merge, on K's word as written above, then T's.
-4. Still K's: the Baton Rouge seat's region in Admin, Board seats, before S merges; the look at the check sheet and the picture sheets.
+3. Done on Sunday, November 15, 2026: checkpoint S's merge, then T's (see the top of this file).
+4. Still K's: the Baton Rouge seat's region in Admin, Board seats; the look at the picture sheets before `clubKeepers` goes on.
+5. Write both merges into the WS09 section of `REDESIGN_STATUS.md` with the next step's record.
