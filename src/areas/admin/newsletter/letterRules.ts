@@ -51,9 +51,10 @@ export function withoutHiddenCharacters(text: string): string {
 
 /**
  * A text field's value with the characters the server would refuse taken out as they arrive, typed or pasted, the
- * caret kept where it was among the characters that stay. Returns the value the field now holds.
+ * caret kept where it was among the characters that stay. Returns the value the field now holds. The field is a box of
+ * one line or one that wraps its words, as the Subject's is.
  */
-export function keepVisible(input: HTMLInputElement): string {
+export function keepVisible(input: HTMLInputElement | HTMLTextAreaElement): string {
   const raw = input.value
   const clean = withoutHiddenCharacters(raw)
   if (clean !== raw) {

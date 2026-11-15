@@ -18,8 +18,12 @@
 // - Refusals, each in words and none tried again by itself: a 409 stops the
 //   saving until the person shows the newer letter, so nothing is ever saved
 //   over another person's later save, and the person's words stay on the
-//   page; a 400 or a 413 is the server's own words; anything else is "Could
-//   not save", and the next change, or Try again, tries again.
+//   page; a 400 or a 413 is the server's own words, and the words it refused
+//   are never sent again by the page itself, as it goes, as it comes back or
+//   as it is left within the site, while a change to them sends them; anything
+//   else is "Could not save", and the next change, or Try again, tries again.
+//   A read of their letter that fails is counted, so the line says each
+//   failure again in one change of its own.
 // - The page's own saves it never heard back about: a save sent as the page
 //   went, and a save that got no answer, may each be stored at a version the
 //   page does not know. A 409 'changed' while there is one, and a page
@@ -55,14 +59,17 @@ export interface LetterDraft {
   bodyHtml: string
 }
 
-/** What the saved line says. Every time is the database's stored text, in UTC. */
+/**
+ * What the saved line says. Every time is the database's stored text, in UTC. A refusal for a newer letter counts the
+ * reads of their letter that have failed since it came, 0 for none, so each failure is said again.
+ */
 export type SaveLine =
   | { kind: 'idle' }
   | { kind: 'saving' }
   | { kind: 'saved'; at: string }
   | { kind: 'failed' }
   | { kind: 'refused'; words: string }
-  | { kind: 'conflict'; reason: 'changed' | 'sent' | 'set_aside'; by: string | null; at: string; readFailed: boolean }
+  | { kind: 'conflict'; reason: 'changed' | 'sent' | 'set_aside'; by: string | null; at: string; readFailures: number }
 
 export interface Issue {
   /** 'loading' until the first read answers, 'failed' when it could not be read, 'ready' after. */
@@ -158,6 +165,12 @@ function createKeeper(report: Report) {
    * went, and a save that got no answer. The server may hold any of them.
    */
   let unanswered: LetterDraft[] = []
+  /**
+   * The words of the last save the server refused in its own words, a 400 or a 413, with those words of the server's,
+   * until a save is answered or a letter is put on the page: the server would refuse them again, so the page never sends
+   * them again of itself.
+   */
+  let refused: { draft: LetterDraft; words: string } | null = null
   /** Moves each time a letter the server answered is put on the page, so a read made for the one before is set aside. */
   let era = 0
 
@@ -196,6 +209,7 @@ function createKeeper(report: Report) {
     wanted = false
     stopped = false
     unanswered = []
+    refused = null
     era += 1
     report.letter(draft)
     report.state(issue ? 'draft' : 'none')
@@ -224,9 +238,13 @@ function createKeeper(report: Report) {
     }
   }
 
+  /** Whether these are the words of the last save the server refused in its own words. */
+  const refusedAgain = (draft: LetterDraft) => refused !== null && same(draft, refused.draft)
+
   /**
    * Sends the words on the page now, unless a save is on the way (then it goes once that one answers), nothing changed,
-   * or a 409 stopped the saving.
+   * a 409 stopped the saving, or they are the words the server last refused in its own words, which it would refuse
+   * again: the line then says that refusal.
    */
   function startSave() {
     stopPause()
@@ -239,6 +257,10 @@ function createKeeper(report: Report) {
     const sent = trimmed(current)
     if (same(sent, stored)) {
       report.line(settled)
+      return
+    }
+    if (refused && same(sent, refused.draft)) {
+      report.line({ kind: 'refused', words: refused.words })
       return
     }
     inFlight = true
@@ -263,6 +285,7 @@ function createKeeper(report: Report) {
         stored = sent
         savedAt = answer.saved.savedAt
         unanswered = []
+        refused = null
         report.state('draft')
         report.line({ kind: 'saved', at: answer.saved.savedAt })
         // Words typed while it was on the way: at once if a save was asked for meanwhile, else after their own pause.
@@ -272,8 +295,10 @@ function createKeeper(report: Report) {
         inFlight = false
         wanted = false
         const words = error instanceof ApiError && (error.status === 400 || error.status === 413) ? error.message : ''
-        // A 400 or a 413 wrote nothing; any other failure may have been stored with no answer reaching the page.
-        if (!words) unanswered.push(sent)
+        // A 400 or a 413 wrote nothing, and its words are kept from being sent again by the page itself; any other
+        // failure may have been stored with no answer reaching the page.
+        if (words) refused = { draft: sent, words }
+        else unanswered.push(sent)
         report.line(words ? { kind: 'refused', words } : { kind: 'failed' })
       },
     )
@@ -283,7 +308,7 @@ function createKeeper(report: Report) {
   function refuse(refusal: ApiNewsletterIssueRefused) {
     stopped = true
     wanted = false
-    report.line({ kind: 'conflict', reason: refusal.reason, by: refusal.changedBy, at: refusal.changedAt, readFailed: false })
+    report.line({ kind: 'conflict', reason: refusal.reason, by: refusal.changedBy, at: refusal.changedAt, readFailures: 0 })
   }
 
   /**
@@ -342,13 +367,15 @@ function createKeeper(report: Report) {
     pause = window.setTimeout(startSave, SAVE_PAUSE_MS)
   }
 
+  /**
+   * Their letter, read and put in place of the person's words. A read that fails is counted on the line, which leaves
+   * the line as it is while the read is on its way, so a failure that repeats is said again in one change of the line.
+   */
   async function showTheirs() {
-    // A read that failed before is taken off the line first, so one that fails again puts it back and is said again.
-    report.line((now) => (now.kind === 'conflict' ? { ...now, readFailed: false } : now))
     try {
       accept(await getNewsletterIssue())
     } catch {
-      report.line((now) => (now.kind === 'conflict' ? { ...now, readFailed: true } : now))
+      report.line((now) => (now.kind === 'conflict' ? { ...now, readFailures: now.readFailures + 1 } : now))
     }
   }
 
@@ -397,7 +424,7 @@ function createKeeper(report: Report) {
       stopPause()
       if (!ready || stopped || !headers) return
       const sent = trimmed(current)
-      if (same(sent, stored)) return
+      if (same(sent, stored) || refusedAgain(sent)) return
       const body = { id, version, ...sent }
       if (new TextEncoder().encode(JSON.stringify(body)).byteLength > KEEPALIVE_MAX_BYTES) return
       unanswered.push(sent)

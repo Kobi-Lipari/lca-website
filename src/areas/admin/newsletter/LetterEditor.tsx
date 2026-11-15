@@ -36,6 +36,15 @@
 // and a press with no drag makes one step taller, for a person who cannot
 // drag; and Make bigger, which fills the window with the letter and shows
 // Make smaller in its place.
+//
+// On a tablet and a phone, under 1024 pixels (boards P19 and P20), the tools
+// are the boards' big ones, 48 pixels tall: a tablet's in one row with their
+// words, the Add menu at the row's end, as on a computer; a phone's six in a
+// row of their own, each its mark alone with its word kept for a screen
+// reader, and the Add menu with its words on the row under them. The band
+// and the letter take the boards' own sizes there. The grip and Make bigger
+// stay under the letter at every width, with a press for a person who cannot
+// drag; the boards draw only the top of those pages.
 
 import { useEffect, useId, useMemo, useRef, useState, type KeyboardEvent, type MouseEvent, type PointerEvent, type ReactNode, type RefObject } from 'react'
 import { flushSync } from 'react-dom'
@@ -86,7 +95,7 @@ const PROMPT_WORDS = {
  * with no words for a screen reader, which knows where the caret is.
  */
 const LETTER_CLASSES = [
-  'min-h-full px-5 pb-6 pt-[22px] font-serif text-[17px] leading-[1.62] text-ink outline-none sm:px-[52px]',
+  'min-h-full px-5 pb-6 pt-[22px] font-serif text-[17px] leading-[1.62] text-ink outline-none sm:px-[52px] md:max-lg:px-10 max-sm:px-4',
   '[&_p]:mb-2.5 [&_strong]:font-bold [&_a]:underline [&_a]:underline-offset-3',
   '[&_h2]:relative [&_h2]:mb-2.5 [&_h2]:mt-6 [&_h2]:font-sans [&_h2]:text-xl [&_h2]:font-bold [&_h2]:leading-tight [&_h2]:tracking-[-0.005em]',
   "[&_h2]:before:mb-3 [&_h2]:before:block [&_h2]:before:h-[3px] [&_h2]:before:w-8 [&_h2]:before:bg-gold-ink-badge [&_h2]:before:content-['']",
@@ -144,6 +153,33 @@ function scrollerOf(element: HTMLElement): HTMLElement | Window {
   return window
 }
 
+/**
+ * Brings the caret, or the words chosen, into view as the keyboard gives the letter the focus: inside the letter's own
+ * box and clear of the page's header and of the room kept at its foot, by the scroll margins every control the keyboard
+ * reaches keeps. The browser shows the letter's top as it takes the focus, which leaves a caret further down in its box
+ * out of view, or under the room kept for the bar. A mark of no size stands in for the caret while the browser scrolls.
+ */
+function showCaret(now: Editor, box: HTMLElement) {
+  let at: { top: number; bottom: number }
+  try {
+    at = now.view.coordsAtPos(now.state.selection.head)
+  } catch {
+    return
+  }
+  const room = box.getBoundingClientRect()
+  const letter = getComputedStyle(now.view.dom)
+  const mark = document.createElement('span')
+  mark.setAttribute('aria-hidden', 'true')
+  Object.assign(mark.style, {
+    position: 'absolute', left: '0', width: '1px', pointerEvents: 'none',
+    top: `${at.top - room.top + box.scrollTop}px`, height: `${Math.max(1, at.bottom - at.top)}px`,
+    scrollMarginTop: letter.scrollMarginTop, scrollMarginBottom: letter.scrollMarginBottom,
+  })
+  box.appendChild(mark)
+  mark.scrollIntoView?.({ block: 'nearest', inline: 'nearest' })
+  mark.remove()
+}
+
 /** Whether a main heading stands anywhere before a place in the letter. */
 function mainHeadingBefore(editor: Editor, at: number): boolean {
   let found = false
@@ -193,10 +229,11 @@ function goToPart(editor: Editor, index: number) {
 }
 
 /**
- * One tool of the row: its mark, its word, 44px tall. A tool that is on is filled with the words' own colour, its words
- * in the ground's, which holds well over 3 to 1 against the row in every look, beside aria-pressed.
+ * One tool of the row: its mark, its word, 44px tall, 48 on a tablet and a phone. A tool that is on is filled with the
+ * words' own colour, its words in the ground's, which holds well over 3 to 1 against the row in every look, beside
+ * aria-pressed.
  */
-const TOOL = 'inline-flex h-11 flex-none items-center gap-1.5 rounded-lg px-2 text-[14.5px] font-semibold text-ink outline-none hover:bg-muted focus-visible:ring-3 focus-visible:ring-focus aria-pressed:bg-foreground aria-pressed:text-background'
+const TOOL = 'inline-flex h-11 flex-none items-center gap-1.5 rounded-lg px-2 text-[14.5px] font-semibold text-ink outline-none hover:bg-muted focus-visible:ring-3 focus-visible:ring-focus aria-pressed:bg-foreground aria-pressed:text-background max-lg:h-12'
 
 interface ToolProps {
   index: number
@@ -207,14 +244,17 @@ interface ToolProps {
   onPress: () => void
   icon: ReactNode
   children: ReactNode
-  /** Drawn with its own edge, as the Add menu's button is. */
+  /** Drawn with its own edge, as the Add menu's button is, and with its words on a phone too. */
   boxed?: boolean
   buttonRef?: (element: HTMLButtonElement | null) => void
   /** What it opens: a menu, or a part of the page (no kind), which it says is open or shut. */
   popup?: { expanded: boolean; controls: string; kind?: 'menu' }
 }
 
-/** A tool: a mouse press leaves the caret in the letter, so a tool acts on the words chosen there. */
+/**
+ * A tool: a mouse press leaves the caret in the letter, so a tool acts on the words chosen there. On a phone a tool
+ * that is not boxed shows its mark alone, the whole of its cell in the row, its word kept for a screen reader.
+ */
 function Tool({ index, active, onActive, pressed, disabled, onPress, icon, children, boxed = false, buttonRef, popup }: ToolProps) {
   return (
     <button
@@ -232,10 +272,10 @@ function Tool({ index, active, onActive, pressed, disabled, onPress, icon, child
       onClick={() => {
         if (!disabled) onPress()
       }}
-      className={cn(TOOL, disabled && 'cursor-default opacity-60', boxed && 'border border-ink/40 bg-background px-2.5')}
+      className={cn(TOOL, disabled && 'cursor-default opacity-60', boxed ? 'border border-ink/40 bg-background px-2.5 max-md:h-11' : 'max-md:w-full max-md:justify-center max-md:px-0')}
     >
       {icon}
-      {children}
+      {boxed ? children : <span className="max-md:sr-only">{children}</span>}
     </button>
   )
 }
@@ -448,6 +488,9 @@ export function LetterEditor({ initialHtml, month, onMonthChange, onChange, bigg
   const monthChip = useRef<HTMLButtonElement>(null)
   const monthInput = useRef<HTMLInputElement>(null)
   const toolbar = useRef<HTMLDivElement>(null)
+  const sheetBox = useRef<HTMLDivElement>(null)
+  /** When a pointer last went down on the letter: a focus that follows it is the pointer's, its caret where it pressed. */
+  const pointerAt = useRef(0)
   const drag = useRef<{ y: number; height: number; far: number } | null>(null)
   /** The pointer just let go on the grip, kept for the click that follows it: a press, with its first height, or a pull. */
   const letGo = useRef<{ pressFrom: number | null } | null>(null)
@@ -509,6 +552,19 @@ export function LetterEditor({ initialHtml, month, onMonthChange, onChange, bigg
         // The look's ring rule sits outside the style layers, so only a style on the element itself turns it off here.
         style: [...Object.entries(PROMPT_WORDS).map(([name, words]) => `${name}: ${words}`), 'outline: none'].join('; '),
       },
+      handleDOMEvents: {
+        pointerdown: () => {
+          pointerAt.current = Date.now()
+          return false
+        },
+      },
+    },
+    onFocus: ({ editor: now }) => {
+      // The keyboard's focus, not a press, which leaves the caret where the person pressed.
+      if (Date.now() - pointerAt.current < 600) return
+      requestAnimationFrame(() => {
+        if (sheetBox.current && now.isFocused) showCaret(now, sheetBox.current)
+      })
     },
     onCreate: ({ editor: now }) => {
       ready.current?.(now.getHTML())
@@ -654,7 +710,7 @@ export function LetterEditor({ initialHtml, month, onMonthChange, onChange, bigg
           aria-label="Writing tools"
           aria-controls={sheetId}
           onKeyDown={onToolbarKey}
-          className="flex flex-wrap items-center gap-1.5 rounded-t-xl border border-border bg-background p-1.5 shadow-sm"
+          className="flex flex-wrap items-center gap-1.5 rounded-t-xl border border-border bg-background p-1.5 shadow-sm max-lg:gap-2 max-lg:p-[7px] max-md:grid max-md:grid-cols-6 max-md:gap-x-0.5 max-md:gap-y-1.5 max-md:p-1"
         >
           <Tool index={0} active={activeTool} onActive={setActiveTool} pressed={tools.bold} onPress={() => editor.chain().toggleBold().run()} icon={<Bold className={icon} aria-hidden="true" />}>
             Bold
@@ -687,7 +743,7 @@ export function LetterEditor({ initialHtml, month, onMonthChange, onChange, bigg
           <Tool index={5} active={activeTool} onActive={setActiveTool} disabled={!tools.canUndo} onPress={() => editor.chain().undo().run()} icon={<Undo2 className={icon} aria-hidden="true" />}>
             Undo
           </Tool>
-          <div className="relative ml-auto">
+          <div className="relative ml-auto max-md:col-span-full max-md:ml-1 max-md:justify-self-start">
             <Tool
               index={6}
               active={activeTool}
@@ -725,15 +781,16 @@ export function LetterEditor({ initialHtml, month, onMonthChange, onChange, bigg
       </div>
 
       <div
+        ref={sheetBox}
         id={sheetId}
         data-slot="letter-sheet"
         className={cn('relative overflow-y-auto border-x border-border bg-surface shadow-md', bigger && 'flex-1')}
         style={bigger ? { minHeight: height } : { height }}
       >
-        <div className="flex min-h-[100px] items-center gap-[18px] border-b-[3px] border-lca-gold bg-brand-navy px-5 py-4 font-sans text-white sm:px-[60px]">
-          <LcaMark title="" className="size-[52px]" />
+        <div className="flex min-h-[100px] items-center gap-[18px] border-b-[3px] border-lca-gold bg-brand-navy px-5 py-4 font-sans text-white sm:px-[60px] max-lg:min-h-[74px] max-lg:py-3 md:max-lg:px-10 max-md:min-h-[76px] max-md:gap-[11px] max-sm:px-4">
+          <LcaMark title="" className="size-[52px] max-md:size-8" />
           <div className="min-w-0">
-            <p className="text-[17px] font-bold uppercase leading-none tracking-[0.08em]" style={{ color: BAND_GOLD }}>LCA Newsletter</p>
+            <p className="text-[17px] font-bold uppercase leading-none tracking-[0.08em] max-md:text-[15px]" style={{ color: BAND_GOLD }}>LCA Newsletter</p>
             <div className="mt-[9px] flex flex-wrap items-center gap-x-3.5 gap-y-1">
               {editingMonth ? (
                 <input
@@ -755,10 +812,10 @@ export function LetterEditor({ initialHtml, month, onMonthChange, onChange, bigg
                     }
                   }}
                   onBlur={() => endMonth(true, false)}
-                  className="w-[min(100%,15ch)] rounded-md bg-transparent px-1.5 text-[36px] font-bold leading-tight tracking-[-0.015em] text-white outline-2 outline-white"
+                  className="w-[min(100%,15ch)] rounded-md bg-transparent px-1.5 text-[36px] font-bold leading-tight tracking-[-0.015em] text-white outline-2 outline-white max-lg:min-h-11 max-lg:text-[32px] max-md:text-[23px]"
                 />
               ) : (
-                <span className="text-[36px] font-bold leading-none tracking-[-0.015em] text-white" onClick={startMonth}>
+                <span className="text-[36px] font-bold leading-none tracking-[-0.015em] text-white max-lg:text-[32px] max-md:text-[23px]" onClick={startMonth}>
                   {month || NO_BREAK_SPACE}
                 </span>
               )}

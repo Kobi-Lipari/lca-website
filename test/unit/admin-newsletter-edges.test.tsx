@@ -11,7 +11,10 @@
 // - "In this issue" when two headings read the same;
 // - what the page's files must never hold: a schema import from the
 //   contracts, a route outside the switch, the old name of US Chess, a dash, a 24-hour time;
-// - the editor kit's package, listed at the exact version the lock holds.
+// - the editor kit's package, listed at the exact version the lock holds;
+// - since the second half: refused words not sent by the read a page brought
+//   back makes for a save it never heard back about, and the sheet's own
+//   region, which says a refusal that comes while the sheet hides the page.
 // Every name, word and time here is made up.
 import { readFileSync, readdirSync } from 'node:fs'
 import { join } from 'node:path'
@@ -127,7 +130,7 @@ describe('the saved line at midnight and across daylight saving in America/Chica
   })
 
   it('names the weekday of a refusal that happened the evening before, in Louisiana, and never writes a 24-hour time', () => {
-    const text = draw({ kind: 'conflict', reason: 'changed', by: 'Player Two', at: '2026-11-13 03:05:00', readFailed: false }, '2026-11-13T21:00:00Z')
+    const text = draw({ kind: 'conflict', reason: 'changed', by: 'Player Two', at: '2026-11-13 03:05:00', readFailures: 0 }, '2026-11-13T21:00:00Z')
     expect(text).toContain('Player Two changed this letter on Thursday, November 12, 2026 at 9:05 PM')
     expect(text).not.toMatch(/\b(1[3-9]|2[0-3]):\d\d\b/)
   })
@@ -248,6 +251,56 @@ describe('saves racing the server\'s answers', () => {
     late.unmount()
     await wait(SAVE_PAUSE_MS * 2)
     expect(sent).toEqual([])
+  })
+})
+
+describe('refused words, and the sheet that hides the page', () => {
+  it('sends no refused words when a page brought back reads the letter again for a save it never heard back about', async () => {
+    const { result } = await opened()
+    // A save whose answer never came, then a save the server refused in its own words.
+    puts.push({ status: 0, body: null })
+    act(() => result.current.edit(words(`${BODY}<p>One</p>`)))
+    await wait(SAVE_PAUSE_MS)
+    expect(result.current.line).toEqual({ kind: 'failed' })
+    puts.push({ status: 413, body: { error: 'This letter is too long for one email. Make it shorter, then save again.' } })
+    act(() => result.current.edit(words(`${BODY}<p>One two</p>`)))
+    await wait(SAVE_PAUSE_MS)
+    expect(result.current.line).toEqual({ kind: 'refused', words: 'This letter is too long for one email. Make it shorter, then save again.' })
+    // The page goes and is brought back by Back: it reads the letter again for the save it never heard back about, finds
+    // other words, and sends nothing, the refused words least of all.
+    act(() => {
+      window.dispatchEvent(new PageTransitionEvent('pagehide', { persisted: true }))
+    })
+    gets.push({ status: 200, body: letterAnswer() })
+    act(() => {
+      window.dispatchEvent(new PageTransitionEvent('pageshow', { persisted: true }))
+    })
+    await settle()
+    await wait(SAVE_PAUSE_MS * 3)
+    expect(sent).toHaveLength(2)
+    expect(result.current.line).toEqual({ kind: 'refused', words: 'This letter is too long for one email. Make it shorter, then save again.' })
+  })
+
+  it('says in the sheet a refusal or a failure that comes while the sheet hides the page, and never one said before it opened', async () => {
+    const { SavedLineNotice } = await import('@/areas/admin/newsletter/NewsletterHead')
+    const conflict = { kind: 'conflict', reason: 'changed', by: 'Player Two', at: '2026-11-13 20:17:00', readFailures: 0 } as const
+    // Opened while a save was on its way: the region starts empty and takes the refusal that comes.
+    const view = render(<SavedLineNotice line={{ kind: 'saving' }} />)
+    const region = screen.getByRole('alert')
+    expect(region.textContent).toBe('')
+    view.rerender(<SavedLineNotice line={conflict} />)
+    expect(screen.getByRole('alert')).toBe(region)
+    expect(region.textContent).toBe('Player Two changed this letter at 2:17 PM. Nothing more is saved over their letter. Your words stay here for you to copy.')
+    view.rerender(<SavedLineNotice line={{ kind: 'failed' }} />)
+    expect(region.textContent).toBe('Could not save')
+    cleanup()
+    // Opened over a refusal the saved line has already said: nothing is said again, until a new one comes.
+    const again = render(<SavedLineNotice line={{ kind: 'refused', words: 'Keep the subject to 200 characters.' }} />)
+    expect(screen.getByRole('alert').textContent).toBe('')
+    again.rerender(<SavedLineNotice line={{ kind: 'saved', at: '2026-11-13 21:00:00' }} />)
+    expect(screen.getByRole('alert').textContent).toBe('')
+    again.rerender(<SavedLineNotice line={{ kind: 'refused', words: 'This letter is too long for one email. Make it shorter, then save again.' }} />)
+    expect(screen.getByRole('alert').textContent).toBe('This letter is too long for one email. Make it shorter, then save again.')
   })
 })
 
