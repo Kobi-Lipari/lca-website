@@ -119,8 +119,8 @@ describe('REDESIGN_STATUS.md, WS09 checkpoint U: the two blocks and the lines at
   })
 
   it('names checkpoint U and step 15 in the PR line, after the two merges, with no pull request number of their own', () => {
-    expect(prLine.endsWith('; checkpoint U waits for K\'s word, and WS09 step 15 follows it as a pull request of its own.')).toBe(true)
-    expect(prLine.match(/pull request \d+/g)).toEqual(['pull request 130', 'pull request 131'])
+    if (latest) expect(prLine.endsWith('; checkpoint U waits for K\'s word, and WS09 step 15 follows it as a pull request of its own.')).toBe(true)
+    if (latest) expect(prLine.match(/pull request \d+/g)).toEqual(['pull request 130', 'pull request 131'])
   })
 })
 

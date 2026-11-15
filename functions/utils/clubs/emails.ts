@@ -27,6 +27,7 @@ import { emailDetails, escapeHtml, p, renderEmail } from '../emailLayout'
 import { resolveSiteUrl } from '../site'
 import { regionRepresentativesOf, representativesOfRegion } from './routing'
 import { formatDate } from '../../../domain/format/date'
+import { NO_STATEMENT } from '../../../domain/clubs/monthlyCheck'
 
 /**
  * Each field a save can change, by its column, as the notice names it: in
@@ -247,19 +248,34 @@ const NAVY = '#1a2744'
 const INK = '#3a3f4b'
 const SANS = 'Arial,Helvetica,sans-serif'
 
-/** A link in navy, bold and underlined, on the box's light ground. */
-const linkHtml = (label: string, url: string) =>
-  `<a href="${escapeHtml(url)}" style="color:${NAVY};font-weight:bold;text-decoration:underline;">${escapeHtml(label)}</a>`
+const GOLD = '#c8a94a'
 
-/** One club's box: its name, town and statement, with its two links in the same cell, so each link reads with its club. */
+/**
+ * One of a club's two buttons: padding 12px above and below, a 20px line
+ * and a 2px edge make it 48px tall. Still accurate wears the look of the
+ * site's own email button (functions/utils/emailLayout.ts emailButton): the
+ * gold ground with navy bold words. Update is the quiet one, navy words and
+ * a navy line round it on a white ground, so no gold word sits on a light
+ * ground. Each sits in its own block with an 8px margin to its right and
+ * above, so the two stand 8px apart side by side and 8px apart when a narrow
+ * screen puts the second under the first; with the styles dropped, the two
+ * blocks fall onto two lines as two plain links.
+ */
+function buttonHtml(label: string, url: string, look: 'main' | 'quiet'): string {
+  const ground = look === 'main' ? `background:${GOLD};border:2px solid ${GOLD};` : `background:#ffffff;border:2px solid ${NAVY};`
+  return `<div style="display:inline-block;margin:8px 8px 0 0;vertical-align:top;"><a href="${escapeHtml(url)}" style="display:inline-block;padding:12px 22px;${ground}font-family:${SANS};font-size:15px;line-height:20px;font-weight:bold;color:${NAVY};text-decoration:none;border-radius:8px;">${escapeHtml(label)}</a></div>`
+}
+
+/** One club's box: its name, town and statement, with its two buttons in the same cell, so each reads with its club. */
 function clubBox(club: CheckClub): string {
-  const statement = club.statement ? oneLine(club.statement) : 'How the club meets is not listed yet.'
+  const statement = club.statement ? oneLine(club.statement) : NO_STATEMENT
   return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:4px 0 16px;background:#f7f6f2;border-radius:10px;">
   <tr><td style="padding:16px 18px;font-family:${SANS};color:${INK};">
     <div style="font-size:16px;font-weight:bold;color:${NAVY};">${escapeHtml(oneLine(club.name))}</div>
     <div style="font-size:14px;">${escapeHtml(oneLine(club.city))}</div>
     <div style="margin-top:8px;font-size:14px;line-height:1.5;">${escapeHtml(statement)}</div>
-    <div style="margin-top:12px;font-size:15px;">${linkHtml('Still accurate', club.confirmUrl)} &nbsp;&middot;&nbsp; ${linkHtml('Update', club.updateUrl)}</div>
+    <div style="margin-top:4px;">${buttonHtml('Still accurate', club.confirmUrl, 'main')}
+      ${buttonHtml('Update', club.updateUrl, 'quiet')}</div>
   </td></tr>
 </table>`
 }
@@ -302,7 +318,7 @@ export function monthlyCheckEmail(data: {
       ...data.clubs.flatMap((club) => [
         oneLine(club.name),
         oneLine(club.city),
-        club.statement ? oneLine(club.statement) : 'How the club meets is not listed yet.',
+        club.statement ? oneLine(club.statement) : NO_STATEMENT,
         `Still accurate: ${club.confirmUrl}`,
         `Update: ${club.updateUrl}`,
         '',

@@ -7,7 +7,10 @@
 // come from the server as words, and the counts are the server's, moved by
 // the page as clubs are marked, so the bar makes no date. The board's
 // reports and events in review join the bar once later steps give them
-// their rows. The parts wrap onto further lines on a narrow phone.
+// their rows. Below the width where the bar sits on one line (lg, 1024px),
+// the parts stand one under another with no dot, so no line starts with a
+// separator; from that width up they read in one line, dots between. The
+// dots are never read aloud.
 //
 // Confirm all asks one plain question first, in a dialog built from the
 // site's own dialog parts (src/components/ui/dialog.tsx, which the scanner
@@ -44,10 +47,10 @@ export function ThisMonthBar({ thisMonth, hasClubs, toConfirm, running, onConfir
   ]
   return (
     <section aria-labelledby="this-month-title" className="flex min-w-0 flex-wrap items-center justify-between gap-3 rounded-xl border bg-card p-4 shadow-sm">
-      <div className="flex min-w-0 flex-wrap items-baseline gap-x-1.5 gap-y-1 text-sm text-ink">
+      <div className="flex min-w-0 flex-col gap-y-1 text-sm text-ink lg:flex-row lg:flex-wrap lg:items-baseline lg:gap-x-1.5">
         <h2 id="this-month-title" ref={headingRef} tabIndex={-1} className="text-sm font-semibold outline-none">This month</h2>
         {parts.map((part) => (
-          <p key={part} className="min-w-0 break-words"><span aria-hidden="true">· </span>{part}</p>
+          <p key={part} className="min-w-0 break-words"><span aria-hidden="true" className="hidden lg:inline">· </span>{part}</p>
         ))}
       </div>
       <Dialog open={asking && toConfirm > 0} onOpenChange={setAsking}>

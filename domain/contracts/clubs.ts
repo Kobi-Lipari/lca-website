@@ -465,11 +465,15 @@ export const workspaceRegionResponseSchema = z.strictObject({
 /**
  * GET /api/clubs/confirm/[token], the page a Still accurate link in the
  * monthly check opens: the club the good link names, by its listing's name
- * and town. Nothing else: no id, no person and no address.
+ * and town, and how it meets in the listing's own public words (`statement`,
+ * as one line, null when the listing has none), the same words the email
+ * shows, so the person sees what they vouch for. Nothing else: no id, no
+ * person and no address.
  */
 export const clubLinkResponseSchema = z.strictObject({
   name: z.string(),
   city: z.string(),
+  statement: z.string().nullable(),
 })
 
 /**

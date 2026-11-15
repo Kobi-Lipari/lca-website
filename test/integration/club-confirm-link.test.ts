@@ -84,7 +84,8 @@ describe('GET /api/clubs/confirm/:token', () => {
     for (let i = 0; i < 3; i++) {
       const result = await call(linkGet, token)
       expect(result.status).toBe(200)
-      expect(await result.json()).toEqual({ name: 'Example Chess Club', city: 'Example City' })
+      // Changed at checkpoint V: the answer names the club's meeting words too, null for a listing with none.
+      expect(await result.json()).toEqual({ name: 'Example Chess Club', city: 'Example City', statement: null })
     }
     expect(await clubRow(clubId)).toEqual(before)
     expect(await rowCounts()).toEqual(rows)
@@ -97,6 +98,125 @@ describe('GET /api/clubs/confirm/:token', () => {
       expect(result.response.headers.get('Cache-Control')).toBe('no-store')
       expect(result.response.headers.get('Referrer-Policy')).toBe('no-referrer')
       expect(result.response.headers.get('X-Robots-Tag')).toBe('noindex')
+    }
+  })
+})
+
+describe('the meeting words in the GET (WS09 checkpoint V)', () => {
+  const setStatement = (clubId: string, words: string | null) =>
+    env.DB.prepare('UPDATE clubs SET how_we_meet_text = ? WHERE id = ?').bind(words, clubId).run()
+
+  it('a good link\'s GET carries the club\'s meeting words, as one line', async () => {
+    const { clubId, token } = await linked()
+    await setStatement(clubId, '  Saturdays from 10:00 AM\n\tat the Example Library. Bring a board.  ')
+    const result = await call(linkGet, token)
+    expect(result.status).toBe(200)
+    expect(await result.json()).toEqual({ name: 'Example Chess Club', city: 'Example City', statement: 'Saturdays from 10:00 AM at the Example Library. Bring a board.' })
+  })
+
+  it('null for a listing with no words, and for one whose words are only white space', async () => {
+    for (const words of [null, '', '   \n\t  ']) {
+      const { clubId, token } = await linked()
+      await setStatement(clubId, words)
+      const result = await call(linkGet, token)
+      expect(result.status, JSON.stringify(words)).toBe(200)
+      expect(await result.json(), JSON.stringify(words)).toEqual({ name: 'Example Chess Club', city: 'Example City', statement: null })
+    }
+  })
+
+  it('the GET with words still changes nothing: the club\'s row, no row anywhere and no email', async () => {
+    const { clubId, token } = await linked()
+    await setStatement(clubId, 'Saturdays from 10:00 AM at the Example Library.')
+    const before = await clubRow(clubId)
+    const rows = await rowCounts()
+    expect((await call(linkGet, token)).status).toBe(200)
+    expect(await clubRow(clubId)).toEqual(before)
+    expect(await rowCounts()).toEqual(rows)
+    expect(emailOutbox).toHaveLength(0)
+  })
+
+  it('the POST\'s answer is unchanged: the name, the town and the month, and no meeting words', async () => {
+    const { clubId, token } = await linked()
+    await setStatement(clubId, 'Saturdays from 10:00 AM at the Example Library.')
+    const result = await call(linkPost, token)
+    expect(result.status).toBe(200)
+    expect(Object.keys(await result.json<Record<string, unknown>>())).toEqual(['name', 'city', 'month'])
+  })
+
+  it('every refused GET is byte for byte the base\'s answer, and none carries the meeting words', async () => {
+    const words = 'Saturdays from 10:00 AM at the Example Library.'
+    /** The base's refusals, written out as the base answers them. */
+    const BASE = {
+      closed: [403, '{"error":"Still accurate cannot be used yet."}'],
+      forged: [400, '{"error":"This link can\'t be read. Check that the whole link was copied from the email."}'],
+      expired: [410, '{"error":"This link has expired. Log in to mark the club from My region."}'],
+      noKey: [503, '{"error":"Links from the monthly check can\'t be read on the site right now. Try again later."}'],
+      clubGone: [404, '{"error":"This club is no longer listed on the site."}'],
+      memberGone: [404, '{"error":"The account this link was sent to is no longer on the site."}'],
+      seatEnded: [403, '{"error":"Your seat no longer covers this club."}'],
+    } as const
+    const seen: Array<[keyof typeof BASE, number, string]> = []
+    const take = async (name: keyof typeof BASE, result: Awaited<ReturnType<typeof call>>) => seen.push([name, result.status, await result.response.text()])
+
+    const good = await linked()
+    await setStatement(good.clubId, words)
+    const [version, kind, payload] = good.token.split('.')
+    await take('forged', await call(linkGet, 'not-a-token'))
+    await take('forged', await call(linkGet, good.token.slice(0, -4)))
+    await take('forged', await call(linkGet, `${version}.${kind}.${payload}`))
+    await take('forged', await call(linkGet, await signToken(KEY, 'waitlist:claim', { club: good.clubId, member: good.memberId }, LINK_TTL_SECONDS)))
+    await take('noKey', await call(linkGet, good.token, { SIGNING_SECRET: undefined }))
+    const old = await linked({ at: new Date(Date.now() - LINK_TTL_SECONDS * 1000 - 60_000) })
+    await setStatement(old.clubId, words)
+    await take('expired', await call(linkGet, old.token))
+    const clubGone = await linked()
+    await env.DB.prepare('DELETE FROM clubs WHERE id = ?').bind(clubGone.clubId).run()
+    await take('clubGone', await call(linkGet, clubGone.token))
+    const memberGone = await linked()
+    await setStatement(memberGone.clubId, words)
+    await env.DB.prepare('DELETE FROM members WHERE id = ?').bind(memberGone.memberId).run()
+    await take('memberGone', await call(linkGet, memberGone.token))
+    const ended = await linked()
+    await setStatement(ended.clubId, words)
+    await env.DB.prepare("UPDATE board_seat_assignments SET ended_at = datetime('now') WHERE seat_id = ?").bind(ended.seat).run()
+    await take('seatEnded', await call(linkGet, ended.token))
+    flags.keepersOn = false
+    await take('closed', await call(linkGet, good.token))
+
+    expect(new Set(seen.map(([name]) => name))).toEqual(new Set(Object.keys(BASE)))
+    for (const [name, status, body] of seen) {
+      expect([status, body], name).toEqual(BASE[name])
+      expect(body, name).not.toContain('statement')
+      expect(body, name).not.toContain('Example Library')
+    }
+    // The words the handler exports are still the base's.
+    expect([LINK_CLOSED, LINK_FORGED, LINK_EXPIRED, LINK_NO_KEY, CLUB_GONE, MEMBER_GONE, SEAT_ENDED].map((w) => JSON.stringify({ error: w })))
+      .toEqual([BASE.closed, BASE.forged, BASE.expired, BASE.noKey, BASE.clubGone, BASE.memberGone, BASE.seatEnded].map(([, body]) => body))
+  })
+
+  it('with CLUB_KEEPERS_ON unset the GET still refuses before anything is read, words or none', async () => {
+    const { clubId, token } = await linked()
+    await setStatement(clubId, 'Saturdays from 10:00 AM at the Example Library.')
+    flags.keepersOn = false
+    const { db, ran } = countingDb()
+    const result = await call(linkGet, token, { ...KEYED, DB: db })
+    expect(result.status).toBe(403)
+    expect(await result.json()).toEqual({ error: LINK_CLOSED })
+    expect(ran).toEqual([])
+  })
+
+  it('role safety: a signed-in session of any role gets the link\'s own answer, and a forged link the same refusal', async () => {
+    const { clubId, token } = await linked()
+    await setStatement(clubId, 'Saturdays from 10:00 AM at the Example Library.')
+    const admin = await seedAdmin()
+    const member = await seedMember({ fullName: 'Player Two' })
+    for (const as of [undefined, admin, member]) {
+      const good = await call(linkGet, token, KEYED, as ? { as } : {})
+      expect(good.status, String(as)).toBe(200)
+      expect(await good.json(), String(as)).toEqual({ name: 'Example Chess Club', city: 'Example City', statement: 'Saturdays from 10:00 AM at the Example Library.' })
+      const forged = await call(linkGet, 'not-a-token', KEYED, as ? { as } : {})
+      expect(forged.status, String(as)).toBe(400)
+      expect(await forged.json(), String(as)).toEqual({ error: LINK_FORGED })
     }
   })
 })
