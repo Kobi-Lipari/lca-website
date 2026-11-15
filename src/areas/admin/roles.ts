@@ -99,6 +99,22 @@ export function canManageClub(
   return regionalClubIds.includes(clubId)
 }
 
+/**
+ * Whether canManageClub admits this member to any club at all: an LCA
+ * admin, a club's rep who has a club, or a member whose regional seat covers
+ * a club. Your club's page asks it before it knows which club its address
+ * names, then asks canManageClub of the club it is answered.
+ */
+export function keepsAnyClub(
+  role: MemberRole,
+  memberClubId: string | null | undefined,
+  regionalClubIds: string[] = [],
+): boolean {
+  if (role === 'lca_admin') return true
+  if (role === 'club_rep' && !!memberClubId) return true
+  return regionalClubIds.length > 0
+}
+
 /** Roles that get the club/event workspace rather than the admin panel. */
 export const WORKSPACE_ROLES: MemberRole[] = ['lca_auditor', 'club_rep', 'tournament_director']
 

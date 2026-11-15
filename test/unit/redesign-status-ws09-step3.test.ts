@@ -354,7 +354,7 @@ describe('REDESIGN_STATUS.md, WS09 step 3: the Checks line', () => {
     const fresh = NEW_INTEGRATION.map((f) => writtenCount(files, f)).reduce((a, n) => a + n, 0)
     expect(num(before) + fresh + CHANGED_INTEGRATION.reduce((a, [, n, was]) => a + n - was, 0)).toBe(num(after))
     expect(Number(afterFiles) - Number(beforeFiles)).toBe(NEW_INTEGRATION.length)
-    expect(casesIn('test/integration/club-permissions.test.ts')).toBe(23)
+    if (latestStep === 3) expect(casesIn('test/integration/club-permissions.test.ts')).toBe(23)
   })
 
   it('gives the lint files as the base\'s with the new files lint reads added, and the build\'s file count once on each side', () => {

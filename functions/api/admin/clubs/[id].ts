@@ -2,40 +2,112 @@
 // The single write path for club edits: this is what the admin UI calls.
 // Merged from the two previous copies: full field set (color, imageUrl,
 // region) from one, hex-color validation from the other.
-import type { Env } from '../../../types'
+//
+// With CLUB_KEEPERS_ON set (functions/utils/clubs/pages.ts) the GET also
+// answers the listing's fifteen new columns and its places, and the PATCH
+// takes the new fields, an admin's new page address and, from the club
+// editor, the club's places, saved in one batch with the keepers' stamps
+// (functions/utils/clubs/save.ts), so one press of the editor is one save
+// and one notice. With it unset both answer and write exactly what they did
+// before, and a body carrying a new field or places is refused 403. With it
+// set the GET also finds a club by its page address (WS09 step 9), under the
+// same check as by its id; the PATCH takes the id alone.
+import type { Env, MemberRow } from '../../../types'
 import { isResponse, requireClubRep, requireAdmin, requireClubView } from '../../../utils/auth'
 import {
   errorResponse,
   handleOptions,
   jsonResponse,
-  parseJsonBody,
+  parseBody,
 } from '../../../utils/response'
 import { recordAdminAction } from '../../../utils/admin/audit'
 import { admittedByRegionAlone, officersWithoutEmail } from '../../../utils/clubs/memberView'
 import { ADMIN_CLUB_COLUMNS } from '../../../utils/clubs/adminAnswer'
 import { isMissingTableOrColumn } from '../../../utils/clubs/migrationLag'
+import { CLUB_KEEPERS_ON } from '../../../utils/clubs/pages'
+import {
+  KEEPER_FLAG_FIELDS,
+  KEEPER_TEXT_FIELDS,
+  carriesKeeperFields,
+  readKeeperColumns,
+  readPlaces,
+  saveListing,
+  slugLeadsElsewhere,
+  storedText,
+} from '../../../utils/clubs/save'
+import { sendClubSaveNotice } from '../../../utils/clubs/emails'
+import { isReservedSlug } from '../../../../domain/clubs/slug'
+import {
+  todaysClubSaveRequestSchema,
+  updateClubRequestSchemaFor,
+  type UpdateClubRequest,
+} from '../../../../domain/contracts/clubs'
 
 /** The one log line for a club's rows in migration 0066's tables that the delete could not clear; it names no club. */
 export const CLUB_ROWS_UNCLEARED_LOG = 'club delete: the club tables of migration 0066 could not be read; the delete goes on without them'
 
-interface UpdateClubBody {
-  name?: string
-  city?: string
-  location?: string | null
-  description?: string | null
-  meetingSchedule?: string | null
-  contactEmail?: string | null
-  color?: string | null
-  imageUrl?: string | null
-  region?: string | null
-  /** The club's pin on the Clubs map; null removes it. */
-  mapLocation?: { lat: number; lng: number } | null
-}
+/** The 403 a body carrying any of the new listing's fields gets while CLUB_KEEPERS_ON is unset. */
+export const KEEPER_FIELDS_CLOSED = 'The new club page fields cannot be saved yet.'
+
+/** The 403 a club's rep or a region's representative gets for a new page address. */
+export const SLUG_KEPT_FOR_ADMINS = 'Only LCA admins can change a club\'s page address'
+
+/** The 400 for an address the club pages keep for their own use. */
+export const SLUG_RESERVED = 'That page address is kept for the club pages\' own use'
+
+/** The 409 for an address that leads, or once led, to another club. */
+export const SLUG_ELSEWHERE = 'That page address leads to another club, so it cannot be used'
+
+/** The 409 for a save whose batch failed on a unique key, as when another save took the address first. */
+export const SAVE_CLASHED = 'The page address clashed with one already kept, so nothing was saved.'
+
+/** The 409 for a keeper's save from a form opened before the club was saved again, by another keeper or in another tab. */
+export const SAVED_SINCE = 'This club\'s page was saved after you opened it. Copy what you want to keep, then reload the page to see the latest version'
+
+/**
+ * Today's columns a keeper's body can carry, with the body's key, and
+ * whether only an LCA admin writes it. On the keepers' path a column is
+ * written only when the body carries it, never from the row read before the
+ * save, so a change someone made in between is never put back.
+ */
+const TODAYS_CARRIED: ReadonlyArray<readonly [keyof UpdateClubRequest, string, boolean]> = [
+  ['name', 'name', true],
+  ['city', 'city', false],
+  ['location', 'location', false],
+  ['description', 'description', false],
+  ['meetingSchedule', 'meeting_schedule', false],
+  ['contactEmail', 'contact_email', false],
+  ['color', 'color', false],
+  ['imageUrl', 'image_url', true],
+  ['region', 'region', true],
+  ['mapLocation', 'latitude', false],
+  ['mapLocation', 'longitude', false],
+]
 
 export const onRequestOptions: PagesFunction<Env> = async () => handleOptions()
 
+/**
+ * The club a GET names, while CLUB_KEEPERS_ON is set: the club whose id the
+ * value is, else the club whose page address it is now, so that Your club's
+ * page can ask by the address it shows. An id is read first, and an old
+ * address is not followed. A value that names no club comes back as it
+ * came, so the check below answers it exactly as it answers any unknown id:
+ * not found for an LCA admin or an observer, 403 for everyone else, and no
+ * person learns from the answer whether an address is in use. It reads the
+ * slug column of migration 0066, which the constant needs in any case.
+ */
+async function clubNamedBy(db: D1Database, value: string): Promise<string> {
+  const byId = await db.prepare('SELECT id FROM clubs WHERE id = ?').bind(value).first<{ id: string }>()
+  if (byId) return byId.id
+  const bySlug = await db.prepare('SELECT id FROM clubs WHERE slug = ?').bind(value).first<{ id: string }>()
+  return bySlug?.id ?? value
+}
+
 export const onRequestGet: PagesFunction<Env> = async (context) => {
-  const clubId = context.params.id as string
+  // With CLUB_KEEPERS_ON unset the value is the club's id alone, as before.
+  const clubId = CLUB_KEEPERS_ON
+    ? await clubNamedBy(context.env.DB, context.params.id as string)
+    : context.params.id as string
   const authResult = await requireClubView(context.request, context.env, clubId)
   if (isResponse(authResult)) return authResult
 
@@ -76,13 +148,23 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
      FROM tournaments WHERE club_id = ? ORDER BY date DESC`,
   ).bind(clubId).all()
 
-  return jsonResponse({
+  const answer = {
     club,
     officers: regionAlone ? officersWithoutEmail(officers.results) : officers.results,
     roster: roster.results,
     // Says the empty roster above is held back, not empty, so the admin club page can say so.
     ...(regionAlone ? { rosterKeptBack: true } : {}),
     tournaments: tournaments.results,
+  }
+  if (!CLUB_KEEPERS_ON) return jsonResponse(answer)
+
+  // With CLUB_KEEPERS_ON set the club's fifteen new columns join it (two of
+  // them member ids, never an email) and its places follow, for each person
+  // admitted; the roster rule above stays as it is.
+  return jsonResponse({
+    ...answer,
+    club: { ...club, ...(await readKeeperColumns(context.env.DB, clubId)) },
+    places: await readPlaces(context.env.DB, clubId),
   })
 }
 
@@ -97,8 +179,37 @@ export const onRequestPatch: PagesFunction<Env> = async (context) => {
 
   if (!existing) return errorResponse('Club not found', 404)
 
-  const body = await parseJsonBody<UpdateClubBody>(context.request)
-  if (!body) return errorResponse('Invalid JSON body', 400)
+  // While CLUB_KEEPERS_ON is unset the body is read by today's contract
+  // alone, and one that carries any of the new listing's fields is refused
+  // before anything is checked or written; once it is set the new fields
+  // are read with their limits (domain/contracts/clubs.ts), and a field of
+  // today's already stored over its limit may come back unchanged.
+  const keepersOn = CLUB_KEEPERS_ON
+  const schema = keepersOn
+    ? updateClubRequestSchemaFor({
+        name: existing.name,
+        city: existing.city,
+        location: existing.location,
+        description: existing.description,
+        meetingSchedule: existing.meeting_schedule,
+        contactEmail: existing.contact_email,
+        color: existing.color,
+        imageUrl: existing.image_url,
+        region: existing.region,
+      })
+    : todaysClubSaveRequestSchema
+  const parsed = await parseBody(context.request, schema)
+  if (isResponse(parsed)) return parsed
+  const body = parsed as UpdateClubRequest
+  if (!keepersOn && carriesKeeperFields(body)) return errorResponse(KEEPER_FIELDS_CLOSED, 403)
+  // A form opened before another keeper's save would put that save's words
+  // back, so its press is refused and nothing is written. The stamp is the
+  // club's told_updated_at as the form read it, null only for a club with
+  // no stamp, since migration 0067 stamps every club; a body without it is
+  // not checked.
+  if (keepersOn && body.toldUpdatedAt !== undefined && (body.toldUpdatedAt ?? null) !== (existing.told_updated_at ?? null)) {
+    return errorResponse(SAVED_SINCE, 409)
+  }
 
   // A club's name and region decide how it is listed and filtered site-wide,
   // so those stay with LCA admins. Sending the unchanged value is fine: the
@@ -115,6 +226,11 @@ export const onRequestPatch: PagesFunction<Env> = async (context) => {
     // storage; a rep pointing image_url at an arbitrary site is not needed.
     if (body.imageUrl !== undefined && body.imageUrl !== existing.image_url) {
       return errorResponse('Upload a new image instead of setting its URL', 403)
+    }
+    // The page's address too: an old address keeps leading to the club, so
+    // a change is for an LCA admin to weigh.
+    if (body.slug !== undefined && body.slug !== existing.slug) {
+      return errorResponse(SLUG_KEPT_FOR_ADMINS, 403)
     }
   }
 
@@ -153,30 +269,60 @@ export const onRequestPatch: PagesFunction<Env> = async (context) => {
         : /^#[0-9A-Fa-f]{6}$/.test(body.color) ? body.color : existing.color)
     : existing.color
 
-  await context.env.DB.prepare(
-    `UPDATE clubs SET
-      name = ?, city = ?, location = ?, description = ?,
-      meeting_schedule = ?, contact_email = ?,
-      color = ?, image_url = ?, region = ?, latitude = ?, longitude = ?
-     WHERE id = ?`,
-  ).bind(
-    body.name?.trim() ?? existing.name,
-    body.city?.trim() ?? existing.city,
-    body.location !== undefined ? body.location : existing.location,
-    body.description !== undefined ? body.description : existing.description,
-    body.meetingSchedule !== undefined ? body.meetingSchedule : existing.meeting_schedule,
-    body.contactEmail !== undefined ? body.contactEmail : existing.contact_email,
+  // Today's eleven columns, as today's save has always written them.
+  const todays: Record<string, unknown> = {
+    name: body.name?.trim() ?? existing.name,
+    city: body.city?.trim() ?? existing.city,
+    location: body.location !== undefined ? body.location : existing.location,
+    description: body.description !== undefined ? body.description : existing.description,
+    meeting_schedule: body.meetingSchedule !== undefined ? body.meetingSchedule : existing.meeting_schedule,
+    contact_email: body.contactEmail !== undefined ? body.contactEmail : existing.contact_email,
     color,
-    body.imageUrl !== undefined ? body.imageUrl : existing.image_url,
-    body.region !== undefined ? (body.region || null) : existing.region,
+    image_url: body.imageUrl !== undefined ? body.imageUrl : existing.image_url,
+    region: body.region !== undefined ? (body.region || null) : existing.region,
     latitude,
     longitude,
-    clubId,
-  ).run()
+  }
+
+  if (keepersOn) {
+    const refused = await saveKeepersListing(context, authResult.member, existing, todays, body)
+    if (refused) return refused
+  } else {
+    await context.env.DB.prepare(
+      `UPDATE clubs SET
+        name = ?, city = ?, location = ?, description = ?,
+        meeting_schedule = ?, contact_email = ?,
+        color = ?, image_url = ?, region = ?, latitude = ?, longitude = ?
+       WHERE id = ?`,
+    ).bind(
+      todays.name,
+      todays.city,
+      todays.location,
+      todays.description,
+      todays.meeting_schedule,
+      todays.contact_email,
+      todays.color,
+      todays.image_url,
+      todays.region,
+      todays.latitude,
+      todays.longitude,
+      clubId,
+    ).run()
+  }
 
   // Today's 13 columns by name, so the answer is what it was before 0066.
   const club = await context.env.DB.prepare(`SELECT ${ADMIN_CLUB_COLUMNS} FROM clubs WHERE id = ?`)
     .bind(clubId).first<Record<string, unknown>>()
+
+  // With CLUB_KEEPERS_ON set the save above wrote its own activity row in
+  // its batch, and the answer carries the fifteen new columns too, and the
+  // places as saved when the body sent them, so the editor shows what was
+  // stored.
+  if (keepersOn) {
+    const saved = { club: { ...club, ...(await readKeeperColumns(context.env.DB, clubId)) } }
+    if (body.places === undefined) return jsonResponse(saved)
+    return jsonResponse({ ...saved, places: await readPlaces(context.env.DB, clubId) })
+  }
 
   // Which fields actually changed, for the activity log.
   const COLUMNS = ['name', 'city', 'location', 'description', 'meeting_schedule',
@@ -193,6 +339,73 @@ export const onRequestPatch: PagesFunction<Env> = async (context) => {
   }
 
   return jsonResponse({ club })
+}
+
+/**
+ * The keepers' save, while CLUB_KEEPERS_ON is set: those of today's eleven
+ * columns the body carries (the name, the region and the logo's address an
+ * LCA admin's alone), the new fields the body carries, the mirror of About and the statement
+ * into today's description and meeting schedule, an admin's new page
+ * address, and the places when the body sends them, with place 1 copied
+ * into today's location and pin, written in one batch with the stamps and
+ * the activity row (functions/utils/clubs/save.ts); then one notice to the
+ * region's representatives, naming every field that changed across the
+ * listing and the places, after the answer. Answers a refusal, or null once
+ * the save is written.
+ */
+async function saveKeepersListing(
+  context: EventContext<Env, string, unknown>,
+  saver: MemberRow,
+  existing: Record<string, unknown>,
+  todays: Record<string, unknown>,
+  body: UpdateClubRequest,
+): Promise<Response | null> {
+  const clubId = context.params.id as string
+  // Today's columns the body carries, each as today's save reads it; the
+  // name, the region and the logo's address only for an LCA admin, and a
+  // colour only when it is cleared or a colour's form.
+  const next: Record<string, unknown> = {}
+  const fields = body as Record<string, unknown>
+  const admin = saver.role === 'lca_admin'
+  for (const [key, column, adminOnly] of TODAYS_CARRIED) {
+    if (fields[key] === undefined || (adminOnly && !admin)) continue
+    if (column === 'color' && fields[key] !== null && todays.color !== fields[key]) continue
+    next[column] = todays[column]
+  }
+  for (const [key, column] of KEEPER_TEXT_FIELDS) {
+    if (fields[key] !== undefined) next[column] = storedText(fields[key] as string | null)
+  }
+  for (const [key, column] of KEEPER_FLAG_FIELDS) {
+    if (fields[key] !== undefined) next[column] = fields[key] ? 1 : 0
+  }
+  // The mirror: a new text that is not empty is written to today's field
+  // too, over what the body sent for it; an empty one leaves today's alone.
+  if (typeof next.about_text === 'string') next.description = next.about_text
+  if (typeof next.how_we_meet_text === 'string') next.meeting_schedule = next.how_we_meet_text
+
+  if (body.slug !== undefined && body.slug !== existing.slug) {
+    if (isReservedSlug(body.slug)) return errorResponse(SLUG_RESERVED, 400)
+    if (await slugLeadsElsewhere(context.env.DB, body.slug, clubId)) return errorResponse(SLUG_ELSEWHERE, 409)
+    next.slug = body.slug
+  }
+
+  let changed: string[] | null
+  try {
+    changed = await saveListing(context.env.DB, { clubId, saver, existing, next, places: body.places })
+  } catch (err) {
+    if (/UNIQUE constraint failed/i.test(err instanceof Error ? err.message : String(err))) return errorResponse(SAVE_CLASHED, 409)
+    throw err
+  }
+  // The club was deleted after this save read it: nothing was written, and no one is told.
+  if (changed === null) return errorResponse('Club not found', 404)
+
+  context.waitUntil(sendClubSaveNotice(context.env, context.request, {
+    clubId,
+    clubName: String(next.name ?? existing.name),
+    saver,
+    columns: changed,
+  }))
+  return null
 }
 
 export const onRequestDelete: PagesFunction<Env> = async (context) => {

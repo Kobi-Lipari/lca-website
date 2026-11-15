@@ -3,7 +3,7 @@ import { Navigate, useLocation, useParams } from 'react-router-dom'
 
 import { useAuth } from '@/contexts/auth-context'
 import { MediaManagerAnswerContext } from '@/areas/admin/mediaManagerAnswer'
-import { canManageClub, isViewOnlyAdmin, toolsHomeFor, type MemberRole } from '@/areas/admin/roles'
+import { canManageClub, isViewOnlyAdmin, keepsAnyClub, toolsHomeFor, type MemberRole } from '@/areas/admin/roles'
 import { useMediaManager } from '@/areas/admin/useMediaManager'
 import { FEATURES } from '@/lib/features'
 
@@ -30,6 +30,15 @@ interface RoleProtectedRouteProps {
    * nothing and nothing is asked.
    */
   allowMediaManager?: boolean
+  /**
+   * Lets in only a person who keeps a club: an LCA admin, a club's rep who
+   * has a club, or a member whose regional seat covers a club, as
+   * canManageClub admits them. The route's address names the club by its
+   * page address, which the sign-in does not load, so the page itself checks
+   * the club it is answered against the same rule, and the server decides
+   * (WS09 step 9).
+   */
+  keepsAClub?: boolean
 }
 
 /** What the route shows while a session, or the media manager's answer, is on the way. */
@@ -61,6 +70,7 @@ export function RoleProtectedRoute({
   fallbackToToolsHome,
   allowDirectors,
   allowMediaManager,
+  keepsAClub,
 }: RoleProtectedRouteProps) {
   const {
     user,
@@ -88,6 +98,10 @@ export function RoleProtectedRoute({
 
   const regionalClubIds = managedClubs.map((c) => c.id)
   if (requireClubMatch && id && !isViewOnlyAdmin(role) && !canManageClub(role, member?.club_id, id, regionalClubIds)) {
+    return <Navigate to="/dashboard" replace />
+  }
+
+  if (keepsAClub && !keepsAnyClub(role, member?.club_id, regionalClubIds)) {
     return <Navigate to="/dashboard" replace />
   }
 

@@ -176,7 +176,8 @@ describe('REDESIGN_STATUS.md, WS09 checkpoint S after K\'s answers: its claims a
     for (const file of [...NEW_UNIT, ...NEW_INTEGRATION]) expect(writtenCount(files, file), file).toBe(casesIn(file))
     for (const [file, n] of CHANGED_TESTS) {
       expect(files, file).toContain(`\`${file}\` (${n}, as before: `)
-      expect(casesIn(file), file).toBe(n)
+      // WS09 step 6 grew club-permissions to its own count on redesign/ws09-clubs-t, which its record test holds.
+      if (latestStep === 5 || file !== 'test/integration/club-permissions.test.ts') expect(casesIn(file), file).toBe(n)
     }
     expect(files).toContain('No migration, switch, route or contract is added')
     const paths = [...block.matchAll(/`([a-z][\w./[\]-]*\/[\w.[\]-]+\.(?:ts|tsx|sql|md|json))`/g)].map((m) => m[1])
@@ -201,7 +202,9 @@ describe('REDESIGN_STATUS.md, WS09 checkpoint S after K\'s answers: its claims a
     expect(del).toContain(refusal)
     expect(del.indexOf(refusal)).toBeLessThan(del.indexOf('SELECT co.member_id'))
     expect(read('functions/utils/clubs/memberView.ts')).toContain(`export const ROSTER_KEPT_BACK = '${KEPT_BACK.replace(/'/g, '\\\'')}'`)
-    expect(read('test/unit/contracts-pending.ts')).toContain('\'GET admin/clubs/[id]\',')
+    // Pending on checkpoint S's branch; contracted by WS09 step 6 on redesign/ws09-clubs-t, where the contract names rosterKeptBack.
+    expect(read('test/unit/contracts-pending.ts').includes('\'GET admin/clubs/[id]\',')).toBe(latestStep === 5)
+    if (latestStep !== 5) expect(read('domain/contracts/clubs.ts')).toContain('  rosterKeptBack: z.literal(true).optional(),\n')
   })
 
   it('quotes the admin club page\'s words for a roster kept back as the page holds them, and keeps today\'s for the rest', () => {
@@ -280,15 +283,27 @@ describe('REDESIGN_STATUS.md, WS09 checkpoint S after K\'s answers: its claims a
       expect(pins, piece).toContain(piece)
     }
     const line = (file: string, n: number) => read(file).split('\n')[n - 1] ?? ''
-    expect(line('test/integration/club-permissions.test.ts', 381)).toContain('expect(body.tournaments.map((t) => t.id), draft).toEqual([])')
-    expect(line('test/integration/club-permissions.test.ts', 375)).toContain('[\'club\', \'officers\', \'roster\', \'rosterKeptBack\', \'tournaments\']')
+    // Lines 381 and 375 on checkpoint S's branch; 399 and 393 on redesign/ws09-clubs-t, where WS09 step 6 added 18 lines above them.
+    // The two lines are held anywhere in the file at every step, and by line number only while step 5 or step 8 is the latest step.
+    const permissions = read('test/integration/club-permissions.test.ts')
+    expect(permissions).toContain('expect(body.tournaments.map((t) => t.id), draft).toEqual([])')
+    expect(permissions).toContain('[\'club\', \'officers\', \'roster\', \'rosterKeptBack\', \'tournaments\']')
+    if (latestStep === 5 || latestStep === 8) {
+      const [draftLine, keysLine] = latestStep === 5 ? [381, 375] : [399, 393]
+      expect(line('test/integration/club-permissions.test.ts', draftLine)).toContain('expect(body.tournaments.map((t) => t.id), draft).toEqual([])')
+      expect(line('test/integration/club-permissions.test.ts', keysLine)).toContain('[\'club\', \'officers\', \'roster\', \'rosterKeptBack\', \'tournaments\']')
+    }
     expect(read('test/integration/club-regions-fill.test.ts')).toContain('expect(statuses[\'officer DELETE\']).toBe(403)')
     expect(read('test/unit/redesign-status-ws09-review.test.ts')).toContain(DASHBOARD_NEW.replace(/'/g, '\\\''))
     expect(read('test/unit/redesign-status-ws09-step5.test.ts')).toContain('!h.startsWith(\'### WS09 checkpoint S, after K\\\'s answers: \')')
     expect(read('test/unit/redesign-status-ws09-step1.test.ts')).toContain('|WS09 checkpoint S, after K\'s answers: \\S)')
-    // goldText's two pins by line hold, since no line above them moved.
-    expect(read(PAGE).split('\n')[405]).toContain('color: clubTextColor(color),')
-    expect(read(CARD).split('\n')[74]).toContain('style={{ color: clubTextColor(club.color) }}')
+    // goldText's two pins by line hold, since no line above them moved; the page's is line 412 on redesign/ws09-clubs-t, where WS09 step 7 moved it.
+    expect(read(PAGE)).toContain('color: clubTextColor(color),')
+    expect(read(CARD)).toContain('style={{ color: clubTextColor(club.color) }}')
+    if (latestStep === 5 || latestStep === 8) {
+      expect(read(PAGE).split('\n')[latestStep === 5 ? 405 : 411]).toContain('color: clubTextColor(color),')
+      expect(read(CARD).split('\n')[74]).toContain('style={{ color: clubTextColor(club.color) }}')
+    }
   })
 })
 
@@ -318,7 +333,12 @@ describe('REDESIGN_STATUS.md, WS09 checkpoint S after K\'s answers: the sentence
       expect(sentence, start).not.toBe('')
       for (const piece of pieces) expect(sentence, `${start}: ${piece}`).toContain(piece)
     }
-    expect(marked.length).toBe(where.length)
+    // The merge into redesign/ws09-clubs-t marks five lines of WS09 steps 6, 7 and 8 too: the three follow-ups on items R3 and R4,
+    // step 6's bullet on what ships with every switch off and step 7's decision on the editor.
+    const MERGE_MARKED = /^(?:- \*\*Items R3 and R4 stay with K \(WS09 step [678]\)\.\*\* |- \*\*What ships with every switch off\.\*\* Today's PATCH and GET for today's bodies, unchanged|- \*\*The editor in place of today's form \(WS09 step 7\)\.\*\* )/
+    const mergeMarks = ws09.split('\n').filter((l) => l.includes(MARK) && MERGE_MARKED.test(l)).length
+    expect(mergeMarks).toBe(latestStep === 5 ? 0 : 5)
+    expect(marked.length - mergeMarks).toBe(where.length)
     // The earlier words are kept: each marked line still holds what was there before the mark.
     expect(addedTo(step5, '  - R4. ')).not.toContain('Changed in checkpoint S\'s review: ')
     expect(bullet(verify, '- **Production\'s rows (WS09 step 5).**')).toMatch(/^- \*\*Production's rows \(WS09 step 5\)\.\*\* Not checked: no remote read was made\./)

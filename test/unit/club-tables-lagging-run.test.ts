@@ -1,25 +1,31 @@
 // test/unit/club-tables-lagging-run.test.ts
 //
-// The three paths that are live with every switch off and read migration
-// 0066's tables and columns (WS09 step 4), the member delete, the club
-// delete and the club create, run on a real SQLite database built from
-// migrations 0001 to 0060 alone, as production would stand if the site's
-// build reached it before the migration run: each catches the missing
-// table or column, writes its one log line and goes on as before 0066. On a
-// database built from every migration the same three write no log line.
-// isMissingTableOrColumn, which tells a missing table or column from any
-// other failure, is held here as well.
+// The four paths that are live with every switch off and read migration
+// 0066's tables and columns, the member delete, the club delete and the
+// club create (WS09 step 4) and a parent's delete of a child profile (WS09
+// step 6), run on a real SQLite database built from migrations 0001 to 0060
+// alone, as production would stand if the site's build reached it before
+// the migration run: each catches the missing table or column, writes its
+// one log line and goes on as before 0066. On a database built from every
+// migration the same four write no log line. isMissingTableOrColumn, which
+// tells a missing table or column from any other failure, is held here as
+// well.
 //
-// The handlers are called with a small D1 over node:sqlite; the admin's
-// sign-in and the sign-in service's account delete are stood in for, since
-// neither is what is tested. Every club, person and address is made up.
+// The handlers are called with a small D1 over node:sqlite; the admin's and
+// the parent's sign-in and the sign-in service's account delete are stood in
+// for, since none is what is tested. Every club, person and address is made
+// up.
 import type { DatabaseSync, SQLInputValue } from 'node:sqlite'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { migrationFiles, openMigratedDb } from './helpers/sqlite'
 
 vi.mock('../../functions/utils/auth', async (importOriginal) => {
   const real = await importOriginal<typeof import('../../functions/utils/auth')>()
-  return { ...real, requireAdmin: async () => ({ member: { id: 'example-admin', role: 'lca_admin' } }) }
+  return {
+    ...real,
+    requireAdmin: async () => ({ member: { id: 'example-admin', role: 'lca_admin' } }),
+    requireAuthedMember: async () => ({ member: { id: 'player-one', role: 'member' } }),
+  }
 })
 vi.mock('../../functions/utils/supabase', async (importOriginal) => {
   const real = await importOriginal<typeof import('../../functions/utils/supabase')>()
@@ -29,6 +35,7 @@ vi.mock('../../functions/utils/supabase', async (importOriginal) => {
 const { CLUB_SLUGS_UNREAD_LOG, onRequestPost: clubCreate } = await import('../../functions/api/admin/clubs')
 const { CLUB_ROWS_UNCLEARED_LOG, onRequestDelete: clubDelete } = await import('../../functions/api/admin/clubs/[id]')
 const { CLUB_REFERENCES_UNCLEARED_LOG, onRequestDelete: memberDelete } = await import('../../functions/api/admin/members/[id]')
+const { CHILD_CLUB_REFERENCES_UNCLEARED_LOG, onRequestDelete: childDelete } = await import('../../functions/api/me/children/[id]')
 const { isMissingTableOrColumn } = await import('../../functions/utils/clubs/migrationLag')
 
 afterEach(() => {
@@ -66,13 +73,14 @@ function d1Over(db: DatabaseSync): D1Database {
   } as unknown as D1Database
 }
 
-/** A database with a made up club and member, built to 0060 alone or from every migration. */
+/** A database with a made up club, a member and the member's child profile, never used, built to 0060 alone or from every migration. */
 function database(files: string[]): DatabaseSync {
   return openMigratedDb({
     files,
     extra: `
       INSERT INTO clubs (id, name, city) VALUES ('example-chess-club', 'Example Chess Club', 'Example City');
       INSERT INTO members (id, email, full_name, club_id) VALUES ('player-one', 'player.one@example.org', 'Player One', 'example-chess-club');
+      INSERT INTO members (id, email, full_name, guardian_id) VALUES ('player-two', 'player.two@example.org', 'Player Two', 'player-one');
     `,
   })
 }
@@ -106,7 +114,7 @@ describe('isMissingTableOrColumn', () => {
 })
 
 describe('on a database built to 0060 alone', () => {
-  it('has none of 0066\'s tables and columns, so the three paths meet them missing', () => {
+  it('has none of 0066\'s tables and columns, so the four paths meet them missing', () => {
     const db = database(TO_0060)
     const tables = (db.prepare(`SELECT name FROM sqlite_master WHERE type = 'table'`).all() as Array<{ name: string }>).map((r) => r.name)
     for (const table of ['club_slug_history', 'club_places', 'club_reports', 'club_rep_requests']) expect(tables, table).not.toContain(table)
@@ -137,6 +145,18 @@ describe('on a database built to 0060 alone', () => {
     expect(db.prepare(`SELECT club_id FROM members WHERE id = 'player-one'`).get()).toEqual({ club_id: null })
   })
 
+  it('deletes a parent\'s unused child profile with one log line, naming no one, and answers the children left', async () => {
+    const db = database(TO_0060)
+    const warn = quiet()
+    const res = await call(childDelete as PagesFunction<never>, db, { method: 'DELETE', id: 'player-two' })
+    expect(res.status).toBe(200)
+    expect(await res.json()).toEqual({ children: [] })
+    expect(lines(warn)).toEqual([CHILD_CLUB_REFERENCES_UNCLEARED_LOG])
+    expect(CHILD_CLUB_REFERENCES_UNCLEARED_LOG).not.toMatch(/player|@/i)
+    expect(db.prepare(`SELECT COUNT(*) AS n FROM members WHERE id = 'player-two'`).get()).toEqual({ n: 0 })
+    expect(db.prepare(`SELECT COUNT(*) AS n FROM members WHERE id = 'player-one'`).get()).toEqual({ n: 1 })
+  })
+
   it('creates a club against the ids alone, with one log line, its answer today\'s 13 columns', async () => {
     const db = database(TO_0060)
     const warn = quiet()
@@ -151,9 +171,13 @@ describe('on a database built to 0060 alone', () => {
 })
 
 describe('on a database built from every migration', () => {
-  it('runs the three paths with no log line of theirs, and gives the new club its slug', async () => {
+  it('runs the four paths with no log line of theirs, and gives the new club its slug', async () => {
     const db = database(migrationFiles())
     const warn = quiet()
+    db.exec(`UPDATE clubs SET confirmed_by = 'player-two' WHERE id = 'example-chess-club'`)
+    expect((await call(childDelete as PagesFunction<never>, db, { method: 'DELETE', id: 'player-two' })).status).toBe(200)
+    expect(db.prepare(`SELECT confirmed_by FROM clubs WHERE id = 'example-chess-club'`).get()).toEqual({ confirmed_by: null })
+    expect(db.prepare(`SELECT COUNT(*) AS n FROM members WHERE id = 'player-two'`).get()).toEqual({ n: 0 })
     db.exec(`UPDATE clubs SET told_by = 'player-one' WHERE id = 'example-chess-club'`)
     expect((await call(memberDelete as PagesFunction<never>, db, { method: 'DELETE', id: 'player-one' })).status).toBe(200)
     expect(db.prepare(`SELECT told_by FROM clubs WHERE id = 'example-chess-club'`).get()).toEqual({ told_by: null })
@@ -163,6 +187,6 @@ describe('on a database built from every migration', () => {
     db.exec(`INSERT INTO club_places (club_id, name) VALUES ('example-chess-club', 'Example Library')`)
     expect((await call(clubDelete as PagesFunction<never>, db, { method: 'DELETE', id: 'example-chess-club' })).status).toBe(200)
     expect(db.prepare(`SELECT COUNT(*) AS n FROM club_places WHERE club_id = 'example-chess-club'`).get()).toEqual({ n: 0 })
-    for (const line of [CLUB_REFERENCES_UNCLEARED_LOG, CLUB_ROWS_UNCLEARED_LOG, CLUB_SLUGS_UNREAD_LOG]) expect(lines(warn)).not.toContain(line)
+    for (const line of [CLUB_REFERENCES_UNCLEARED_LOG, CLUB_ROWS_UNCLEARED_LOG, CLUB_SLUGS_UNREAD_LOG, CHILD_CLUB_REFERENCES_UNCLEARED_LOG]) expect(lines(warn)).not.toContain(line)
   })
 })

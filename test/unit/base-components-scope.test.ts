@@ -55,9 +55,10 @@ describe('the new components are drawn on the fixture page only', () => {
     expect(importersOf(name)).toEqual([FIXTURE])
   })
 
-  it('ScrollPanel is imported by the fixture page and the Menu sheet, and nothing else under src', () => {
+  it('ScrollPanel is imported by the fixture page, the Menu sheet and the club editor, and nothing else under src', () => {
     // WS02 step 6's sheet scrolls its list inside the panel (decision D16), its first place off the fixture page.
-    expect(importersOf('ScrollPanel')).toEqual(['src/components/layout/MobileMenu.tsx', FIXTURE].sort())
+    // WS09 step 7's club editor scrolls its form inside it, drawn only with clubKeepers on.
+    expect(importersOf('ScrollPanel')).toEqual(['src/areas/clubs/components/ClubEditor.tsx', 'src/components/layout/MobileMenu.tsx', FIXTURE].sort())
   })
 
   it('the statuses and their words are read by StatusBadge and the fixture page only', () => {

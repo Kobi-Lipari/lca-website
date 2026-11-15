@@ -5,11 +5,32 @@
 // pin) to place it, or paste coordinates or a Google Maps link. Saving goes
 // through the normal club update, so admins, the club's rep and its regional
 // representative can all do it.
+//
+// The club editor (src/areas/clubs/components/EditorPlaces.tsx) draws the
+// same map and pasted coordinates bare: no heading, no words and no save of
+// its own, with each new point handed to the form, which saves it with the
+// rest on Save and publish. A second place's picker names its place in its
+// label, its buttons and its line, so each of the two reads apart. While
+// the editor saves, the bare picker is marked shut (`waiting`) and not
+// disabled, so its box and its buttons keep the focus: the box is read
+// only, a press of a button or Enter in the box does nothing, and the map
+// takes no click or drag (WS09 step 9). The bare picker keeps the focus in
+// place for a keyboard: Use this stays a live button with an empty box, which
+// it refuses in words, so a good paste that empties the box never disables
+// the button that holds the focus, and Remove pin, which goes once the pin
+// is gone, hands the focus to the pin's box. The pin's line and a refused
+// paste's words stand in live regions drawn from the first render, polite
+// and assertive (not the roles, so the editor's own status and alert stay
+// the form's only ones), so a screen reader hears the point set, the pin
+// removed and the refusal, a second refusal in the same words as well. For
+// a person who asks for less motion the editor's map moves to a pasted pin
+// at once rather than gliding there.
 import { useEffect, useRef, useState } from 'react'
 import { MapPin } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import { MAP_STYLES, findPinByName, fitLouisiana, loadMapsScript } from '@/areas/clubs/clubMap'
 import { LCA } from '@/lib/brand'
 import { parseLocation, round6 } from '@/areas/clubs/mapLocation'
@@ -25,35 +46,80 @@ const PIN =
     '</svg>',
   )
 
+/** The editor's bare picker: the id of its coordinates box, and where each new point goes (null once the pin is removed). */
+export interface BarePicker {
+  inputId: string
+  onChange: (point: LatLng | null) => void
+  /** The place it sets, such as "place 2", named in its words; the first place's picker names none. */
+  place?: string
+}
+
+/** Whether the person has asked for less motion, in whichever look the page is drawn. */
+function reducesMotion(): boolean {
+  return typeof window !== 'undefined' && typeof window.matchMedia === 'function' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
+}
+
+/** A control of the bare picker, shut by its aria-disabled mark as by disabled. */
+const SHUT = 'min-h-11 aria-disabled:cursor-not-allowed aria-disabled:opacity-50'
+
 export function ClubLocationPicker({
-  clubName, latitude, longitude, disabled, onSave,
+  clubName, latitude, longitude, disabled, waiting, onSave, bare,
 }: {
   clubName: string
   latitude: number | null | undefined
   longitude: number | null | undefined
   disabled?: boolean
-  /** Saves the location (null removes it); resolves once saved. */
-  onSave: (location: LatLng | null) => Promise<void>
+  /** The editor's save is under way: the bare picker is marked shut, never disabled, and takes no new point. */
+  waiting?: boolean
+  /** Saves the location (null removes it); resolves once saved. Today's card alone calls it. */
+  onSave?: (location: LatLng | null) => Promise<void>
+  /** Draws the map and the coordinates box alone, for the club editor's form. */
+  bare?: BarePicker
 }) {
   const saved: LatLng | null =
     typeof latitude === 'number' && typeof longitude === 'number' ? { lat: latitude, lng: longitude } : null
-  const fallback = findPinByName(clubName)
+  // The original club list's spot stands in on today's card alone: the
+  // editor sends the point it shows, so it shows only one a person set.
+  const fallback = bare ? null : findPinByName(clubName)
   const [draft, setDraft] = useState<LatLng | null>(saved ?? (fallback ? { lat: fallback.lat, lng: fallback.lng } : null))
   const [paste, setPaste] = useState('')
   const [pasteError, setPasteError] = useState<string | null>(null)
+  // Counts the refusals, so the bare picker draws each one afresh and a second with the same words is heard again.
+  const [refusals, setRefusals] = useState(0)
   const [busy, setBusy] = useState(false)
   const [note, setNote] = useState<{ ok: boolean; text: string } | null>(null)
   const [loaded, setLoaded] = useState(false)
+  // The pin's box, set by a press of Remove pin, whose button goes with the pin: the focus then moves to the box.
+  const focusBox = useRef<string | null>(null)
 
   const mapEl = useRef<HTMLDivElement>(null)
   const mapRef = useRef<google.maps.Map | null>(null)
   const markerRef = useRef<google.maps.Marker | null>(null)
   // The map's click listener reads this, so it sees the latest value without
   // the map being made again. Updated after each render, not during one.
-  const disabledRef = useRef(disabled)
+  const shut = !!disabled || !!waiting
+  const disabledRef = useRef(shut)
   useEffect(() => {
-    disabledRef.current = disabled
-  }, [disabled])
+    disabledRef.current = shut
+  }, [shut])
+
+  // The editor hears of each new point after the render that draws it.
+  const onChange = useRef(bare?.onChange)
+  useEffect(() => {
+    onChange.current = bare?.onChange
+  })
+  const first = useRef(true)
+  useEffect(() => {
+    if (first.current) {
+      first.current = false
+      return
+    }
+    onChange.current?.(draft)
+    if (focusBox.current && !draft) {
+      document.getElementById(focusBox.current)?.focus()
+      focusBox.current = null
+    }
+  }, [draft])
 
   const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY as string | undefined
   useEffect(() => {
@@ -98,7 +164,7 @@ export function ClubLocationPicker({
         optimized: false,
         map: mapRef.current,
         position: draft,
-        draggable: !disabled,
+        draggable: !shut,
         icon: { url: PIN, scaledSize: new g.Size(34, 45), anchor: new g.Point(17, 45) },
         title: 'Drag to adjust',
       })
@@ -110,23 +176,33 @@ export function ClubLocationPicker({
     } else {
       markerRef.current.setPosition(draft)
     }
-    markerRef.current.setDraggable(!disabled)
-  }, [loaded, draft, disabled])
+    markerRef.current.setDraggable(!shut)
+  }, [loaded, draft, shut])
 
   function applyPasted() {
+    if (waiting) return
+    if (bare && !paste.trim()) {
+      setPasteError('Paste coordinates or a Google Maps link in the box first.')
+      setRefusals((n) => n + 1)
+      return
+    }
     const parsed = parseLocation(paste)
     if (!parsed) {
       setPasteError('Couldn’t find coordinates in that. Paste something like 30.4515, -91.1871 or a Google Maps link.')
+      setRefusals((n) => n + 1)
       return
     }
     setPasteError(null)
     setPaste('')
     setDraft(parsed)
-    mapRef.current?.panTo(parsed)
+    // In the editor the map moves straight to the pin for a person who asked for less motion; today's card glides as before.
+    if (bare && reducesMotion()) mapRef.current?.setCenter(parsed)
+    else mapRef.current?.panTo(parsed)
     mapRef.current?.setZoom(15)
   }
 
   async function save(location: LatLng | null) {
+    if (!onSave) return
     setBusy(true)
     setNote(null)
     try {
@@ -142,6 +218,68 @@ export function ClubLocationPicker({
 
   const changed = !!draft && (!saved || draft.lat !== saved.lat || draft.lng !== saved.lng)
 
+  const mapBox = apiKey ? (
+    <div className="relative h-72 overflow-hidden rounded-lg border bg-[#f2efe6]">
+      <div ref={mapEl} className="h-full w-full" />
+      {!loaded && (
+        <div className="absolute inset-0 flex items-center justify-center text-sm text-muted-on-light">Loading map…</div>
+      )}
+    </div>
+  ) : null
+
+  if (bare) {
+    const errorId = `${bare.inputId}-error`
+    const of = bare.place ? ` for ${bare.place}` : ''
+    return (
+      <div className="space-y-3">
+        {mapBox}
+        <div className="space-y-1.5">
+          <Label htmlFor={bare.inputId}>{`Pin${of}: coordinates or a Google Maps link`}</Label>
+          <div className="flex flex-col gap-2 sm:flex-row">
+            <Input
+              id={bare.inputId}
+              value={paste}
+              disabled={disabled}
+              readOnly={waiting}
+              aria-disabled={waiting || undefined}
+              onChange={(e) => { if (!waiting) setPaste(e.target.value) }}
+              onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); applyPasted() } }}
+              aria-invalid={pasteError ? true : undefined}
+              aria-describedby={pasteError ? errorId : undefined}
+              className={SHUT}
+            />
+            <Button
+              type="button" variant="outline" className={SHUT} disabled={disabled} aria-disabled={waiting || undefined}
+              onClick={applyPasted}
+            >
+              {`Use this${of}`}
+            </Button>
+          </div>
+          <div aria-live="assertive">
+            {pasteError && <p key={refusals} id={errorId} className="text-sm text-destructive">{pasteError}</p>}
+          </div>
+        </div>
+        <div className="flex flex-col items-start gap-2 sm:flex-row sm:items-center sm:gap-3">
+          <p aria-live="polite" className="text-sm tabular-nums text-ink">
+            {draft ? `Pin${of} at ${draft.lat.toFixed(5)}, ${draft.lng.toFixed(5)}` : `No pin set${of}`}
+          </p>
+          {draft && (
+            <Button
+              type="button" variant="outline" className={SHUT} disabled={disabled} aria-disabled={waiting || undefined}
+              onClick={() => {
+                if (waiting) return
+                focusBox.current = bare.inputId
+                setDraft(null)
+              }}
+            >
+              {`Remove pin${of}`}
+            </Button>
+          )}
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="rounded-xl border bg-card p-6 shadow-sm">
       <div className="mb-1 flex items-center gap-2">
@@ -155,14 +293,7 @@ export function ClubLocationPicker({
         {!saved && !fallback && ' This club isn’t on the map yet.'}
       </p>
 
-      {apiKey ? (
-        <div className="relative h-72 overflow-hidden rounded-lg border bg-[#f2efe6]">
-          <div ref={mapEl} className="h-full w-full" />
-          {!loaded && (
-            <div className="absolute inset-0 flex items-center justify-center text-sm text-muted-on-light">Loading map…</div>
-          )}
-        </div>
-      ) : (
+      {mapBox ?? (
         <p className="rounded-lg border border-dashed p-4 text-sm text-muted-foreground">The map isn&rsquo;t available here, but you can paste coordinates below.</p>
       )}
 

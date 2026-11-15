@@ -24,7 +24,14 @@
 // caller's header can be any height and wraps on a phone or when the text is
 // zoomed, so the height is read as the header is drawn and again whenever it
 // changes, rather than written as a class.
-import { useLayoutEffect, useRef, type ReactNode } from 'react'
+//
+// A caller may let the panel scroll only from some width up, as the club
+// editor does from the width where its previews stand beside it: its
+// className lifts the height bound below that width, and `scrollsWhen` names
+// the same width as a media query. Where the query does not match, nothing in
+// the panel scrolls, so it is neither a stop for Tab nor a named region. A
+// panel given no query scrolls at every width, as before.
+import { useCallback, useLayoutEffect, useRef, useSyncExternalStore, type ReactNode } from 'react'
 import { ADMIN_SCROLL } from '@/lib/brand'
 import { drawsNothing } from '@/lib/drawsNothing'
 import { cn } from '@/lib/utils'
@@ -46,11 +53,36 @@ interface ScrollPanelProps {
   header?: ReactNode
   /** Classes for the panel itself; a max-h-* here replaces the 70vh bound. */
   className?: string
+  /**
+   * A media query for the widths at which the panel scrolls, when className
+   * lets it grow to its content at the others. Left out, it always scrolls.
+   */
+  scrollsWhen?: string
   children: ReactNode
 }
 
-export function ScrollPanel({ label, header, className, children }: ScrollPanelProps) {
+/**
+ * Whether the panel scrolls now: always without a query, and wherever the
+ * browser cannot be asked, as before; else while the query matches,
+ * followed as the window changes.
+ */
+function useScrolls(media: string | undefined): boolean {
+  const list = useCallback(
+    (): MediaQueryList | null => (media && typeof window.matchMedia === 'function' ? window.matchMedia(media) : null),
+    [media],
+  )
+  const subscribe = useCallback((changed: () => void) => {
+    const query = list()
+    if (!query) return () => {}
+    query.addEventListener('change', changed)
+    return () => query.removeEventListener('change', changed)
+  }, [list])
+  return useSyncExternalStore(subscribe, () => list()?.matches ?? true, () => true)
+}
+
+export function ScrollPanel({ label, header, className, scrollsWhen, children }: ScrollPanelProps) {
   const panel = useRef<HTMLDivElement>(null)
+  const scrolls = useScrolls(scrollsWhen)
   const bar = useRef<HTMLDivElement>(null)
   const hasHeader = !drawsNothing(header)
 
@@ -76,9 +108,9 @@ export function ScrollPanel({ label, header, className, children }: ScrollPanelP
   return (
     <div
       ref={panel}
-      role="region"
-      aria-label={label}
-      tabIndex={0}
+      role={scrolls ? 'region' : undefined}
+      aria-label={scrolls ? label : undefined}
+      tabIndex={scrolls ? 0 : undefined}
       data-slot="scroll-panel"
       className={cn(
         ADMIN_SCROLL,
