@@ -47,7 +47,7 @@ K's decisions on the clubs work, numbered in the order K made them, each with th
    - The lead then asks that session for the next directed brief, as the clubs work began. K's own words in the clubs session stay the final word over any brief.
    - What the answer does not cover: any merge, any switch and any choice still open.
 
-7. The five open choices (Sunday, November 15, 2026, about 4:30 AM UTC). The lead had listed them with a recommendation each. K's words: "All recommended. But why are we sending rep an email on saves? Just wanna talk and help me understand"
+7. The five open choices (Sunday, November 15, 2026, about 4:10 AM UTC). The lead had listed them with a recommendation each. K's words: "All recommended. But why are we sending rep an email on saves? Just wanna talk and help me understand"
    - How often a save emails the regional representatives (T10): at most one notice for a club and a saver in an hour, the later saves of the hour named in the activity log alone. K asked why the notice exists at all, and the lead answered in the chat; if that talk changes K's mind, K's later word replaces this line. Built behind `clubKeepers`.
    - What a first save does to today's page (P9): kept as built.
    - Still accurate: no row in the activity log.
