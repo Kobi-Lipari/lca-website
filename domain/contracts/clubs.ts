@@ -399,7 +399,73 @@ export const updateClubResponseSchema = z.strictObject({ club: adminClubRowSchem
 /** PUT /api/admin/clubs/[id]/places: the club's places as saved. */
 export const clubPlacesResponseSchema = z.strictObject({ places: z.array(clubPlaceSchema) })
 
+/**
+ * POST /api/admin/clubs/[id]/confirm, Still accurate: no field of its own.
+ * The client sends `{}`; a key beside it passes through and is ignored, as
+ * in every request schema, and changes nothing.
+ */
+export const clubConfirmRequestSchema = z.looseObject({})
+
+/**
+ * POST /api/admin/clubs/[id]/confirm: the club's new last check, stored in
+ * UTC, and its words for the card ("Checked Nov 2026").
+ */
+export const clubConfirmResponseSchema = z.strictObject({
+  id: idSchema,
+  lastConfirmedAt: storedTimestampSchema,
+  lastCheckWords: z.string(),
+})
+
+/**
+ * One club's card in My region: the listing's name, town, region, colour,
+ * logo address and statement (how the club meets, in its own words), the
+ * last check (null for a club never checked) with its words and whether it
+ * needs a check, the count of the club's events the person is shown, and
+ * its open items, empty until WS09 steps 19 and 28 give them their rows.
+ * No email of any kind, no roster and no member.
+ */
+export const regionClubSchema = z.strictObject({
+  id: idSchema,
+  name: z.string(),
+  city: z.string(),
+  region: z.string().nullable(),
+  color: z.string().nullable(),
+  logoUrl: z.string().nullable(),
+  statement: z.string().nullable(),
+  lastConfirmedAt: storedTimestampSchema.nullable(),
+  lastCheckWords: z.string(),
+  needsCheck: z.boolean(),
+  events: z.number().int().nonnegative(),
+  openItems: z.array(z.never()),
+})
+
+/** A region My region covers, and who else keeps it: the name and seat title of each other holder of an active seat over it. */
+export const regionKeepersSchema = z.strictObject({
+  region: z.string(),
+  keepers: z.array(z.strictObject({ name: z.string(), seat: z.string() })),
+})
+
+/**
+ * GET /api/workspace/region, My region's answer, for a holder of an active
+ * regional seat and for an LCA admin: the cards in their order, This month
+ * (the next check's day, its date with the weekday and its time, and how
+ * many of the clubs were checked in the last 90 days and how many not), and
+ * the regions with who else keeps them.
+ */
+export const workspaceRegionResponseSchema = z.strictObject({
+  clubs: z.array(regionClubSchema),
+  thisMonth: z.strictObject({
+    nextCheck: z.strictObject({ day: isoDateSchema, date: z.string(), time: z.string() }),
+    checked: z.number().int().nonnegative(),
+    notChecked: z.number().int().nonnegative(),
+  }),
+  regions: z.array(regionKeepersSchema),
+})
+
 export type UpdateClubRequest = z.infer<typeof updateClubRequestSchema>
 export type ClubPlacesRequest = z.infer<typeof clubPlacesRequestSchema>
 export type AdminClubResponse = z.infer<typeof adminClubResponseSchema>
 export type ClubPlace = z.infer<typeof clubPlaceSchema>
+export type ClubConfirmResponse = z.infer<typeof clubConfirmResponseSchema>
+export type WorkspaceRegionResponse = z.infer<typeof workspaceRegionResponseSchema>
+export type RegionClub = z.infer<typeof regionClubSchema>

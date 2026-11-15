@@ -14,12 +14,15 @@
 import type { ZodType } from 'zod'
 import {
   adminClubResponseSchema,
+  clubConfirmRequestSchema,
+  clubConfirmResponseSchema,
   clubDetailResponseSchema,
   clubListResponseSchema,
   clubPlacesRequestSchema,
   clubPlacesResponseSchema,
   updateClubRequestSchema,
   updateClubResponseSchema,
+  workspaceRegionResponseSchema,
 } from './clubs'
 import {
   adminTournamentResponseSchema,
@@ -82,6 +85,9 @@ export const contracts = {
   'admin/clubs/[id]': {
     GET: { response: adminClubResponseSchema },
     PATCH: { request: updateClubRequestSchema, response: updateClubResponseSchema },
+  },
+  'admin/clubs/[id]/confirm': {
+    POST: { request: clubConfirmRequestSchema, response: clubConfirmResponseSchema },
   },
   'admin/clubs/[id]/places': {
     PUT: { request: clubPlacesRequestSchema, response: clubPlacesResponseSchema },
@@ -160,6 +166,9 @@ export const contracts = {
   },
   'tournaments/[id]': {
     GET: { response: tournamentDetailResponseSchema },
+  },
+  'workspace/region': {
+    GET: { response: workspaceRegionResponseSchema },
   },
 } satisfies Record<string, RouteContracts>
 
