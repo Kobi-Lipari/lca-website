@@ -12,6 +12,9 @@ export const NEWSLETTER_ROWS_UNREAD_LOG = 'member delete: the newsletter that is
 /** The one log line for the club references of migration 0066 the delete could not clear; it names no member. */
 export const CLUB_REFERENCES_UNCLEARED_LOG = 'member delete: the club tables of migration 0066 could not be read; the delete goes on without them'
 
+/** The one log line for the run record of migration 0068 the delete could not clear; it names no member. */
+export const RUN_MARKS_UNCLEARED_LOG = 'member delete: the run record of migration 0068 could not be read; the delete goes on without it'
+
 export const onRequestOptions: PagesFunction<Env> = async () => handleOptions()
 
 export const onRequestDelete: PagesFunction<Env> = async (context) => {
@@ -42,6 +45,18 @@ export const onRequestDelete: PagesFunction<Env> = async (context) => {
   // Children managed by this account keep their own history (games, ratings)
   // and simply stop having a parent attached; an admin can reattach them.
   await context.env.DB.prepare('UPDATE members SET guardian_id = NULL WHERE guardian_id = ?').bind(memberId).run()
+  // Migration 0068's one reference to a member, automation_runs.seen_by, with
+  // no delete action: a run this member marked as seen keeps its row and its
+  // seen_at and loses the name. It runs on its own, before the batch below,
+  // so a database that has 0066 and not yet 0068 still clears 0066's
+  // references with the member; before 0068 has run the table is not there,
+  // and the delete goes on with one log line.
+  try {
+    await context.env.DB.prepare('UPDATE automation_runs SET seen_by = NULL WHERE seen_by = ?').bind(memberId).run()
+  } catch (err) {
+    if (!isMissingTableOrColumn(err)) throw err
+    console.warn(RUN_MARKS_UNCLEARED_LOG)
+  }
   // Migration 0066's references to a member, none with a delete action: the
   // club pages' last save and last check keep their dates and lose the name,
   // a report or a rep request this member decided keeps its outcome, and the

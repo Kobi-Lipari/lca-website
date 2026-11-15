@@ -23,6 +23,7 @@ const BoardPage = lazy(() => import('@/pages/BoardPage').then(m => ({ default: m
 const ChampionsPage = lazy(() => import('@/pages/ChampionsPage').then(m => ({ default: m.ChampionsPage })))
 const BylawsPage = lazy(() => import('@/pages/BylawsPage').then(m => ({ default: m.BylawsPage })))
 const ClubDetailPage = lazy(() => import('@/pages/ClubDetailPage').then(m => ({ default: m.ClubDetailPage })))
+const ClubConfirmPage = lazy(() => import('@/pages/ClubConfirmPage').then(m => ({ default: m.ClubConfirmPage })))
 const ClubsPage = lazy(() => import('@/pages/ClubsPage').then(m => ({ default: m.ClubsPage })))
 const ContactPage = lazy(() => import('@/pages/ContactPage').then(m => ({ default: m.ContactPage })))
 const DashboardPage = lazy(() => import('@/pages/DashboardPage').then(m => ({ default: m.DashboardPage })))
@@ -49,6 +50,8 @@ const TournamentPairingsPage = lazy(() => import('@/pages/TournamentPairingsPage
 const TournamentPrintPage = lazy(() => import('@/pages/TournamentPrintPage').then(m => ({ default: m.TournamentPrintPage })))
 const WorkspacePage = lazy(() => import('@/pages/WorkspacePage').then(m => ({ default: m.WorkspacePage })))
 const YourClubPage = lazy(() => import('@/pages/YourClubPage').then(m => ({ default: m.YourClubPage })))
+const MyRegionPage = lazy(() => import('@/pages/MyRegionPage').then(m => ({ default: m.MyRegionPage })))
+const MyRegionClubPage = lazy(() => import('@/pages/MyRegionClubPage').then(m => ({ default: m.MyRegionClubPage })))
 const TournamentsPage = lazy(() => import('@/pages/TournamentsPage').then(m => ({ default: m.TournamentsPage })))
 // The accessibility test build's fixture page (vite build --mode a11y, see
 // test/a11y). The build replaces import.meta.env.MODE with the mode's name,
@@ -192,6 +195,8 @@ function App() {
             <Route path="/tournaments/:id/print" element={<TournamentPrintPage />} />
             <Route path="/scholastic" element={<ScholasticPage />} />
             <Route path="/clubs" element={<ClubsPage />} />
+            {/* The page a Still accurate link in the monthly check opens, with no sign-in (WS09 step 14); routed only while clubKeepers is on, so with it off the address draws what it draws today. */}
+            {FEATURES.clubKeepers && <Route path="/clubs/confirm/:token" element={<ClubConfirmPage />} />}
             <Route path="/clubs/:id" element={<ClubDetailPage />} />
             <Route path="/news" element={<NewsPage />} />
             <Route path="/news/:slug" element={<NewsPostPage />} />
@@ -240,6 +245,10 @@ function App() {
             <Route path="/board/inbox" element={<ProtectedRoute><BoardInboxPage /></ProtectedRoute>} />
             {/* ── Club reps, directors, auditors ── */}
             <Route path="/workspace" element={<RoleProtectedRoute roles={WORKSPACE_ROLES} allowDirectors><WorkspacePage /></RoleProtectedRoute>} />
+            {/* My region, for a holder of an active regional seat whatever their role, or an LCA admin (WS09 step 11); with clubKeepers off it sends everyone to the dashboard. */}
+            <Route path="/workspace/region" element={FEATURES.clubKeepers ? <RoleProtectedRoute requireSeat><MyRegionPage /></RoleProtectedRoute> : <Navigate to="/dashboard" replace />} />
+            {/* A club in My region, for an LCA admin or a holder of an active regional seat whose regions hold the club (WS09 step 12); with clubKeepers off it sends everyone to the dashboard. */}
+            <Route path="/workspace/region/clubs/:id" element={FEATURES.clubKeepers ? <RoleProtectedRoute requireSeat requireClubMatch><MyRegionClubPage /></RoleProtectedRoute> : <Navigate to="/dashboard" replace />} />
             {/* ── Admin ── */}
             {/* Admin-only. Anyone else who follows an old /admin link lands in
                 their workspace (or the dashboard) instead of an empty panel.

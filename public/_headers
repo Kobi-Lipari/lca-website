@@ -1,0 +1,12 @@
+# public/_headers
+#
+# Cloudflare Pages reads this file from the build's output and adds these
+# headers to the static answers whose address matches.
+#
+# /clubs/confirm/<token> is the page a Still accurate link in the monthly
+# check opens (WS09 step 14). Its token rides in the address, so the page is
+# sent with no referrer, from its first request on, and asks search engines
+# not to index it. The page also sets both in its head while it draws.
+/clubs/confirm/*
+  Referrer-Policy: no-referrer
+  X-Robots-Tag: noindex

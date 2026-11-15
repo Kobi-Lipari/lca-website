@@ -31,6 +31,7 @@ import { ROLE_LABELS, canAccessAdmin } from '@/areas/admin/roles'
 import UscfSearchInput, { type UscfPlayerResult } from '@/areas/membership/components/UscfSearchInput'
 import { supabase } from '@/lib/supabase'
 import { cn } from '@/lib/utils'
+import { FEATURES } from '@/lib/features'
 import { usePageTitle } from '@/hooks/usePageTitle'
 import { FamilyCard } from '@/areas/households/components/FamilyCard'
 import { UsChessBadge, UsChessMembershipDetail } from '@/areas/membership/components/UsChessMembership'
@@ -339,6 +340,12 @@ export function DashboardPage() {
                 <p className="mt-1 text-sm text-muted-foreground">
                   As regional representative you can update these clubs' pages and news.
                 </p>
+                {/* With clubKeepers on, the way into My region (WS09 step 11). */}
+                {FEATURES.clubKeepers && (
+                  <Button asChild variant="outline" className="mt-3 min-h-11 px-4">
+                    <Link to="/workspace/region">Open My region</Link>
+                  </Button>
+                )}
                 <ul className="mt-4 grid gap-2 sm:grid-cols-2">
                   {managedClubs.map((c) => (
                     <li key={c.id}>

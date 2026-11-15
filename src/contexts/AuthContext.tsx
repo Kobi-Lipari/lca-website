@@ -155,6 +155,31 @@ export function AuthProvider({ children }: { children: ReactNode }) {
    * an explicit refreshMember() call still re-fetches on demand.
    */
   const autoFetchedFor = useRef<string | null>(null)
+  /**
+   * The access token whose first profile load has ended, well or badly.
+   *
+   * Between the draw that first knows a session and the end of that load the
+   * member is null, and a guarded route reading the role, seats and clubs in
+   * that draw would send a signed-in person away on a reload. Until this
+   * holds the current token, memberLoading reads true for a signed-in person
+   * with no member in hand (see firstLoadOpen below). firstLoadOpen never
+   * reads true for a visitor with no session or while a member is in hand;
+   * refreshMember's own state still does, as it always has.
+   */
+  const [firstLoadEndedFor, setFirstLoadEndedFor] = useState<string | null>(null)
+  /** Profile loads under way: the listener's and refreshMember's. The first load has ended only when none is left. */
+  const loadsInFlight = useRef(0)
+  /** The access token of the session last set, so a load that ends marks the session that is current then. */
+  const currentToken = useRef<string | null>(null)
+
+  const profileLoadStarted = useCallback(() => {
+    loadsInFlight.current += 1
+  }, [])
+
+  const profileLoadEnded = useCallback(() => {
+    loadsInFlight.current = Math.max(0, loadsInFlight.current - 1)
+    if (loadsInFlight.current === 0) setFirstLoadEndedFor(currentToken.current)
+  }, [])
 
   const refreshMember = useCallback(async () => {
     if (!session) {
@@ -166,6 +191,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
 
     setMemberLoading(true)
+    profileLoadStarted()
     try {
       const data = await loadMemberProfile()
       setMember(data.member)
@@ -189,11 +215,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
     } finally {
       setMemberLoading(false)
+      profileLoadEnded()
     }
-  }, [session])
+  }, [session, profileLoadStarted, profileLoadEnded])
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session: initialSession } }) => {
+      currentToken.current = initialSession?.access_token ?? null
       setSession(initialSession)
       setUser(initialSession?.user ?? null)
       setLoading(false)
@@ -202,11 +230,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (_event, nextSession) => {
+      currentToken.current = nextSession?.access_token ?? null
       setSession(nextSession)
       setUser(nextSession?.user ?? null)
       setLoading(false)
 
       if (nextSession?.user) {
+        // Counted before the first await, so a load that ends meanwhile
+        // does not mark this session's load as ended.
+        profileLoadStarted()
         try {
           await apiSyncMember()
           const data = await loadMemberProfile()
@@ -219,6 +251,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           setSeats([])
           setManagedClubs([])
           setDirectedTournaments([])
+        } finally {
+          profileLoadEnded()
         }
       } else {
         setMember(null)
@@ -229,13 +263,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     })
 
     return () => subscription.unsubscribe()
-  }, [])
+  }, [profileLoadStarted, profileLoadEnded])
 
   useEffect(() => {
     if (!session) {
       autoFetchedFor.current = null
       return
     }
+    // The state itself, never the value handed out below, or the load that
+    // ends the wait would never start. The one automatic attempt is per
+    // access token, so a refreshed token after a failed load gets another.
     if (member || memberLoading) return
     if (autoFetchedFor.current === session.access_token) return
 
@@ -393,6 +430,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     user?.user_metadata?.role as string | undefined,
   )
 
+  // Worked out at each draw: a session is known, no member is in hand, and the
+  // first load for this token has not ended. A visitor with no session, or a
+  // person whose member is in hand, never reads true from this.
+  const firstLoadOpen = !!session?.user && !member && firstLoadEndedFor !== session.access_token
+  const memberLoadingShown = memberLoading || firstLoadOpen
+
   const directedTournamentIds = useMemo(
     () => directedTournaments.map((t) => t.id),
     [directedTournaments],
@@ -423,7 +466,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       directedTournaments,
       directedTournamentIds,
       loading,
-      memberLoading,
+      memberLoading: memberLoadingShown,
       signIn,
       signUp,
       signOut,
@@ -447,7 +490,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       directedTournaments,
       directedTournamentIds,
       loading,
-      memberLoading,
+      memberLoadingShown,
       signIn,
       signUp,
       signOut,

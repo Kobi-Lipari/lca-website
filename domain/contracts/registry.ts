@@ -14,12 +14,20 @@
 import type { ZodType } from 'zod'
 import {
   adminClubResponseSchema,
+  clubConfirmRequestSchema,
+  clubConfirmResponseSchema,
   clubDetailResponseSchema,
+  clubLinkConfirmRequestSchema,
+  clubLinkConfirmResponseSchema,
+  clubLinkResponseSchema,
   clubListResponseSchema,
   clubPlacesRequestSchema,
   clubPlacesResponseSchema,
+  monthlyCheckRequestSchema,
+  monthlyCheckResponseSchema,
   updateClubRequestSchema,
   updateClubResponseSchema,
+  workspaceRegionResponseSchema,
 } from './clubs'
 import {
   adminTournamentResponseSchema,
@@ -83,8 +91,14 @@ export const contracts = {
     GET: { response: adminClubResponseSchema },
     PATCH: { request: updateClubRequestSchema, response: updateClubResponseSchema },
   },
+  'admin/clubs/[id]/confirm': {
+    POST: { request: clubConfirmRequestSchema, response: clubConfirmResponseSchema },
+  },
   'admin/clubs/[id]/places': {
     PUT: { request: clubPlacesRequestSchema, response: clubPlacesResponseSchema },
+  },
+  'admin/clubs/monthly-check': {
+    POST: { request: monthlyCheckRequestSchema, response: monthlyCheckResponseSchema },
   },
   'admin/mail/newsletter': {
     GET: { response: newsletterSummaryResponseSchema },
@@ -126,6 +140,10 @@ export const contracts = {
   'clubs/[id]': {
     GET: { response: clubDetailResponseSchema },
   },
+  'clubs/confirm/[token]': {
+    GET: { response: clubLinkResponseSchema },
+    POST: { request: clubLinkConfirmRequestSchema, response: clubLinkConfirmResponseSchema },
+  },
   'mail/preferences/[token]': {
     GET: { response: emailChoicesResponseSchema },
     PATCH: { request: emailChoicesRequestSchema, response: emailChoicesResponseSchema },
@@ -160,6 +178,9 @@ export const contracts = {
   },
   'tournaments/[id]': {
     GET: { response: tournamentDetailResponseSchema },
+  },
+  'workspace/region': {
+    GET: { response: workspaceRegionResponseSchema },
   },
 } satisfies Record<string, RouteContracts>
 

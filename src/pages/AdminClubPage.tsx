@@ -1,9 +1,7 @@
 // src/pages/AdminClubPage.tsx
 import { lazy, Suspense, useEffect, useRef, useState, type ChangeEvent, type FormEvent } from 'react'
 import { Link, useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom'
-import {
-  ArrowLeft, Building2, EyeOff, Newspaper, Palette, Trash2, Trophy, Upload, UserPlus, Users,
-} from 'lucide-react'
+import { ArrowLeft, Building2, EyeOff, Newspaper, Palette, Trophy, Upload, UserPlus, Users } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -28,6 +26,8 @@ import { useAuth } from '@/contexts/auth-context'
 import { isViewOnlyAdmin, toolsHomeFor } from '@/areas/admin/roles'
 import { REGIONS } from '@/lib/regions'
 import { ClubLocationPicker } from '@/areas/clubs/components/ClubLocationPicker'
+// The News tab's form and list, which a club's page in My region draws too.
+import { ClubNewsPanel } from '@/areas/clubs/components/ClubNewsPanel'
 import { clubTextColor, clubTextOnDark } from '@/areas/clubs/clubColors'
 import { resizeImageToFit } from '@/lib/resizeImage'
 import { cn } from '@/lib/utils'
@@ -525,79 +525,20 @@ export function AdminClubPage() {
         {/* ── News tab ── */}
         {tab === 'news' && (
           <ViewOnlyFieldset>
-          <div className="space-y-4">
             {/*
               Posted news was previously invisible here — the tab only offered a
               form, so anything already published could not be reviewed or
               removed from the admin panel at all.
             */}
-            <div className="rounded-xl border bg-card p-6 shadow-sm">
-              <div className="mb-4 flex items-center gap-2">
-                <Newspaper className="size-5 text-gold-ink" />
-                <h2 className="text-base font-semibold text-ink">
-                  Posted news · {news.length}
-                </h2>
-              </div>
-              {news.length === 0 ? (
-                <p className="text-sm text-muted-foreground">
-                  Nothing posted yet. Anything you publish below appears on the club's public page.
-                </p>
-              ) : (
-                <ul className="divide-y">
-                  {news.map((item) => (
-                    <li key={item.id} className="flex items-start justify-between gap-4 py-3 first:pt-0 last:pb-0">
-                      <div className="min-w-0">
-                        <p className="font-medium text-ink">{item.title}</p>
-                        <p className="mt-0.5 text-xs text-muted-foreground">{item.news_date}</p>
-                        <p className="mt-1 text-sm text-muted-foreground">{item.excerpt}</p>
-                      </div>
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        className="flex-shrink-0 text-bad hover:bg-bad-50"
-                        disabled={newsDeletingId === item.id}
-                        onClick={() => handleDeleteNews(item)}
-                      >
-                        <Trash2 className="mr-1.5 size-3.5" />
-                        {newsDeletingId === item.id ? 'Deleting…' : 'Delete'}
-                      </Button>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
-
-          <form onSubmit={handlePostNews} className="rounded-xl border bg-card p-6 shadow-sm">
-            <div className="mb-4 flex items-center gap-2">
-              <Newspaper className="size-5 text-gold-ink" />
-              <h2 className="text-base font-semibold text-ink">Post club news</h2>
-            </div>
-            <div className="space-y-4">
-              <div className="space-y-1.5">
-                <Label htmlFor="news-title">Title</Label>
-                <Input id="news-title" value={newsForm.title} onChange={(e) => setNewsForm((p) => ({ ...p, title: e.target.value }))} required />
-              </div>
-              <div className="space-y-1.5">
-                <Label htmlFor="news-date">Date</Label>
-                <Input id="news-date" type="date" value={newsForm.newsDate} onChange={(e) => setNewsForm((p) => ({ ...p, newsDate: e.target.value }))} required />
-              </div>
-              <div className="space-y-1.5">
-                <Label htmlFor="news-excerpt">Excerpt</Label>
-                <textarea
-                  id="news-excerpt"
-                  className="min-h-[90px] w-full rounded-md border bg-background px-3 py-2 text-sm"
-                  value={newsForm.excerpt}
-                  onChange={(e) => setNewsForm((p) => ({ ...p, excerpt: e.target.value }))}
-                  required
-                />
-              </div>
-            </div>
-            <Button type="submit" className={cn('mt-4', goldButtonClass)} disabled={newsSaving}>
-              {newsSaving ? 'Posting…' : 'Post news'}
-            </Button>
-          </form>
-          </div>
+            <ClubNewsPanel
+              news={news}
+              newsForm={newsForm}
+              setNewsForm={setNewsForm}
+              newsSaving={newsSaving}
+              newsDeletingId={newsDeletingId}
+              handleDeleteNews={handleDeleteNews}
+              handlePostNews={handlePostNews}
+            />
           </ViewOnlyFieldset>
         )}
 

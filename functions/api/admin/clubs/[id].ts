@@ -34,6 +34,7 @@ import {
   saveListing,
   slugLeadsElsewhere,
   storedText,
+  type SavedChange,
 } from '../../../utils/clubs/save'
 import { sendClubSaveNotice } from '../../../utils/clubs/emails'
 import { isReservedSlug } from '../../../../domain/clubs/slug'
@@ -350,8 +351,9 @@ export const onRequestPatch: PagesFunction<Env> = async (context) => {
  * into today's location and pin, written in one batch with the stamps and
  * the activity row (functions/utils/clubs/save.ts); then one notice to the
  * region's representatives, naming every field that changed across the
- * listing and the places, after the answer. Answers a refusal, or null once
- * the save is written.
+ * listing and the places, after the answer, when the activity row says it
+ * goes (at most once an hour for one club and one saver). Answers a refusal,
+ * or null once the save is written.
  */
 async function saveKeepersListing(
   context: EventContext<Env, string, unknown>,
@@ -389,7 +391,7 @@ async function saveKeepersListing(
     next.slug = body.slug
   }
 
-  let changed: string[] | null
+  let changed: SavedChange | null
   try {
     changed = await saveListing(context.env.DB, { clubId, saver, existing, next, places: body.places })
   } catch (err) {
@@ -398,12 +400,14 @@ async function saveKeepersListing(
   }
   // The club was deleted after this save read it: nothing was written, and no one is told.
   if (changed === null) return errorResponse('Club not found', 404)
+  // The save's activity row says whether its notice goes: at most once an hour for this club and this saver.
+  if (!changed.notice) return null
 
   context.waitUntil(sendClubSaveNotice(context.env, context.request, {
     clubId,
     clubName: String(next.name ?? existing.name),
     saver,
-    columns: changed,
+    columns: changed.fields,
   }))
   return null
 }

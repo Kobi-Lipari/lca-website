@@ -752,7 +752,7 @@ describe('the club editor: what it asks and how it is drawn', () => {
     }
     expect(read('src/areas/clubs/editor.ts')).not.toMatch(/@domain\/contracts|\bfetch\(/)
     const api = read('src/areas/clubs/api.ts')
-    expect(api).toContain('import type { AdminClubResponse, ClubPlace, UpdateClubRequest } from \'@domain/contracts\'')
+    expect(api).toContain('import type { AdminClubResponse, ClubConfirmResponse, ClubPlace, UpdateClubRequest, WorkspaceRegionResponse } from \'@domain/contracts\'')
     // One call for one press: the client no longer reaches the places' own endpoint.
     expect(api).not.toContain('/places`')
     const added = JSON.parse(read('test/unit/fixtures/api-added-since-split.json')) as { paths: string[]; exports: Record<string, string> }

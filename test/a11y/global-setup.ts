@@ -110,6 +110,9 @@ export const A11Y_EMPTY_SECRETS = [
   'SES_ACCESS_KEY_ID',
   'SES_SECRET_ACCESS_KEY',
   'SES_SNS_TOPIC_ARN',
+  // The secret of the expiring tokens in links: with none, as on the Preview environment until K sets it, no token is made.
+  'SIGNING_SECRET',
+  'SIGNING_SECRET_PREVIOUS',
 ] as const
 
 /**

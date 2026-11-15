@@ -121,7 +121,8 @@ describe('activity log', () => {
       .first<{ actor_id: string; actor_email: string; target_label: string; detail: string }>()
     const actor = await env.DB.prepare('SELECT email FROM members WHERE id = ?').bind(rep).first<{ email: string }>()
     expect(entry).toMatchObject({ actor_id: rep, actor_email: actor?.email, target_label: 'Example Chess Club' })
-    expect(JSON.parse(entry!.detail)).toEqual({ club_id: clubId, fields: ['description', 'about_text', 'weekend_play'] })
+    // The club has no region, so no representative is told, and the row says so.
+    expect(JSON.parse(entry!.detail)).toEqual({ club_id: clubId, fields: ['description', 'about_text', 'weekend_play'], notice: false })
 
     expect((await invoke(clubPatch, { method: 'PATCH', as: rep, params: { id: clubId }, body: { aboutText: 'Tuesdays, 6:00 PM' } })).status).toBe(200)
     expect(await logCount('club_edit')).toBe(before + 1)
