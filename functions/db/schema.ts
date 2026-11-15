@@ -774,3 +774,26 @@ export const clubRepRequests = sqliteTable('club_rep_requests', {
   decidedAt: text('decided_at'),
   createdAt: text('created_at').default(sql`(datetime('now'))`).notNull(),
 })
+
+/**
+ * One row for each run of a scheduled job (functions/utils/admin/automations.ts writes it). A run that never closes
+ * keeps the outcome 'failed' it was opened with and no finished_at.
+ */
+export const automationRuns = sqliteTable('automation_runs', {
+  id: integer().primaryKey({ autoIncrement: true }),
+  /** 'clearinghouse_sync', or 'daily:<phase>' and 'five_minute:<phase>'. */
+  job: text().notNull(),
+  startedAt: text('started_at').default(sql`(datetime('now'))`).notNull(),
+  finishedAt: text('finished_at'),
+  /** 'ok', 'partial' or 'failed'. */
+  outcome: text().notNull(),
+  sentCount: integer('sent_count'),
+  failedCount: integer('failed_count'),
+  /** One plain line for the admin; never a secret, a token or an email address. */
+  detail: text(),
+  seenAt: text('seen_at'),
+  seenBy: text('seen_by').references(() => members.id),
+},
+(table) => [
+  index('idx_automation_runs_job').on(table.job, table.startedAt),
+])
