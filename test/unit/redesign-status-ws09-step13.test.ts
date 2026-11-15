@@ -78,6 +78,8 @@ const checksLine = block.split('\n').find((l) => l.startsWith('- Checks:')) ?? '
 const mapItem = (id: string) => entries(map).find((l) => l.startsWith(`- **${id}.**`)) ?? ''
 const latestStep = Math.max(0, ...[...ws09.matchAll(/^### WS09 step (\d+): /gm)].map((m) => Number(m[1])))
 const headings = lines.filter((l) => l.startsWith('### '))
+/** The section's latest block: the heading straight before the four lists. */
+const latestBlock = headings[headings.indexOf(LISTS[0]) - 1] ?? ''
 
 const TOKENS = 'functions/utils/tokens.ts'
 const RUNS = 'functions/utils/admin/automations.ts'
@@ -121,12 +123,12 @@ describe('REDESIGN_STATUS.md, WS09 step 13: the block', () => {
     expect(block).not.toBe('')
     expect(ws09.split(`\n${STEP}\n`)).toHaveLength(2)
     expect(headings[headings.indexOf(PREVIOUS) + 1]).toBe(STEP)
-    if (latestStep === 13) expect(headings[headings.indexOf(STEP) + 1]).toBe(LISTS[0])
+    if (latestStep === 13 && latestBlock === STEP) expect(headings[headings.indexOf(STEP) + 1]).toBe(LISTS[0])
   })
 
   it('gives the Status line this step\'s tail while this step is the latest', () => {
     const tail = statusLine.slice(statusLine.indexOf('checkpoint Z for steps 36 to 38); ') + 'checkpoint Z for steps 36 to 38); '.length)
-    if (latestStep === 13) {
+    if (latestStep === 13 && latestBlock === STEP) {
       expect(tail).toBe('checkpoints S and T merged into `main` on Sun, Nov 15, 2026; checkpoint U goes on on its own branch; steps 1 to 13, K\'s answers to checkpoint S\'s review and K\'s second answer, the Clubs page on a narrow phone, are built.')
     }
     expect(tail).toMatch(/\bbuilt\.$/)
