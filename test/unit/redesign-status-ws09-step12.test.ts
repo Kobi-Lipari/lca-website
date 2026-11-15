@@ -172,7 +172,8 @@ describe('REDESIGN_STATUS.md, WS09 checkpoints S and T: the merges', () => {
     }
     expect(tail).toMatch(/\bbuilt\.$/)
     expect(statusLine).not.toContain('checkpoint S waits for its pull request')
-    expect(prLine).toBe('**PR:** checkpoint S (steps 1 to 5) merged into `main` as pull request 130, `bd808c5`, and checkpoint T (steps 6 to 9) as pull request 131, `9293e2f`, both on Sun, Nov 15, 2026, on K\'s word, ahead of the mail stream\'s checkpoint P by K\'s choice; the six checkpoints after them come one at a time, each merged on its own.')
+    // Read from its start since checkpoint U's review, which names checkpoint U and WS09 step 15 after the two merges.
+    expect(prLine.startsWith('**PR:** checkpoint S (steps 1 to 5) merged into `main` as pull request 130, `bd808c5`, and checkpoint T (steps 6 to 9) as pull request 131, `9293e2f`, both on Sun, Nov 15, 2026, on K\'s word, ahead of the mail stream\'s checkpoint P by K\'s choice; the six checkpoints after them come one at a time, each merged on its own')).toBe(true)
   })
 })
 
@@ -310,6 +311,8 @@ describe('REDESIGN_STATUS.md, WS09 step 12: the parts against the files', () => 
     const ships = bullet(block, '- **What ships with every switch off.**')
     expect(ships.startsWith('- **What ships with every switch off.** Today\'s admin club page, unchanged:')).toBe(true)
     for (const piece of ['A visitor', 'never fetched', 'No switch is added']) expect(ships, piece).toContain(piece)
+    // Checkpoint U's review, A1: the two addresses routed by now are named in both bullets as a change from the base.
+    for (const text of [ships, bullet(block, '- **What the merge does.**')]) expect(text).toContain('With `clubKeepers` false the merge changes nothing a person meets but that `/workspace/region` and `/workspace/region/clubs/:id`, addresses no link names, send to the dashboard, and a signed-out visitor from there to the login page, where the base drew the site\'s frame with an empty main area.')
     expect(read(PAGE_TEST)).toContain('  it(\'sends every kind of person to the dashboard, fetches no file of the page and calls no answer\', async () => {')
     expect(read(LIFT)).toContain('  it(\'draws the markup it drew before the move, for each kind of person, with news and with none\', async () => {')
   })

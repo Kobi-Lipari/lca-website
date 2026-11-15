@@ -248,6 +248,8 @@ describe('REDESIGN_STATUS.md, WS09 step 11: the parts', () => {
     const ships = bullet(block, '- **What ships with every switch off.**')
     expect(ships.startsWith('- **What ships with every switch off.** Today\'s Dashboard and Workspace, unchanged.')).toBe(true)
     for (const piece of ['A visitor', 'a member, a seat holder and an LCA admin', 'no Open My region', 'never fetched', 'No switch is added']) expect(ships, piece).toContain(piece)
+    // Checkpoint U's review, A1: the one address this step routes is named in both bullets as a change from the base.
+    for (const text of [ships, bullet(block, '- **What the merge does.**')]) expect(text).toContain('With `clubKeepers` false the merge changes nothing a person meets but that `/workspace/region`, an address no link names, sends to the dashboard, and a signed-out visitor from there to the login page, where the base drew the site\'s frame with an empty main area.')
     const test = read(PAGE_TEST)
     expect(test).toContain('  it(\'sends every kind of person to the dashboard, fetches no file of the page and calls no answer\', async () => {')
     expect(read(WAYS_IN)).toContain('  it(\'with clubKeepers off, draws the block for a seat holder as the base does, with no Open My region\', async () => {')

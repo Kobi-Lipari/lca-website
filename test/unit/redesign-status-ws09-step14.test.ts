@@ -328,6 +328,8 @@ describe('REDESIGN_STATUS.md, WS09 step 14: the parts against the files', () => 
     const ships = bullet(block, '- **What ships with every switch off.**')
     expect(ships.startsWith('- **What ships with every switch off.** Three methods that refuse in words before anything is read')).toBe(true)
     for (const piece of ['No email', 'No route and no button', 'One empty table more', '`public/_headers`', 'No switch is added']) expect(ships, piece).toContain(piece)
+    // Checkpoint U's review, A1: My region is routed, to the dashboard, since WS09 step 11.
+    expect(ships.includes('and My region, which carries the button, sends everyone to the dashboard, as WS09 step 11\'s merge left it, so the button is never drawn.') && !ships.includes('is not routed')).toBe(true)
     expect(read('functions/utils/clubs/pages.ts')).toContain('export const CLUB_KEEPERS_ON = false')
     expect(read('src/lib/features.ts')).toContain('  clubKeepers: false,')
     for (const piece of ['K\'s part', '`SIGNING_SECRET`', '32 random bytes or more']) expect(bullet(block, '- **Owed before clubKeepers goes on.**'), piece).toContain(piece)

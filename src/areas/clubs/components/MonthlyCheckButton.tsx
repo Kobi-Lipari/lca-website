@@ -13,13 +13,20 @@
 // not. A refusal, an LCA admin's missing second factor among them, is said
 // in the server's own words, plainly. Its two calls live in
 // src/areas/clubs/api.ts.
+//
+// "Not sent" is said only of a refusal in the server's own words, with a
+// status below 500: the server refuses before it sends anything. A press
+// takes many seconds, one email after another, so any other failure (a
+// dropped connection, a 5xx, an answer that could not be read) may have come
+// part way through the sends, and the words say so, since pressing again
+// sends to everyone again (sendFailedWords in src/areas/clubs/region.ts).
 import { useState } from 'react'
 import * as DialogPrimitive from '@radix-ui/react-dialog'
 
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogClose, DialogOverlay, DialogPortal, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { countMonthlyCheck, sendMonthlyCheck } from '@/lib/api'
-import { errorWords, peopleWord, sentWords } from '@/areas/clubs/region'
+import { askFailedWords, peopleWord, sendFailedWords, sentWords } from '@/areas/clubs/region'
 
 const CONTROL = 'min-h-11 px-4 whitespace-normal'
 
@@ -37,7 +44,7 @@ export function MonthlyCheckButton() {
       if (count.people === 0) setSaid('No one holds a regional seat that keeps a club, so the check has no one to go to.')
       else setPeople(count.people)
     } catch (err) {
-      setSaid(errorWords(err))
+      setSaid(askFailedWords(err))
     } finally {
       setBusy(false)
     }
@@ -50,7 +57,7 @@ export function MonthlyCheckButton() {
     try {
       setSaid(sentWords(await sendMonthlyCheck()))
     } catch (err) {
-      setSaid(`Not sent: ${errorWords(err)}`)
+      setSaid(sendFailedWords(err))
     } finally {
       setBusy(false)
     }

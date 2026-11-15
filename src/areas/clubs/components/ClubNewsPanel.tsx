@@ -10,8 +10,9 @@
 // The page that draws it keeps the news, the form's values and what is on
 // its way, and makes the calls, so the admin club page loads and says its
 // errors as before. Drawn on a club in My region (myRegion), each date also
-// carries its weekday and each Delete is named with the news it deletes;
-// unset, neither is drawn, as on the admin club page.
+// carries its weekday, each Delete is named with the news it deletes, and an
+// empty list reads "Nothing posted yet." alone; unset, none of these is
+// drawn, as on the admin club page.
 import type { Dispatch, FormEvent, SetStateAction } from 'react'
 import { Newspaper, Trash2 } from 'lucide-react'
 
@@ -57,7 +58,8 @@ export function ClubNewsPanel({
         </div>
         {news.length === 0 ? (
           <p className="text-sm text-muted-foreground">
-            Nothing posted yet. Anything you publish below appears on the club's public page.
+            {/* My region has no Help to hold the explaining sentence, so a club there reads the first alone. */}
+            {myRegion ? 'Nothing posted yet.' : 'Nothing posted yet. Anything you publish below appears on the club\'s public page.'}
           </p>
         ) : (
           <ul className="divide-y">

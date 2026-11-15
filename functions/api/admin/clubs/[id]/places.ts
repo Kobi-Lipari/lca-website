@@ -10,8 +10,10 @@
 // keepers' stamps and the activity row (functions/utils/clubs/save.ts), and
 // the region's representatives are told after the answer, at most once an
 // hour for one club and one saver, counted with the listing's save. With the constant
-// unset every keeper is answered 403 in words and nothing is read or
-// written.
+// unset every keeper is answered 403 in words after the sign-in and
+// permission check (requireClubRep, which reads the session and the member
+// and, for a region's representative, the club's region), before this
+// handler reads the club or the body, and nothing is written.
 import type { Env } from '../../../../types'
 import { isResponse, requireClubRep } from '../../../../utils/auth'
 import { errorResponse, handleOptions, jsonResponse, parseBody } from '../../../../utils/response'

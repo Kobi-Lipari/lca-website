@@ -17,7 +17,9 @@
 // keeper), so the header names no keeper.
 //
 // Listing is the one club editor, saving through the one PATCH, with its
-// previews and its page checklist; News is the admin club page's own form
+// previews and its page checklist, first drawn only with Listing showing
+// and then kept, hidden while another tab shows, so what was typed survives
+// a change of tab; News is the admin club page's own form
 // and list (ClubNewsPanel.tsx); Events lists what the club's answer gives
 // this person, each linked only to a page they may open.
 //
@@ -30,7 +32,7 @@
 // only other regions passes the route for their own club and is shown "not
 // found here" by the page, since no seat of theirs covers it. Nothing here
 // shows an email address or the roster.
-import { lazy, Suspense, useEffect, useRef, useState, type FocusEvent, type FormEvent } from 'react'
+import { lazy, Suspense, useCallback, useEffect, useRef, useState, type FocusEvent, type FormEvent } from 'react'
 import { Link, useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { ArrowLeft, ExternalLink } from 'lucide-react'
 
@@ -130,6 +132,15 @@ export function MyRegionClubPage() {
   return <ClubInRegion key={id} id={id} />
 }
 
+/**
+ * Drawn beside the editor, inside its Suspense, so its effect runs only once the editor's file
+ * has loaded and the editor is on the page: from then the page keeps the editor.
+ */
+function EditorDrawn({ onDrawn }: { onDrawn: () => void }) {
+  useEffect(() => { onDrawn() }, [onDrawn])
+  return null
+}
+
 function ClubInRegion({ id }: { id: string }) {
   const { role, member, managedClubs, directedTournamentIds } = useAuth()
   const isAdmin = role === 'lca_admin'
@@ -138,6 +149,12 @@ function ClubInRegion({ id }: { id: string }) {
   const tabParam = params.get('tab')
   const tab: ClubTab = tabParam === 'news' || tabParam === 'events' ? tabParam : 'listing'
   const setTab = (next: ClubTab) => setParams(next === 'listing' ? {} : { tab: next }, { replace: true })
+  // Once the editor has been drawn with Listing showing it stays drawn, hidden while another tab
+  // shows, so a change of tab never throws away what was typed. Until then it is drawn only while
+  // Listing shows, so it is never first drawn hidden, where its Help would open by itself unseen:
+  // not before Listing is first opened, and not when the person left Listing before its file came.
+  const [editorDrawn, setEditorDrawn] = useState(false)
+  const keepEditor = useCallback(() => setEditorDrawn(true), [])
 
   // The time the page opened, which the header's stamp is read against, as My region's answer is.
   const [openedAt] = useState(() => Date.now())
@@ -151,6 +168,15 @@ function ClubInRegion({ id }: { id: string }) {
       .catch((err) => { if (!cancelled) setLoad(settleError(err)) })
     return () => { cancelled = true }
   }, [id, attempt])
+
+  // The focus goes to the page's heading once a second try has settled, since Try again is gone by
+  // then, as on My region: for the club here, and for the club's news below, where it waits on
+  // News still being open and the focus being lost.
+  const heading = useRef<HTMLHeadingElement>(null)
+  const loadKind = load?.kind ?? null
+  useEffect(() => {
+    if (attempt > 0 && loadKind !== null) heading.current?.focus()
+  }, [attempt, loadKind])
 
   const data = load?.kind === 'ready' ? load.data : null
   // The server gives a club to more people than this page is for (an observer outside the
@@ -188,6 +214,9 @@ function ClubInRegion({ id }: { id: string }) {
     if (!club || confirming) return
     const { id: clubId, name } = club
     setConfirming(true)
+    // Cleared as the press starts, so the words that follow are a fresh change to the status
+    // line, and a second press in the same month is announced again.
+    setSaid('')
     try {
       const answer = await confirmClubStillAccurate(clubId)
       if (!live.current) return
@@ -218,6 +247,20 @@ function ClubInRegion({ id }: { id: string }) {
     return () => { cancelled = true }
   }, [clubId, newsAttempt])
   const newsNow = news && news.club === clubId ? news : null
+  const newsKind = newsNow ? ('failed' in newsNow ? 'failed' : 'list') : null
+  // The tabs stay usable while a news retry is on its way, so the heading takes the focus only
+  // when the retry settles with News still open and the focus lost (Try again gone, nothing else
+  // focused). A person who has moved to another tab or control keeps their place. Each settle is
+  // weighed once, so a later change of tab never moves the focus by itself.
+  const newsSettleSeen = useRef('')
+  useEffect(() => {
+    if (newsAttempt === 0 || newsKind === null) return
+    const settle = `${newsAttempt}:${newsKind}`
+    if (newsSettleSeen.current === settle) return
+    newsSettleSeen.current = settle
+    const lost = document.activeElement === null || document.activeElement === document.body
+    if (tab === 'news' && lost) heading.current?.focus()
+  }, [newsAttempt, newsKind, tab])
 
   async function handlePostNews(e: FormEvent) {
     e.preventDefault()
@@ -302,7 +345,7 @@ function ClubInRegion({ id }: { id: string }) {
               )}
             </ol>
           </nav>
-          <h1 className="mt-1 break-words text-3xl font-bold tracking-tight sm:text-4xl">{club ? club.name : 'A club in My region'}</h1>
+          <h1 ref={heading} tabIndex={-1} className="mt-1 break-words text-3xl font-bold tracking-tight outline-none sm:text-4xl">{club ? club.name : 'A club in My region'}</h1>
           {club && <p className="mt-2 break-words text-base text-white">{where}</p>}
           {club && (
             <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2">
@@ -364,23 +407,27 @@ function ClubInRegion({ id }: { id: string }) {
           </Link>
         )}
 
-        {club && data && tab === 'listing' && (
-          <Suspense fallback={<p className="text-muted-foreground" role="status">Loading the editor…</p>}>
-            <ClubEditor
-              key={club.id}
-              club={club}
-              places={data.places ?? []}
-              own={ownRep}
-              isAdmin={isAdmin}
-              showAdminFields={isAdmin}
-              viewOnly={false}
-              onSaved={(saved, places) => {
-                setClubData(club.id, (d) => ({ ...d, club: saved, places }))
-                // A save is a check too, so the header reads the saved club's own stamp.
-                setConfirmed(null)
-              }}
-            />
-          </Suspense>
+        {/* Hidden, not taken away, while another tab shows: out of the tab order and of what a screen reader reads, with what was typed kept. */}
+        {club && data && (tab === 'listing' || editorDrawn) && (
+          <div hidden={tab !== 'listing'}>
+            <Suspense fallback={<p className="text-muted-foreground" role="status">Loading the editor…</p>}>
+              <ClubEditor
+                key={club.id}
+                club={club}
+                places={data.places ?? []}
+                own={ownRep}
+                isAdmin={isAdmin}
+                showAdminFields={isAdmin}
+                viewOnly={false}
+                onSaved={(saved, places) => {
+                  setClubData(club.id, (d) => ({ ...d, club: saved, places }))
+                  // A save is a check too, so the header reads the saved club's own stamp.
+                  setConfirmed(null)
+                }}
+              />
+              <EditorDrawn onDrawn={keepEditor} />
+            </Suspense>
+          </div>
         )}
 
         {club && tab === 'news' && (

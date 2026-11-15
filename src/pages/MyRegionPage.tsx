@@ -204,6 +204,9 @@ export function MyRegionPage() {
   }
 
   async function stillAccurate(club: RegionClub) {
+    // Cleared as the press starts, so the words that follow are a fresh change to the status
+    // line, and a second press in the same month is announced again.
+    if (!onItsWay.current.has(club.id)) setSaid('')
     const stamp = await confirmOne(club)
     if (!live.current || stamp === 'on its way') return
     setSaid(stamp !== 'failed' ? `${club.name} marked still accurate: ${stamp}.` : `${club.name} was not marked still accurate. Nothing changed.`)

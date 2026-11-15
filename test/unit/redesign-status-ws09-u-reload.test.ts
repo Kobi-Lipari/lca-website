@@ -305,7 +305,8 @@ describe('REDESIGN_STATUS.md, WS09 checkpoint U, the reload of a guarded page: t
       'Still accurate writes no row in the activity log', 'My region asks no second sign-in factor', 'mended at its root in `src/contexts/AuthContext.tsx`',
     ]) expect(entry, piece).toContain(piece)
     if (latestBlock === BLOCK) expect(decisions.trim().split('\n').at(-1)).toBe(entry)
-    expect(tagged(followUps)).toEqual([])
+    // Checkpoint U's review logs the one follow-up of its own, from B1, under the same tag.
+    expect(tagged(followUps).map(head).filter((h) => h !== 'The run record\'s prune and the read of `seen_by` (WS09 checkpoint U).')).toEqual([])
   })
 
   it('marks WS09\'s follow-up closed and keeps its words, and adds a marked sentence to each earlier bullet that said the window was open', () => {

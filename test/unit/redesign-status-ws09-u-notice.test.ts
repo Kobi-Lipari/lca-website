@@ -230,6 +230,8 @@ describe('REDESIGN_STATUS.md, WS09 checkpoint U, the save notice at most once an
     for (const piece of ['Nothing a person meets', '`CLUB_KEEPERS_ON` is `false`', '"The new club page fields cannot be saved yet."', '"A club\'s places cannot be saved yet."', 'no notice is sent or counted', 'No switch is added']) {
       expect(ships, piece).toContain(piece)
     }
+    // Checkpoint U's review, A2: refused after the sign-in check and, for the listing save, the club's read and the body's check.
+    expect(ships.includes('as before, after the sign-in check and, for the listing save, the club\'s read and the body\'s check, with nothing written;') && !ships.includes('before anything is read')).toBe(true)
     expect(read('functions/utils/clubs/pages.ts')).toContain('export const CLUB_KEEPERS_ON = false')
     expect(read('src/lib/features.ts')).toContain('  clubKeepers: false,')
     const does = bullet(block, '- **What the merge does.**')
@@ -331,7 +333,8 @@ describe('REDESIGN_STATUS.md, WS09 checkpoint U, the save notice at most once an
       'the hour is 3,600 seconds counted from the last notice', '`created_at`', '`"notice": true`', 'decided in the same statement that writes the save\'s row', 'sharing the one count',
     ]) expect(first, piece).toContain(piece)
     if (latestBlock === BLOCK) expect(decisions.trim().split('\n').at(-1)).toBe(entry)
-    expect(tagged(followUps)).toEqual([])
+    // Checkpoint U's review logs the one follow-up of its own, from B1, under the same tag.
+    expect(tagged(followUps).map(head).filter((h) => h !== 'The run record\'s prune and the read of `seen_by` (WS09 checkpoint U).')).toEqual([])
   })
 
   it('marks item T10 and its follow-up closed with their words kept, and adds one marked sentence to each of two earlier bullets', () => {

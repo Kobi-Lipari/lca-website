@@ -8,7 +8,11 @@
 // regional seat whose seats keep a club, as a forced call: the due rule and
 // the monthly marks are not read and no mark is written, so every press
 // sends to everyone and a press never stands in for the first Monday's
-// timed send. The run is recorded as club_monthly_check, marked manual.
+// timed send. The run is recorded as club_monthly_check, marked manual, and
+// a press that sent (send true and the check ran) writes one row to the
+// activity log, club_monthly_check_sent, naming the LCA admin who pressed
+// it, with the month in words and the counts; asking how many, a press that
+// found nobody left to send to, and a refusal, write none.
 //
 // Who may: an LCA admin with a second factor (requireAdmin). Anyone else
 // gets 403; an LCA admin without the second factor gets requireAdmin's
@@ -30,6 +34,7 @@ import { isResponse, requireAdmin } from '../../../utils/auth'
 import { errorResponse, handleOptions, jsonResponse, parseBody } from '../../../utils/response'
 import { CLUB_KEEPERS_ON } from '../../../utils/clubs/pages'
 import { monthlyCheckPeople, runMonthlyCheck, signingKeyReady } from '../../../utils/clubs/monthlyCheck'
+import { recordAdminAction } from '../../../utils/admin/audit'
 import { monthInWords } from '../../../../domain/clubs/monthlyCheck'
 import { monthlyCheckRequestSchema, type MonthlyCheckResponse } from '../../../../domain/contracts/clubs'
 
@@ -59,6 +64,18 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
   }
 
   const done = await runMonthlyCheck(context.env, now, true, { request: context.request })
+  // Who pressed it, in the activity log, as announce.ts logs an email to entrants: the month
+  // in words and the counts alone. Only a press where the check ran writes the row: when
+  // nobody was left to send to (stopped 'nobody'), nothing was tried and no run was recorded,
+  // so there is nothing to log. recordAdminAction never throws, so a failed write never fails
+  // the answer of a press that has already sent.
+  if (done.stopped === null) {
+    await recordAdminAction(context.env.DB, authResult.member, {
+      action: 'club_monthly_check_sent',
+      targetLabel: done.month,
+      detail: { sent: done.sent, notSent: done.notSent, notReached: done.notReached },
+    })
+  }
   const sent: MonthlyCheckResponse = { month: done.month, people: done.people, sent: done.sent, notSent: done.notSent, notReached: done.notReached }
   return jsonResponse(sent)
 }

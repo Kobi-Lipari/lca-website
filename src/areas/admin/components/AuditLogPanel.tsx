@@ -75,6 +75,7 @@ const ACTION_META: Record<
   officer_remove: { label: 'Removed officer', icon: UserMinus, className: 'bg-muted text-muted-foreground' },
   group_email_sent: { label: 'Sent group email', icon: Mail, className: 'bg-info-100 text-info-800' },
   group_email_stopped: { label: 'Stopped a newsletter', icon: Mail, className: 'bg-muted text-muted-foreground' },
+  club_monthly_check_sent: { label: 'Sent the monthly check', icon: Mail, className: 'bg-info-100 text-info-800' },
   seat_assign: { label: 'Board seat filled', icon: UserPlus, className: 'bg-info-100 text-info-800' },
   members_export: { label: 'Exported members', icon: Download, className: 'bg-lca-gold/20 text-gold-ink-badge' },
   seat_end: { label: 'Board seat ended', icon: UserMinus, className: 'bg-muted text-muted-foreground' },
@@ -134,6 +135,8 @@ function describeDetail(entry: ApiAuditEntry): string | null {
       return typeof parsed.title === 'string' ? parsed.title : null
     case 'group_email_sent':
       return `${parsed.recipients ?? 0} recipients`
+    case 'club_monthly_check_sent':
+      return `${parsed.sent ?? 0} sent, ${parsed.notSent ?? 0} not sent, ${parsed.notReached ?? 0} not reached`
     case 'ticket_delete':
       return typeof parsed.from === 'string' ? `From ${parsed.from}` : null
     case 'seat_regions': {

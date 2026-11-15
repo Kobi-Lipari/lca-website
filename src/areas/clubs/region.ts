@@ -7,6 +7,7 @@
 // opened by itself once. Every date and month the page shows comes from the
 // server as words (lastCheckWords, thisMonth.nextCheck.date), so nothing
 // here makes a date.
+import { ApiError } from '@/lib/http'
 import type { ClubConfirmResponse, RegionClub, WorkspaceRegionResponse } from '@domain/contracts'
 
 /**
@@ -86,10 +87,41 @@ export function confirmAllWords(marked: number, failed: readonly string[]): stri
   return `${marked} of ${clubsWord(asked)} marked still accurate. ${left}`
 }
 
-/** The words of an error, as a sentence. */
+/** What the page says when no answer came at all, a dropped connection among them. */
+export const SITE_UNREACHED = 'The site could not be reached. Check your connection, then try again.'
+
+/**
+ * The words of an error, as a sentence. An answer from the server is said
+ * in its own words; anything else, a dropped connection whose message is the
+ * browser's own ("Failed to fetch", "Load failed"), reads as SITE_UNREACHED.
+ */
 export function errorWords(err: unknown): string {
-  const text = err instanceof Error && err.message.trim() ? err.message.trim() : 'The server did not answer'
+  if (!(err instanceof ApiError)) return SITE_UNREACHED
+  const text = err.message.trim() || 'The server did not answer'
   return /[.!?]$/.test(text) ? text : `${text}.`
+}
+
+/** What a press of "Send this month's check now" says when the send may have stopped part way. */
+export const SEND_UNSURE = 'The send may not have finished, so some people may already have the email. Pressing again sends it to everyone again.'
+
+/**
+ * A refusal the server gave in its own words, with a status below 500,
+ * which the server gives before any email is sent. An answer with no words
+ * of its own (the fetch helper's "Request failed (404)") could not be read,
+ * so it is not one.
+ */
+function refusedBeforeSending(err: unknown): err is ApiError {
+  return err instanceof ApiError && err.status >= 400 && err.status < 500 && err.message !== `Request failed (${err.status})`
+}
+
+/** The button's status line when a press of Send failed: "Not sent" only for a refusal before sending. */
+export function sendFailedWords(err: unknown): string {
+  return refusedBeforeSending(err) ? `Not sent: ${errorWords(err)}` : SEND_UNSURE
+}
+
+/** The button's status line when asking how many people the check goes to failed: nothing is claimed about sending. */
+export function askFailedWords(err: unknown): string {
+  return `Could not ask how many people the check goes to: ${errorWords(err)}`
 }
 
 /** The id of the part My region's Help opens, which its button controls. */
