@@ -298,7 +298,7 @@ describe('REDESIGN_STATUS.md, WS09 checkpoint T: the review of the whole and its
       expect(added(line), start).toContain(piece)
     }
     for (const start of LEFTOVER_FOLLOW_UPS) expect(lineOf('### WS09 follow-ups', start), start).not.toBe('')
-    expect(statusLine).toContain('checkpoint T, steps 6 to 9, has had the review of the whole with its fixes and waits on its own branch for K\'s look at the pictures and K\'s own word;')
+    if (!ws09.includes('\n### WS09 checkpoint T: checkpoints S and T merged and live\n')) expect(statusLine).toContain('checkpoint T, steps 6 to 9, has had the review of the whole with its fixes and waits on its own branch for K\'s look at the pictures and K\'s own word;')
     expect(statusLine).not.toContain('waits on its own branch for its review')
     expect(block).toContain('"This club\'s page was saved after you opened it. Copy what you want to keep, then reload the page to see the latest version"')
     expect(part.split('\n').filter((l) => /^ {2}- N\d+\. /.test(l))).toHaveLength(14)

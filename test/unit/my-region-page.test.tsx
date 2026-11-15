@@ -305,7 +305,7 @@ describe('My region with clubKeepers on: the page', () => {
       const openLink = screen.getByRole('link', { name: `Open: ${name}` })
       expect(openLink.className.split(' ')).toContain('min-h-11')
     }
-    expect(screen.getByRole('link', { name: 'Open: Example Chess Club' }).getAttribute('href')).toBe('/my/club/c-chess')
+    expect(screen.getByRole('link', { name: 'Open: Example Chess Club' }).getAttribute('href')).toBe('/workspace/region/clubs/c-chess')
     expect(screen.getByRole('button', { name: 'Confirm all still accurate' }).className.split(' ')).toContain('min-h-11')
     expect(screen.getByRole('button', { name: 'Help' }).className.split(' ')).toContain('min-h-11')
     // Nothing on the page shows an email address.

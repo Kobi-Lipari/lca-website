@@ -8,12 +8,17 @@
 // monthly check's date as the server words it, and works out no date of its
 // own: with the clock set years away, the page still says what the server
 // said. The page is drawn alone, through the real client with fetch stubbed.
-// The club pages' own parts join this file with WS09 step 21. Every name and
-// club here is made up.
+// A club's page in My region (WS09 step 12) has its part below: no Tonight
+// tab and no weekly claim on any of its three tabs, and no date of its own
+// but the stamp of its last check, read against the time the page opened
+// in My region's own words; every full date it shows is an event's or a
+// news post's, as the server gave it, with its weekday through the site's
+// own helper. The club pages' own parts join this file with WS09 step 21.
+// Every name and club here is made up.
 import { readFileSync } from 'node:fs'
 import { join, resolve } from 'node:path'
 import { act, cleanup, render, screen } from '@testing-library/react'
-import { MemoryRouter } from 'react-router-dom'
+import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { AuthContext } from '@/contexts/auth-context'
 import type { AuthContextValue } from '@/contexts/AuthContext'
@@ -24,7 +29,10 @@ vi.mock('@/lib/supabase', () => ({
   supabase: { auth: { getSession: async () => ({ data: { session: { access_token: 'tok-example' } } }) } },
 }))
 
+vi.mock('@/areas/clubs/components/ClubLocationPicker', () => ({ ClubLocationPicker: () => null }))
+
 const { MyRegionPage } = await import('@/pages/MyRegionPage')
+const { MyRegionClubPage } = await import('@/pages/MyRegionClubPage')
 
 const ROOT = resolve(__dirname, '../..')
 const read = (path: string) => readFileSync(join(ROOT, path), 'utf8')
@@ -129,5 +137,109 @@ describe('My region draws no weekly claims', () => {
       expect(code, file).not.toMatch(/new Date\(|Date\.now\(|Intl\.DateTimeFormat|toLocale(?:Date|Time)?String|getDay\(|from '@\/lib\/format'|formatDate|formatTime|nextCheck\.day/)
       expect(code, file).not.toMatch(/\b(?:Tonight|Meets today|calendar|timetable)\b/i)
     }
+  })
+})
+
+/** The files that draw a club's page in My region, beside the one editor, which has its own tests. */
+const CLUB_FILES = ['src/pages/MyRegionClubPage.tsx', 'src/areas/clubs/components/ClubEventsList.tsx', 'src/areas/clubs/components/ClubNewsPanel.tsx']
+
+const CLUB = {
+  id: 'c-two', name: 'Example Chess Club', city: 'Example City', location: null, description: null, meeting_schedule: 'Every Tuesday at 7:00 PM, and tonight too',
+  contact_email: null, created_at: '2026-01-01 12:00:00', color: null, image_url: null, region: 'Bayou Region', latitude: null, longitude: null,
+  slug: 'example-chess', about_text: 'A made-up club.', how_we_meet_text: 'Every Tuesday at 7:00 PM, and tonight too', cost_text: null, welcome_text: null,
+  weekend_play: 0, scholastic_friendly: 0, contact_name_public: null, facebook_url: null, website_url: null, other_url: null,
+  told_updated_at: '2026-11-02 15:00:00', told_by: 'm-two', last_confirmed_at: '2026-11-02 15:00:00', confirmed_by: 'm-two',
+}
+const CLUB_ANSWER = {
+  club: CLUB, officers: [], roster: [], rosterKeptBack: true, places: [],
+  tournaments: [{ id: 't-one', name: 'Example Open', date: '2026-12-05', end_date: null, status: 'upcoming', is_visible: 1, registration_status: 'open' }],
+}
+const CLUB_NEWS = [{ id: 'n-one', club_id: 'c-two', title: 'Example club night', news_date: '2026-11-07', excerpt: 'An example evening.', created_at: '2026-11-08 18:00:00' }]
+
+describe('a club in My region draws no weekly claims', () => {
+  beforeEach(() => {
+    vi.stubGlobal('fetch', vi.fn(async (url: string) => {
+      if (url === '/api/admin/clubs/c-two') return new Response(JSON.stringify(CLUB_ANSWER), { status: 200 })
+      if (url === '/api/admin/clubs/c-two/news') return new Response(JSON.stringify({ news: CLUB_NEWS }), { status: 200 })
+      return new Response(JSON.stringify({ error: 'Not found' }), { status: 404 })
+    }))
+  })
+
+  /** The page at one of its tabs, for a region's representative, and its words but the club's own. */
+  async function drawClub(tab: string) {
+    const auth = {
+      user: { id: 'm-one' }, session: null, role: 'member', member: { id: 'm-one', role: 'member', club_id: null, full_name: 'Player One' },
+      loading: false, memberLoading: false, seats: [{ id: 's1', slug: 'example', role: 'Regional representative', category: 'regional_rep', started_at: '2026-01-01' }],
+      managedClubs: [{ id: 'c-two', name: 'Example Chess Club', region: 'Bayou Region' }], isBoardMember: true, assuranceLevel: 'aal1', mfaRequired: false,
+      directedTournamentIds: [], directedTournaments: [],
+    } as unknown as AuthContextValue
+    render(
+      <AuthContext.Provider value={auth}>
+        <MemoryRouter initialEntries={[`/workspace/region/clubs/c-two${tab ? `?tab=${tab}` : ''}`]}>
+          <Routes><Route path="/workspace/region/clubs/:id" element={<MyRegionClubPage />} /></Routes>
+        </MemoryRouter>
+      </AuthContext.Provider>,
+    )
+    await screen.findByRole('heading', { level: 1, name: 'Example Chess Club' }, { timeout: 5000 })
+    if (tab === '') await screen.findByRole('button', { name: 'Save and publish' }, { timeout: 5000 })
+    if (tab === 'news') await screen.findByRole('heading', { level: 2, name: 'Posted news · 1' }, { timeout: 5000 })
+    await act(async () => {})
+    const own = new Set([CLUB.how_we_meet_text, CLUB.about_text])
+    const texts: string[] = []
+    const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT)
+    for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+      const text = node.textContent ?? ''
+      // The club's own words, which the editor's previews quote and may say anything, are read apart.
+      if (text.trim() && ![...own].some((w) => text.includes(w))) texts.push(text)
+    }
+    return texts.join('\n')
+  }
+
+  it('has no Tonight tab and shows no computed next meeting, count of clubs meeting, calendar, timetable or week grid on any of its three tabs', async () => {
+    for (const tab of ['', 'news', 'events']) {
+      const words = await drawClub(tab)
+      const tabs = [...document.querySelectorAll('section.bg-brand-navy button:not([aria-label])')].map((b) => b.textContent)
+      expect(tabs, tab).toEqual(['Listing', 'News', 'Events'])
+      expect(words, tab).not.toMatch(/\b(?:tonight|meets today|meeting today|meeting tonight|next meeting|meets next|this week|next week)\b/i)
+      expect(words, tab).not.toMatch(/\b\d+ (?:clubs? )?(?:meet|meets|meeting)\b/i)
+      expect(words, tab).not.toMatch(/\b(?:calendar|timetable)\b/i)
+      expect(document.querySelector('table, [role="grid"], [role="table"]'), tab).toBeNull()
+      cleanup()
+    }
+  })
+
+  it('shows as full dates only the event\'s and the news post\'s, each with its weekday, and as a month only the stamp of its last check', async () => {
+    vi.useFakeTimers({ toFake: ['Date'] })
+    vi.setSystemTime(new Date('2026-11-15T18:00:00Z'))
+    const fullDates = (words: string) => [...words.matchAll(/\b(?:Mon|Tue|Wed|Thu|Fri|Sat|Sun)[a-z]*, [A-Z][a-z]{2} \d{1,2}, \d{4}\b/g)].map((m) => m[0])
+    const months = (words: string) => [...words.matchAll(/\b(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) \d{4}\b/g)].map((m) => m[0])
+    let words = await drawClub('events')
+    expect(fullDates(words)).toEqual(['Sat, Dec 5, 2026'])
+    expect(months(words)).toEqual(['Nov 2026'])
+    expect(words).toContain('Example City · Bayou Region · Checked Nov 2026')
+    cleanup()
+    words = await drawClub('news')
+    expect(fullDates(words)).toEqual(['Sat, Nov 7, 2026'])
+    cleanup()
+    // Years later the stamp says how long ago the check was, and no other date moves or appears.
+    vi.setSystemTime(new Date('2031-03-04T15:00:00Z'))
+    words = await drawClub('events')
+    expect(words).toContain('Example City · Bayou Region · Not checked since Nov 2026')
+    expect(fullDates(words)).toEqual(['Sat, Dec 5, 2026'])
+    expect(words).not.toMatch(/2031/)
+  })
+
+  it('reads the clock in one place, for the stamp in My region\'s words, and makes every full date through the site\'s own helper', () => {
+    const code = (file: string) => read(file).replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '')
+    const page = code(CLUB_FILES[0])
+    expect(page.match(/Date\.now\(\)/g)).toHaveLength(1)
+    expect(page).toContain('checkWords(club.last_confirmed_at, openedAt)')
+    expect(page).toContain('import { checkWords } from \'@domain/clubs/regionCards\'')
+    for (const file of CLUB_FILES) {
+      const text = code(file)
+      expect(text, file).not.toMatch(/new Date\(|Intl\.DateTimeFormat|toLocale(?:Date|Time)?String|getDay\(|nextCheck/)
+      expect(text, file).not.toMatch(/\b(?:Tonight|Meets today|calendar|timetable)\b/i)
+    }
+    for (const file of CLUB_FILES.slice(1)) expect(code(file), file).toContain('formatDate(')
   })
 })

@@ -261,7 +261,7 @@ describe('REDESIGN_STATUS.md, WS09 step 11: the parts', () => {
     expect(read('test/unit/redesign-status-ws09-step10.test.ts')).toContain('    if (latestStep === 10) expect(read(\'src/areas/clubs/api.ts\')).not.toMatch(/workspace\\/region|\\/confirm\\b/)')
     expect(read('test/unit/club-editor.test.tsx')).toContain('import type { AdminClubResponse, ClubConfirmResponse, ClubPlace, UpdateClubRequest, WorkspaceRegionResponse } from \\\'@domain/contracts\\\'')
     expect(read('test/unit/api-split-modules.test.ts')).toContain('\'/api/me/media-manager\', \'/api/me/payout-request\', \'/api/me/tournament-creation\', \'/api/workspace/region\',')
-    expect(read('test/unit/themeScopes.test.ts')).toContain('      \'/workspace\',\n      \'/workspace/region\',\n    ])')
+    expect(read('test/unit/themeScopes.test.ts')).toContain('      \'/workspace\',\n      \'/workspace/region\',\n')
     const added = JSON.parse(read(FIXTURE)) as { paths: string[]; exports: Record<string, string> }
     expect(added.paths).toEqual(expect.arrayContaining(['/api/admin/clubs/*/confirm', '/api/workspace/region']))
     expect(added.exports).toMatchObject({ confirmClubStillAccurate: 'clubs', getWorkspaceRegion: 'clubs' })
@@ -293,7 +293,7 @@ describe('REDESIGN_STATUS.md, WS09 step 11: the Checks line', () => {
 
   it('counts as many cases for each new test as the file holds', () => {
     const files = bullet(block, '- **Files.**')
-    for (const file of NEW_TESTS) expect(writtenCount(files, file), file).toBe(casesIn(file))
+    for (const file of NEW_TESTS) if (latestStep === 11 || file !== NO_DATES) expect(writtenCount(files, file), file).toBe(casesIn(file))
   })
 
   it('gives unit counts that add up: the base\'s, the new files\' and the cases other tests gained', () => {

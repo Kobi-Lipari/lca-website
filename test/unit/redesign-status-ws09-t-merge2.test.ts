@@ -108,7 +108,8 @@ describe('REDESIGN_STATUS.md, WS09 checkpoint T: the merge of checkpoint S\'s Cl
     // A later block is written after this one, so the heading after it is read only while this block is the latest.
     if (latestBlock === BLOCK) expect(headings[headings.indexOf(BLOCK) + 1]).toBe(DECISIONS)
     expect(ws09.split('\n').filter((l) => l.startsWith('**Status:**'))).toHaveLength(1)
-    expect(statusLine).toContain('checkpoint T, steps 6 to 9, has had the review of the whole with its fixes and waits on its own branch for K\'s look at the pictures and K\'s own word;')
+    // Read until the record says checkpoints S and T have merged, when the Status line says so instead.
+    if (!ws09.includes('\n### WS09 checkpoint T: checkpoints S and T merged and live\n')) expect(statusLine).toContain('checkpoint T, steps 6 to 9, has had the review of the whole with its fixes and waits on its own branch for K\'s look at the pictures and K\'s own word;')
     expect(statusLine).toContain('K\'s second answer, the Clubs page on a narrow phone, are built.')
   })
 

@@ -15,8 +15,7 @@
 // so a list of the page's buttons tells the cards apart. While a confirm is
 // on the way Still accurate is marked busy rather than disabled, so the
 // focus stays on it; a confirm that failed says so in words on the card.
-// Open goes to the club's listing on Your club's page by the club's id,
-// which that page takes as its address.
+// Open goes to the club's page in My region by the club's id (WS09 step 12).
 import { Link } from 'react-router-dom'
 
 import { Button } from '@/components/ui/button'
@@ -86,7 +85,7 @@ export function RegionClubCard({ club, busy, error, onConfirm }: {
             Still accurate
           </Button>
           <Button asChild variant="outline" className={CONTROL}>
-            <Link to={`/my/club/${encodeURIComponent(club.id)}`} aria-label={`Open: ${club.name}`}>Open</Link>
+            <Link to={`/workspace/region/clubs/${encodeURIComponent(club.id)}`} aria-label={`Open: ${club.name}`}>Open</Link>
           </Button>
         </div>
       </div>
