@@ -153,16 +153,16 @@ function ClubCard({
           )}
         </div>
         <div className="mt-1 space-y-0.5 text-xs text-muted-foreground">
-          <p className="flex items-center gap-1.5">
-            <MapPin className="size-3 flex-shrink-0 text-gold-ink" />
-            <span className="truncate">
+          <p className="flex items-start gap-1.5">
+            <MapPin className="mt-0.5 size-3 flex-shrink-0 text-gold-ink" />
+            <span className="min-w-0 break-words">
               {club.city}, LA{club.region ? ` · ${club.region}` : ''}
             </span>
           </p>
           {club.meeting_schedule && (
-            <p className="flex items-center gap-1.5">
-              <Calendar className="size-3 flex-shrink-0 text-gold-ink" />
-              <span className="truncate">{club.meeting_schedule}</span>
+            <p className="flex items-start gap-1.5">
+              <Calendar className="mt-0.5 size-3 flex-shrink-0 text-gold-ink" />
+              <span className="min-w-0 break-words">{club.meeting_schedule}</span>
             </p>
           )}
         </div>
@@ -405,7 +405,7 @@ export function ClubsPage() {
         ) : error ? (
           <p className="text-sm text-destructive">{error}</p>
         ) : (
-          <div className="grid gap-5 lg:grid-cols-[minmax(0,400px)_minmax(0,1fr)] lg:gap-6">
+          <div className="grid grid-cols-1 gap-5 lg:grid-cols-[minmax(0,400px)_minmax(0,1fr)] lg:gap-6">
             {/* Map: on top for phones, on the right and pinned in place on desktop. */}
             <div ref={mapWrapRef} {...(chrome ? { id: 'map' } : {})} className="scroll-mt-20 lg:order-2">
               <div className="lg:sticky lg:top-20">

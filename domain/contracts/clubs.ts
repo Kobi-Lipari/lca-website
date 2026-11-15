@@ -8,7 +8,12 @@ import { z } from 'zod'
 import { dollarsSchema, idSchema, isoDateSchema, storedTimestampSchema } from './common'
 import { savedSectionSchema, tournamentStatusSchema } from './events'
 
-/** Every column of clubs, as SELECT * returns it. */
+/**
+ * The club's public row: today's 13 columns of clubs, in the table's own
+ * order, the named list GET /api/clubs/[id] selects and
+ * PUBLIC_CLUB_COLUMNS in functions/utils/clubs/publicAnswer.ts keeps. A
+ * column added to the table is public only once it is named in both.
+ */
 export const clubRowSchema = z.strictObject({
   id: idSchema,
   name: z.string(),
@@ -23,6 +28,27 @@ export const clubRowSchema = z.strictObject({
   region: z.string().nullable(),
   latitude: z.number().nullable(),
   longitude: z.number().nullable(),
+})
+
+/**
+ * One club in GET /api/clubs (getClubs), A to Z by name: the nine columns
+ * the clubs page and its map read, and no contact email.
+ */
+export const clubListItemSchema = z.strictObject({
+  id: idSchema,
+  name: z.string(),
+  city: z.string(),
+  meeting_schedule: z.string().nullable(),
+  color: z.string().nullable(),
+  image_url: z.string().nullable(),
+  region: z.string().nullable(),
+  latitude: z.number().nullable(),
+  longitude: z.number().nullable(),
+})
+
+/** GET /api/clubs (getClubs). Public; every club, whoever asks. */
+export const clubListResponseSchema = z.strictObject({
+  clubs: z.array(clubListItemSchema),
 })
 
 /**
@@ -63,4 +89,5 @@ export const clubDetailResponseSchema = z.strictObject({
   })),
 })
 
+export type ClubListResponse = z.infer<typeof clubListResponseSchema>
 export type ClubDetailResponse = z.infer<typeof clubDetailResponseSchema>

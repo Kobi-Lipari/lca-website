@@ -12,7 +12,7 @@
 // test/unit/contracts-pending.ts; when you add a contract, take its line out
 // of that list and lower the count pinned there.
 import type { ZodType } from 'zod'
-import { clubDetailResponseSchema } from './clubs'
+import { clubDetailResponseSchema, clubListResponseSchema } from './clubs'
 import {
   adminTournamentResponseSchema,
   clearinghouseQuerySchema,
@@ -104,6 +104,9 @@ export const contracts = {
   },
   clearinghouse: {
     GET: { query: clearinghouseQuerySchema, response: clearinghouseResponseSchema },
+  },
+  clubs: {
+    GET: { response: clubListResponseSchema },
   },
   'clubs/[id]': {
     GET: { response: clubDetailResponseSchema },
