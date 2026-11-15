@@ -41,3 +41,8 @@ K's decisions on the clubs work, numbered in the order K made them, each with th
    - The first is not settled: K asked what it means, and the lead explains it before anything merges.
    - The merge is made build first, as K chose in decision 3: K turns "Apply database migrations" off, the lead merges only once it reads as off, the Pages build goes live, K turns the workflow on and starts it by hand, then the live check.
    - What the answer does not cover: any switch; K's mapping of the Baton Rouge seat; the four choices still open (how often a save emails the regional representatives, what a first save does to today's page, a row in the activity log for Still accurate, the second sign-in factor for My region).
+
+6. The end of the stream (Sunday, November 15, 2026, about 12:20 AM UTC). K's words: "If and when you get done with this work stream report a summary of your work (what ever context you this the director of this entire project needs) please the other main chat for this and ask it for more directed work like you started with."
+   - When the clubs work is done, the lead sends the first lead's session a summary written for whoever directs the whole project: what is merged and what is not, what is behind which switch, what K still owes, the open choices, the shared files and pins the other stream must know, and where the record and the handoff are.
+   - The lead then asks that session for the next directed brief, as the clubs work began. K's own words in the clubs session stay the final word over any brief.
+   - What the answer does not cover: any merge, any switch and any choice still open.
