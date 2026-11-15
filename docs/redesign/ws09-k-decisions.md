@@ -46,3 +46,11 @@ K's decisions on the clubs work, numbered in the order K made them, each with th
    - When the clubs work is done, the lead sends the first lead's session a summary written for whoever directs the whole project: what is merged and what is not, what is behind which switch, what K still owes, the open choices, the shared files and pins the other stream must know, and where the record and the handoff are.
    - The lead then asks that session for the next directed brief, as the clubs work began. K's own words in the clubs session stay the final word over any brief.
    - What the answer does not cover: any merge, any switch and any choice still open.
+
+7. The five open choices (Sunday, November 15, 2026, about 4:30 AM UTC). The lead had listed them with a recommendation each. K's words: "All recommended. But why are we sending rep an email on saves? Just wanna talk and help me understand"
+   - How often a save emails the regional representatives (T10): at most one notice for a club and a saver in an hour, the later saves of the hour named in the activity log alone. K asked why the notice exists at all, and the lead answered in the chat; if that talk changes K's mind, K's later word replaces this line. Built behind `clubKeepers`.
+   - What a first save does to today's page (P9): kept as built.
+   - Still accurate: no row in the activity log.
+   - My region: no second sign-in factor asked, as the club save asks none.
+   - The reload of a guarded page before the seats arrive: mended at its root in `src/contexts/AuthContext.tsx` as its own small step in checkpoint U with its own review. It changes today's site with every switch off, so it reaches main only with checkpoint U's merge, on K's own word; the mail stream is told first.
+   - What the answer does not cover: any merge, any switch, the Baton Rouge seat's region (K's own to set), K's glance at the live Clubs page and K's look at the picture sheets.
