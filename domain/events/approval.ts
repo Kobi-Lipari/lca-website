@@ -4,8 +4,9 @@
 // may not list until an LCA admin approves it, which sets approved_at. Every
 // event not marked lists as today. The rule reads the event's own two
 // columns (migration 0070) and nothing else, so the server and the pages get
-// the same answer; nothing calls it yet, since the publish paths and the
-// pages that show the wait come with WS09 steps 17 to 19.
+// the same answer. The setup save (PATCH /api/admin/tournaments/[id])
+// refuses a publish in its words since WS09 step 17; Approve and publish and
+// the pages that show the wait come with WS09 steps 18 and 19.
 
 /** The two columns of a tournament the wait reads. */
 export interface ApprovalEvent {

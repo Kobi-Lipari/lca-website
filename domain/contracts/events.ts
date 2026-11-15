@@ -625,6 +625,35 @@ export const tournamentManageResponseSchema = z.strictObject({
 })
 
 /**
+ * POST and DELETE /api/admin/tournaments/[id]/directors
+ * (adminAssignTournamentDirector, adminRemoveTournamentDirector): the member
+ * to name as one of the event's directors, or to remove. Optional here, so a
+ * body without it still gets the endpoint's own words, "memberId is
+ * required".
+ */
+export const tournamentDirectorRequestSchema = z.looseObject({
+  memberId: z.string().optional(),
+})
+
+/** One of an event's directors, as the directors endpoint lists them. */
+export const tournamentDirectorSchema = z.strictObject({
+  tournament_id: idSchema,
+  member_id: idSchema,
+  assigned_at: storedTimestampSchema,
+  full_name: z.string(),
+  email: z.string(),
+})
+
+/**
+ * GET, POST and DELETE /api/admin/tournaments/[id]/directors
+ * (adminGetTournamentDirectors and the two above): every director of the
+ * event, after the naming or the removal for the two writes.
+ */
+export const tournamentDirectorsResponseSchema = z.strictObject({
+  directors: z.array(tournamentDirectorSchema),
+})
+
+/**
  * PATCH /api/admin/tournaments/[id]/registration
  * (updateTournamentRegistration): whether entries are taken, when they
  * open, and the two reminder emails. A key left out keeps its column.
@@ -784,3 +813,5 @@ export type TournamentManageResponse = z.infer<typeof tournamentManageResponseSc
 export type RegistrationSettingsRequest = z.infer<typeof registrationSettingsRequestSchema>
 export type RatingReportResponse = z.infer<typeof ratingReportResponseSchema>
 export type ClearinghouseResponse = z.infer<typeof clearinghouseResponseSchema>
+export type TournamentDirectorRequest = z.infer<typeof tournamentDirectorRequestSchema>
+export type TournamentDirectorsResponse = z.infer<typeof tournamentDirectorsResponseSchema>

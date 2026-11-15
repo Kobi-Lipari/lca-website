@@ -6,13 +6,16 @@ import { getDb } from '../db/client'
 import { loadSectionsFor, toTournamentResponse } from '../utils/events/sectionsRepo'
 import { loadSchedulesFor } from '../utils/events/schedulesRepo'
 import { eventsManagedBy, publicTournamentAnswer } from '../utils/events/publicAnswer'
+import { regionClubIdsOf } from '../utils/events/creation'
 
 export const onRequestOptions: PagesFunction<Env> = async () => handleOptions()
 
 export const onRequestGet: PagesFunction<Env> = async (context) => {
   // Hidden drafts are visible only to the people who can manage them: admins
-  // see every draft, a club rep sees their own club's, and anyone assigned as
-  // a director sees the events they direct. Everyone else gets the public list.
+  // see every draft, a club rep sees their own club's, anyone assigned as
+  // a director sees the events they direct, and, while REGION_EVENTS_ON is
+  // set, a regional representative sees the drafts of the clubs their seats
+  // keep. Everyone else gets the public list.
   let viewer: { role: string; id: string; clubId: string | null } | null = null
   try {
     const authed = await requireAuthedMember(context.request, context.env)
@@ -31,9 +34,27 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
        FROM tournaments t
        LEFT JOIN clubs c ON t.club_id = c.id`
 
+  // The clubs a regional representative runs the events of (WS09 step 17),
+  // read once while REGION_EVENTS_ON is set and never for an LCA admin or an
+  // observer, who see every event already; empty, with no query, while it
+  // is unset, so the list is as before.
+  const regionClubIds = viewer && viewer.role !== 'lca_admin' && !isObserver(viewer)
+    ? await regionClubIdsOf(context.env.DB, { id: viewer.id, role: viewer.role, club_id: viewer.clubId })
+    : []
+
   let statement: D1PreparedStatement
   if (viewer && (viewer.role === 'lca_admin' || isObserver(viewer))) {
     statement = context.env.DB.prepare(`${base} ORDER BY t.date ASC`)
+  } else if (viewer && regionClubIds.length > 0) {
+    // As below, and the drafts of the clubs the representative's seats keep.
+    statement = context.env.DB.prepare(
+      `${base}
+       WHERE t.is_visible = 1
+          OR (?1 IS NOT NULL AND t.club_id = ?1 AND ?2 = 'club_rep')
+          OR t.id IN (SELECT tournament_id FROM tournament_directors WHERE member_id = ?3)
+          OR t.club_id IN (SELECT value FROM json_each(?4))
+       ORDER BY t.date ASC`,
+    ).bind(viewer.clubId, viewer.role, viewer.id, JSON.stringify(regionClubIds))
   } else if (viewer) {
     // Drafts: a rep's own club's, plus any event this person directs.
     statement = context.env.DB.prepare(
@@ -59,7 +80,7 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
   // The keys MANAGER_ONLY_TOURNAMENT_KEYS names go only to the people who
   // manage each event, decided row by row with one read of the viewer's
   // director assignments, never one query an event.
-  const manages = await eventsManagedBy(context.env.DB, viewer)
+  const manages = await eventsManagedBy(context.env.DB, viewer, regionClubIds)
   const tournaments = rows.map((t) => publicTournamentAnswer(
     toTournamentResponse(t, sections.get(t.id) ?? [], schedules.get(t.id) ?? []),
     manages(t),

@@ -12,8 +12,9 @@
 // copied into a variable of its own module, as the trim's handlers pass
 // CLUB_EMAIL_HIDDEN, so a test can turn it on through a getter on the mocked
 // module. REGION_EVENTS_ON, the regional representatives' switch, is read
-// here, inside regionClubIdsOf at each call, through its module, whatever
-// rolesOn is. Nothing here reads a setting of the environment.
+// here, inside regionClubIdsOf and draftedInRegion at each call,
+// through its module, whatever rolesOn is. Nothing here reads a setting of
+// the environment.
 
 import type { CreationGrant, CreationPerson } from '../../../domain/events/creation'
 import type { MemberRow } from '../../types'
@@ -110,6 +111,19 @@ export async function creationPerson(db: D1Database, member: GrantMember, rolesO
   if (!REGION_EVENTS_ON) return { grant: await creationGrant(db, member, rolesOn), memberId: member.id, repClubId }
   const regionClubIds = await regionClubIdsOf(db, member)
   return { grant: await grantOf(db, member, rolesOn, async () => regionClubIds), memberId: member.id, repClubId, regionClubIds }
+}
+
+/**
+ * Whether the member drafted the club event (tournaments.created_by is
+ * theirs) and their regional seats keep its club: the representative's
+ * standing on their own draft, whatever its state, which lets them change its
+ * membership switch as canAssignDirectors lets them name its directors. False
+ * with no query while REGION_EVENTS_ON is unset, for an LCA-run event and for
+ * an event the member did not create.
+ */
+export async function draftedInRegion(db: D1Database, member: GrantMember, event: { clubId: string | null; createdBy: string | null }): Promise<boolean> {
+  if (!REGION_EVENTS_ON || event.clubId === null || event.createdBy !== member.id) return false
+  return (await regionClubIdsOf(db, member)).includes(event.clubId)
 }
 
 /**

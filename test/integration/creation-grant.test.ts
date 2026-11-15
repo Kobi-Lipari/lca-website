@@ -32,7 +32,10 @@
 //   with the clubs of the seat's regions, its added regions among them, for
 //   a club rep, a director and an LCA admin as well; an ended term, a seat
 //   made inactive, a seat nobody holds and a guest's seat give nothing (WS09
-//   step 16).
+//   step 16); draftedInRegion reads the seat only while the constant is set
+//   and only for a club event the member drafted, and canManageTournament
+//   reads the region last, for no LCA admin, club rep on their own club or
+//   assigned director (WS09 step 17).
 // CREATION_ROLES_ON is false in the tree. It is read here through a getter on
 // the mocked module and held unset, so once a handler reads it, as the trim's
 // handlers read theirs, the comparison still asks the handler and the rules
@@ -43,7 +46,9 @@ import { env } from 'cloudflare:test'
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 import { canAssignDirectors, canChargeFees, canCreate, canDeleteDraft, type CreationGrant } from '../../domain/events/creation'
 import * as creation from '../../functions/utils/events/creation'
-import { creationGrant, creationPerson, creatorGrant, holdsPresidentSeat, type GrantMember } from '../../functions/utils/events/creation'
+import { creationGrant, creationPerson, creatorGrant, draftedInRegion, holdsPresidentSeat, type GrantMember } from '../../functions/utils/events/creation'
+import { canManageTournament } from '../../functions/utils/admin/permissions'
+import type { MemberRow } from '../../functions/types'
 import { onRequestPost as createTournament } from '../../functions/api/admin/tournaments'
 import { onRequestDelete as deleteTournament, onRequestPatch as patchTournament } from '../../functions/api/admin/tournaments/[id]'
 import { onRequestPost as assignDirector } from '../../functions/api/admin/tournaments/[id]/directors'
@@ -610,6 +615,65 @@ describe('the regional seat, REGION_EVENTS_ON set and unset, CREATION_ROLES_ON u
       await creationGrant(asked.db, member, creation.CREATION_ROLES_ON)
       expect(asked.asked, member.role).toEqual([])
     }
+  })
+
+  it('draftedInRegion reads nothing while REGION_EVENTS_ON is unset, and once set is true only for a club event in the region the member drafted (WS09 step 17)', async () => {
+    const club = await clubIn(REGION, 'Example Chess Club')
+    const far = await clubIn('Example Far Region', 'Example Rooks Club')
+    const id = await seedMember()
+    await regionalSeat(id)
+    const member = await memberRow(id)
+    const own = { clubId: club, createdBy: id }
+    const unset = counting()
+    expect(await draftedInRegion(unset.db, member, own)).toBe(false)
+    expect(unset.asked).toEqual([])
+    flags.regionOn = true
+    expect(await draftedInRegion(env.DB, member, own)).toBe(true)
+    for (const [label, event] of [
+      ['another person\'s draft', { clubId: club, createdBy: await seedMember() }],
+      ['a draft with no creator', { clubId: club, createdBy: null }],
+      ['an LCA-run draft', { clubId: null, createdBy: id }],
+    ] as const) {
+      const asked = counting()
+      expect(await draftedInRegion(asked.db, member, event), label).toBe(false)
+      expect(asked.asked, label).toEqual([])
+    }
+    expect(await draftedInRegion(env.DB, member, { clubId: far, createdBy: id })).toBe(false)
+    const guest = await seedMember({ role: 'guest' })
+    await regionalSeat(guest)
+    expect(await draftedInRegion(env.DB, await memberRow(guest), { clubId: club, createdBy: guest })).toBe(false)
+  })
+
+  it('canManageTournament reads the region last and only while REGION_EVENTS_ON is set, for no LCA admin, club rep on their own club or assigned director (WS09 step 17)', async () => {
+    const club = await clubIn(REGION, 'Example Chess Club')
+    const event = await seedTournament({ clubId: club, entryFee: 0, isVisible: false })
+    const lcaRun = await seedTournament({ clubId: null, entryFee: 0, isVisible: false })
+    const full = async (id: string) => (await env.DB.prepare('SELECT * FROM members WHERE id = ?').bind(id).first<MemberRow>())!
+    const seated = await full(await seedMember())
+    await regionalSeat(seated.id)
+    const director = await full(await seedMember())
+    await regionalSeat(director.id)
+    await seedTournamentDirector(event, director.id)
+    const admin = await full(await seedAdmin())
+    const rep = await full(await seedMember({ role: 'club_rep', clubId: club }))
+    const seatReads = (asked: readonly string[]) => asked.filter((sql) => sql.includes('seat_regions'))
+    const unset = counting()
+    expect(await canManageTournament(unset.db, seated, event)).toBe(false)
+    expect(seatReads(unset.asked)).toEqual([])
+    flags.regionOn = true
+    const set = counting()
+    expect(await canManageTournament(set.db, seated, event)).toBe(true)
+    expect(set.asked).toHaveLength(unset.asked.length + 1)
+    expect(seatReads(set.asked)).toHaveLength(1)
+    expect(set.asked.at(-1)).toContain('JOIN seat_regions')
+    for (const [who, person] of [['an LCA admin', admin], ['the club\'s own rep', rep], ['an assigned director who holds the seat', director]] as const) {
+      const asked = counting()
+      expect(await canManageTournament(asked.db, person, event), who).toBe(true)
+      expect(seatReads(asked.asked), who).toEqual([])
+    }
+    const lcaRunAsked = counting()
+    expect(await canManageTournament(lcaRunAsked.db, seated, lcaRun)).toBe(false)
+    expect(seatReads(lcaRunAsked.asked)).toEqual([])
   })
 
   it('with REGION_EVENTS_ON unset, a seat holder\'s create, director naming and fee save answer as today\'s handlers do', async () => {

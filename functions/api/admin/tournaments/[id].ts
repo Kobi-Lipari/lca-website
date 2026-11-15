@@ -24,8 +24,9 @@ import {
   schedulesProblemForRounds,
   type SaveSchedulesInput,
 } from '../../../utils/events/schedulesRepo'
-import { CREATION_ROLES_ON, creationPerson } from '../../../utils/events/creation'
+import { CREATION_ROLES_ON, creationPerson, draftedInRegion } from '../../../utils/events/creation'
 import { sendPublishedReviewNotice } from '../../../utils/events/publishedReview'
+import { WAITING_FOR_APPROVAL, mayList } from '../../../../domain/events/approval'
 import { SECTIONS_CHANGED_MESSAGE, type TierTournament } from '../../../../domain/events/sections'
 import { SCHEDULE_FORMS_MESSAGE, SCHEDULES_CHANGED_MESSAGE } from '../../../../domain/events/schedules'
 import { FEES_NEED_PAYOUT_ACCOUNT, canChargeFees, canDeleteDraft, feesRaised, type CreationGrant } from '../../../../domain/events/creation'
@@ -60,9 +61,13 @@ function pricingOf(event: {
  * round outside the event's rounds, before anything is written. If the
  * sections or the schedules change between reading them and the batch
  * (another save at the same moment), the batch fails as a whole and the
- * answer is 409. A save that raises what an entrant pays, once
- * CREATION_ROLES_ON is set, needs someone canChargeFees lets set a fee (D24).
- * Once it is set, the first publish of a standing director's event also
+ * answer is 409. A save that raises what an entrant pays needs someone
+ * canChargeFees lets set a fee (D24): once CREATION_ROLES_ON is set, D24's
+ * list; in both states, never a person whose standing on the club is the
+ * region alone, and on an event marked for approval no one but an LCA admin
+ * and the club's own rep. A save that publishes an event marked for approval
+ * before an LCA admin approves it is refused 409 with mayList's words.
+ * Once CREATION_ROLES_ON is set, the first publish of a standing director's event also
  * tells the LCA admins by email (D22), and the publish's row in the activity
  * log says whether the mark was set and how many emails went.
  */
@@ -90,6 +95,18 @@ export const onRequestPatch: PagesFunction<Env> = async (context) => {
     return errorResponse(SCHEDULE_FORMS_MESSAGE, 400)
   }
 
+  // An event marked for an LCA admin's approval, a regional representative's
+  // club event (WS09 step 17), may not list until an LCA admin approves it:
+  // a save that publishes it before then is refused 409, whoever makes it,
+  // an LCA admin among them, whose way is Approve and publish, and nothing is
+  // written. mayList reads the mark from the row read above and compares it
+  // with the number 1, so a database the migration has not reached, which
+  // answers the column's name as text, refuses no publish, and an event not
+  // marked publishes as before.
+  if (body.isVisible && !mayList({ needs_lca_approval: existing.needsLcaApproval, approved_at: existing.approvedAt })) {
+    return errorResponse(WAITING_FOR_APPROVAL, 409)
+  }
+
   // Reassigning the organizing club moves the event between reps' scopes, so
   // only an admin may do it. Checked before any write happens.
   let clubId = existing.clubId
@@ -107,8 +124,12 @@ export const onRequestPatch: PagesFunction<Env> = async (context) => {
   }
 
   // Whether entering needs an LCA membership. Only an LCA admin or the rep
-  // of the organizing club decides it; an assigned director, who reaches this
-  // handler through requireTournamentManager, may not. An LCA-run event
+  // of the organizing club decides it, and, while REGION_EVENTS_ON is set, a
+  // regional representative on a club event in their region they drafted
+  // (draftedInRegion, read last and only for someone the first two do not
+  // admit); an assigned director, who reaches this handler through
+  // requireTournamentManager, may not, nor may a representative on a club
+  // event someone else created. An LCA-run event
   // (no club, after this save) always requires one. Written only when sent
   // or when taking the club off forces it on, so an edit read before another
   // save changed it cannot put the old value back.
@@ -116,7 +137,7 @@ export const onRequestPatch: PagesFunction<Env> = async (context) => {
   if (body.requiresLcaMembership !== undefined) {
     const { member } = authResult
     const ownsEvent = member.role === 'club_rep' && !!existing.clubId && member.club_id === existing.clubId
-    if (member.role !== 'lca_admin' && !ownsEvent) {
+    if (member.role !== 'lca_admin' && !ownsEvent && !(await draftedInRegion(context.env.DB, member, existing))) {
       return errorResponse("Only the organizing club's rep or an LCA admin can change whether an LCA membership is required", 403)
     }
     if (!body.requiresLcaMembership && !clubId) {
@@ -145,14 +166,19 @@ export const onRequestPatch: PagesFunction<Env> = async (context) => {
   // gives it, and not by when it applies, so a stored late date or early
   // deadline moved earlier is not read as a raise. CREATION_ROLES_ON is read
   // here, at each request; while it is unset canChargeFees lets everyone the
-  // manage check admits set a fee, as before.
+  // manage check admits set a fee, as before, but for two refusals it holds
+  // in both states: a person whose standing on the event's club is the
+  // region alone, and, on an event marked for approval, read from the row
+  // above with no query of its own, everyone but an LCA admin and the club's
+  // own rep (WS09 step 17), so a director the representative names raises no
+  // fee there either.
   const rolesOn = CREATION_ROLES_ON
   const stored = await loadSections(db, tournamentId, { includeArchived: true })
   const before = savedSectionFees(stored, null, pricingOf(existing))
   const after = savedSectionFees(stored, body.sections, pricingOf({ entryFee, earlyDeadline, earlyDiscount, lateAfter, lateFee }))
   if (feesRaised(before, after)) {
     const person = await creationPerson(context.env.DB, authResult.member, rolesOn)
-    if (!canChargeFees(person, { clubId: existing.clubId, createdBy: existing.createdBy }, rolesOn)) {
+    if (!canChargeFees(person, { clubId: existing.clubId, createdBy: existing.createdBy, needsLcaApproval: existing.needsLcaApproval }, rolesOn)) {
       return errorResponse(FEES_NEED_PAYOUT_ACCOUNT, 403)
     }
   }

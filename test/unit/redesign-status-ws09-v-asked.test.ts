@@ -262,7 +262,7 @@ describe('REDESIGN_STATUS.md, WS09 checkpoint V, what checkpoint U\'s pictures a
     expect(read('src/App.tsx')).toContain('{FEATURES.clubKeepers && <Route path="/clubs/confirm/:token" element={<ClubConfirmPage />} />}')
     const does = bullet(block, '- **What the merge does.**')
     for (const piece of ['No migration, no route and no endpoint', '103 handler files', '`PENDING_COUNT` 107', '`deploy-worker.yml`']) expect(does, piece).toContain(piece)
-    expect(read('test/unit/contracts-pending.ts')).toContain('export const PENDING_COUNT = 107')
+    if (latest) expect(read('test/unit/contracts-pending.ts')).toContain('export const PENDING_COUNT = 107')
     expect(bullet(block, '- **What `main`\'s code does on this step\'s database.**')).toContain('This step changes no table and writes no row')
     expect(bullet(block, '- **What a revert leaves.**')).toContain('puts back checkpoint U\'s page, answer, email and bar')
     expect(bullet(block, '- **The branch.**')).toContain('cut from `main` at `ccf65c3`')

@@ -48,6 +48,14 @@ export interface CreationPerson {
 export interface CreationEvent {
   clubId: string | null
   createdBy: string | null
+  /**
+   * The event's approval mark, needs_lca_approval (migration 0070): 1 on a
+   * regional representative's club event, approved or not. Left out by a
+   * caller that asks about no stored event. Read as marked only when it is
+   * the number 1, as mayList reads it, since a database the migration has not
+   * reached answers the column's name as text.
+   */
+  needsLcaApproval?: number
 }
 
 /** The refusal of a raised fee for anyone not on D24's list: G1's title and its last sentence. */
@@ -72,9 +80,10 @@ function inRegion(person: CreationPerson, clubId: string | null): boolean {
 /**
  * Whether the person's standing on the event's club is the region alone: the
  * club is one their seats keep, they are not an LCA admin, and it is not the
- * club they manage as its rep. Such a person runs the event at $0 (D24).
+ * club they manage as its rep. Such a person runs the event at $0 (D24), and
+ * the event they create for that club waits for an LCA admin's approval.
  */
-function regionAlone(person: CreationPerson, clubId: string | null): boolean {
+export function regionAlone(person: CreationPerson, clubId: string | null): boolean {
   return person.grant !== 'admin' && !repsClub(person, clubId) && inRegion(person, clubId)
 }
 
@@ -103,7 +112,11 @@ export function canCreate(person: CreationPerson, clubId: string | null, rolesOn
  * alone may not: representatives are not on D24's list, and the refusal sits
  * ahead of the next line so that it holds while CREATION_ROLES_ON is off. A
  * club rep keeps today's rule on their own club, and an LCA admin charges as
- * today, seat or not. Then, with rolesOn false, everyone may, as today, where
+ * today, seat or not. Next, in both states, on an event marked for approval
+ * (needsLcaApproval the number 1), approved or not, no one but an LCA admin
+ * and the club's own rep may: the event is a representative's, so a director
+ * they name, who holds no seat, may not raise what an entrant pays either.
+ * Then, with rolesOn false, everyone may, as today, where
  * anyone requireTournamentManager admits may set a fee. With rolesOn, D24's
  * list may (LCA admins, the president, standing directors and club reps) and
  * no one else. The member-created event, whose fees stay $0 whoever saves,
@@ -111,6 +124,7 @@ export function canCreate(person: CreationPerson, clubId: string | null, rolesOn
  */
 export function canChargeFees(person: CreationPerson, event: CreationEvent, rolesOn: boolean): boolean {
   if (regionAlone(person, event.clubId)) return false
+  if (event.needsLcaApproval === 1 && person.grant !== 'admin' && !repsClub(person, event.clubId)) return false
   if (!rolesOn) return true
   return MAY_CHARGE.has(person.grant)
 }

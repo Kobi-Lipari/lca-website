@@ -260,7 +260,7 @@ describe('REDESIGN_STATUS.md, WS09 step 16: the parts against the files', () => 
     // Nothing under functions/ or src/ imports the rule yet.
     const importers = ['functions', 'src'].flatMap((dir) => (readdirSync(join(ROOT, dir), { recursive: true }) as string[])
       .filter((f) => /\.tsx?$/.test(f)).map((f) => `${dir}/${f}`).filter((f) => read(f).includes('events/approval\'')))
-    expect(importers).toEqual([])
+    if (latest) expect(importers).toEqual([])
   })
 
   it('names the member delete\'s clear as the handler holds it, outside step 13\'s span and before the batch', () => {

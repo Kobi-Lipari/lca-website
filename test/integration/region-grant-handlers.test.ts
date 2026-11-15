@@ -8,10 +8,12 @@
 //   grant creates for a club in the seat's regions, an added region included,
 //   and not for a club outside them, not an LCA-run event, and, with an ended
 //   term or no seat, not at all; the event is a hidden draft with its creator
-//   written; a fee above $0 is refused with the payout-account words and
-//   nothing written, with CREATION_ROLES_ON unset and with it set; a club rep
-//   who also holds a seat keeps today's rule on their own club and gets $0 on
-//   another club in the region; an LCA admin with a seat charges as today;
+//   written and, since WS09 step 17, marked for approval; a fee above $0 is
+//   refused with the payout-account words and nothing written, with
+//   CREATION_ROLES_ON unset and with it set; a club rep who also holds a seat
+//   keeps today's rule on their own club and, since WS09 step 17, creates for
+//   another club in the region at $0 as its representative; an LCA admin with
+//   a seat charges as today;
 // - naming directors (POST .../directors): on a club event in the region the
 //   seat holder drafted, and not on one someone else drafted or one outside
 //   the region; nothing written when refused;
@@ -105,16 +107,16 @@ describe('creating, with REGION_EVENTS_ON set and CREATION_ROLES_ON unset', () =
     flags.regionOn = true
   })
 
-  it('lets a seat holder create a $0 hidden draft for a club in the seat\'s region, with its creator written and nothing marked for approval yet', async () => {
+  it('lets a seat holder create a $0 hidden draft for a club in the seat\'s region, with its creator written and marked for approval (WS09 step 17)', async () => {
     const club = await clubIn(REGION, 'Example Chess Club')
     const id = await seedMember()
     await regionalSeat(id)
     const { res, rows } = await create(id, club)
     expect(res.status).toBe(201)
     expect(rows).toHaveLength(1)
-    expect(rows[0]).toMatchObject({ club_id: club, created_by: id, is_visible: 0, needs_lca_approval: 0, approved_at: null, approved_by: null })
+    expect(rows[0]).toMatchObject({ club_id: club, created_by: id, is_visible: 0, needs_lca_approval: 1, approved_at: null, approved_by: null })
     const answer = await res.json<{ tournament: Record<string, unknown> }>()
-    expect(answer.tournament).toMatchObject({ needs_lca_approval: 0, approval_requested_at: null, approved_at: null, approved_by: null })
+    expect(answer.tournament).toMatchObject({ needs_lca_approval: 1, approval_requested_at: null, approved_at: null, approved_by: null })
   })
 
   it('counts a seat\'s added region, and not a region the seat does not keep', async () => {
@@ -165,7 +167,7 @@ describe('creating, with REGION_EVENTS_ON set and CREATION_ROLES_ON unset', () =
     expect((await create(id, club, 0)).res.status).toBe(201)
   })
 
-  it.each([false, true])('keeps a club rep who holds a seat on today\'s rule on their own club, and, the create not yet wired (WS09 step 17), still refuses them another club in the region, with CREATION_ROLES_ON %s', async (rolesOn) => {
+  it.each([false, true])('keeps a club rep who holds a seat on today\'s rule on their own club, and lets them create for another club in the region as its representative, hidden, marked and at $0 (WS09 step 17), with CREATION_ROLES_ON %s', async (rolesOn) => {
     flags.rolesOn = rolesOn
     const own = await clubIn(REGION, 'Example Chess Club')
     const other = await clubIn(REGION, 'Example Knights Club')
@@ -175,10 +177,11 @@ describe('creating, with REGION_EVENTS_ON set and CREATION_ROLES_ON unset', () =
     const ownFee = await create(id, own, 30)
     expect(ownFee.res.status).toBe(201)
     expect(ownFee.rows[0]).toMatchObject({ club_id: own, created_by: id })
-    // Another club's event is refused a club rep before the seat is asked, as today.
+    // Another club in the region: created as its representative.
     const otherFree = await create(id, other, 0)
-    expect(otherFree.res.status).toBe(403)
-    expect(otherFree.rows).toHaveLength(0)
+    expect(otherFree.res.status).toBe(201)
+    expect(otherFree.rows).toHaveLength(1)
+    expect(otherFree.rows[0]).toMatchObject({ club_id: other, created_by: id, is_visible: 0, needs_lca_approval: 1 })
   })
 
   it.each([false, true])('lets an LCA admin who holds a seat charge as today, on a club in the region and on an LCA-run event, with CREATION_ROLES_ON %s', async (rolesOn) => {

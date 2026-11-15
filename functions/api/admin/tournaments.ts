@@ -10,7 +10,7 @@ import { buildSaveSections, isSectionsConflict, loadSections, runBatch, savedSec
 import { loadSchedules } from '../../utils/events/schedulesRepo'
 import { CREATION_ROLES_ON, creationPerson } from '../../utils/events/creation'
 import { SECTIONS_CHANGED_MESSAGE } from '../../../domain/events/sections'
-import { FEES_NEED_PAYOUT_ACCOUNT, LCA_RUN_ONLY, canChargeFees, canCreate, feesRaised } from '../../../domain/events/creation'
+import { FEES_NEED_PAYOUT_ACCOUNT, LCA_RUN_ONLY, canChargeFees, canCreate, feesRaised, regionAlone } from '../../../domain/events/creation'
 import { LCA_RUN_NEEDS_MEMBERSHIP } from '../../../domain/membership/requirement'
 
 function slugify(value: string): string {
@@ -39,9 +39,12 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
   // Who may create is the creation rules' answer (domain/events/creation.ts)
   // for the person their database half reads. CREATION_ROLES_ON is read here,
   // at each request; while it is unset the seat and the tournament_director
-  // role grant nothing, so the rules answer as today's checks did.
+  // role grant nothing, so the rules answer as today's checks did. While
+  // REGION_EVENTS_ON is unset the person has no region's clubs and no seat
+  // is read; once it is set, a regional seat gives the grant regional_rep
+  // and the clubs it keeps (WS09 step 16).
   const rolesOn = CREATION_ROLES_ON
-  const person = await creationPerson(context.env.DB, member, rolesOn)
+  let person = await creationPerson(context.env.DB, member, rolesOn)
   const isAdmin = person.grant === 'admin'
 
   // No grant, no create, as before for everyone but an LCA admin and a club
@@ -62,6 +65,16 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
   if (member.role === 'club_rep' && !member.club_id) {
     return errorResponse('Your account is not linked to a club yet. Ask an LCA admin to assign you one.', 403)
   }
+  // Whether the person creates as the region's representative (WS09 step
+  // 17): the club named is one their regional seats keep, and not one they
+  // run as an LCA admin or as its rep. Never while REGION_EVENTS_ON is unset,
+  // when the person has no region's clubs.
+  const asRepresentative = !!body.clubId && regionAlone(person, body.clubId)
+  // A club rep who also holds a regional seat and names another club in the
+  // region creates for that club, as its representative: the rep's own club
+  // has no part in this create, so it is left off the person here, and the
+  // two lines below read the club named.
+  if (asRepresentative) person = { ...person, repClubId: null }
   if (person.repClubId && body.clubId && body.clubId !== person.repClubId) {
     return errorResponse('Club reps can only create tournaments for their club', 403)
   }
@@ -74,8 +87,9 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
 
   // A standing director's and the president's events are LCA-run (Q37, and
   // for the president the membership row of the brief's table); a president
-  // who wants a club's event asks an LCA admin.
-  if (clubId !== null && person.repClubId === null && (person.grant === 'president' || person.grant === 'standing_director')) {
+  // who wants a club's event asks an LCA admin, unless they hold a regional
+  // seat over the club and create it as the representative.
+  if (clubId !== null && person.repClubId === null && !asRepresentative && (person.grant === 'president' || person.grant === 'standing_director')) {
     return errorResponse(LCA_RUN_ONLY, 403)
   }
   if (!canCreate(person, clubId, rolesOn)) {
@@ -90,9 +104,13 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
 
   // D24: a price above $0 at any tier of any section, each read as the
   // section writer will store it (savedSectionFees, the save's comparison
-  // too), needs a grant on the fee list. Every grant that may create is on it
-  // for now, so no creator is refused here yet; WS09's representatives will
-  // be the first who can be.
+  // too), needs canChargeFees's yes, the rule the save asks too. Every grant
+  // of today's that may create is on D24's list, so none of them is refused
+  // here; a person who creates as the region's representative is, whatever
+  // CREATION_ROLES_ON is, since their standing on the club is the region
+  // alone, so their event starts at $0 (WS09 step 17). The approval mark the
+  // rule reads on a stored event is the representative's alone here, so the
+  // create does not pass it.
   if (feesRaised([], savedSectionFees([], sections, { entry_fee: body.entryFee })) && !canChargeFees(person, { clubId, createdBy: member.id }, rolesOn)) {
     return errorResponse(FEES_NEED_PAYOUT_ACCOUNT, 403)
   }
@@ -116,9 +134,11 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
 
   // A club-run event starts without the LCA membership requirement (clubs
   // get tournament creation first, free of charge); an LCA-run event always
-  // has it. Only an admin or the club's own rep reaches this point with a
-  // club, since a standing director and the president create LCA-run events
-  // only, so either may set it.
+  // has it. Three people reach this point with a club: an admin, the club's
+  // own rep and, while REGION_EVENTS_ON is set, the region's representative,
+  // who decides it on the draft they create as on any draft of theirs
+  // (draftedInRegion in the save). A standing director and the president
+  // reach it with a club only as that representative.
   if (body.requiresLcaMembership === false && !clubId) {
     return errorResponse(LCA_RUN_NEEDS_MEMBERSHIP, 400)
   }
@@ -133,6 +153,10 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
   // is_visible = 0: new tournaments are true drafts, hidden from public pages
   // until made visible from the management page. This makes the wizard's
   // "created as a draft" banner accurate (the column otherwise defaults to 1).
+  // The create schema has no visibility key, so whatever the body asks, the
+  // event starts hidden. A representative's event is also marked for an LCA
+  // admin's approval, needs_lca_approval 1, and may not list until approved
+  // (mayList, read by the save); every other event is written as before.
   const insert = db.insert(tournaments).values({
     id,
     name: body.name,
@@ -154,13 +178,15 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     registrationClosesAt: body.registrationClosesAt ?? null,
     customDetails: body.customDetails?.length ? JSON.stringify(body.customDetails) : null,
     requiresLcaMembership,
+    ...(asRepresentative ? { needsLcaApproval: 1 } : {}),
   })
   // A standing director and the president run the event they create as its
   // first director, the row canManageTournament admits them by, written in the
   // same batch as the event. An admin and a club rep, a club rep who holds the
   // seat among them, manage it by their role and get no row, which would
-  // outlive the role.
-  const firstDirector = (person.grant === 'president' || person.grant === 'standing_director') && person.repClubId === null
+  // outlive the role; so does a president or a standing director who creates
+  // a club's event as the region's representative, who manages it by the seat.
+  const firstDirector = (person.grant === 'president' || person.grant === 'standing_director') && person.repClubId === null && !asRepresentative
     ? [db.insert(tournamentDirectors).values({ tournamentId: id, memberId: member.id }).onConflictDoNothing()]
     : []
   try {

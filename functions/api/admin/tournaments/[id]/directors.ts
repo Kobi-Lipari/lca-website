@@ -5,16 +5,13 @@ import { canManageTournament } from '../../../../utils/admin/permissions'
 import { recordAdminAction } from '../../../../utils/admin/audit'
 import { CREATION_ROLES_ON, creationPerson } from '../../../../utils/events/creation'
 import { canAssignDirectors } from '../../../../../domain/events/creation'
+import { tournamentDirectorRequestSchema } from '../../../../../domain/contracts/events'
 import {
   errorResponse,
   handleOptions,
   jsonResponse,
-  parseJsonBody,
+  parseBody,
 } from '../../../../utils/response'
-
-interface DirectorBody {
-  memberId?: string
-}
 
 export const onRequestOptions: PagesFunction<Env> = async () => handleOptions()
 
@@ -32,7 +29,10 @@ async function listDirectors(env: Env, tournamentId: string) {
 
 // Shared gate for assigning/removing (D21): an LCA admin on any event, the
 // rep of the club that organizes it, and, once CREATION_ROLES_ON is set, the
-// president on an event the president created. canAssignDirectors decides,
+// president on an event the president created, and, while REGION_EVENTS_ON
+// is set, a regional representative on a club event in their region that
+// they drafted (WS09 step 17), never on a club rep's own event there, which
+// the representative otherwise runs. canAssignDirectors decides,
 // the one place the rule is written. Assigning someone gives them this event
 // only; it never changes their role.
 async function requireCanAssign(
@@ -90,8 +90,9 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
   if (gate instanceof Response) return gate
   const { tournamentId } = gate
 
-  const body = await parseJsonBody<DirectorBody>(context.request)
-  if (!body?.memberId) {
+  const body = await parseBody(context.request, tournamentDirectorRequestSchema)
+  if (isResponse(body)) return body
+  if (!body.memberId) {
     return errorResponse('memberId is required', 400)
   }
 
@@ -127,8 +128,9 @@ export const onRequestDelete: PagesFunction<Env> = async (context) => {
   if (gate instanceof Response) return gate
   const { tournamentId } = gate
 
-  const body = await parseJsonBody<DirectorBody>(context.request)
-  if (!body?.memberId) {
+  const body = await parseBody(context.request, tournamentDirectorRequestSchema)
+  if (isResponse(body)) return body
+  if (!body.memberId) {
     return errorResponse('memberId is required', 400)
   }
 

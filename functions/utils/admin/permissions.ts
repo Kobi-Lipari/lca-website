@@ -1,5 +1,6 @@
 // functions/utils/admin/permissions.ts
 import type { MemberRow } from '../../types'
+import { REGION_EVENTS_ON } from '../clubs/pages'
 
 /**
  * Ordered least to most privileged, which is also the order they are offered
@@ -75,7 +76,17 @@ export async function canManageTournament(
   // Being assigned no longer changes anyone's role: a club rep naming a
   // member as director gives that member this event and nothing else.
   if (member.role === 'guest') return false
-  return isTournamentDirector(db, member.id, tournamentId)
+  if (await isTournamentDirector(db, member.id, tournamentId)) return true
+
+  // The regional representative runs every club event in their region, a
+  // club rep's own among them (WS09 step 17). Read last, only while
+  // REGION_EVENTS_ON is set, at each call, and only for a club event someone
+  // the lines above do not already admit asks about, so an LCA admin, a
+  // club's own rep and an assigned director cost what they cost before, and
+  // with the constant unset no seat is read. An LCA-run event and a club with
+  // no region give nothing.
+  if (!REGION_EVENTS_ON || !clubId) return false
+  return isRegionalRepFor(db, member.id, clubId)
 }
 
 /**
