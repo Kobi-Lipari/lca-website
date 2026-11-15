@@ -174,6 +174,7 @@ describe('routeScope: the route-to-scope map', () => {
       '/dashboard',
       '/manage/club',
       '/workspace',
+      '/workspace/region',
     ])
     for (const path of working) expect(routeScope(filled(path)), path).toBe('base')
   })

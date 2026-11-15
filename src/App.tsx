@@ -49,6 +49,7 @@ const TournamentPairingsPage = lazy(() => import('@/pages/TournamentPairingsPage
 const TournamentPrintPage = lazy(() => import('@/pages/TournamentPrintPage').then(m => ({ default: m.TournamentPrintPage })))
 const WorkspacePage = lazy(() => import('@/pages/WorkspacePage').then(m => ({ default: m.WorkspacePage })))
 const YourClubPage = lazy(() => import('@/pages/YourClubPage').then(m => ({ default: m.YourClubPage })))
+const MyRegionPage = lazy(() => import('@/pages/MyRegionPage').then(m => ({ default: m.MyRegionPage })))
 const TournamentsPage = lazy(() => import('@/pages/TournamentsPage').then(m => ({ default: m.TournamentsPage })))
 // The accessibility test build's fixture page (vite build --mode a11y, see
 // test/a11y). The build replaces import.meta.env.MODE with the mode's name,
@@ -240,6 +241,8 @@ function App() {
             <Route path="/board/inbox" element={<ProtectedRoute><BoardInboxPage /></ProtectedRoute>} />
             {/* ── Club reps, directors, auditors ── */}
             <Route path="/workspace" element={<RoleProtectedRoute roles={WORKSPACE_ROLES} allowDirectors><WorkspacePage /></RoleProtectedRoute>} />
+            {/* My region, for a holder of an active regional seat whatever their role, or an LCA admin (WS09 step 11); with clubKeepers off it sends everyone to the dashboard. */}
+            <Route path="/workspace/region" element={FEATURES.clubKeepers ? <RoleProtectedRoute requireSeat><MyRegionPage /></RoleProtectedRoute> : <Navigate to="/dashboard" replace />} />
             {/* ── Admin ── */}
             {/* Admin-only. Anyone else who follows an old /admin link lands in
                 their workspace (or the dashboard) instead of an empty panel.

@@ -173,7 +173,7 @@ describe('REDESIGN_STATUS.md, WS09 step 10: the parts', () => {
       expect(beyond, piece).toContain(piece)
     }
     expect(read('domain/contracts/index.ts')).not.toContain('region')
-    expect(read('src/areas/clubs/api.ts')).not.toMatch(/workspace\/region|\/confirm\b/)
+    if (latestStep === 10) expect(read('src/areas/clubs/api.ts')).not.toMatch(/workspace\/region|\/confirm\b/)
   })
 
   it('names who sees what as the read holds it: the seat, the regions, the refusals and the count of events', () => {

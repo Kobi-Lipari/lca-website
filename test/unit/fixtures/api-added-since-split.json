@@ -1,5 +1,6 @@
 {
   "paths": [
+    "/api/admin/clubs/*/confirm",
     "/api/admin/mail/newsletter",
     "/api/admin/mail/newsletter/stop",
     "/api/admin/mail/newsletter/test",
@@ -7,7 +8,8 @@
     "/api/mail/unsubscribe/*",
     "/api/me/media-manager",
     "/api/me/payout-request",
-    "/api/me/tournament-creation"
+    "/api/me/tournament-creation",
+    "/api/workspace/region"
   ],
   "exports": {
     "ApiClubListing": "clubs",
@@ -21,10 +23,12 @@
     "ApiTournamentCreation": "membership",
     "ApiUnsubscribeLink": "membership",
     "ApiUnsubscribed": "membership",
+    "confirmClubStillAccurate": "clubs",
     "getEmailChoices": "membership",
     "getMediaManager": "admin",
     "getNewsletter": "admin",
     "getTournamentCreation": "membership",
+    "getWorkspaceRegion": "clubs",
     "requestPayoutAccount": "membership",
     "saveClubListing": "clubs",
     "saveEmailChoices": "membership",

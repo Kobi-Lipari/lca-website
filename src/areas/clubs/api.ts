@@ -11,7 +11,7 @@
 
 import { authHeaders, handleResponse } from '@/lib/http'
 import type { ApiAdminMember } from '@/areas/membership/api'
-import type { AdminClubResponse, ClubPlace, UpdateClubRequest } from '@domain/contracts'
+import type { AdminClubResponse, ClubConfirmResponse, ClubPlace, UpdateClubRequest, WorkspaceRegionResponse } from '@domain/contracts'
 
 export interface ApiClubDetail {
   id: string
@@ -171,6 +171,34 @@ export async function saveClubListing(id: string, body: UpdateClubRequest): Prom
     body: JSON.stringify(body),
   })
   return handleResponse<{ club: ApiClubListing; places?: ApiClubPlace[] }>(response)
+}
+
+/**
+ * My region's answer, GET /api/workspace/region (WS09 step 11's page): the
+ * cards in the server's order with their words, This month and the regions.
+ * Answered only while CLUB_KEEPERS_ON is set on the server, and only to a
+ * holder of an active regional seat or an LCA admin; everyone else gets 403
+ * in words, which the page draws.
+ */
+export async function getWorkspaceRegion(): Promise<WorkspaceRegionResponse> {
+  const response = await fetch(`/api/workspace/region`, {
+    headers: await authHeaders(),
+  })
+  return handleResponse<WorkspaceRegionResponse>(response)
+}
+
+/**
+ * Still accurate for one club, POST /api/admin/clubs/:id/confirm, with no
+ * field of its own: the body is `{}`. Answers the club's new last check and
+ * its words for the card ("Checked Nov 2026").
+ */
+export async function confirmClubStillAccurate(id: string): Promise<ClubConfirmResponse> {
+  const response = await fetch(`/api/admin/clubs/${encodeURIComponent(id)}/confirm`, {
+    method: 'POST',
+    headers: await authHeaders(),
+    body: JSON.stringify({}),
+  })
+  return handleResponse<ClubConfirmResponse>(response)
 }
 
 export async function adminCreateClub(body: {
