@@ -183,6 +183,9 @@ describe('one press is one save, with CLUB_KEEPERS_ON set', () => {
     expect(byHolder.status).toBe(200)
     await flushWaitUntil()
     expect(emailOutbox).toEqual([])
+    // The rep's first notice is put an hour back, so this press is the first of a new hour and tells the others again.
+    await env.DB.prepare('UPDATE admin_audit_log SET created_at = datetime(\'now\', \'-3600 seconds\') WHERE action = \'club_edit\' AND actor_id = ? AND detail LIKE ?')
+      .bind(rep, `%"club_id":"${clubId}"%`).run()
     expect((await patch(rep, clubId, { ...PRESS, places: [{ name: 'Example Annex', note: 'Side door' }] })).status).toBe(200)
     await flushWaitUntil()
     expect(sentTo()).toEqual([`holder.${clubId}@example.org`, `second.${clubId}@example.org`].sort())

@@ -8,7 +8,8 @@
 // nothing is looked up at any provider. The places replace the club's own
 // in one batch with today's location and pin taken from place 1, the
 // keepers' stamps and the activity row (functions/utils/clubs/save.ts), and
-// the region's representatives are told after the answer. With the constant
+// the region's representatives are told after the answer, at most once an
+// hour for one club and one saver, counted with the listing's save. With the constant
 // unset every keeper is answered 403 in words and nothing is read or
 // written.
 import type { Env } from '../../../../types'
@@ -42,11 +43,14 @@ export const onRequestPut: PagesFunction<Env> = async (context) => {
   // The club was deleted after this save read it: nothing was written, and no one is told.
   if (changed === null) return errorResponse('Club not found', 404)
 
-  context.waitUntil(sendClubSaveNotice(context.env, context.request, {
-    clubId,
-    clubName: String(existing.name),
-    saver: authResult.member,
-    columns: changed,
-  }))
+  // The save's activity row says whether its notice goes, by the same hour as the listing's save.
+  if (changed.notice) {
+    context.waitUntil(sendClubSaveNotice(context.env, context.request, {
+      clubId,
+      clubName: String(existing.name),
+      saver: authResult.member,
+      columns: changed.fields,
+    }))
+  }
   return jsonResponse({ places: await readPlaces(context.env.DB, clubId) })
 }

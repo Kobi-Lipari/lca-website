@@ -56,6 +56,17 @@ export async function clubRepsOf(db: D1Database, clubId: string): Promise<Keeper
 }
 
 /**
+ * The seat rule the two reads below share, written once so they can never
+ * part: a current assignment of an active regional seat, held by anyone but
+ * a guest, with an address that can be written to.
+ */
+const SEAT_RULE = `a.ended_at IS NULL
+          AND s.is_active = 1
+          AND s.category = 'regional_rep'
+          AND m.role <> 'guest'
+          AND m.email LIKE '%@%'`
+
+/**
  * The holders of every active regional seat whose regions cover the club's
  * region, as canManageClub in functions/utils/admin/permissions.ts admits
  * them through the seat: a current assignment (ended_at NULL) of an active
@@ -74,14 +85,35 @@ export async function regionRepresentativesOf(db: D1Database, clubId: string): P
          JOIN clubs c         ON c.region = r.region
          JOIN members m       ON m.id = a.member_id
         WHERE c.id = ?
-          AND a.ended_at IS NULL
-          AND s.is_active = 1
-          AND s.category = 'regional_rep'
-          AND m.role <> 'guest'
-          AND m.email LIKE '%@%'
+          AND ${SEAT_RULE}
         ORDER BY m.full_name, m.id`,
     )
     .bind(clubId)
+    .all<Keeper>()
+  return once(results ?? [])
+}
+
+/**
+ * The same people as regionRepresentativesOf, by the rule it reads, for a
+ * region named outright rather than through a club's stored one: the save
+ * notice asks it when a save is about to move the club to another region,
+ * so the notice is decided on the region the save leaves the club in. No
+ * region answers none.
+ */
+export async function representativesOfRegion(db: D1Database, region: string | null): Promise<Keeper[]> {
+  if (!region) return []
+  const { results } = await db
+    .prepare(
+      `SELECT DISTINCT m.id, m.full_name, m.email
+         FROM board_seat_assignments a
+         JOIN board_members s ON s.id = a.seat_id
+         JOIN seat_regions r  ON r.seat_id = s.id
+         JOIN members m       ON m.id = a.member_id
+        WHERE r.region = ?
+          AND ${SEAT_RULE}
+        ORDER BY m.full_name, m.id`,
+    )
+    .bind(region)
     .all<Keeper>()
   return once(results ?? [])
 }

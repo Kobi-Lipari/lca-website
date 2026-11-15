@@ -175,7 +175,8 @@ describe('the keepers\' save, with CLUB_KEEPERS_ON set', () => {
     const detail = await env.DB.prepare('SELECT actor_id, target_label, detail FROM admin_audit_log WHERE action = \'club_edit\' AND detail LIKE ? ORDER BY rowid DESC LIMIT 1')
       .bind(`%"club_id":"${clubId}"%`).first<{ actor_id: string; target_label: string; detail: string }>()
     expect(detail).toMatchObject({ actor_id: rep, target_label: 'Example Chess Club' })
-    expect(JSON.parse(detail!.detail)).toEqual({ club_id: clubId, fields: ['cost_text'] })
+    // The rep is not one of the region's representatives, so the row says the notice went.
+    expect(JSON.parse(detail!.detail)).toEqual({ club_id: clubId, fields: ['cost_text'], notice: true })
   })
 
   it('the notice goes once, to the region\'s representatives, and not to the saver', async () => {

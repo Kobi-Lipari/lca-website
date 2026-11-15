@@ -12,6 +12,16 @@
 // whether or not a field changed. The club_edit row of the activity log is
 // written when a field changed, as today's save writes it.
 //
+// The notice at most once an hour, by K's decision 7: the row's detail also
+// says whether this save's notice goes ("notice": true or false), and that
+// is decided inside the row's own INSERT, so the decision and the row are
+// one statement of the batch. The notice goes when noticeMayGo
+// (functions/utils/clubs/emails.ts) allows it and no club_edit row by the
+// same saver for the same club says a notice went in the 3,600 seconds
+// before, by created_at, the database's clock that stamps the row. The hour
+// counts from the last notice, never from the last save. Today's save
+// writes no "notice" key, so its rows never count.
+//
 // The mirror, by K's choice 3 (a) on the WS09 plan: a save also writes
 // today's fields beside the new ones, so today's club pages keep showing
 // what the keepers wrote. description takes About and meeting_schedule the
@@ -31,6 +41,7 @@
 // columns alone, with no stamp, as before.
 
 import type { MemberRow } from '../../types'
+import { noticeMayGo } from './emails'
 
 /**
  * The fifteen columns migration 0066 added to clubs, named for the admin
@@ -141,26 +152,59 @@ export function changedColumns(existing: Record<string, unknown>, next: Record<s
 const STAMPS = 'told_updated_at = datetime(\'now\'), told_by = ?, last_confirmed_at = datetime(\'now\'), confirmed_by = ?'
 
 /**
+ * A row by the saver for the club, within the 3,600 seconds before now by
+ * the row's created_at, that says a notice went. Only rows whose detail
+ * says "notice": true count, so today's rows, a representative's own saves
+ * and saves in a region with no representative never start an hour. A
+ * detail that is not JSON is passed over, never read.
+ */
+const NOTICE_IN_THE_HOUR = `SELECT 1 FROM admin_audit_log
+           WHERE actor_id = ? AND action = 'club_edit'
+             AND created_at > datetime('now', '-3600 seconds')
+             AND CASE WHEN json_valid(detail)
+                   THEN json_extract(detail, '$.club_id') = ? AND json_extract(detail, '$.notice') = 1
+                   ELSE 0 END`
+
+/**
  * The activity log's club_edit row, as recordAdminAction in
  * functions/utils/admin/audit.ts writes one, prepared for the save's batch.
  * It is written only while the club is there, so a save whose club was
- * deleted after its read writes no row for a club that is gone.
+ * deleted after its read writes no row for a club that is gone. Its detail
+ * says whether this save's notice goes, decided in the same statement that
+ * writes it, and the statement answers that back.
  */
-function auditRow(db: D1Database, saver: MemberRow, label: string, clubId: string, fields: string[]): D1PreparedStatement {
+function auditRow(db: D1Database, saver: MemberRow, label: string, clubId: string, fields: string[], mayNotify: boolean): D1PreparedStatement {
+  const detail = (notice: boolean) => JSON.stringify({ club_id: clubId, fields, notice })
   return db
     .prepare(
       `INSERT INTO admin_audit_log
          (id, actor_id, actor_email, action, target_member_id, target_label, detail)
-       SELECT ?, ?, ?, 'club_edit', NULL, ?, ? WHERE EXISTS (SELECT 1 FROM clubs WHERE id = ?)`,
+       SELECT ?, ?, ?, 'club_edit', NULL, ?,
+              CASE WHEN ? = 1 AND NOT EXISTS (${NOTICE_IN_THE_HOUR}) THEN ? ELSE ? END
+        WHERE EXISTS (SELECT 1 FROM clubs WHERE id = ?)
+       RETURNING json_extract(detail, '$.notice') AS notice`,
     )
     .bind(
       `aud-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`,
       saver.id,
       saver.email,
       label,
-      JSON.stringify({ club_id: clubId, fields }),
+      mayNotify ? 1 : 0,
+      saver.id,
+      clubId,
+      detail(true),
+      detail(false),
       clubId,
     )
+}
+
+/** Whether the batch's activity row says this save's notice goes. */
+const noticeGoes = (result: D1Result | undefined) => (result?.results?.[0] as { notice?: number } | undefined)?.notice === 1
+
+/** What a save changed: the fields, and whether its notice goes. */
+export interface SavedChange {
+  fields: string[]
+  notice: boolean
 }
 
 /**
@@ -199,11 +243,12 @@ export interface ListingSave {
  * place 1's line and point copied into today's location and pin by the
  * places' own rule (placesMirror); and the activity log's row when a field
  * changed. Answers the fields that changed, the columns and 'places' when
- * the places differ from those before, or null, with nothing written, when
- * the club was deleted after the save read it. A failed statement fails the
- * whole batch, and the error is thrown to the caller with nothing written.
+ * the places differ from those before, with whether the notice goes, or
+ * null, with nothing written, when the club was deleted after the save read
+ * it. A failed statement fails the whole batch, and the error is thrown to
+ * the caller with nothing written.
  */
-export async function saveListing(db: D1Database, save: ListingSave): Promise<string[] | null> {
+export async function saveListing(db: D1Database, save: ListingSave): Promise<SavedChange | null> {
   const next = { ...save.next }
   const places = save.places ? await placesStatements(db, save.clubId, save.places) : null
   if (places) Object.assign(next, placesMirror(save.places!))
@@ -229,7 +274,11 @@ export async function saveListing(db: D1Database, save: ListingSave): Promise<st
     )
   }
   if (places) statements.push(...places.statements)
-  if (changed.length > 0) statements.push(auditRow(db, save.saver, label, save.clubId, changed))
+  if (changed.length > 0) {
+    // When the save writes the region, the notice is decided on the region it leaves the club in.
+    const region = 'region' in next ? (typeof next.region === 'string' ? next.region : null) : undefined
+    statements.push(auditRow(db, save.saver, label, save.clubId, changed, await noticeMayGo(db, save.clubId, save.saver.id, changed, region)))
+  }
 
   let results: D1Result[]
   try {
@@ -238,7 +287,8 @@ export async function saveListing(db: D1Database, save: ListingSave): Promise<st
     if (await clubGone(db, save.clubId, err)) return null
     throw err
   }
-  return updated(results[0]) ? changed : null
+  if (!updated(results[0])) return null
+  return { fields: changed, notice: changed.length > 0 && noticeGoes(results[statements.length - 1]) }
 }
 
 /** One place as a keeper saves it. */
@@ -271,11 +321,12 @@ export interface PlacesSave {
  * ones written in their order, today's location, latitude and longitude
  * taken from place 1 where place 1 has them, the four stamps, and the
  * activity log's row when anything changed. Answers the fields that
- * changed, 'places' among them when the places differ from those before, or
+ * changed, 'places' among them when the places differ from those before,
+ * with whether the notice goes, by the same count as the listing's save, or
  * null, with nothing written, when the club was deleted after the save read
  * it.
  */
-export async function savePlaces(db: D1Database, save: PlacesSave): Promise<string[] | null> {
+export async function savePlaces(db: D1Database, save: PlacesSave): Promise<SavedChange | null> {
   const places = await placesStatements(db, save.clubId, save.places)
   const mirror = placesMirror(save.places)
   const columns = Object.keys(mirror)
@@ -287,7 +338,9 @@ export async function savePlaces(db: D1Database, save: PlacesSave): Promise<stri
       .prepare(`UPDATE clubs SET ${[...columns.map((column) => `${column} = ?`), STAMPS].join(', ')} WHERE id = ?`)
       .bind(...columns.map((column) => mirror[column]), save.saver.id, save.saver.id, save.clubId),
   ]
-  if (changed.length > 0) statements.push(auditRow(db, save.saver, String(save.existing.name), save.clubId, changed))
+  if (changed.length > 0) {
+    statements.push(auditRow(db, save.saver, String(save.existing.name), save.clubId, changed, await noticeMayGo(db, save.clubId, save.saver.id, changed)))
+  }
 
   let results: D1Result[]
   try {
@@ -296,7 +349,8 @@ export async function savePlaces(db: D1Database, save: PlacesSave): Promise<stri
     if (await clubGone(db, save.clubId, err)) return null
     throw err
   }
-  return updated(results[places.statements.length]) ? changed : null
+  if (!updated(results[places.statements.length])) return null
+  return { fields: changed, notice: changed.length > 0 && noticeGoes(results[statements.length - 1]) }
 }
 
 /**

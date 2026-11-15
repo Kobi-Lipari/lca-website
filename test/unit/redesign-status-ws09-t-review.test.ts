@@ -73,6 +73,8 @@ const part = (heading: string) => {
   return at < 0 ? '' : between(ws09.slice(at + 1), heading, '\n### ')
 }
 const BLOCK = '### WS09 checkpoint T: the review of the whole and its fixes'
+/** The block of checkpoint U that builds K's choice for T10. */
+const NOTICE_BLOCK = '### WS09 checkpoint U: the save notice at most once an hour'
 const CHECKPOINT = '### Checkpoint T: WS09 steps 6 to 9, the keepers\' editor and its ways in'
 const CHECKPOINT_HEADING = CHECKPOINT
 const STEP9 = '### WS09 step 9: Your club\'s page and the ways in'
@@ -187,8 +189,8 @@ describe('REDESIGN_STATUS.md, WS09 checkpoint T: the review of the whole and its
       [7, '`toldUpdatedAt`'], [8, 'only when the body carries it'],
     ] as const) expect(findings[i], piece).toContain(piece)
     for (const piece of ['(1) ', '(2) ', '(3) ', '(4) ', 'The first is the one to build first', 'the choice is K\'s before `clubKeepers` goes on']) expect(findings[9], piece).toContain(piece)
-    // The tree is as it was for T10: one notice to each representative for each save that changes a field.
-    expect(read('functions/utils/clubs/emails.ts')).not.toMatch(/club_edit|within the hour|one notice an hour/)
+    // The tree is as it was for T10: one notice to each representative for each save that changes a field, until checkpoint U builds K's choice.
+    if (!ws09.includes(`\n${NOTICE_BLOCK}\n`)) expect(read('functions/utils/clubs/emails.ts')).not.toMatch(/club_edit|within the hour|one notice an hour/)
   })
 
   it('mends three earlier lines with one marked sentence each, keeps their words, and drops "which waits for K" from WS09 step 9\'s block', () => {
@@ -313,7 +315,9 @@ describe('REDESIGN_STATUS.md, WS09 checkpoint T: the review of the whole and its
     }
     expect(emails).not.toMatch(/'(?:Description|Meeting schedule|Contact email|Map pin|Other link|Places|Color)'/)
     const save = read('functions/utils/clubs/save.ts')
-    expect(save).toContain('SELECT ?, ?, ?, \'club_edit\', NULL, ?, ? WHERE EXISTS (SELECT 1 FROM clubs WHERE id = ?)')
+    // Checkpoint U decides the notice inside the row's INSERT, so with its block there the INSERT's head and its guard are read apart.
+    if (!ws09.includes(`\n${NOTICE_BLOCK}\n`)) expect(save).toContain('SELECT ?, ?, ?, \'club_edit\', NULL, ?, ? WHERE EXISTS (SELECT 1 FROM clubs WHERE id = ?)')
+    else for (const piece of ['SELECT ?, ?, ?, \'club_edit\', NULL, ?,', 'WHERE EXISTS (SELECT 1 FROM clubs WHERE id = ?)']) expect(save, piece).toContain(piece)
     expect(save.match(/if \(await clubGone\(db, save\.clubId, err\)\) return null/g)).toHaveLength(2)
     expect(read('functions/api/admin/clubs/[id].ts')).toContain('if (changed === null) return errorResponse(\'Club not found\', 404)')
     expect(read('functions/api/admin/clubs/[id]/places.ts')).toContain('if (changed === null) return errorResponse(\'Club not found\', 404)')

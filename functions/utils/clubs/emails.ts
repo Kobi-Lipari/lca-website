@@ -11,11 +11,17 @@
 // functions/utils/events/publishedReview.ts draws its own, and it goes
 // through trySendEmail, one email to each person, so no representative sees
 // another's address.
+//
+// By K's decision 7 of Sunday, November 15, 2026, the notice goes at most
+// once an hour for one club and one person saving. The save decides that in
+// its own batch (functions/utils/clubs/save.ts), with noticeMayGo below as
+// the half of the rule that needs the region's representatives, and the
+// handlers send only when the save's activity row says the notice goes.
 
 import { trySendEmail, type EmailEnv, type EmailMessage } from '../email'
 import { emailDetails, escapeHtml, p, renderEmail } from '../emailLayout'
 import { resolveSiteUrl } from '../site'
-import { regionRepresentativesOf } from './routing'
+import { regionRepresentativesOf, representativesOfRegion } from './routing'
 
 /**
  * Each field a save can change, by its column, as the notice names it: in
@@ -93,6 +99,8 @@ export function clubSaveNoticeEmail(data: {
   const clubName = oneLine(data.clubName)
   const saverName = oneLine(data.saverName)
   const why = 'You are told because your board seat covers this club\'s region. Nothing needs doing unless something looks wrong.'
+  // The email is no longer the whole story of the hour, so it says so.
+  const later = `If ${saverName} saves again within the hour, no second email follows; the link shows the listing as it stands.`
   return {
     to: '',
     subject: `${clubName}: its listing was updated`,
@@ -104,7 +112,7 @@ export function clubSaveNoticeEmail(data: {
         ['Club', clubName],
         ['Saved by', saverName],
         ['What changed', changed],
-      ]) + p(escapeHtml(why)),
+      ]) + p(escapeHtml(why)) + p(escapeHtml(later)),
       cta: { label: 'See the club', url },
     }),
     text: [
@@ -116,19 +124,53 @@ export function clubSaveNoticeEmail(data: {
       '',
       why,
       '',
+      later,
+      '',
       `See the club: ${url}`,
     ].join('\n'),
   }
 }
 
 /**
- * Sends the notice for one save. Nothing goes when no field changed, when
- * the club's region has no representative (no region, no seat covering it,
- * or a vacant seat), or when the saver is one of its representatives;
- * otherwise each representative gets one email, however many seats they
- * hold. The saver is never sent one. Never throws: a failed read or send is
- * logged with no address and no name, and the save it follows has already
- * landed. Answers how many emails went.
+ * Whether a save that changed these columns may send the notice at all,
+ * before the hour is counted: a field with a name changed, the club's region
+ * has a representative, and the saver is not one of them. The region is the
+ * one the save leaves the club in: `region` is passed when the save writes
+ * the region (an LCA admin's save can move a club), and the club's stored
+ * region is read otherwise, so the decision and sendClubSaveNotice, which
+ * reads the region after the batch, ask about the same people. The save
+ * reads it just before its batch, and the batch counts the hour. Never
+ * throws: a failed read is logged with no address and no name and answers
+ * false, so the save still lands and its row says no notice went.
+ */
+export async function noticeMayGo(
+  db: D1Database,
+  clubId: string,
+  saverId: string,
+  columns: readonly string[],
+  region?: string | null,
+): Promise<boolean> {
+  if (fieldNames(columns).length === 0) return false
+  try {
+    const representatives = region === undefined ? await regionRepresentativesOf(db, clubId) : await representativesOfRegion(db, region)
+    return representatives.length > 0 && !representatives.some((person) => person.id === saverId)
+  } catch (err) {
+    console.warn(`club save notice not decided for ${clubId}:`, err instanceof Error ? err.message : String(err))
+    return false
+  }
+}
+
+/**
+ * Sends the notice for one save. The handlers call it only when the save's
+ * activity row says the notice goes, at most once an hour for one club and
+ * one saver. Nothing goes when no field changed, when the club's region has
+ * no representative (no region, no seat covering it, or a vacant seat), or
+ * when the saver is one of its representatives; otherwise each
+ * representative gets one email, however many seats they hold. The saver is
+ * never sent one. Never throws: a failed read or send is logged with no
+ * address and no name, and the save it follows has already landed; it is
+ * not tried again, and the hour counts from it all the same. Answers how
+ * many emails went.
  */
 export async function sendClubSaveNotice(
   env: EmailEnv & { DB: D1Database; SITE_URL?: string },

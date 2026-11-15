@@ -313,7 +313,8 @@ describe('REDESIGN_STATUS.md, WS09 checkpoint U, the reload of a guarded page: t
     expect(reload).toContain('WS09 step 12\'s page, `/workspace/region/clubs/:id`, has the same window')
     expect(reload).toContain('Closed in WS09 checkpoint U: the window is mended at its root in `src/contexts/AuthContext.tsx`')
     expect(reload).toContain('WS01\'s follow-up "Admin link opened directly" is mended by the same change')
-    expect(ws09.split('Changed at checkpoint U: ')).toHaveLength(4)
+    // A later block of checkpoint U may mark sentences of its own, so the count of three is read while this block is the latest.
+    if (latestBlock === BLOCK) expect(ws09.split('Changed at checkpoint U: ')).toHaveLength(4)
     // WS01's own follow-up keeps its words, outside this section.
     expect(status).toContain('- **Admin link opened directly (step 13, seen on the local dev server).** Loading `/admin/tournaments` in a fresh tab as a signed-in admin went to `/dashboard`')
     expect(bullet(block, '- **The follow-ups it closes.**')).toContain('"Admin link opened directly"')
