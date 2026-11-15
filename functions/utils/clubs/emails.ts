@@ -18,10 +18,15 @@
 // the half of the rule that needs the region's representatives, and the
 // handlers send only when the save's activity row says the notice goes.
 
+//
+// The monthly check's email (monthlyCheckEmail below) is drawn here too, and
+// sent by functions/utils/clubs/monthlyCheck.ts.
+
 import { trySendEmail, type EmailEnv, type EmailMessage } from '../email'
 import { emailDetails, escapeHtml, p, renderEmail } from '../emailLayout'
 import { resolveSiteUrl } from '../site'
 import { regionRepresentativesOf, representativesOfRegion } from './routing'
+import { formatDate } from '../../../domain/format/date'
 
 /**
  * Each field a save can change, by its column, as the notice names it: in
@@ -199,4 +204,112 @@ export async function sendClubSaveNotice(
     console.warn(`club save notice failed for ${save.clubId} (${sent} sent):`, err instanceof Error ? err.message : String(err))
   }
   return sent
+}
+
+// ── The monthly check ────────────────────────────────────────────
+
+/** The monthly check's subject and heading. */
+export const MONTHLY_CHECK_HEADING = 'Your region\'s clubs: still accurate?'
+
+/** The line on the links' life, before the day they stop: it names the link by its label, so it reads true of one club or several. */
+export const LINK_LIFE = 'Still accurate works without logging in for 30 days'
+
+/** Why the person gets the email: it is about their own seat, so it carries no unsubscribe line. True of one seat or two. */
+export const MONTHLY_CHECK_WHY = 'You get this because you are a regional representative.'
+
+/** When the email comes, said after the why: the timed send's line. */
+export const MONTHLY_CHECK_TIMED = 'It comes on the first Monday of each month at 8:00 AM.'
+
+/** The line a copy sent with the LCA admin's button carries in its place, since it can go on any day. */
+export const MONTHLY_CHECK_BY_HAND = 'An LCA admin sent this one by hand.'
+
+/** One club in the monthly check's email: its listing's name, town and statement, and its two links. */
+export interface CheckClub {
+  name: string
+  city: string
+  /** How the club meets, in its own words; null when it has none. */
+  statement: string | null
+  /** Still accurate: the signed link, good for 30 days with no login. */
+  confirmUrl: string
+  /** Update: the club's page in My region, after sign-in. */
+  updateUrl: string
+}
+
+/** "1 club" or "3 clubs". */
+const clubCount = (n: number) => `${n} ${n === 1 ? 'club' : 'clubs'}`
+
+/** The first word of a stored name, as one line, or "there" for a name with none. */
+function firstNameOf(fullName: string): string {
+  return oneLine(fullName).split(' ')[0] || 'there'
+}
+
+const NAVY = '#1a2744'
+const INK = '#3a3f4b'
+const SANS = 'Arial,Helvetica,sans-serif'
+
+/** A link in navy, bold and underlined, on the box's light ground. */
+const linkHtml = (label: string, url: string) =>
+  `<a href="${escapeHtml(url)}" style="color:${NAVY};font-weight:bold;text-decoration:underline;">${escapeHtml(label)}</a>`
+
+/** One club's box: its name, town and statement, with its two links in the same cell, so each link reads with its club. */
+function clubBox(club: CheckClub): string {
+  const statement = club.statement ? oneLine(club.statement) : 'How the club meets is not listed yet.'
+  return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:4px 0 16px;background:#f7f6f2;border-radius:10px;">
+  <tr><td style="padding:16px 18px;font-family:${SANS};color:${INK};">
+    <div style="font-size:16px;font-weight:bold;color:${NAVY};">${escapeHtml(oneLine(club.name))}</div>
+    <div style="font-size:14px;">${escapeHtml(oneLine(club.city))}</div>
+    <div style="margin-top:8px;font-size:14px;line-height:1.5;">${escapeHtml(statement)}</div>
+    <div style="margin-top:12px;font-size:15px;">${linkHtml('Still accurate', club.confirmUrl)} &nbsp;&middot;&nbsp; ${linkHtml('Update', club.updateUrl)}</div>
+  </td></tr>
+</table>`
+}
+
+/**
+ * The monthly check for one person: every club their seats keep, each with its statement, Still accurate (a signed
+ * link that needs no login) and Update (the club's page in My region). `linksEnd` is the moment the links stop, shown
+ * as its day with its weekday. `byHand` is true for a copy sent with the LCA admin's button. Its `to` is empty, as
+ * every template's is, and is filled by the sender.
+ */
+export function monthlyCheckEmail(data: {
+  siteUrl: string
+  fullName: string
+  month: string
+  linksEnd: Date
+  clubs: readonly CheckClub[]
+  byHand?: boolean
+}): EmailMessage {
+  const first = firstNameOf(data.fullName)
+  const until = formatDate(data.linksEnd, { year: true })
+  const ask = data.clubs.length === 1
+    ? `Here is the club in your region, for ${data.month}. Press Still accurate if its listing is right, or Update to change it.`
+    : `Here are the ${clubCount(data.clubs.length)} in your region, for ${data.month}. For each one, press Still accurate if its listing is right, or Update to change it.`
+  const life = `${LINK_LIFE}, until ${until}. Update opens the club in My region after you log in.`
+  const why = `${MONTHLY_CHECK_WHY} ${data.byHand ? MONTHLY_CHECK_BY_HAND : MONTHLY_CHECK_TIMED}`
+  return {
+    to: '',
+    subject: MONTHLY_CHECK_HEADING,
+    html: renderEmail({
+      siteUrl: data.siteUrl,
+      heading: MONTHLY_CHECK_HEADING,
+      preheader: `${clubCount(data.clubs.length)} to look over for ${data.month}`,
+      body: p(`Hi ${escapeHtml(first)},`) + p(escapeHtml(ask)) + data.clubs.map(clubBox).join('') + p(escapeHtml(life)) + p(escapeHtml(why)),
+    }),
+    text: [
+      `Hi ${first},`,
+      '',
+      ask,
+      '',
+      ...data.clubs.flatMap((club) => [
+        oneLine(club.name),
+        oneLine(club.city),
+        club.statement ? oneLine(club.statement) : 'How the club meets is not listed yet.',
+        `Still accurate: ${club.confirmUrl}`,
+        `Update: ${club.updateUrl}`,
+        '',
+      ]),
+      life,
+      '',
+      why,
+    ].join('\n'),
+  }
 }

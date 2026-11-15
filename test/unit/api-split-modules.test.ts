@@ -132,8 +132,12 @@ describe('the committed map', () => {
     expect(membership).toContain("import type { EmailChoicesResponse, PayoutRequestResponse, TournamentCreationResponse, UnsubscribeLinkResponse, UnsubscribeResponse } from '@domain/contracts'")
     expect(membership).toMatch(/export type ApiTournamentCreation = TournamentCreationResponse\b/)
     expect(membership).toMatch(/export type ApiPayoutRequest = PayoutRequestResponse\b/)
-    // The club editor's save, added since the split, takes its body and answer from the contracts the same way.
-    expect(importsOf(moduleOf('clubs')).filter((i) => i.specifier.startsWith('@domain/'))).toEqual([{ specifier: '@domain/contracts', typeOnly: true, reexport: false }])
+    // The club editor's save, added since the split, takes its body and answer from the contracts the same way; the
+    // monthly check's three answers (WS09 step 14) come in a second type-only line, so the first stays as it was.
+    expect(importsOf(moduleOf('clubs')).filter((i) => i.specifier.startsWith('@domain/'))).toEqual([
+      { specifier: '@domain/contracts', typeOnly: true, reexport: false },
+      { specifier: '@domain/contracts', typeOnly: true, reexport: false },
+    ])
     for (const file of MODULES.filter((f) => f !== moduleOf('events') && f !== moduleOf('membership') && f !== moduleOf('clubs'))) {
       expect(importsOf(file).filter((i) => i.specifier.startsWith('@domain/')), file).toEqual([])
     }
@@ -335,8 +339,8 @@ describe('calls through the barrel send what they sent before', () => {
   it('asks what the member may create and sends a payout request, signed in, to the two paths added since the split', async () => {
     const { getTournamentCreation, requestPayoutAccount, ApiError } = await import('@/lib/api')
     expect([...ADDED.paths].sort()).toEqual([
-      '/api/admin/clubs/*/confirm', '/api/admin/mail/newsletter', '/api/admin/mail/newsletter/stop', '/api/admin/mail/newsletter/test', '/api/mail/preferences/*', '/api/mail/unsubscribe/*',
-      '/api/me/media-manager', '/api/me/payout-request', '/api/me/tournament-creation', '/api/workspace/region',
+      '/api/admin/clubs/*/confirm', '/api/admin/clubs/monthly-check', '/api/admin/mail/newsletter', '/api/admin/mail/newsletter/stop', '/api/admin/mail/newsletter/test',
+      '/api/clubs/confirm/*', '/api/mail/preferences/*', '/api/mail/unsubscribe/*', '/api/me/media-manager', '/api/me/payout-request', '/api/me/tournament-creation', '/api/workspace/region',
     ])
     session.token = 'tok-5'
     const grant = { grant: 'standing_director', canCreate: true, canChargeFees: true, clubId: null }

@@ -17,9 +17,14 @@ import {
   clubConfirmRequestSchema,
   clubConfirmResponseSchema,
   clubDetailResponseSchema,
+  clubLinkConfirmRequestSchema,
+  clubLinkConfirmResponseSchema,
+  clubLinkResponseSchema,
   clubListResponseSchema,
   clubPlacesRequestSchema,
   clubPlacesResponseSchema,
+  monthlyCheckRequestSchema,
+  monthlyCheckResponseSchema,
   updateClubRequestSchema,
   updateClubResponseSchema,
   workspaceRegionResponseSchema,
@@ -92,6 +97,9 @@ export const contracts = {
   'admin/clubs/[id]/places': {
     PUT: { request: clubPlacesRequestSchema, response: clubPlacesResponseSchema },
   },
+  'admin/clubs/monthly-check': {
+    POST: { request: monthlyCheckRequestSchema, response: monthlyCheckResponseSchema },
+  },
   'admin/mail/newsletter': {
     GET: { response: newsletterSummaryResponseSchema },
     POST: { request: newsletterRequestSchema, response: newsletterResponseSchema },
@@ -131,6 +139,10 @@ export const contracts = {
   },
   'clubs/[id]': {
     GET: { response: clubDetailResponseSchema },
+  },
+  'clubs/confirm/[token]': {
+    GET: { response: clubLinkResponseSchema },
+    POST: { request: clubLinkConfirmRequestSchema, response: clubLinkConfirmResponseSchema },
   },
   'mail/preferences/[token]': {
     GET: { response: emailChoicesResponseSchema },

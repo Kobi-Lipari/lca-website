@@ -216,7 +216,7 @@ const RUNS = 'functions/utils/admin/automations.ts'
  * The files outside the tests that import either helper. None in this step: the step that first calls one adds its
  * file here, one line.
  */
-const IMPORTERS: string[] = []
+const IMPORTERS: string[] = ['functions/api/clubs/confirm/[token].ts', 'functions/utils/clubs/monthlyCheck.ts']
 
 /** Every code file under the folders the site, the functions and the workers are built from. */
 function codeFiles(): string[] {

@@ -6,7 +6,10 @@
 // it, the This month bar with Confirm all still accurate, and a card per
 // club in the server's order, each with its stamp in words, Still accurate
 // and Open. An LCA admin sees every club, under the banner "You're here as
-// an LCA admin", and never reads "your region".
+// an LCA admin", and never reads "your region". An LCA admin also gets
+// "Send this month's check now" (WS09 step 14), which asks one question
+// naming how many people the monthly check goes to and then says how many
+// were sent and how many were not.
 //
 // The page draws the server's words as they come and makes no date of its
 // own: each card's lastCheckWords and the next check's date with its
@@ -36,6 +39,7 @@ import { usePageTitle } from '@/hooks/usePageTitle'
 import { RegionClubCard } from '@/areas/clubs/components/RegionClubCard'
 import { RegionHelp, RegionHelpButton } from '@/areas/clubs/components/RegionHelp'
 import { ThisMonthBar } from '@/areas/clubs/components/ThisMonthBar'
+import { MonthlyCheckButton } from '@/areas/clubs/components/MonthlyCheckButton'
 import {
   clubsToConfirm, clubsWord, confirmAllWords, errorWords, namesInWords, regionHelpShownBefore, rememberRegionHelpShown, withConfirmed,
 } from '@/areas/clubs/region'
@@ -273,6 +277,9 @@ export function MyRegionPage() {
             <p>You see every club, in every region.</p>
           </div>
         )}
+
+        {/* The LCA admin's button for the monthly check (WS09 step 14): one question, then how many were sent and how many were not. */}
+        {answer && isAdmin && <MonthlyCheckButton />}
 
         {answer && (
           <ThisMonthBar

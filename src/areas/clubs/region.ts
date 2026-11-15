@@ -59,6 +59,18 @@ export function clubsWord(n: number): string {
   return `${n} ${n === 1 ? 'club' : 'clubs'}`
 }
 
+/** "1 person" or "4 people", for the LCA admin's button for the monthly check (WS09 step 14). */
+export function peopleWord(n: number): string {
+  return `${n} ${n === 1 ? 'person' : 'people'}`
+}
+
+/** What a press of "Send this month's check now" did, in numbers: how many were sent, how many not, and any not reached. */
+export function sentWords(done: { sent: number; notSent: number; notReached: number }): string {
+  const parts = [`This month's check was sent to ${peopleWord(done.sent)}; ${done.notSent} not sent.`]
+  if (done.notReached > 0) parts.push(`${peopleWord(done.notReached)} not reached by this press.`)
+  return parts.join(' ')
+}
+
 /** Names in a sentence: "A", "A and B", "A, B and C". */
 export function namesInWords(names: readonly string[]): string {
   if (names.length <= 1) return names[0] ?? ''

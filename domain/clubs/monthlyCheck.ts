@@ -91,6 +91,32 @@ export function nextCheckWords(now: Date | number): { day: string; date: string;
   }
 }
 
+const LONG_MONTHS = [
+  'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December',
+] as const
+
+/**
+ * The key of a month's check: the first Monday of the Central month `now`
+ * falls in, as "2026-12-07". The monthly check marks each person it sends to
+ * under this key, so one month's marks never stand for the next. Empty for a
+ * time that is not one.
+ */
+export function checkMonthKey(now: Date | number): string {
+  const at = centralNow(now)
+  return at ? dayText({ year: at.year, month: at.month, day: firstMondayOf(at.year, at.month) }) : ''
+}
+
+/**
+ * A month in words, read in Central time: "December 2026". Takes a moment
+ * or a stamp stored in UTC by datetime('now'), so a check marked late on the
+ * last evening of a month in Louisiana is that month's. Empty for no stamp.
+ */
+export function monthInWords(value: DateInput | null | undefined): string {
+  if (value === null || value === undefined) return ''
+  const parts = zonedParts(value, { stored: 'utc' })
+  return parts ? `${LONG_MONTHS[parts.month - 1]} ${parts.year}` : ''
+}
+
 /**
  * The month of a stamp stored in UTC by datetime('now'), read in Central
  * time: "Sep 2026". A save late on the last evening of a month in Louisiana

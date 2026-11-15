@@ -23,6 +23,7 @@ const BoardPage = lazy(() => import('@/pages/BoardPage').then(m => ({ default: m
 const ChampionsPage = lazy(() => import('@/pages/ChampionsPage').then(m => ({ default: m.ChampionsPage })))
 const BylawsPage = lazy(() => import('@/pages/BylawsPage').then(m => ({ default: m.BylawsPage })))
 const ClubDetailPage = lazy(() => import('@/pages/ClubDetailPage').then(m => ({ default: m.ClubDetailPage })))
+const ClubConfirmPage = lazy(() => import('@/pages/ClubConfirmPage').then(m => ({ default: m.ClubConfirmPage })))
 const ClubsPage = lazy(() => import('@/pages/ClubsPage').then(m => ({ default: m.ClubsPage })))
 const ContactPage = lazy(() => import('@/pages/ContactPage').then(m => ({ default: m.ContactPage })))
 const DashboardPage = lazy(() => import('@/pages/DashboardPage').then(m => ({ default: m.DashboardPage })))
@@ -194,6 +195,8 @@ function App() {
             <Route path="/tournaments/:id/print" element={<TournamentPrintPage />} />
             <Route path="/scholastic" element={<ScholasticPage />} />
             <Route path="/clubs" element={<ClubsPage />} />
+            {/* The page a Still accurate link in the monthly check opens, with no sign-in (WS09 step 14); routed only while clubKeepers is on, so with it off the address draws what it draws today. */}
+            {FEATURES.clubKeepers && <Route path="/clubs/confirm/:token" element={<ClubConfirmPage />} />}
             <Route path="/clubs/:id" element={<ClubDetailPage />} />
             <Route path="/news" element={<NewsPage />} />
             <Route path="/news/:slug" element={<NewsPostPage />} />

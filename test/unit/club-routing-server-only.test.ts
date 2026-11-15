@@ -36,7 +36,8 @@ describe('who keeps a club is for server code only', () => {
     const readers = sourceFiles('functions')
       .filter((file) => relative(ROOT, join(ROOT, file)) !== 'functions/utils/clubs/routing.ts')
       .filter((file) => /from '\.\/routing'|clubs\/routing'/.test(read(file)))
-    expect(readers).toEqual(['functions/utils/clubs/emails.ts'])
+    // The monthly check (WS09 step 14) reads the seat rule the other way round, each holder with their clubs.
+    expect(readers).toEqual(['functions/utils/clubs/emails.ts', 'functions/utils/clubs/monthlyCheck.ts'])
     const notice = read('functions/utils/clubs/emails.ts')
     expect(notice).toContain('trySendEmail')
     expect(notice).not.toMatch(/\bdeliver\(/)

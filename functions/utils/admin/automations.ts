@@ -63,6 +63,16 @@ export interface AutomationRun {
   seen_by: string | null
 }
 
+/**
+ * Each job's expected interval, the longest gap in days between two of its runs before an admin should look, for the
+ * admin home that reads the run record (WS08). A job joins the list when it first records its runs:
+ * club_monthly_check (WS09 step 14) lands on the first Monday of each month, and two first Mondays are at most five
+ * weeks apart.
+ */
+export const EXPECTED_INTERVAL_DAYS: Readonly<Record<string, number>> = {
+  club_monthly_check: 35,
+}
+
 /** The longest detail written. */
 export const MAX_DETAIL_LENGTH = 200
 

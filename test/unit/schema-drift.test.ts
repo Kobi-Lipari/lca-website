@@ -174,9 +174,9 @@ describe('functions/db/schema.ts matches the migrations', () => {
     expect(foreignKeysOn(db)).toBe(1)
   })
 
-  it('has the 41 tables the migrations create', () => {
-    expect(userTables(db)).toHaveLength(41)
-    expect(drizzleTables).toHaveLength(41)
+  it('has the 42 tables the migrations create', () => {
+    expect(userTables(db)).toHaveLength(42)
+    expect(drizzleTables).toHaveLength(42)
   })
 
   it('has no difference in tables, columns, indexes or foreign keys', () => {
@@ -186,8 +186,8 @@ describe('functions/db/schema.ts matches the migrations', () => {
   it('compares every column of every table', () => {
     const counted = userTables(db).reduce((n, t) => n + dbColumns(db, t).size, 0)
     const modelled = drizzleTables.reduce((n, t) => n + getTableConfig(t).columns.length, 0)
-    expect(counted).toBe(400)
-    expect(modelled).toBe(400)
+    expect(counted).toBe(402)
+    expect(modelled).toBe(402)
   })
 })
 

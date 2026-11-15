@@ -12,6 +12,7 @@
 import { authHeaders, handleResponse } from '@/lib/http'
 import type { ApiAdminMember } from '@/areas/membership/api'
 import type { AdminClubResponse, ClubConfirmResponse, ClubPlace, UpdateClubRequest, WorkspaceRegionResponse } from '@domain/contracts'
+import type { ClubLinkConfirmResponse, ClubLinkResponse, MonthlyCheckResponse } from '@domain/contracts'
 
 export interface ApiClubDetail {
   id: string
@@ -199,6 +200,63 @@ export async function confirmClubStillAccurate(id: string): Promise<ClubConfirmR
     body: JSON.stringify({}),
   })
   return handleResponse<ClubConfirmResponse>(response)
+}
+
+/**
+ * The club a Still accurate link in the monthly check names, GET
+ * /api/clubs/confirm/:token (WS09 step 14's page), which changes nothing.
+ * No sign-in: the token is the key, so no Authorization header is sent, and
+ * no referrer goes with the call, so the token rides in its own address alone.
+ */
+export async function getClubLink(token: string): Promise<ClubLinkResponse> {
+  const response = await fetch(`/api/clubs/confirm/${encodeURIComponent(token)}`, {
+    headers: { Accept: 'application/json' },
+    referrerPolicy: 'no-referrer',
+  })
+  return handleResponse<ClubLinkResponse>(response)
+}
+
+/**
+ * Still accurate by the link, POST /api/clubs/confirm/:token, with the body
+ * `{}` and no sign-in. Answers the club and the month it is marked as
+ * checked for, in words.
+ */
+export async function confirmClubByLink(token: string): Promise<ClubLinkConfirmResponse> {
+  const response = await fetch(`/api/clubs/confirm/${encodeURIComponent(token)}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+    referrerPolicy: 'no-referrer',
+    body: '{}',
+  })
+  return handleResponse<ClubLinkConfirmResponse>(response)
+}
+
+/**
+ * How many people this month's check goes to, for the LCA admin's one
+ * question in My region: POST /api/admin/clubs/monthly-check with `send`
+ * false, which sends nothing.
+ */
+export async function countMonthlyCheck(): Promise<MonthlyCheckResponse> {
+  const response = await fetch('/api/admin/clubs/monthly-check', {
+    method: 'POST',
+    headers: await authHeaders(),
+    body: JSON.stringify({ send: false }),
+  })
+  return handleResponse<MonthlyCheckResponse>(response)
+}
+
+/**
+ * Sends this month's check now, the LCA admin's button: POST
+ * /api/admin/clubs/monthly-check with `send` true. Answers how many emails
+ * went, how many did not and how many people were not reached.
+ */
+export async function sendMonthlyCheck(): Promise<MonthlyCheckResponse> {
+  const response = await fetch('/api/admin/clubs/monthly-check', {
+    method: 'POST',
+    headers: await authHeaders(),
+    body: JSON.stringify({ send: true }),
+  })
+  return handleResponse<MonthlyCheckResponse>(response)
 }
 
 export async function adminCreateClub(body: {

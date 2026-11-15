@@ -462,6 +462,58 @@ export const workspaceRegionResponseSchema = z.strictObject({
   regions: z.array(regionKeepersSchema),
 })
 
+/**
+ * GET /api/clubs/confirm/[token], the page a Still accurate link in the
+ * monthly check opens: the club the good link names, by its listing's name
+ * and town. Nothing else: no id, no person and no address.
+ */
+export const clubLinkResponseSchema = z.strictObject({
+  name: z.string(),
+  city: z.string(),
+})
+
+/**
+ * POST /api/clubs/confirm/[token], Still accurate by the link: no field of
+ * its own. The page sends `{}`; a key beside it passes through and is
+ * ignored, and changes nothing.
+ */
+export const clubLinkConfirmRequestSchema = z.looseObject({})
+
+/**
+ * POST /api/clubs/confirm/[token]: the club marked, by name and town, and
+ * the month it is marked as checked for, in words ("November 2026").
+ */
+export const clubLinkConfirmResponseSchema = z.strictObject({
+  name: z.string(),
+  city: z.string(),
+  month: z.string(),
+})
+
+/**
+ * POST /api/admin/clubs/monthly-check, the LCA admin's button: `send`
+ * false asks only how many people the check goes to, for the button's one
+ * question, and sends nothing; `send` true sends it to every one of them.
+ */
+export const monthlyCheckRequestSchema = z.looseObject({
+  send: z.boolean(),
+})
+
+/**
+ * POST /api/admin/clubs/monthly-check: the month in words, how many people
+ * the check goes to, and, once sent, how many emails went, how many did not
+ * and how many people one press could not reach. Numbers only: no person.
+ */
+export const monthlyCheckResponseSchema = z.strictObject({
+  month: z.string(),
+  people: z.number().int().nonnegative(),
+  sent: z.number().int().nonnegative(),
+  notSent: z.number().int().nonnegative(),
+  notReached: z.number().int().nonnegative(),
+})
+
+export type ClubLinkResponse = z.infer<typeof clubLinkResponseSchema>
+export type ClubLinkConfirmResponse = z.infer<typeof clubLinkConfirmResponseSchema>
+export type MonthlyCheckResponse = z.infer<typeof monthlyCheckResponseSchema>
 export type UpdateClubRequest = z.infer<typeof updateClubRequestSchema>
 export type ClubPlacesRequest = z.infer<typeof clubPlacesRequestSchema>
 export type AdminClubResponse = z.infer<typeof adminClubResponseSchema>

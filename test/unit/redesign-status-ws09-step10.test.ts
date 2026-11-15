@@ -209,7 +209,9 @@ describe('REDESIGN_STATUS.md, WS09 step 10: the parts', () => {
     expect(post.indexOf('if (!CLUB_KEEPERS_ON) return errorResponse(CONFIRM_CLOSED, 403)')).toBeGreaterThan(-1)
     expect(post.indexOf('if (!CLUB_KEEPERS_ON)')).toBeLessThan(post.indexOf('requireClubRep('))
     expect(post.indexOf('requireClubRep(')).toBeLessThan(post.indexOf('parseBody(context.request, clubConfirmRequestSchema)'))
-    expect(post).toContain('`UPDATE clubs SET last_confirmed_at = datetime(\'now\'), confirmed_by = ?\n      WHERE id = ?\n      RETURNING last_confirmed_at`')
+    // Since WS09 step 14 the one write lives in functions/utils/clubs/stillAccurate.ts, shared with the monthly check's link.
+    expect(post).toContain('await markStillAccurate(context.env.DB, clubId, authResult.member.id)')
+    expect(read('functions/utils/clubs/stillAccurate.ts')).toContain('`UPDATE clubs SET last_confirmed_at = datetime(\'now\'), confirmed_by = ?\n      WHERE id = ?\n      RETURNING last_confirmed_at`')
     expect(codeOf(CONFIRM)).not.toMatch(/told_updated_at|told_by|admin_audit_log|recordAdminAction|sendEmail|trySendEmail|waitUntil/)
     expect(read(INTEGRATION)).toContain('  it(\'leaves a form another keeper has open able to save: a confirm never makes the PATCH refuse it as stale\', async () => {')
   })
@@ -305,7 +307,7 @@ describe('REDESIGN_STATUS.md, WS09 step 10: the parts', () => {
     const pins = bullet(block, '- **Pins moved.**')
     for (const piece of ['`test/unit/routes.test.ts`, one assertion and its case\'s name', '101 handler files in place of 99', 'The contract lists', 'Not moved:']) expect(pins, piece).toContain(piece)
     const routes = read(ROUTES)
-    expect(routes).toContain('  it(\'finds the 101 handler files under api plus the page routes\', () => {')
+    if (latestStep === 10) expect(routes).toContain('  it(\'finds the 101 handler files under api plus the page routes\', () => {')
     expect(routes).toContain('functions/api/admin/clubs/[id]/confirm.ts, Still accurate, and functions/api/workspace/region.ts, My region\'s answer, two new routes, are the 100th and 101st since WS09 step 10.')
   })
 

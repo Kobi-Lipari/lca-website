@@ -13,6 +13,9 @@
 // region), a seat can be vacant, and one member can hold two seats that
 // cover one region; each person is answered once, however many seats they
 // hold.
+//
+// The monthly check reads the same seat rule the other way round: each
+// holder with the clubs their seats keep (seatHoldersWithClubs).
 
 /** One person who keeps a club, as the server's mail reads them. */
 export interface Keeper {
@@ -56,14 +59,22 @@ export async function clubRepsOf(db: D1Database, clubId: string): Promise<Keeper
 }
 
 /**
- * The seat rule the two reads below share, written once so they can never
- * part: a current assignment of an active regional seat, held by anyone but
- * a guest, with an address that can be written to.
+ * Who holds a seat, the first half of the seat rule: a current assignment of
+ * an active regional seat, held by anyone but a guest. The monthly check
+ * reads it alone, so that a holder with no address that can be written to is
+ * counted as not sent rather than left out unseen.
  */
-const SEAT_RULE = `a.ended_at IS NULL
+const SEAT_HOLD = `a.ended_at IS NULL
           AND s.is_active = 1
           AND s.category = 'regional_rep'
-          AND m.role <> 'guest'
+          AND m.role <> 'guest'`
+
+/**
+ * The seat rule the reads below share, written once so they can never part:
+ * a current assignment of an active regional seat, held by anyone but a
+ * guest, with an address that can be written to.
+ */
+const SEAT_RULE = `${SEAT_HOLD}
           AND m.email LIKE '%@%'`
 
 /**
@@ -116,6 +127,52 @@ export async function representativesOfRegion(db: D1Database, region: string | n
     .bind(region)
     .all<Keeper>()
   return once(results ?? [])
+}
+
+/** One club a holder's seats keep, with the holder, as the monthly check reads it. */
+export interface SeatClub {
+  member_id: string
+  full_name: string
+  email: string
+  /** 1 when the address can be written to, by the address half of the seat rule; 0 otherwise. */
+  addressable: number
+  club_id: string
+  club_name: string
+  club_city: string
+  /** How the club meets, in its own words: the statement My region's card shows; null when it has none. */
+  club_statement: string | null
+}
+
+/**
+ * Every holder of an active regional seat, by SEAT_HOLD, with the clubs the
+ * holder's seats keep: each club whose region a seat's regions cover, a
+ * region an LCA admin added to the seat among them. These are the clubs My
+ * region shows a holder who is not an LCA admin (getRegionalClubIds in
+ * functions/utils/admin/permissions.ts reads the same join, and
+ * test/integration/club-check-edges.test.ts holds the two together). A
+ * holder who is an LCA admin is given the clubs their seats keep as well,
+ * and not every club as My region shows an admin: the check asks each seat
+ * about its own clubs. One row for each holder and club, however many of the holder's
+ * seats cover it; a seat that keeps no club gives no row. The address half
+ * of the rule is read as `addressable`, so the check counts a holder it
+ * cannot write to. For the monthly check
+ * (functions/utils/clubs/monthlyCheck.ts) alone.
+ */
+export async function seatHoldersWithClubs(db: D1Database): Promise<SeatClub[]> {
+  const { results } = await db
+    .prepare(
+      `SELECT DISTINCT m.id AS member_id, m.full_name, m.email, (m.email LIKE '%@%') AS addressable,
+              c.id AS club_id, c.name AS club_name, c.city AS club_city, c.how_we_meet_text AS club_statement
+         FROM board_seat_assignments a
+         JOIN board_members s ON s.id = a.seat_id
+         JOIN seat_regions r  ON r.seat_id = s.id
+         JOIN clubs c         ON c.region = r.region
+         JOIN members m       ON m.id = a.member_id
+        WHERE ${SEAT_HOLD}
+        ORDER BY m.full_name, m.id, c.name, c.id`,
+    )
+    .all<SeatClub>()
+  return results ?? []
 }
 
 /** The LCA admins, each once. */

@@ -20,6 +20,7 @@ import type { Env } from '../../../../types'
 import { isResponse, requireClubRep } from '../../../../utils/auth'
 import { errorResponse, handleOptions, jsonResponse, parseBody } from '../../../../utils/response'
 import { CLUB_KEEPERS_ON } from '../../../../utils/clubs/pages'
+import { markStillAccurate } from '../../../../utils/clubs/stillAccurate'
 import { checkWords } from '../../../../../domain/clubs/regionCards'
 import { clubConfirmRequestSchema } from '../../../../../domain/contracts/clubs'
 
@@ -38,13 +39,8 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
   const body = await parseBody(context.request, clubConfirmRequestSchema)
   if (isResponse(body)) return body
 
-  const row = await context.env.DB.prepare(
-    `UPDATE clubs SET last_confirmed_at = datetime('now'), confirmed_by = ?
-      WHERE id = ?
-      RETURNING last_confirmed_at`,
-  )
-    .bind(authResult.member.id, clubId)
-    .first<{ last_confirmed_at: string }>()
+  // The one write the monthly check's link makes too (functions/utils/clubs/stillAccurate.ts).
+  const row = await markStillAccurate(context.env.DB, clubId, authResult.member.id)
   // Only an LCA admin reaches here for a club that is not there.
   if (!row) return errorResponse('Club not found', 404)
 

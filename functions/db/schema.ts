@@ -797,3 +797,17 @@ export const automationRuns = sqliteTable('automation_runs', {
 (table) => [
   index('idx_automation_runs_job').on(table.job, table.startedAt),
 ])
+
+/**
+ * The monthly check's mark: one row for each person sent this month's check by the timed run
+ * (functions/utils/clubs/monthlyCheck.ts), claimed before the send by an insert the key refuses the second time, and
+ * given back when the send is worth another try. `month` is the first Monday's day in Central time, "2026-12-07". No
+ * address and no name; the row goes with the member.
+ */
+export const clubCheckMarks = sqliteTable('club_check_marks', {
+  memberId: text('member_id').notNull().references(() => members.id, { onDelete: 'cascade' }),
+  month: text().notNull(),
+},
+(table) => [
+  primaryKey({ columns: [table.memberId, table.month], name: 'club_check_marks_member_id_month_pk' }),
+])
