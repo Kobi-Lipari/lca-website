@@ -34,7 +34,7 @@ import { cn } from '@/lib/utils'
 import { usePageTitle } from '@/hooks/usePageTitle'
 import { LCA } from '@/lib/brand'
 import { ViewOnlyFieldset, ViewOnlyNote } from '@/lib/viewOnly'
-import { keepersOn } from '@/areas/clubs/switches'
+import { keepersOn, regionEventsOn } from '@/areas/clubs/switches'
 // The one club editor, fetched only when the Details tab draws it, with clubKeepers on.
 const ClubEditor = lazy(() => import('@/areas/clubs/components/ClubEditor').then((m) => ({ default: m.ClubEditor })))
 
@@ -689,6 +689,18 @@ export function AdminClubPage() {
               </Button>
             </div>
 
+            {/* With regionEvents on, for an LCA admin: the club's events that wait for LCA approval, with Approve and publish and Ask for changes. */}
+            {regionEventsOn() && isAdmin && (
+              <Suspense fallback={null}>
+                <ClubWaitingEvents
+                  clubId={club.id}
+                  onMoved={(tournamentId, answer) => setTournaments((now) => now.map((t) => (t.id === tournamentId
+                    ? { ...t, needs_lca_approval: answer.needs_lca_approval, approval_requested_at: answer.approval_requested_at, approved_at: answer.approved_at, ...(answer.approved_at ? { is_visible: 1 } : {}) }
+                    : t)))}
+                />
+              </Suspense>
+            )}
+
             {tournaments.length === 0 ? (
               <div className="rounded-xl border border-dashed px-6 py-10 text-center">
                 <Trophy className="mx-auto mb-3 size-8 text-muted-foreground" />
@@ -730,3 +742,7 @@ export function AdminClubPage() {
     </div>
   )
 }
+
+// The club's events that wait for LCA approval (WS09 step 19), fetched only when the Tournaments tab draws them with
+// regionEvents on for an LCA admin. Declared here, below the page, so the lines above keep their places.
+const ClubWaitingEvents = lazy(() => import('@/areas/clubs/components/ClubWaitingEvents').then((m) => ({ default: m.ClubWaitingEvents })))

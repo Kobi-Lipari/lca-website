@@ -478,3 +478,38 @@ export async function adminGetAuditLog(params?: {
   const data = await handleResponse<{ entries: ApiAuditEntry[] }>(response)
   return data.entries
 }
+
+// ── The LCA admins' wait for a representative's club event (WS09 step 19) ──
+
+// Kept with the call it serves rather than at the head of the file, so the
+// lines of this block stay together. An import is hoisted wherever it sits.
+import type { TournamentApprovalRequest, TournamentApprovalResponse } from '@domain/contracts'
+
+/**
+ * POST /api/admin/tournaments/:id/approval: one of the wait's three moves,
+ * Submit for LCA review, Approve and publish or Ask for changes with its
+ * note. Answers the event's four columns after the move and, in words a
+ * page shows as they come, whether the email went. A refusal rejects with
+ * the server's own words; a note the server refuses rejects with the note
+ * field's own words as `noteError` beside them, so the form ties them to
+ * the field.
+ */
+export async function moveTournamentApproval(
+  tournamentId: string,
+  body: TournamentApprovalRequest,
+): Promise<TournamentApprovalResponse> {
+  const response = await fetch(`/api/admin/tournaments/${encodeURIComponent(tournamentId)}/approval`, {
+    method: 'POST',
+    headers: await authHeaders(),
+    body: JSON.stringify(body),
+  })
+  const noteError = response.ok
+    ? undefined
+    : await response.clone().json().then((data: { fields?: { note?: unknown } }) => data?.fields?.note, () => undefined)
+  try {
+    return await handleResponse<TournamentApprovalResponse>(response)
+  } catch (err) {
+    if (typeof noteError === 'string' && err instanceof Error) Object.assign(err, { noteError })
+    throw err
+  }
+}

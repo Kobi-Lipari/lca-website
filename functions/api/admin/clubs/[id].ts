@@ -11,7 +11,10 @@
 // and one notice. With it unset both answer and write exactly what they did
 // before, and a body carrying a new field or places is refused 403. With it
 // set the GET also finds a club by its page address (WS09 step 9), under the
-// same check as by its id; the PATCH takes the id alone.
+// same check as by its id; the PATCH takes the id alone. With
+// REGION_EVENTS_ON set (WS09 step 19) the GET gives every person it admits
+// the club's events with the approval wait's columns, and `eventRights`,
+// what the person may do with them; with it unset the answer is as before.
 import type { Env, MemberRow } from '../../../types'
 import { isResponse, requireClubRep, requireAdmin, requireClubView } from '../../../utils/auth'
 import {
@@ -25,6 +28,8 @@ import { admittedByRegionAlone, officersWithoutEmail } from '../../../utils/club
 import { ADMIN_CLUB_COLUMNS } from '../../../utils/clubs/adminAnswer'
 import { isMissingTableOrColumn } from '../../../utils/clubs/migrationLag'
 import { CLUB_KEEPERS_ON } from '../../../utils/clubs/pages'
+import { REGION_EVENTS_ON } from '../../../utils/clubs/pages'
+import { clubEventRights } from '../../../utils/clubs/eventRights'
 import {
   KEEPER_FLAG_FIELDS,
   KEEPER_TEXT_FIELDS,
@@ -141,13 +146,20 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
   // admin, an observer and the club's own rep, the people who manage those
   // drafts. A person admitted by a regional seat alone gets the visible
   // events only, as GET /api/tournaments/[id] answers them a draft with 404
-  // unless they direct it.
-  const tournaments = await context.env.DB.prepare(regionAlone
-    ? `SELECT id, name, date, end_date, status, is_visible, registration_status
+  // unless they direct it. While REGION_EVENTS_ON is set that person runs
+  // every club event in their region (canManageTournament), so they get the
+  // club's events as its own rep does, and every row carries the three
+  // columns of the approval wait (WS09 step 19); the roster rule above stays
+  // as it is.
+  const regionEvents = REGION_EVENTS_ON
+  const tournaments = regionEvents
+    ? { results: await readWaitingEvents(context.env.DB, clubId) }
+    : await context.env.DB.prepare(regionAlone
+      ? `SELECT id, name, date, end_date, status, is_visible, registration_status
      FROM tournaments WHERE club_id = ? AND is_visible = 1 ORDER BY date DESC`
-    : `SELECT id, name, date, end_date, status, is_visible, registration_status
+      : `SELECT id, name, date, end_date, status, is_visible, registration_status
      FROM tournaments WHERE club_id = ? ORDER BY date DESC`,
-  ).bind(clubId).all()
+    ).bind(clubId).all()
 
   const answer = {
     club,
@@ -156,6 +168,8 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
     // Says the empty roster above is held back, not empty, so the admin club page can say so.
     ...(regionAlone ? { rosterKeptBack: true } : {}),
     tournaments: tournaments.results,
+    // What the person may do with the club's events, for the pages, only while REGION_EVENTS_ON is set.
+    ...(regionEvents ? { eventRights: await clubEventRights(context.env.DB, authResult.member, clubId) } : {}),
   }
   if (!CLUB_KEEPERS_ON) return jsonResponse(answer)
 
@@ -167,6 +181,25 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
     club: { ...club, ...(await readKeeperColumns(context.env.DB, clubId)) },
     places: await readPlaces(context.env.DB, clubId),
   })
+}
+
+/**
+ * The club's events with the three columns of the approval wait (migration
+ * 0070), every event of the club, read only while REGION_EVENTS_ON is set; a
+ * blank stored time is answered as null, as the wait reads it.
+ */
+async function readWaitingEvents(db: D1Database, clubId: string): Promise<Record<string, unknown>[]> {
+  const { results } = await db.prepare(
+    `SELECT id, name, date, end_date, status, is_visible, registration_status, needs_lca_approval, approval_requested_at, approved_at
+     FROM tournaments WHERE club_id = ? ORDER BY date DESC`,
+  ).bind(clubId).all<Record<string, unknown> & { needs_lca_approval: unknown; approval_requested_at: unknown; approved_at: unknown }>()
+  const stamp = (value: unknown) => (typeof value === 'string' && value.trim() !== '' ? value : null)
+  return (results ?? []).map((row) => ({
+    ...row,
+    needs_lca_approval: row.needs_lca_approval === 1 ? 1 : 0,
+    approval_requested_at: stamp(row.approval_requested_at),
+    approved_at: stamp(row.approved_at),
+  }))
 }
 
 export const onRequestPatch: PagesFunction<Env> = async (context) => {

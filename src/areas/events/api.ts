@@ -12,7 +12,7 @@
 
 // Types only: a runtime import of the contracts would bring zod into the site
 // bundle, which npm run check:bundle refuses.
-import type { SavedSection, Schedule, ScheduleRound, TournamentDetailResponse, TournamentListItem } from '@domain/contracts'
+import type { SavedSection, Schedule, ScheduleRound, TournamentDetailResponse, TournamentListItem, TournamentManageResponse } from '@domain/contracts'
 import { authHeaders, handleResponse } from '@/lib/http'
 import type { ApiMyRegistration } from '@/areas/registration/api'
 import type { ApiTournamentPairing, ApiStanding, ApiTournamentGame } from '@/areas/live/api'
@@ -358,6 +358,8 @@ export async function adminGetTournamentManage(tournamentId: string) {
     standings: ApiStanding[]
     prizes?: ApiPrizeAward[]
     directors: Array<{ member_id: string; full_name: string; email: string }>
+    /** Who may move the event through the LCA admins' wait, answered only while REGION_EVENTS_ON is set on the server. */
+    approval?: TournamentManageResponse['approval']
   }>(response)
 }
 

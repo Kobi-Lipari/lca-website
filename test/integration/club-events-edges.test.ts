@@ -395,7 +395,9 @@ describe('the club\'s admin answer, as checkpoint S left it', () => {
       expect(res.status).toBe(200)
       return (await res.json<{ tournaments: Array<{ id: string }> }>()).tournaments.map((t) => t.id).sort()
     }
-    expect(await events(representative)).toEqual([listed])
+    // Since WS09 step 19 the club's answer gives the representative, who runs every club event in the region, the club's
+    // events as it gives them to its own rep while REGION_EVENTS_ON is set; with it unset, the listed events alone.
+    expect(await events(representative)).toEqual(regionOn ? [mine, theirs, listed].sort() : [listed])
     expect(await events(admin)).toEqual([mine, theirs, listed].sort())
     expect(await events(rep)).toEqual([mine, theirs, listed].sort())
   })

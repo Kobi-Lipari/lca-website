@@ -138,7 +138,9 @@ describe('the committed map', () => {
       { specifier: '@domain/contracts', typeOnly: true, reexport: false },
       { specifier: '@domain/contracts', typeOnly: true, reexport: false },
     ])
-    for (const file of MODULES.filter((f) => f !== moduleOf('events') && f !== moduleOf('membership') && f !== moduleOf('clubs'))) {
+    // The approval call (WS09 step 19) takes its body and answer from the contracts in one type-only line, kept in its own block at the end.
+    expect(importsOf(moduleOf('admin')).filter((i) => i.specifier.startsWith('@domain/'))).toEqual([{ specifier: '@domain/contracts', typeOnly: true, reexport: false }])
+    for (const file of MODULES.filter((f) => f !== moduleOf('events') && f !== moduleOf('membership') && f !== moduleOf('clubs') && f !== moduleOf('admin'))) {
       expect(importsOf(file).filter((i) => i.specifier.startsWith('@domain/')), file).toEqual([])
     }
   })
@@ -340,7 +342,7 @@ describe('calls through the barrel send what they sent before', () => {
     const { getTournamentCreation, requestPayoutAccount, ApiError } = await import('@/lib/api')
     expect([...ADDED.paths].sort()).toEqual([
       '/api/admin/clubs/*/confirm', '/api/admin/clubs/monthly-check', '/api/admin/mail/newsletter', '/api/admin/mail/newsletter/stop', '/api/admin/mail/newsletter/test',
-      '/api/clubs/confirm/*', '/api/mail/preferences/*', '/api/mail/unsubscribe/*', '/api/me/media-manager', '/api/me/payout-request', '/api/me/tournament-creation', '/api/workspace/region',
+      '/api/admin/tournaments/*/approval', '/api/clubs/confirm/*', '/api/mail/preferences/*', '/api/mail/unsubscribe/*', '/api/me/media-manager', '/api/me/payout-request', '/api/me/tournament-creation', '/api/workspace/region',
     ])
     session.token = 'tok-5'
     const grant = { grant: 'standing_director', canCreate: true, canChargeFees: true, clubId: null }

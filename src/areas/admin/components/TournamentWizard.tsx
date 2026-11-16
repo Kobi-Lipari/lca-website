@@ -4,6 +4,15 @@
 // picker (admins only: a club rep's events always belong to their club),
 // and sending time control / registration close / copied custom details,
 // which the wizard collected but previously never saved.
+//
+// With a fixed club (WS09 step 19, behind regionEvents: a club's Events tab
+// in My region passes it) the event is that club's: the basics name the
+// club in words and offer no picker, and the create sends that club alone,
+// whatever an event copied from carries. For an event that waits for an LCA
+// admin's approval (the club's answer says so, never the page), a fee above
+// $0 meets G1 through FeeNotice, its ask drawn only where the server can
+// take it, and the review step says the event waits for approval in place of
+// the line about making it visible.
 import { useLayoutEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
@@ -73,6 +82,19 @@ const defaultWizard = (): WizardState => ({
   sections: [], registrationClosesAt: '',
   clubId: '', customDetails: [],
 })
+
+/**
+ * The club a wizard opened from a club's page creates for (WS09 step 19):
+ * its id and name, whether the event waits for an LCA admin's approval and
+ * so runs at $0, and whether a payout request can go through, each as the
+ * club's answer gives them (GET /api/admin/clubs/[id]'s eventRights).
+ */
+export interface WizardFixedClub {
+  id: string
+  name: string
+  waitsForApproval: boolean
+  mayAskForPayout: boolean
+}
 
 // ── Wizard step bar ───────────────────────────────────────────────────────────
 
@@ -252,11 +274,13 @@ function StepTemplate({ w, set, tournaments, onNext }: {
   )
 }
 
-function StepBasics({ w, set, onBack, onNext, onDraft, clubs }: {
+function StepBasics({ w, set, onBack, onNext, onDraft, clubs, fixedClub }: {
   w: WizardState; set: (p: Partial<WizardState>) => void
   onBack: () => void; onNext: () => void; onDraft: () => void
   /** Present only for admins, who choose the organizing club. */
   clubs?: ApiClubListItem[]
+  /** The club the event is for, which cannot be changed. */
+  fixedClub?: WizardFixedClub
 }) {
   const basicsComplete = !!(w.name && w.startDate && w.location)
   return (
@@ -275,7 +299,13 @@ function StepBasics({ w, set, onBack, onNext, onDraft, clubs }: {
           <div><Label htmlFor="t-loc">Location</Label><Input id="t-loc" placeholder="Baton Rouge, LA" value={w.location} onChange={(e) => set({ location: e.target.value })} className="mt-1" /></div>
           <div><Label htmlFor="t-venue">Venue <span className="text-xs font-normal text-muted-foreground">(optional)</span></Label><Input id="t-venue" placeholder="Convention Center" value={w.venue} onChange={(e) => set({ venue: e.target.value })} className="mt-1" /></div>
         </div>
-        {clubs && (
+        {fixedClub && (
+          <div>
+            <p className="text-sm font-medium">Organizing club</p>
+            <p className="mt-1 text-sm text-ink">{fixedClub.name}</p>
+          </div>
+        )}
+        {clubs && !fixedClub && (
           <div>
             <Label htmlFor="t-club">Organizing club <span className="text-xs font-normal text-muted-foreground">(optional)</span></Label>
             <select id="t-club" className="mt-1 w-full rounded-md border bg-background px-3 py-2 text-sm"
@@ -357,9 +387,11 @@ function askFailedWords(err: unknown): string {
   return err instanceof Error ? err.message : 'Could not send the request'
 }
 
-function StepSections({ w, set, onBack, onNext, onDraft, copiedFrom, creation, payoutAsked, onAskForAccount }: {
+function StepSections({ w, set, onBack, onNext, onDraft, copiedFrom, creation, payoutAsked, onAskForAccount, fixedClub }: {
   w: WizardState; set: (p: Partial<WizardState>) => void
   onBack: () => void; onNext: () => void; onDraft: () => void; copiedFrom?: string
+  /** The club the event is for; with waitsForApproval its fees stay at $0 until a payout account exists. */
+  fixedClub?: WizardFixedClub
   /** What the signed-in person may do with fees, read with standingDirectors on; null until read, or when the read fails. */
   creation: ApiTournamentCreation | null
   /** Whether the payout request has gone. */
@@ -401,10 +433,14 @@ function StepSections({ w, set, onBack, onNext, onDraft, copiedFrom, creation, p
   // from the same sections and keep only the last change. For a press from
   // the keyboard the focus goes to the fee box of the first section whose fee
   // was above $0; a tap or a mouse press moves none, since a fee box given the
-  // focus opens the number keyboard on a tablet.
+  // focus opens the number keyboard on a tablet. On a representative's event
+  // (fixedClub.waitsForApproval, WS09 step 19) the focus goes back to that
+  // fee box after any press, so it is never dropped to the page when the
+  // panel goes.
   const keepFree = (fromKeyboard = true) => {
     const first = w.sections.find((s) => s.entryFee > 0) ?? w.sections[0]
-    focusAfterKeep.current = fromKeyboard ? (first && feeBoxes.current.get(first.name)) || null : null
+    const moveFocus = fromKeyboard || !!fixedClub?.waitsForApproval
+    focusAfterKeep.current = moveFocus ? (first && feeBoxes.current.get(first.name)) || null : null
     set({ sections: w.sections.map((s) => ({ ...s, entryFee: 0 })) })
   }
   const updatePrize = (name: string, val: string) => set({ sections: w.sections.map((s) => s.name === name ? { ...s, prizeFund: val } : s) })
@@ -419,7 +455,11 @@ function StepSections({ w, set, onBack, onNext, onDraft, copiedFrom, creation, p
   // list: the wizard loads no prices, so any fee above $0 reads as a raise.
   // Every grant that may create may charge today, so only G2, a standing
   // director's note, can show.
-  const feesNeedAccount = FEATURES.standingDirectors && !!creation && !creation.canChargeFees && w.sections.some((s) => s.entryFee > 0)
+  // A representative's event, which waits for an LCA admin's approval, runs at
+  // $0: the club's answer says so (fixedClub.waitsForApproval), never
+  // GET /api/me/tournament-creation, which asks about no club.
+  const representativeFees = !!fixedClub?.waitsForApproval && w.sections.some((s) => s.entryFee > 0)
+  const feesNeedAccount = representativeFees || (FEATURES.standingDirectors && !!creation && !creation.canChargeFees && w.sections.some((s) => s.entryFee > 0))
   const standingFeeNote = FEATURES.standingDirectors && creation?.grant === 'standing_director' && w.sections.length > 0
   if (askFailure && !feesNeedAccount) setAskFailure(null)
 
@@ -427,7 +467,7 @@ function StepSections({ w, set, onBack, onNext, onDraft, copiedFrom, creation, p
     <div className="flex gap-6 p-5">
       <div className="flex-1 min-w-0">
         {/* With standingDirectors on, the line a screen reader hears as G1 shows under the fee table, and after a failed ask the error line's words; visually hidden, it moves nothing. */}
-        {FEATURES.standingDirectors && <FeeNoticeStatus shows={feesNeedAccount} failure={askFailure} />}
+        {(FEATURES.standingDirectors || !!fixedClub?.waitsForApproval) && <FeeNoticeStatus shows={feesNeedAccount} failure={askFailure} />}
         <PreviewBanner w={w} />
         {copiedFrom && (
           <div className="mb-4 flex items-center gap-2 rounded-lg border border-lca-gold/30 bg-lca-gold/8 px-3 py-2 text-xs text-gold-ink-badge">
@@ -487,7 +527,13 @@ function StepSections({ w, set, onBack, onNext, onDraft, copiedFrom, creation, p
         )}
         {feesNeedAccount && (
           <div className="mt-4">
-            <FeeNotice kind="needs-account" onKeepFree={keepFree} onAskForAccount={askForAccount} asked={payoutAsked} />
+            <FeeNotice
+              kind="needs-account"
+              onKeepFree={keepFree}
+              onAskForAccount={askForAccount}
+              asked={payoutAsked}
+              canAsk={fixedClub?.waitsForApproval ? fixedClub.mayAskForPayout : true}
+            />
           </div>
         )}
         {standingFeeNote && (
@@ -543,8 +589,9 @@ function StepSchedule({ w, onBack, onNext, onDraft }: {
   )
 }
 
-function StepReview({ w, onBack, onCreate, creating, error }: {
+function StepReview({ w, onBack, onCreate, creating, error, fixedClub }: {
   w: WizardState; onBack: () => void; onCreate: () => void; creating: boolean; error: string | null
+  fixedClub?: WizardFixedClub
 }) {
   return (
     <div className="flex gap-6 p-5">
@@ -572,7 +619,9 @@ function StepReview({ w, onBack, onCreate, creating, error }: {
           {w.description && <div><p className="mb-1 text-sm text-muted-foreground">Description</p><p className="text-sm">{w.description}</p></div>}
         </div>
         <div className="mt-3 rounded-lg border border-lca-gold/30 bg-lca-gold/8 px-4 py-3 text-xs text-gold-ink-badge">
-          Tournament will be created as a <strong>draft</strong> — hidden from the public until you make it visible in the management page.
+          {fixedClub?.waitsForApproval
+            ? <>Tournament will be created as a <strong>draft</strong> for {fixedClub.name}. It waits for LCA approval: send it for LCA review from its management page, and an LCA admin publishes it.</>
+            : <>Tournament will be created as a <strong>draft</strong> — hidden from the public until you make it visible in the management page.</>}
         </div>
         {error && <p className="mt-3 text-sm text-destructive">{error}</p>}
         <div className="mt-5 flex items-center justify-between gap-3">
@@ -596,11 +645,13 @@ function StepReview({ w, onBack, onCreate, creating, error }: {
  * row the create wrote: its guard admits a standing director only to an
  * event they direct, and it lifts view-only for the president only on one.
  */
-export function TournamentWizard({ templates, clubs, onCancel }: {
+export function TournamentWizard({ templates, clubs, fixedClub, onCancel }: {
   /** Tournaments offered under "From an existing tournament". */
   templates: ApiTournamentListItem[]
   /** Pass for admins only: shows the organizing-club picker. */
   clubs?: ApiClubListItem[]
+  /** The club the event is for, shown in words and sent with the create; no other club can be picked or sent. */
+  fixedClub?: WizardFixedClub
   onCancel: () => void
 }) {
   const navigate = useNavigate()
@@ -673,7 +724,7 @@ export function TournamentWizard({ templates, clubs, onCancel }: {
         timeControl: wizard.timeControl.trim() || null,
         registrationClosesAt: wizard.registrationClosesAt || null,
         customDetails: wizard.customDetails.length ? wizard.customDetails : undefined,
-        ...(clubs ? { clubId: wizard.clubId || null } : {}),
+        ...(fixedClub ? { clubId: fixedClub.id } : clubs ? { clubId: wizard.clubId || null } : {}),
       })
       // The manage page reads the events the member directs, as they were
       // read at sign-in. A refresh draws "Loading..." in place of the page
@@ -698,15 +749,15 @@ export function TournamentWizard({ templates, clubs, onCancel }: {
       </div>
       {step !== 'template' && <StepBar current={step} />}
       {step === 'template' && <StepTemplate w={wizard} set={patchWizard} tournaments={templates} onNext={() => setStep('basics')} />}
-      {step === 'basics' && <StepBasics w={wizard} set={patchWizard} clubs={clubs} onBack={() => setStep('template')} onNext={openSections} onDraft={handleCreate} />}
+      {step === 'basics' && <StepBasics w={wizard} set={patchWizard} clubs={clubs} fixedClub={fixedClub} onBack={() => setStep('template')} onNext={openSections} onDraft={handleCreate} />}
       {step === 'sections' && (
         <StepSections
           w={wizard} set={patchWizard} onBack={() => setStep('basics')} onNext={() => setStep('schedule')} onDraft={handleCreate} copiedFrom={copiedFromName}
-          creation={creation} payoutAsked={payoutAsked} onAskForAccount={askForPayoutAccount}
+          creation={creation} payoutAsked={payoutAsked} onAskForAccount={askForPayoutAccount} fixedClub={fixedClub}
         />
       )}
       {step === 'schedule' && <StepSchedule w={wizard} onBack={() => setStep('sections')} onNext={() => setStep('review')} onDraft={handleCreate} />}
-      {step === 'review' && <StepReview w={wizard} onBack={() => setStep('schedule')} onCreate={handleCreate} creating={creating} error={createError} />}
+      {step === 'review' && <StepReview w={wizard} onBack={() => setStep('schedule')} onCreate={handleCreate} creating={creating} error={createError} fixedClub={fixedClub} />}
       {createError && step !== 'review' && (
         <p className="border-t border-destructive/30 bg-destructive/10 px-5 py-2 text-sm text-destructive">{createError}</p>
       )}

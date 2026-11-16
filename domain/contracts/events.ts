@@ -622,6 +622,14 @@ export const tournamentManageResponseSchema = z.strictObject({
     full_name: z.string(),
     email: z.string(),
   })),
+  /**
+   * Who may move the event through the LCA admins' wait, answered only while
+   * REGION_EVENTS_ON is set (WS09 step 19): maySubmit, Submit for LCA review,
+   * for the person who drafted it in their region or an LCA admin;
+   * mayDecide, Approve and publish and Ask for changes, for an LCA admin.
+   * Both false for an event not marked and for one approved.
+   */
+  approval: z.strictObject({ maySubmit: z.boolean(), mayDecide: z.boolean() }).optional(),
 })
 
 /**

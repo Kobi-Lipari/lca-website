@@ -1,5 +1,5 @@
 // functions/api/admin/tournaments/[id]/manage.ts
-import type { Env, TournamentRow } from '../../../../types'
+import type { Env, MemberRow, TournamentRow } from '../../../../types'
 import { isResponse, requireTournamentView } from '../../../../utils/auth'
 import { errorResponse, handleOptions, jsonResponse } from '../../../../utils/response'
 import { computeStandings, tournamentPrizes } from '../../../../utils/events/tournament-manage'
@@ -7,6 +7,27 @@ import { parseJsonArray } from '../../../../utils/json'
 import { getDb } from '../../../../db/client'
 import { loadSections, toTournamentResponse } from '../../../../utils/events/sectionsRepo'
 import { loadSchedules } from '../../../../utils/events/schedulesRepo'
+import { REGION_EVENTS_ON } from '../../../../utils/clubs/pages'
+import { draftedInRegion } from '../../../../utils/events/creation'
+import { approvalState } from '../../../../../domain/events/approval'
+import type { TournamentManageResponse } from '../../../../../domain/contracts/events'
+
+/**
+ * Who may move the event through the LCA admins' wait (WS09 step 19), as
+ * POST /api/admin/tournaments/[id]/approval decides it: Submit for LCA
+ * review, the person who drafted it while a seat of theirs keeps its club
+ * (draftedInRegion), or an LCA admin; Approve and publish and Ask for
+ * changes, an LCA admin, the endpoint asking the second factor itself.
+ * Read only while REGION_EVENTS_ON is set; an event not marked, or one
+ * approved, asks no seat.
+ */
+async function approvalRights(db: D1Database, member: MemberRow, event: TournamentRow): Promise<NonNullable<TournamentManageResponse['approval']>> {
+  const isAdmin = member.role === 'lca_admin'
+  const state = approvalState(event)
+  if (state === 'not_marked' || state === 'approved') return { maySubmit: false, mayDecide: false }
+  const maySubmit = isAdmin || await draftedInRegion(db, member, { clubId: event.club_id, createdBy: event.created_by })
+  return { maySubmit, mayDecide: isAdmin }
+}
 
 export const onRequestOptions: PagesFunction<Env> = async () => handleOptions()
 
@@ -81,5 +102,7 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
     standings,
     prizes: await tournamentPrizes(context.env.DB, tournamentId, answer.sections, standings),
     directors: directors.results ?? [],
+    // Only while REGION_EVENTS_ON is set: who may move the event through the wait, for the manage page.
+    ...(REGION_EVENTS_ON ? { approval: await approvalRights(context.env.DB, authResult.member, tournament) } : {}),
   })
 }
