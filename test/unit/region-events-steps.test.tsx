@@ -210,6 +210,36 @@ describe('the creation steps from the Events tab, by who is adding', () => {
     expect(screen.queryByRole('button', { name: /publish|list it|visible/i })).toBeNull()
   })
 
+  it('keeps what was typed and the step when the person presses Listing and then Events, and while hidden no control of the steps is reachable', async () => {
+    answers[`GET ${CLUB_URL}`] = () => json(clubAnswer(REP_RIGHTS))
+    await openEventsTab()
+    await openStepsToBasics()
+    const name = screen.getByLabelText('Tournament name') as HTMLInputElement
+    expect(name.value).toBe('Example Club Quads')
+    const steps = (screen.getByRole('heading', { level: 2, name: 'Add a club event for Example Knights Club' }).closest('section') as HTMLElement)
+    // A press of the tab puts the focus on it, as a browser does.
+    const listing = screen.getByRole('button', { name: 'Listing' })
+    listing.focus()
+    fireEvent.click(listing)
+    // Hidden, not taken away: out of what a screen reader reads and of the tab order.
+    expect(steps.isConnected).toBe(true)
+    expect(steps.closest('[hidden]')).not.toBeNull()
+    expect(screen.queryByRole('heading', { name: 'Add a club event for Example Knights Club' })).toBeNull()
+    expect(screen.queryByRole('textbox', { name: 'Tournament name' })).toBeNull()
+    expect(screen.queryByRole('button', { name: /Next: Sections/ })).toBeNull()
+    expect(within(steps).queryAllByRole('button')).toEqual([])
+    // No notice opens and no status line speaks while hidden.
+    expect(screen.queryByRole('note', { name: 'Entry fees need a payout account first' })).toBeNull()
+    expect(steps.contains(document.activeElement)).toBe(false)
+    expect(document.activeElement).toBe(listing)
+    fireEvent.click(screen.getByRole('button', { name: 'Events' }))
+    await screen.findByRole('heading', { level: 2, name: 'Add a club event for Example Knights Club' })
+    expect((screen.getByLabelText('Tournament name') as HTMLInputElement).value).toBe('Example Club Quads')
+    expect(screen.getByLabelText('Tournament name')).toBe(name)
+    expect(screen.getByRole('button', { name: /Next: Sections/ })).toBeTruthy()
+    expect(steps.closest('[hidden]')).toBeNull()
+  })
+
   it('keeps the club fixed when the person goes back and forward through the steps', async () => {
     answers[`GET ${CLUB_URL}`] = () => json(clubAnswer(REP_RIGHTS))
     await openEventsTab()

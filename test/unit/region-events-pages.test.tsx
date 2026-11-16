@@ -275,8 +275,8 @@ describe('the Events tab of a club in My region, with regionEvents on', () => {
     const list = within(screen.getByRole('region', { name: 'Events' })).getByRole('list')
     const row = (name: string) => within(list).getByText(name).closest('li') as HTMLElement
     expect(row('Example Winter Quads').textContent).toContain('Draft, not public')
-    expect(row('Example Winter Quads').textContent).toContain('Waiting for LCA approval: a draft, not sent for review yet.')
-    expect(row('Example Spring Swiss').textContent).toContain('Waiting for LCA approval: sent for review on Sat, Nov 14, 2026.')
+    expect(row('Example Winter Quads').textContent).toContain('Draft. Not sent for LCA review yet.')
+    expect(row('Example Spring Swiss').textContent).toContain('Waiting for LCA approval. Sent for review on Sat, Nov 14, 2026.')
     expect(row('Example Summer Rapid').textContent).toContain('Approved by LCA on Mon, Nov 16, 2026.')
     expect(row('Example Knights Open').textContent).not.toContain('LCA approval')
     for (const name of ['Example Winter Quads', 'Example Spring Swiss', 'Example Summer Rapid', 'Example Knights Open']) {
@@ -326,7 +326,7 @@ async function openManage(who: Person, answer: unknown, tab = 'details') {
   await screen.findByRole('heading', { level: 1 })
   await act(async () => {})
 }
-const panel = () => screen.queryByRole('region', { name: /LCA approval|Approved by LCA/ })
+const panel = () => screen.queryByRole('region', { name: 'LCA approval' })
 const statusOf = (el: HTMLElement) => within(el).getAllByRole('status').at(-1) as HTMLElement
 
 describe('the manage page route, with regionEvents on and off', () => {
@@ -360,8 +360,8 @@ describe('the manage page shows the wait and the right buttons per person', () =
   it('gives a draft\'s state in words with Submit for LCA review for the drafter, and Publish absent with its reason in words', async () => {
     await openManage(REPRESENTATIVE, manageAnswer({}, { maySubmit: true, mayDecide: false }), 'registration')
     const wait = panel() as HTMLElement
-    expect(within(wait).getByRole('heading', { name: 'Waiting for LCA approval' })).toBeTruthy()
-    expect(wait.textContent).toContain('Waiting for LCA approval: a draft, not sent for review yet.')
+    expect(within(wait).getByRole('heading', { name: 'LCA approval' })).toBeTruthy()
+    expect(wait.textContent).toContain('Draft. Not sent for LCA review yet.')
     expect(within(wait).getByRole('button', { name: 'Submit for LCA review' })).toBeTruthy()
     expect(within(wait).queryByRole('button', { name: 'Approve and publish' })).toBeNull()
     expect(screen.queryByRole('button', { name: 'Visible to public' })).toBeNull()
@@ -370,12 +370,12 @@ describe('the manage page shows the wait and the right buttons per person', () =
 
   it('gives in review with its day, and approved with its day, after which Publish is today\'s again', async () => {
     await openManage(REPRESENTATIVE, manageAnswer(WAIT.review, { maySubmit: true, mayDecide: false }), 'registration')
-    expect((panel() as HTMLElement).textContent).toContain('Waiting for LCA approval: sent for review on Sat, Nov 14, 2026.')
+    expect((panel() as HTMLElement).textContent).toContain('Waiting for LCA approval. Sent for review on Sat, Nov 14, 2026.')
     expect(within(panel() as HTMLElement).queryByRole('button', { name: /Submit for LCA review|Approve and publish|Ask for changes/ })).toBeNull()
     expect(screen.queryByRole('button', { name: 'Visible to public' })).toBeNull()
     cleanup()
     await openManage(REPRESENTATIVE, manageAnswer({ ...WAIT.approved, is_visible: 1 }, { maySubmit: false, mayDecide: false }), 'registration')
-    expect(within(panel() as HTMLElement).getByRole('heading', { name: 'Approved by LCA' })).toBeTruthy()
+    expect(within(panel() as HTMLElement).getByRole('heading', { name: 'LCA approval' })).toBeTruthy()
     expect((panel() as HTMLElement).textContent).toContain('Approved by LCA on Mon, Nov 16, 2026.')
     expect(screen.getByRole('button', { name: 'Visible to public' })).toBeTruthy()
   })
@@ -389,7 +389,7 @@ describe('the manage page shows the wait and the right buttons per person', () =
       cleanup()
       await openManage(who, manageAnswer(WAIT.review, { maySubmit: false, mayDecide: false }))
       const theirs = panel() as HTMLElement
-      expect(theirs.textContent, who.id).toContain('sent for review on Sat, Nov 14, 2026.')
+      expect(theirs.textContent, who.id).toContain('Sent for review on Sat, Nov 14, 2026.')
       expect(within(theirs).queryByRole('button', { name: /Approve and publish|Ask for changes|Submit for LCA review/ }), who.id).toBeNull()
     }
   })
@@ -402,7 +402,7 @@ describe('the manage page shows the wait and the right buttons per person', () =
     fireEvent.click(submit)
     await waitFor(() => expect(statusOf(panel() as HTMLElement).textContent).toBe('Sent for LCA review. The LCA admins were emailed.'))
     expect(callsTo('POST /api/admin/tournaments/t1/approval').map((c) => c.body)).toEqual([{ action: 'submit' }])
-    expect((panel() as HTMLElement).textContent).toContain('sent for review on Sat, Nov 14, 2026.')
+    expect((panel() as HTMLElement).textContent).toContain('Sent for review on Sat, Nov 14, 2026.')
     expect(within(panel() as HTMLElement).queryByRole('button', { name: 'Submit for LCA review' })).toBeNull()
     expect(document.activeElement).toBe(statusOf(panel() as HTMLElement))
     cleanup()
@@ -422,12 +422,17 @@ describe('the manage page shows the wait and the right buttons per person', () =
     approve.focus()
     fireEvent.click(approve)
     await waitFor(() => expect(statusOf(panel() as HTMLElement).textContent).toBe('Nothing changed: This event is already approved.'))
-    expect((panel() as HTMLElement).textContent).toContain('sent for review on Sat, Nov 14, 2026.')
-    expect(document.activeElement).toBe(approve)
+    expect((panel() as HTMLElement).textContent).toContain('Sent for review on Sat, Nov 14, 2026.')
+    // A 409 moves the focus to the status line, since the read again may take the button away.
+    await waitFor(() => expect(document.activeElement).toBe(statusOf(panel() as HTMLElement)))
+    // The 409 reads the manage answer again, which here still says in review, so the panel stays as it was.
+    await waitFor(() => expect(callsTo('GET /api/admin/tournaments/t1/manage')).toHaveLength(2))
     answers['POST /api/admin/tournaments/t1/approval'] = () => { throw new TypeError('Failed to fetch') }
     fireEvent.click(approve)
     await waitFor(() => expect(statusOf(panel() as HTMLElement).textContent).toBe(`Nothing changed: ${SITE_UNREACHED}`))
     expect(within(panel() as HTMLElement).getByRole('button', { name: 'Ask for changes' })).toBeTruthy()
+    // Any other failure reads nothing again.
+    expect(callsTo('GET /api/admin/tournaments/t1/manage')).toHaveLength(2)
   })
 
   it('the note\'s form refuses an empty note and one over 500 characters in words tied to the field, and Cancel returns the focus', async () => {
@@ -456,8 +461,49 @@ describe('the manage page shows the wait and the right buttons per person', () =
     answers['POST /api/admin/tournaments/t1/approval'] = () => json({ ...WAIT.draft, approved_by: null, email: 'Changes asked. The person who drafted it was emailed your note.' })
     fireEvent.click(screen.getByRole('button', { name: 'Send' }))
     await waitFor(() => expect(statusOf(panel() as HTMLElement).textContent).toBe('Changes asked. The person who drafted it was emailed your note.'))
-    expect((panel() as HTMLElement).textContent).toContain('a draft, not sent for review yet.')
+    expect((panel() as HTMLElement).textContent).toContain('Draft. Not sent for LCA review yet.')
     expect(document.activeElement).toBe(statusOf(panel() as HTMLElement))
+  })
+
+  it('gives an LCA admin on a draft Approve and publish and no Submit for LCA review, and the drafter Submit alone', async () => {
+    await openManage(ADMIN, manageAnswer({}, { maySubmit: true, mayDecide: true }))
+    expect(within(panel() as HTMLElement).getAllByRole('button').map((b) => b.textContent?.trim()).filter((t) => t !== 'Help')).toEqual(['Approve and publish'])
+    cleanup()
+    await openManage(REPRESENTATIVE, manageAnswer({}, { maySubmit: true, mayDecide: false }))
+    expect(within(panel() as HTMLElement).getAllByRole('button').map((b) => b.textContent?.trim()).filter((t) => t !== 'Help')).toEqual(['Submit for LCA review'])
+  })
+
+  it('after a 409 reads the manage answer again and redraws the panel to what is true, keeping the status line\'s words', async () => {
+    answers['POST /api/admin/tournaments/t1/approval'] = () => json({ error: 'This event is already approved.' }, 409)
+    await openManage(ADMIN, manageAnswer(WAIT.review, { maySubmit: true, mayDecide: true }))
+    // The page is read again after the refusal: by then another LCA admin has approved it.
+    answers['GET /api/admin/tournaments/t1/manage'] = () => json(manageAnswer({ ...WAIT.approved, is_visible: 1 }, { maySubmit: false, mayDecide: false }))
+    fireEvent.click(within(panel() as HTMLElement).getByRole('button', { name: 'Approve and publish' }))
+    await waitFor(() => expect((panel() as HTMLElement).textContent).toContain('Approved by LCA on Mon, Nov 16, 2026.'))
+    expect(statusOf(panel() as HTMLElement).textContent).toBe('Nothing changed: This event is already approved.')
+    expect(within(panel() as HTMLElement).queryByRole('button', { name: /Approve and publish|Ask for changes/ })).toBeNull()
+    // The button pressed is gone, and the focus is on the status line, not the page's body.
+    await waitFor(() => expect(document.activeElement).toBe(statusOf(panel() as HTMLElement)))
+  })
+
+  it('the back link takes a plain-member representative to My region, and everyone the tools pages let in where it took them', async () => {
+    const back = () => screen.getByRole('link', { name: /^(All Tournaments|My region)$/ })
+    await openManage(REPRESENTATIVE, manageAnswer({}, { maySubmit: true, mayDecide: false }))
+    expect(back().textContent).toBe('My region')
+    expect(back().getAttribute('href')).toBe('/workspace/region')
+    const today: Array<[Person, string]> = [[ADMIN, '/admin/tournaments'], [OWN_REP, '/workspace?tab=events'], [NAMED_DIRECTOR, '/workspace?tab=events']]
+    for (const [who, href] of today) {
+      cleanup()
+      await openManage(who, manageAnswer({}, { maySubmit: false, mayDecide: who === ADMIN }))
+      expect(back().textContent, who.id).toBe('All Tournaments')
+      expect(back().getAttribute('href'), who.id).toBe(href)
+    }
+    // With regionEvents off the representative's link is today's.
+    cleanup()
+    flags.regionEvents = false
+    await openManage(REPRESENTATIVE, manageAnswer({}, { maySubmit: true, mayDecide: false }))
+    expect(back().textContent).toBe('All Tournaments')
+    expect(back().getAttribute('href')).toBe('/workspace?tab=events')
   })
 
   it('Help opens by itself once, on the first visit, and not again', async () => {
@@ -487,21 +533,80 @@ describe('the admin club page\'s Tournaments tab, with regionEvents on', () => {
     await act(async () => {})
   }
 
-  it('gives an LCA admin a row for each event that waits, with the same two buttons, and nobody else any', async () => {
-    const admin = { ...clubAnswer({ add: 'yes', manage: true, decide: true, askPayout: false }), rosterKeptBack: undefined }
+  const ADMIN_RIGHTS = { add: 'yes', manage: true, decide: true, askPayout: false }
+  const SECOND_REVIEW = { id: 't-review-2', name: 'Example Autumn Blitz', date: '2027-04-03', end_date: null, status: 'upcoming', is_visible: 0, registration_status: 'draft', ...WAIT.review }
+
+  it('gives an LCA admin a row for each event in review alone, headed by its name and date, each button once by its full name, and nobody else any', async () => {
+    const admin = { ...clubAnswer(ADMIN_RIGHTS, [LISTED, DRAFT, IN_REVIEW, SECOND_REVIEW, APPROVED]), rosterKeptBack: undefined }
     await openClub(ADMIN, admin)
     const waiting = await screen.findByRole('region', { name: 'Events waiting for LCA approval' })
     const rows = within(waiting).getAllByRole('listitem')
-    expect(rows.map((r) => within(r).getByText(/^Example/).textContent)).toEqual(['Example Winter Quads', 'Example Spring Swiss'])
-    expect(within(rows[0]).getByRole('button', { name: 'Approve and publish' })).toBeTruthy()
-    expect(within(rows[0]).queryByRole('button', { name: 'Ask for changes' })).toBeNull()
-    expect(within(rows[1]).getByRole('button', { name: 'Approve and publish' })).toBeTruthy()
-    expect(within(rows[1]).getByRole('button', { name: 'Ask for changes' })).toBeTruthy()
-    expect(within(rows[1]).getByText('Sat, Mar 6, 2027')).toBeTruthy()
+    // The draft not yet sent is not listed; an LCA admin approves it from its manage page.
+    expect(rows).toHaveLength(2)
+    expect(within(waiting).queryByText('Example Winter Quads')).toBeNull()
+    // The headings in order: the tab's, the section's, then one for each row naming the event and its date; no second heading in a row.
+    expect(screen.getAllByRole('heading').map((h) => `${h.tagName} ${h.textContent}`).filter((h) => /^H[2-4] (Club tournaments|Events waiting|Example)/.test(h))).toEqual([
+      'H2 Club tournaments',
+      'H3 Events waiting for LCA approval',
+      'H4 Example Spring Swiss, Sat, Mar 6, 2027',
+      'H4 Example Autumn Blitz, Sat, Apr 3, 2027',
+    ])
+    for (const row of rows) expect(within(row).getAllByRole('heading')).toHaveLength(1)
+    for (const name of ['Example Spring Swiss', 'Example Autumn Blitz']) {
+      expect(screen.getAllByRole('button', { name: `Approve and publish: ${name}` }), name).toHaveLength(1)
+      expect(screen.getAllByRole('button', { name: `Ask for changes: ${name}` }), name).toHaveLength(1)
+    }
+    // The words a person sees are unchanged, and each row gives the wait's state line.
+    expect(within(rows[0]).getByRole('button', { name: 'Approve and publish: Example Spring Swiss' }).textContent?.trim()).toBe('Approve and publish')
+    expect(rows[0].textContent).toContain('Waiting for LCA approval. Sent for review on Sat, Nov 14, 2026.')
     cleanup()
     await openClub(OWN_REP, clubAnswer({ add: 'yes', manage: true, decide: false, askPayout: false }))
     expect(screen.queryByRole('region', { name: 'Events waiting for LCA approval' })).toBeNull()
-    expect(screen.queryByRole('button', { name: 'Approve and publish' })).toBeNull()
+    expect(screen.queryByRole('button', { name: /^Approve and publish/ })).toBeNull()
+  })
+
+  it('draws nothing for an LCA admin when no event is in review, a draft not yet sent included', async () => {
+    await openClub(ADMIN, { ...clubAnswer(ADMIN_RIGHTS, [LISTED, DRAFT, APPROVED]), rosterKeptBack: undefined })
+    await waitFor(() => expect(callsTo(`GET ${CLUB_URL}`).length).toBeGreaterThanOrEqual(2))
+    expect(screen.queryByRole('region', { name: 'Events waiting for LCA approval' })).toBeNull()
+    expect(screen.queryByText(/LCA approval/)).toBeNull()
+  })
+
+  it('after a 409 reads the club again, keeps the row and its status line\'s words, and redraws the row to what is true', async () => {
+    answers['POST /api/admin/tournaments/t-review/approval'] = () => json({ error: 'This event is already approved.' }, 409)
+    await openClub(ADMIN, { ...clubAnswer(ADMIN_RIGHTS, [IN_REVIEW]), rosterKeptBack: undefined })
+    const waiting = await screen.findByRole('region', { name: 'Events waiting for LCA approval' })
+    const reads = callsTo(`GET ${CLUB_URL}`).length
+    // By the time the club is read again another LCA admin has approved the event.
+    answers[`GET ${CLUB_URL}`] = () => json({ ...clubAnswer(ADMIN_RIGHTS, [{ ...IN_REVIEW, ...WAIT.approved, is_visible: 1 }]), rosterKeptBack: undefined })
+    fireEvent.click(within(waiting).getByRole('button', { name: 'Approve and publish: Example Spring Swiss' }))
+    await waitFor(() => expect(within(waiting).getByRole('listitem').textContent).toContain('Approved by LCA on Mon, Nov 16, 2026.'))
+    expect(callsTo(`GET ${CLUB_URL}`)).toHaveLength(reads + 1)
+    expect(within(waiting).getByRole('status').textContent).toBe('Nothing changed: This event is already approved.')
+    expect(within(waiting).queryByRole('button', { name: /Approve and publish|Ask for changes/ })).toBeNull()
+    // The button pressed is gone, and the focus is on the row's status line, not the page's body.
+    await waitFor(() => expect(document.activeElement).toBe(within(waiting).getByRole('status')))
+  })
+
+  it('leaves the drafts sentence out of the empty tab when the club\'s answer carries eventRights, and keeps it word for word without', async () => {
+    // Another club's rep who holds the region's seat: the tab is theirs, and the club's roster is kept back from them.
+    const seatHoldingRep: Person = { id: 'm-rooks', role: 'club_rep', club: 'c-rooks', seats: [REGIONAL], managed: [ID] }
+    await openClub(seatHoldingRep, clubAnswer(REP_RIGHTS, []))
+    // The words read the club's answer once more, with regionEvents on.
+    await waitFor(() => expect(callsTo(`GET ${CLUB_URL}`)).toHaveLength(2))
+    await act(async () => {})
+    expect(screen.getByText('Published tournaments of Example Knights Club show up here.')).toBeTruthy()
+    expect(screen.queryByText(/Drafts stay with LCA admins/)).toBeNull()
+    cleanup()
+    await openClub(seatHoldingRep, clubAnswer(null, []))
+    expect(await screen.findByText('Published tournaments of Example Knights Club show up here. Drafts stay with LCA admins and the club\'s own rep.')).toBeTruthy()
+    // With regionEvents off the words are today's at once, with no read more.
+    cleanup()
+    flags.regionEvents = false
+    asked = []
+    await openClub(seatHoldingRep, clubAnswer(REP_RIGHTS, []))
+    expect(screen.getByText('Published tournaments of Example Knights Club show up here. Drafts stay with LCA admins and the club\'s own rep.')).toBeTruthy()
+    expect(callsTo(`GET ${CLUB_URL}`)).toHaveLength(1)
   })
 })
 

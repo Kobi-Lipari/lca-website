@@ -238,6 +238,48 @@ describe('GET /api/admin/clubs/[id] with REGION_EVENTS_ON set: what each person 
     await club(p.admin, p.clubId, 'aal2', adminOn.db)
     expect(adminOn.ran.filter((r) => r.sql.includes('FROM tournaments'))).toHaveLength(admin.ran.filter((r) => r.sql.includes('FROM tournaments')).length)
   })
+
+  it('with both constants unset, as the checkpoint ships, the answer is the base\'s, byte for byte, with the base\'s statements and no query more', async () => {
+    const p = await example()
+    await event(p.clubId, null, 'none')
+    await event(p.clubId, p.representative, 'draft')
+    flags.regionOn = false
+    flags.keepersOn = false
+    const off = countingDb()
+    const res = await club(p.representative, p.clubId, 'aal1', off.db)
+    expect(res.status).toBe(200)
+    const text = await res.response.clone().text()
+    // The statements are the base's, one for one: no look-up by page address, the person and their seat as
+    // requireClubView asks, then the handler's own three reads in the base's words, the tournaments' read with the
+    // visible events only, and neither the keeper columns nor the places.
+    expect(off.ran.map((r) => r.sql)).toEqual([
+      'SELECT * FROM members WHERE id = ?',
+      'SELECT * FROM members WHERE id = ?',
+      expect.stringContaining('FROM board_seat_assignments a'),
+      `SELECT ${ADMIN_CLUB_COLUMNS} FROM clubs WHERE id = ?`,
+      BASE_OFFICERS_SQL,
+      BASE_VISIBLE_EVENTS_SQL,
+    ])
+    expect(off.ran.some((r) => r.sql.includes('needs_lca_approval') || r.sql.includes('club_places'))).toBe(false)
+    // And the body is the base's byte for byte, built here the base's way from the same rows.
+    const clubRow = await env.DB.prepare(`SELECT ${ADMIN_CLUB_COLUMNS} FROM clubs WHERE id = ?`).bind(p.clubId).first()
+    const officerRows = (await env.DB.prepare(BASE_OFFICERS_SQL).bind(p.clubId).all<Record<string, unknown>>()).results
+    const baseBody = {
+      club: clubRow,
+      officers: officersWithoutEmail(officerRows),
+      roster: [],
+      rosterKeptBack: true,
+      tournaments: (await env.DB.prepare(BASE_VISIBLE_EVENTS_SQL).bind(p.clubId).all()).results,
+    }
+    expect(text).toBe(JSON.stringify(baseBody))
+    expect(JSON.parse(text).tournaments).toHaveLength(1)
+    // An LCA admin's answer too: the base's statements, the tournaments' one read unfiltered, and no right in it.
+    const admin = countingDb()
+    const forAdmin = await (await club(p.admin, p.clubId, 'aal2', admin.db)).json()
+    expect(Object.keys(forAdmin)).toEqual(['club', 'officers', 'roster', 'tournaments'])
+    expect(admin.ran.filter((r) => r.sql.includes('FROM tournaments')).map((r) => r.sql)).toEqual([BASE_ALL_EVENTS_SQL])
+    expect(admin.ran.some((r) => r.sql.includes('needs_lca_approval') || r.sql.includes('board_seat_assignments') || r.sql.includes('club_places'))).toBe(false)
+  })
 })
 
 async function manage(as: string, id: string, aal: Aal = 'aal1', db?: D1Database) {

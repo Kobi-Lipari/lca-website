@@ -279,7 +279,8 @@ export interface ApiTournamentDirector {
   member_id: string
   assigned_at: string
   full_name: string
-  email: string
+  /** null when the server leaves it out: a regional representative running the event through the seat alone. */
+  email: string | null
 }
 
 export async function adminGetTournamentDirectors(
@@ -357,7 +358,7 @@ export async function adminGetTournamentManage(tournamentId: string) {
     games: ApiTournamentGame[]
     standings: ApiStanding[]
     prizes?: ApiPrizeAward[]
-    directors: Array<{ member_id: string; full_name: string; email: string }>
+    directors: Array<{ member_id: string; full_name: string; email: string | null }>
     /** Who may move the event through the LCA admins' wait, answered only while REGION_EVENTS_ON is set on the server. */
     approval?: TournamentManageResponse['approval']
   }>(response)

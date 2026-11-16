@@ -13,7 +13,9 @@
 //   admin, by the one rule D22's notice writes to them by. The person who
 //   drafted the event, while a seat of theirs still keeps its club
 //   (draftedInRegion), or an LCA admin. In review, it changes nothing and
-//   sends nothing, and its answer says so; approved, 409.
+//   sends nothing, and its answer says so; approved, 409. Anyone but an LCA
+//   admin has at most SUBMITS_A_DAY submits go through in 24 hours; the next
+//   is 429 in words, and sends and writes nothing.
 // - approve, from a draft or in review: sets approved_at, approved_by and
 //   is_visible 1 in one statement, which is the event's first listing, and
 //   emails the person who drafted it. An LCA admin with a second factor
@@ -75,6 +77,29 @@ export const EMAIL_WORDS = {
   changesNotSent: 'Changes asked, but the email to the person who drafted it was not sent.',
   changesNoDrafter: 'Changes asked. No email was sent: the person who drafted it can no longer be reached.',
 } as const
+
+/**
+ * The most submits that go through for one person in any 24 hours, an LCA
+ * admin's not counted. Each submit emails every LCA admin, and everything the
+ * site sends shares a limit of 100 emails a day, so one person's drafts must
+ * not use the day's sending up. K may change the number.
+ */
+export const SUBMITS_A_DAY = 5
+
+/** The 429 of a submit past SUBMITS_A_DAY: the number, and when to try again. */
+export const TOO_MANY_SUBMITS = `You have sent ${SUBMITS_A_DAY} events for LCA review in the last day. Try again tomorrow.`
+
+/** How many submits of the person went through in the last 24 hours, by their rows in the activity log. */
+async function submitsInLastDay(db: D1Database, memberId: string): Promise<number> {
+  const row = await db
+    .prepare(
+      `SELECT COUNT(*) AS n FROM admin_audit_log
+        WHERE actor_id = ? AND action = 'tournament_submitted' AND created_at > datetime('now', '-1 day')`,
+    )
+    .bind(memberId)
+    .first<{ n: number }>()
+  return row?.n ?? 0
+}
 
 /** The pause between one LCA admin's email and the next, the pace functions/utils/events/publishedReview.ts keeps. */
 const SEND_INTERVAL_MS = 400
@@ -209,6 +234,12 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
 
   const early = settled(body.action, approvalState(event), event)
   if (early) return early
+
+  // A submit that would go through, by anyone but an LCA admin, is bounded:
+  // past SUBMITS_A_DAY in 24 hours it is refused, sends nothing and writes nothing.
+  if (body.action === 'submit' && member.role !== 'lca_admin' && (await submitsInLastDay(db, member.id)) >= SUBMITS_A_DAY) {
+    return errorResponse(TOO_MANY_SUBMITS, 429)
+  }
 
   const statement = body.action === 'approve'
     ? db.prepare(MOVES.approve).bind(member.id, tournamentId)

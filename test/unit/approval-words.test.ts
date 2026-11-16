@@ -28,11 +28,11 @@ describe('waitWords: each state in words', () => {
   })
 
   it('says a draft is not sent yet, with no date', () => {
-    expect(waitWords(draft)).toBe('Waiting for LCA approval: a draft, not sent for review yet.')
+    expect(waitWords(draft)).toBe('Draft. Not sent for LCA review yet.')
   })
 
   it('says in review with the day it was sent, weekday and year included', () => {
-    expect(waitWords(review('2026-11-14 18:00:00'))).toBe('Waiting for LCA approval: sent for review on Sat, Nov 14, 2026.')
+    expect(waitWords(review('2026-11-14 18:00:00'))).toBe('Waiting for LCA approval. Sent for review on Sat, Nov 14, 2026.')
   })
 
   it('says approved with the day it was approved, not the day it was sent', () => {
@@ -55,8 +55,8 @@ describe('waitWords: each state in words', () => {
           const words = waitWords(event)
           const state = approvalState(event)
           if (state === 'not_marked') expect(words, JSON.stringify(event)).toBeNull()
-          else if (state === 'draft') expect(words, JSON.stringify(event)).toMatch(/a draft, not sent/)
-          else if (state === 'in_review') expect(words, JSON.stringify(event)).toMatch(/sent for review on [A-Z][a-z]{2}, /)
+          else if (state === 'draft') expect(words, JSON.stringify(event)).toBe('Draft. Not sent for LCA review yet.')
+          else if (state === 'in_review') expect(words, JSON.stringify(event)).toMatch(/^Waiting for LCA approval\. Sent for review on [A-Z][a-z]{2}, /)
           else expect(words, JSON.stringify(event)).toMatch(/^Approved by LCA on [A-Z][a-z]{2}, /)
         }
       }

@@ -279,8 +279,8 @@ describe('the member delete and approved_by', () => {
     const member = await seedMember({ fullName: 'Player Nine', email: 'player.nine@example.org' })
     const db = env.DB
     const failing = {
-      prepare: (sql: string) => (sql.startsWith('UPDATE tournaments SET approved_by')
-        ? { bind: () => ({ run: async () => { throw new Error('D1_ERROR: database is locked: SQLITE_BUSY') } }) }
+      prepare: (sql: string) => (sql.startsWith('SELECT approved_by FROM tournaments')
+        ? { all: async () => { throw new Error('D1_ERROR: database is locked: SQLITE_BUSY') } }
         : db.prepare(sql)),
       batch: (statements: D1PreparedStatement[]) => db.batch(statements),
     } as unknown as D1Database

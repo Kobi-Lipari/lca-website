@@ -269,7 +269,10 @@ describe('REDESIGN_STATUS.md, WS09 step 16: the parts against the files', () => 
       expect(del, piece).toContain(piece)
     }
     const handler = codeOf(MEMBER_DELETE)
-    expect(handler).toContain("await context.env.DB.prepare('UPDATE tournaments SET approved_by = NULL WHERE approved_by = ?').bind(memberId).run()")
+    // Since checkpoint V's review the column is asked about by a read that changes nothing, and the clear is a statement of the batch.
+    expect(handler).toContain("    await context.env.DB.prepare('SELECT approved_by FROM tournaments LIMIT 0').all()\n    approvalsClear = [context.env.DB.prepare('UPDATE tournaments SET approved_by = NULL WHERE approved_by = ?').bind(memberId)]")
+    // B1 of checkpoint V's review: the bullet says the clear is in the batch and what a delete of an approver the activity log names answers.
+    for (const piece of ['Changed in checkpoint V\'s review: the clear is a statement of the batch of WS09 step 4, straight before `DELETE FROM members`', '`SELECT approved_by FROM tournaments LIMIT 0`', '"FOREIGN KEY constraint failed"', '`test/integration/member-delete-approver.test.ts`']) expect(del, piece).toContain(piece)
     expect(handler).toContain('console.warn(APPROVALS_UNCLEARED_LOG)')
     expect(handler.indexOf('console.warn(RUN_MARKS_UNCLEARED_LOG)')).toBeLessThan(handler.indexOf('UPDATE tournaments SET approved_by'))
     expect(handler.indexOf('UPDATE tournaments SET approved_by')).toBeLessThan(handler.indexOf('await context.env.DB.batch(['))
@@ -319,8 +322,12 @@ describe('REDESIGN_STATUS.md, WS09 step 16: the parts against the files', () => 
       expect(old, piece).toContain(piece)
     }
     for (const piece of ['leaves the four columns', 'read by nothing']) expect(bullet(block, '- **What a revert leaves.**'), piece).toContain(piece)
+    // B2 of checkpoint V's review: a revert made with the constant set and approvals written.
+    for (const piece of ['so it does not keep `approved_by` back', 'the approving LCA admin\'s member id', 'keeps the four names in `MANAGER_ONLY_TOURNAMENT_KEYS`, reverting everything but that, or clears `approved_by`, which is a write to the production database and needs K\'s own word']) expect(bullet(block, '- **What a revert leaves.**'), piece).toContain(piece)
     const ships = bullet(block, '- **What ships with every switch off.**')
     expect(ships.startsWith('- **What ships with every switch off.** Four columns more on `tournaments` once 0070 has run, which nothing live writes and which no public answer carries')).toBe(true)
+    // D1 of checkpoint V's review, refuted, a clause added all the same.
+    expect(ships).toContain('though the live create\'s insert names all four and writes their defaults, 0 and three NULLs, on every create, which is why a create fails until 0070 is applied')
     for (const piece of [
       'byte for byte the base\'s with the four columns there and with them not there yet', 'A seat holder\'s grant is none, as today', 'an empty list for everyone',
       'The member delete answers as on the base in both worlds', 'no switch is added', '`REGION_EVENTS_ON` stays unset until WS09 steps 17 to 19',

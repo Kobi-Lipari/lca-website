@@ -492,17 +492,20 @@ function ClubInRegion({ id }: { id: string }) {
             {...(mayAdd ? { onAdd: () => { addFocus.current = 'steps'; setAdding(true) }, addRef: addButton } : {})}
           />
         )}
-        {club && data && tab === 'events' && adding && mayAdd && rights && (
-          <section aria-labelledby="add-club-event-title" className="space-y-4">
-            <h2 ref={stepsTitle} id="add-club-event-title" tabIndex={-1} className="break-words text-lg font-semibold text-ink outline-none">Add a club event for {club.name}</h2>
-            <Suspense fallback={<p className="text-muted-foreground" role="status">Loading the creation steps…</p>}>
-              <TournamentWizard
-                templates={[]}
-                fixedClub={{ id: club.id, name: club.name, waitsForApproval: rights.add === 'for_approval', mayAskForPayout: rights.askPayout }}
-                onCancel={() => { addFocus.current = 'add'; setAdding(false) }}
-              />
-            </Suspense>
-          </section>
+        {/* Once opened, the creation steps stay drawn, hidden while another tab shows, as the editor is: out of the tab order and of what a screen reader reads, with what was typed kept. They are only ever opened from Events, so never first drawn hidden. */}
+        {club && data && adding && mayAdd && rights && (
+          <div hidden={tab !== 'events'}>
+            <section aria-labelledby="add-club-event-title" className="space-y-4">
+              <h2 ref={stepsTitle} id="add-club-event-title" tabIndex={-1} className="break-words text-lg font-semibold text-ink outline-none">Add a club event for {club.name}</h2>
+              <Suspense fallback={<p className="text-muted-foreground" role="status">Loading the creation steps…</p>}>
+                <TournamentWizard
+                  templates={[]}
+                  fixedClub={{ id: club.id, name: club.name, waitsForApproval: rights.add === 'for_approval', mayAskForPayout: rights.askPayout }}
+                  onCancel={() => { addFocus.current = 'add'; setAdding(false) }}
+                />
+              </Suspense>
+            </section>
+          </div>
         )}
       </section>
     </div>

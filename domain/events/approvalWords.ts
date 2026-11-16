@@ -20,8 +20,8 @@ const dayOf = (stamp: string | null) => formatDate(stamp, { year: true, stored: 
 export function waitWords(event: ApprovalWaitEvent): string | null {
   const state: ApprovalState = approvalState(event)
   if (state === 'not_marked') return null
-  if (state === 'draft') return 'Waiting for LCA approval: a draft, not sent for review yet.'
-  if (state === 'in_review') return `Waiting for LCA approval: sent for review on ${dayOf(event.approval_requested_at)}.`
+  if (state === 'draft') return 'Draft. Not sent for LCA review yet.'
+  if (state === 'in_review') return `Waiting for LCA approval. Sent for review on ${dayOf(event.approval_requested_at)}.`
   return `Approved by LCA on ${dayOf(event.approved_at)}.`
 }
 

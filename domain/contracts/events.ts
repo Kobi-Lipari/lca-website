@@ -620,7 +620,8 @@ export const tournamentManageResponseSchema = z.strictObject({
   directors: z.array(z.strictObject({
     member_id: idSchema,
     full_name: z.string(),
-    email: z.string(),
+    /** null while REGION_EVENTS_ON is set for a viewer whose standing on the event's club is the region alone. */
+    email: z.string().nullable(),
   })),
   /**
    * Who may move the event through the LCA admins' wait, answered only while
@@ -649,7 +650,11 @@ export const tournamentDirectorSchema = z.strictObject({
   member_id: idSchema,
   assigned_at: storedTimestampSchema,
   full_name: z.string(),
-  email: z.string(),
+  /**
+   * null while REGION_EVENTS_ON is set for a caller whose standing on the
+   * event's club is the region alone, who may not read members' emails.
+   */
+  email: z.string().nullable(),
 })
 
 /**

@@ -2,16 +2,21 @@
 //
 // The admin club page's events that wait for LCA approval (WS09 step 19),
 // drawn on its Tournaments tab with regionEvents on: a row for each event of
-// the club that is marked for approval and not yet approved, each with
-// ApprovalWait's Approve and publish and Ask for changes. It reads the
+// the club in review (sent for LCA review and not approved; a draft not yet
+// sent is not listed, and an LCA admin approves one from its manage page).
+// Each row's heading is the event's name with its date in words, under it
+// ApprovalWait's state line and its Approve and publish and Ask for changes,
+// each button named with the event's name. It reads the
 // club's answer itself, GET /api/admin/clubs/[id], whose `eventRights.decide`
 // says whether the person approves (an LCA admin) and whose rows carry the
 // wait's columns, both sent only while REGION_EVENTS_ON is set; with neither
 // in the answer, or with no event waiting, it draws nothing, so for everyone
 // but an LCA admin the tab is as before. A row stays after its move, showing
 // the state the answer gives, so the focus is never lost with it, and the
-// page is told so its own list follows.
-import { useEffect, useState } from 'react'
+// page is told so its own list follows. After a move the server refuses with
+// 409 it reads the club again, keeping the rows it shows, so each redraws to
+// what is true.
+import { useEffect, useRef, useState } from 'react'
 
 import { adminGetClub, type ApiAdminClubTournament } from '@/lib/api'
 import { errorWords } from '@/areas/clubs/region'
@@ -42,20 +47,35 @@ export function ClubWaitingEvents({ clubId, onMoved }: {
   onMoved: (tournamentId: string, answer: TournamentApprovalResponse) => void
 }) {
   const [load, setLoad] = useState<Load>({ kind: 'loading' })
+  // Each read of the club after the first: a 409 on a move asks for one.
+  const [reads, setReads] = useState(0)
+  const firstRead = useRef(true)
   useEffect(() => {
     let cancelled = false
+    const again = !firstRead.current
+    firstRead.current = false
     adminGetClub(clubId)
       .then((data) => {
         if (cancelled) return
-        const rows = (data.tournaments ?? []).filter((row) => {
-          const state = approvalState(waitOf(row))
-          return state === 'draft' || state === 'in_review'
+        const all = data.tournaments ?? []
+        const inReview = all.filter((row) => approvalState(waitOf(row)) === 'in_review')
+        setLoad((now) => {
+          // Read again: the rows shown stay, each with its columns as they now are, so no status line goes.
+          if (again && now.kind === 'ready') {
+            const fresh = new Map(all.map((row) => [row.id, row]))
+            const kept = now.rows.map((row) => fresh.get(row.id) ?? row)
+            const shown = new Set(kept.map((row) => row.id))
+            return { kind: 'ready', decide: !!data.eventRights?.decide, rows: [...kept, ...inReview.filter((row) => !shown.has(row.id))] }
+          }
+          return { kind: 'ready', decide: !!data.eventRights?.decide, rows: inReview }
         })
-        setLoad({ kind: 'ready', decide: !!data.eventRights?.decide, rows })
       })
-      .catch((err) => { if (!cancelled) setLoad({ kind: 'failed', text: `The events waiting for LCA approval could not be loaded: ${errorWords(err)}` }) })
+      .catch((err) => {
+        if (cancelled || again) return
+        setLoad({ kind: 'failed', text: `The events waiting for LCA approval could not be loaded: ${errorWords(err)}` })
+      })
     return () => { cancelled = true }
-  }, [clubId])
+  }, [clubId, reads])
 
   if (load.kind === 'loading') return null
   if (load.kind === 'failed') return <p role="status" className="break-words text-sm text-ink">{load.text}</p>
@@ -79,9 +99,18 @@ export function ClubWaitingEvents({ clubId, onMoved }: {
       <ul className="space-y-3">
         {load.rows.map((row) => (
           <li key={row.id} className="min-w-0 space-y-2 rounded-xl border bg-card p-4 shadow-sm">
-            <p className="break-words font-medium text-ink">{row.name}</p>
-            <p className="break-words text-sm text-ink">{formatDate(row.date, { year: true })}</p>
-            <ApprovalWait event={waitOf(row)} maySubmit={false} mayDecide={load.decide} headingLevel={4} onMoved={(answer) => moved(row, answer)} />
+            <h4 className="break-words font-medium text-ink">
+              {row.name}<span className="sr-only">, </span>
+              <span className="block text-sm font-normal">{formatDate(row.date, { year: true })}</span>
+            </h4>
+            <ApprovalWait
+              event={waitOf(row)}
+              maySubmit={false}
+              mayDecide={load.decide}
+              inRow
+              onMoved={(answer) => moved(row, answer)}
+              onStale={() => setReads((n) => n + 1)}
+            />
           </li>
         ))}
       </ul>

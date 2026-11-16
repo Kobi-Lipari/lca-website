@@ -181,7 +181,9 @@ describe('REDESIGN_STATUS.md, WS09 step 19: the block', () => {
     const files = bullet(block, '- **Files.**')
     for (const name of [...NEW_FILES, ...NEW_TESTS, ...CHANGED, 'REDESIGN_STATUS.md']) expect(files, name).toContain(`\`${name}\``)
     for (const file of [...NEW_FILES, ...NEW_TESTS]) expect(existsSync(join(ROOT, file)), file).toBe(true)
-    for (const file of NEW_TESTS) expect(writtenCount(files, file), file).toBe(casesRun(file))
+    // Four of them grow at checkpoint V's review, whose block counts them anew.
+    const grownInReview = ws09.includes('\n### WS09 checkpoint V: the review of the whole and its fixes\n') ? [PAGES_TEST, ANSWERS_TEST, 'test/unit/approval-wait-panel.test.tsx', 'test/unit/region-events-steps.test.tsx'] : []
+    for (const file of NEW_TESTS.filter((f) => !grownInReview.includes(f))) expect(writtenCount(files, file), file).toBe(casesRun(file))
     for (const [file, after, before] of GROWN) {
       expect(files, file).toContain(`\`${file}\` (${after}, ${before} on the base: `)
       expect(casesIn(file), file).toBe(after)
@@ -238,6 +240,11 @@ describe('REDESIGN_STATUS.md, WS09 step 19: the parts against the files', () => 
     for (const piece of ['"Add a club event"', '"Submit for LCA review"', '"Approve and publish"', '"Ask for changes"', '`WAITING_FOR_APPROVAL`', '`EMAIL_WORDS`', '`approvalState`', `\`${PAGES_TEST}\``]) {
       expect(pages, piece).toContain(piece)
     }
+    // Checkpoint V's review: the wait's heading and lines, Submit only for a person who cannot decide, the rows in review, the kept steps, and the old line gone.
+    expect([
+      'the heading "LCA approval"', '"Draft. Not sent for LCA review yet."', 'for a person the answer lets submit and who cannot decide', 'a row for each event of the club in review, sent and not approved',
+      'once opened, the steps stay drawn while another tab shows', 'Waiting for LCA approval: sent for review',
+    ].map((piece) => pages.includes(piece))).toEqual([true, true, true, true, true, false])
     expect(read(WAIT)).toContain('Submit for LCA review')
     expect(read(WAIT)).toContain('Approve and publish')
     expect(read('src/pages/TournamentManagePage.tsx')).toContain('<p className="text-sm text-ink">Hidden (draft). {WAITING_FOR_APPROVAL}</p>')
@@ -351,6 +358,8 @@ describe('REDESIGN_STATUS.md, WS09 step 19: the map and the lists', () => {
     ])
     const closed = entries(followUps).find((l) => l.startsWith('- **The manage page for a representative (WS09 step 18).**')) ?? ''
     expect(closed).toContain(' Closed in WS09 step 19: ')
+    // Checkpoint V's review closes the way back from the manage page in place.
+    expect(entries(followUps).find((l) => l.startsWith('- **The way back from the manage page (WS09 step 19).**'))).toContain(' Closed in checkpoint V\'s review: with `regionEvents` on, the link reads "My region" and leads to `/workspace/region`')
   })
 })
 

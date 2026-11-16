@@ -145,7 +145,8 @@ describe('REDESIGN_STATUS.md, WS09 checkpoint U merged and live', () => {
       expect(prLine.endsWith('; checkpoint U (steps 10 to 14) merged as pull request 132, `ccf65c3`, on Sun, Nov 15, 2026, on K\'s word; checkpoint V is under way on `redesign/ws09-clubs-v`, and WS09 step 15 follows as a pull request of its own.')).toBe(true)
     }
     expect(tail).toMatch(/\bbuilt\.$/)
-    expect(statusLine).not.toContain('waits for K\'s word for its merge')
+    // Checkpoint U no longer waits; checkpoint V's review moves the Status line to V waiting for K's word.
+    expect(statusLine).not.toMatch(/checkpoint U[^;]*waits for K's word for its merge/)
     expect(prLine).not.toContain('checkpoint U waits for K\'s word')
     expect(prLine.match(/pull request \d+/g)).toEqual(['pull request 130', 'pull request 131', 'pull request 132'])
   })
@@ -344,7 +345,8 @@ describe('REDESIGN_STATUS.md, WS09 checkpoint V, what checkpoint U\'s pictures a
   })
 
   it('logs each thing the pictures showed that this step does not fix, tagged for checkpoint V', () => {
-    expect(tagged(followUps).map(head)).toEqual([
+    // The first seven entries tagged for checkpoint V are this step's; checkpoint V's review adds its own after them.
+    expect(tagged(followUps).map(head).slice(0, 7)).toEqual([
       'The header marks Clubs on the no-login page (WS09 checkpoint V).',
       'The email\'s time names no zone (WS09 checkpoint V).',
       'The editor\'s share preview and its box\'s title (WS09 checkpoint V).',
@@ -353,7 +355,7 @@ describe('REDESIGN_STATUS.md, WS09 checkpoint V, what checkpoint U\'s pictures a
       'A statement of white space alone in the email (WS09 checkpoint V).',
       'The email\'s buttons in Outlook on Windows (WS09 checkpoint V).',
     ])
-    const all = tagged(followUps).join('\n')
+    const all = tagged(followUps).slice(0, 7).join('\n')
     for (const piece of ['`src/components/layout/Navbar.tsx`, the mail stream\'s file', '"7:0..."', 'pressing the label ticks the box', '"valid through 2027-10-31"', 'needs K\'s own yes, which is put to K with checkpoint V', 'This was not seen: that program was not at hand.', 'One look in it is owed before `clubKeepers` goes on']) {
       expect(all, piece).toContain(piece)
     }

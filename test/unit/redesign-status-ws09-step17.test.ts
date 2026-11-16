@@ -324,6 +324,8 @@ describe('REDESIGN_STATUS.md, WS09 step 17: the parts against the files', () => 
     for (const piece of ['For K, in everyday words', 'publishing a club\'s own event, taking it off the site', 'create an event for that club', 'choose who directs the events they create', 'whether entering needs an LCA membership', 'run every event of every club in their region', 'seeing who registered with their details', 'US Chess IDs', 'never record a refund', 'A representative of another region gets none of this.']) {
       expect(opens, piece).toContain(piece)
     }
+    // C2 of checkpoint V's review: the directors' emails are kept from a representative whose one standing on the event is the region.
+    for (const piece of ['and the directors\' names. Corrected in checkpoint V\'s review:', 'is answered the directors without their emails']) expect(opens, piece).toContain(piece)
   })
 
   it('names the branch, what the merge does, the database, a revert, what ships with every switch off and what is owed', () => {
@@ -335,6 +337,8 @@ describe('REDESIGN_STATUS.md, WS09 step 17: the parts against the files', () => 
     expect(bullet(block, '- **What a revert leaves.**')).toContain('the constant goes off before any revert of this step')
     const ships = bullet(block, '- **What ships with every switch off.**')
     for (const piece of ['every representative gets 403 on all four grants and on every caller', 'with not one query more', 'refuse nothing', '"Invalid JSON body"', 'No switch is added']) expect(ships, piece).toContain(piece)
+    // A1 of checkpoint V's review: the three kinds of body answered otherwise than on main, and "each 400 as before" gone.
+    expect(['three kinds of body no page sends', 'a body of JSON that is not an object', 'a number such as 7 got 404 "Member not found" on the POST and 200 with the directors\' list on the DELETE', 'each 400 as before'].map((piece) => ships.includes(piece))).toEqual([true, true, true, false])
     expect(read('functions/utils/clubs/pages.ts')).toContain('export const REGION_EVENTS_ON = false')
     expect(read('src/lib/features.ts')).toContain('  regionEvents: false,')
     expect(bullet(block, '- **Owed before regionEvents goes on.**')).toContain('WS09 steps 18 and 19 first')
@@ -440,6 +444,8 @@ describe('REDESIGN_STATUS.md, WS09 step 17: the map and the lists', () => {
       'A publish date before approval (WS09 step 17).', 'Emailing a club event\'s entrants (WS09 step 17).', 'The creation answer for a representative (WS09 step 17).',
       'A deleted club\'s marked events (WS09 step 17).',
     ])
+    // D3 of checkpoint V's review, refuted, closed in place all the same.
+    expect(entries(followUps).find((l) => l.startsWith('- **The creation answer for a representative (WS09 step 17).**'))).toContain(' Closed in WS09 step 19: the creation steps take a representative\'s fee rule from the club\'s answer')
   })
 })
 

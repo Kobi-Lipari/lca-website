@@ -60,15 +60,17 @@ afterEach(() => {
   vi.restoreAllMocks()
 })
 
-function draw(event: WaitingEvent, over: { maySubmit?: boolean; mayDecide?: boolean; help?: boolean; headingLevel?: 2 | 3 | 4; onMoved?: (a: TournamentApprovalResponse) => void } = {}) {
+function draw(event: WaitingEvent, over: { maySubmit?: boolean; mayDecide?: boolean; help?: boolean; headingLevel?: 2 | 3 | 4; inRow?: boolean; onMoved?: (a: TournamentApprovalResponse) => void; onStale?: () => void } = {}) {
   return render(
     <ApprovalWait
       event={event}
       maySubmit={over.maySubmit ?? false}
       mayDecide={over.mayDecide ?? false}
       onMoved={over.onMoved ?? (() => {})}
+      onStale={over.onStale}
       help={over.help}
       headingLevel={over.headingLevel}
+      inRow={over.inRow}
     />,
   )
 }
@@ -86,7 +88,8 @@ describe('which buttons each state and each answer of the server gives', () => {
     const table: Row[] = [
       ['draft, drafter', DRAFT, true, false, ['Submit for LCA review']],
       ['draft, nobody', DRAFT, false, false, []],
-      ['draft, admin', DRAFT, true, true, ['Submit for LCA review', 'Approve and publish']],
+      // Submit is for a person who cannot decide: an LCA admin approves a draft as it stands.
+      ['draft, admin', DRAFT, true, true, ['Approve and publish']],
       ['draft, decide only', DRAFT, false, true, ['Approve and publish']],
       ['in review, drafter', REVIEW, true, false, []],
       ['in review, admin', REVIEW, true, true, ['Approve and publish', 'Ask for changes']],
@@ -101,34 +104,59 @@ describe('which buttons each state and each answer of the server gives', () => {
     }
   })
 
-  it('gives the state in words in the panel, a heading that follows the state, and the heading level asked for', () => {
+  it('gives the state in words in the panel under the heading that names the thing, LCA approval, at the level asked for', () => {
     const { unmount } = draw(DRAFT, { headingLevel: 4 })
-    expect(screen.getByRole('heading', { level: 4, name: 'Waiting for LCA approval' })).toBeTruthy()
-    expect(screen.getByText('Waiting for LCA approval: a draft, not sent for review yet.')).toBeTruthy()
+    expect(screen.getByRole('heading', { level: 4, name: 'LCA approval' })).toBeTruthy()
+    expect(screen.getByText('Draft. Not sent for LCA review yet.')).toBeTruthy()
     unmount()
+    const review = draw(REVIEW, { headingLevel: 3 })
+    expect(screen.getByRole('heading', { level: 3, name: 'LCA approval' })).toBeTruthy()
+    expect(screen.getByText('Waiting for LCA approval. Sent for review on Sat, Nov 14, 2026.')).toBeTruthy()
+    review.unmount()
     draw(APPROVED, { headingLevel: 3 })
-    expect(screen.getByRole('heading', { level: 3, name: 'Approved by LCA' })).toBeTruthy()
+    expect(screen.getByRole('heading', { level: 3, name: 'LCA approval' })).toBeTruthy()
     expect(screen.getByText('Approved by LCA on Mon, Nov 16, 2026.')).toBeTruthy()
   })
 
-  it('draws no Help button in a row of the admin club page, which asks for none, and one on the manage page', () => {
+  it('in a row draws no heading and no box of its own, and names each button with the event, the words seen unchanged', () => {
+    const { container } = draw(REVIEW, { mayDecide: true, inRow: true })
+    expect(screen.queryByRole('heading')).toBeNull()
+    expect(container.querySelector('section')).toBeNull()
+    expect((container.firstElementChild as HTMLElement).className).not.toMatch(/\bborder\b|\bbg-card\b/)
+    expect(screen.getByRole('button', { name: 'Approve and publish: Example Winter Quads' }).textContent?.trim()).toBe('Approve and publish')
+    expect(screen.getByRole('button', { name: 'Ask for changes: Example Winter Quads' }).textContent?.trim()).toBe('Ask for changes')
+    expect(screen.getByText('Waiting for LCA approval. Sent for review on Sat, Nov 14, 2026.')).toBeTruthy()
+  })
+
+  it('draws no Help button in a row of the admin club page, which asks for none, and one on the manage page, on one line with the heading', () => {
     const { unmount } = draw(REVIEW, { mayDecide: true })
     expect(screen.queryByRole('button', { name: 'Help' })).toBeNull()
     expect(screen.queryByText('Who approves')).toBeNull()
     unmount()
     draw(REVIEW, { mayDecide: true, help: true })
-    expect(screen.getByRole('button', { name: 'Help' })).toBeTruthy()
+    const help = screen.getByRole('button', { name: 'Help' })
+    // The heading at the left and Help at the right, in that reading order, on one line at every width with their
+    // middles level: the row never wraps and sets nothing per width, and Help keeps its 44 pixels.
+    const heading = screen.getByRole('heading', { level: 2, name: 'LCA approval' })
+    const row = heading.parentElement as HTMLElement
+    expect(row.firstElementChild).toBe(heading)
+    expect(row.lastElementChild).toBe(help)
+    expect(row.className.split(/\s+/)).toEqual(expect.arrayContaining(['flex', 'items-center', 'justify-between']))
+    expect(row.className).not.toMatch(/\bflex-wrap\b|\bitems-(?:start|end|baseline)\b|\b(?:sm|md|lg|xl):/)
+    expect(heading.className).toMatch(/\bmin-w-0\b/)
+    expect(help.className).toMatch(/\bmin-h-11\b/)
+    expect(help.className).toMatch(/\bshrink-0\b/)
   })
 })
 
 describe('the sizes and the words of every control', () => {
   it('gives every button, the note\'s field and Help\'s buttons a 44 pixel height, in each state and with the form and Help open', () => {
     window.localStorage.removeItem(WAIT_HELP_SHOWN_KEY)
-    for (const [event, maySubmit, mayDecide] of [[DRAFT, true, true], [REVIEW, false, true]] as Array<[WaitingEvent, boolean, boolean]>) {
+    for (const [event, maySubmit, mayDecide] of [[DRAFT, true, false], [DRAFT, true, true], [REVIEW, false, true]] as Array<[WaitingEvent, boolean, boolean]>) {
       const { unmount } = draw(event, { maySubmit, mayDecide, help: true })
       if (event === REVIEW) fireEvent.click(screen.getByRole('button', { name: 'Ask for changes' }))
       const controls = [...screen.getAllByRole('button'), ...screen.queryAllByLabelText(NOTE_LABEL)]
-      expect(controls.length).toBeGreaterThan(3)
+      expect(controls.length).toBeGreaterThanOrEqual(3)
       for (const control of controls) expect(control.className, control.textContent ?? control.tagName).toMatch(/\bmin-h-11\b/)
       unmount()
       window.localStorage.removeItem(WAIT_HELP_SHOWN_KEY)
@@ -158,7 +186,7 @@ describe('the sizes and the words of every control', () => {
     expect(help.textContent).toContain('These events run at $0.')
     expect(within(help).getByText('Entry fees')).toBeTruthy()
     // Nothing outside Help explains the wait: the panel's other words are its state and its status line.
-    const outside = (screen.getByRole('heading', { name: 'Waiting for LCA approval' }).closest('section') as HTMLElement).textContent?.replace(help.textContent ?? '', '') ?? ''
+    const outside = (screen.getByRole('heading', { name: 'LCA approval' }).closest('section') as HTMLElement).textContent?.replace(help.textContent ?? '', '') ?? ''
     expect(outside).not.toMatch(/payout|fees|who approves/i)
   })
 })
@@ -216,7 +244,8 @@ describe('a press that fails', () => {
   it('keeps the note the person typed, the form open and the state as it was, and says nothing changed in the server\'s words', async () => {
     reply = () => json({ error: 'This event is not in review.' }, 409)
     const onMoved = vi.fn()
-    draw(REVIEW, { mayDecide: true, onMoved })
+    const onStale = vi.fn()
+    draw(REVIEW, { mayDecide: true, onMoved, onStale })
     fireEvent.click(screen.getByRole('button', { name: 'Ask for changes' }))
     const field = screen.getByLabelText(NOTE_LABEL) as HTMLTextAreaElement
     fireEvent.change(field, { target: { value: 'Please give the round times.' } })
@@ -225,7 +254,10 @@ describe('a press that fails', () => {
     expect(onMoved).not.toHaveBeenCalled()
     expect(field.value).toBe('Please give the round times.')
     expect(field.getAttribute('aria-invalid')).toBeNull()
-    expect(screen.getByText('Waiting for LCA approval: sent for review on Sat, Nov 14, 2026.')).toBeTruthy()
+    expect(screen.getByText('Waiting for LCA approval. Sent for review on Sat, Nov 14, 2026.')).toBeTruthy()
+    // A 409 asks the caller to read the event again, once, and the words stay, with the focus on them.
+    expect(onStale).toHaveBeenCalledTimes(1)
+    await waitFor(() => expect(document.activeElement).toBe(statusLine()))
     // The press can be made again once it has failed.
     reply = () => json({ ...ANSWER, approval_requested_at: null, email: 'Changes asked. The person who drafted it was emailed your note.' })
     fireEvent.click(screen.getByRole('button', { name: 'Send' }))
@@ -253,16 +285,31 @@ describe('a press that fails', () => {
     expect(document.activeElement).toBe(reopened)
   })
 
-  it('says a failed Submit or Approve with no words from the server in the panel\'s own, and keeps the focus on the button', async () => {
+  it('says a failed Submit or Approve with no words from the server in the panel\'s own, keeps the focus on the button, and asks for no read again', async () => {
     reply = () => json({}, 500)
-    draw(DRAFT, { maySubmit: true, mayDecide: true })
+    const onStale = vi.fn()
+    draw(DRAFT, { maySubmit: false, mayDecide: true, onStale })
     const approve = screen.getByRole('button', { name: 'Approve and publish' })
     approve.focus()
     fireEvent.click(approve)
     await waitFor(() => expect(statusLine().textContent).toMatch(/^Nothing changed: \S/))
     expect(statusLine().textContent).not.toMatch(LONG_DASH)
     expect(document.activeElement).toBe(approve)
-    expect(buttons()).toEqual(['Submit for LCA review', 'Approve and publish'])
+    expect(buttons()).toEqual(['Approve and publish'])
+    expect(onStale).not.toHaveBeenCalled()
+  })
+
+  it('shows the bound on submits, a 429, in the server\'s own words, and asks for no read again', async () => {
+    const words = 'You have sent 5 events for LCA review in the last day. Try again tomorrow.'
+    reply = () => json({ error: words }, 429)
+    const onMoved = vi.fn()
+    const onStale = vi.fn()
+    draw(DRAFT, { maySubmit: true, onMoved, onStale })
+    fireEvent.click(screen.getByRole('button', { name: 'Submit for LCA review' }))
+    await waitFor(() => expect(statusLine().textContent).toBe(`Nothing changed: ${words}`))
+    expect(onMoved).not.toHaveBeenCalled()
+    expect(onStale).not.toHaveBeenCalled()
+    expect(buttons()).toEqual(['Submit for LCA review'])
   })
 })
 

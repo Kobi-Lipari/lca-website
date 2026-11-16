@@ -141,7 +141,7 @@ export function DirectorsModal({ tournament, onClose }: {
                   <div key={d.member_id} className="flex items-center justify-between border-b border-border py-2 last:border-0">
                     <div className="min-w-0">
                       <p className="truncate text-sm font-medium">{d.full_name}</p>
-                      <p className="truncate text-xs text-muted-foreground">{d.email}</p>
+                      {d.email !== null && <p className="truncate text-xs text-muted-foreground">{d.email}</p>}
                     </div>
                     <button
                       type="button"

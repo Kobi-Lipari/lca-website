@@ -43,7 +43,7 @@ import {
 import { cn } from '@/lib/utils'
 import { FEATURES } from '@/lib/features'
 import { useAuth } from '@/contexts/auth-context'
-import { canUseMailing, isViewOnlyAdmin, toolsHomeFor } from '@/areas/admin/roles'
+import { canAccessAdmin, canUseMailing, isViewOnlyAdmin, toolsHomeFor, WORKSPACE_ROLES } from '@/areas/admin/roles'
 import { ViewOnlyFieldset, ViewOnlyNote } from '@/lib/viewOnly'
 import { useViewOnly } from '@/hooks/useViewOnly'
 import { StandingsTable } from '@/areas/live/components/StandingsTable'
@@ -252,6 +252,10 @@ export function TournamentManagePage() {
   const { role: authRole, member: authMember, directedTournamentIds } = useAuth()
   // Someone directing an event with an ordinary member account works from the workspace.
   const backHref = authRole === 'member' ? '/workspace?tab=events' : toolsHomeFor(authRole, 'tournaments')
+  // With regionEvents on, a person no tools page lets in (a regional
+  // representative who is a plain member and directs no event, whom the
+  // workspace would turn away) goes back to My region instead.
+  const backToRegion = regionEventsOn() && !canAccessAdmin(authRole) && !WORKSPACE_ROLES.includes(authRole) && directedTournamentIds.length === 0
   // LCA Officers see events like an observer but without the mailing tools.
   const noEmailTab = isViewOnlyAdmin(authRole) && !canUseMailing(authRole)
   const visibleTabs = noEmailTab ? TABS.filter((t) => t.id !== 'email') : TABS
@@ -726,6 +730,28 @@ export function TournamentManagePage() {
     if (answer.approved_at) {
       setIsVisible(true)
       setSnapshot((now) => (now ? { ...now, isVisible: true } : now))
+    }
+  }
+  /**
+   * The server refused a move with 409, so the event is not as the page drew
+   * it: the manage answer is read again and the wait's part of it applied,
+   * the event's four columns and who may move it, leaving every field a
+   * person may be typing in as it is. A read that fails changes nothing; the
+   * panel's status line already says why nothing changed.
+   */
+  async function rereadWait() {
+    if (!id) return
+    try {
+      const data = await adminGetTournamentManage(id)
+      setApproval(data.approval ?? null)
+      applyApproval({
+        needs_lca_approval: data.tournament.needs_lca_approval === 1 ? 1 : 0,
+        approval_requested_at: data.tournament.approval_requested_at ?? null,
+        approved_at: data.tournament.approved_at ?? null,
+        approved_by: data.tournament.approved_by ?? null,
+      })
+    } catch {
+      // Nothing more to say: the status line has the server's words.
     }
   }
   // A failed ask's words go with the panel that drew them, so a panel drawn
@@ -1321,8 +1347,8 @@ export function TournamentManagePage() {
       {/* Hero */}
       <section className="border-b-4 border-lca-gold bg-brand-navy text-white">
         <div className="mx-auto max-w-6xl px-6 py-12">
-          <Link to={backHref} className="inline-flex items-center gap-1.5 text-sm text-white/70 hover:text-lca-gold">
-            <ArrowLeft className="size-4" />All Tournaments
+          <Link to={backToRegion ? '/workspace/region' : backHref} className="inline-flex items-center gap-1.5 text-sm text-white/70 hover:text-lca-gold">
+            <ArrowLeft className="size-4" />{backToRegion ? 'My region' : 'All Tournaments'}
           </Link>
           <div className="mt-4 flex items-start justify-between gap-4 flex-wrap">
             <div className="flex items-center gap-3">
@@ -1408,7 +1434,7 @@ export function TournamentManagePage() {
         )}
 
         {waitingEvent && approval && waitState !== 'not_marked' && (
-          <ApprovalWait event={waitingEvent} maySubmit={approval.maySubmit} mayDecide={approval.mayDecide} onMoved={applyApproval} help />
+          <ApprovalWait event={waitingEvent} maySubmit={approval.maySubmit} mayDecide={approval.mayDecide} onMoved={applyApproval} onStale={() => { void rereadWait() }} help />
         )}
 
         <ViewOnlyNote viewOnly={viewOnly}>View only: you can see everything about this event and email its entrants from the Email tab. Changes are made by the organizers.</ViewOnlyNote>

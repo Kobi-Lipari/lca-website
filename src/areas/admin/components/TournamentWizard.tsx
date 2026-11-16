@@ -619,9 +619,13 @@ function StepReview({ w, onBack, onCreate, creating, error, fixedClub }: {
           {w.description && <div><p className="mb-1 text-sm text-muted-foreground">Description</p><p className="text-sm">{w.description}</p></div>}
         </div>
         <div className="mt-3 rounded-lg border border-lca-gold/30 bg-lca-gold/8 px-4 py-3 text-xs text-gold-ink-badge">
-          {fixedClub?.waitsForApproval
-            ? <>Tournament will be created as a <strong>draft</strong> for {fixedClub.name}. It waits for LCA approval: send it for LCA review from its management page, and an LCA admin publishes it.</>
-            : <>Tournament will be created as a <strong>draft</strong> — hidden from the public until you make it visible in the management page.</>}
+          {fixedClub?.waitsForApproval ? (
+            <>Tournament will be created as a <strong>draft</strong> for {fixedClub.name}. It waits for LCA approval: send it for LCA review from its management page, and an LCA admin publishes it.</>
+          ) : (
+            <>
+          Tournament will be created as a <strong>draft</strong> — hidden from the public until you make it visible in the management page.
+            </>
+          )}
         </div>
         {error && <p className="mt-3 text-sm text-destructive">{error}</p>}
         <div className="mt-5 flex items-center justify-between gap-3">

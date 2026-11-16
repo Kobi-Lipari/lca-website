@@ -1,6 +1,6 @@
 // functions/api/admin/tournaments/[id]/manage.ts
 import type { Env, MemberRow, TournamentRow } from '../../../../types'
-import { isResponse, requireTournamentView } from '../../../../utils/auth'
+import { isObserver, isResponse, requireTournamentView } from '../../../../utils/auth'
 import { errorResponse, handleOptions, jsonResponse } from '../../../../utils/response'
 import { computeStandings, tournamentPrizes } from '../../../../utils/events/tournament-manage'
 import { parseJsonArray } from '../../../../utils/json'
@@ -8,7 +8,7 @@ import { getDb } from '../../../../db/client'
 import { loadSections, toTournamentResponse } from '../../../../utils/events/sectionsRepo'
 import { loadSchedules } from '../../../../utils/events/schedulesRepo'
 import { REGION_EVENTS_ON } from '../../../../utils/clubs/pages'
-import { draftedInRegion } from '../../../../utils/events/creation'
+import { CREATION_ROLES_ON, directorEmailsHidden, draftedInRegion } from '../../../../utils/events/creation'
 import { approvalState } from '../../../../../domain/events/approval'
 import type { TournamentManageResponse } from '../../../../../domain/contracts/events'
 
@@ -28,6 +28,19 @@ async function approvalRights(db: D1Database, member: MemberRow, event: Tourname
   const maySubmit = isAdmin || await draftedInRegion(db, member, { clubId: event.club_id, createdBy: event.created_by })
   return { maySubmit, mayDecide: isAdmin }
 }
+
+/**
+ * The event as directorEmailsHidden asks about it: its club, its directors'
+ * ids and its mark for approval. The mark comes from the row the handler
+ * loads (SELECT *), which carries needs_lca_approval once migration 0070 has
+ * run, so no statement is added; it is asked only while REGION_EVENTS_ON is
+ * set, past an observer, an LCA admin and the club's own rep.
+ */
+const directorsOf = (event: TournamentRow, rows: Record<string, unknown>[]) => ({
+  clubId: event.club_id,
+  directorIds: rows.map((row) => String(row.member_id)),
+  mark: async () => event.needs_lca_approval,
+})
 
 export const onRequestOptions: PagesFunction<Env> = async () => handleOptions()
 
@@ -90,7 +103,8 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
      FROM tournament_directors td
      JOIN members m ON m.id = td.member_id
      WHERE td.tournament_id = ?`,
-  ).bind(tournamentId).all()
+  ).bind(tournamentId).all<Record<string, unknown>>()
+  const directorRows = directors.results ?? []
 
   return jsonResponse({
     tournament: {
@@ -101,7 +115,11 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
     games: games.results ?? [],
     standings,
     prizes: await tournamentPrizes(context.env.DB, tournamentId, answer.sections, standings),
-    directors: directors.results ?? [],
+    // Only while REGION_EVENTS_ON is set: without their emails as directorEmailsHidden decides, on a marked event for
+    // anyone but an observer, an LCA admin and the club's own rep, and elsewhere for a viewer whose one standing is the region.
+    directors: REGION_EVENTS_ON && await directorEmailsHidden(context.env.DB, authResult.member, directorsOf(tournament, directorRows), isObserver(authResult.member), CREATION_ROLES_ON)
+      ? directorRows.map((row) => ({ ...row, email: null }))
+      : directorRows,
     // Only while REGION_EVENTS_ON is set: who may move the event through the wait, for the manage page.
     ...(REGION_EVENTS_ON ? { approval: await approvalRights(context.env.DB, authResult.member, tournament) } : {}),
   })

@@ -16,7 +16,7 @@
 // through its module, whatever rolesOn is. Nothing here reads a setting of
 // the environment.
 
-import type { CreationGrant, CreationPerson } from '../../../domain/events/creation'
+import { regionAlone, type CreationGrant, type CreationPerson } from '../../../domain/events/creation'
 import type { MemberRow } from '../../types'
 import { getRegionalClubIds } from '../admin/permissions'
 import { REGION_EVENTS_ON } from '../clubs/pages'
@@ -124,6 +124,46 @@ export async function creationPerson(db: D1Database, member: GrantMember, rolesO
 export async function draftedInRegion(db: D1Database, member: GrantMember, event: { clubId: string | null; createdBy: string | null }): Promise<boolean> {
   if (!REGION_EVENTS_ON || event.clubId === null || event.createdBy !== member.id) return false
   return (await regionClubIdsOf(db, member)).includes(event.clubId)
+}
+
+/**
+ * Whether the directors' answers (GET, POST and DELETE
+ * /api/admin/tournaments/[id]/directors and the manage answer) leave out
+ * each director's email for the member, only while REGION_EVENTS_ON is set.
+ * An observer (the caller says so, from isObserver), an LCA admin and the
+ * club's own rep read the emails on every event, and with no director there
+ * is nothing to leave out. On an event marked for approval (the mark the
+ * number 1, as mayList reads it, approved or not) everyone else is left
+ * without them, one of the event's own directors included: a representative
+ * drafts every such event and names its directors, so a director there may
+ * have been named by the representative or by someone the representative
+ * named. On an event not marked, one of its own directors reads them, and
+ * anyone else is left without them only when their one standing on the event
+ * is the region, as regionAlone reads it on the person creationPerson builds.
+ * A regional representative who is a plain member may read no member's email
+ * anywhere else. The mark is asked only past the observer, the LCA admin and
+ * the club's own rep, and the person only past the mark and the directors,
+ * unless the caller has built it already. The event's club and its mark are
+ * the caller's to find: the manage answer has both on the event row it
+ * loads; GET of the directors reads both in one statement for anyone but an
+ * observer and an LCA admin, so one of the event's own directors costs that
+ * read there; POST and DELETE take the club from their gate and read the
+ * mark alone when it is asked.
+ */
+export async function directorEmailsHidden(
+  db: D1Database,
+  member: GrantMember,
+  event: { clubId: string | null; directorIds: readonly string[]; mark: () => Promise<number | null | undefined> },
+  observer: boolean,
+  rolesOn: boolean,
+  built?: CreationPerson,
+): Promise<boolean> {
+  if (!REGION_EVENTS_ON || observer || event.directorIds.length === 0) return false
+  if (member.role === 'lca_admin') return false
+  if (member.role === 'club_rep' && member.club_id != null && member.club_id === event.clubId) return false
+  if ((await event.mark()) === 1) return true
+  if (event.directorIds.includes(member.id)) return false
+  return regionAlone(built ?? await creationPerson(db, member, rolesOn), event.clubId)
 }
 
 /**

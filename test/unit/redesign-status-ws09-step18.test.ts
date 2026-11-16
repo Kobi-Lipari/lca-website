@@ -292,6 +292,8 @@ describe('REDESIGN_STATUS.md, WS09 step 18: the parts against the files', () => 
   it('counts the emails against the day\'s 100 and gives K the line on what an approval covers afterwards', () => {
     const day = bullet(block, '- **The emails against the day\'s 100.**')
     for (const piece of ['100 emails a day', 'one to each LCA admin\'s address', 'Approve sends one', 'Ask for changes one', 'twice the number of LCA admins and two more']) expect(day, piece).toContain(piece)
+    // C3 of checkpoint V's review: a day costs the submits times the LCA admins, and one person's submits are bounded.
+    for (const piece of ['the submits times the LCA admins', 'at most five submits go through in any 24 hours, `SUBMITS_A_DAY` in `functions/api/admin/tournaments/[id]/approval.ts`', 'at most five times the number of LCA admins a day']) expect(day, piece).toContain(piece)
     const covers = bullet(block, '- **What an approval covers afterwards, for K.**')
     for (const piece of ['does not ask for a new approval', 'The mark stays 1', 'K reads this before `regionEvents` goes on']) expect(covers, piece).toContain(piece)
   })

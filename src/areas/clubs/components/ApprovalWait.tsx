@@ -1,15 +1,18 @@
 // src/areas/clubs/components/ApprovalWait.tsx
 //
 // The LCA admins' wait for a regional representative's club event (WS09
-// step 19), drawn by the event's manage page and, in a row for each waiting
-// event, by the admin club page's Tournaments tab. One line gives the wait's
-// state in words (a draft not yet sent, sent for review with its day, or
-// approved with its day), read through approvalState from the event's own
-// columns, never by a colour. Beside it, only the moves the server says this
-// person may make (the manage answer's `approval`, or for an LCA admin on the
-// admin club page the same rule): Submit for LCA review from a draft, and for
-// an LCA admin Approve and publish from a draft or in review and Ask for
-// changes in review. The page works no permission out itself.
+// step 19), drawn by the event's manage page under the heading "LCA
+// approval" and, in a row for each event in review, by the admin club page's
+// Tournaments tab, where the row's own heading names the event and the panel
+// draws no heading and no box of its own (inRow), and each button's name
+// carries the event's. One line gives the wait's state in words (a draft not
+// yet sent, sent for review with its day, or approved with its day), read
+// through approvalState from the event's own columns, never by a colour.
+// Beside it, only the moves the server says this person may make (the manage
+// answer's `approval`, or for an LCA admin on the admin club page the same
+// rule): Submit for LCA review from a draft, for a person who cannot decide,
+// and for an LCA admin Approve and publish from a draft or in review and Ask
+// for changes in review. The page works no permission out itself.
 //
 // Each move goes through POST /api/admin/tournaments/[id]/approval. After a
 // move the caller redraws from the answer's four columns, and the polite
@@ -17,7 +20,11 @@
 // comes, and takes the focus, since the button pressed may be gone. A press
 // that fails changes nothing, says so with the server's own words or, for a
 // dropped connection, the words My region uses, and keeps the focus on the
-// button. Ask for changes opens a small form: one labelled field for the
+// button. A 409 (already approved, not in review, changed a moment ago)
+// keeps the status line's words, moves the focus to the status line, since
+// the redraw may take away the button pressed, and asks the caller, through
+// onStale, to read the event again, so the panel redraws to what is true.
+// Ask for changes opens a small form: one labelled field for the
 // note, its error in the server's words tied to the field, Send and Cancel;
 // the focus moves into the field as it opens and back to Ask for changes on
 // Cancel. With `help`, a Help button holds every sentence that explains the
@@ -30,6 +37,7 @@ import { CircleHelp } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { moveTournamentApproval } from '@/lib/api'
 import { errorWords } from '@/areas/clubs/region'
+import { ApiError } from '@/lib/http'
 import { rememberWaitHelpShown, waitHelpShownBefore, WAIT_HELP_ID } from '@/areas/clubs/approval'
 import { approvalState } from '@domain/events/approval'
 import { waitWords } from '@domain/events/approvalWords'
@@ -98,7 +106,7 @@ function WaitHelp({ open, onClose, ref }: { open: boolean; onClose: () => void; 
   )
 }
 
-export function ApprovalWait({ event, maySubmit, mayDecide, onMoved, help = false, headingLevel = 2 }: {
+export function ApprovalWait({ event, maySubmit, mayDecide, onMoved, onStale, help = false, headingLevel = 2, inRow = false }: {
   event: WaitingEvent
   /** The server lets this person submit the event (the drafter in their region, or an LCA admin). */
   maySubmit: boolean
@@ -106,10 +114,14 @@ export function ApprovalWait({ event, maySubmit, mayDecide, onMoved, help = fals
   mayDecide: boolean
   /** The move went through: the caller redraws the event from the answer's four columns. */
   onMoved: (answer: TournamentApprovalResponse) => void
+  /** The server answered 409, so the event is not as the page drew it: the caller reads it again. */
+  onStale?: () => void
   /** Draw the Help button and the part it opens: on the manage page. */
   help?: boolean
-  /** The panel's heading level: 2 on the manage page, 4 in a row of the admin club page. */
+  /** The panel's heading level: 2 on the manage page. */
   headingLevel?: 2 | 3 | 4
+  /** In a row whose own heading names the event: no heading and no box, and each button's name carries the event's. */
+  inRow?: boolean
 }) {
   const state = approvalState(event)
   const ids = useId()
@@ -186,6 +198,12 @@ export function ApprovalWait({ event, maySubmit, mayDecide, onMoved, help = fals
         moveFocus('note')
       } else {
         setSaid(`Nothing changed: ${errorWords(err)}`)
+        // The event is not where the page drew it: the caller reads it again, and the words stay.
+        // The redraw may take away the button pressed, so the focus goes to the status line first.
+        if (err instanceof ApiError && err.status === 409) {
+          moveFocus('status')
+          onStale?.()
+        }
       }
     } finally {
       if (live.current) setBusy(null)
@@ -198,42 +216,47 @@ export function ApprovalWait({ event, maySubmit, mayDecide, onMoved, help = fals
   }
 
   const Heading = headingLevel === 2 ? 'h2' : headingLevel === 3 ? 'h3' : 'h4'
-  const showSubmit = state === 'draft' && maySubmit
+  // Submit is drawn only for a person who cannot decide: an LCA admin approves a draft as it stands.
+  const showSubmit = state === 'draft' && maySubmit && !mayDecide
   const showApprove = mayDecide && (state === 'draft' || state === 'in_review')
   const showAsk = mayDecide && state === 'in_review'
   const pressed = (action: TournamentApprovalRequest['action']) => (busy === action ? true : undefined)
+  /** A button's name in a row: its own words and the event's, as the Events list names its buttons. */
+  const named = (words: string) => (inRow ? `${words}: ${event.name}` : undefined)
 
-  return (
-    <section aria-labelledby={`${ids}-title`} className="min-w-0 space-y-3 rounded-lg border border-hairline bg-card p-4 text-sm text-ink">
-      <div className="flex min-w-0 flex-wrap items-start justify-between gap-2">
-        <Heading id={`${ids}-title`} className="text-base font-semibold">
-          {state === 'approved' ? 'Approved by LCA' : 'Waiting for LCA approval'}
-        </Heading>
-        {help && (
-          <button
-            ref={helpButton}
-            type="button"
-            className={OPENER}
-            aria-expanded={helpOpen}
-            aria-controls={WAIT_HELP_ID}
-            onClick={() => { helpFocus.current = helpOpen ? 'button' : 'panel'; setHelpOpen(!helpOpen) }}
-          >
-            <CircleHelp className="size-4" aria-hidden="true" /> Help
-          </button>
-        )}
-      </div>
+  // One line at every width: the heading at the left, Help at the right, their middles level, Help 44px tall.
+  const heading = (
+    <div className="flex min-w-0 items-center justify-between gap-2">
+      <Heading id={`${ids}-title`} className="min-w-0 break-words text-base font-semibold">LCA approval</Heading>
+      {help && (
+        <button
+          ref={helpButton}
+          type="button"
+          className={`${OPENER} shrink-0`}
+          aria-expanded={helpOpen}
+          aria-controls={WAIT_HELP_ID}
+          onClick={() => { helpFocus.current = helpOpen ? 'button' : 'panel'; setHelpOpen(!helpOpen) }}
+        >
+          <CircleHelp className="size-4" aria-hidden="true" /> Help
+        </button>
+      )}
+    </div>
+  )
+
+  const content = (
+    <>
       <p className="break-words">{waitWords(event)}</p>
       {help && <WaitHelp ref={helpPanel} open={helpOpen} onClose={() => { helpFocus.current = 'button'; setHelpOpen(false) }} />}
 
       {(showSubmit || showApprove || showAsk) && (
         <div className="flex flex-wrap gap-2">
           {showSubmit && (
-            <Button type="button" className={CONTROL} aria-disabled={!!busy || undefined} aria-busy={pressed('submit')} onClick={() => { void move({ action: 'submit' }) }}>
+            <Button type="button" className={CONTROL} aria-label={named('Submit for LCA review')} aria-disabled={!!busy || undefined} aria-busy={pressed('submit')} onClick={() => { void move({ action: 'submit' }) }}>
               Submit for LCA review
             </Button>
           )}
           {showApprove && (
-            <Button type="button" className={CONTROL} aria-disabled={!!busy || undefined} aria-busy={pressed('approve')} onClick={() => { void move({ action: 'approve' }) }}>
+            <Button type="button" className={CONTROL} aria-label={named('Approve and publish')} aria-disabled={!!busy || undefined} aria-busy={pressed('approve')} onClick={() => { void move({ action: 'approve' }) }}>
               Approve and publish
             </Button>
           )}
@@ -243,6 +266,7 @@ export function ApprovalWait({ event, maySubmit, mayDecide, onMoved, help = fals
               type="button"
               variant="outline"
               className={CONTROL}
+              aria-label={named('Ask for changes')}
               aria-expanded={asking}
               aria-disabled={!!busy || undefined}
               onClick={() => {
@@ -293,6 +317,16 @@ export function ApprovalWait({ event, maySubmit, mayDecide, onMoved, help = fals
       )}
 
       <p ref={statusLine} role="status" tabIndex={-1} className="min-w-0 break-words outline-none focus-visible:ring-3 focus-visible:ring-focus">{said}</p>
+    </>
+  )
+
+  // In a row, the row's own heading names the event: no second heading and no inner box.
+  if (inRow) return <div className="min-w-0 space-y-3 text-sm text-ink">{content}</div>
+
+  return (
+    <section aria-labelledby={`${ids}-title`} className="min-w-0 space-y-3 rounded-lg border border-hairline bg-card p-4 text-sm text-ink">
+      {heading}
+      {content}
     </section>
   )
 }
