@@ -27,7 +27,9 @@
 // gives it back and hides the page behind it from a screen reader, keeps the
 // site's root inert while it is open and goes round to Back to writing on
 // Shift and Tab from the email's frame and from itself; and the caret brought
-// into view when the keyboard gives the letter the focus.
+// into view when the keyboard gives the letter the focus. Since page step 5,
+// the line being typed kept clear of the bar at the window's foot, and Make
+// bigger brought into view as a press of Make smaller leaves the focus on it.
 // The editor's library measures text through browser APIs jsdom lacks; they
 // are given stand-ins here, in this file only. Every word here is made up.
 import { act, cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react'
@@ -308,14 +310,15 @@ describe('Make bigger', () => {
     expect(dialog.getAttribute('aria-modal')).toBe('true')
     expect(within(dialog).getByRole('button', { name: 'Make smaller' })).toBe(bigger)
     await waitFor(() => expect(editorOf().isFocused).toBe(true))
-    // The keyboard stays inside: Tab from the last control goes to the first, "Show the email" in the letter's own top,
-    // and Shift and Tab from the first to the last.
-    act(() => bigger.focus())
+    // The keyboard stays inside: Tab from the last control, the last of the bar at the letter's foot since page step 5,
+    // goes to the first, "Show the email" in the letter's own top, and Shift and Tab from the first to the last.
+    const last = [...dialog.querySelectorAll<HTMLElement>('[data-slot="foot-bar"] button')].at(-1)!
+    act(() => last.focus())
     const tab = key(dialog, 'Tab')
     expect(tab).toBe(false)
     expect(within(dialog).getByRole('button', { name: 'Show the email' })).toBe(focused())
     key(dialog, 'Tab', { shiftKey: true })
-    expect(focused()).toBe(bigger)
+    expect(focused()).toBe(last)
     key(dialog, 'Escape')
     expect(screen.queryByRole('dialog', { name: 'The letter, made bigger' })).toBeNull()
     await settle()
@@ -333,6 +336,58 @@ describe('Make bigger', () => {
     expect(screen.queryByRole('dialog', { name: 'The letter, made bigger' })).toBeNull()
     await settle()
     expect(focused()).toBe(screen.getByRole('button', { name: 'Make bigger' }))
+  })
+
+  it('brings Make bigger into view, with no second focus, when a press of Make smaller leaves the focus on it, and gives it the focus on Escape from the letter, asking for no scroll', async () => {
+    await thePage()
+    const size = screen.getByRole('button', { name: 'Make bigger' })
+    const asked: unknown[] = []
+    const given: Element[] = []
+    const had = { into: Element.prototype.scrollIntoView, focus: HTMLElement.prototype.focus }
+    const bigger = async () => {
+      fireEvent.click(size)
+      await waitFor(() => expect(editorOf().isFocused).toBe(true))
+    }
+    try {
+      Element.prototype.scrollIntoView = function into(this: Element, how?: unknown) {
+        if (this === size) asked.push(how)
+      }
+      HTMLElement.prototype.focus = function focus(this: HTMLElement, how?: FocusOptions) {
+        if (this === size) given.push(this)
+        had.focus.call(this, how)
+      }
+      // A press: the browser gives the button the focus as the pointer goes down, so it holds it as the letter is made
+      // smaller, and a second focus would do nothing.
+      await bigger()
+      had.focus.call(size)
+      fireEvent.click(size)
+      await settle()
+      expect(screen.queryByRole('dialog', { name: 'The letter, made bigger' })).toBeNull()
+      expect(focused()).toBe(size)
+      expect(asked).toEqual([{ block: 'nearest', inline: 'nearest' }])
+      expect(given).toHaveLength(0)
+      // Escape from the letter, which holds the focus: the button is given it, and no scroll is asked for.
+      asked.length = 0
+      await bigger()
+      key(document.querySelector('.ProseMirror') as HTMLElement, 'Escape', { keyCode: 27 })
+      await settle()
+      expect(focused()).toBe(size)
+      expect(given).toEqual([size])
+      expect(asked).toHaveLength(0)
+      // Where the runtime has no way to bring an element into view, as this one has none of its own, nothing throws.
+      given.length = 0
+      Element.prototype.scrollIntoView = had.into
+      await bigger()
+      had.focus.call(size)
+      expect(() => fireEvent.click(size)).not.toThrow()
+      await settle()
+      expect(screen.queryByRole('dialog', { name: 'The letter, made bigger' })).toBeNull()
+      expect(focused()).toBe(size)
+      expect(given).toHaveLength(0)
+    } finally {
+      Element.prototype.scrollIntoView = had.into
+      HTMLElement.prototype.focus = had.focus
+    }
   })
 })
 
@@ -613,7 +668,12 @@ describe('the controls a keyboard moves', () => {
     await thePage()
     const scrolled: Array<{ inBox: boolean; hidden: string | null }> = []
     const had = Element.prototype.scrollIntoView
+    const root = (document.querySelector('[data-slot="letter-sheet"]') as HTMLElement).parentElement
     Element.prototype.scrollIntoView = function scrolledInto(this: Element) {
+      // In this runtime the browser's selection stands at the letter's start as the letter takes the focus, so the
+      // editor puts its own back and scrolls to it, and so asks for the room kept for the bar too, which a browser's
+      // Tab does not: that mark stands in the editor's root, outside the letter's box, and is the next case's.
+      if (this.parentElement === root) return
       scrolled.push({ inBox: this.parentElement?.getAttribute('data-slot') === 'letter-sheet', hidden: this.getAttribute('aria-hidden') })
     }
     try {
@@ -636,6 +696,56 @@ describe('the controls a keyboard moves', () => {
       expect(scrolled).toHaveLength(1)
     } finally {
       Element.prototype.scrollIntoView = had
+    }
+  })
+
+  it('keeps the line being typed clear of the bar: after the editor\'s own scroll, a mark at the caret with the letter\'s room below it and none above is brought into view from outside the letter\'s box, and taken away', async () => {
+    await thePage()
+    const asked: Array<{ inRoot: boolean; top: string; bottom: string; hidden: string | null; how: unknown }> = []
+    const had = Element.prototype.scrollIntoView
+    const root = (document.querySelector('[data-slot="letter-sheet"]') as HTMLElement).parentElement as HTMLElement
+    const into = function into(this: Element, how?: unknown) {
+      const style = (this as HTMLElement).style
+      asked.push({ inRoot: this.parentElement === root, top: style.scrollMarginTop, bottom: style.scrollMarginBottom, hidden: this.getAttribute('aria-hidden'), how })
+    }
+    // The room the page keeps round the letter on a phone, the width this runtime is taken for, which its stylesheet
+    // gives in a browser.
+    const room = document.createElement('style')
+    room.textContent = '.ProseMirror { scroll-margin-top: 96px; scroll-margin-bottom: 144px }'
+    document.head.appendChild(room)
+    const type = (words: string) => editorOf().view.dispatch(editorOf().state.tr.insertText(words).scrollIntoView())
+    const left = () => root.querySelectorAll(':scope > span[aria-hidden="true"]')
+    try {
+      // A press puts the caret in the letter, so the focus itself brings nothing into view.
+      const letter = document.querySelector('.ProseMirror') as HTMLElement
+      fireEvent.pointerDown(letter)
+      act(() => letter.focus())
+      Element.prototype.scrollIntoView = into
+      await act(async () => {
+        type(' and more words')
+        await Promise.resolve()
+      })
+      expect(asked).toEqual([{ inRoot: true, top: '0px', bottom: '144px', hidden: 'true', how: { block: 'nearest', inline: 'nearest' } }])
+      expect(left()).toHaveLength(0)
+      // Where the runtime has no way to bring an element into view, nothing throws and nothing is left.
+      Element.prototype.scrollIntoView = undefined as unknown as Element['scrollIntoView']
+      await act(async () => {
+        type(' and the next')
+        await Promise.resolve()
+      })
+      expect(left()).toHaveLength(0)
+      // With the editor taken off the page before its turn comes, nothing is asked and nothing throws.
+      Element.prototype.scrollIntoView = into
+      act(() => {
+        type(' and the last')
+        cleanup()
+      })
+      await act(async () => Promise.resolve())
+      expect(asked).toHaveLength(1)
+      expect(document.querySelectorAll('span[aria-hidden="true"][style*="scroll-margin"]')).toHaveLength(0)
+    } finally {
+      Element.prototype.scrollIntoView = had
+      room.remove()
     }
   })
 

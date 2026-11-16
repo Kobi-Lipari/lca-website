@@ -417,6 +417,8 @@ describe('the sheet on the page', () => {
 
 describe('what a narrow window is given', () => {
   it('draws the side column only from 1024 pixels up and "See the email" only under it, and puts the sheet in the page only while it is open', async () => {
+    // At a tablet's width, where "See the email" is the head's; on a phone it is the bar's at the foot (page step 5).
+    windowAt(820)
     await thePage()
     const side = document.querySelector('[data-slot="side-preview"]')!.parentElement!
     expect(side.className).toMatch(/(^|\s)max-lg:hidden(\s|$)/)

@@ -118,7 +118,7 @@ describe('REDESIGN_STATUS.md, WS16 part two: page step 4\'s second half, its pla
 
   it('gives the part\'s status line this half\'s words while page step 4 is the latest', () => {
     for (const piece of ['`redesign/ws16-page`', 'nothing of it is merged']) expect(partStatus, piece).toContain(piece)
-    if (latestPageStep === 4) {
+    if (latestPageStep === 4 && !part.includes('\n#### WS16 part two, page step 5, first part: ')) {
       expect(partStatus).toBe(
         `${PART_STATUS}four of its twelve steps are built, page step 4 in two halves, the page on a computer and then on a tablet and a phone, on the branch \`redesign/ws16-page\`, cut from \`d2c5ec0\`, the merge of checkpoint M (pull request 126); nothing of it is merged, and no pull request is opened before checkpoint P, the page, is ready, which is after checkpoint N has merged.`,
       )

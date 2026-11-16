@@ -25,8 +25,9 @@
 //   its words scrolling inside it, so the row, the tools and the letter
 //   never move as a subject runs on. Under 1024 pixels, on a tablet and a
 //   phone, it is a field that wraps its words and grows by a line as they
-//   run on, so a long subject shows whole there, and as it takes the focus
-//   its whole box is brought into view, clear of the room kept at the foot.
+//   run on, so a long subject shows whole there, and as it takes the focus,
+//   and after a paste, its whole box is brought into view, clear of the room
+//   kept at the foot for the bar.
 //   When the window crosses the line while the field has the focus, the
 //   field drawn in its place takes it, the caret or the chosen words where
 //   they were. Either way it is one line of text to the server: Enter types
@@ -42,7 +43,7 @@
 //   phone's browser zooms the page in when a field of smaller words takes
 //   the focus.
 
-import { useCallback, useEffect, useId, useLayoutEffect, useRef, useState, type ClipboardEvent } from 'react'
+import { useCallback, useEffect, useId, useLayoutEffect, useRef, useState, type ClipboardEvent, type InputHTMLAttributes, type Ref } from 'react'
 import { Pencil } from 'lucide-react'
 import { LIST_SENDERS, SENDER_NAME } from '@domain/mail/addresses'
 import { NEWSLETTER_LIST_ID } from '@domain/mail/lists'
@@ -149,6 +150,20 @@ function showCaret(field: HTMLInputElement) {
 }
 
 /**
+ * The words a paste puts in, cut to the room the field's own limit leaves beside the words it keeps, as the browser's
+ * own paste cuts them, and never between the two halves of a character written as two. The browser's insert keeps to
+ * the limit by itself; where it has none, the words are set by script, which no limit stops. A field with no limit, as
+ * the Subject's, takes them all.
+ */
+function toTheLimit(words: string, field: HTMLInputElement | HTMLTextAreaElement, start: number, end: number): string {
+  if (field.maxLength < 0) return words
+  const room = Math.max(0, field.maxLength - (field.value.length - (end - start)))
+  if (words.length <= room) return words
+  const last = words.charCodeAt(room - 1)
+  return words.slice(0, last >= 0xd800 && last <= 0xdbff ? room - 1 : room)
+}
+
+/**
  * A paste that holds a character the server would refuse, taken from the browser and put in on one line: every such
  * character but the tabs and line breaks dropped first, so none of them standing beside a run hides a space from it,
  * then each run of tabs and line breaks one space, the characters either side of the chosen words counting as beside
@@ -162,10 +177,11 @@ function showCaret(field: HTMLInputElement) {
  * their own, as after the browser's own paste, and do not join the paste's. A selection set by script does not scroll
  * the field in Chromium, so the caret stays in view. The field that wraps needs none of this: it has no sideways
  * scroll, and in Chromium the letters typed in it after such a paste do not join the paste's step.
- * When nothing is left to put in, the chosen words go, as they would with the browser's own paste once keepVisible had
- * run, by the same insert of no words, which its Undo takes back in one step; with nothing chosen, nothing happens.
- * Where the browser has no such insert, the words are set by script, the caret after them. A paste with no such
- * character is left wholly to the browser.
+ * On a field with a limit of its own, the words are first cut to the room it leaves (toTheLimit), so they keep to it by
+ * either way in. When nothing is left to put in, the chosen words go, as they would with the browser's own paste once
+ * keepVisible had run, by the same insert of no words, which its Undo takes back in one step; with nothing chosen,
+ * nothing happens. Where the browser has no such insert, the words are set by script, the caret after them. A paste
+ * with no such character is left wholly to the browser.
  */
 function pasteOnOneLine(event: ClipboardEvent<HTMLInputElement | HTMLTextAreaElement>, onSubjectChange: (subject: string) => void) {
   const pasted = event.clipboardData.getData('text/plain')
@@ -177,7 +193,7 @@ function pasteOnOneLine(event: ClipboardEvent<HTMLInputElement | HTMLTextAreaEle
   const before = field.value.slice(0, start)
   const after = field.value.slice(end)
   const kept = pasted.replace(BETWEEN_BREAKS, withoutHiddenCharacters)
-  const words = joinLines(before + kept, before + kept + after, BREAKS_AND_TABS).slice(before.length)
+  const words = toTheLimit(joinLines(before + kept, before + kept + after, BREAKS_AND_TABS).slice(before.length), field, start, end)
   if (!words && start === end) return
   const scrolled = field.scrollLeft
   if (typeof document.execCommand === 'function' && document.execCommand('insertText', false, words)) {
@@ -191,6 +207,18 @@ function pasteOnOneLine(event: ClipboardEvent<HTMLInputElement | HTMLTextAreaEle
   field.value = before + words + after
   field.setSelectionRange(before.length + words.length, before.length + words.length)
   onSubjectChange(keepVisible(field))
+}
+
+/**
+ * Brings the whole box of the Subject's field that wraps its words into view, with its own scroll margins, one frame
+ * from now and only while it still has the focus: the browser brings only the caret's line into view, which left a
+ * subject of several lines reaching into the room kept at the foot, under the bar. As the field takes the focus, and
+ * after a paste, which may add lines, the page's own insert and the browser's own paste alike.
+ */
+function showWholeBox(field: HTMLTextAreaElement) {
+  requestAnimationFrame(() => {
+    if (field.ownerDocument.activeElement === field) field.scrollIntoView?.({ block: 'nearest' })
+  })
 }
 
 /** Where the caret, or the chosen words, stood in the field, and which way they were chosen. */
@@ -319,19 +347,17 @@ export function FromSubjectRow({ subject, onSubjectChange, stacked = false }: Fr
               onFocus={(event) => {
                 setCounting(true)
                 fit(event.currentTarget)
-                // The browser brings only the caret's line into view as a field takes the focus, so a subject of several
-                // lines could end in the room kept at the foot: its whole box comes into view, with its scroll margins.
-                const element = event.currentTarget
-                requestAnimationFrame(() => {
-                  if (element.ownerDocument.activeElement === element) element.scrollIntoView?.({ block: 'nearest' })
-                })
+                showWholeBox(event.currentTarget)
               }}
               onBlur={() => setCounting(false)}
               onKeyDown={(event) => {
                 // One line of text: Enter types no line break, as in a field of one line.
                 if (event.key === 'Enter') event.preventDefault()
               }}
-              onPaste={(event) => pasteOnOneLine(event, onSubjectChange)}
+              onPaste={(event) => {
+                pasteOnOneLine(event, onSubjectChange)
+                showWholeBox(event.currentTarget)
+              }}
               onChange={(event) => {
                 onOneLine(event.target)
                 onSubjectChange(keepVisible(event.target))
@@ -358,5 +384,32 @@ export function FromSubjectRow({ subject, onSubjectChange, stacked = false }: Fr
         </span>
       </div>
     </div>
+  )
+}
+
+export interface OneLineFieldProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'type' | 'value' | 'onChange' | 'onPaste'> {
+  value: string
+  /** The field's words each time they change, with every character the server would refuse taken out. */
+  onValueChange: (value: string) => void
+  ref?: Ref<HTMLInputElement>
+}
+
+/**
+ * A field of one line of words that takes them as the Subject's field of one line does: a character the server would
+ * refuse is dropped as it is typed or dropped in (keepVisible), and a paste goes by the Subject's own rule
+ * (pasteOnOneLine), a line break or a tab becoming one space between the words either side, put in by the browser's own
+ * insert so that Undo takes it back in one step, and held to the field's own limit (maxLength) as the browser's own
+ * paste is. More options' inbox preview line is one (MoreOptions.tsx).
+ */
+export function OneLineField({ value, onValueChange, ref, ...field }: OneLineFieldProps) {
+  return (
+    <input
+      {...field}
+      ref={ref}
+      type="text"
+      value={value}
+      onChange={(event) => onValueChange(keepVisible(event.target))}
+      onPaste={(event) => pasteOnOneLine(event, onValueChange)}
+    />
   )
 }

@@ -180,6 +180,36 @@ function showCaret(now: Editor, box: HTMLElement) {
   mark.remove()
 }
 
+/**
+ * Keeps the line being typed clear of the bar at the window's foot, which the editor's own scroll to the caret knows
+ * nothing of: that scroll, which runs first, keeps the caret 5 pixels inside the letter's box and the window, as page
+ * step 4 left it. Then a mark of no size at the caret's height, in the editor's own root, outside the letter's box,
+ * with no room above it and the letter's own room below it (96 pixels, or 144 on a phone), is brought into view, so
+ * only the window, or the letter made bigger, moves, and only while the caret's line would stand in the room kept for
+ * the bar; going back up the letter moves nothing more than before. Nothing is asked once the letter has left the page.
+ */
+function keepCaretClearOfTheBar(view: Editor['view'], box: HTMLElement | null) {
+  const root = box?.parentElement
+  if (!root || view.isDestroyed || !view.dom.isConnected) return
+  let at: { top: number; bottom: number }
+  try {
+    at = view.coordsAtPos(view.state.selection.head, 1)
+  } catch {
+    return
+  }
+  const mark = document.createElement('span')
+  mark.setAttribute('aria-hidden', 'true')
+  Object.assign(mark.style, {
+    position: 'absolute', left: '0', top: '0', width: '1px', pointerEvents: 'none', height: `${Math.max(1, at.bottom - at.top)}px`,
+    scrollMarginTop: '0px', scrollMarginBottom: getComputedStyle(view.dom).scrollMarginBottom,
+  })
+  root.appendChild(mark)
+  // Moved to the caret's height from where it first stands, whatever box it is placed by.
+  mark.style.top = `${at.top - mark.getBoundingClientRect().top}px`
+  mark.scrollIntoView?.({ block: 'nearest', inline: 'nearest' })
+  mark.remove()
+}
+
 /** Whether a main heading stands anywhere before a place in the letter. */
 function mainHeadingBefore(editor: Editor, at: number): boolean {
   let found = false
@@ -558,6 +588,11 @@ export function LetterEditor({ initialHtml, month, onMonthChange, onChange, bigg
           return false
         },
       },
+      // The editor's own scroll to the caret first, inside the letter's box; once it is done, the room kept for the bar.
+      handleScrollToSelection: (view) => {
+        queueMicrotask(() => keepCaretClearOfTheBar(view, sheetBox.current))
+        return false
+      },
     },
     onFocus: ({ editor: now }) => {
       // The keyboard's focus, not a press, which leaves the caret where the person pressed.
@@ -592,10 +627,16 @@ export function LetterEditor({ initialHtml, month, onMonthChange, onChange, bigg
 
   const parts = useMemo(() => letterParts(html), [html])
 
-  // Make bigger takes the focus to the letter; Make smaller, or Escape, gives it back to the button that made it bigger.
+  // Make bigger takes the focus to the letter; Make smaller, or Escape, gives it back to the button that made it bigger,
+  // which is brought into view instead where it already holds the focus, as after a press of Make smaller or Enter on
+  // it, since a second focus does nothing and would leave it out of the window or under the bar.
   useEffect(() => {
     if (bigger && !wasBigger.current) editor?.commands.focus()
-    if (!bigger && wasBigger.current) sizeButton.current?.focus()
+    if (!bigger && wasBigger.current) {
+      const button = sizeButton.current
+      if (button && button === document.activeElement) button.scrollIntoView?.({ block: 'nearest', inline: 'nearest' })
+      else button?.focus()
+    }
     wasBigger.current = bigger
   }, [bigger, editor])
 

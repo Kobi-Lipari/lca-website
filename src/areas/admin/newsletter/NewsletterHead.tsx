@@ -22,11 +22,12 @@
 //
 // On a tablet and a phone, under 1024 pixels (boards P19 and P20), Help is
 // its mark alone, 44 pixels square, "Admin sections" gives way to the crumb's
-// own Admin, every link a finger can press is 44 pixels tall, and "See the
-// email" stands at the head's right, where the tablet's board draws it; on a
-// phone it sits there too until page step 5's bar at the foot takes it. On a
-// phone the month and the saved line each have a line of their own under the
-// title, as board P20 draws them.
+// own Admin, and every link a finger can press is 44 pixels tall. On a
+// tablet, from 768 to 1023 pixels, "See the email" stands at the head's
+// right, where the tablet's board draws it; on a phone, under 768, it is in
+// the bar at the foot, beside "Pick a template" (FootBar.tsx), and the head
+// draws none. On a phone the month and the saved line each have a line of
+// their own under the title, as board P20 draws them.
 //
 // While the letter fills the window, this same head is its top: the month
 // with its state, the saved line and "Show the email", the rest put away. The
@@ -34,7 +35,7 @@
 // letter is made bigger and smaller, and a refusal on it is never read out
 // again by a change of size.
 
-import { useState } from 'react'
+import { useState, type Ref } from 'react'
 import { Link } from 'react-router-dom'
 import * as DialogPrimitive from '@radix-ui/react-dialog'
 import { Check, CircleAlert, CircleHelp, Eye, Menu } from 'lucide-react'
@@ -194,10 +195,20 @@ export interface NewsletterHeadProps {
   saved?: SavedLineProps
   /** Whether the letter fills the window, the head then being its top. */
   bigger?: boolean
-  /** Opens the email's sheet, from the control pressed: "See the email" under 1024 pixels, "Show the email" on the letter made bigger. */
+  /**
+   * Opens the email's sheet, from the control pressed: "See the email" on a tablet, from 768 to 1023 pixels, and "Show
+   * the email" on the letter made bigger.
+   */
   onSeeEmail?: (opener: HTMLButtonElement) => void
   /** Whether the email's sheet is open. */
   sheetOpen?: boolean
+  /** Under 768 pixels, where "See the email" is the bar's at the foot and the head draws none. */
+  phone?: boolean
+  /**
+   * The ref of the head's "See the email", and of "Show the email" on the letter made bigger, the same action: each takes
+   * the focus back as the sheet closes, and the focus a "See the email" taken off the page carried.
+   */
+  seeRef?: Ref<HTMLButtonElement>
 }
 
 /** The month with the letter's state in a word: "Draft" for an open letter, "Not saved yet" for a letter with no row yet. */
@@ -240,7 +251,7 @@ export function SavedLineNotice({ line }: { line: SaveLine }) {
 const CRUMB_LINK =
   'rounded-sm font-medium text-ink underline decoration-ink/40 underline-offset-3 outline-none hover:decoration-ink focus-visible:ring-3 focus-visible:ring-focus max-lg:-my-2.5 max-lg:inline-flex max-lg:min-h-11 max-lg:min-w-11 max-lg:items-center'
 
-export function NewsletterHead({ month, state, saved, bigger = false, onSeeEmail, sheetOpen = false }: NewsletterHeadProps) {
+export function NewsletterHead({ month, state, saved, bigger = false, onSeeEmail, sheetOpen = false, phone = false, seeRef }: NewsletterHeadProps) {
   return (
     <div className={cn('border-b border-border bg-background', bigger && 'flex-none px-5 py-2')}>
       {/*
@@ -274,7 +285,7 @@ export function NewsletterHead({ month, state, saved, bigger = false, onSeeEmail
         </div>
         {bigger ? (
           onSeeEmail && (
-            <button type="button" aria-haspopup="dialog" aria-expanded={sheetOpen} className={QUIET_BUTTON} onClick={(event) => onSeeEmail(event.currentTarget)}>
+            <button ref={seeRef} type="button" aria-haspopup="dialog" aria-expanded={sheetOpen} className={QUIET_BUTTON} onClick={(event) => onSeeEmail(event.currentTarget)}>
               <Eye className="size-4" aria-hidden="true" />
               Show the email
             </button>
@@ -290,8 +301,9 @@ export function NewsletterHead({ month, state, saved, bigger = false, onSeeEmail
               <Menu className="size-4" aria-hidden="true" />
               Admin sections
             </Link>
-            {onSeeEmail && (
+            {onSeeEmail && !phone && (
               <button
+                ref={seeRef}
                 type="button"
                 aria-haspopup="dialog"
                 aria-expanded={sheetOpen}

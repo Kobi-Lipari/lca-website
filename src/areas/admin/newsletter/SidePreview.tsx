@@ -49,8 +49,9 @@
 //
 // The sheet (boards P19 and P20; K's decision 29): on a tablet and a phone,
 // under 1024 pixels, where the column is not drawn, "See the email" opens
-// "What members will get" as a sheet over the page, and "Show the email" does
-// the same from the letter made bigger at any width. It is a dialog on the
+// "What members will get" as a sheet over the page, the head's on a tablet
+// and the bar's at the foot on a phone, and "Show the email" does the same
+// from the letter made bigger at any width. It is a dialog on the
 // site's dialog primitive, as the site's menu sheet is: it takes the focus
 // as it opens, keeps it inside, closes on Escape, on "Back to writing" and
 // on a press outside it, hides the page behind it from a screen reader and
@@ -360,7 +361,8 @@ export interface EmailSheetProps {
   notice?: ReactNode
   /**
    * The controls the focus goes back to as the sheet closes, in turn: the one that opened it, and, when that one is no
-   * longer drawn, as when the window has grown past 1024 pixels while the sheet was open, the side preview's own.
+   * longer drawn, as when the window has crossed 768 pixels while the sheet was open, "See the email" where it then
+   * stands, in the bar at the foot on a phone or in the head on a tablet, or, past 1024 pixels, the side preview's own.
    */
   returnFocus: () => Array<HTMLElement | null | undefined>
 }
