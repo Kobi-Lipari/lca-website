@@ -30,7 +30,7 @@ import { isObserver } from '../auth'
  * Turned on with rosterShortNames in src/lib/features.ts, in the same change;
  * test/unit/public-answer-switches.test.ts holds the two equal.
  */
-export const ROSTER_SHORT_NAMES = false
+export const ROSTER_SHORT_NAMES = true
 
 type ManagerOnlyKey = (typeof MANAGER_ONLY_TOURNAMENT_KEYS)[number]
 
