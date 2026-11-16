@@ -331,7 +331,8 @@ describe('REDESIGN_STATUS.md, WS09 step 9: the parts', () => {
       '"off: the route sends to the dashboard and /manage/club is today\'s"', '`test/unit/your-club-route.test.tsx`', 'compares with the base\'s own answer', 'No switch is added',
     ]) expect(ships, piece).toContain(piece)
     expect(read('src/lib/features.ts')).toContain('  clubKeepers: false,')
-    expect(read('src/lib/features.ts')).toContain('  clubEmailHidden: false,')
+    // clubEmailHidden is the Phase 0 trim's switch, turned on by a change of its own, so this step holds only that it is declared.
+    expect(read('src/lib/features.ts')).toMatch(/^ {2}clubEmailHidden: (?:false|true),$/m)
     expect(read('functions/utils/clubs/pages.ts')).toContain('export const CLUB_KEEPERS_ON = false')
     expect(read('test/unit/your-club-route.test.tsx')).toContain('  it(\'off: the route sends to the dashboard and /manage/club is today\\\'s\', async () => {')
   })
