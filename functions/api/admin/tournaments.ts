@@ -207,8 +207,15 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     action: 'tournament_create',
     targetLabel: body.name,
     // The grant the person created with joins the entry once CREATION_ROLES_ON
-    // is set; while it is unset the entry is as before.
-    detail: rolesOn ? { tournament_id: id, grant: person.grant } : { tournament_id: id },
+    // is set; while it is unset the entry is as before. A create made as the
+    // region's representative says so with one key more, as_representative,
+    // in both states, since the grant is the person's own (a club rep's, the
+    // president's or a standing director's) and would not say it (WS09 step
+    // 18); every other create's entry is as before.
+    detail: {
+      ...(rolesOn ? { tournament_id: id, grant: person.grant } : { tournament_id: id }),
+      ...(asRepresentative ? { as_representative: true } : {}),
+    },
   })
 
   return jsonResponse({ tournament: toTournamentResponse(tournament, await loadSections(db, id), await loadSchedules(db, id)) }, 201)

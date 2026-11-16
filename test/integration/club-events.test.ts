@@ -23,6 +23,18 @@
 //   cost on the manage check what they cost before;
 // - on a database the migration has not reached a club rep's fee save and
 //   publish answer as on the base.
+// The second half, the approval wait (WS09 step 18), through
+// POST /api/admin/tournaments/[id]/approval, with mail read from the test
+// outbox:
+// - with the constant unset the endpoint answers 403 in its words to everyone
+//   before anything is read, with no query made;
+// - submit by the person who drafted the event or an LCA admin, once, emailing
+//   the LCA admins; approve and ask for changes by an LCA admin with a second
+//   factor alone, each one guarded statement, so a second press or two at once
+//   write one row and send one email; the note escaped and kept nowhere; the
+//   refusals in words; what an approval leaves for the ordinary save;
+// - the create's row in the activity log, which says when an event was created
+//   as the region's representative and is as before for every other create.
 import { env } from 'cloudflare:test'
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 import { WAITING_FOR_APPROVAL } from '../../domain/events/approval'
@@ -50,9 +62,22 @@ import { onRequestPatch as patchRegistration } from '../../functions/api/registr
 import { onRequestPost as payRegistration } from '../../functions/api/registrations/[id]/pay'
 import { onRequestGet as tournamentsGet } from '../../functions/api/tournaments'
 import { onRequestGet as tournamentGet } from '../../functions/api/tournaments/[id]'
+import {
+  ALREADY_APPROVED,
+  APPROVAL_CLOSED,
+  EMAIL_WORDS,
+  NOT_IN_REVIEW,
+  NOT_MARKED,
+  onRequestPost as approval,
+} from '../../functions/api/admin/tournaments/[id]/approval'
+import { requireAdmin } from '../../functions/utils/auth'
+import { escapeHtml } from '../../functions/utils/emailLayout'
+import { lcaAdminAddresses } from '../../functions/utils/events/publishedReview'
+import { fieldErrorBodySchema } from '../../domain/contracts'
+import { APPROVAL_NOTE_EMPTY, APPROVAL_NOTE_TOO_LONG, tournamentApprovalResponseSchema } from '../../domain/contracts/events'
 import { seedAdmin, seedClub, seedMember, seedPresident, seedRegistration, seedTournament, seedTournamentDirector } from './factories'
-import { invoke, resetHarness } from './harness'
-import { countingDb } from './mailRuns'
+import { accessToken, emailBehavior, emailOutbox, expectContract, invoke, resetHarness } from './harness'
+import { countingDb, noWaits } from './mailRuns'
 import { migrationModules, splitSql } from './setup'
 
 const flags = vi.hoisted(() => ({ rolesOn: false, regionOn: false }))
@@ -729,6 +754,513 @@ describe('on a database the migration has not reached', () => {
   })
 })
 
+// ── The approval wait (WS09 step 18) ─────────────────────────────
+
+const moveTo = (as: string | null, id: string, body: unknown, extra: { aal?: 'aal1' | 'aal2'; env?: Partial<Env> } = {}) =>
+  invoke(approval, { method: 'POST', ...(as ? { as } : {}), params: { id }, body, ...extra })
+const submit = (as: string | null, id: string) => moveTo(as, id, { action: 'submit' })
+const approve = (as: string | null, id: string, extra: { aal?: 'aal1' | 'aal2'; env?: Partial<Env> } = {}) => moveTo(as, id, { action: 'approve' }, extra)
+const askChanges = (as: string | null, id: string, note: unknown = 'Add the time control to the description.') => moveTo(as, id, { action: 'ask_changes', note })
+
+interface WaitColumns {
+  needs_lca_approval: number
+  approval_requested_at: string | null
+  approved_at: string | null
+  approved_by: string | null
+  is_visible: number
+  review_notified_at: string | null
+}
+const waitOf = (id: string) => env.DB.prepare('SELECT needs_lca_approval, approval_requested_at, approved_at, approved_by, is_visible, review_notified_at FROM tournaments WHERE id = ?')
+  .bind(id).first<WaitColumns>()
+const memberOf = async (id: string) => (await env.DB.prepare('SELECT email, full_name FROM members WHERE id = ?').bind(id).first<{ email: string; full_name: string }>())!
+/** The activity log's rows about the event, in the order they were written. */
+const rowsAbout = async (id: string) => (await env.DB.prepare("SELECT action, actor_id, target_label, detail FROM admin_audit_log WHERE json_extract(detail, '$.tournament_id') = ? ORDER BY rowid")
+  .bind(id).all<{ action: string; actor_id: string; target_label: string | null; detail: string }>()).results
+const actionsAbout = async (id: string) => (await rowsAbout(id)).map((r) => r.action)
+const STAMP = /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/
+/** The event's day as every email writes it, with its weekday. */
+const EVENT_DAY = 'Sat, Dec 12, 2026'
+/** An en dash or an em dash, written by code so that this file holds neither. */
+const LONG_DASHES = new RegExp(`[${String.fromCharCode(0x2013, 0x2014)}]`)
+/** Words that would explain a control rather than say what happened. */
+const EXPLAINING = /\b(?:click|press|tap|button|link below|use this)\b/i
+const plainOf = (html: string) => html.replace(/<style[\s\S]*?<\/style>/g, ' ').replace(/<[^>]+>/g, ' ')
+
+/**
+ * The world of most cases, with the representative's draft for the club in
+ * the region, marked for approval as their create marks it, named and dated.
+ */
+async function waiting() {
+  const w = await world()
+  const eventName = `Example Winter Open ${++seq}`
+  const draft = await seedTournament({ name: eventName, date: '2026-12-12', clubId: w.club, createdBy: w.representative, entryFee: 0, sections: [{ name: 'Open', entryFee: 0 }], isVisible: false })
+  await mark(draft)
+  const clubName = (await env.DB.prepare('SELECT name FROM clubs WHERE id = ?').bind(w.club).first<{ name: string }>())!.name
+  return { ...w, draft, eventName, clubName }
+}
+
+describe('the approval wait with REGION_EVENTS_ON unset, as it ships', () => {
+  it('answers 403 in its own words to everyone, signed in or not, before the body is read, with no query made, nothing written and nothing sent', async () => {
+    const { draft, representative, admin } = await waiting()
+    const before = await waitOf(draft)
+    const log = await count('SELECT COUNT(*) AS n FROM admin_audit_log')
+    for (const as of [null, representative, admin]) {
+      for (const body of [{ action: 'submit' }, { action: 'approve' }, { action: 'ask_changes', note: 'Example note' }]) {
+        const { db, ran } = countingDb()
+        const res = await moveTo(as, draft, body, { env: { DB: db } })
+        expect(res.status, `${as} ${body.action}`).toBe(403)
+        expect(await res.json()).toEqual({ error: APPROVAL_CLOSED })
+        expect(ran).toEqual([])
+      }
+      // A body that is not JSON at all is never read.
+      const { db, ran } = countingDb()
+      const raw = await invoke(approval, { method: 'POST', ...(as ? { as } : {}), params: { id: draft }, rawBody: 'not json', env: { DB: db } })
+      expect(raw.status).toBe(403)
+      expect(await raw.json()).toEqual({ error: APPROVAL_CLOSED })
+      expect(ran).toEqual([])
+    }
+    expect(await waitOf(draft)).toEqual(before)
+    expect(await count('SELECT COUNT(*) AS n FROM admin_audit_log')).toBe(log)
+    expect(emailOutbox).toEqual([])
+  })
+})
+
+describe('the approval wait: submit, approve and ask for changes, with REGION_EVENTS_ON set', () => {
+  beforeEach(() => {
+    flags.regionOn = true
+    noWaits()
+  })
+  afterEach(() => {
+    vi.restoreAllMocks()
+  })
+
+  it('submit by the drafter sets the request and emails each LCA admin once, with the event\'s name, club, weekday date and link, naming no person, and writes one row', async () => {
+    const { draft, representative, admin, eventName, clubName } = await waiting()
+    const second = await seedAdmin()
+    const res = await submit(representative, draft)
+    expect(res.status).toBe(200)
+    const body = await expectContract(res, tournamentApprovalResponseSchema)
+    expect(body).toMatchObject({ needs_lca_approval: 1, approved_at: null, approved_by: null, email: EMAIL_WORDS.reviewSent })
+    expect(body.approval_requested_at).toMatch(STAMP)
+    expect(await waitOf(draft)).toMatchObject({ approval_requested_at: body.approval_requested_at, approved_at: null, approved_by: null, is_visible: 0 })
+    // Every LCA admin by the D22 notice's one rule, once each, the two seeded here among them.
+    const admins = [(await memberOf(admin)).email, (await memberOf(second)).email]
+    const everyAdmin = await lcaAdminAddresses(env.DB)
+    expect(everyAdmin).toEqual(expect.arrayContaining(admins))
+    expect(emailOutbox.map((e) => e.to)).toEqual(everyAdmin)
+    expect(new Set(everyAdmin).size).toBe(everyAdmin.length)
+    const drafter = await memberOf(representative)
+    const adminNames = [(await memberOf(admin)).full_name, (await memberOf(second)).full_name]
+    for (const mail of emailOutbox) {
+      expect(mail.subject).toBe(`For LCA review: ${eventName} (${EVENT_DAY})`)
+      for (const text of [mail.html, mail.text ?? '']) {
+        for (const piece of [eventName, clubName, EVENT_DAY, `/admin/tournaments/${draft}`]) expect(text, piece).toContain(piece)
+        for (const person of [drafter.full_name, drafter.email, ...adminNames, ...admins]) expect(text, person).not.toContain(person)
+      }
+    }
+    const rows = await rowsAbout(draft)
+    expect(rows.map((r) => [r.action, r.actor_id, r.target_label, JSON.parse(r.detail)])).toEqual([['tournament_submitted', representative, eventName, { tournament_id: draft }]])
+  })
+
+  it('a second submit while in review changes nothing, sends nothing and says so', async () => {
+    const { draft, representative } = await waiting()
+    expect((await submit(representative, draft)).status).toBe(200)
+    const sent = emailOutbox.length
+    const before = await waitOf(draft)
+    const again = await submit(representative, draft)
+    expect(again.status).toBe(200)
+    expect(await expectContract(again, tournamentApprovalResponseSchema)).toEqual({
+      needs_lca_approval: 1, approval_requested_at: before!.approval_requested_at, approved_at: null, approved_by: null, email: EMAIL_WORDS.alreadyInReview,
+    })
+    expect(emailOutbox).toHaveLength(sent)
+    expect(await waitOf(draft)).toEqual(before)
+    expect(await actionsAbout(draft)).toEqual(['tournament_submitted'])
+  })
+
+  it('submit by an LCA admin sets the request and emails the LCA admins', async () => {
+    const { draft, admin } = await waiting()
+    const res = await submit(admin, draft)
+    expect(res.status).toBe(200)
+    expect((await res.json<{ email: string }>()).email).toBe(EMAIL_WORDS.reviewSent)
+    expect((await waitOf(draft))?.approval_requested_at).toMatch(STAMP)
+    expect(emailOutbox.map((e) => e.to)).toEqual(await lcaAdminAddresses(env.DB))
+    expect(emailOutbox.map((e) => e.to)).toContain((await memberOf(admin)).email)
+    expect((await rowsAbout(draft)).map((r) => [r.action, r.actor_id])).toEqual([['tournament_submitted', admin]])
+  })
+
+  const SUBMIT_REFUSED = ['a director the representative named', 'the club\'s own rep', 'another region\'s representative', 'the drafter once their seat has ended', 'a plain member'] as const
+  it.each(SUBMIT_REFUSED)('refuses submit 403 to %s, and writes and sends nothing', async (who) => {
+    const { draft, rep, other, representative } = await waiting()
+    let as: string = representative
+    if (who === 'a director the representative named') {
+      as = await seedMember()
+      await seedTournamentDirector(draft, as)
+    } else if (who === 'the club\'s own rep') as = rep
+    else if (who === 'another region\'s representative') as = other
+    else if (who === 'the drafter once their seat has ended') await env.DB.prepare("UPDATE board_seat_assignments SET ended_at = datetime('now') WHERE member_id = ?").bind(representative).run()
+    else as = await seedMember()
+    const before = await waitOf(draft)
+    const res = await submit(as, draft)
+    expect(res.status).toBe(403)
+    expect(await res.json()).toEqual({ error: 'Forbidden' })
+    expect(await waitOf(draft)).toEqual(before)
+    expect(emailOutbox).toEqual([])
+    expect(await rowsAbout(draft)).toEqual([])
+  })
+
+  it('approve by an LCA admin sets approved_at, approved_by and is_visible 1 in one statement, emails the drafter, and writes one row', async () => {
+    const { draft, representative, admin, eventName, clubName } = await waiting()
+    expect((await submit(representative, draft)).status).toBe(200)
+    const requested = (await waitOf(draft))?.approval_requested_at
+    emailOutbox.length = 0
+    const { db, ran } = countingDb()
+    const res = await approve(admin, draft, { env: { DB: db } })
+    expect(res.status).toBe(200)
+    const body = await expectContract(res, tournamentApprovalResponseSchema)
+    expect(body).toMatchObject({ needs_lca_approval: 1, approval_requested_at: requested, approved_by: admin, email: EMAIL_WORDS.approvedSent })
+    expect(body.approved_at).toMatch(STAMP)
+    // The one statement that sets the three, and no other write that sets any of them.
+    const writes = ran.map((r) => r.sql).filter((sql) => /^\s*UPDATE tournaments SET/.test(sql))
+    expect(writes[0]).toContain("SET approved_at = datetime('now'), approved_by = ?, is_visible = 1 WHERE id = ? AND needs_lca_approval = 1")
+    for (const write of writes.slice(1)) expect(write.split(' WHERE ')[0]).not.toMatch(/approved_at|approved_by|is_visible/)
+    expect(await waitOf(draft)).toMatchObject({ approved_at: body.approved_at, approved_by: admin, is_visible: 1, approval_requested_at: requested })
+    expect((await waitOf(draft))?.review_notified_at).toMatch(STAMP)
+    const drafter = await memberOf(representative)
+    expect(emailOutbox.map((e) => e.to)).toEqual([drafter.email])
+    expect(emailOutbox[0].subject).toBe(`Approved and listed: ${eventName}`)
+    for (const text of [emailOutbox[0].html, emailOutbox[0].text ?? '']) {
+      for (const piece of [eventName, clubName, EVENT_DAY, `/tournaments/${draft}`]) expect(text, piece).toContain(piece)
+    }
+    expect((await rowsAbout(draft)).slice(1).map((r) => [r.action, r.actor_id, r.target_label, JSON.parse(r.detail)])).toEqual([['tournament_approved', admin, eventName, { tournament_id: draft }]])
+  })
+
+  it('refuses approve and ask for changes without the second factor, exactly as requireAdmin refuses, and changes nothing', async () => {
+    const { draft, representative, admin } = await waiting()
+    expect((await submit(representative, draft)).status).toBe(200)
+    const before = await waitOf(draft)
+    const sent = emailOutbox.length
+    const told = await requireAdmin(new Request('https://lca-website.pages.dev/api/test', { headers: { Authorization: `Bearer ${accessToken(admin, 'aal1')}` } }), env as unknown as Env)
+    expect(told).toBeInstanceOf(Response)
+    const refusal = await (told as Response).json()
+    expect(refusal).toMatchObject({ mfaRequired: true })
+    for (const body of [{ action: 'approve' }, { action: 'ask_changes', note: 'Example note' }]) {
+      const res = await moveTo(admin, draft, body, { aal: 'aal1' })
+      expect(res.status, body.action).toBe(403)
+      expect(await res.json(), body.action).toEqual(refusal)
+    }
+    expect(await waitOf(draft)).toEqual(before)
+    expect(emailOutbox).toHaveLength(sent)
+    expect(await actionsAbout(draft)).toEqual(['tournament_submitted'])
+  })
+
+  const APPROVE_REFUSED = ['the representative who drafted it', 'the club\'s own rep', 'a director the representative named'] as const
+  it.each(APPROVE_REFUSED)('refuses approve and ask for changes 403 to %s, and changes nothing', async (who) => {
+    const { draft, rep, representative } = await waiting()
+    expect((await submit(representative, draft)).status).toBe(200)
+    let as: string = representative
+    if (who === 'the club\'s own rep') as = rep
+    if (who === 'a director the representative named') {
+      as = await seedMember()
+      await seedTournamentDirector(draft, as)
+    }
+    const before = await waitOf(draft)
+    const sent = emailOutbox.length
+    for (const res of [await approve(as, draft), await askChanges(as, draft)]) {
+      expect(res.status).toBe(403)
+      expect(await res.json()).toEqual({ error: 'Forbidden' })
+    }
+    expect(await waitOf(draft)).toEqual(before)
+    expect(emailOutbox).toHaveLength(sent)
+    expect(await actionsAbout(draft)).toEqual(['tournament_submitted'])
+  })
+
+  it('a second approve is 409, with no second row and no second email', async () => {
+    const { draft, admin } = await waiting()
+    expect((await approve(admin, draft)).status).toBe(200)
+    const after = await waitOf(draft)
+    const again = await approve(admin, draft)
+    expect(again.status).toBe(409)
+    expect(await again.json()).toEqual({ error: ALREADY_APPROVED })
+    expect(await waitOf(draft)).toEqual(after)
+    expect(emailOutbox).toHaveLength(1)
+    expect(await actionsAbout(draft)).toEqual(['tournament_approved'])
+  })
+
+  it('two approves at once: one goes through and the other is answered 409, so one row and one email', async () => {
+    const { draft, admin } = await waiting()
+    const second = await seedAdmin()
+    const answers = await Promise.all([approve(admin, draft), approve(second, draft)])
+    expect(answers.map((a) => a.status).sort()).toEqual([200, 409])
+    expect(await actionsAbout(draft)).toEqual(['tournament_approved'])
+    expect(emailOutbox).toHaveLength(1)
+    const winner = answers[0].status === 200 ? admin : second
+    expect((await waitOf(draft))?.approved_by).toBe(winner)
+  })
+
+  it('approves from a draft as well, writing one row for the one act and no publish row beside it', async () => {
+    const { draft, admin } = await waiting()
+    const res = await approve(admin, draft)
+    expect(res.status).toBe(200)
+    expect(await res.json()).toMatchObject({ approval_requested_at: null, approved_by: admin })
+    expect(await waitOf(draft)).toMatchObject({ is_visible: 1, approved_by: admin })
+    expect(await actionsAbout(draft)).toEqual(['tournament_approved'])
+  })
+
+  it('ask for changes from in review clears the request, emails the drafter the note escaped, and writes one row without the note', async () => {
+    const { draft, representative, admin, eventName, clubName } = await waiting()
+    expect((await submit(representative, draft)).status).toBe(200)
+    emailOutbox.length = 0
+    const note = '  Bring a <b>clock</b> & list the "rounds" for each section.  '
+    const res = await askChanges(admin, draft, note)
+    expect(res.status).toBe(200)
+    expect(await expectContract(res, tournamentApprovalResponseSchema)).toEqual({
+      needs_lca_approval: 1, approval_requested_at: null, approved_at: null, approved_by: null, email: EMAIL_WORDS.changesSent,
+    })
+    expect(await waitOf(draft)).toMatchObject({ approval_requested_at: null, approved_at: null, is_visible: 0 })
+    const drafter = await memberOf(representative)
+    expect(emailOutbox.map((e) => e.to)).toEqual([drafter.email])
+    const [mail] = emailOutbox
+    expect(mail.subject).toBe(`Changes asked: ${eventName}`)
+    expect(mail.html).toContain(escapeHtml(note.trim()))
+    expect(mail.html).not.toContain('<b>clock')
+    expect(mail.text).toContain(note.trim())
+    for (const text of [mail.html, mail.text ?? '']) {
+      for (const piece of [eventName, clubName, EVENT_DAY, `/admin/tournaments/${draft}`]) expect(text, piece).toContain(piece)
+    }
+    const rows = await rowsAbout(draft)
+    expect(rows.map((r) => [r.action, r.actor_id, JSON.parse(r.detail)])).toEqual([
+      ['tournament_submitted', representative, { tournament_id: draft }],
+      ['tournament_changes_asked', admin, { tournament_id: draft }],
+    ])
+    // No column and no row holds the note.
+    expect(JSON.stringify(await env.DB.prepare('SELECT * FROM tournaments WHERE id = ?').bind(draft).first())).not.toContain('clock')
+    expect(JSON.stringify((await env.DB.prepare('SELECT * FROM admin_audit_log').all()).results)).not.toContain('clock')
+  })
+
+  it.each([
+    ['no note', { action: 'ask_changes' }, null],
+    ['a note of white space', { action: 'ask_changes', note: '   \n\t  ' }, APPROVAL_NOTE_EMPTY],
+    ['a note of 501 characters', { action: 'ask_changes', note: 'x'.repeat(501) }, APPROVAL_NOTE_TOO_LONG],
+  ] as const)('refuses ask for changes with %s 400 in words, and changes nothing', async (_, body, words) => {
+    const { draft, representative, admin } = await waiting()
+    expect((await submit(representative, draft)).status).toBe(200)
+    const before = await waitOf(draft)
+    const sent = emailOutbox.length
+    const res = await moveTo(admin, draft, body)
+    expect(res.status).toBe(400)
+    const refused = await expectContract(res, fieldErrorBodySchema)
+    expect(Object.keys(refused.fields)).toEqual(['note'])
+    if (words) expect(refused.fields.note).toBe(words)
+    expect(await waitOf(draft)).toEqual(before)
+    expect(emailOutbox).toHaveLength(sent)
+    expect(await actionsAbout(draft)).toEqual(['tournament_submitted'])
+  })
+
+  it.each(['a draft', 'an approved event'])('refuses ask for changes on %s 409, and changes nothing', async (state) => {
+    const { draft, admin } = await waiting()
+    if (state === 'an approved event') expect((await approve(admin, draft)).status).toBe(200)
+    const before = await waitOf(draft)
+    const rows = await actionsAbout(draft)
+    const sent = emailOutbox.length
+    const res = await askChanges(admin, draft)
+    expect(res.status).toBe(409)
+    expect(await res.json()).toEqual({ error: state === 'a draft' ? NOT_IN_REVIEW : ALREADY_APPROVED })
+    expect(await waitOf(draft)).toEqual(before)
+    expect(await actionsAbout(draft)).toEqual(rows)
+    expect(emailOutbox).toHaveLength(sent)
+  })
+
+  it('refuses all three 409 on an event not marked for approval, and changes nothing', async () => {
+    const { event, admin } = await world()
+    const before = await env.DB.prepare('SELECT * FROM tournaments WHERE id = ?').bind(event).first()
+    for (const res of [await submit(admin, event), await approve(admin, event), await askChanges(admin, event)]) {
+      expect(res.status).toBe(409)
+      expect(await res.json()).toEqual({ error: NOT_MARKED })
+    }
+    expect(await env.DB.prepare('SELECT * FROM tournaments WHERE id = ?').bind(event).first()).toEqual(before)
+    expect(emailOutbox).toEqual([])
+    expect(await rowsAbout(event)).toEqual([])
+  })
+
+  it('answers an unknown event 404 to an LCA admin, as its neighbours do, and 403 to anyone else on submit', async () => {
+    const { admin, representative } = await world()
+    for (const res of [await submit(admin, 'no-such-event'), await approve(admin, 'no-such-event'), await askChanges(admin, 'no-such-event')]) {
+      expect(res.status).toBe(404)
+      expect(await res.json()).toEqual({ error: 'Tournament not found' })
+    }
+    const res = await submit(representative, 'no-such-event')
+    expect(res.status).toBe(403)
+    expect(await res.json()).toEqual({ error: 'Forbidden' })
+  })
+
+  it.each(['gone from the event', 'with no address'])('sends no email to a drafter %s, and the answer says so', async (how) => {
+    const { draft, representative, admin } = await waiting()
+    if (how === 'gone from the event') await env.DB.prepare('UPDATE tournaments SET created_by = NULL WHERE id = ?').bind(draft).run()
+    else await env.DB.prepare("UPDATE members SET email = 'no address on file' WHERE id = ?").bind(representative).run()
+    expect((await submit(admin, draft)).status).toBe(200)
+    const toAdmins = emailOutbox.length
+    const asked = await askChanges(admin, draft)
+    expect(asked.status).toBe(200)
+    expect((await asked.json<{ email: string }>()).email).toBe(EMAIL_WORDS.changesNoDrafter)
+    const approved = await approve(admin, draft)
+    expect(approved.status).toBe(200)
+    expect((await approved.json<{ email: string }>()).email).toBe(EMAIL_WORDS.approvedNoDrafter)
+    expect(emailOutbox).toHaveLength(toAdmins)
+    expect(await waitOf(draft)).toMatchObject({ approved_by: admin, is_visible: 1 })
+    expect(await actionsAbout(draft)).toEqual(['tournament_submitted', 'tournament_changes_asked', 'tournament_approved'])
+  })
+
+  it('a send that fails leaves each move made and the answer says the email was not sent', async () => {
+    const { draft, representative, admin } = await waiting()
+    emailBehavior.succeed = false
+    const submitted = await submit(representative, draft)
+    expect(submitted.status).toBe(200)
+    expect((await submitted.json<{ email: string }>()).email).toBe(EMAIL_WORDS.reviewNotSent)
+    expect((await waitOf(draft))?.approval_requested_at).toMatch(STAMP)
+    const asked = await askChanges(admin, draft)
+    expect(asked.status).toBe(200)
+    expect((await asked.json<{ email: string }>()).email).toBe(EMAIL_WORDS.changesNotSent)
+    expect((await waitOf(draft))?.approval_requested_at).toBeNull()
+    const approved = await approve(admin, draft)
+    expect(approved.status).toBe(200)
+    expect((await approved.json<{ email: string }>()).email).toBe(EMAIL_WORDS.approvedNotSent)
+    expect(await waitOf(draft)).toMatchObject({ approved_by: admin, is_visible: 1 })
+    expect(emailOutbox).toEqual([])
+    expect(await actionsAbout(draft)).toEqual(['tournament_submitted', 'tournament_changes_asked', 'tournament_approved'])
+  })
+
+  it('after approval the representative hides the event and lists it again by the ordinary save, asks for no new approval, and a raised fee is still refused', async () => {
+    const { draft, representative, admin } = await waiting()
+    expect((await approve(admin, draft)).status).toBe(200)
+    const approved = await waitOf(draft)
+    expect((await save(representative, draft, { isVisible: false })).status).toBe(200)
+    expect((await save(representative, draft, { isVisible: true, venue: 'Example Hall' })).status).toBe(200)
+    expect(await waitOf(draft)).toEqual(approved)
+    const { Open } = await sectionIds(draft)
+    const raised = await save(representative, draft, { sections: [{ id: Open, name: 'Open', entryFee: 10 }] })
+    expect(raised.status).toBe(403)
+    expect(await error(raised)).toBe(FEES_NEED_PAYOUT_ACCOUNT)
+    expect(await openFee(draft)).toBe(0)
+    expect(await actionsAbout(draft)).toEqual(['tournament_approved', 'tournament_unpublish', 'tournament_publish'])
+  })
+
+  it('after ask for changes a new submit emails the LCA admins again', async () => {
+    const { draft, representative, admin } = await waiting()
+    expect((await submit(representative, draft)).status).toBe(200)
+    expect((await askChanges(admin, draft)).status).toBe(200)
+    const before = emailOutbox.length
+    const again = await submit(representative, draft)
+    expect(again.status).toBe(200)
+    expect((await again.json<{ email: string }>()).email).toBe(EMAIL_WORDS.reviewSent)
+    expect(emailOutbox.slice(before).map((e) => e.to)).toEqual(await lcaAdminAddresses(env.DB))
+    expect(await actionsAbout(draft)).toEqual(['tournament_submitted', 'tournament_changes_asked', 'tournament_submitted'])
+  })
+
+  it('sets the published review mark at approval, so a standing director\'s event approved and listed again sends no D22 notice, with CREATION_ROLES_ON set', async () => {
+    flags.rolesOn = true
+    const { club, admin } = await world()
+    const director = await seedMember({ role: 'tournament_director' })
+    await regionalSeat(director)
+    const { rows } = await create(director, { clubId: club })
+    const id = rows[0].id
+    expect((await approve(admin, id)).status).toBe(200)
+    emailOutbox.length = 0
+    expect((await save(director, id, { isVisible: false })).status).toBe(200)
+    expect((await save(director, id, { isVisible: true })).status).toBe(200)
+    expect(emailOutbox).toEqual([])
+    const publish = (await rowsAbout(id)).filter((r) => r.action === 'tournament_publish').map((r) => JSON.parse(r.detail))
+    expect(publish).toEqual([{ tournament_id: id, review_notified: false, review_notices_sent: 0 }])
+  })
+
+  it('draws each email with the event named in its HTML and its text, no long dash and no sentence that explains a control', async () => {
+    const { draft, representative, admin, eventName } = await waiting()
+    await submit(representative, draft)
+    await askChanges(admin, draft)
+    await approve(admin, draft)
+    // One of each: the review's email goes to every LCA admin, the other two to the drafter.
+    const drafter = (await memberOf(representative)).email
+    const toAdmin = (await memberOf(admin)).email
+    const mails = [emailOutbox.find((e) => e.to === toAdmin), ...emailOutbox.filter((e) => e.to === drafter)]
+    expect(mails.map((e) => e?.subject.split(':')[0])).toEqual(['For LCA review', 'Changes asked', 'Approved and listed'])
+    for (const mail of mails as typeof emailOutbox) {
+      for (const text of [plainOf(mail.html), mail.text ?? '', mail.subject]) {
+        expect(text, mail.subject).toContain(eventName)
+        expect(text, mail.subject).not.toMatch(LONG_DASHES)
+        expect(text, mail.subject).not.toMatch(EXPLAINING)
+      }
+    }
+  })
+})
+
+describe('the create\'s row in the activity log', () => {
+  beforeEach(() => {
+    flags.regionOn = true
+  })
+  const createRow = async (id: string) => JSON.parse((await env.DB.prepare("SELECT detail FROM admin_audit_log WHERE action = 'tournament_create' AND json_extract(detail, '$.tournament_id') = ?")
+    .bind(id).first<{ detail: string }>())!.detail) as Record<string, unknown>
+
+  const AS_REPRESENTATIVE = [
+    ['a club rep who holds a seat', false], ['a club rep who holds a seat', true],
+    ['the president who holds a seat', false], ['the president who holds a seat', true],
+    ['a standing director who holds a seat', false], ['a standing director who holds a seat', true],
+    ['a representative with no other grant', false], ['a representative with no other grant', true],
+  ] as const
+  it.each(AS_REPRESENTATIVE)('says the event was created as the region\'s representative for %s, CREATION_ROLES_ON %s', async (who, rolesOn) => {
+    flags.rolesOn = rolesOn
+    const { club } = await world()
+    let id: string
+    let grant: string
+    let clubId = club
+    if (who === 'a club rep who holds a seat') {
+      clubId = await clubIn(REGION, 'Example Knights Club')
+      id = await seedMember({ role: 'club_rep', clubId: club })
+      grant = 'club_rep'
+    } else if (who === 'the president who holds a seat') {
+      id = await seedMember({ role: 'lca_observer' })
+      await seedPresident(id)
+      grant = rolesOn ? 'president' : 'regional_rep'
+    } else if (who === 'a standing director who holds a seat') {
+      id = await seedMember({ role: 'tournament_director' })
+      grant = rolesOn ? 'standing_director' : 'regional_rep'
+    } else {
+      id = await seedMember()
+      grant = 'regional_rep'
+    }
+    await regionalSeat(id)
+    const made = await create(id, { clubId })
+    expect(made.res.status).toBe(201)
+    expect(made.rows[0]).toMatchObject({ club_id: clubId, needs_lca_approval: 1 })
+    const event = made.rows[0].id
+    expect(await createRow(event)).toEqual(rolesOn ? { tournament_id: event, grant, as_representative: true } : { tournament_id: event, as_representative: true })
+  })
+
+  it.each([false, true])('writes every other create\'s row as on the base, CREATION_ROLES_ON %s', async (rolesOn) => {
+    flags.rolesOn = rolesOn
+    const { club, admin } = await world()
+    const rep = await seedMember({ role: 'club_rep', clubId: club })
+    const seatedRep = await seedMember({ role: 'club_rep', clubId: club })
+    await regionalSeat(seatedRep)
+    const makers: Array<[string, string, Record<string, unknown>]> = [
+      [admin, 'admin', { clubId: club }],
+      [rep, 'club_rep', {}],
+      [seatedRep, 'club_rep', { clubId: club }],
+    ]
+    if (rolesOn) {
+      const president = await seedMember({ role: 'lca_observer' })
+      await seedPresident(president)
+      const director = await seedMember({ role: 'tournament_director' })
+      makers.push([president, 'president', {}], [director, 'standing_director', {}])
+    }
+    for (const [as, grant, extra] of makers) {
+      const made = await create(as, extra)
+      expect(made.res.status, grant).toBe(201)
+      expect(made.rows[0].needs_lca_approval, grant).toBe(0)
+      const event = made.rows[0].id
+      expect(await createRow(event), grant).toEqual(rolesOn ? { tournament_id: event, grant } : { tournament_id: event })
+    }
+  })
+})
+
 describe('role safety', () => {
   it('answers a signed-out caller 401 and a plain member 403 on the create, the save, the directors and the manage page, with the constant set, and writes nothing', async () => {
     flags.regionOn = true
@@ -746,5 +1278,22 @@ describe('role safety', () => {
     expect((await invoke(manageGet, { as: member, params: { id: event } })).status).toBe(403)
     expect(await count('SELECT COUNT(*) AS n FROM tournaments')).toBe(before)
     expect(await count('SELECT COUNT(*) AS n FROM tournament_directors WHERE tournament_id = ?', event)).toBe(0)
+  })
+
+  it('answers a signed-out caller 401 and a plain member 403 on each move of the approval wait, with the constant set, and writes and sends nothing', async () => {
+    flags.regionOn = true
+    const { draft } = await waiting()
+    const member = await seedMember()
+    const before = await waitOf(draft)
+    for (const body of [{ action: 'submit' }, { action: 'approve' }, { action: 'ask_changes', note: 'Example note' }]) {
+      const signedOut = await moveTo(null, draft, body)
+      expect(signedOut.status, body.action).toBe(401)
+      const plain = await moveTo(member, draft, body)
+      expect(plain.status, body.action).toBe(403)
+      expect(await plain.json(), body.action).toEqual({ error: 'Forbidden' })
+    }
+    expect(await waitOf(draft)).toEqual(before)
+    expect(emailOutbox).toEqual([])
+    expect(await rowsAbout(draft)).toEqual([])
   })
 })

@@ -376,7 +376,8 @@ describe('REDESIGN_STATUS.md, WS09 step 17: the Checks line', () => {
 
   it('counts as many cases for each new test as the file holds', () => {
     const files = bullet(block, '- **Files.**')
-    for (const file of NEW_TESTS) expect(writtenCount(files, file), file).toBe(casesIn(file))
+    // WS09 step 18 adds the approval wait's cases to club-events.test.ts, so its count is read only while this step is the latest.
+    for (const file of NEW_TESTS) if (latest || file !== EVENTS_TEST) expect(writtenCount(files, file), file).toBe(casesIn(file))
   })
 
   it('gives unit counts that add up: the base\'s and the new file\'s', () => {

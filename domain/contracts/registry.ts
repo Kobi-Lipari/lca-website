@@ -36,6 +36,8 @@ import {
   createTournamentRequestSchema,
   ratingReportResponseSchema,
   registrationSettingsRequestSchema,
+  tournamentApprovalRequestSchema,
+  tournamentApprovalResponseSchema,
   tournamentDetailResponseSchema,
   tournamentDirectorRequestSchema,
   tournamentDirectorsResponseSchema,
@@ -117,6 +119,9 @@ export const contracts = {
   },
   'admin/tournaments/[id]': {
     PATCH: { request: updateTournamentRequestSchema, response: adminTournamentResponseSchema },
+  },
+  'admin/tournaments/[id]/approval': {
+    POST: { request: tournamentApprovalRequestSchema, response: tournamentApprovalResponseSchema },
   },
   'admin/tournaments/[id]/directors': {
     GET: { response: tournamentDirectorsResponseSchema },

@@ -667,6 +667,47 @@ export const registrationSettingsRequestSchema = z.looseObject({
   reminder_2_enabled: z.boolean().optional(),
 })
 
+/** The longest note Ask for changes takes, in characters, once trimmed. */
+export const APPROVAL_NOTE_MAX = 500
+
+/** The words for a note that is empty, or only spaces, on Ask for changes. */
+export const APPROVAL_NOTE_EMPTY = 'Write what needs to change before you send it back.'
+
+/** The words for a note longer than APPROVAL_NOTE_MAX. */
+export const APPROVAL_NOTE_TOO_LONG = 'Keep the note to 500 characters or fewer.'
+
+/**
+ * POST /api/admin/tournaments/[id]/approval (WS09 step 18): one of the
+ * three moves of a representative's club event through the LCA admins'
+ * wait. Strict, unlike the other request schemas, since no page sends it
+ * yet: a key it does not name is refused, and so is a note on submit or
+ * approve. Ask for changes needs its note, plain text, trimmed, 1 to 500
+ * characters; it goes in the email to the person who drafted the event and
+ * is kept nowhere.
+ */
+export const tournamentApprovalRequestSchema = z.discriminatedUnion('action', [
+  z.strictObject({ action: z.literal('submit') }),
+  z.strictObject({ action: z.literal('approve') }),
+  z.strictObject({
+    action: z.literal('ask_changes'),
+    note: z.string().trim().min(1, APPROVAL_NOTE_EMPTY).max(APPROVAL_NOTE_MAX, APPROVAL_NOTE_TOO_LONG),
+  }),
+])
+
+/**
+ * POST /api/admin/tournaments/[id]/approval: where the event stands after
+ * the move, by the wait's four columns, and whether the email went, in
+ * words a page can show. No person's id but approved_by, which the
+ * managers' answers already carry.
+ */
+export const tournamentApprovalResponseSchema = z.strictObject({
+  needs_lca_approval: flagSchema,
+  approval_requested_at: storedTimestampSchema.nullable(),
+  approved_at: storedTimestampSchema.nullable(),
+  approved_by: idSchema.nullable(),
+  email: z.string().min(1),
+})
+
 /** US Chess crosstable codes: W, L, D played; X forfeit win, F forfeit loss; B full bye, H half bye; U unplayed. */
 const ratingCodeSchema = z.enum(['W', 'L', 'D', 'X', 'F', 'B', 'H', 'U'])
 
@@ -815,3 +856,5 @@ export type RatingReportResponse = z.infer<typeof ratingReportResponseSchema>
 export type ClearinghouseResponse = z.infer<typeof clearinghouseResponseSchema>
 export type TournamentDirectorRequest = z.infer<typeof tournamentDirectorRequestSchema>
 export type TournamentDirectorsResponse = z.infer<typeof tournamentDirectorsResponseSchema>
+export type TournamentApprovalRequest = z.infer<typeof tournamentApprovalRequestSchema>
+export type TournamentApprovalResponse = z.infer<typeof tournamentApprovalResponseSchema>
