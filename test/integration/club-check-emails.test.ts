@@ -270,7 +270,7 @@ describe('the mark: claimed before the send, given back only when another try is
   it('a send worth another try gives the mark back and the next call sends', async () => {
     const who = await holder()
     emailBehavior.succeed = false
-    emailBehavior.status = 500
+    emailBehavior.status = 503
     emailBehavior.failFor = [who.email]
     const first = await runMonthlyCheck(keyed(), DEC_7_8AM, false, FAST)
     expect(first).toMatchObject({ sent: 0, notSent: 1 })

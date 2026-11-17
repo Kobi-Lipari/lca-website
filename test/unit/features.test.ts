@@ -44,7 +44,7 @@ const EARLIER = ['clubTournaments', 'tournamentQuickFilters', 'externalTags'] as
 const WS08 = ['standingDirectors'] as const
 
 /** WS16, the mail engine and the LCA newsletter: its switch, held off until the newsletter is switched on. */
-const WS16 = ['mailLists'] as const
+const WS16 = [] as const
 
 /** WS09, clubs as living listings: its three switches, held off until each is turned on in its order. */
 const WS09 = ['newClubs', 'clubKeepers', 'regionEvents'] as const

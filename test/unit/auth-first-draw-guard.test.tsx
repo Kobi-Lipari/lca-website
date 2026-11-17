@@ -249,7 +249,7 @@ describe('the routes drawn here are the ones App.tsx draws', () => {
   it('reads mailLists as it ships, and clubKeepers on in this file alone', async () => {
     const real = await vi.importActual<typeof import('@/lib/features')>('@/lib/features')
     expect(FEATURES.mailLists).toBe(real.FEATURES.mailLists)
-    expect(FEATURES.mailLists).toBe(false)
+    expect(FEATURES.mailLists).toBe(true)
     expect(FEATURES.clubKeepers).toBe(true)
   })
 })
