@@ -32,8 +32,12 @@
 // came from. A letter set aside, used again for its own month, brings back
 // its own subject with its words. The first step wiggles once as the page
 // opens on a letter that holds no words.
-// Steps 2 and 3, the test and Send, are drawn and not yet available. Saving
-// and starting are useIssue's. Help comes with a later part.
+// Step 2, "Send a test to me" (page step 6), saves the words on the page
+// first by the chooser's own path, then asks for a test of the stored letter
+// to the person's own address, and the bar's status line says what came of
+// it in words. Step 3, Send, is drawn and not yet available, and a press on
+// it says why there. Saving, starting and the test are useIssue's. Help
+// comes with a later part.
 //
 // By the window's width, at the site's own breakpoints: from 1024 pixels up
 // the computer's page, the letter with the email beside it; under 1024 the
@@ -55,17 +59,18 @@
 import { useEffect, useRef, useState, type KeyboardEvent } from 'react'
 import { Link, Navigate } from 'react-router-dom'
 import { defaultSubject } from '@domain/mail/letter'
+import { TEST_NO_WORDS, WAITS_FOR_SES } from '@domain/mail/newsletterWords'
 import { useAuth } from '@/contexts/auth-context'
 import { useMediaManagerAnswer } from '@/areas/admin/mediaManagerAnswer'
 import { CountCard } from '@/areas/admin/newsletter/CountCard'
-import { FootBar, type FocusCarry, type FocusHold } from '@/areas/admin/newsletter/FootBar'
+import { FootBar, type BarSaid, type FocusCarry, type FocusHold } from '@/areas/admin/newsletter/FootBar'
 import { FromSubjectRow } from '@/areas/admin/newsletter/FromSubjectRow'
 import { LetterEditor } from '@/areas/admin/newsletter/LetterEditor'
 import { MoreOptions, type ReachRead } from '@/areas/admin/newsletter/MoreOptions'
 import { NewsletterHead, SavedLineNotice, type SavedLineProps } from '@/areas/admin/newsletter/NewsletterHead'
 import { EmailSheet, SidePreview, type PreviewView } from '@/areas/admin/newsletter/SidePreview'
 import { TemplateChooser, type ChooserBusy, type Choice } from '@/areas/admin/newsletter/TemplateChooser'
-import { holdsWords, useIssue, type Issue, type LetterDraft, type SavedFirst, type StartOutcome } from '@/areas/admin/newsletter/useIssue'
+import { holdsWords, useIssue, type Issue, type LetterDraft, type SavedFirst, type StartOutcome, type TestOutcome } from '@/areas/admin/newsletter/useIssue'
 import { usePageTitle } from '@/hooks/usePageTitle'
 import { useTabletScreen } from '@/hooks/useWideScreen'
 import { getNewsletter } from '@/lib/api'
@@ -125,6 +130,48 @@ function startFailedWords(outcome: Exclude<StartOutcome, { kind: 'started' } | {
   if (outcome.kind === 'refused') return 'No new letter was started.'
   if (outcome.kind === 'not-found') return 'That newsletter could not be found, so no letter was started.'
   return outcome.words !== '' ? outcome.words : 'Could not start a new letter. Try again in a moment.'
+}
+
+/** The test's words when someone else has changed, replaced or sent the letter: the saved line at the page's top says who and when. */
+const TEST_CHANGED = 'No test was sent: someone else has changed, replaced or sent this letter. See who and when at the top of the page.'
+
+/** The test's words for a test that could not be asked for, or got no answer the page can read. */
+const TEST_FAILED = 'The test could not be sent. Try again in a moment.'
+
+/**
+ * Why no test was sent when the words on the page could not be saved first, by saveFirst's answer, in the chooser's
+ * own words for the same answers; the saved line says the rest, as it does for any save.
+ */
+const TEST_NOT_SAVED: Record<Exclude<SavedFirst, 'saved'>, string> = {
+  failed: 'Your words could not be saved, so no test was sent. Try again in a moment.',
+  refused: 'Your words could not be saved, so no test was sent.',
+  conflict: 'Your words could not be saved, so no test was sent.',
+  stopped: 'Your words here are not saved, so no test was sent. Copy anything you want to keep first.',
+  'changed-before': TEST_CHANGED,
+  waiting: 'Your words are still being saved, so no test was sent. Try again in a moment.',
+  changed: TEST_CHANGED,
+  unchecked: TEST_FAILED,
+}
+
+/** What the bar's status line says of a test, in words, or null for a letter that has left the page. */
+function testSaid(outcome: TestOutcome): BarSaid | null {
+  switch (outcome.kind) {
+    case 'sent':
+      return { tone: 'sent', words: outcome.to !== '' ? `Test sent to ${outcome.to}.` : 'Test sent to your address.' }
+    case 'not-saved':
+      return { tone: 'not-sent', words: TEST_NOT_SAVED[outcome.first] }
+    case 'empty':
+      // The server holds no letter yet, so there is nothing to test: its own words for a letter with no words.
+      return { tone: 'not-sent', words: TEST_NO_WORDS }
+    case 'conflict':
+      return { tone: 'not-sent', words: TEST_CHANGED }
+    case 'moved':
+      return { tone: 'not-sent', words: 'No test was sent, since your words changed as it went. Send a test again.' }
+    case 'refused':
+      return { tone: 'not-sent', words: outcome.words !== '' ? outcome.words : TEST_FAILED }
+    default:
+      return null
+  }
 }
 
 /** Every control the keyboard stops on inside a part of the page, in the page's order. */
@@ -368,6 +415,9 @@ function NewsletterLetter({ issue, reach, view, onView, previewHidden, onPreview
   const [asking, setAsking] = useState<Choice | null>(null)
   const [busy, setBusy] = useState<ChooserBusy>(null)
   const [said, setSaid] = useState('')
+  // "Send a test to me" while it is on its way, and what the bar's status line says; empty whenever a letter is drawn.
+  const [testing, setTesting] = useState(false)
+  const [barSaid, setBarSaid] = useState<BarSaid | null>(null)
   // The first step's cue plays once only, as the page opens on its first letter when that letter holds no words, from
   // the moment the letter is drawn until something is written.
   const [opensEmpty] = useState(() => issue.letterKey === 1 && !holdsWords(issue.letter))
@@ -538,6 +588,25 @@ function NewsletterLetter({ issue, reach, view, onView, previewHidden, onPreview
     setSaid(startFailedWords(outcome))
   }
 
+  /**
+   * "Send a test to me": one test at a time, the step saying so while it is on its way and the status line saying it
+   * to a screen reader; then what it came to, in words. Nothing is said for a letter that has left the page meanwhile.
+   */
+  async function sendTest() {
+    if (testing) return
+    setTesting(true)
+    setBarSaid({ tone: 'busy', words: 'Sending a test to your address.' })
+    const outcome = await issue.sendTest(() => live.current)
+    if (!live.current) return
+    setTesting(false)
+    setBarSaid(testSaid(outcome))
+  }
+
+  /** Send, drawn and not yet available, says why on a press, in the newsletter tab's own words for its Send. */
+  function sendNotYet() {
+    setBarSaid({ tone: 'note', words: WAITS_FOR_SES })
+  }
+
   const moreOptions = (place: 'bar' | 'end') => (
     <MoreOptions
       place={place}
@@ -644,6 +713,10 @@ function NewsletterLetter({ issue, reach, view, onView, previewHidden, onPreview
         chooserOpen={chooserOpen}
         cue={opensEmpty && drawn && !holdsWords(words)}
         carry={carry}
+        onTest={() => void sendTest()}
+        testing={testing}
+        onSendNotYet={sendNotYet}
+        said={barSaid}
       />
       {/*
         The chooser, drawn in a layer of its own over the page. It comes after the bar here, so that as the window crosses

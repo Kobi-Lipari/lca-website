@@ -5,9 +5,12 @@
 // their own cases here.
 //
 // - The bar at a computer's width: More options, then the three numbered
-//   steps; steps 2 and 3 drawn and not yet available, each a button a screen
-//   reader says is not available, which Tab reaches and no press, key or
-//   touch acts on, and step 1 opening the chooser, whose cases are in
+//   steps; step 3 drawn and not yet available, a button a screen reader says
+//   is not available, which Tab reaches and no press, key or touch opens
+//   anything with, saying why in the bar's status line since page step 6,
+//   whose test of the letter makes step 2 ready (its cases are in
+//   test/unit/admin-newsletter-test.test.tsx); and step 1 opening the
+//   chooser, whose cases are in
 //   test/unit/admin-newsletter-chooser.test.tsx; the count read once, as
 //   Group email's newsletter tab reads it, in Send, and "Send" alone while it
 //   is not known or could not be read.
@@ -235,10 +238,13 @@ describe('the bar at the foot, from 768 pixels up', () => {
     expect(within(theBar()).queryByRole('button', { name: 'See the email' })).toBeNull()
   })
 
-  it('draws steps 2 and 3 not yet available: each says so, Tab reaches it, and no press, key or touch acts on it', async () => {
+  // Moved in page step 6: step 2 is ready there, its test of the letter held in test/unit/admin-newsletter-test.test.tsx,
+  // and step 3, still not available, says why in the bar's status line on a press, a key or a touch, opening nothing.
+  it('draws step 3 not yet available: it says so, Tab reaches it, and no press, key or touch opens anything or asks the server; step 2 is ready', async () => {
     windowAt(1440)
     await thePage()
-    const steps = ['2 Send a test to me', '3 Send to 155 people'].map((name) => within(theBar()).getByRole('button', { name }))
+    expect(within(theBar()).getByRole('button', { name: '2 Send a test to me' }).hasAttribute('aria-disabled')).toBe(false)
+    const steps = ['3 Send to 155 people'].map((name) => within(theBar()).getByRole('button', { name }))
     const before = calls.length
     for (const step of steps) {
       expect(step.getAttribute('aria-disabled'), step.id).toBe('true')
@@ -260,11 +266,12 @@ describe('the bar at the foot, from 768 pixels up', () => {
       await settle()
       expect(focused()).toBe(step)
     }
-    // Nothing opened, nothing was asked of the server, and More options stayed shut.
+    // Nothing opened, nothing was asked of the server, and More options stayed shut; the bar's status line says why.
     expect(screen.queryByRole('dialog')).toBeNull()
     expect(screen.queryByRole('menu')).toBeNull()
     expect(moreRows()).toBeNull()
     expect(calls.slice(before)).toEqual([])
+    expect(within(theBar()).getByRole('status').textContent).toBe('The newsletter goes out through Amazon SES, which this site does not send through yet. You can write it and send yourself a test.')
   })
 
   it('reads the count once as the page opens, as Group email\'s newsletter tab does, in words for one person and for none', async () => {

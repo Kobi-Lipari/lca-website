@@ -8,7 +8,10 @@
 //   contract, its 200, its 409 for an old version, and its refusals;
 // - POST /api/admin/mail/newsletter/issue/start, its 201 and its 409;
 // - GET /api/admin/mail/newsletter/issues, with a letter set aside, a sent
-//   letter and a send from the plain tab.
+//   letter and a send from the plain tab;
+// - since page step 6, POST /api/admin/mail/newsletter/test's second form, a
+//   test of the stored letter, its body read through the endpoint's request
+//   contract beside today's form, its 200, its 409 and its refusals.
 // Every refusal answers the shared error bodies, the 409 its own. MAIL_PAGE_ON
 // and MAIL_LISTS_ON are read through getters on the mocked switches module,
 // set before every case, with the module's other constants set beside them.
@@ -20,8 +23,9 @@ import { NEWSLETTER_LIST_ID } from '../../../domain/mail/lists'
 import { onRequestGet as issueGet, onRequestPut as issuePut } from '../../../functions/api/admin/mail/newsletter/issue'
 import { onRequestPost as startPost } from '../../../functions/api/admin/mail/newsletter/issue/start'
 import { onRequestGet as issuesGet } from '../../../functions/api/admin/mail/newsletter/issues'
+import { onRequestPost as testPost } from '../../../functions/api/admin/mail/newsletter/test'
 import { seedAdmin, seedMember } from '../factories'
-import { expectContract, invoke, resetHarness } from '../harness'
+import { emailOutbox, expectContract, invoke, resetHarness } from '../harness'
 
 const flags = vi.hoisted(() => ({ pageOn: true, listsOn: true, sender: 'resend', plan: 'free', complaintStops: true }))
 vi.mock('../../../functions/utils/mail/switches', async (importOriginal) => {
@@ -50,6 +54,7 @@ const read = contracts['admin/mail/newsletter/issue'].GET
 const save = contracts['admin/mail/newsletter/issue'].PUT
 const start = contracts['admin/mail/newsletter/issue/start'].POST
 const last = contracts['admin/mail/newsletter/issues'].GET
+const test = contracts['admin/mail/newsletter/test'].POST
 
 const LETTER = '<h2>Sample heading one</h2><p>Example words for a sample letter.</p>'
 const SAVE = { id: null, version: 0, monthLabel: 'December 2026', subject: 'Sample subject one', preheader: 'Sample preview line', bodyHtml: LETTER }
@@ -209,5 +214,43 @@ describe('GET /api/admin/mail/newsletter/issues', () => {
     const res = await invoke(issuesGet, { as: await seedAdmin() })
     expect(res.status).toBe(404)
     expect(await expectContract(res, errorBodySchema)).toEqual({ error: 'Not found' })
+  })
+})
+
+describe('POST /api/admin/mail/newsletter/test, the test of the stored letter (page step 6)', () => {
+  it('takes either form through its request contract, and answers the letter form\'s 200 to its contract, with the address it went to', async () => {
+    const admin = await seedAdmin()
+    const saved = await (await invoke(issuePut, { as: admin, method: 'PUT', body: SAVE })).json<{ id: string; version: number }>()
+    const body = { issueId: saved.id, version: saved.version, from: 'the page' }
+    expect(test.request.safeParse(body).success).toBe(true)
+    expect(test.request.safeParse({ to: 'contract.tester@newsletter.test.lca', subject: 'Sample newsletter one', bodyHtml: '<p>Sample words.</p>' }).success).toBe(true)
+    for (const bad of [{ issueId: '', version: 1 }, { issueId: saved.id, version: 0 }, { issueId: saved.id }]) expect(test.request.safeParse(bad).success, JSON.stringify(bad)).toBe(false)
+    const res = await invoke(testPost, { as: admin, method: 'POST', body })
+    expect(res.status).toBe(200)
+    const sent = await expectContract(res, test.response)
+    expect(sent).toEqual({ sent: true, to: emailOutbox[0].to })
+    expect(test.response.safeParse({ sent: true, to: 'x', words: 'y' }).success).toBe(false)
+  })
+
+  it('answers a letter changed since its version with the save\'s 409 body, and every other refusal with the shared error bodies', async () => {
+    const one = await seedMember({ fullName: 'Player One', role: 'lca_admin' })
+    const two = await seedMember({ fullName: 'Player Two', role: 'lca_admin' })
+    const saved = await (await invoke(issuePut, { as: one, method: 'PUT', body: SAVE })).json<{ id: string; version: number }>()
+    await invoke(issuePut, { as: two, method: 'PUT', body: { ...SAVE, id: saved.id, version: saved.version } })
+    const stale = await invoke(testPost, { as: one, method: 'POST', body: { issueId: saved.id, version: saved.version } })
+    expect(stale.status).toBe(409)
+    expect(await expectContract(stale, newsletterIssueRefusedSchema)).toMatchObject({ reason: 'changed', changedBy: 'Player Two' })
+    const field = await invoke(testPost, { as: one, method: 'POST', body: { issueId: saved.id, version: 0 } })
+    expect(field.status).toBe(400)
+    expect(Object.keys((await expectContract(field, fieldErrorBodySchema)).fields)).toEqual(['version'])
+    for (const [body, status, env] of [
+      [{ issueId: 'issue-nowhere', version: 1 }, 404, undefined],
+      [{ issueId: saved.id, version: saved.version + 1 }, 503, { MAIL_LINK_SECRET: '' }],
+    ] as const) {
+      const refused = await invoke(testPost, { as: one, method: 'POST', body, ...(env ? { env } : {}) })
+      expect(refused.status).toBe(status)
+      await expectContract(refused, errorBodySchema)
+    }
+    expect(emailOutbox).toEqual([])
   })
 })

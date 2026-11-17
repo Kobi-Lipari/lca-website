@@ -52,6 +52,14 @@
 //   letter set aside with a subject of its own, started from for the same
 //   month, has that subject put back on the page as the person's own words,
 //   saved after the pause as an edit is.
+// - "Send a test to me" (page step 6): the words on the page are saved
+//   first by the same path the chooser's start uses (saveFirst), and when
+//   that save cannot be made nothing is sent; then one request asks the
+//   server for a test of the stored letter by the id and version the page
+//   then holds, to the signed-in account's own address. A test the server
+//   refuses with 409 stops the saving as a save's 409 does, the saved line
+//   saying who did what and when, unless the page's own save was on its way
+//   or landed as the test went; nothing is ever tried again by itself.
 // - Leaving with words not saved: a press on a link to another of the site's
 //   pages asks first, and the person who stays keeps the page and their
 //   words; one who goes has the save sent at once, or once the save on the
@@ -72,6 +80,7 @@ import { STARTERS, STARTER_IDS, defaultSubject, monthLabel, type StarterId } fro
 import {
   getNewsletterIssue,
   saveNewsletterIssue,
+  sendNewsletterIssueTest,
   startNewsletterIssue,
   type ApiNewsletterIssue,
   type ApiNewsletterIssueRefused,
@@ -137,6 +146,23 @@ export type SavedFirst = 'saved' | 'failed' | 'refused' | 'conflict' | 'stopped'
  */
 export type StartOutcome = { kind: 'started' } | { kind: 'refused' } | { kind: 'not-found' } | { kind: 'failed'; words: string } | { kind: 'busy' }
 
+/**
+ * What "Send a test to me" came to (page step 6): sent, with the address the server sent it to; nothing sent, since the
+ * words on the page could not be saved first (`first`, saveFirst's answer), or the server holds no letter yet; refused
+ * with 409, someone else having changed, replaced or sent the letter since the version the page holds, the saved line
+ * then saying who and when ('conflict'); refused with 409 while the page's own save was on its way or had landed as the
+ * test went ('moved'); refused in the server's own words, '' for an answer that brings none or for none at all; or,
+ * the letter having left the page meanwhile, nothing to say ('gone').
+ */
+export type TestOutcome =
+  | { kind: 'sent'; to: string }
+  | { kind: 'not-saved'; first: Exclude<SavedFirst, 'saved'> }
+  | { kind: 'empty' }
+  | { kind: 'conflict' }
+  | { kind: 'moved' }
+  | { kind: 'refused'; words: string }
+  | { kind: 'gone' }
+
 export interface Issue {
   /** 'loading' until the first read answers, 'failed' when it could not be read, 'ready' after. */
   status: 'loading' | 'failed' | 'ready'
@@ -172,6 +198,11 @@ export interface Issue {
    * and answers 'busy'.
    */
   start: (from: StartFrom, month: string, startedFrom: string, subjectBack?: SubjectBack) => Promise<StartOutcome>
+  /**
+   * "Send a test to me": saves the words on the page first (saveFirst), then asks for one test of the stored letter at
+   * the version the page then holds; `onPage` says whether the letter is still on the page, as for saveFirst.
+   */
+  sendTest: (onPage?: () => boolean) => Promise<TestOutcome>
   /** The name of the choice the letter on the page was started from, until the page has drawn it and said so; else null. */
   startedFrom: string | null
   /** Once the letter a start put on the page is drawn: the saved line says which choice it was started from, once. */
@@ -755,6 +786,38 @@ function createKeeper(report: Report) {
     }
   }
 
+  /**
+   * "Send a test to me": the words on the page saved first by saveFirst, the chooser's own path, so the test is of the
+   * words on the page; when they cannot be saved, nothing is sent, and the answer says why. Then one request for a test
+   * of the stored letter by the id and version the page holds then, which the server sends to the signed-in account's
+   * own address; nothing is sent for a letter the server holds no row for yet. A 409 means the letter on the server is
+   * not the one the page holds at that version: when the page's own save is on its way, or landed as the test went, it
+   * is the page's own doing ('moved') and nothing more is done; else someone else changed, replaced or sent it, and the
+   * saving stops, as after a save's 409, the saved line saying who did it and when. Any other refusal, or none, changes
+   * nothing. An answer for a letter that has left the page meanwhile is set aside ('gone').
+   */
+  async function sendTest(onPage: () => boolean = () => true): Promise<TestOutcome> {
+    const first = await saveFirst(undefined, onPage)
+    if (!onPage()) return { kind: 'gone' }
+    if (first !== 'saved') return { kind: 'not-saved', first }
+    if (id === null) return { kind: 'empty' }
+    const named = { issueId: id, version }
+    const at = era
+    try {
+      const answer = await sendNewsletterIssueTest(named)
+      if (at !== era) return { kind: 'gone' }
+      if ('refused' in answer) {
+        if (inFlight || id !== named.issueId || version !== named.version) return { kind: 'moved' }
+        if (!stopped) refuse(answer.refused)
+        return { kind: 'conflict' }
+      }
+      return { kind: 'sent', to: answer.sent.to }
+    } catch (error) {
+      if (at !== era) return { kind: 'gone' }
+      return { kind: 'refused', words: error instanceof ApiError ? error.message : '' }
+    }
+  }
+
   /** Says once on the saved line which choice the letter on the page was started from, unless the line has moved on. */
   function sayStarted() {
     if (startedWords === null) return
@@ -841,7 +904,7 @@ function createKeeper(report: Report) {
     }
   }
 
-  return { read, edit, startSave, showTheirs, reload, watchLeaving, saveFirst, start, sayStarted }
+  return { read, edit, startSave, showTheirs, reload, watchLeaving, saveFirst, start, sendTest, sayStarted }
 }
 
 /**
@@ -878,6 +941,6 @@ export function useIssue(enabled: boolean): Issue {
   return {
     status, loadError, letter, letterKey, state, line,
     edit: keeper.edit, saveNow: keeper.startSave, showTheirs: keeper.showTheirs, reload: keeper.reload,
-    saveFirst: keeper.saveFirst, start: keeper.start, startedFrom, sayStarted: keeper.sayStarted,
+    saveFirst: keeper.saveFirst, start: keeper.start, sendTest: keeper.sendTest, startedFrom, sayStarted: keeper.sayStarted,
   }
 }

@@ -11,7 +11,10 @@
 //   one, one of LCA's starters, a past letter or a newsletter sent from the
 //   plain tab, setting the open letter aside when it holds words;
 // - GET /api/admin/mail/newsletter/issues, the last letters and sends,
-//   without their words.
+//   without their words;
+// - since page step 6, the second form of POST
+//   /api/admin/mail/newsletter/test, a test of the stored letter to the
+//   signed-in account's own address, taken only while MAIL_PAGE_ON is set.
 // The newsletter tab's own contracts are in ./mail.ts, and these are not
 // among them, since the page and the tab are switched apart.
 //
@@ -174,6 +177,28 @@ export const newsletterIssuesResponseSchema = z.strictObject({
   issues: z.array(lastNewsletterSchema).max(20),
 })
 
+/** The words for a test's letter that is not one the server can name. */
+const TEST_LETTER_WORDS = 'Name the letter to test.'
+
+/**
+ * POST /api/admin/mail/newsletter/test's second form, from the newsletter's own page (WS16 part two, page step 6),
+ * taken only while MAIL_PAGE_ON is set: the stored letter by its id and the version the page holds, and nothing else.
+ * The words sent are the stored letter's and the address is the signed-in account's, so neither is read from the
+ * body; a key beside the two passes through and is ignored, a `to` among them. Its refusals: the save's 409
+ * (newsletterIssueRefusedSchema) for a letter changed, sent or set aside since that version; 404 for a letter that is
+ * not the newsletter's; and the shared error bodies for the rest, each in words.
+ */
+export const newsletterTestLetterRequestSchema = z.looseObject({
+  issueId: z.string({ error: TEST_LETTER_WORDS }).min(1, TEST_LETTER_WORDS).max(REQUEST_ID_MAX, TEST_LETTER_WORDS),
+  version: z.number({ error: VERSION_WORDS }).int(VERSION_WORDS).min(1, VERSION_WORDS),
+})
+
+/** That form's 200: the test went to the mail service, and to which address, the signed-in account's own. */
+export const newsletterTestLetterResponseSchema = z.strictObject({
+  sent: z.literal(true),
+  to: z.string(),
+})
+
 export type NewsletterLetter = z.infer<typeof newsletterLetterSchema>
 export type NewsletterIssueResponse = z.infer<typeof newsletterIssueResponseSchema>
 export type NewsletterIssueSaveRequest = z.infer<typeof newsletterIssueSaveRequestSchema>
@@ -182,3 +207,5 @@ export type NewsletterIssueRefused = z.infer<typeof newsletterIssueRefusedSchema
 export type NewsletterIssueStartRequest = z.infer<typeof newsletterIssueStartRequestSchema>
 export type LastNewsletter = z.infer<typeof lastNewsletterSchema>
 export type NewsletterIssuesResponse = z.infer<typeof newsletterIssuesResponseSchema>
+export type NewsletterTestLetterRequest = z.infer<typeof newsletterTestLetterRequestSchema>
+export type NewsletterTestLetterResponse = z.infer<typeof newsletterTestLetterResponseSchema>
