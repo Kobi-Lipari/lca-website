@@ -29,7 +29,7 @@ export type WorkersPlan = 'free' | 'paid'
  * WORKERS_PLAN). Turned on with mailLists in src/lib/features.ts, in the same change;
  * test/unit/mail-switches.test.ts holds the two equal.
  */
-export const MAIL_LISTS_ON = false
+export const MAIL_LISTS_ON = true
 
 /**
  * Set: the newsletter's own page on the server, the four methods that read, save and start a letter and list the last
@@ -37,7 +37,7 @@ export const MAIL_LISTS_ON = false
  * before reading anything. Turned on with mailPage in src/lib/features.ts, in the same change, and only while
  * MAIL_LISTS_ON is set; test/unit/mail-switches.test.ts holds the two equal and holds it to MAIL_LISTS_ON.
  */
-export const MAIL_PAGE_ON = false
+export const MAIL_PAGE_ON = true
 
 /**
  * Which service sends every email: 'resend' today. It changes only in a pull request of its own (the cutover, whose

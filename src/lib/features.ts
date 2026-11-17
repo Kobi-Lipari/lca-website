@@ -41,7 +41,7 @@ const SWITCHES = {
    * focus ring, and the new date, time and score formats. It also shows the
    * home page hero as one still picture, with no slideshow and no timer.
    */
-  newLook: false,
+  newLook: true,
 
   /**
    * The Heritage Club look on About, Board, Bylaws, Minutes, Annual meeting
@@ -50,7 +50,7 @@ const SWITCHES = {
    * them in the base look. The look itself shows only when newLook is on as
    * well.
    */
-  themeHeritage: false,
+  themeHeritage: true,
 
   /**
    * The Bright Scholastic look on the Scholastic pages. Off until the
@@ -64,7 +64,7 @@ const SWITCHES = {
    * footer, plus the tablet header and, on phones, the top bar, bottom tab
    * bar and menu sheet. One switch, so a phone is never left without a menu.
    */
-  newNav: false,
+  newNav: true,
 
   /**
    * The Search button in the header, its search panel (also opened with
@@ -227,10 +227,10 @@ const SWITCHES = {
   // Redesign, mail. Off until it is checked on a preview.
 
   /** The LCA newsletter list in Group email, with the unsubscribe link, the email preferences page and the footer every optional email carries, and the media manager's way in to it: Admin with Group email alone and a Group email link in the account menu. */
-  mailLists: false,
+  mailLists: true,
 
   /** The newsletter's own page, where the LCA admins, the president and the media manager write, save and start a letter; it needs mailLists on. */
-  mailPage: false,
+  mailPage: true,
 } as const
 
 /** The name of one switch. */
