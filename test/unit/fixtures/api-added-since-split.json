@@ -52,6 +52,7 @@
     "saveNewsletterIssue": "admin",
     "sendMonthlyCheck": "clubs",
     "sendNewsletter": "admin",
+    "sendNewsletterIssueTest": "admin",
     "sendNewsletterTest": "admin",
     "startNewsletterIssue": "admin",
     "stopNewsletter": "admin",

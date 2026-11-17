@@ -3,7 +3,8 @@
 // The rules of an LCA newsletter letter, written once for the newsletter's
 // own page and the server (WS16 part two, page step 1). Pure, with no
 // import, so the page, the server functions and the daily-emails worker can
-// all read it. Nothing imports it yet.
+// all read it. The page, the page's server functions and its contracts
+// import it.
 //
 // - letterParts reads a cleaned letter's h2 headings, in order, as the
 //   letter's parts: the "In this issue" list is made from them and is never

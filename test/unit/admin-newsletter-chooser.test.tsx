@@ -311,9 +311,11 @@ describe('the first step', () => {
       expect(step(), name).toBe(button)
       expect(button.getAttribute('aria-expanded'), name).toBe('false')
     }
-    // Steps 2 and 3 stay as the first part drew them, not yet available.
+    // Step 3 stays as the first part drew it, not yet available; step 2 is ready since page step 6, its test of the letter
+    // held in test/unit/admin-newsletter-test.test.tsx.
     move(1440)
-    for (const name of ['2 Send a test to me', '3 Send to 155 people']) expect(within(theBar()).getByRole('button', { name }).getAttribute('aria-disabled')).toBe('true')
+    expect(within(theBar()).getByRole('button', { name: '3 Send to 155 people' }).getAttribute('aria-disabled')).toBe('true')
+    expect(within(theBar()).getByRole('button', { name: '2 Send a test to me' }).getAttribute('aria-disabled')).toBeNull()
   })
 })
 
@@ -1108,8 +1110,9 @@ describe('the wiggle', () => {
     expect(wiggle.on.textContent).toBe('1Pick a template to start from')
     expect(wiggle.options.duration).toBe(1000)
     expect(wiggle.frames.map((frame) => frame.transform)).toEqual(['rotate(0deg)', 'rotate(-2deg)', 'rotate(2deg)', 'rotate(-2deg)', 'rotate(1.5deg)', 'rotate(0deg)'])
-    // Nothing is said to a screen reader for it, and nothing beside the step is asked to move.
-    expect(theBar().querySelectorAll('[role="status"], [role="alert"]')).toHaveLength(0)
+    // Nothing is said to a screen reader for it, and nothing beside the step is asked to move. Since page step 6 the bar
+    // holds one polite region, its status line, which stays empty until a step is pressed.
+    expect([...theBar().querySelectorAll('[role="status"], [role="alert"]')].map((region) => [region.getAttribute('data-slot'), region.textContent])).toEqual([['bar-said', '']])
   })
 
   it('plays on a phone on "Pick a template", and never on a letter that holds words', async () => {

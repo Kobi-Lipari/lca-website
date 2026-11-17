@@ -4,7 +4,8 @@
 // newsletter_issues of migration 0061 (functions/db/schema.ts says what each
 // column holds): a list's open letter, its save, the start of a new one and
 // the last ones. The four methods under functions/api/admin/mail/newsletter/
-// call these behind requireListMailer and MAIL_PAGE_ON.
+// call these behind requireListMailer and MAIL_PAGE_ON, and so, since page
+// step 6, does the test of the stored letter (letterToTest), which only reads.
 //
 // - One open letter for a list: campaign_id and set_aside_at both empty,
 //   held by the unique index newsletter_issues_one_open, and each insert
@@ -235,6 +236,33 @@ const stateStatement = (db: D1Database, id: string, listId: string) =>
         WHERE i.id = ?1 AND i.list_id = ?2`,
     )
     .bind(id, listId)
+
+/**
+ * The letter a test names, read as it is stored, when it is the list's open letter at the version given; else why not,
+ * in the refusal a save at that version gets (refusalOf): sent, set aside, or written to since; or not found for a
+ * letter that is not the list's, whether or not it is another's. One query, and nothing written.
+ */
+export async function letterToTest(db: D1Database, listId: string, id: string, version: number): Promise<{ letter: Letter } | { refused: Refusal } | { notFound: true }> {
+  const row = await db
+    .prepare(
+      `SELECT ${LETTER_COLUMNS}, i.campaign_id, i.set_aside_at, c.created_at AS sent_at, s.full_name AS sent_by
+         FROM newsletter_issues i
+         LEFT JOIN members m ON m.id = i.updated_by
+         LEFT JOIN email_campaigns c ON c.id = i.campaign_id
+         LEFT JOIN members s ON s.id = c.created_by
+        WHERE i.id = ?1 AND i.list_id = ?2`,
+    )
+    .bind(id, listId)
+    .first<LetterRow & StateRow>()
+  if (!row) return { notFound: true }
+  if (row.campaign_id !== null || row.set_aside_at !== null || row.version !== version) return { refused: refusalOf(row) }
+  return { letter: openOf(row).letter }
+}
+
+/** Whether a stored letter's body holds any words, its headings among them: its text once the cleaner's tags and the spaces are taken out. */
+export function bodyHasWords(bodyHtml: string): boolean {
+  return bodyHtml.replace(/<\/?(?:p|br|strong|em|h2|h3|ul|ol|li|hr|a)(?: [^<>]*)?>/g, ' ').replace(/&nbsp;|&#160;|&#xa0;/gi, ' ').trim() !== ''
+}
 
 /** Why a write to a letter changed nothing, as the letter now stands: it was sent, it was set aside, or it was written to since it was read. */
 function refusalOf(row: StateRow): Refusal {

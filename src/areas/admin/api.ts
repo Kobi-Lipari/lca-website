@@ -328,8 +328,8 @@ export async function stopNewsletter(): Promise<ApiNewsletterStopped> {
 
 // The newsletter's own page (WS16 part two, page step 3): its four methods under /api/admin/mail/newsletter/issue and
 // /issues, behind requireListMailer, each answering 404 while the page is switched off on the server. Their answers are
-// the contracts in domain/contracts/newsletter.ts, written here by hand, as the newsletter's above are. Nothing imports
-// these yet; the page that calls them comes in WS16 part two step 4.
+// the contracts in domain/contracts/newsletter.ts, written here by hand, as the newsletter's above are. The page's
+// own files under src/areas/admin/newsletter call them.
 
 /** One letter as the server keeps it (newsletterLetterSchema): its words are the cleaner's own, its times the database's. */
 export interface ApiNewsletterLetter {
@@ -459,6 +459,27 @@ export async function getLastNewsletters(): Promise<{ issues: ApiLastNewsletter[
     headers: await authHeaders(),
   })
   return handleResponse(response)
+}
+
+/**
+ * "Send a test to me" (page step 6): a test of the stored letter, by the id and version the page holds, to the
+ * signed-in account's own address, in the navy look with the real footer, through POST /api/admin/mail/newsletter/test's
+ * second form, which the server takes only while the page is switched on there. It answers the address the test went
+ * to. A 409 is answered, not thrown, as a save's is, with who changed, sent or replaced the letter and when; every
+ * other refusal throws ApiError with the server's own words, or with none for an answer that brings none, as a page
+ * from the edge, so the page says the test could not be sent rather than give a status code.
+ */
+export async function sendNewsletterIssueTest(payload: { issueId: string; version: number }): Promise<{ sent: { to: string } } | { refused: ApiNewsletterIssueRefused }> {
+  const response = await fetch('/api/admin/mail/newsletter/test', {
+    method: 'POST',
+    headers: await authHeaders(),
+    body: JSON.stringify(payload),
+  })
+  const answer = (await response.clone().json().catch(() => null)) as { error?: unknown; reason?: unknown; sent?: unknown; to?: unknown } | null
+  if (response.status === 409 && answer && typeof answer.reason === 'string') return { refused: answer as unknown as ApiNewsletterIssueRefused }
+  // A 200 is a test the mail service took; the address is said when the answer names it.
+  if (response.ok && answer?.sent === true) return { sent: { to: typeof answer.to === 'string' ? answer.to : '' } }
+  throw new ApiError(!response.ok && typeof answer?.error === 'string' ? answer.error : '', response.status)
 }
 
 // The media manager (WS16 step 6): whether the signed-in member sends the newsletter as the media manager, which only

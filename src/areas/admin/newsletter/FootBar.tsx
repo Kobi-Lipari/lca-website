@@ -42,18 +42,27 @@
 // moment instead. Either ends by itself, stops as soon as something is
 // written, and never plays under the focus or a press in the bar.
 //
-// Steps 2 and 3 are drawn and not yet available: the test and Send come with
-// page step 6. Each is a button a screen reader says is not available
-// (aria-disabled), which Tab still reaches and no press, key or touch acts
-// on, drawn quiet with its words kept readable: the white step in the site's
-// own quiet colours, Send in its gold with the colour drawn out of it; and in
-// forced colours in the system's colour for a control that cannot be used.
-// Send counts the people the newsletter would go to, read once as the page
-// opens; while that count is not known, or could not be read, it says
-// "Send".
+// The second step, "Send a test to me" (page step 6), is drawn ready, as the
+// board draws it: white with a navy edge. A press, a key or a touch asks the
+// page for a test of the letter to the person's own address; while it is on
+// its way the step says so in words and is not available, so it cannot be
+// pressed again, and the focus stays on it. What it came to is said in words
+// in the bar's status line, under the steps from 768 pixels up, read out
+// politely where the person is. The phone's bar draws no second step, as the
+// board draws none there: a phone held on its side has the wider bar.
+//
+// Step 3, Send, is drawn and not yet available: the real Send comes with the
+// move to Amazon SES. It is a button a screen reader says is not available
+// (aria-disabled), which Tab still reaches, drawn quiet with its words kept
+// readable, Send in its gold with the colour drawn out of it, and in forced
+// colours in the system's colour for a control that cannot be used. A press,
+// a key or a touch on it opens nothing and sends nothing: it says why in the
+// bar's status line, in the newsletter tab's own words for its Send. Send
+// counts the people the newsletter would go to, read once as the page opens;
+// while that count is not known, or could not be read, it says "Send".
 
 import { useEffect, useId, useLayoutEffect, useRef, type RefObject } from 'react'
-import { Bookmark, ChevronDown, ChevronUp, Eye, Mail, Send } from 'lucide-react'
+import { Bookmark, Check, ChevronDown, ChevronUp, CircleAlert, Eye, Mail, Send } from 'lucide-react'
 import { isTextField, useDock } from '@/components/layout/dockParts'
 import { cn } from '@/lib/utils'
 import type { ReactNode } from 'react'
@@ -81,14 +90,20 @@ export interface FocusCarry {
  */
 const NOT_YET = 'cursor-default outline-none focus-visible:ring-3 focus-visible:ring-focus forced-colors:border-[GrayText] forced-colors:text-[GrayText]'
 
-/**
- * The board's white step with its navy edge, drawn quiet: the site's own quiet words, which keep at least 4.7 to 1 on
- * the bar's ground in every look, and its edge at 60 per cent of them.
- */
-const LINE_NOT_YET = 'border-muted-foreground/60 bg-background text-muted-foreground'
-
 /** The first step, ready: the board's white step with its edge and words in the site's ink, navy in the light look. */
 const PICK_READY = 'relative border-ink bg-background text-ink outline-none focus-visible:ring-3 focus-visible:ring-focus'
+
+/** The second step, ready (page step 6): the board's white step with its navy edge, as the first step is drawn. */
+const TEST_READY = 'border-ink bg-background text-ink outline-none focus-visible:ring-3 focus-visible:ring-focus'
+
+/**
+ * What the bar says in its status line (page step 6): a test on its way ('busy', heard and not drawn, since the step
+ * itself says so), a test sent, nothing sent and why, or a note, as why Send waits.
+ */
+export interface BarSaid {
+  tone: 'busy' | 'sent' | 'not-sent' | 'note'
+  words: string
+}
 
 /**
  * The ring shown for a moment in place of the wiggle with reduced motion asked for: a gold band 3 pixels wide with a
@@ -240,9 +255,16 @@ export interface FootBarProps {
   /** While true, the first step's cue may play, once: the page opened on a letter that holds no words, and none is written yet. */
   cue: boolean
   carry: FocusCarry
+  /** "Send a test to me", from 768 pixels up: pressed, and whether a test is on its way. */
+  onTest: () => void
+  testing: boolean
+  /** Send, drawn and not yet available: pressed, it says why in the bar's status line. */
+  onSendNotYet: () => void
+  /** What the bar's status line says, or null while it says nothing. */
+  said: BarSaid | null
 }
 
-export function FootBar({ phone, bigger, count, moreOptions, onSeeEmail, sheetOpen, onPick, chooserOpen, cue, carry }: FootBarProps) {
+export function FootBar({ phone, bigger, count, moreOptions, onSeeEmail, sheetOpen, onPick, chooserOpen, cue, carry, onTest, testing, onSendNotYet, said }: FootBarProps) {
   const bar = useRef<HTMLElement>(null)
   useRoomForTheBar(bar, phone, bigger)
   usePickCue(bar, cue)
@@ -277,9 +299,36 @@ export function FootBar({ phone, bigger, count, moreOptions, onSeeEmail, sheetOp
       {phone ? (
         <PhoneBar onSeeEmail={onSeeEmail} sheetOpen={sheetOpen} onPick={onPick} chooserOpen={chooserOpen} carry={carry} />
       ) : (
-        <WideBar count={count} moreOptions={moreOptions} onPick={onPick} chooserOpen={chooserOpen} carry={carry} />
+        <>
+          <WideBar count={count} moreOptions={moreOptions} onPick={onPick} chooserOpen={chooserOpen} carry={carry} onTest={onTest} testing={testing} onSendNotYet={onSendNotYet} />
+          <BarLine said={said} />
+        </>
       )}
     </section>
+  )
+}
+
+/**
+ * The bar's status line (page step 6), under the steps: one polite region, on the page whenever the steps are, so each
+ * change is read out where the person is, the focus left where it was. Empty, it takes no room; with words, the bar is a
+ * line taller, and the page keeps that room too (useRoomForTheBar). A test sent has a tick beside its words and nothing
+ * sent a mark of its own, each beside words that say it; a test on its way is heard and not drawn, since the step says
+ * so itself. The words stay until the next press of either step.
+ */
+function BarLine({ said }: { said?: BarSaid | null }) {
+  return (
+    <p role="status" aria-atomic="true" data-slot="bar-said" className="mx-auto max-w-[1198px] px-6 text-[15px] leading-snug text-ink">
+      {said &&
+        (said.tone === 'busy' ? (
+          <span className="sr-only">{said.words}</span>
+        ) : (
+          <span className="ml-auto flex max-w-[44rem] items-start justify-end gap-2 pb-2.5 text-right">
+            {said.tone === 'sent' && <Check className="mt-[3px] size-4 flex-none text-ok-700" aria-hidden="true" />}
+            {said.tone === 'not-sent' && <CircleAlert className="mt-[3px] size-4 flex-none text-destructive" aria-hidden="true" />}
+            <span>{said.words}</span>
+          </span>
+        ))}
+    </p>
   )
 }
 
@@ -291,7 +340,11 @@ export function FootBar({ phone, bigger, count, moreOptions, onSeeEmail, sheetOp
  * at the board's narrower size, and Send without its arrow. Where a person's own text spacing makes the words wider than
  * the forms allow for, the four narrow and run their words on to more lines, and the row stays one.
  */
-function WideBar({ count, moreOptions, onPick, chooserOpen, carry }: { count: number | null | 'failed'; moreOptions?: ReactNode; onPick: () => void; chooserOpen: boolean; carry: FocusCarry }) {
+function WideBar({
+  count, moreOptions, onPick, chooserOpen, carry, onTest, testing, onSendNotYet,
+}: {
+  count: number | null | 'failed'; moreOptions?: ReactNode; onPick: () => void; chooserOpen: boolean; carry: FocusCarry; onTest: () => void; testing: boolean; onSendNotYet: () => void
+}) {
   const id = useId()
   return (
     <div className="@container mx-auto flex min-h-[75px] max-w-[1198px] items-center justify-between gap-x-3 px-6 py-2">
@@ -322,15 +375,27 @@ function WideBar({ count, moreOptions, onPick, chooserOpen, carry }: { count: nu
       </div>
       <div className="flex flex-initial items-center gap-2.5">
         <Mark id={`${id}-2`}>2</Mark>
+        {/* While a test is on its way the step says so and is not available, keeping the focus where it is. */}
         <button
           type="button"
-          aria-disabled="true"
+          aria-disabled={testing || undefined}
           aria-labelledby={`${id}-2 ${id}-2-words`}
-          className={cn(NOT_YET, LINE_NOT_YET, 'inline-flex min-h-[46px] items-center gap-2 rounded-lg border px-[15px] text-[15px] font-semibold leading-tight')}
+          onClick={() => {
+            if (!testing) onTest()
+          }}
+          className={cn(TEST_READY, 'inline-flex min-h-[46px] items-center gap-2 rounded-lg border px-[15px] text-[15px] font-semibold leading-tight', testing && 'cursor-default')}
         >
           <Mail className="size-[15px] flex-none" aria-hidden="true" />
           <span id={`${id}-2-words`} className="text-left">
-            Send a test <span className="@max-[1104px]:block">to me</span>
+            {testing ? (
+              <>
+                Sending <span className="@max-[1104px]:block">a test</span>
+              </>
+            ) : (
+              <>
+                Send a test <span className="@max-[1104px]:block">to me</span>
+              </>
+            )}
           </span>
         </button>
       </div>
@@ -340,6 +405,7 @@ function WideBar({ count, moreOptions, onPick, chooserOpen, carry }: { count: nu
           type="button"
           aria-disabled="true"
           aria-labelledby={`${id}-3 ${id}-3-words`}
+          onClick={onSendNotYet}
           className={cn(NOT_YET, 'inline-flex rounded-lg')}
         >
           {/* The gold and its words drawn quiet inside the button, so the focus ring keeps its own colour. */}

@@ -5,10 +5,10 @@
 // decision 53), written once for the server that sends it and the page that
 // previews it (WS16 part two, page step 2). Pure: the same email for the
 // same input on every call, with no clock, no random value and nothing read
-// from outside its arguments, and no import from outside domain/. Nothing
-// imports it yet: the send (page step 6) and the page's side preview (page
-// step 4) are its first callers. Today's layout, functions/utils/emailLayout.ts,
-// is not changed, so no other email moves.
+// from outside its arguments, and no import from outside domain/. The page's
+// side preview (page step 4) and the test of a letter (page step 6) import
+// it; the send from the page is to follow. Today's layout,
+// functions/utils/emailLayout.ts, is not changed, so no other email moves.
 //
 // What it trusts, and does not clean again:
 // - bodyHtml is a letter in the cleaner's own form (cleanLetterHtml in

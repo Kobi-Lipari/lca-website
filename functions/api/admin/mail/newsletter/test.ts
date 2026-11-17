@@ -48,17 +48,61 @@
 // another person's address carries the footer's words as a member reads
 // them, as today's test carries the page's. No activity row is written for
 // a test, as today's Group email test writes none.
+//
+// Since WS16 part two's page step 6, while MAIL_PAGE_ON is set, a body that
+// names a letter, { issueId, version }, is the newsletter's own page asking
+// for "Send a test to me" (newsletterTestLetterRequestSchema in
+// domain/contracts/newsletter.ts); with MAIL_PAGE_ON unset no body is looked
+// at before today's, so that one is refused as any body today's schema does
+// not take. The guard and the 404 are today's. The test goes to one address,
+// the signed-in account's own, for everyone the guard lets in, and no
+// address is read from the body; an account with no address mail can reach
+// gets TEST_TO_OWN_ADDRESS's words, 403, and no link key, today's 503. The
+// letter is read from the database, never from the body: the newsletter's
+// open letter, which must be the one named at that version, or the answer
+// is the save's 409, in the save's words (letterToTest and refusalWords in
+// functions/utils/mail/issues.ts), or 404 for a letter that is not the
+// newsletter's; then 400 in words for a letter with no subject or no words.
+// What is sent is "[TEST] " and the letter's subject, the letter in the navy
+// look (renderNewsletter in domain/mail/newsletterLayout.ts) with the real
+// footer and both headers for that person, as the newsletter itself would
+// carry them, kind 'test', through the service a test goes through by
+// default, and no Amazon SES option; an email over EMAIL_MAX_BYTES as drawn
+// is refused, 413, in words that say by about how much. The email is drawn
+// here rather than by listMessage in functions/utils/admin/campaigns.ts, so
+// the campaign sender and the daily-emails worker that bundles it stay as
+// they are. It writes nothing on the letter and no campaign; it makes the
+// person's contact as today's test does, and sends once, as today's does.
 import type { Env } from '../../../../types'
 import { isSendableAddress, normalizeAddress } from '../../../../../domain/mail/address'
+import { DEFAULT_REPLY_TO, LIST_SENDERS } from '../../../../../domain/mail/addresses'
 import { NEWSLETTER_LIST_ID } from '../../../../../domain/mail/lists'
+import { EMAIL_MAX_BYTES, renderNewsletter } from '../../../../../domain/mail/newsletterLayout'
 import { newsletterTestRequestSchema, type NewsletterTestResponse } from '../../../../../domain/contracts/mail'
+import {
+  newsletterTestLetterRequestSchema,
+  type NewsletterIssueRefused,
+  type NewsletterTestLetterResponse,
+} from '../../../../../domain/contracts/newsletter'
 import { listMessage, wordsUnderRules } from '../../../../utils/admin/campaigns'
-import { isResponse, requireListMailer } from '../../../../utils/auth'
+import { isResponse, requireListMailer, type AuthedMember } from '../../../../utils/auth'
+import { listMailParts } from '../../../../utils/mail/footer'
+import { bodyHasWords, letterToTest, refusalWords, type Letter } from '../../../../utils/mail/issues'
 import { contactFor } from '../../../../utils/mail/lists'
-import { LINK_KEY_MISSING, SES_TEST_ADMINS_ONLY, TEST_TO_OWN_ADDRESS, newsletterNotFound } from '../../../../utils/mail/newsletterAnswers'
+import {
+  LINK_KEY_MISSING,
+  SES_TEST_ADMINS_ONLY,
+  TEST_NO_SUBJECT,
+  TEST_NO_SUBJECT_OR_WORDS,
+  TEST_NO_WORDS,
+  TEST_TO_OWN_ADDRESS,
+  newsletterNotFound,
+  testTooLong,
+} from '../../../../utils/mail/newsletterAnswers'
 import { deliver, type SendResult } from '../../../../utils/mail/send'
-import { MAIL_LISTS_ON } from '../../../../utils/mail/switches'
+import { MAIL_LISTS_ON, MAIL_PAGE_ON } from '../../../../utils/mail/switches'
 import { errorResponse, handleOptions, jsonResponse, parseBody } from '../../../../utils/response'
+import { resolveSiteUrl } from '../../../../utils/site'
 
 export const onRequestOptions: PagesFunction<Env> = async () => handleOptions()
 
@@ -66,6 +110,8 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
   const authed = await requireListMailer(context.request, context.env)
   if (isResponse(authed)) return authed
   if (!MAIL_LISTS_ON) return newsletterNotFound()
+  // The page's own form, only while the page is switched on and only for a body that names a letter.
+  if (MAIL_PAGE_ON && (await namesLetter(context.request))) return testOfLetter(context, authed)
 
   const test = await parseBody(context.request, newsletterTestRequestSchema)
   if (test instanceof Response) return test
@@ -118,4 +164,80 @@ function testWords(result: Exclude<SendResult, { ok: true }>): string {
   if (result.fromSes) return result.error
   const answered = result.status !== undefined && !result.refused && !result.gateUnread && !result.waitForSes && !result.limitRefused && !result.noAnswer
   return answered ? `Resend ${result.status}: ${result.error}` : wordsUnderRules(result)
+}
+
+/**
+ * Whether a body names a letter, the newsletter's own page's form: a JSON object with an issueId of its own, whatever
+ * else it holds. Read from a copy of the request, so the body is still there for parseBody; anything else, a body that
+ * is not JSON among it, is today's form, answered as today.
+ */
+async function namesLetter(request: Request): Promise<boolean> {
+  const raw: unknown = await request.clone().json().catch(() => null)
+  return typeof raw === 'object' && raw !== null && !Array.isArray(raw) && Object.hasOwn(raw, 'issueId')
+}
+
+/** Why a stored letter cannot be tested yet, in words, or null when it can: it has no subject, no words, or neither. */
+function letterGap(letter: Letter): string | null {
+  const subject = letter.subject.trim() !== ''
+  const words = bodyHasWords(letter.bodyHtml)
+  if (!subject && !words) return TEST_NO_SUBJECT_OR_WORDS
+  if (!subject) return TEST_NO_SUBJECT
+  return words ? null : TEST_NO_WORDS
+}
+
+/**
+ * A test of the stored letter, the page's "Send a test to me": to the signed-in account's own address alone, the letter
+ * as the database holds it at the version named, in the navy look with the person's real footer and headers, sent once.
+ * Each refusal comes before anything is sent; none writes on the letter.
+ */
+async function testOfLetter(context: Parameters<PagesFunction<Env>>[0], authed: AuthedMember): Promise<Response> {
+  const named = await parseBody(context.request, newsletterTestLetterRequestSchema)
+  if (named instanceof Response) return named
+  // The account's own address, for everyone the guard lets in; no address is read from the body.
+  const to = normalizeAddress(authed.member.email ?? '')
+  if (!isSendableAddress(to)) return errorResponse(TEST_TO_OWN_ADDRESS, 403)
+  if (!context.env.MAIL_LINK_SECRET) return errorResponse(LINK_KEY_MISSING, 503)
+
+  const read = await letterToTest(context.env.DB, NEWSLETTER_LIST_ID, named.issueId, named.version)
+  if ('notFound' in read) return newsletterNotFound()
+  if ('refused' in read) {
+    const refused: NewsletterIssueRefused = { error: refusalWords(read.refused.reason), ...read.refused }
+    return jsonResponse(refused, 409)
+  }
+  const letter = read.letter
+  const gap = letterGap(letter)
+  if (gap) return errorResponse(gap, 400)
+
+  const sender = LIST_SENDERS[NEWSLETTER_LIST_ID]
+  if (!sender) throw new Error('No sender is written for this list.')
+  const contactId = await contactFor(context.env.DB, to)
+  const parts = await listMailParts(context.env, { contactId, listId: NEWSLETTER_LIST_ID })
+  const html = renderNewsletter({
+    siteUrl: resolveSiteUrl(context.env),
+    month: letter.monthLabel,
+    subject: letter.subject,
+    preheader: letter.preheader,
+    bodyHtml: letter.bodyHtml,
+    footerHtml: parts.footerHtml,
+  })
+  const size = new TextEncoder().encode(html).byteLength
+  if (size > EMAIL_MAX_BYTES) return errorResponse(testTooLong(size - EMAIL_MAX_BYTES), 413)
+
+  const subject = `[TEST] ${letter.subject}`
+  const result = await deliver(context.env, {
+    kind: 'test',
+    listId: NEWSLETTER_LIST_ID,
+    headers: parts.headers,
+    from: sender.from,
+    fromName: sender.name,
+    to,
+    replyTo: context.env.REPLY_TO_EMAIL ?? DEFAULT_REPLY_TO,
+    subject,
+    html,
+    shape: 'campaign',
+  })
+  if (!result.ok) return errorResponse(`Failed to send test email: ${testWords(result)}`, 502)
+
+  const body: NewsletterTestLetterResponse = { sent: true, to }
+  return jsonResponse(body)
 }
