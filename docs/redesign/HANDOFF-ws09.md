@@ -2,7 +2,7 @@
 
 Written on Saturday, November 14, 2026, for whoever takes this stream over. The whole project's handoff is `HANDOFF.md`; the rules where the two streams meet are `STREAMS.md`. This file holds only what is the clubs stream's own.
 
-## Where it stands (Tuesday, November 17, 2026, about 8:50 PM UTC)
+## Where it stands (Tuesday, November 17, 2026, about 8:30 PM UTC)
 
 - **Checkpoint W's branch** (`redesign/ws09-clubs-w`) is at `b6bf464`: steps 20 to 24's sitemap, and the step K's decision 12 asked for ("what K's look at the test site asked"): no line on who keeps a club reaches a visitor or the page's answer, a signed-in keeper still reads their own line, and the line under the meeting words reads "Last checked {month and year}" from the later of a real save and a Still accurate, with no line where there is neither. Full gate green: lint 13 and 11 over 1,240; unit 11,138 in 479 files; integration 2,921 passing and 1 todo in 166 files; the browser run 659 and 336, baseline unchanged.
 - **The test site** (`https://preview-clubs.lca-website.pages.dev`, signed out only, the preview database) is rebuilt from that version: branch `preview-clubs` at `9830fe5`, never merged. On the test site alone every club shows the "Last checked" line.
