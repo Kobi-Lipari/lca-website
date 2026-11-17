@@ -26,6 +26,17 @@ const api = vi.hoisted(() => ({
   adminAddClubOfficer: vi.fn(),
   adminRemoveClubOfficer: vi.fn(),
 }))
+// A switch a case sets itself is read from here; every other switch is read as it ships.
+const flags = vi.hoisted(() => ({}) as { regionEvents?: boolean })
+vi.mock('@/lib/features', async (importOriginal) => {
+  const real = await importOriginal<typeof import('@/lib/features')>()
+  return {
+    ...real,
+    FEATURES: new Proxy(real.FEATURES, {
+      get: (target, key) => (typeof key === 'string' && key in flags ? flags[key as keyof typeof flags] : Reflect.get(target, key)),
+    }),
+  }
+})
 vi.mock('@/lib/supabase', () => ({ supabase: {} }))
 vi.mock('@/lib/api', async (importOriginal) => ({ ...(await importOriginal<typeof import('@/lib/api')>()), ...api }))
 // The map picker needs Google's script; the roster tab is what is read here.
@@ -89,6 +100,7 @@ beforeEach(() => {
 })
 afterEach(() => {
   cleanup()
+  delete flags.regionEvents
 })
 
 /** Today's tab, with the roster's line under it that differs between an LCA admin and the club's own rep. */
@@ -174,6 +186,8 @@ describe('the Roster and officers tab for a person a regional seat alone admits'
   it('the Tournaments tab of a club with no visible event says drafts stay with the club\'s keepers, and an LCA admin and the club\'s own rep read today\'s words', async () => {
     const TODAY = 'Tournaments you create for Example Chess Club will show up here, including drafts.'
     const KEPT = 'Published tournaments of Example Chess Club show up here. Drafts stay with LCA admins and the club\'s own rep.'
+    // These are the words with regionEvents off; test/unit/region-events-pages.test.tsx holds the tab with it on.
+    flags.regionEvents = false
     const body = await openRoster(OTHER_CLUBS_REP, { officers: OFFICERS_NO_EMAIL, roster: [], rosterKeptBack: true }, 'tournaments')
     expect(within(body).getByText('No tournaments yet')).toBeTruthy()
     expect(body.textContent).toContain(KEPT)
