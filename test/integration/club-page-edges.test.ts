@@ -2,8 +2,8 @@
 // The edges of GET /api/clubs/[id]/page beside test/integration/club-page.test.ts
 // (WS09 step 20): OPTIONS, what the lookup does with odd address parts and
 // with an old slug that matches another club's id, a club with nothing filled
-// in, text of spaces alone, the told line when the saver has since changed or
-// gone, the order of places and events on a tie, a read that never writes,
+// in, text of spaces alone, the told line whoever saved and with a stamp
+// that is no date, the order of places and events on a tie, a read that never writes,
 // and every other reader's 404 for an address by old slug. CLUB_PAGES_ON and
 // CLUB_KEEPERS_ON are set through getters on a mock of their module. Every
 // club, person and place here is made up.
@@ -57,7 +57,6 @@ const page = async (address: string) => {
   return JSON.parse(res.body) as {
     club: { id: string; slug: string }
     sections: string[]
-    author: string
     about: Record<string, unknown>
     statement: { text: string | null; told: string }
     places: Array<Record<string, unknown>>
@@ -166,7 +165,7 @@ describe('GET /api/clubs/[id]/page: odd address parts', () => {
 })
 
 describe('GET /api/clubs/[id]/page: a club with little or nothing filled in', () => {
-  it('answers a club with nothing at all: Contact alone, empty lists, no month on the told line, and passes the contract', async () => {
+  it('answers a club with nothing at all: Contact alone, empty lists, no told line, and passes the contract', async () => {
     flags.pagesOn = true
     const club = await makeClub({ region: null, slug: null })
     const body = await page(club.id)
@@ -175,12 +174,12 @@ describe('GET /api/clubs/[id]/page: a club with little or nothing filled in', ()
     expect(body.places).toEqual([])
     expect(body.events).toEqual([])
     expect(body.news).toEqual([])
-    expect(body.statement).toEqual({ text: null, told: 'As told to LCA' })
+    expect(body.statement).toEqual({ text: null, told: '' })
     expect(body.contact).toEqual({ name: null })
     expect(body.about).toEqual({
       text: null, cost: null, welcome: null, facebook: null, website: null, other: null, weekend_play: false, scholastic_friendly: false,
     })
-    expect(body.author).toBe('Kept by LCA admins')
+    expect(Object.keys(body)).not.toContain('author')
   })
 
   it('reads text of spaces alone as empty: no About, no statement, no street and no note, and no section for them', async () => {
@@ -213,29 +212,32 @@ describe('GET /api/clubs/[id]/page: a club with little or nothing filled in', ()
   })
 })
 
-describe('GET /api/clubs/[id]/page: the told line when the saver has changed or gone', () => {
-  it('reads "As told to LCA" once the club\'s rep who saved has become a plain member, or has moved to another club', async () => {
+describe('GET /api/clubs/[id]/page: the told line whoever saved, and with a stamp that is no date', () => {
+  it('reads the same "Last checked" month whoever saved, and once the club\'s rep who saved has become a plain member, or has moved to another club', async () => {
     flags.pagesOn = true
     const club = await makeClub()
     const other = await makeClub()
     const rep = await seedMember({ role: 'club_rep', clubId: club.id, fullName: 'Rita Sample', email: `rita.${mark()}@example.org` })
     await env.DB.prepare(`UPDATE clubs SET told_by = ?, told_updated_at = '2026-11-02 15:00:00' WHERE id = ?`).bind(rep, club.id).run()
-    expect((await page(club.id)).statement.told).toBe('As told by the club, updated November 2026')
+    expect((await page(club.id)).statement.told).toBe('Last checked November 2026')
     await env.DB.prepare(`UPDATE members SET role = 'member' WHERE id = ?`).bind(rep).run()
-    expect((await page(club.id)).statement.told).toBe('As told to LCA, November 2026')
+    expect((await page(club.id)).statement.told).toBe('Last checked November 2026')
     await env.DB.prepare(`UPDATE members SET role = 'club_rep', club_id = ? WHERE id = ?`).bind(other.id, rep).run()
-    expect((await page(club.id)).statement.told).toBe('As told to LCA, November 2026')
+    expect((await page(club.id)).statement.told).toBe('Last checked November 2026')
+    expect(JSON.stringify(await page(club.id))).not.toMatch(/Rita|Sample/)
   })
 
-  it('reads "As told by the club" with no month for a stamp that is not a date, never "Invalid Date"', async () => {
+  it('gives no line for a stamp that is not a date, never "Invalid Date", and lets a real Still accurate stand', async () => {
     flags.pagesOn = true
     const club = await makeClub()
     const rep = await seedMember({ role: 'club_rep', clubId: club.id, fullName: 'Rita Sample', email: `rita.${mark()}@example.org` })
     for (const stamp of ['not a date', '', '0000-00-00 00:00:00']) {
-      await env.DB.prepare('UPDATE clubs SET told_by = ?, told_updated_at = ? WHERE id = ?').bind(rep, stamp, club.id).run()
+      await env.DB.prepare('UPDATE clubs SET told_by = ?, told_updated_at = ?, last_confirmed_at = ? WHERE id = ?').bind(rep, stamp, stamp, club.id).run()
       const told = (await page(club.id)).statement.told
-      expect(told, stamp).toBe('As told by the club')
+      expect(told, stamp).toBe('')
       expect(told, stamp).not.toMatch(/Invalid|NaN|undefined/)
+      await env.DB.prepare(`UPDATE clubs SET last_confirmed_at = '2026-10-05 15:00:00' WHERE id = ?`).bind(club.id).run()
+      expect((await page(club.id)).statement.told, stamp).toBe('Last checked October 2026')
     }
   })
 })

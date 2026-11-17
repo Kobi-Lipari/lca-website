@@ -34,9 +34,8 @@ function bare(): ClubPageResponse {
   return {
     club: { id: 'example-chess-club', slug: 'example-chess-club', name: 'Example Chess Club', city: 'Example City', region: null, color: '#1a2744', logo: null },
     sections: ['about', 'when_and_where', 'contact'],
-    author: 'Kept by the club\'s rep, Player O.',
     about: { text: 'A made up club.', cost: null, welcome: null, facebook: null, website: null, other: null, weekend_play: false, scholastic_friendly: false },
-    statement: { text: 'Tuesdays at 7:00 PM', told: 'As told by the club, updated November 2026' },
+    statement: { text: 'Tuesdays at 7:00 PM', told: 'Last checked November 2026' },
     places: [{ name: 'Example Library', street: null, note: null, latitude: null, longitude: null }],
     contact: { name: 'Player One' },
     events: [],

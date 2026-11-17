@@ -36,9 +36,9 @@ describe('who keeps a club is for server code only', () => {
     const all = sourceFiles('functions')
       .filter((file) => relative(ROOT, join(ROOT, file)) !== 'functions/utils/clubs/routing.ts')
       .filter((file) => /from '\.\/routing'|clubs\/routing'/.test(read(file)))
-    // The club page's author line (WS09 step 20) reads who keeps the club and answers words alone, a first name and
-    // last initial at most, through functions/api/clubs/[id]/page.ts; the mail's readers are the two below.
-    expect(all).toContain('functions/utils/clubs/authorLine.ts')
+    // The club page's author line (WS09 step 20) read who keeps the club until K's decision 12 took it off the page
+    // (checkpoint W); the told line's file reads it no longer, and the mail's readers are the two below.
+    expect(all).not.toContain('functions/utils/clubs/authorLine.ts')
     const readers = all.filter((file) => file !== 'functions/utils/clubs/authorLine.ts')
     // The monthly check (WS09 step 14) reads the seat rule the other way round, each holder with their clubs.
     expect(readers).toEqual(['functions/utils/clubs/emails.ts', 'functions/utils/clubs/monthlyCheck.ts'])

@@ -12,15 +12,13 @@ export const CLUB_ID = 'c-example-club'
 export const CLUB_SLUG = 'example-chess-club'
 export const ABOUT_ONE = 'A friendly made-up club for casual and rated games, open to every level.'
 export const STATEMENT = 'First and third Tuesdays at 7:00 PM at Example Library.'
-export const TOLD = 'As told to LCA, November 2026'
-export const AUTHOR = 'Kept by the club\'s rep, Player O.'
+export const TOLD = 'Last checked November 2026'
 
 /** A club with only the five basics, as most clubs start: one sentence, how it meets, a place, and a contact that stays private. */
 export function bareAnswer(): ClubPageResponse {
   return clubPageResponseSchema.parse({
     club: { id: CLUB_ID, slug: CLUB_SLUG, name: 'Example Chess Club', city: 'Example City', region: 'Bayou Region', color: '#1a2744', logo: null },
     sections: ['about', 'when_and_where', 'contact'],
-    author: AUTHOR,
     about: { text: ABOUT_ONE, cost: null, welcome: null, facebook: null, website: null, other: null, weekend_play: false, scholastic_friendly: false },
     statement: { text: STATEMENT, told: TOLD },
     places: [{ name: 'Example Library', street: null, note: null, latitude: 30.1, longitude: -91.2 }],
@@ -39,7 +37,6 @@ export function fullAnswer(): ClubPageResponse {
   return clubPageResponseSchema.parse({
     club: { id: CLUB_ID, slug: CLUB_SLUG, name: 'Example Chess Club', city: 'Example City', region: 'Bayou Region', color: '#2e6b4f', logo: null },
     sections: ['about', 'when_and_where', 'events', 'news', 'contact'],
-    author: 'Kept by the club\'s rep, Player O.',
     about: {
       text: ABOUT_LONG,
       cost: 'Free. Saturday rated games are $5 toward the room.',
@@ -50,7 +47,7 @@ export function fullAnswer(): ClubPageResponse {
       weekend_play: true,
       scholastic_friendly: true,
     },
-    statement: { text: STATEMENT_LONG, told: 'As told by the club, updated October 2026' },
+    statement: { text: STATEMENT_LONG, told: 'Last checked October 2026' },
     places: [
       { name: 'Example Library', street: '1 Example Street, Example City', note: 'Meeting room past the front desk.', latitude: 30.1, longitude: -91.2 },
       { name: 'Example Cafe', street: null, note: 'Tables at the back.', latitude: null, longitude: null },

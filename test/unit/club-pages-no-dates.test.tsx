@@ -16,7 +16,7 @@
 // own helper. The club pages' own parts join this file with WS09 step 21:
 // the new club page shows how the club meets as the club's own words, in a
 // quote, and the told line as the server words it, and works out nothing:
-// no meeting date, no Tonight, no "Checked" month, with the clock set years
+// no meeting date, no Tonight, no "Checked" month of its own, with the clock set years
 // away as with it today; and the files that draw it hold no clock.
 // Every name and club here is made up.
 import { readFileSync } from 'node:fs'
@@ -256,11 +256,10 @@ const PAGE_FILES = [
   'src/areas/clubs/components/PagePreview.tsx', 'src/areas/clubs/clubPage.ts', 'src/pages/ClubListingPage.tsx',
 ]
 const PAGE_STATEMENT = 'Every Tuesday at 7:00 PM, and tonight too'
-const PAGE_TOLD = 'As told by the club, updated November 2026'
+const PAGE_TOLD = 'Last checked November 2026'
 const PAGE_ANSWER: ClubPageResponse = {
   club: { id: 'c-two', slug: 'example-chess-club', name: 'Example Chess Club', city: 'Example City', region: 'Bayou Region', color: '#1a2744', logo: null },
   sections: ['about', 'when_and_where', 'contact'],
-  author: 'Kept by the club\'s rep, Player O.',
   about: { text: 'A made-up club.', cost: null, welcome: null, facebook: null, website: null, other: null, weekend_play: true, scholastic_friendly: false },
   statement: { text: PAGE_STATEMENT, told: PAGE_TOLD },
   places: [{ name: 'Example Library', street: null, note: 'Come at 6:45 PM on a first visit.', latitude: null, longitude: null }],
@@ -282,7 +281,7 @@ describe('the new club page draws no weekly claims', () => {
     return texts.join('\n')
   }
 
-  it('shows the statement as the club\'s words in a quote and the told line as given, and no meeting date, Tonight or "Checked" month', () => {
+  it('shows the statement as the club\'s words in a quote and the told line as given, and no meeting date, Tonight or "Checked" month of its own', () => {
     for (const at of ['2026-11-17T18:00:00Z', '2031-03-04T15:00:00Z']) {
       vi.useFakeTimers({ toFake: ['Date'] })
       vi.setSystemTime(new Date(at))

@@ -8,14 +8,14 @@
 // The page asks one thing, getClubPage (GET /api/clubs/:address/page), and
 // draws what it answers, top to bottom as Club-Final-Bare draws a club that
 // has only the basics and Club-G a fuller one: the cover with the club's
-// initials and its h1, the author line, the section nav, About and When and
+// initials and its h1, the section nav, About and When and
 // where, then (WS09 step 22) the club's events and its news, each only with
 // a row to draw, the nearest clubs where the answer gives any, and the foot
 // line with Copy link. On a phone with the new chrome the club bar in the
 // dock holds Directions. Contact and Photos come with the steps that build
 // them; until then the page draws no block for them and the nav lists
-// neither, whatever the answer names. The author line, the told line and a
-// nearest club's distance are the server's words, drawn as given; the cover
+// neither, whatever the answer names. The told line and a nearest club's
+// distance are the server's words, drawn as given; the cover
 // takes its colour from the answer. The page has one status, under the
 // cover's buttons, which says what Share or Copy link did. While it
 // loads the page says so in a status; a club the server does not answer
@@ -28,10 +28,11 @@
 // a new entry in the history and without asking again; a club whose slug is
 // its id stays where it is.
 //
-// A keeper of the club who is signed in reads where they stand in the
-// author line, decided from what the session already holds (keeperFor in
+// A keeper of the club who is signed in reads where they stand in a band
+// under the cover, decided from what the session already holds (keeperFor in
 // src/areas/clubs/clubPage.ts), and only while clubKeepers is on, since the
-// pages Edit leads to exist only then.
+// pages Edit leads to exist only then. Who keeps a club is not shown to
+// anyone else (K's decision 12): with no keeper there is no band.
 import { useEffect, useEffectEvent, useRef, useState, type Ref } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { ArrowLeft, Users } from 'lucide-react'
@@ -197,9 +198,11 @@ export function ClubPageView({
           </ol>
         </nav>
         <ClubCover club={club} statement={answer.statement.text} headingRef={headingRef} said={said.words} say={(words) => setSaid({ words, from: 'cover' })} />
-        <div className="mt-6">
-          <AuthorLine author={answer.author} keeper={keeper} />
-        </div>
+        {keeper && (
+          <div className="mt-6">
+            <AuthorLine keeper={keeper} />
+          </div>
+        )}
       </div>
       <SectionNav sections={sections} />
       <div className={CONTROLS_CLEAR_OF_BARS}>

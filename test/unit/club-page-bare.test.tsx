@@ -3,7 +3,8 @@
 // The new club page for a club with only the five basics (WS09 step 21), as
 // Club-Final-Bare draws it, since most clubs start there: the cover with the
 // club's initials, the h1, the line the site writes under it and how the
-// club meets under that, the author line, the section nav, About and When
+// club meets under that, the section nav (no line of who keeps it, by K's
+// decision 12), About and When
 // and where, and since WS09 step 22 the foot line with Copy link, and
 // nothing else. No bracket, no "not listed", no empty box and no Suggest an
 // update; a block and its link in the nav appear the first time the answer
@@ -19,7 +20,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { AuthContext } from '@/contexts/auth-context'
 import type { AuthContextValue } from '@/contexts/AuthContext'
 import type { ClubPageResponse } from '@domain/contracts'
-import { ABOUT_ONE, AUTHOR, CLUB_SLUG, STATEMENT, TOLD, bareAnswer, visitor } from './helpers/clubPageAnswer'
+import { ABOUT_ONE, CLUB_SLUG, STATEMENT, TOLD, bareAnswer, visitor } from './helpers/clubPageAnswer'
 
 const flags = vi.hoisted(() => ({ newClubs: true, newLook: true, clubKeepers: false, clubEmailHidden: true }))
 vi.mock('@/lib/features', async (importOriginal) => {
@@ -73,15 +74,15 @@ async function draw(auth: AuthContextValue = visitor()) {
 const wordsOf = (el: Element) => (el.textContent ?? '').replace(/\s+/g, ' ').trim()
 
 describe('a club with only the five basics', () => {
-  it('cover with initials, author line, About, When and where, the foot line, and nothing else', async () => {
+  it('cover with initials, About, When and where, the foot line, and nothing else', async () => {
     const page = await draw()
     // The cover: the initials tile, the h1, the site's line, and the two buttons.
     expect(page.querySelector('[aria-hidden="true"].size-24')?.textContent).toBe('EC')
     expect(screen.getByText('Chess club in Example City, Louisiana · Bayou Region')).toBeTruthy()
     expect(screen.getByRole('link', { name: 'Contact the club' }).getAttribute('href')).toBe('/contact')
     expect(screen.getByRole('button', { name: 'Share' })).toBeTruthy()
-    // The author line, as the server words it.
-    expect(screen.getByText(AUTHOR)).toBeTruthy()
+    // Who keeps the club is not shown (K's decision 12): no words of it for a visitor.
+    expect(wordsOf(page)).not.toMatch(/Kept by/)
     // The nav lists the two sections, and the page draws those two and no other.
     const nav = screen.getByRole('navigation', { name: 'On this page' })
     expect(within(nav).getAllByRole('link').map((a) => [a.textContent, a.getAttribute('href')])).toEqual([['About', '#about'], ['When and where', '#when-and-where']])
@@ -127,10 +128,10 @@ describe('a club with only the five basics', () => {
     expect(meets).toBeTruthy()
     expect(h1.compareDocumentPosition(line) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
     expect(line.compareDocumentPosition(meets) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
-    // All three share the cover's block of words, before the author line.
+    // All three share the cover's block of words, before the section nav.
     expect(h1.parentElement).toBe(line.parentElement)
     expect(meets.parentElement).toBe(h1.parentElement)
-    expect(meets.compareDocumentPosition(screen.getByText(AUTHOR)) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
+    expect(meets.compareDocumentPosition(screen.getByRole('navigation', { name: 'On this page' })) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
   })
 
   it('draws the h1 on the page\'s ground, never on the club\'s colour, which fills the cover with no words on it', async () => {

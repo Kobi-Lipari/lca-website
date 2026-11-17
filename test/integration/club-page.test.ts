@@ -103,7 +103,6 @@ const page = async (who: Who, address: string) => {
   return JSON.parse(res.body) as Record<string, unknown> & {
     club: { id: string; slug: string; color: string; logo: string | null }
     sections: string[]
-    author: string
     statement: { text: string | null; told: string }
     places: Array<Record<string, unknown>>
     events: Array<Record<string, unknown>>
@@ -349,24 +348,32 @@ describe('GET /api/clubs/[id]/page: what it carries', () => {
 })
 
 describe('GET /api/clubs/[id]/page: the author and told lines', () => {
-  it('the three author lines: the club\'s rep, the region\'s representative while it has no rep, and the LCA admins while the seat is open', async () => {
+  // K's decision 12 (checkpoint W): who keeps a club is not public, so the answer carries no author line and no
+  // keeper's name, and the told line reads "Last checked" with its month.
+  it('no author line for any keeper: the club\'s rep, the region\'s representative while it has no rep, and the LCA admins while the seat is open', async () => {
     flags.pagesOn = true
     const club = await makeClub()
     await seedAdmin()
-    expect((await page(undefined, club.id)).author).toBe(`Kept by LCA admins until the ${club.region} seat is filled`)
+    const bare = await page(undefined, club.id)
+    expect(Object.keys(bare)).not.toContain('author')
+    expect(JSON.stringify(bare)).not.toMatch(/Kept by|LCA admins|representative/)
     const m = mark()
     const second = await seedMember({ fullName: 'Zed Second', email: `zed.${m}@example.org` })
     const first = await seedMember({ fullName: 'Ann Firstly', email: `ann.${m}@example.org` })
     await regionalSeat(second, [club.region ?? ''])
     await regionalSeat(first, [club.region ?? ''])
-    expect((await page(undefined, club.id)).author).toBe(`This club hasn't named a rep yet · Kept by Ann F., the ${club.region} representative`)
+    const seat = await page(undefined, club.id)
+    expect(Object.keys(seat)).not.toContain('author')
+    expect(JSON.stringify(seat)).not.toMatch(/Kept by|Ann|Firstly|Zed|representative/)
     await seedMember({ role: 'club_rep', clubId: club.id, fullName: '  Rita   Sample  Jr. ', email: `rita.${m}@example.org` })
-    expect((await page(undefined, club.id)).author).toBe('Kept by the club\'s rep, Rita S.')
+    const rep = await page(undefined, club.id)
+    expect(Object.keys(rep)).not.toContain('author')
+    expect(JSON.stringify(rep)).not.toMatch(/Kept by|Rita|Sample/)
     const noRegion = await makeClub({ region: null })
-    expect((await page(undefined, noRegion.id)).author).toBe('Kept by LCA admins')
+    expect(JSON.stringify(await page(undefined, noRegion.id))).not.toMatch(/Kept by/)
   })
 
-  it('never names a child: the line reads without a name for a rep or a representative with a guardian', async () => {
+  it('never names a child: no line and no name for a rep or a representative with a guardian', async () => {
     flags.pagesOn = true
     const m = mark()
     const guardian = await seedMember({ fullName: 'Parent Person', email: `parent.${m}@example.org` })
@@ -374,14 +381,14 @@ describe('GET /api/clubs/[id]/page: the author and told lines', () => {
     const child = await seedMember({ role: 'club_rep', clubId: club.id, fullName: 'Kid Junior', email: `kid.${m}@example.org` })
     await env.DB.prepare('UPDATE members SET guardian_id = ? WHERE id = ?').bind(guardian, child).run()
     const rep = await page(undefined, club.id)
-    expect(rep.author).toBe('Kept by the club\'s rep')
-    expect(JSON.stringify(rep)).not.toMatch(/Kid|Junior|Parent/)
+    expect(Object.keys(rep)).not.toContain('author')
+    expect(JSON.stringify(rep)).not.toMatch(/Kid|Junior|Parent|Kept by/)
 
     const another = await makeClub()
     const childSeat = await seedMember({ fullName: 'Kid Seatholder', email: `kid.seat.${m}@example.org` })
     await env.DB.prepare('UPDATE members SET guardian_id = ? WHERE id = ?').bind(guardian, childSeat).run()
     await regionalSeat(childSeat, [another.region ?? ''])
-    expect((await page(undefined, another.id)).author).toBe(`This club hasn't named a rep yet · Kept by the ${another.region} representative`)
+    expect(JSON.stringify(await page(undefined, another.id))).not.toMatch(/Kid|Seatholder|Kept by/)
   })
 
   it('never names a child with no guardian whose entry confirmed a scholastic range, as a rep or a representative', async () => {
@@ -391,11 +398,11 @@ describe('GET /api/clubs/[id]/page: the author and told lines', () => {
     const club = await makeClub()
     const teen = await seedMember({ role: 'club_rep', clubId: club.id, fullName: 'Sam Player', email: `sam.${m}@example.org` })
     const entry = await seedRegistration({ tournamentId, memberId: teen })
-    expect((await page(undefined, club.id)).author).toBe('Kept by the club\'s rep, Sam P.')
+    expect(JSON.stringify(await page(undefined, club.id))).not.toMatch(/Sam|Player|Kept by/)
     await env.DB.prepare('UPDATE registrations SET grade = ? WHERE id = ?').bind('9-12', entry).run()
     const rep = await page(undefined, club.id)
-    expect(rep.author).toBe('Kept by the club\'s rep')
-    expect(JSON.stringify(rep)).not.toMatch(/Sam|Player/)
+    expect(Object.keys(rep)).not.toContain('author')
+    expect(JSON.stringify(rep)).not.toMatch(/Sam|Player|Kept by/)
 
     const another = await makeClub()
     const teenSeat = await seedMember({ fullName: 'Tess Seatholder', email: `tess.${m}@example.org` })
@@ -403,32 +410,28 @@ describe('GET /api/clubs/[id]/page: the author and told lines', () => {
     await env.DB.prepare('UPDATE registrations SET grade = ? WHERE id = ?').bind('0-8', seatEntry).run()
     await regionalSeat(teenSeat, [another.region ?? ''])
     const seat = await page(undefined, another.id)
-    expect(seat.author).toBe(`This club hasn't named a rep yet · Kept by the ${another.region} representative`)
-    expect(JSON.stringify(seat)).not.toMatch(/Tess|Seatholder/)
+    expect(Object.keys(seat)).not.toContain('author')
+    expect(JSON.stringify(seat)).not.toMatch(/Tess|Seatholder|Kept by/)
   })
 
-  it('the told line\'s two forms: the club\'s rep\'s save, and an admin\'s, a representative\'s or none, with the month at a month\'s edge', async () => {
+  it('the told line reads "Last checked" with the month of the later of the last save and the last Still accurate, at a month\'s edge, and none with neither', async () => {
     flags.pagesOn = true
     const club = await makeClub()
     await giveBasics(club.id)
-    const m = mark()
-    const rep = await seedMember({ role: 'club_rep', clubId: club.id, fullName: 'Rita Sample', email: `rita.${m}@example.org` })
-    const otherRep = await seedMember({ role: 'club_rep', clubId: (await makeClub()).id, fullName: 'Olive Other', email: `olive.${m}@example.org` })
-    const admin = await seedAdmin()
-    const representative = await seedMember({ fullName: 'Theo Region', email: `theo.${m}@example.org` })
-    await regionalSeat(representative, [club.region ?? ''])
-    const told = async (by: string | null, at: string | null) => {
-      await env.DB.prepare('UPDATE clubs SET told_by = ?, told_updated_at = ? WHERE id = ?').bind(by, at, club.id).run()
+    // A save writes its saver with its stamp; a stamp with no saver and no check is not a save.
+    const saver = await seedMember({ fullName: 'Player One', email: `player.${mark()}@example.org` })
+    const told = async (saved: string | null, checked: string | null) => {
+      await env.DB.prepare('UPDATE clubs SET told_updated_at = ?, told_by = ?, last_confirmed_at = ? WHERE id = ?').bind(saved, saved === null ? null : saver, checked, club.id).run()
       return (await page(undefined, club.id)).statement
     }
-    expect(await told(null, null)).toEqual({ text: 'Tuesdays at 7:00 PM', told: 'As told to LCA' })
-    expect((await told(null, '2026-11-02 15:00:00')).told).toBe('As told to LCA, November 2026')
-    expect((await told(admin, '2026-12-01 05:59:59')).told).toBe('As told to LCA, November 2026')
-    expect((await told(admin, '2026-12-01 06:00:00')).told).toBe('As told to LCA, December 2026')
-    expect((await told(representative, '2026-11-02 15:00:00')).told).toBe('As told to LCA, November 2026')
-    expect((await told(otherRep, '2026-11-02 15:00:00')).told).toBe('As told to LCA, November 2026')
-    expect((await told(rep, '2026-12-01 05:59:59')).told).toBe('As told by the club, updated November 2026')
-    expect((await told(rep, '2026-12-01 06:00:00')).told).toBe('As told by the club, updated December 2026')
+    expect(await told(null, null)).toEqual({ text: 'Tuesdays at 7:00 PM', told: '' })
+    expect((await told('2026-11-02 15:00:00', null)).told).toBe('Last checked November 2026')
+    expect((await told(null, '2026-11-02 15:00:00')).told).toBe('Last checked November 2026')
+    expect((await told('2026-12-01 05:59:59', null)).told).toBe('Last checked November 2026')
+    expect((await told('2026-12-01 06:00:00', null)).told).toBe('Last checked December 2026')
+    expect((await told('2026-09-10 15:00:00', '2026-12-01 05:59:59')).told).toBe('Last checked November 2026')
+    expect((await told('2026-12-01 06:00:00', '2026-09-10 15:00:00')).told).toBe('Last checked December 2026')
+    expect((await told('2026-09-10 15:00:00', '2026-10-05 15:00:00')).told).toBe('Last checked October 2026')
   })
 })
 
