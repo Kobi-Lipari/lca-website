@@ -283,7 +283,7 @@ describe('no answer carries the sections or the round schedule as JSON text', ()
 // ── The same fields for the pages ─────────────────────────────────────
 
 describe('the pages read what they read before', () => {
-  it('every column of the tournaments row passes through unchanged, except the two JSON columns and, read signed out, the four only managers get', async () => {
+  it('every column of the tournaments row passes through unchanged, except the two JSON columns and, read signed out, the eight only managers get', async () => {
     const setup = await seedTiered()
     const { tournamentId } = setup
     await env.DB.prepare(
@@ -301,11 +301,12 @@ describe('the pages read what they read before', () => {
     const { tournaments } = await readEverywhere(setup)
     const row = (await tournamentRow(tournamentId))!
     // The list and the detail are read signed out, and since the Phase 0
-    // trim neither answers a visitor these keys (the trim's three, and
-    // review_notified_at, which WS08 step 2 added); every answer an admin
-    // reads still carries them, equal to the row.
+    // trim neither answers a visitor these keys (the trim's three,
+    // review_notified_at, which WS08 step 2 added, and the four of the
+    // approval wait, which WS09 step 16 added); every answer an admin reads
+    // still carries them, equal to the row.
     const signedOut = ['list', 'detail']
-    const managersOnly = ['created_by', 'keep_apart', 'report_settings', 'review_notified_at']
+    const managersOnly = ['created_by', 'keep_apart', 'report_settings', 'review_notified_at', 'needs_lca_approval', 'approval_requested_at', 'approved_at', 'approved_by']
     expect(columns).toEqual(expect.arrayContaining(managersOnly))
     for (const [endpoint, tournament] of Object.entries(tournaments)) {
       for (const column of columns.filter((c) => c !== 'sections' && c !== 'round_schedule')) {

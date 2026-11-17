@@ -57,9 +57,15 @@ export interface FeeNoticeProps {
   onAskForAccount?: () => Promise<void> | void
   /** Whether the request has gone; the ask then reads as done and stays disabled. */
   asked?: boolean
+  /**
+   * Whether the ask can go through: false leaves the ask's button out, never greyed, where the server would only refuse it
+   * (POST /api/me/payout-request while CREATION_ROLES_ON is unset, as a club's answer says for WS09 step 19's wizard). True by
+   * default, as before.
+   */
+  canAsk?: boolean
 }
 
-export function FeeNotice({ kind, onKeepFree, onAskForAccount, asked = false }: FeeNoticeProps) {
+export function FeeNotice({ kind, onKeepFree, onAskForAccount, asked = false, canAsk = true }: FeeNoticeProps) {
   const titleId = useId()
   const [pending, setPending] = useState(false)
   // A second press can arrive before the first one's render disables the
@@ -131,9 +137,11 @@ export function FeeNotice({ kind, onKeepFree, onAskForAccount, asked = false }: 
             <Button ref={keepButton} type="button" variant="outline" className={WRAPS} onClick={(event) => onKeepFree?.(event.detail === 0)}>
               Keep it at $0
             </Button>
-            <Button ref={askButton} type="button" variant="gold" className={WRAPS} disabled={pending || asked} onClick={ask}>
-              {asked ? 'Asked. LCA has your request.' : 'Ask LCA to set up my payout account'}
-            </Button>
+            {canAsk && (
+              <Button ref={askButton} type="button" variant="gold" className={WRAPS} disabled={pending || asked} onClick={ask}>
+                {asked ? 'Asked. LCA has your request.' : 'Ask LCA to set up my payout account'}
+              </Button>
+            )}
           </div>
           <p>Who can charge fees for now: LCA admins, club reps, the president and standing directors.</p>
         </div>

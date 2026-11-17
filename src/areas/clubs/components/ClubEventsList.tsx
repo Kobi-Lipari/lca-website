@@ -13,13 +13,22 @@
 // it, its public page for a listed event otherwise, and no link for a hidden
 // draft the person may not manage. A person a regional seat alone admits is
 // given the listed events alone by the server, so a draft never reaches them.
-// Adding a club event comes with a later step.
+//
+// With regionEvents on (WS09 step 19) the page passes what the club's answer
+// says the person may do: "Add a club event" for a person the create admits
+// for the club, which opens today's creation steps with the club fixed, and
+// for a representative's event the LCA admins' wait in words beside its
+// state (`showWait`), each row linking to its manage page where the server
+// lets the person run it. The setup checklist of a later workstream does not
+// exist, so the creation steps are the way in until it does.
+import type { Ref } from 'react'
 import { Link } from 'react-router-dom'
-import { EyeOff, Trophy } from 'lucide-react'
+import { EyeOff, Plus, Trophy } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 import type { ApiAdminClubTournament } from '@/lib/api'
 import { formatDate } from '@/lib/format'
+import { waitWords } from '@domain/events/approvalWords'
 
 /** Where an event's row may lead this person: its manage page, its public page, or nowhere. */
 export type EventLink = 'manage' | 'public' | null
@@ -49,20 +58,36 @@ function eventDateWords(event: Pick<ApiAdminClubTournament, 'date' | 'end_date'>
 /** A link on the list: 44px tall, with the site's focus ring. */
 const ROW_LINK = 'min-h-11 px-4 whitespace-normal'
 
-export function ClubEventsList({ clubName, events, linkOf, draftsKeptBack }: {
+export function ClubEventsList({ clubName, events, linkOf, draftsKeptBack, onAdd, addRef, showWait = false }: {
   clubName: string
   events: ApiAdminClubTournament[]
   /** Where each event may lead this person. */
   linkOf: (event: ApiAdminClubTournament) => EventLink
   /** The server gives this person the listed events alone. */
   draftsKeptBack: boolean
+  /** With regionEvents on, for a person the create admits for the club: opens the creation steps with the club fixed. */
+  onAdd?: () => void
+  /** The Add button, which takes the focus back when the creation steps close. */
+  addRef?: Ref<HTMLButtonElement>
+  /** With regionEvents on: each representative's event shows the LCA admins' wait in words. */
+  showWait?: boolean
 }) {
+  const heading = (
+    <div className="flex min-w-0 flex-wrap items-baseline gap-x-3 gap-y-1">
+      <h2 id="club-events-title" className="text-lg font-semibold text-ink">Events</h2>
+      {events.length > 0 && <p className="text-sm text-muted-foreground">{events.length === 1 ? '1 event' : `${events.length} events`}</p>}
+    </div>
+  )
   return (
     <section aria-labelledby="club-events-title" className="space-y-4">
-      <div className="flex min-w-0 flex-wrap items-baseline gap-x-3 gap-y-1">
-        <h2 id="club-events-title" className="text-lg font-semibold text-ink">Events</h2>
-        {events.length > 0 && <p className="text-sm text-muted-foreground">{events.length === 1 ? '1 event' : `${events.length} events`}</p>}
-      </div>
+      {onAdd ? (
+        <div className="flex min-w-0 flex-wrap items-center justify-between gap-3">
+          {heading}
+          <Button ref={addRef} type="button" className={ROW_LINK} onClick={onAdd}>
+            <Plus className="size-4" aria-hidden="true" /> Add a club event
+          </Button>
+        </div>
+      ) : heading}
       {events.length === 0 ? (
         <div className="rounded-xl border border-dashed px-6 py-10 text-center">
           <Trophy className="mx-auto mb-3 size-8 text-muted-foreground" aria-hidden="true" />
@@ -74,6 +99,9 @@ export function ClubEventsList({ clubName, events, linkOf, draftsKeptBack }: {
           {events.map((event) => {
             const link = linkOf(event)
             const registration = registrationWords(event.registration_status)
+            const wait = showWait && event.needs_lca_approval !== undefined
+              ? waitWords({ needs_lca_approval: event.needs_lca_approval, approval_requested_at: event.approval_requested_at ?? null, approved_at: event.approved_at ?? null })
+              : null
             return (
               <li key={event.id} className="flex min-w-0 flex-wrap items-center justify-between gap-3 rounded-xl border bg-card p-4 shadow-sm">
                 <div className="min-w-0">
@@ -87,6 +115,7 @@ export function ClubEventsList({ clubName, events, linkOf, draftsKeptBack }: {
                       </span>
                     )}
                   </p>
+                  {wait && <p className="break-words text-sm text-ink">{wait}</p>}
                 </div>
                 {link === 'manage' && (
                   <Button asChild variant="outline" className={ROW_LINK}>

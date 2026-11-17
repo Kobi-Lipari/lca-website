@@ -37,7 +37,7 @@ const read = (path: string) => readFileSync(join(ROOT, path), 'utf8')
 /** The specifiers a file names: imports, re-exports and import(), types included. */
 const specifiersOf = (path: string) => ts.preProcessFile(read(path), true, true).importedFiles.map((f) => f.fileName)
 
-const GRANTS = ['admin', 'president', 'standing_director', 'club_rep', 'none'] as const
+const GRANTS = ['admin', 'president', 'standing_director', 'club_rep', 'regional_rep', 'none'] as const
 
 /** An answer of each shape the contract allows, to be changed one way at a time. */
 const grantAnswer = { grant: 'standing_director', canCreate: true, canChargeFees: true, clubId: null }
@@ -92,7 +92,7 @@ describe('the imports', () => {
 })
 
 describe('the grants', () => {
-  it('are the five the creation rules name, in their order', () => {
+  it('are the six the creation rules name, in their order', () => {
     expect(creationGrantSchema.options).toEqual([...GRANTS])
     const rules = ts.createSourceFile('creation.ts', read('domain/events/creation.ts'), ts.ScriptTarget.Latest, true)
     const alias = rules.statements.find((s): s is ts.TypeAliasDeclaration => ts.isTypeAliasDeclaration(s) && s.name.text === 'CreationGrant')

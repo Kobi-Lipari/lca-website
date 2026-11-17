@@ -32,6 +32,14 @@
 // only other regions passes the route for their own club and is shown "not
 // found here" by the page, since no seat of theirs covers it. Nothing here
 // shows an email address or the roster.
+//
+// With regionEvents on (WS09 step 19) the Events tab reads what the club's
+// answer says the person may do with its events (`eventRights`, sent only
+// while REGION_EVENTS_ON is set): "Add a club event" for a person the create
+// admits, opening today's creation steps with the club fixed, a manage link
+// for each event the person runs, and the LCA admins' wait in words. After
+// the create the steps go to the event's manage page. With regionEvents off
+// the tab is as before.
 import { lazy, Suspense, useCallback, useEffect, useRef, useState, type FocusEvent, type FormEvent } from 'react'
 import { Link, useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { ArrowLeft, ExternalLink } from 'lucide-react'
@@ -47,9 +55,12 @@ import { usePageTitle } from '@/hooks/usePageTitle'
 import { ClubNewsPanel, type ClubNewsForm } from '@/areas/clubs/components/ClubNewsPanel'
 import { ClubEventsList, type EventLink } from '@/areas/clubs/components/ClubEventsList'
 import { errorWords } from '@/areas/clubs/region'
+import { regionEventsOn } from '@/areas/clubs/switches'
 import { checkWords } from '@domain/clubs/regionCards'
 // The one club editor, fetched only when the Listing tab draws it.
 const ClubEditor = lazy(() => import('@/areas/clubs/components/ClubEditor').then((m) => ({ default: m.ClubEditor })))
+// Today's creation steps, fetched only when Add a club event opens them (regionEvents on).
+const TournamentWizard = lazy(() => import('@/areas/admin/components/TournamentWizard').then((m) => ({ default: m.TournamentWizard })))
 
 /**
  * Below lg the page runs under today's sticky header, which gives the page no
@@ -313,12 +324,28 @@ function ClubInRegion({ id }: { id: string }) {
   // An event leads to its manage page only for a person the server lets manage it: an LCA
   // admin, an observer, the club's own rep or the event's director. Anyone else, a region's
   // representative among them, is led to a listed event's public page, and to no page for a draft.
+  // With regionEvents on, the club's answer says whether the person runs its events (`eventRights.manage`), as a region's
+  // representative does since WS09 step 17, and every such event leads to its manage page.
   const ownRep = role === 'club_rep' && !!member?.club_id && !!club && member.club_id === club.id
+  const rights = regionEventsOn() ? data?.eventRights ?? null : null
   function linkOf(event: ApiAdminClubTournament): EventLink {
     const directs = member?.role !== 'guest' && directedTournamentIds.includes(event.id)
     if (isAdmin || isViewOnlyAdmin(role) || ownRep || directs) return 'manage'
+    if (rights?.manage) return 'manage'
     return event.is_visible === 1 ? 'public' : null
   }
+
+  // Add a club event: today's creation steps in the tab's place, with the club fixed; closing them puts the focus back on Add.
+  const [adding, setAdding] = useState(false)
+  const addButton = useRef<HTMLButtonElement>(null)
+  const stepsTitle = useRef<HTMLHeadingElement>(null)
+  const addFocus = useRef<'steps' | 'add' | null>(null)
+  useEffect(() => {
+    if (addFocus.current === 'steps' && adding) stepsTitle.current?.focus()
+    else if (addFocus.current === 'add' && !adding) addButton.current?.focus()
+    addFocus.current = null
+  }, [adding])
+  const mayAdd = !!rights && rights.add !== 'no'
 
   const stamp = club ? (confirmed?.id === club.id ? confirmed.words : checkWords(club.last_confirmed_at, openedAt)) : ''
   const where = club ? [club.city, club.region, stamp].filter(Boolean).join(' · ') : ''
@@ -455,8 +482,30 @@ function ClubInRegion({ id }: { id: string }) {
           </div>
         )}
 
-        {club && data && tab === 'events' && (
-          <ClubEventsList clubName={club.name} events={data.tournaments ?? []} linkOf={linkOf} draftsKeptBack={!!data.rosterKeptBack} />
+        {club && data && tab === 'events' && !(adding && mayAdd) && (
+          <ClubEventsList
+            clubName={club.name}
+            events={data.tournaments ?? []}
+            linkOf={linkOf}
+            draftsKeptBack={!!data.rosterKeptBack && !rights}
+            {...(rights ? { showWait: true } : {})}
+            {...(mayAdd ? { onAdd: () => { addFocus.current = 'steps'; setAdding(true) }, addRef: addButton } : {})}
+          />
+        )}
+        {/* Once opened, the creation steps stay drawn, hidden while another tab shows, as the editor is: out of the tab order and of what a screen reader reads, with what was typed kept. They are only ever opened from Events, so never first drawn hidden. */}
+        {club && data && adding && mayAdd && rights && (
+          <div hidden={tab !== 'events'}>
+            <section aria-labelledby="add-club-event-title" className="space-y-4">
+              <h2 ref={stepsTitle} id="add-club-event-title" tabIndex={-1} className="break-words text-lg font-semibold text-ink outline-none">Add a club event for {club.name}</h2>
+              <Suspense fallback={<p className="text-muted-foreground" role="status">Loading the creation steps…</p>}>
+                <TournamentWizard
+                  templates={[]}
+                  fixedClub={{ id: club.id, name: club.name, waitsForApproval: rights.add === 'for_approval', mayAskForPayout: rights.askPayout }}
+                  onCancel={() => { addFocus.current = 'add'; setAdding(false) }}
+                />
+              </Suspense>
+            </section>
+          </div>
         )}
       </section>
     </div>

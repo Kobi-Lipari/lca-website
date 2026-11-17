@@ -4,37 +4,51 @@
 // /clubs/confirm/:token (WS09 step 14), routed only while clubKeepers is on.
 // It needs no sign-in and sits under no guard, so it never reads the
 // sign-in context and draws at once for a visitor and a signed-in person
-// alike. Plain and short: the club's name and town and one Still accurate
-// button, then "Thanks. {Club} is marked as checked for {month}." with the
-// month in words, as the server gives it.
+// alike. Plain and short: the club's name and town, how it meets in the
+// listing's own words (or the email's own sentence when it has none), so the
+// person sees what they vouch for, and one Still accurate button, then
+// "Thanks. {Club} is marked as checked for {month}." with the month in
+// words, as the server gives it.
 //
 // On load it makes one request, the GET, which changes nothing, so a mail
 // scanner that opens the link stamps nothing; the button sends the one POST.
 // Every other state is said in words: reading the link, a link that has
-// expired (with Log in), one that cannot be read, a seat that no longer
-// covers the club, a club or an account that is gone, and a request that did
-// not go through, with Try again. Its two calls live in
+// expired, one that cannot be read, no signing key on the site, a seat that
+// no longer covers the club, a club or an account that is gone, and a
+// request that did not go through, with Try again. Each refusal ends on one
+// link onward, told by the answer's status: where logging in lets the person
+// do the same from My region (410, 400 and 503), "Log in to My region",
+// which sends them on to /workspace/region once signed in; where it would
+// not help (403 and 404), "Go to the home page". Its two calls live in
 // src/areas/clubs/api.ts.
 //
 // The token rides in the address, so the page keeps it there alone: it is
-// never in the title, the page asks browsers to send no referrer from it and
-// search engines not to index it, and it links nowhere outside the site.
+// never in the title or in a link's address, the page asks browsers to send
+// no referrer from it and search engines not to index it, and it links
+// nowhere outside the site.
 import { useEffect, useRef, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { usePageTitle } from '@/hooks/usePageTitle'
 import { ApiError, confirmClubByLink, getClubLink } from '@/lib/api'
+import { NO_STATEMENT } from '@domain/clubs/monthlyCheck'
 
 /** The statuses the server refuses a link with, each said in the server's own words. */
 const REFUSALS = new Set([400, 403, 404, 410, 503])
 
+/** The refusals where logging in lets the person mark the club from My region: an expired link, one that cannot be read, no key. */
+const LOG_IN_HELPS = new Set([400, 410, 503])
+
+/** The club as the page shows it: its name, town and how it meets. */
+type Club = { name: string; city: string; statement: string | null }
+
 /** What the page draws. */
 type View =
   | { kind: 'reading' }
-  | { kind: 'ready'; name: string; city: string }
+  | ({ kind: 'ready' } & Club)
   | { kind: 'done'; name: string; month: string }
-  | { kind: 'refused'; text: string; expired: boolean }
-  | { kind: 'failed'; text: string; name?: string; city?: string }
+  | { kind: 'refused'; text: string; status: number }
+  | { kind: 'failed'; text: string; club?: Club }
 
 /** The heading for a state with no club to name. */
 const HEADING = 'Monthly check'
@@ -44,8 +58,8 @@ const LOAD_FAILED = 'The link could not be checked. Check your connection, then 
 const PRESS_FAILED = 'Not marked: the request did not go through. Nothing changed.'
 
 /** A refusal in the server's words, or null for a failure to try again. */
-function refusalOf(err: unknown): { text: string; expired: boolean } | null {
-  if (err instanceof ApiError && REFUSALS.has(err.status)) return { text: err.message, expired: err.status === 410 }
+function refusalOf(err: unknown): { text: string; status: number } | null {
+  if (err instanceof ApiError && REFUSALS.has(err.status)) return { text: err.message, status: err.status }
   return null
 }
 
@@ -81,7 +95,7 @@ export function ClubConfirmPage() {
   useEffect(() => {
     let cancelled = false
     getClubLink(token)
-      .then((club) => { if (!cancelled) setView({ kind: 'ready', name: club.name, city: club.city }) })
+      .then((club) => { if (!cancelled) setView({ kind: 'ready', name: club.name, city: club.city, statement: club.statement }) })
       .catch((err: unknown) => {
         if (cancelled) return
         const refused = refusalOf(err)
@@ -98,7 +112,7 @@ export function ClubConfirmPage() {
     }
   }, [view])
 
-  async function stillAccurate(club: { name: string; city: string }) {
+  async function stillAccurate(club: Club) {
     setPressing(true)
     moveFocus.current = true
     try {
@@ -106,7 +120,8 @@ export function ClubConfirmPage() {
       setView({ kind: 'done', name: done.name, month: done.month })
     } catch (err) {
       const refused = refusalOf(err)
-      setView(refused ? { kind: 'refused', ...refused } : { kind: 'failed', text: PRESS_FAILED, name: club.name, city: club.city })
+      // A press that did not go through keeps the club on the page: its name, town and how it meets.
+      setView(refused ? { kind: 'refused', ...refused } : { kind: 'failed', text: PRESS_FAILED, club: { name: club.name, city: club.city, statement: club.statement } })
     } finally {
       setPressing(false)
     }
@@ -115,15 +130,15 @@ export function ClubConfirmPage() {
   function tryAgain() {
     if (view.kind !== 'failed') return
     // A press that did not go through is sent again; a load that did not is read again.
-    if (view.name !== undefined && view.city !== undefined) {
-      void stillAccurate({ name: view.name, city: view.city })
+    if (view.club) {
+      void stillAccurate(view.club)
       return
     }
     setView({ kind: 'reading' })
     setAttempt((n) => n + 1)
   }
 
-  const club = view.kind === 'ready' ? view : view.kind === 'failed' && view.name !== undefined ? { name: view.name, city: view.city ?? '' } : null
+  const club: Club | null = view.kind === 'ready' ? view : view.kind === 'failed' && view.club ? view.club : null
   const heading = view.kind === 'done' ? view.name : club ? club.name : HEADING
   const words = view.kind === 'reading'
     ? 'Reading the link…'
@@ -137,6 +152,7 @@ export function ClubConfirmPage() {
     <div className="mx-auto max-w-lg px-4 py-12 sm:px-6 sm:py-16">
       <h1 className="break-words text-2xl font-bold text-ink">{heading}</h1>
       {club && club.city && <p className="mt-1 break-words text-ink">{club.city}</p>}
+      {club && <p className="mt-4 min-w-0 whitespace-normal break-words text-ink">{club.statement ?? NO_STATEMENT}</p>}
       {view.kind === 'ready' && (
         <Button type="button" className="mt-6 min-h-11 px-5" disabled={pressing} onClick={() => { void stillAccurate(view) }}>
           Still accurate
@@ -146,8 +162,13 @@ export function ClubConfirmPage() {
       <div ref={said} tabIndex={-1} role="status" className={`mt-4 break-words outline-none ${view.kind === 'reading' ? 'text-muted-foreground' : 'text-ink'}`}>
         {words}
       </div>
-      {view.kind === 'refused' && view.expired && (
-        <p className="mt-4"><Link to="/login" className={LINK}>Log in</Link></p>
+      {/* One way onward from a refusal, told by its status. The login page sends the person on to My region; the token goes with neither. */}
+      {view.kind === 'refused' && (
+        <p className="mt-4">
+          {LOG_IN_HELPS.has(view.status)
+            ? <Link to="/login" state={{ from: '/workspace/region' }} className={LINK}>Log in to My region</Link>
+            : <Link to="/" className={LINK}>Go to the home page</Link>}
+        </p>
       )}
       {view.kind === 'failed' && (
         <Button type="button" variant="outline" className="mt-4 min-h-11 px-4" disabled={pressing} onClick={tryAgain}>

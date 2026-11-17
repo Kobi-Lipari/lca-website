@@ -181,7 +181,8 @@ describe('naming: requireCanAssign in the directors endpoint (D21)', () => {
       ['person', '{ clubId: tournament.club_id, createdBy: tournament.created_by }', 'rolesOn'],
     ])
     const rules = importDeclarations(source, '../../../../../domain/events/creation')
-    expect(rules.flatMap(importedNames)).toEqual(['canAssignDirectors'])
+    // WS09 checkpoint V's review adds regionAlone and the person's type, for the representative's own naming and the directors' emails.
+    expect(rules.flatMap(importedNames)).toEqual(['canAssignDirectors', 'regionAlone', 'CreationPerson'])
     expect(resolve(ROOT, dirname(DIRECTORS), '../../../../../domain/events/creation')).toBe(join(ROOT, 'domain/events/creation'))
     for (const piece of ['now selects the event\'s `created_by` beside its club', '`canAssignDirectors(person, { clubId, createdBy }, rolesOn)`']) {
       expect(naming, piece).toContain(piece)
@@ -190,9 +191,10 @@ describe('naming: requireCanAssign in the directors endpoint (D21)', () => {
 
   it('reads the constant once, inside requireCanAssign, into a name of the function\'s own, from the module the tests\' getter mocks', () => {
     const from = importDeclarations(source, '../../../../utils/events/creation')
-    expect(from.flatMap(importedNames)).toEqual(['CREATION_ROLES_ON', 'creationPerson'])
+    // WS09 checkpoint V's review adds directorEmailsHidden, which answerDirectors hands the constant too; the gate's own read is counted below.
+    expect(from.flatMap(importedNames)).toEqual(['CREATION_ROLES_ON', 'creationPerson', 'directorEmailsHidden'])
     expect(resolve(ROOT, dirname(DIRECTORS), '../../../../utils/events/creation')).toBe(join(ROOT, 'functions/utils/events/creation'))
-    const reads = nodesOf(source).filter((n): n is ts.Identifier => ts.isIdentifier(n) && n.text === 'CREATION_ROLES_ON' && !ts.isImportSpecifier(n.parent))
+    const reads = nodesOf(gate).filter((n): n is ts.Identifier => ts.isIdentifier(n) && n.text === 'CREATION_ROLES_ON' && !ts.isImportSpecifier(n.parent))
     expect(reads).toHaveLength(1)
     expect(inside(reads[0], gate.body!)).toBe(true)
     expect(ts.isVariableDeclaration(reads[0].parent) && reads[0].parent.name.getText(source)).toBe('rolesOn')
@@ -219,7 +221,8 @@ describe('naming: requireCanAssign in the directors endpoint (D21)', () => {
       'return authed',
       "return errorResponse('Tournament not found', 404)",
       `return errorResponse('Only admins and the organizing club\\'s rep can assign directors', 403)`,
-      'return { tournamentId, tournamentName: tournament.name, actor: authed.member }',
+      // WS09 checkpoint V's review: the gate also hands back the person it built and the event's club.
+      'return { tournamentId, tournamentName: tournament.name, actor: authed.member, person, clubId: tournament.club_id }',
     ])
     expect(naming).toContain('A missing event still answers 404 "Tournament not found" before the rule, as before')
   })

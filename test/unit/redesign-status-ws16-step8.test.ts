@@ -213,8 +213,9 @@ describe('REDESIGN_STATUS.md, WS16 step 8: the Status line', () => {
     expect(statusLine.startsWith(STATUS_PREFIX)).toBe(true)
     const tail = statusLine.slice(STATUS_PREFIX.length)
     expect(latestStep).toBeGreaterThanOrEqual(8)
-    // Once checkpoint M merged, the tail says so as well, while this step is still the latest.
-    if (latestStep === 8) expect([TAIL, 'steps 1 to 8 are built and merged, switched off.']).toContain(tail)
+    // Once checkpoint M merged, the tail says so as well, while this step is still the latest, and once the switch-on change
+    // is made, that it switches them on.
+    if (latestStep === 8) expect([TAIL, 'steps 1 to 8 are built and merged, switched off.', 'steps 1 to 8 are built and merged, switched on by the switch-on change.']).toContain(tail)
     expect(tail).toMatch(/\bbuilt\b/)
     expect(tail.endsWith('.')).toBe(true)
   })

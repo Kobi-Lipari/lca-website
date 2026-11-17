@@ -17,9 +17,13 @@ import type { TierFees } from './sections'
  * assignment to the President seat, whatever their role (the seat is the
  * grant); a standing director holds today's tournament_director role; a club
  * rep holds club_rep with a club. The president and the standing director
- * count only once CREATION_ROLES_ON is set, and read as none until then.
+ * count only once CREATION_ROLES_ON is set, and read as none until then. A
+ * regional representative holds an active regional seat and no stronger
+ * grant, and counts only once REGION_EVENTS_ON is set; the rules read the
+ * seat's clubs, regionClubIds, not this name, since a seat holder can be a
+ * club rep or a director as well.
  */
-export type CreationGrant = 'admin' | 'president' | 'standing_director' | 'club_rep' | 'none'
+export type CreationGrant = 'admin' | 'president' | 'standing_director' | 'club_rep' | 'regional_rep' | 'none'
 
 /** The person a rule asks about. */
 export interface CreationPerson {
@@ -32,12 +36,26 @@ export interface CreationPerson {
    * Q2 leaves club reps.
    */
   repClubId: string | null
+  /**
+   * The clubs the person's active regional seats keep, by the seat's regions,
+   * its added regions included. Left out, and read as no club, while
+   * REGION_EVENTS_ON is unset, so a seat gives nothing until then.
+   */
+  regionClubIds?: readonly string[]
 }
 
 /** The event a rule asks about: its club, null for an LCA-run event, and its creator. */
 export interface CreationEvent {
   clubId: string | null
   createdBy: string | null
+  /**
+   * The event's approval mark, needs_lca_approval (migration 0070): 1 on a
+   * regional representative's club event, approved or not. Left out by a
+   * caller that asks about no stored event. Read as marked only when it is
+   * the number 1, as mayList reads it, since a database the migration has not
+   * reached answers the column's name as text.
+   */
+  needsLcaApproval?: number
 }
 
 /** The refusal of a raised fee for anyone not on D24's list: G1's title and its last sentence. */
@@ -54,31 +72,59 @@ function repsClub(person: CreationPerson, clubId: string | null): boolean {
   return clubId !== null && clubId === person.repClubId
 }
 
+/** Whether the club is one the person's regional seats keep; an LCA-run event (no club) never is. */
+function inRegion(person: CreationPerson, clubId: string | null): boolean {
+  return clubId !== null && (person.regionClubIds ?? []).includes(clubId)
+}
+
+/**
+ * Whether the person's standing on the event's club is the region alone: the
+ * club is one their seats keep, they are not an LCA admin, and it is not the
+ * club they manage as its rep. Such a person runs the event at $0 (D24), and
+ * the event they create for that club waits for an LCA admin's approval.
+ */
+export function regionAlone(person: CreationPerson, clubId: string | null): boolean {
+  return person.grant !== 'admin' && !repsClub(person, clubId) && inRegion(person, clubId)
+}
+
 /**
  * Whether the person may create an event for the club, or an LCA-run event
  * when clubId is null. In both states an LCA admin creates for any club or
  * none, and a club rep for their own club only. With rolesOn, the president
  * and a standing director create LCA-run events only (Q37 for the standing
  * director, and for the president the table's membership row: their events
- * are LCA-run). Anyone else may not, nor, with rolesOn false, the president
- * and the standing director.
+ * are LCA-run). A regional representative creates for a club their seats
+ * keep (regionClubIds), in both states, and never an LCA-run event. Anyone
+ * else may not, nor, with rolesOn false, the president and the standing
+ * director.
  */
 export function canCreate(person: CreationPerson, clubId: string | null, rolesOn: boolean): boolean {
   if (person.grant === 'admin') return true
   if (repsClub(person, clubId)) return true
+  if (inRegion(person, clubId)) return true
   if (rolesOn && (person.grant === 'president' || person.grant === 'standing_director')) return clubId === null
   return false
 }
 
 /**
- * Whether the person may set an entry fee above $0 on the event (D24). With
- * rolesOn false everyone may, as today, where anyone requireTournamentManager
- * admits may set a fee. With rolesOn, D24's list may (LCA admins, the
- * president, standing directors and club reps) and no one else. The event
- * changes no answer yet: it has its place for the member-created event, whose
- * fees stay $0 whoever saves (Phase 4), and for WS09's representatives.
+ * Whether the person may set an entry fee above $0 on the event (D24). First,
+ * in both states, a person whose standing on the event's club is the region
+ * alone may not: representatives are not on D24's list, and the refusal sits
+ * ahead of the next line so that it holds while CREATION_ROLES_ON is off. A
+ * club rep keeps today's rule on their own club, and an LCA admin charges as
+ * today, seat or not. Next, in both states, on an event marked for approval
+ * (needsLcaApproval the number 1), approved or not, no one but an LCA admin
+ * and the club's own rep may: the event is a representative's, so a director
+ * they name, who holds no seat, may not raise what an entrant pays either.
+ * Then, with rolesOn false, everyone may, as today, where
+ * anyone requireTournamentManager admits may set a fee. With rolesOn, D24's
+ * list may (LCA admins, the president, standing directors and club reps) and
+ * no one else. The member-created event, whose fees stay $0 whoever saves,
+ * comes with Phase 4.
  */
 export function canChargeFees(person: CreationPerson, event: CreationEvent, rolesOn: boolean): boolean {
+  if (regionAlone(person, event.clubId)) return false
+  if (event.needsLcaApproval === 1 && person.grant !== 'admin' && !repsClub(person, event.clubId)) return false
   if (!rolesOn) return true
   return MAY_CHARGE.has(person.grant)
 }
@@ -91,12 +137,14 @@ export function canChargeFees(person: CreationPerson, event: CreationEvent, role
  * canDeleteDraft reads the creator), an LCA-run event, since the president
  * creates no other. A club's event the seat holder made earlier, as a club's
  * rep or as an LCA admin, is not one the president drafted, so the seat gives
- * no right to name there. A standing director never does, nor does anyone
- * else.
+ * no right to name there. A regional representative names them, in both
+ * states, on a club event they drafted for a club their seats keep, and on
+ * no other. A standing director never does, nor does anyone else.
  */
 export function canAssignDirectors(person: CreationPerson, event: CreationEvent, rolesOn: boolean): boolean {
   if (person.grant === 'admin') return true
   if (repsClub(person, event.clubId)) return true
+  if (inRegion(person, event.clubId) && event.createdBy === person.memberId) return true
   return rolesOn && person.grant === 'president' && event.createdBy === person.memberId && canCreate(person, event.clubId, true)
 }
 

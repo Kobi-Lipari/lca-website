@@ -28,7 +28,7 @@ export type WorkersPlan = 'free' | 'paid'
  * WORKERS_PLAN). Turned on with mailLists in src/lib/features.ts, in the same change;
  * test/unit/mail-switches.test.ts holds the two equal.
  */
-export const MAIL_LISTS_ON = false
+export const MAIL_LISTS_ON = true
 
 /**
  * Which service sends every email: 'resend' today. It changes only in a pull request of its own (the cutover, whose
@@ -42,7 +42,7 @@ export const MAIL_SENDER: MailSender = 'resend'
  * is on Workers Paid, then 'paid' in the change that follows K's word. The cutover to Amazon SES waits for 'paid'
  * (WS16 step 7). test/unit/mail-switches.test.ts holds it written once, with either value.
  */
-export const WORKERS_PLAN: WorkersPlan = 'free'
+export const WORKERS_PLAN: WorkersPlan = 'paid'
 
 /**
  * Decision 18 of the WS16 plan (D35): a spam report always stops the list it was pressed on, and while this holds it

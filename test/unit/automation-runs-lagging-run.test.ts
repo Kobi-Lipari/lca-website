@@ -37,7 +37,7 @@ vi.mock('../../functions/utils/supabase', async (importOriginal) => {
   return { ...real, deleteSupabaseUser: async () => false }
 })
 
-const { CLUB_REFERENCES_UNCLEARED_LOG, RUN_MARKS_UNCLEARED_LOG, onRequestDelete: memberDelete } = await import('../../functions/api/admin/members/[id]')
+const { APPROVALS_UNCLEARED_LOG, CLUB_REFERENCES_UNCLEARED_LOG, RUN_MARKS_UNCLEARED_LOG, onRequestDelete: memberDelete } = await import('../../functions/api/admin/members/[id]')
 const { MAX_DETAIL_LENGTH, RUN_NOT_RECORDED_LOG, lastRun, plainDetail, recordRun } = await import('../../functions/utils/admin/automations')
 
 afterEach(() => {
@@ -114,7 +114,8 @@ describe('before migration 0068 has run', () => {
     const res = await deleteMember(db, 'player-two')
     expect(res.status).toBe(200)
     expect(await res.text()).toBe(ANSWER)
-    expect(lines(warn).filter((l) => typeof l === 'string' && l.startsWith('member delete: '))).toEqual([RUN_MARKS_UNCLEARED_LOG])
+    // Built to 0067, the database lacks 0070's approved_by as well, which WS09 step 16's clear meets with its own line.
+    expect(lines(warn).filter((l) => typeof l === 'string' && l.startsWith('member delete: '))).toEqual([RUN_MARKS_UNCLEARED_LOG, APPROVALS_UNCLEARED_LOG])
     expect(RUN_MARKS_UNCLEARED_LOG).not.toMatch(/player|@/i)
     expect(RUN_MARKS_UNCLEARED_LOG).not.toBe(CLUB_REFERENCES_UNCLEARED_LOG)
     expect(db.prepare(`SELECT COUNT(*) AS n FROM members WHERE id = 'player-two'`).get()).toEqual({ n: 0 })

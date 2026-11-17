@@ -34,7 +34,7 @@ import { cn } from '@/lib/utils'
 import { usePageTitle } from '@/hooks/usePageTitle'
 import { LCA } from '@/lib/brand'
 import { ViewOnlyFieldset, ViewOnlyNote } from '@/lib/viewOnly'
-import { keepersOn } from '@/areas/clubs/switches'
+import { keepersOn, regionEventsOn } from '@/areas/clubs/switches'
 // The one club editor, fetched only when the Details tab draws it, with clubKeepers on.
 const ClubEditor = lazy(() => import('@/areas/clubs/components/ClubEditor').then((m) => ({ default: m.ClubEditor })))
 
@@ -689,13 +689,25 @@ export function AdminClubPage() {
               </Button>
             </div>
 
+            {/* With regionEvents on, for an LCA admin: the club's events that wait for LCA approval, with Approve and publish and Ask for changes. */}
+            {regionEventsOn() && isAdmin && (
+              <Suspense fallback={null}>
+                <ClubWaitingEvents
+                  clubId={club.id}
+                  onMoved={(tournamentId, answer) => setTournaments((now) => now.map((t) => (t.id === tournamentId
+                    ? { ...t, needs_lca_approval: answer.needs_lca_approval, approval_requested_at: answer.approval_requested_at, approved_at: answer.approved_at, ...(answer.approved_at ? { is_visible: 1 } : {}) }
+                    : t)))}
+                />
+              </Suspense>
+            )}
+
             {tournaments.length === 0 ? (
               <div className="rounded-xl border border-dashed px-6 py-10 text-center">
                 <Trophy className="mx-auto mb-3 size-8 text-muted-foreground" />
                 <p className="font-medium text-ink">No tournaments yet</p>
                 <p className="mt-1 text-sm text-muted-foreground">
                   {roster === null
-                    ? `Published tournaments of ${club.name} show up here. Drafts stay with LCA admins and the club's own rep.`
+                    ? <KeptBackEmptyWords club={club} />
                     : `Tournaments you create for ${club.name} will show up here, including drafts.`}
                 </p>
               </div>
@@ -729,4 +741,32 @@ export function AdminClubPage() {
       </section>
     </div>
   )
+}
+
+// The club's events that wait for LCA approval (WS09 step 19), fetched only when the Tournaments tab draws them with
+// regionEvents on for an LCA admin. Declared here, below the page, so the lines above keep their places.
+const ClubWaitingEvents = lazy(() => import('@/areas/clubs/components/ClubWaitingEvents').then((m) => ({ default: m.ClubWaitingEvents })))
+
+/**
+ * The empty Tournaments tab's words for a person the club's roster is kept back from. With regionEvents off they are
+ * today's, drawn at once with no read. With it on the club's answer is read once more: when it carries eventRights
+ * (REGION_EVENTS_ON set on the server) the person gets the club's drafts too, so the sentence that drafts stay with LCA
+ * admins and the club's own rep is left out, and until the answer comes it is not said; without eventRights, or when
+ * the read fails, the words are today's. Declared below the page, so the lines above keep their places.
+ */
+function KeptBackEmptyWords({ club }: { club: Pick<ApiClubDetail, 'id' | 'name'> }) {
+  const on = regionEventsOn()
+  const [rights, setRights] = useState<boolean | null>(on ? null : false)
+  useEffect(() => {
+    if (!on) return
+    let cancelled = false
+    adminGetClub(club.id).then(
+      (data) => { if (!cancelled) setRights(!!data.eventRights) },
+      () => { if (!cancelled) setRights(false) },
+    )
+    return () => { cancelled = true }
+  }, [on, club.id])
+  return rights === false
+    ? `Published tournaments of ${club.name} show up here. Drafts stay with LCA admins and the club's own rep.`
+    : `Published tournaments of ${club.name} show up here.`
 }

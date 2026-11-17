@@ -15,6 +15,9 @@ export const CLUB_REFERENCES_UNCLEARED_LOG = 'member delete: the club tables of 
 /** The one log line for the run record of migration 0068 the delete could not clear; it names no member. */
 export const RUN_MARKS_UNCLEARED_LOG = 'member delete: the run record of migration 0068 could not be read; the delete goes on without it'
 
+/** The one log line for the approval column of migration 0070 the delete could not clear; it names no member. */
+export const APPROVALS_UNCLEARED_LOG = 'member delete: the approval column of migration 0070 could not be read; the delete goes on without it'
+
 export const onRequestOptions: PagesFunction<Env> = async () => handleOptions()
 
 export const onRequestDelete: PagesFunction<Env> = async (context) => {
@@ -57,13 +60,30 @@ export const onRequestDelete: PagesFunction<Env> = async (context) => {
     if (!isMissingTableOrColumn(err)) throw err
     console.warn(RUN_MARKS_UNCLEARED_LOG)
   }
+  // Migration 0070's one reference to a member, tournaments.approved_by, with
+  // no delete action: an event this member approved keeps its approved_at
+  // and loses the name. The clear goes in the batch below, straight before
+  // the member's own delete, so a member whose delete fails (the activity
+  // log or an event they created still names them) keeps the name on every
+  // event they approved. A read that changes nothing asks first whether the
+  // column is there: before 0070 has run it is not, the clear is left out
+  // and the delete goes on with one log line.
+  let approvalsClear: D1PreparedStatement[] = []
+  try {
+    await context.env.DB.prepare('SELECT approved_by FROM tournaments LIMIT 0').all()
+    approvalsClear = [context.env.DB.prepare('UPDATE tournaments SET approved_by = NULL WHERE approved_by = ?').bind(memberId)]
+  } catch (err) {
+    if (!isMissingTableOrColumn(err)) throw err
+    console.warn(APPROVALS_UNCLEARED_LOG)
+  }
   // Migration 0066's references to a member, none with a delete action: the
   // club pages' last save and last check keep their dates and lose the name,
   // a report or a rep request this member decided keeps its outcome, and the
   // member's own rep requests go. They go in one batch with the member, so a
   // member whose own delete fails keeps every one of them. Before 0066 has
   // run the columns and tables are not there, and the member is deleted on
-  // their own as before, with one log line.
+  // their own as before, with one log line; such a database has not reached
+  // 0070 either, as the migrations run in order.
   try {
     await context.env.DB.batch([
       context.env.DB.prepare('UPDATE clubs SET told_by = NULL WHERE told_by = ?').bind(memberId),
@@ -71,6 +91,7 @@ export const onRequestDelete: PagesFunction<Env> = async (context) => {
       context.env.DB.prepare('UPDATE club_reports SET resolved_by = NULL WHERE resolved_by = ?').bind(memberId),
       context.env.DB.prepare('UPDATE club_rep_requests SET decided_by = NULL WHERE decided_by = ?').bind(memberId),
       context.env.DB.prepare('DELETE FROM club_rep_requests WHERE member_id = ?').bind(memberId),
+      ...approvalsClear,
       context.env.DB.prepare('DELETE FROM members WHERE id = ?').bind(memberId),
     ])
   } catch (err) {

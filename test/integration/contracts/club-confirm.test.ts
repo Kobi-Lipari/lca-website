@@ -59,11 +59,15 @@ async function exampleLink() {
 
 describe('GET and POST /api/clubs/confirm/[token] keep their contracts', () => {
   it('answers a good link within them, and each refusal as an error body, set and unset', async () => {
-    const { token } = await exampleLink()
+    const { clubId, token } = await exampleLink()
     flags.keepersOn = true
     const read = await invoke(linkGet, { params: { token }, env: { SIGNING_SECRET: KEY } })
     expect(read.status).toBe(200)
-    expect(await expectContract(read, linkContract.response)).toEqual({ name: 'Example Chess Club', city: 'Example City' })
+    // Changed at checkpoint V: the answer carries the club's meeting words, null for a listing with none.
+    expect(await expectContract(read, linkContract.response)).toEqual({ name: 'Example Chess Club', city: 'Example City', statement: null })
+    await env.DB.prepare('UPDATE clubs SET how_we_meet_text = ? WHERE id = ?').bind('Saturdays from 10:00 AM at the Example Library.', clubId).run()
+    const withWords = await invoke(linkGet, { params: { token }, env: { SIGNING_SECRET: KEY } })
+    expect(await expectContract(withWords, linkContract.response)).toEqual({ name: 'Example Chess Club', city: 'Example City', statement: 'Saturdays from 10:00 AM at the Example Library.' })
     const marked = await invoke(linkPost, { method: 'POST', params: { token }, body: {}, env: { SIGNING_SECRET: KEY } })
     expect(marked.status).toBe(200)
     const body = await expectContract(marked, linkConfirmContract.response)
@@ -89,7 +93,13 @@ describe('GET and POST /api/clubs/confirm/[token] keep their contracts', () => {
   })
 
   it('the contracts are strict: an id, a person or an address beside the answer is refused, and the request takes {}', () => {
-    expect(clubLinkResponseSchema.safeParse({ name: 'Example Chess Club', city: 'Example City', id: 'example-chess-club' }).success).toBe(false)
+    expect(clubLinkResponseSchema.safeParse({ name: 'Example Chess Club', city: 'Example City', statement: null, id: 'example-chess-club' }).success).toBe(false)
+    // The meeting words are one key, a string or null, and always there.
+    expect(clubLinkResponseSchema.safeParse({ name: 'Example Chess Club', city: 'Example City', statement: null }).success).toBe(true)
+    expect(clubLinkResponseSchema.safeParse({ name: 'Example Chess Club', city: 'Example City', statement: 'Saturdays from 10:00 AM.' }).success).toBe(true)
+    expect(clubLinkResponseSchema.safeParse({ name: 'Example Chess Club', city: 'Example City' }).success).toBe(false)
+    expect(clubLinkResponseSchema.safeParse({ name: 'Example Chess Club', city: 'Example City', statement: 7 }).success).toBe(false)
+    expect(clubLinkResponseSchema.safeParse({ name: 'Example Chess Club', city: 'Example City', statement: null, member: 'Player One' }).success).toBe(false)
     expect(clubLinkConfirmResponseSchema.safeParse({ name: 'Example Chess Club', city: 'Example City', month: 'November 2026', member: 'Player One' }).success).toBe(false)
     expect(clubLinkConfirmResponseSchema.safeParse({ name: 'Example Chess Club', city: 'Example City' }).success).toBe(false)
     expect(linkConfirmContract.request.safeParse({}).success).toBe(true)

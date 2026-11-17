@@ -21,12 +21,19 @@
 //
 // The monthly check's email (monthlyCheckEmail below) is drawn here too, and
 // sent by functions/utils/clubs/monthlyCheck.ts.
+//
+// So are the three emails of a representative's club event in the LCA
+// admins' wait (WS09 step 18), sent by
+// functions/api/admin/tournaments/[id]/approval.ts: Submit for LCA review
+// writes to the LCA admins, and Approve and publish and Ask for changes to
+// the person who drafted the event.
 
 import { trySendEmail, type EmailEnv, type EmailMessage } from '../email'
-import { emailDetails, escapeHtml, p, renderEmail } from '../emailLayout'
+import { emailDetails, emailQuote, escapeHtml, p, renderEmail } from '../emailLayout'
 import { resolveSiteUrl } from '../site'
 import { regionRepresentativesOf, representativesOfRegion } from './routing'
 import { formatDate } from '../../../domain/format/date'
+import { NO_STATEMENT } from '../../../domain/clubs/monthlyCheck'
 
 /**
  * Each field a save can change, by its column, as the notice names it: in
@@ -247,19 +254,34 @@ const NAVY = '#1a2744'
 const INK = '#3a3f4b'
 const SANS = 'Arial,Helvetica,sans-serif'
 
-/** A link in navy, bold and underlined, on the box's light ground. */
-const linkHtml = (label: string, url: string) =>
-  `<a href="${escapeHtml(url)}" style="color:${NAVY};font-weight:bold;text-decoration:underline;">${escapeHtml(label)}</a>`
+const GOLD = '#c8a94a'
 
-/** One club's box: its name, town and statement, with its two links in the same cell, so each link reads with its club. */
+/**
+ * One of a club's two buttons: padding 12px above and below, a 20px line
+ * and a 2px edge make it 48px tall. Still accurate wears the look of the
+ * site's own email button (functions/utils/emailLayout.ts emailButton): the
+ * gold ground with navy bold words. Update is the quiet one, navy words and
+ * a navy line round it on a white ground, so no gold word sits on a light
+ * ground. Each sits in its own block with an 8px margin to its right and
+ * above, so the two stand 8px apart side by side and 8px apart when a narrow
+ * screen puts the second under the first; with the styles dropped, the two
+ * blocks fall onto two lines as two plain links.
+ */
+function buttonHtml(label: string, url: string, look: 'main' | 'quiet'): string {
+  const ground = look === 'main' ? `background:${GOLD};border:2px solid ${GOLD};` : `background:#ffffff;border:2px solid ${NAVY};`
+  return `<div style="display:inline-block;margin:8px 8px 0 0;vertical-align:top;"><a href="${escapeHtml(url)}" style="display:inline-block;padding:12px 22px;${ground}font-family:${SANS};font-size:15px;line-height:20px;font-weight:bold;color:${NAVY};text-decoration:none;border-radius:8px;">${escapeHtml(label)}</a></div>`
+}
+
+/** One club's box: its name, town and statement, with its two buttons in the same cell, so each reads with its club. */
 function clubBox(club: CheckClub): string {
-  const statement = club.statement ? oneLine(club.statement) : 'How the club meets is not listed yet.'
+  const statement = club.statement ? oneLine(club.statement) : NO_STATEMENT
   return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:4px 0 16px;background:#f7f6f2;border-radius:10px;">
   <tr><td style="padding:16px 18px;font-family:${SANS};color:${INK};">
     <div style="font-size:16px;font-weight:bold;color:${NAVY};">${escapeHtml(oneLine(club.name))}</div>
     <div style="font-size:14px;">${escapeHtml(oneLine(club.city))}</div>
     <div style="margin-top:8px;font-size:14px;line-height:1.5;">${escapeHtml(statement)}</div>
-    <div style="margin-top:12px;font-size:15px;">${linkHtml('Still accurate', club.confirmUrl)} &nbsp;&middot;&nbsp; ${linkHtml('Update', club.updateUrl)}</div>
+    <div style="margin-top:4px;">${buttonHtml('Still accurate', club.confirmUrl, 'main')}
+      ${buttonHtml('Update', club.updateUrl, 'quiet')}</div>
   </td></tr>
 </table>`
 }
@@ -302,7 +324,7 @@ export function monthlyCheckEmail(data: {
       ...data.clubs.flatMap((club) => [
         oneLine(club.name),
         oneLine(club.city),
-        club.statement ? oneLine(club.statement) : 'How the club meets is not listed yet.',
+        club.statement ? oneLine(club.statement) : NO_STATEMENT,
         `Still accurate: ${club.confirmUrl}`,
         `Update: ${club.updateUrl}`,
         '',
@@ -310,6 +332,158 @@ export function monthlyCheckEmail(data: {
       life,
       '',
       why,
+    ].join('\n'),
+  }
+}
+
+// ── The approval wait (WS09 step 18) ─────────────────────────────
+
+/** A representative's club event as the three emails of the wait name it. */
+export interface WaitingEvent {
+  siteUrl: string
+  id: string
+  name: string
+  /** The club's name, or null for an event whose club is gone. */
+  clubName: string | null
+  /** The event's days, a weekday on each, as eventDays in functions/utils/events/publishedReview.ts writes them. */
+  when: string
+}
+
+/** The club line of an event whose club has been deleted since it was drafted. */
+export const NO_CLUB = 'No club on file'
+
+/** Submit's subject line and heading. */
+export const REVIEW_ASKED_HEADING = 'A club event is waiting for LCA review'
+
+/** Approve's heading. */
+export const APPROVED_HEADING = 'Your event is approved and listed'
+
+/** Ask for changes' heading. */
+export const CHANGES_ASKED_HEADING = 'An LCA admin asked for changes to your event'
+
+/** The event's name, club and days as one line each, and its two addresses. */
+function waitingWords(event: WaitingEvent) {
+  return {
+    name: oneLine(event.name),
+    club: event.clubName && oneLine(event.clubName) ? oneLine(event.clubName) : NO_CLUB,
+    when: event.when,
+    manageUrl: `${event.siteUrl}/admin/tournaments/${encodeURIComponent(event.id)}`,
+    publicUrl: `${event.siteUrl}/tournaments/${encodeURIComponent(event.id)}`,
+  }
+}
+
+/**
+ * Submit for LCA review, to each LCA admin: the event's name, its club and
+ * its days, with a link to its manage page, where an LCA admin approves it.
+ * It names no person. Its `to` is empty, as every template's is, and is
+ * filled for each admin.
+ */
+export function reviewAskedEmail(event: WaitingEvent): EmailMessage {
+  const words = waitingWords(event)
+  const wait = 'It stays off the site until an LCA admin approves it.'
+  return {
+    to: '',
+    subject: `For LCA review: ${words.name} (${words.when})`,
+    html: renderEmail({
+      siteUrl: event.siteUrl,
+      heading: REVIEW_ASKED_HEADING,
+      preheader: `${words.name}, ${words.club}`,
+      body: emailDetails([
+        ['Event', words.name],
+        ['Club', words.club],
+        ['When', words.when],
+      ]) + p(escapeHtml(wait)),
+      cta: { label: 'Review the event', url: words.manageUrl },
+    }),
+    text: [
+      `${REVIEW_ASKED_HEADING}.`,
+      '',
+      `Event: ${words.name}`,
+      `Club: ${words.club}`,
+      `When: ${words.when}`,
+      '',
+      wait,
+      '',
+      `Review the event: ${words.manageUrl}`,
+    ].join('\n'),
+  }
+}
+
+/**
+ * Approve and publish, to the person who drafted the event: it is approved
+ * and listed, with its name, club and days and a link to its public page.
+ */
+export function approvedEmail(event: WaitingEvent & { fullName: string }): EmailMessage {
+  const words = waitingWords(event)
+  const first = firstNameOf(event.fullName)
+  const listed = 'An LCA admin approved it, and it is now listed on Tournaments.'
+  return {
+    to: '',
+    subject: `Approved and listed: ${words.name}`,
+    html: renderEmail({
+      siteUrl: event.siteUrl,
+      heading: APPROVED_HEADING,
+      preheader: `${words.name} is now listed`,
+      body: p(`Hi ${escapeHtml(first)},`) + p(escapeHtml(listed)) + emailDetails([
+        ['Event', words.name],
+        ['Club', words.club],
+        ['When', words.when],
+      ]),
+      cta: { label: 'See the event', url: words.publicUrl },
+    }),
+    text: [
+      `Hi ${first},`,
+      '',
+      listed,
+      '',
+      `Event: ${words.name}`,
+      `Club: ${words.club}`,
+      `When: ${words.when}`,
+      '',
+      `See the event: ${words.publicUrl}`,
+    ].join('\n'),
+  }
+}
+
+/**
+ * Ask for changes, to the person who drafted the event: the LCA admin's
+ * note, as plain text, escaped in the HTML, with a link to the event's
+ * manage page.
+ */
+export function changesAskedEmail(event: WaitingEvent & { fullName: string; note: string }): EmailMessage {
+  const words = waitingWords(event)
+  const first = firstNameOf(event.fullName)
+  const ask = 'An LCA admin looked over your event and asked for a few changes before it is listed.'
+  const again = 'Once it is changed, send it for LCA review again.'
+  return {
+    to: '',
+    subject: `Changes asked: ${words.name}`,
+    html: renderEmail({
+      siteUrl: event.siteUrl,
+      heading: CHANGES_ASKED_HEADING,
+      preheader: `Changes asked for ${words.name}`,
+      body: p(`Hi ${escapeHtml(first)},`) + p(escapeHtml(ask)) + emailDetails([
+        ['Event', words.name],
+        ['Club', words.club],
+        ['When', words.when],
+      ]) + emailQuote(event.note, 'What to change') + p(escapeHtml(again)),
+      cta: { label: 'Open the event', url: words.manageUrl },
+    }),
+    text: [
+      `Hi ${first},`,
+      '',
+      ask,
+      '',
+      `Event: ${words.name}`,
+      `Club: ${words.club}`,
+      `When: ${words.when}`,
+      '',
+      'What to change:',
+      event.note,
+      '',
+      again,
+      '',
+      `Open the event: ${words.manageUrl}`,
     ].join('\n'),
   }
 }
