@@ -2,7 +2,16 @@
 
 Written on Saturday, November 14, 2026, for whoever takes this stream over. The whole project's handoff is `HANDOFF.md`; the rules where the two streams meet are `STREAMS.md`. This file holds only what is the clubs stream's own.
 
-## Where it stands (Tuesday, November 17, 2026, about 5:40 PM UTC)
+## Where it stands (Tuesday, November 17, 2026, about 8:50 PM UTC)
+
+- **Checkpoint W's branch** (`redesign/ws09-clubs-w`) is at `b6bf464`: steps 20 to 24's sitemap, and the step K's decision 12 asked for ("what K's look at the test site asked"): no line on who keeps a club reaches a visitor or the page's answer, a signed-in keeper still reads their own line, and the line under the meeting words reads "Last checked {month and year}" from the later of a real save and a Still accurate, with no line where there is neither. Full gate green: lint 13 and 11 over 1,240; unit 11,138 in 479 files; integration 2,921 passing and 1 todo in 166 files; the browser run 659 and 336, baseline unchanged.
+- **The test site** (`https://preview-clubs.lca-website.pages.dev`, signed out only, the preview database) is rebuilt from that version: branch `preview-clubs` at `9830fe5`, never merged. On the test site alone every club shows the "Last checked" line.
+- **Owed by K:** which rule "Last checked" follows for a club nobody has checked yet: no line until a save or a Still accurate (recommended, as built), or every club reading "Last checked November 2026" from the start.
+- **The two wordings K chose** are on the rehearsal branch (`redesign/ws09-keepers-on-build`, `71cc235`), gate green.
+- **Running:** the rehearsal of the regionEvents switch-on, on the rehearsal branch after `71cc235`.
+- **Waiting on the mail stream:** pull request 135 (the club email switch) merged and live; main is still `498ec7f`. Then the real clubs switch-on branch from main, its gate, its draft pull request and K's word.
+
+## Where it stood at about 5:40 PM UTC on Tuesday, November 17, 2026
 
 - **Checkpoint V is merged and live.** Pull request 134 merged into `main` as `498ec7f` at 5:31 PM UTC on K's word (decision 10), two hours after the mail stream's switch-on (their pull request 133, `2468da5`), by the two leads' agreement for Thursday's meeting. `main` had been merged into the branch first (`bed8adc`, no conflict; `test/integration/club-check-emails.test.ts` kept as the branch had it, line 252 of `test/unit/auth-first-draw-guard.test.tsx` as `main` had it) and the full gate run on the merged tree: lint 13 errors and 12 warnings over 1,170 files; unit 10,551 in 448 files; integration 2,799 passing and one named todo in 155; browser 659 passing and 336 skipped, the baseline unchanged. Migration 0070 ran green, the worker's deploy was green, and the live check passed signed out, every clubs switch off.
 - **K's decisions of the day** are in `ws09-k-decisions.md`: 10 (the seven choices: a representative runs every club event in the region as built; `regionEvents` may go on sooner than Amazon SES; "due" for "lands"; the dashboard's sentence removed; the rest as recommended), 11 (the `regionEvents` switch-on built Wednesday and live Thursday morning if the clubs switch-on went cleanly; the public club pages in a first version as soon as the new look is live, with a `robots.txt` naming the sitemap) and 12 (two notes from the test site: no line on who keeps a club on a public page or in its answer; "Last checked" with the month in place of "As told to").
