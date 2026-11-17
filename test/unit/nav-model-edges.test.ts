@@ -241,7 +241,7 @@ describe('each page under one section', () => {
     }
   })
 
-  it('puts every row a section holds in the sheet, and every About menu row, on a page that section owns', () => {
+  it('puts every row a section holds in the sheet, and every About menu row but Donate, on a page that section owns', () => {
     // The brief's one exception: List or update your club is the contact form
     // with the club subject, and the contact form is About's.
     const states = [ALL_OFF, ALL_ON, ...EARLY.map((n) => withOn(n)), withOn('newAbout', 'newNews'), withOn('newTournaments', 'newNews', 'newClubs')]
@@ -254,7 +254,10 @@ describe('each page under one section', () => {
           expect(sectionFor(pathOf(href)), `${row.entry} at ${href}`).toBe(owner)
         }
       }
-      for (const id of aboutMenu().rows) expect(sectionFor(pathOf(navEntry(id, features).href!)), id).toBe('about')
+      // The About menu ends with Donate (decision 68), which has no page until
+      // newMembership is on, and whose page is not About's then either.
+      expect(aboutMenu().rows).toEqual([...ABOUT_ROWS, 'donate'])
+      for (const id of ABOUT_ROWS) expect(sectionFor(pathOf(navEntry(id, features).href!)), id).toBe('about')
       // Donate's page, once it has one, is Membership's.
       const give = navEntry('donate', features).href
       if (give !== null) expect(sectionFor(give)).toBe('membership')
@@ -311,7 +314,7 @@ describe('the word Workspace once myLcaRail is on', () => {
     return [
       ...NAV_IDS.filter((id) => isLive(id, features)).map(navLabel),
       ...headerUtilities({ signedIn, joinSlot: 'renew' }).map(navLabel),
-      ...aboutMenu(true).rows.map(navLabel),
+      ...aboutMenu().rows.map(navLabel),
       navLabel(aboutMenu().footer),
       ...navTabs(signedIn).flatMap((tab) => [navLabel(tab.entry), tab.whileOpen ?? '']),
       ...sheet.sections.flatMap((s) => [navLabel(s.section), s.note ?? '', ...s.rows.map(sheetRowLabel)]),
@@ -343,7 +346,8 @@ describe('the word Workspace once myLcaRail is on', () => {
 describe('the sheet\'s About rows', () => {
   it('open where the About menu, the footer and the trust line open them, with newAbout and newNews each off and on', () => {
     for (const features of [ALL_OFF, withOn('newAbout'), withOn('newNews'), withOn('newAbout', 'newNews')]) {
-      const menu = aboutMenu().rows.map((id) => navEntry(id, features).href)
+      // The menu's seven page rows; its last, Donate, is among the sheet's buttons instead.
+      const menu = aboutMenu().rows.filter((id) => id !== 'donate').map((id) => navEntry(id, features).href)
       for (const pathname of ['/', '/governance/minutes', '/about/minutes']) {
         const about = navSheet({ pathname, signedIn: false }, features).sections.find((s) => s.section === 'about')!
         expect(about.rows.map((r) => navEntry(r.entry, features).href)).toEqual(menu)

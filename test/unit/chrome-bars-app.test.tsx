@@ -122,10 +122,10 @@ afterEach(() => {
 describe('with the chrome on, each width\'s bar inside the page frame, and the phone\'s tab bar after the main and before the footer', () => {
   /** Each width, the bar it draws, the bar's height, its own controls after the brand link, signed out, and the tab bar's tabs, right after the main's. */
   const WIDTHS = [
-    [1280, 'desktop', '64px', ['Tournaments', 'Clubs', 'Scholastic', 'News', 'Membership', 'About', 'Donate', 'Log in', 'Join LCA'], []],
-    [1023, 'tablet', '64px', ['Tournaments', 'Clubs', 'Donate', 'Log in', 'Menu'], []],
-    [900, 'tablet', '64px', ['Tournaments', 'Clubs', 'Donate', 'Log in', 'Menu'], []],
-    [768, 'tablet', '64px', ['Tournaments', 'Clubs', 'Donate', 'Log in', 'Menu'], []],
+    [1280, 'desktop', '64px', ['Tournaments', 'Clubs', 'Scholastic', 'News', 'Membership', 'About', 'Log in', 'Join LCA'], []],
+    [1023, 'tablet', '64px', ['Tournaments', 'Clubs', 'Log in', 'Menu'], []],
+    [900, 'tablet', '64px', ['Tournaments', 'Clubs', 'Log in', 'Menu'], []],
+    [768, 'tablet', '64px', ['Tournaments', 'Clubs', 'Log in', 'Menu'], []],
     [767, 'app bar', '56px', [], ['Tournaments', 'Clubs', 'Log in', 'Menu']],
     [390, 'app bar', '56px', [], ['Tournaments', 'Clubs', 'Log in', 'Menu']],
     [320, 'app bar', '56px', [], ['Tournaments', 'Clubs', 'Log in', 'Menu']],
