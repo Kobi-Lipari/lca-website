@@ -19,7 +19,7 @@
  * Turned on with clubEmailHidden in src/lib/features.ts, in the same change;
  * test/unit/public-answer-switches.test.ts holds the two equal.
  */
-export const CLUB_EMAIL_HIDDEN = false
+export const CLUB_EMAIL_HIDDEN = true
 
 /**
  * The columns of clubs the public club answer carries: today's 13, in the

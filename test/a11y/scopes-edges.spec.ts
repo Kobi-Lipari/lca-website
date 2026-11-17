@@ -41,11 +41,14 @@
 //   light look and takes the look's ink on a dark ground (dark mode, the
 //   live look, heritage on a dark device), reading 3:1 or more on its tint,
 //   while brand gold keeps its own colour;
-// - the same for a club's colour as words on a club's page, a page AC1 does
-//   not name: the seeded club's contact link keeps the club's navy blue on a
-//   light device and takes the look's ink on a dark one, where the navy blue
-//   read 2.01:1 on the card, and axe reads it at 4.5:1 or more in both;
-//   today's colour with every switch off;
+// - a club's page, a page AC1 does not name: with clubEmailHidden on, as the
+//   site ships it, both builds draw two links to /contact, "Contact this club
+//   through LCA", where the seeded club's address stood, and no mail link or
+//   address anywhere on the page; the header strip's link takes the strip's
+//   own colour and turns white on hover, the Visit us card's takes the look's
+//   ink, today's navy on a11y-off, both underlined, and each reads 4.5:1 or
+//   more, by axe or, where axe cannot finish, on its pixels, on a light and a
+//   dark device;
 // - the option ring of the /tournaments hero's filter menu with every switch
 //   off is today's, the browser's ring with no offset.
 //
@@ -782,63 +785,158 @@ test.describe('the clubs\' initials', () => {
   })
 })
 
-/** The seeded capital club's page, whose contact link is drawn in the club's own navy blue. */
+/** The words of the two links that stand where a club's address stood, with clubEmailHidden on. */
+const CONTACT_WORDS = 'Contact this club through LCA'
+
+/** The seeded capital club's address, which neither its page nor the page's answer carries with the switch on. */
+const CLUB_ADDRESS = 'capital-club@example.org'
+
+/** The seeded capital club's page, where clubEmailHidden, on as the site ships it, draws the two links in place of the club's address. */
 const CLUB_PAGE: Drawn = {
   route: '/clubs/fx-club-capital',
-  drawn: (page) => [heading(page, 'Fixture Capital Chess Club'), page.locator('main').getByRole('link', { name: 'capital-club@example.org' })],
+  drawn: (page) => [heading(page, 'Fixture Capital Chess Club'), page.locator('main').getByRole('link', { name: CONTACT_WORDS })],
 }
 
-/** The contact link's colour, the colour of the page's own ink beside it, and axe's contrast reading of the link. */
-async function contactReading(page: Page) {
-  const colours = await page.evaluate(() => {
-    const link = document.querySelector('main a[href^="mailto:"]') as HTMLElement
-    const ink = [...document.querySelectorAll<HTMLElement>('main h2')].find((h) => h.textContent === 'Upcoming tournaments') as HTMLElement
-    return { link: getComputedStyle(link).color, ink: getComputedStyle(ink).color }
+/** The two links by where the page draws them: the header strip's on the hero's navy, and the Visit us card's under Contact. */
+const CONTACT_LINKS = { strip: 'main section[data-ground="dark"] a[href="/contact"]', card: 'main dd a[href="/contact"]' } as const
+
+/** How a link is drawn: its words, its colour, its line and weight, and the colour the element around it gives its words. */
+const linkLook = (link: Locator) =>
+  link.evaluate((el) => {
+    const s = getComputedStyle(el)
+    return {
+      words: (el.textContent ?? '').trim(),
+      colour: s.color,
+      line: s.textDecorationLine,
+      offset: s.textUnderlineOffset,
+      weight: s.fontWeight,
+      around: el.parentElement ? getComputedStyle(el.parentElement).color : '',
+    }
   })
-  const results = await new AxeBuilder({ page }).include('main a[href^="mailto:"]').withRules(['color-contrast']).analyze()
-  const passed = results.passes.flatMap((r) => r.nodes.map((n) => (n.any[0]?.data as { contrastRatio?: number } | undefined)?.contrastRatio ?? 0))
+
+/** axe's contrast reading of the one element a selector names. */
+async function axeContrast(page: Page, selector: string) {
+  const results = await new AxeBuilder({ page }).include(selector).withRules(['color-contrast']).analyze()
   return {
-    ...colours,
     found: results.violations.flatMap((r) => r.nodes.map((n) => JSON.stringify(n.any[0]?.data ?? {}))),
     unfinished: results.incomplete.length,
-    ratios: passed,
+    ratios: results.passes.flatMap((r) => r.nodes.map((n) => (n.any[0]?.data as { contrastRatio?: number } | undefined)?.contrastRatio ?? 0)),
   }
 }
 
-test.describe('the contact link on a club\'s page, a club\'s colour as words beyond the pages AC1 names', () => {
-  test('a11y-on: the club\'s own colour on a light device and the look\'s ink on a dark one, which axe reads at 4.5:1 or more in both', async ({ page, external }, testInfo) => {
-    only(testInfo, ON, 'the fix is the new look\'s, on a11y-on')
+/**
+ * The two links at rest, the header strip's on hover too, the page's own ink
+ * beside them, where each link of the two words leads, the mail links in
+ * <main> and whether the club's address is anywhere in the document, and
+ * axe's contrast reading of each link at rest, with its reading on its
+ * pixels where axe could not finish it.
+ */
+async function contactReading(page: Page) {
+  const strip = page.locator(CONTACT_LINKS.strip)
+  const card = page.locator(CONTACT_LINKS.card)
+  await page.mouse.move(0, 0)
+  await settled(strip)
+  const stripRest = await linkLook(strip)
+  const cardRest = await linkLook(card)
+  await strip.hover()
+  await settled(strip)
+  const stripHover = await linkLook(strip)
+  await page.mouse.move(0, 0)
+  await settled(strip)
+  const around = await page.evaluate(({ words, address }) => {
+    const ink = [...document.querySelectorAll<HTMLElement>('main h2')].find((h) => h.textContent === 'Upcoming tournaments') as HTMLElement
+    return {
+      ink: getComputedStyle(ink).color,
+      leads: [...document.querySelectorAll<HTMLAnchorElement>('main a')].filter((a) => (a.textContent ?? '').trim() === words).map((a) => a.getAttribute('href')),
+      mail: document.querySelectorAll('main a[href^="mailto:"]').length,
+      address: document.documentElement.outerHTML.includes(address),
+    }
+  }, { words: CONTACT_WORDS, address: CLUB_ADDRESS })
+  // A link axe could not finish is read on its pixels, as this file reads every check axe leaves.
+  const stripAxe = await axeContrast(page, CONTACT_LINKS.strip)
+  const cardAxe = await axeContrast(page, CONTACT_LINKS.card)
+  return {
+    ...around,
+    strip: { rest: stripRest, hover: stripHover, axe: stripAxe, pixels: stripAxe.unfinished > 0 ? await readGround(page, CONTACT_LINKS.strip) : null },
+    card: { rest: cardRest, axe: cardAxe, pixels: cardAxe.unfinished > 0 ? await readGround(page, CONTACT_LINKS.card) : null },
+  }
+}
+
+type ContactReading = Awaited<ReturnType<typeof contactReading>>
+
+/**
+ * What both builds draw on any device, as the page's code sets it: the two
+ * links to the contact form and no mail link or address; each underlined,
+ * two pixels below the words; the header strip's with no colour of its own,
+ * so the strip's, and white on hover; the card's in the page's ink, at medium
+ * weight; and each reading 4.5:1 or more, by axe, or on its pixels where axe
+ * could not finish it.
+ */
+function expectContactLinks(r: ContactReading, at: string) {
+  expect(r.leads, at).toEqual(['/contact', '/contact'])
+  expect(r.mail, `${at}: a mail link in main`).toBe(0)
+  expect(r.address, `${at}: the club's address on the page`).toBe(false)
+  const links = [['the header strip', r.strip], ['the Visit us card', r.card]] as const
+  for (const [where, link] of links) {
+    expect(link.rest.words, `${at}, ${where}`).toBe(CONTACT_WORDS)
+    expect([link.rest.line, link.rest.offset], `${at}, ${where}`).toEqual(['underline', '2px'])
+  }
+  expect(r.strip.rest.colour, `${at}: the header strip's link at rest`).toBe(r.strip.rest.around)
+  expect(r.strip.rest.colour, `${at}: the header strip's link at rest`).not.toBe(WHITE)
+  expect(r.strip.hover.colour, `${at}: the header strip's link on hover`).toBe(WHITE)
+  expect(r.card.rest.colour, `${at}: the card's link`).toBe(r.ink)
+  expect(r.card.rest.weight, `${at}: the card's link`).toBe('500')
+  for (const [where, link] of links) {
+    expect(link.axe.found, `${at}, ${where}`).toEqual([])
+    if (link.pixels) {
+      expect(link.pixels.needs, `${at}, ${where}: read on its pixels`).toBe(4.5)
+      expect(link.pixels.lowest, `${at}, ${where}: read on its pixels, over ${link.pixels.against}`).toBeGreaterThanOrEqual(4.5)
+    } else {
+      expect(link.axe.ratios, `${at}, ${where}`).toHaveLength(1)
+      expect(link.axe.ratios[0], `${at}, ${where}`).toBeGreaterThanOrEqual(4.5)
+    }
+  }
+}
+
+test.describe('the contact links on a club\'s page, where the club\'s address stood, beyond the pages AC1 names', () => {
+  test('a11y-on: two links to the contact form and no address, the header strip\'s in the strip\'s own colour and white on hover, the card\'s in the look\'s ink, both underlined, each reading 4.5:1 or more, light and dark', async ({ page, external }, testInfo) => {
+    only(testInfo, ON, 'the new look\'s ink and dark mode, on a11y-on')
     const errors: string[] = []
     page.on('pageerror', (e) => errors.push(e.message))
-    const seen: Record<string, unknown> = {}
+    const seen: Record<string, ContactReading> = {}
     for (const scheme of ['light', 'dark'] as const) {
       await page.emulateMedia({ colorScheme: scheme })
       await openDrawn(page, CLUB_PAGE.route, CLUB_PAGE.drawn(page))
       expect(await device(page), scheme).toEqual({ look: 'new', dark: scheme === 'dark' })
       const r = await contactReading(page)
       seen[scheme] = r
-      if (scheme === 'light') expect(r.link, scheme).toBe(OWN.FC)
-      else expect(r.link, scheme).toBe(r.ink)
-      expect(r.found, scheme).toEqual([])
-      expect(r.unfinished, scheme).toBe(0)
-      expect(r.ratios, scheme).toHaveLength(1)
-      expect(r.ratios[0], scheme).toBeGreaterThanOrEqual(4.5)
+      expectContactLinks(r, scheme)
     }
-    console.log(`The contact link on ${CLUB_PAGE.route} (${ON}): ${JSON.stringify(seen)}`)
+    // The look's ink is its own on each device, and the card's link follows it.
+    expect(seen.light.card.rest.colour, 'the card\'s link, light and dark').not.toBe(seen.dark.card.rest.colour)
+    console.log(`The contact links on ${CLUB_PAGE.route} (${ON}): ${JSON.stringify(seen)}`)
     testInfo.annotations.push({ type: 'measured', description: JSON.stringify(seen) })
     expect(errors, 'script errors on the page').toEqual([])
     expect(external).toEqual([])
   })
 
-  test('a11y-off: the club\'s own colour, as today, on a light and a dark device', async ({ page, external }, testInfo) => {
+  test('a11y-off: the same two links and no address in today\'s look, the card\'s in today\'s navy, each reading 4.5:1 or more, on a light and a dark device', async ({ page, external }, testInfo) => {
     only(testInfo, OFF, 'today\'s page, on a11y-off')
+    const errors: string[] = []
+    page.on('pageerror', (e) => errors.push(e.message))
+    const seen: Record<string, ContactReading> = {}
     for (const scheme of ['light', 'dark'] as const) {
       await page.emulateMedia({ colorScheme: scheme })
       await openDrawn(page, CLUB_PAGE.route, CLUB_PAGE.drawn(page))
       const r = await contactReading(page)
-      expect(r.link, scheme).toBe(OWN.FC)
-      expect(await page.locator('main a[href^="mailto:"]').getAttribute('class'), scheme).toBe('hover:underline')
+      seen[scheme] = r
+      expectContactLinks(r, scheme)
+      // Today's look has no dark mode: its ink is navy on either device.
+      expect(r.card.rest.colour, scheme).toBe(NAVY)
     }
+    console.log(`The contact links on ${CLUB_PAGE.route} (${OFF}): ${JSON.stringify(seen)}`)
+    testInfo.annotations.push({ type: 'measured', description: JSON.stringify(seen) })
+    expect(errors, 'script errors on the page').toEqual([])
     expect(external).toEqual([])
   })
 })
