@@ -11,11 +11,12 @@
 // mailLists, is held off in WS16 below; it is turned on with MAIL_LISTS_ON
 // in functions/utils/mail/switches.ts, in the same change that takes its
 // name out of WS16 (test/unit/mail-switches.test.ts holds the two equal).
-// WS09's switches still off, newClubs and regionEvents, are held off in WS09
-// below; each is turned on with its constant in
-// functions/utils/clubs/pages.ts, in the same change that takes its name out
-// of WS09, and in the order test/unit/club-pages-switch.test.ts holds.
+// WS09's switch still off, newClubs, is held off in WS09 below; it is turned
+// on with its constant in functions/utils/clubs/pages.ts, in the same change
+// that takes its name out of WS09, and in the order
+// test/unit/club-pages-switch.test.ts holds.
 // clubKeepers has been turned on that way, with CLUB_KEEPERS_ON.
+// regionEvents has been turned on that way too, with REGION_EVENTS_ON.
 import { describe, expect, it } from 'vitest'
 import { FEATURES } from '@/lib/features'
 
@@ -46,8 +47,8 @@ const WS08 = ['standingDirectors'] as const
 /** WS16, the mail engine and the LCA newsletter: its switch, held off until the newsletter is switched on. */
 const WS16 = ['mailLists'] as const
 
-/** WS09, clubs as living listings: its switches still off, held off until each is turned on in its order. */
-const WS09 = ['newClubs', 'regionEvents'] as const
+/** WS09, clubs as living listings: its switch still off, held off until it is turned on in its order. */
+const WS09 = ['newClubs'] as const
 
 describe('feature switches', () => {
   it.each(PHASE_0)('%s exists, is a boolean and is off', (key) => {

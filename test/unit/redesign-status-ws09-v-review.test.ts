@@ -190,8 +190,9 @@ describe('REDESIGN_STATUS.md, Checkpoint V: what it is and what it asks of K', (
     expect(sql).not.toMatch(/^\s*(?:DROP|UPDATE|DELETE|INSERT|CREATE)\b/m)
     expect(codeOf(APPROVAL)).toContain('export const onRequestPost: PagesFunction<Env> = async (context) => {\n  if (!REGION_EVENTS_ON) return errorResponse(APPROVAL_CLOSED, 403)\n')
     expect(read('src/areas/admin/components/AuditLogPanel.tsx')).toMatch(/tournament_submitted[\s\S]*tournament_approved[\s\S]*tournament_changes_asked/)
-    expect(read('functions/utils/clubs/pages.ts')).toContain('export const REGION_EVENTS_ON = false')
-    expect(read('src/lib/features.ts')).toContain('  regionEvents: false,')
+    // regionEvents and REGION_EVENTS_ON went on together in the block "WS09 switch-on: regionEvents and REGION_EVENTS_ON", so this step holds only that each is declared.
+    expect(read('functions/utils/clubs/pages.ts')).toMatch(/^export const REGION_EVENTS_ON = (?:false|true)$/m)
+    expect(read('src/lib/features.ts')).toMatch(/^ {2}regionEvents: (?:false|true),$/m)
     // The bodies are the three step 17's corrected sentence names.
     const step17 = bullet(part(STEP17), '- **What ships with every switch off.**')
     for (const piece of ['a body that is not JSON, 400 "Invalid JSON body", where `main` answered 400 "memberId is required"', 'a body of JSON that is not an object', 'a `memberId` that is not text, 400 with the field\'s error']) {

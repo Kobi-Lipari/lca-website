@@ -366,8 +366,9 @@ describe('REDESIGN_STATUS.md, WS09 step 18: the parts against the files', () => 
       expect(ships, file).toContain(`\`${file}\``)
       expect(existsSync(join(ROOT, file)), file).toBe(true)
     }
-    expect(read('functions/utils/clubs/pages.ts')).toContain('export const REGION_EVENTS_ON = false')
-    expect(read('src/lib/features.ts')).toContain('  regionEvents: false,')
+    // regionEvents and REGION_EVENTS_ON went on together in the block "WS09 switch-on: regionEvents and REGION_EVENTS_ON", so this step holds only that each is declared.
+    expect(read('functions/utils/clubs/pages.ts')).toMatch(/^export const REGION_EVENTS_ON = (?:false|true)$/m)
+    expect(read('src/lib/features.ts')).toMatch(/^ {2}regionEvents: (?:false|true),$/m)
     expect(bullet(block, '- **Owed before regionEvents goes on.**')).toContain('WS09 step 19 first')
     expect(bullet(block, '- **Step 15.**')).toContain('Still to come')
   })
