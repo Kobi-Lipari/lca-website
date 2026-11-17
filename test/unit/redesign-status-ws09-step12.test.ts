@@ -217,7 +217,8 @@ describe('REDESIGN_STATUS.md, WS09 step 12: the block', () => {
     for (const file of ['src/components/layout/Navbar.tsx', 'src/pages/AdminPage.tsx', 'src/pages/AdminEmailPage.tsx', 'src/lib/features.ts', 'src/contexts/AuthContext.tsx']) {
       expect(read(file), file).not.toMatch(/MyRegionClub|workspace\/region\/clubs|ClubNewsPanel|WS09 step 12/)
     }
-    expect(read('src/lib/features.ts')).toContain('  clubKeepers: false,')
+    // clubKeepers went on in the block "WS09 switch-on: clubKeepers and CLUB_KEEPERS_ON", so this step holds only that it is declared.
+    expect(read('src/lib/features.ts')).toMatch(/^ {2}clubKeepers: (?:false|true),$/m)
   })
 })
 

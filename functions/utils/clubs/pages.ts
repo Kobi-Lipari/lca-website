@@ -26,11 +26,12 @@ export const CLUB_PAGES_ON = false
 /**
  * Set: the one club editor, Your club's page, My region, Still accurate and
  * the monthly check, for a club's rep, the region's representative and the
- * LCA admins. Turned on with clubKeepers in src/lib/features.ts, in the same
- * change, and only once clubEmailHidden is on with CLUB_EMAIL_HIDDEN;
- * test/unit/club-pages-switch.test.ts holds the two equal and the order.
+ * LCA admins. On, together with clubKeepers in src/lib/features.ts: the two
+ * were turned on in the same change, once clubEmailHidden was on with
+ * CLUB_EMAIL_HIDDEN; test/unit/club-pages-switch.test.ts holds the two equal
+ * and the order.
  */
-export const CLUB_KEEPERS_ON = false
+export const CLUB_KEEPERS_ON = true
 
 /**
  * Set: a regional representative creates, names the director of and runs the

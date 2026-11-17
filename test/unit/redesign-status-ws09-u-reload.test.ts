@@ -236,7 +236,8 @@ describe('REDESIGN_STATUS.md, WS09 checkpoint U, the reload of a guarded page: t
     for (const piece of ['No migration and no handler', 'Pages rebuilds the site', 'on K\'s own word']) expect(does, piece).toContain(piece)
     expect(bullet(block, '- **What `main`\'s code does on this step\'s database.**')).toContain('changes no table')
     expect(bullet(block, '- **What a revert leaves.**')).toContain('the window comes back')
-    expect(read('src/lib/features.ts')).toContain('  clubKeepers: false,')
+    // clubKeepers went on in the block "WS09 switch-on: clubKeepers and CLUB_KEEPERS_ON", so this step holds only that it is declared.
+    expect(read('src/lib/features.ts')).toMatch(/^ {2}clubKeepers: (?:false|true),$/m)
     expect(read('src/lib/features.ts')).not.toMatch(/firstLoad|reload of a guarded page/)
   })
 
