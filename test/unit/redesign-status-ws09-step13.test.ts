@@ -285,7 +285,8 @@ describe('REDESIGN_STATUS.md, WS09 step 13: the parts against the files', () => 
     for (const piece of ['K\'s part', '`SIGNING_SECRET`', 'one value for production and a different one for the Preview environment', '32 random bytes or more', 'No value is set anywhere']) {
       expect(owed, piece).toContain(piece)
     }
-    expect(read('src/lib/features.ts')).toContain('  clubKeepers: false,')
+    // clubKeepers went on in the block "WS09 switch-on: clubKeepers and CLUB_KEEPERS_ON", so this step holds only that it is declared.
+    expect(read('src/lib/features.ts')).toMatch(/^ {2}clubKeepers: (?:false|true),$/m)
     expect(read('src/lib/features.ts')).not.toMatch(/SIGNING|automation|tokens/)
   })
 

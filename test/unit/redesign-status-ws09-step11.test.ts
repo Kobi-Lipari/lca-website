@@ -167,7 +167,8 @@ describe('REDESIGN_STATUS.md, WS09 step 11: the parts', () => {
     }
     // The held files and the switches are as on the base: no line of this step in them.
     for (const file of ['src/components/layout/Navbar.tsx', 'src/pages/AdminPage.tsx', 'src/pages/AdminEmailPage.tsx', 'src/lib/features.ts']) expect(read(file), file).not.toMatch(/MyRegion|workspace\/region|WS09 step 11/)
-    expect(read('src/lib/features.ts')).toContain('  clubKeepers: false,')
+    // clubKeepers went on in the block "WS09 switch-on: clubKeepers and CLUB_KEEPERS_ON", so this step holds only that it is declared.
+    expect(read('src/lib/features.ts')).toMatch(/^ {2}clubKeepers: (?:false|true),$/m)
   })
 
   it('names the way in as the route and the guard hold it', () => {
