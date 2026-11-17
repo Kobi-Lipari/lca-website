@@ -206,7 +206,7 @@ describe('REDESIGN_STATUS.md, WS09 step 21: the parts against the files', () => 
     expect(page).toContain('getClubPage(address)')
     expect(page).toContain('loading: \'Loading the club…\'')
     expect(page).toContain('err instanceof ApiError && err.status === 404 ? \'not-found\' : \'error\'')
-    expect(read(PLAIN)).toContain('export const DRAWN_SECTIONS = [\'about\', \'when_and_where\'] as const')
+    expect(read(PLAIN)).toContain('export const DRAWN_SECTIONS = [\'about\', \'when_and_where\', \'events\', \'news\'] as const')
     expect(codeOf(COVER)).toContain('<Link to="/contact"')
     expect(codeOf(COVER)).not.toMatch(/fetch\(|sendBeacon|XMLHttpRequest/)
   })

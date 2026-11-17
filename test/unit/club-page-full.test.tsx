@@ -190,7 +190,7 @@ describe('the cover', () => {
     expect(filled.map((el) => el.style.backgroundColor)).toEqual(['rgb(46, 107, 79)'])
     expect(screen.getByRole('link', { name: 'Contact the club' }).getAttribute('href')).toBe('/contact')
     expect(screen.queryByRole('button', { name: /Follow/ })).toBeNull()
-    expect(screen.getAllByRole('heading', { level: 2 }).map((h) => h.textContent)).toEqual(['About Example Chess Club', 'When and where Example Chess Club meets'])
+    expect(screen.getAllByRole('heading', { level: 2 }).map((h) => h.textContent)).toEqual(['About Example Chess Club', 'When and where Example Chess Club meets', 'Events', 'Club news'])
   })
 
   it('shares through the visitor\'s own share sheet where the browser has one, and says what happened', async () => {

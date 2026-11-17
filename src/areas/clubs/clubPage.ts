@@ -1,13 +1,14 @@
 // src/areas/clubs/clubPage.ts
 //
 // The plain code of the new club page (src/areas/clubs/components/ClubPage.tsx
-// and its parts, WS09 step 21): which of the answer's sections the page draws
-// so far, the line the site writes under the club's name, whether the club's
-// words in About are one sentence, which links it may draw, the address the
-// page goes by, and whether the person reading is one of the club's keepers.
-// The page draws what GET /api/clubs/:address/page answers and builds none
-// of the server's words: the author line and the told line are drawn as
-// given. A component file exports only components, so these live here.
+// and its parts, WS09 steps 21 and 22): which of the answer's sections the
+// page draws, the line the site writes under the club's name, whether the
+// club's words in About are one sentence, which links it may draw, the
+// address the page goes by and the one it gives to Share and Copy link, and
+// whether the person reading is one of the club's keepers. The page draws
+// what GET /api/clubs/:address/page answers and builds none of the server's
+// words: the author line and the told line are drawn as given. A component
+// file exports only components, so these live here.
 import type { ClubPageResponse } from '@domain/contracts'
 
 /** A control of the page: 44 pixels tall at least, with the look's focus ring. */
@@ -29,19 +30,34 @@ export const CLEAR_OF_BARS = 'scroll-mt-[calc(3.5rem_+_var(--header-h,4.0625rem)
 /** The same room for every control and section inside the page. */
 export const CONTROLS_CLEAR_OF_BARS = '[&_:is(a,button,[tabindex],section)]:scroll-mt-[calc(3.5rem_+_var(--header-h,4.0625rem)_-_var(--header-h,0px))]'
 
-/** The sections the page draws at this step, in the nav's order. Events and News, Contact and Photos come with later steps. */
-export const DRAWN_SECTIONS = ['about', 'when_and_where'] as const
+/** The sections the page draws, in the nav's order. Contact and Photos come with later steps. */
+export const DRAWN_SECTIONS = ['about', 'when_and_where', 'events', 'news'] as const
 export type DrawnSection = (typeof DRAWN_SECTIONS)[number]
 
 /** Each drawn section's name in the section nav. */
-export const SECTION_LABELS: Record<DrawnSection, string> = { about: 'About', when_and_where: 'When and where' }
+export const SECTION_LABELS: Record<DrawnSection, string> = { about: 'About', when_and_where: 'When and where', events: 'Events', news: 'News' }
 
 /** Each drawn section's id on the page, so /clubs/example-chess-club#when-and-where can be shared. */
-export const SECTION_IDS: Record<DrawnSection, string> = { about: 'about', when_and_where: 'when-and-where' }
+export const SECTION_IDS: Record<DrawnSection, string> = { about: 'about', when_and_where: 'when-and-where', events: 'events', news: 'news' }
 
-/** The sections of an answer the page draws, in the nav's order: only those the answer names and this step builds. */
-export function drawnSections(sections: readonly string[]): DrawnSection[] {
-  return DRAWN_SECTIONS.filter((section) => sections.includes(section))
+/** How many of the answer's events and news rows there are; none where it is not said, as in the editor's preview. */
+export interface SectionRows {
+  events?: number
+  news?: number
+}
+
+/**
+ * The sections of an answer the page draws, in the nav's order: only those
+ * the answer names and the page builds, and Events and News only with a row
+ * to draw, so neither is ever an empty block or a link to nothing.
+ */
+export function drawnSections(sections: readonly string[], rows: SectionRows = {}): DrawnSection[] {
+  return DRAWN_SECTIONS.filter((section) => {
+    if (!sections.includes(section)) return false
+    if (section === 'events') return (rows.events ?? 0) > 0
+    if (section === 'news') return (rows.news ?? 0) > 0
+    return true
+  })
 }
 
 /**
@@ -76,13 +92,29 @@ export function clubInitials(name: string): string {
 export const hasWords = (text: string | null | undefined): text is string => typeof text === 'string' && text.trim() !== ''
 
 /**
+ * The short words a full stop follows inside a sentence, as a club writes
+ * them: St. Example's hall, Dr. One, Example Ave., 7:00 p.m. Each must
+ * stand as a word of its own, so "the 3rd." still ends a sentence.
+ */
+const SHORT_WORD = /(?:^|[^\p{L}\p{N}.])(?:St|Dr|Mr|Mrs|Ms|Mt|Ave|Blvd|Rd|[aApP]\.[mM])$/u
+
+/**
  * True for words that are one sentence on one line: no line break, and no
- * full stop, question mark or exclamation mark followed by more words. Such
- * words are set large across About; anything longer is set as paragraphs.
+ * full stop, question mark or exclamation mark followed by more words. A
+ * full stop after a short word (St., Dr., Ave., p.m. and the like) or
+ * followed by a word in lower case does not end the sentence, so "We meet
+ * at St. Example's hall on Tuesdays." is one. Such words are set large
+ * across About; anything longer is set as paragraphs.
  */
 export function oneSentence(text: string): boolean {
   const words = text.trim()
-  return words !== '' && !/\n/.test(words) && !/[.!?]["'”)\]]?\s+\S/.test(words)
+  if (words === '' || /\n/.test(words)) return false
+  for (const end of words.matchAll(/([.!?])["'”)\]]?\s+(\S)/gu)) {
+    // A stop straight after a short word, with no closing quote between, is the short word's.
+    if (end[1] === '.' && (/\p{Ll}/u.test(end[2]) || (/^\.\s/.test(end[0]) && SHORT_WORD.test(words.slice(0, end.index))))) continue
+    return false
+  }
+  return true
 }
 
 /** The club's words as paragraphs, split at blank lines (a single line break stays inside its paragraph). */
@@ -90,11 +122,21 @@ export function paragraphs(text: string): string[] {
   return text.split(/\n\s*\n/).map((part) => part.trim()).filter(Boolean)
 }
 
-/** A link the club gave, drawn only when it is a web address; anything else is not drawn. */
+/**
+ * A link the club gave, drawn only when it is a web address with a host and
+ * no name or password before an "@", as the keeper's save holds it; anything
+ * else is not drawn.
+ */
 export function webLink(url: string | null | undefined): string | null {
   if (!hasWords(url)) return null
   const trimmed = url.trim()
-  return /^https?:\/\/[^\s/]+/i.test(trimmed) ? trimmed : null
+  if (!/^https?:\/\/[^\s/]+/i.test(trimmed)) return null
+  try {
+    const parsed = new URL(trimmed)
+    return parsed.username === '' && parsed.password === '' ? trimmed : null
+  } catch {
+    return null
+  }
 }
 
 /** A web address's site, without its www., as a link's words name it. */
@@ -109,6 +151,28 @@ export function siteOf(url: string): string {
 /** The address the page goes by, with the query and the hash it was opened with. */
 export function pageAddress(slug: string, search: string, hash: string): string {
   return `/clubs/${encodeURIComponent(slug)}${search}${hash}`
+}
+
+/** The page's own address in full, as Share and Copy link give it and the foot line shows it: the slug on this site, with no query and no hash. */
+export function pageLink(origin: string, slug: string): string {
+  return `${origin}/clubs/${encodeURIComponent(slug)}`
+}
+
+/** Copies an address to the clipboard and gives back what happened, in the words the page's status says. */
+export async function copyLink(address: string): Promise<string> {
+  try {
+    if (!navigator.clipboard?.writeText) throw new Error('no clipboard')
+    await navigator.clipboard.writeText(address)
+    return 'Link copied.'
+  } catch {
+    return `The link could not be copied. The page's address is ${address}`
+  }
+}
+
+/** What the page's one status says, and which control spoke last: the cover's Share or the foot line's Copy link. */
+export interface Said {
+  words: string
+  from: 'cover' | 'foot'
 }
 
 /**

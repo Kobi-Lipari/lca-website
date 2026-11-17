@@ -7,12 +7,17 @@
 //
 // The page asks one thing, getClubPage (GET /api/clubs/:address/page), and
 // draws what it answers, top to bottom as Club-Final-Bare draws a club that
-// has only the basics: the cover with the club's initials and its h1, the
-// author line, the section nav, About and When and where. Events and News,
-// Contact and Photos come with the steps that build them; until then the
-// page draws no block for them and the nav lists none of them, whatever the
-// answer names. The author line and the told line are the server's words,
-// drawn as given; the cover takes its colour from the answer. While it
+// has only the basics and Club-G a fuller one: the cover with the club's
+// initials and its h1, the author line, the section nav, About and When and
+// where, then (WS09 step 22) the club's events and its news, each only with
+// a row to draw, the nearest clubs where the answer gives any, and the foot
+// line with Copy link. On a phone with the new chrome the club bar in the
+// dock holds Directions. Contact and Photos come with the steps that build
+// them; until then the page draws no block for them and the nav lists
+// neither, whatever the answer names. The author line, the told line and a
+// nearest club's distance are the server's words, drawn as given; the cover
+// takes its colour from the answer. The page has one status, under the
+// cover's buttons, which says what Share or Copy link did. While it
 // loads the page says so in a status; a club the server does not answer
 // for draws today's "Club not found", and any other failure says so in
 // words with Try again. The focus goes to the page's heading once there is
@@ -37,12 +42,17 @@ import { cn } from '@/lib/utils'
 import { keepersOn } from '@/areas/clubs/switches'
 import { placePoints } from '@/areas/clubs/clubMap'
 import {
-  CONTROL, CONTROLS_CLEAR_OF_BARS, SECTION_IDS, WORD_LINK, drawnSections, keeperFor, pageAddress, type Keeper,
+  CONTROL, CONTROLS_CLEAR_OF_BARS, SECTION_IDS, WORD_LINK, copyLink, drawnSections, keeperFor, pageAddress, pageLink, type Keeper, type Said,
 } from '@/areas/clubs/clubPage'
 import { AuthorLine } from '@/areas/clubs/components/AuthorLine'
 import { ClubAbout } from '@/areas/clubs/components/ClubAbout'
+import { ClubBar } from '@/areas/clubs/components/ClubBar'
 import { ClubCover } from '@/areas/clubs/components/ClubCover'
+import { ClubEvents } from '@/areas/clubs/components/ClubEvents'
+import { ClubFootLine } from '@/areas/clubs/components/ClubFootLine'
+import { ClubNews } from '@/areas/clubs/components/ClubNews'
 import { LCAMap } from '@/areas/clubs/components/LCAMap'
+import { NearbyClubs } from '@/areas/clubs/components/NearbyClubs'
 import { SectionNav } from '@/areas/clubs/components/SectionNav'
 import { WhenAndWhere } from '@/areas/clubs/components/WhenAndWhere'
 import { SITE_NAME, clubPageTitle } from '@domain/clubs/pageMeta'
@@ -127,7 +137,8 @@ export function ClubPage({ address }: { address: string }) {
   if (answer) {
     // While the session's member is still loading there is no member, so no line; it appears once the member is there.
     const keeper = keepersOn() ? keeperFor(answer.club, { role, member, managedClubs }) : null
-    return <ClubPageView answer={answer} keeper={keeper} headingRef={heading} />
+    // Drawn afresh for each club, so what the status said of one club is not said of the next.
+    return <ClubPageView key={answer.club.id} answer={answer} keeper={keeper} headingRef={heading} />
   }
 
   // Before the club: one status from the first render, which says Loading and
@@ -165,9 +176,16 @@ export function ClubPageView({
   keeper: Keeper | null
   headingRef?: Ref<HTMLHeadingElement>
 }) {
-  const sections = drawnSections(answer.sections)
+  const sections = drawnSections(answer.sections, { events: answer.events.length, news: answer.news.length })
   const { club } = answer
   const pins = placePoints(answer.places)
+  const link = pageLink(window.location.origin, club.slug)
+  const [said, setSaid] = useState<Said>({ words: '', from: 'cover' })
+  const copyFromFoot = async () => {
+    setSaid({ words: '', from: 'foot' })
+    const words = await copyLink(link)
+    setSaid({ words, from: 'foot' })
+  }
   return (
     <div data-slot="club-page" className="@container bg-ground text-ink">
       <div className={CONTROLS_CLEAR_OF_BARS}>
@@ -178,7 +196,7 @@ export function ClubPageView({
             <li className="min-w-0 break-words"><span aria-current="page">{club.name}</span></li>
           </ol>
         </nav>
-        <ClubCover club={club} statement={answer.statement.text} headingRef={headingRef} />
+        <ClubCover club={club} statement={answer.statement.text} headingRef={headingRef} said={said.words} say={(words) => setSaid({ words, from: 'cover' })} />
         <div className="mt-6">
           <AuthorLine author={answer.author} keeper={keeper} />
         </div>
@@ -198,7 +216,12 @@ export function ClubPageView({
             ) : null}
           />
         )}
+        {sections.includes('events') && <ClubEvents id={SECTION_IDS.events} events={answer.events} />}
+        {sections.includes('news') && <ClubNews id={SECTION_IDS.news} news={answer.news} />}
+        {answer.nearest.length > 0 && <NearbyClubs city={club.city} nearest={answer.nearest} />}
+        <ClubFootLine name={club.name} city={club.city} address={link} said={said} onCopy={() => { void copyFromFoot() }} />
       </div>
+      <ClubBar place={pins[0] ?? null} />
     </div>
   )
 }

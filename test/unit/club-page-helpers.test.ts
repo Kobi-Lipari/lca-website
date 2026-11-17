@@ -13,9 +13,10 @@ import {
 const CLUB = { id: 'c-example', slug: 'example-chess-club', region: 'Bayou Region' }
 
 describe('the sections the page draws at this step', () => {
-  it('are About and When and where, in the nav\'s order, whatever the answer names', () => {
-    expect([...DRAWN_SECTIONS]).toEqual(['about', 'when_and_where'])
+  it('are About, When and where, Events and News, in the nav\'s order, Events and News only with a row, whatever else the answer names', () => {
+    expect([...DRAWN_SECTIONS]).toEqual(['about', 'when_and_where', 'events', 'news'])
     expect(drawnSections(['about', 'when_and_where', 'events', 'news', 'photos', 'contact'])).toEqual(['about', 'when_and_where'])
+    expect(drawnSections(['about', 'when_and_where', 'events', 'news', 'photos', 'contact'], { events: 1, news: 2 })).toEqual(['about', 'when_and_where', 'events', 'news'])
     // The answer's order is the answer's; the page keeps its own.
     expect(drawnSections(['contact', 'when_and_where', 'about'])).toEqual(['about', 'when_and_where'])
   })
@@ -32,8 +33,8 @@ describe('the sections the page draws at this step', () => {
       expect(SECTION_LABELS[section].length).toBeGreaterThan(0)
       expect(SECTION_IDS[section]).toMatch(/^[a-z][a-z-]*$/)
     }
-    expect(SECTION_LABELS).toEqual({ about: 'About', when_and_where: 'When and where' })
-    expect(SECTION_IDS).toEqual({ about: 'about', when_and_where: 'when-and-where' })
+    expect(SECTION_LABELS).toEqual({ about: 'About', when_and_where: 'When and where', events: 'Events', news: 'News' })
+    expect(SECTION_IDS).toEqual({ about: 'about', when_and_where: 'when-and-where', events: 'events', news: 'news' })
   })
 })
 

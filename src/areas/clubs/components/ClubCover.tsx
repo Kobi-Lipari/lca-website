@@ -15,16 +15,18 @@
 // the page's own Contact section is built, and Share, which opens the
 // visitor's own share sheet where the browser has one and otherwise copies
 // the page's address, and says what happened in words in a status beside
-// it. Nothing is sent anywhere by either. There is no Follow button.
+// it. That status is the page's one status: the page holds what it says, so
+// the foot line's Copy link says its outcome there too (WS09 step 22).
+// Nothing is sent anywhere by either. There is no Follow button.
 //
 // Drawn in the club editor's preview column (compact), the cover is smaller,
 // the name is words rather than a heading, and there are no buttons.
-import { useState, type Ref } from 'react'
+import type { Ref } from 'react'
 import { Link } from 'react-router-dom'
 import { CalendarDays, Mail, Share2 } from 'lucide-react'
 
 import { cn } from '@/lib/utils'
-import { CONTROL, cityLine, clubInitials } from '@/areas/clubs/clubPage'
+import { CONTROL, cityLine, clubInitials, copyLink, pageLink } from '@/areas/clubs/clubPage'
 import type { ClubPageResponse } from '@domain/contracts'
 
 /** The cover's quiet pattern of squares, a lighter wash over the club's colour on its right. */
@@ -36,7 +38,7 @@ const SQUARES = {
 } as const
 
 export function ClubCover({
-  club, statement, compact = false, headingRef,
+  club, statement, compact = false, headingRef, said = '', say,
 }: {
   club: ClubPageResponse['club']
   /** How the club meets, in its own words, drawn under the name. */
@@ -45,6 +47,10 @@ export function ClubCover({
   compact?: boolean
   /** The page's h1, which the page focuses once it has drawn. */
   headingRef?: Ref<HTMLHeadingElement>
+  /** What the page's one status says now. */
+  said?: string
+  /** Sets what the status says; the page passes it, and the buttons are drawn with it. */
+  say?: (words: string) => void
 }) {
   const initials = clubInitials(club.name)
   const logo = club.logo && club.logo.startsWith('/') && !club.logo.startsWith('//') ? club.logo : null
@@ -83,41 +89,29 @@ export function ClubCover({
               </p>
             )}
           </div>
-          {!compact && <CoverButtons name={club.name} slug={club.slug} />}
+          {!compact && say && <CoverButtons name={club.name} slug={club.slug} said={said} say={say} />}
         </div>
       </div>
     </div>
   )
 }
 
-/** Contact the club and Share, with Share's outcome in words. */
-function CoverButtons({ name, slug }: { name: string; slug: string }) {
-  const [said, setSaid] = useState('')
-
-  async function copy(address: string) {
-    try {
-      if (!navigator.clipboard?.writeText) throw new Error('no clipboard')
-      await navigator.clipboard.writeText(address)
-      setSaid('Link copied.')
-    } catch {
-      setSaid(`The link could not be copied. The page's address is ${address}`)
-    }
-  }
-
+/** Contact the club and Share, with the page's one status, which says Share's outcome in words. */
+function CoverButtons({ name, slug, said, say }: { name: string; slug: string; said: string; say: (words: string) => void }) {
   async function share() {
-    const address = `${window.location.origin}/clubs/${encodeURIComponent(slug)}`
-    setSaid('')
+    const address = pageLink(window.location.origin, slug)
+    say('')
     if (typeof navigator.share === 'function') {
       try {
         await navigator.share({ title: name, url: address })
-        setSaid('Shared.')
+        say('Shared.')
       } catch (err) {
-        if (err instanceof Error && err.name === 'AbortError') setSaid('Not shared.')
-        else await copy(address)
+        if (err instanceof Error && err.name === 'AbortError') say('Not shared.')
+        else say(await copyLink(address))
       }
       return
     }
-    await copy(address)
+    say(await copyLink(address))
   }
 
   return (

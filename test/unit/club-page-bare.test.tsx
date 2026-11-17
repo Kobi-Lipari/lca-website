@@ -4,10 +4,11 @@
 // Club-Final-Bare draws it, since most clubs start there: the cover with the
 // club's initials, the h1, the line the site writes under it and how the
 // club meets under that, the author line, the section nav, About and When
-// and where, and nothing else. No bracket, no "not listed", no empty box and
-// no Suggest an update; a block and its link in the nav appear the first
-// time the answer names them, and the nav names only what the page draws at
-// this step, whatever the answer names. The h1 sits on the page's ground,
+// and where, and since WS09 step 22 the foot line with Copy link, and
+// nothing else. No bracket, no "not listed", no empty box and no Suggest an
+// update; a block and its link in the nav appear the first time the answer
+// names them, and the nav names only what the page draws, whatever the
+// answer names. The h1 sits on the page's ground,
 // never on the club's colour, which fills the cover and is never words.
 // The page is drawn through the real client, with fetch stubbed, and the
 // switches set through the mocked FEATURES by each case. Every name,
@@ -72,7 +73,7 @@ async function draw(auth: AuthContextValue = visitor()) {
 const wordsOf = (el: Element) => (el.textContent ?? '').replace(/\s+/g, ' ').trim()
 
 describe('a club with only the five basics', () => {
-  it('cover with initials, author line, About, When and where, and nothing else', async () => {
+  it('cover with initials, author line, About, When and where, the foot line, and nothing else', async () => {
     const page = await draw()
     // The cover: the initials tile, the h1, the site's line, and the two buttons.
     expect(page.querySelector('[aria-hidden="true"].size-24')?.textContent).toBe('EC')
@@ -93,10 +94,10 @@ describe('a club with only the five basics', () => {
     expect(where.querySelector('blockquote')?.textContent).toBe(STATEMENT)
     expect(within(where).getByText(TOLD)).toBeTruthy()
     expect(within(where).getByText('Example Library')).toBeTruthy()
-    // No Follow button and no other control: the crumb, the two cover buttons, the nav's two, and Directions; no Edit for a visitor.
+    // No Follow button and no other control: the crumb, the two cover buttons, the nav's two, Directions and the foot line's Copy link; no Edit for a visitor.
     expect(screen.queryByText(/Follow/)).toBeNull()
     expect([...page.querySelectorAll('a, button')].map((c) => c.getAttribute('aria-label') ?? c.textContent?.trim())).toEqual([
-      'Clubs', 'Contact the club', 'Share', 'About', 'When and where', 'Directions to Example Library (opens in a new tab)',
+      'Clubs', 'Contact the club', 'Share', 'About', 'When and where', 'Directions to Example Library (opens in a new tab)', 'Copy link',
     ])
     expect(screen.getByRole('link', { name: 'Directions to Example Library (opens in a new tab)' }).textContent).toBe('Directions')
   })
@@ -170,7 +171,7 @@ describe('a club with only the five basics', () => {
     expect(screen.queryByText('Find us online')).toBeNull()
   })
 
-  it('lists in the nav only what the page draws at this step, whatever the answer names', async () => {
+  it('lists in the nav only what the page draws, whatever the answer names: no Events or News with no row, no Photos and no Contact', async () => {
     answer = { ...bareAnswer(), sections: ['about', 'when_and_where', 'events', 'news', 'photos', 'contact'] }
     await draw()
     const nav = screen.getByRole('navigation', { name: 'On this page' })
