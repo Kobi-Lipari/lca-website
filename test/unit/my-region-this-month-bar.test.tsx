@@ -52,14 +52,15 @@ describe('the This month bar on a phone and from the wide layout up', () => {
     for (const dot of row.querySelectorAll('p > span')) expect(classes(dot)).toContain('lg:inline')
   })
 
-  it('the words in the page are the base\'s, the dots in them, and no dot is read aloud in either layout', () => {
+  it('the words in the page are the base\'s but for "due", the dots in them, and no dot is read aloud in either layout', () => {
     const { row, section } = draw()
-    expect(row.textContent).toBe('This month· Next monthly check lands Mon, Dec 7, 2026· 1 of 3 checked in the last 90 days· 2 not checked in 90 days')
+    // "due" in place of the base's "lands", by K's decision 10.
+    expect(row.textContent).toBe('This month· Next monthly check due Mon, Dec 7, 2026· 1 of 3 checked in the last 90 days· 2 not checked in 90 days')
     expect(section.textContent).toBe(`${row.textContent}Confirm all still accurate`)
     for (const dot of row.querySelectorAll('p > span')) expect(dot.getAttribute('aria-hidden')).toBe('true')
     // Each part is its own paragraph, so it reads as its own line with no dot in either layout.
     expect([...row.querySelectorAll('p')].map((p) => [...p.childNodes].filter((n) => n.nodeType === 3).map((n) => n.textContent).join(''))).toEqual([
-      'Next monthly check lands Mon, Dec 7, 2026', '1 of 3 checked in the last 90 days', '2 not checked in 90 days',
+      'Next monthly check due Mon, Dec 7, 2026', '1 of 3 checked in the last 90 days', '2 not checked in 90 days',
     ])
   })
 
