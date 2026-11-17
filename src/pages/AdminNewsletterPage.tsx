@@ -20,8 +20,20 @@
 // the side what members will get with the count, and the bar at the foot
 // (FootBar, page step 5): More options (MoreOptions), with the letter's
 // inbox preview line, who gets it and where replies go, then the three
-// numbered steps, drawn and not yet available. Saving is useIssue's. The
-// chooser of templates, Help, the test and Send come with later steps.
+// numbered steps. The first opens the chooser of templates and past
+// newsletters (TemplateChooser, page step 5's second part): "Use this" saves
+// the words on the page first, or with nothing to save reads that the
+// server's letter is still the page's, asks once before a letter that holds
+// words is replaced, reads again once it is answered, and starts the new
+// letter, which the server keeps the old one for; a letter someone else has
+// changed since starts nothing, and the saved line says who changed it and
+// when. The new letter is drawn afresh, More options closed, the focus on
+// the first step, and a moment later the saved line says which choice it
+// came from. A letter set aside, used again for its own month, brings back
+// its own subject with its words. The first step wiggles once as the page
+// opens on a letter that holds no words.
+// Steps 2 and 3, the test and Send, are drawn and not yet available. Saving
+// and starting are useIssue's. Help comes with a later part.
 //
 // By the window's width, at the site's own breakpoints: from 1024 pixels up
 // the computer's page, the letter with the email beside it; under 1024 the
@@ -52,7 +64,8 @@ import { LetterEditor } from '@/areas/admin/newsletter/LetterEditor'
 import { MoreOptions, type ReachRead } from '@/areas/admin/newsletter/MoreOptions'
 import { NewsletterHead, SavedLineNotice, type SavedLineProps } from '@/areas/admin/newsletter/NewsletterHead'
 import { EmailSheet, SidePreview, type PreviewView } from '@/areas/admin/newsletter/SidePreview'
-import { useIssue, type Issue, type LetterDraft } from '@/areas/admin/newsletter/useIssue'
+import { TemplateChooser, type ChooserBusy, type Choice } from '@/areas/admin/newsletter/TemplateChooser'
+import { holdsWords, useIssue, type Issue, type LetterDraft, type SavedFirst, type StartOutcome } from '@/areas/admin/newsletter/useIssue'
 import { usePageTitle } from '@/hooks/usePageTitle'
 import { useTabletScreen } from '@/hooks/useWideScreen'
 import { getNewsletter } from '@/lib/api'
@@ -63,6 +76,13 @@ const SECOND_FACTOR_LINE = 'Set up two-factor sign-in to send group email.'
 
 /** How long the side preview waits after the last change before it draws the letter again. */
 const PREVIEW_PAUSE_MS = 400
+
+/**
+ * How long after a start's letter is drawn its saved line waits before it says which choice it came from: a quarter of
+ * a second, so the line's polite region, drawn afresh with the letter, is on the page empty first, as a screen reader
+ * says only a change to a region already there.
+ */
+const STARTED_PAUSE_MS = 250
 
 /**
  * The page's ground under the head: the board's desk, a warm tint over the site's own ground, in every look. Each
@@ -82,6 +102,30 @@ const DESK_WITH_BAR = `${DESK_GROUND} flex flex-col`
 
 /** The page while the letter fills the window: the whole window, scrolling inside itself, its controls kept clear as on the page. */
 const BIGGER = 'fixed inset-0 z-[70] flex flex-col overflow-y-auto bg-background [&_:is(a,button,input,textarea,[tabindex],[contenteditable])]:scroll-mb-24 [&_:is(a,button,input,textarea,[tabindex],[contenteditable])]:scroll-mt-24'
+
+/**
+ * Why no letter was started when the words on the page could not be saved first, or were still being saved after the
+ * wait, or the server's letter was found to be someone else's newer one, or could not be read; the saved line's own
+ * notice says the rest. A press after an earlier refusal with nothing typed since says who and when are on the saved
+ * line, since the chooser, opened again, shows no notice of what came before it opened.
+ */
+const NOT_SAVED_FIRST: Record<Exclude<SavedFirst, 'saved'>, string> = {
+  failed: 'Your words could not be saved, so no letter was started. Try again in a moment.',
+  refused: 'Your words could not be saved, so no letter was started.',
+  conflict: 'Your words could not be saved, so no letter was started.',
+  stopped: 'Your words here are not saved, so no letter was started. Copy anything you want to keep first.',
+  'changed-before': 'No new letter was started: someone else has changed, replaced or sent this letter. Close this to see who and when.',
+  waiting: 'Your words are still being saved, so no letter was started. Try again in a moment.',
+  changed: 'No new letter was started.',
+  unchecked: 'Could not start a new letter. Try again in a moment.',
+}
+
+/** Why a start that went to the server did not put a new letter on the page, in the chooser's own words. */
+function startFailedWords(outcome: Exclude<StartOutcome, { kind: 'started' } | { kind: 'busy' }>): string {
+  if (outcome.kind === 'refused') return 'No new letter was started.'
+  if (outcome.kind === 'not-found') return 'That newsletter could not be found, so no letter was started.'
+  return outcome.words !== '' ? outcome.words : 'Could not start a new letter. Try again in a moment.'
+}
 
 /** Every control the keyboard stops on inside a part of the page, in the page's order. */
 function tabStops(root: HTMLElement | null): HTMLElement[] {
@@ -287,6 +331,8 @@ function NewsletterDesk({ mayCall }: { mayCall: boolean }) {
         setReplaced(true)
         void issue.showTheirs()
       }}
+      // A letter a start puts on the page gives the focus to the first step, so the letter's own caret is not taken there.
+      onStarting={() => setReplaced(false)}
     />
   )
 }
@@ -300,10 +346,12 @@ interface NewsletterLetterProps {
   onPreviewHidden: (hidden: boolean) => void
   autoFocus: boolean
   onShowTheirs: () => void
+  /** A start is being sent from the chooser. */
+  onStarting: () => void
 }
 
 /** One letter on the page, drawn afresh each time a letter takes the place of the one before. */
-function NewsletterLetter({ issue, reach, view, onView, previewHidden, onPreviewHidden, autoFocus, onShowTheirs }: NewsletterLetterProps) {
+function NewsletterLetter({ issue, reach, view, onView, previewHidden, onPreviewHidden, autoFocus, onShowTheirs, onStarting }: NewsletterLetterProps) {
   const [month, setMonth] = useState(issue.letter.monthLabel)
   const [subject, setSubject] = useState(issue.letter.subject)
   const [preheader, setPreheader] = useState(issue.letter.preheader)
@@ -314,6 +362,16 @@ function NewsletterLetter({ issue, reach, view, onView, previewHidden, onPreview
   const [sheetOpen, setSheetOpen] = useState(false)
   // More options is closed whenever the page opens on a letter.
   const [moreOpen, setMoreOpen] = useState(false)
+  // The chooser, the page's own as More options is, the question before a letter that holds words is replaced, what the
+  // chooser is doing, and why a start did not happen; all closed and empty whenever a letter is drawn.
+  const [chooserOpen, setChooserOpen] = useState(false)
+  const [asking, setAsking] = useState<Choice | null>(null)
+  const [busy, setBusy] = useState<ChooserBusy>(null)
+  const [said, setSaid] = useState('')
+  // The first step's cue plays once only, as the page opens on its first letter when that letter holds no words, from
+  // the moment the letter is drawn until something is written.
+  const [opensEmpty] = useState(() => issue.letterKey === 1 && !holdsWords(issue.letter))
+  const [drawn, setDrawn] = useState(false)
   // Under 768 pixels the phone's bar, "See the email" in it, and More options at the page's end.
   const phone = !useTabletScreen()
   const carry = useFocusCarry()
@@ -322,8 +380,34 @@ function NewsletterLetter({ issue, reach, view, onView, previewHidden, onPreview
   /** The control that opened the email's sheet, which takes the focus back as it closes. */
   const opener = useRef<HTMLButtonElement | null>(null)
   const previewPause = useRef<number | undefined>(undefined)
+  /**
+   * Whether this letter is still the one on the page: a save or a read made for a start that answers after it has gone
+   * starts nothing, and saveFirst then sends no save to learn who changed the letter; a save of the words on the page
+   * over one of the page's own saves the read finds still goes, as the page's leave save would.
+   */
+  const live = useRef(true)
+  const words: LetterDraft = { monthLabel: month, subject, preheader, bodyHtml: body }
 
   useEffect(() => () => window.clearTimeout(previewPause.current), [])
+  useEffect(() => {
+    live.current = true
+    return () => {
+      live.current = false
+    }
+  }, [])
+
+  // A letter a start put on the page: the focus goes at once to the first step, which opened the chooser, drawn afresh
+  // with the letter, by a plain focus, which brings it into view; the saved line says which choice it came from, once,
+  // STARTED_PAUSE_MS later, by a timer set once and cleared as this letter leaves the page. The line's polite region is
+  // drawn afresh with the letter, and this effect runs in the same task as that drawing, before the browser shows a
+  // frame, so words put in it at once would come with the region itself, which a screen reader does not say.
+  const { startedFrom, sayStarted } = issue
+  useEffect(() => {
+    if (startedFrom === null) return
+    carry.find('pick')?.focus()
+    const later = window.setTimeout(sayStarted, STARTED_PAUSE_MS)
+    return () => window.clearTimeout(later)
+  }, [startedFrom, sayStarted, carry])
 
   /** The words on the page changed: the letter saves after its pause, and the side draws it again after a shorter one. */
   function changed(next: Partial<LetterDraft>) {
@@ -384,6 +468,74 @@ function NewsletterLetter({ issue, reach, view, onView, previewHidden, onPreview
   function onPreheaderChange(next: string) {
     setPreheader(next)
     changed({ preheader: next })
+  }
+
+  /** The first step opens the chooser; More options, at a phone's page end or in the bar, closes as it does. */
+  function openChooser() {
+    setMoreOpen(false)
+    setSaid('')
+    setChooserOpen(true)
+  }
+
+  /** Escape, Close or a press outside it: never while a letter is being started, which then puts its own letter here. */
+  function closeChooser() {
+    if (busy !== null) return
+    setAsking(null)
+    setChooserOpen(false)
+  }
+
+  /**
+   * The words on the page saved first, or, with nothing to save, the server's letter read to learn that it is still the
+   * one the page holds (saveFirst), the chooser saying which it is doing. False when either cannot be had, the chooser
+   * then saying why, staying open, since it hides the saved line; and false once this letter has left the page, when
+   * nothing is started and saveFirst sends no save to learn who changed the letter.
+   */
+  async function heldFirst(): Promise<boolean> {
+    setBusy('checking')
+    const first = await issue.saveFirst(() => setBusy('saving'), () => live.current)
+    if (!live.current) return false
+    setBusy(null)
+    if (first === 'saved') return true
+    setSaid(NOT_SAVED_FIRST[first])
+    return false
+  }
+
+  /**
+   * "Use this": nothing is started until the server holds every word on the page as the page knows it (heldFirst), so
+   * nothing a person wrote is left only on the page and the question is asked of the letter the server would keep. Then
+   * a letter that holds words is replaced only once the question has been answered.
+   */
+  async function use(choice: Choice) {
+    if (busy !== null || asking !== null) return
+    setSaid('')
+    if (!(await heldFirst())) return
+    if (holdsWords(words)) setAsking(choice)
+    else await begin(choice)
+  }
+
+  /** The question's answer. The question may have stood open a while, so "Replace it" asks again that the server's letter is still the page's. */
+  function answer(replace: boolean) {
+    const choice = asking
+    setAsking(null)
+    if (replace && choice) void replaceWith(choice)
+  }
+
+  async function replaceWith(choice: Choice) {
+    if (await heldFirst()) await begin(choice)
+  }
+
+  /**
+   * The start itself, for the month the page is on, with the subject of its own a letter set aside takes back for its
+   * month; on success this letter is replaced, so nothing more is done here, nor for a start asked for while one is on
+   * its way, which sends nothing ('busy'): the one on its way says what it comes to.
+   */
+  async function begin(choice: Choice) {
+    setBusy('starting')
+    onStarting()
+    const outcome = await issue.start(choice.from, month, choice.startedFrom, choice.subjectBack)
+    if (outcome.kind === 'started' || outcome.kind === 'busy') return
+    setBusy(null)
+    setSaid(startFailedWords(outcome))
   }
 
   const moreOptions = (place: 'bar' | 'end') => (
@@ -453,7 +605,10 @@ function NewsletterLetter({ issue, reach, view, onView, previewHidden, onPreview
               bigger={bigger}
               onBiggerChange={setBigger}
               autoFocus={autoFocus}
-              onReady={(html) => setPreview((now) => ({ ...now, bodyHtml: html }))}
+              onReady={(html) => {
+                setPreview((now) => ({ ...now, bodyHtml: html }))
+                setDrawn(true)
+              }}
             />
             {/* On a phone More options is a part of the page at its end, under the letter and its size row. */}
             {phone && moreOptions('end')}
@@ -485,7 +640,27 @@ function NewsletterLetter({ issue, reach, view, onView, previewHidden, onPreview
         moreOptions={!phone && moreOptions('bar')}
         onSeeEmail={openSheet}
         sheetOpen={sheetOpen}
+        onPick={openChooser}
+        chooserOpen={chooserOpen}
+        cue={opensEmpty && drawn && !holdsWords(words)}
         carry={carry}
+      />
+      {/*
+        The chooser, drawn in a layer of its own over the page. It comes after the bar here, so that as the window crosses
+        768 pixels while it is open, the first step drawn in the bar's new form is on the page by the time the chooser
+        places itself from it.
+      */}
+      <TemplateChooser
+        open={chooserOpen}
+        onClose={closeChooser}
+        phone={phone}
+        opener={() => carry.find('pick')}
+        onUse={(choice) => void use(choice)}
+        busy={busy}
+        said={said}
+        notice={<SavedLineNotice line={issue.line} />}
+        asking={asking}
+        onAnswer={answer}
       />
     </div>
   )

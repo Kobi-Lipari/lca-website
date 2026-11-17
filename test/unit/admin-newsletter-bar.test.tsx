@@ -5,10 +5,12 @@
 // their own cases here.
 //
 // - The bar at a computer's width: More options, then the three numbered
-//   steps, each drawn and not yet available, a button a screen reader says
-//   is not available, which Tab reaches and no press, key or touch acts on;
-//   the count read once, as Group email's newsletter tab reads it, in Send,
-//   and "Send" alone while it is not known or could not be read.
+//   steps; steps 2 and 3 drawn and not yet available, each a button a screen
+//   reader says is not available, which Tab reaches and no press, key or
+//   touch acts on, and step 1 opening the chooser, whose cases are in
+//   test/unit/admin-newsletter-chooser.test.tsx; the count read once, as
+//   Group email's newsletter tab reads it, in Send, and "Send" alone while it
+//   is not known or could not be read.
 // - The bar on a phone, as far as this runtime can tell: the page decides
 //   which side of 768 pixels it is on by the browser's media query, given
 //   here through a stand-in for matchMedia, which jsdom lacks, as the sheet's
@@ -233,10 +235,10 @@ describe('the bar at the foot, from 768 pixels up', () => {
     expect(within(theBar()).queryByRole('button', { name: 'See the email' })).toBeNull()
   })
 
-  it('draws the three numbered steps not yet available: each says so, Tab reaches it, and no press, key or touch acts on it', async () => {
+  it('draws steps 2 and 3 not yet available: each says so, Tab reaches it, and no press, key or touch acts on it', async () => {
     windowAt(1440)
     await thePage()
-    const steps = ['1 Pick a template to start from', '2 Send a test to me', '3 Send to 155 people'].map((name) => within(theBar()).getByRole('button', { name }))
+    const steps = ['2 Send a test to me', '3 Send to 155 people'].map((name) => within(theBar()).getByRole('button', { name }))
     const before = calls.length
     for (const step of steps) {
       expect(step.getAttribute('aria-disabled'), step.id).toBe('true')
@@ -318,12 +320,13 @@ describe('the bar at the foot, from 768 pixels up', () => {
 })
 
 describe('the bar on a phone, under 768 pixels', () => {
-  it('holds "Pick a template", not yet available, and "See the email"; the head draws no "See the email", and More options is at the page\'s end', async () => {
+  it('holds "Pick a template", which opens the chooser, and "See the email"; the head draws no "See the email", and More options is at the page\'s end', async () => {
     windowAt(390)
     await thePage()
     expectBar(['Pick a template', 'See the email'])
     const pick = within(theBar()).getByRole('button', { name: 'Pick a template' })
-    expect(pick.getAttribute('aria-disabled')).toBe('true')
+    expect(pick.hasAttribute('aria-disabled')).toBe(false)
+    expect(pick.getAttribute('aria-haspopup')).toBe('dialog')
     expect(pick.tabIndex).toBe(0)
     const see = within(theBar()).getByRole('button', { name: 'See the email' })
     expect(see.getAttribute('aria-haspopup')).toBe('dialog')

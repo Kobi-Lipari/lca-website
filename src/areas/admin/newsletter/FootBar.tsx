@@ -31,20 +31,30 @@
 // stands clear of the header, and More options' field, in its rows over the
 // stuck bar, takes the focus without moving the page.
 //
-// The numbered steps are drawn and not yet available: the chooser of
-// templates comes with this step's second part, the test and Send with page
-// step 6. Each is a button a screen reader says is not available
+// The first step, "Pick a template to start from" ("Pick a template" on a
+// phone), opens the chooser of templates and past newsletters
+// (TemplateChooser.tsx, page step 5's second part), drawn ready as the board
+// draws it: white with a navy edge, its chevron up from 768 pixels up. When
+// the page opens on a letter that holds no words it wiggles once, for about a
+// second, so nobody misses where to start (K's decision 47): a turn of 2
+// degrees each way, the step's own transform, so nothing beside it moves;
+// with reduced motion asked for it keeps still and shows a gold ring for a
+// moment instead. Either ends by itself, stops as soon as something is
+// written, and never plays under the focus or a press in the bar.
+//
+// Steps 2 and 3 are drawn and not yet available: the test and Send come with
+// page step 6. Each is a button a screen reader says is not available
 // (aria-disabled), which Tab still reaches and no press, key or touch acts
-// on, drawn quiet with its words kept readable: the white steps in the site's
+// on, drawn quiet with its words kept readable: the white step in the site's
 // own quiet colours, Send in its gold with the colour drawn out of it; and in
 // forced colours in the system's colour for a control that cannot be used.
 // Send counts the people the newsletter would go to, read once as the page
 // opens; while that count is not known, or could not be read, it says
 // "Send".
 
-import { useId, useLayoutEffect, useRef, type RefObject } from 'react'
+import { useEffect, useId, useLayoutEffect, useRef, type RefObject } from 'react'
 import { Bookmark, ChevronDown, ChevronUp, Eye, Mail, Send } from 'lucide-react'
-import { useDock } from '@/components/layout/dockParts'
+import { isTextField, useDock } from '@/components/layout/dockParts'
 import { cn } from '@/lib/utils'
 import type { ReactNode } from 'react'
 
@@ -76,6 +86,74 @@ const NOT_YET = 'cursor-default outline-none focus-visible:ring-3 focus-visible:
  * the bar's ground in every look, and its edge at 60 per cent of them.
  */
 const LINE_NOT_YET = 'border-muted-foreground/60 bg-background text-muted-foreground'
+
+/** The first step, ready: the board's white step with its edge and words in the site's ink, navy in the light look. */
+const PICK_READY = 'relative border-ink bg-background text-ink outline-none focus-visible:ring-3 focus-visible:ring-focus'
+
+/**
+ * The ring shown for a moment in place of the wiggle with reduced motion asked for: a gold band 3 pixels wide with a
+ * gap of 4 pixels between it and the step's edge, as measured, where the site's focus ring is a 2 pixel line 2 pixels
+ * off it in the new look and a 3 pixel shadow against it in today's; it is never drawn while the step has the focus,
+ * and goes by itself. A cue only, hidden from a screen reader, so it is not drawn in forced colours, where it would
+ * read as a frame.
+ */
+const PICK_RING =
+  'pointer-events-none absolute -inset-[8px] rounded-[14px] border-[3px] border-lca-gold opacity-0 group-focus-visible:hidden forced-colors:hidden'
+
+/**
+ * The wiggle (K's decision 47; the board's figure "When the page opens on an empty letter" draws its turn, 2 degrees
+ * each way): once, a second long, the step turning about its middle, each swing easing in and out, back to still.
+ */
+const WIGGLE: Keyframe[] = [
+  { transform: 'rotate(0deg)', easing: 'ease-in-out' },
+  { transform: 'rotate(-2deg)', offset: 0.15, easing: 'ease-in-out' },
+  { transform: 'rotate(2deg)', offset: 0.35, easing: 'ease-in-out' },
+  { transform: 'rotate(-2deg)', offset: 0.55, easing: 'ease-in-out' },
+  { transform: 'rotate(1.5deg)', offset: 0.75, easing: 'ease-in-out' },
+  { transform: 'rotate(0deg)' },
+]
+const WIGGLE_MS = 1000
+
+/** The ring with reduced motion: drawn whole for a moment, with no movement and no fade, then gone. */
+const RING: Keyframe[] = [{ opacity: 1 }, { opacity: 1 }]
+const RING_MS = 1500
+
+/** The browser's own media query for reduced motion, the one the site's stylesheet reads. */
+const REDUCED_MOTION = '(prefers-reduced-motion: reduce)'
+
+/**
+ * The first step's cue as the page opens on a letter that holds no words: the wiggle, or with reduced motion the ring.
+ * Played once, on the frame after the letter is drawn, by the browser's own animation of the step, so nothing is set
+ * on the page and nothing beside the step moves; never while the focus is in the bar; stopped by the focus or a press
+ * coming into the bar, by words written (`cue` turning false) and as the page goes; never played again on this page,
+ * whatever is opened, closed or changed. Nothing is stored, and nothing said to a screen reader.
+ */
+function usePickCue(bar: RefObject<HTMLElement | null>, cue: boolean) {
+  /** Set on the frame the cue is played or passed over on, so it is never played again. */
+  const spent = useRef(false)
+  useEffect(() => {
+    const element = bar.current
+    if (!cue || spent.current || !element) return
+    let playing: Animation | undefined
+    const stop = () => playing?.cancel()
+    const frame = requestAnimationFrame(() => {
+      spent.current = true
+      if (element.contains(element.ownerDocument.activeElement)) return
+      const reduced = typeof window.matchMedia === 'function' && window.matchMedia(REDUCED_MOTION).matches
+      const target = element.querySelector<HTMLElement>(reduced ? '[data-slot="pick-ring"]' : '[data-slot="pick-step"]')
+      if (!target || typeof target.animate !== 'function') return
+      playing = reduced ? target.animate(RING, { duration: RING_MS }) : target.animate(WIGGLE, { duration: WIGGLE_MS })
+    })
+    element.addEventListener('focusin', stop)
+    element.addEventListener('pointerdown', stop)
+    return () => {
+      cancelAnimationFrame(frame)
+      element.removeEventListener('focusin', stop)
+      element.removeEventListener('pointerdown', stop)
+      stop()
+    }
+  }, [bar, cue])
+}
 
 /**
  * The board's gold Send, drawn quiet: the site's gold button, navy words on the brand gold, with the colour drawn out
@@ -156,12 +234,18 @@ export interface FootBarProps {
   /** Opens the email's sheet from the phone's "See the email". */
   onSeeEmail: (opener: HTMLButtonElement) => void
   sheetOpen: boolean
+  /** Opens the chooser from the first step, at every width. */
+  onPick: () => void
+  chooserOpen: boolean
+  /** While true, the first step's cue may play, once: the page opened on a letter that holds no words, and none is written yet. */
+  cue: boolean
   carry: FocusCarry
 }
 
-export function FootBar({ phone, bigger, count, moreOptions, onSeeEmail, sheetOpen, carry }: FootBarProps) {
+export function FootBar({ phone, bigger, count, moreOptions, onSeeEmail, sheetOpen, onPick, chooserOpen, cue, carry }: FootBarProps) {
   const bar = useRef<HTMLElement>(null)
   useRoomForTheBar(bar, phone, bigger)
+  usePickCue(bar, cue)
   const dock = useDock()
   // The new look's tab bar holds a phone's safe area under it; with none drawn, the bar keeps that room itself.
   const ownSafeArea = bigger || !dock?.tabBar
@@ -190,7 +274,11 @@ export function FootBar({ phone, bigger, count, moreOptions, onSeeEmail, sheetOp
         phone ? 'shadow-[0_-6px_14px_rgba(16,24,43,0.07)]' : 'shadow-[0_-10px_28px_rgba(16,24,43,0.10)]',
       )}
     >
-      {phone ? <PhoneBar onSeeEmail={onSeeEmail} sheetOpen={sheetOpen} carry={carry} /> : <WideBar count={count} moreOptions={moreOptions} carry={carry} />}
+      {phone ? (
+        <PhoneBar onSeeEmail={onSeeEmail} sheetOpen={sheetOpen} onPick={onPick} chooserOpen={chooserOpen} carry={carry} />
+      ) : (
+        <WideBar count={count} moreOptions={moreOptions} onPick={onPick} chooserOpen={chooserOpen} carry={carry} />
+      )}
     </section>
   )
 }
@@ -203,22 +291,24 @@ export function FootBar({ phone, bigger, count, moreOptions, onSeeEmail, sheetOp
  * at the board's narrower size, and Send without its arrow. Where a person's own text spacing makes the words wider than
  * the forms allow for, the four narrow and run their words on to more lines, and the row stays one.
  */
-function WideBar({ count, moreOptions, carry }: { count: number | null | 'failed'; moreOptions?: ReactNode; carry: FocusCarry }) {
+function WideBar({ count, moreOptions, onPick, chooserOpen, carry }: { count: number | null | 'failed'; moreOptions?: ReactNode; onPick: () => void; chooserOpen: boolean; carry: FocusCarry }) {
   const id = useId()
   return (
     <div className="@container mx-auto flex min-h-[75px] max-w-[1198px] items-center justify-between gap-x-3 px-6 py-2">
       {moreOptions}
-      <div className="flex flex-initial items-center gap-2.5">
+      {/* The first step, its mark with it, as the board's figure of the wiggle draws the two turning together. */}
+      <div data-slot="pick-step" className="flex flex-initial items-center gap-2.5">
         <Mark id={`${id}-1`}>1</Mark>
         <button
           ref={carry.hold('pick')}
           type="button"
-          aria-disabled="true"
+          aria-haspopup="dialog"
+          aria-expanded={chooserOpen}
           aria-labelledby={`${id}-1 ${id}-1-words`}
+          onClick={onPick}
           className={cn(
-            NOT_YET,
-            LINE_NOT_YET,
-            'inline-flex min-h-[52px] items-center gap-2.5 rounded-lg border-[1.5px] pl-[9px] pr-2.5 text-[17.5px] font-semibold leading-tight',
+            PICK_READY,
+            'group inline-flex min-h-[52px] items-center gap-2.5 rounded-lg border-[1.5px] pl-[9px] pr-2.5 text-[17.5px] font-semibold leading-tight',
             '@max-[845px]:min-h-[50px] @max-[845px]:gap-2 @max-[845px]:px-3 @max-[845px]:text-base',
           )}
         >
@@ -226,7 +316,8 @@ function WideBar({ count, moreOptions, carry }: { count: number | null | 'failed
           <span id={`${id}-1-words`} className="text-left">
             Pick a template <span className="@max-[1104px]:block">to start from</span>
           </span>
-          <ChevronUp className="size-[18px] flex-none @max-[845px]:size-4" aria-hidden="true" />
+          <ChevronUp className={cn('size-[18px] flex-none @max-[845px]:size-4', chooserOpen && 'rotate-180')} aria-hidden="true" />
+          <span data-slot="pick-ring" aria-hidden="true" className={PICK_RING} />
         </button>
       </div>
       <div className="flex flex-initial items-center gap-2.5">
@@ -276,30 +367,45 @@ function WideBar({ count, moreOptions, carry }: { count: number | null | 'failed
 }
 
 /**
- * The phone's bar (board P20): "Pick a template", drawn and not yet available, at its own width, and "See the email" in
- * the rest of the row. Each keeps the board's 50 pixels of height, and on the narrowest windows the words of "See the
- * email" run on to a second line rather than past the bar. The board's soft white edge above the bar is not drawn: it
- * would fade the words, and the edge of a control with the focus, just above the bar. "See the email" has a border of
- * no colour, as the site's own buttons have, so in forced colours it is framed as the one control that can be used,
- * with a pixel less room at each side, so its words stand where they did.
+ * The phone's bar (board P20): "Pick a template", which opens the chooser, at its own width, with no chevron, as the
+ * board draws it, and "See the email" in the rest of the row. Each keeps the board's 50 pixels of height, and on the
+ * narrowest windows the words of "See the email" run on to a second line rather than past the bar. The board's soft
+ * white edge above the bar is not drawn: it would fade the words, and the edge of a control with the focus, just above
+ * the bar. "See the email" has a border of no colour, as the site's own buttons have, so in forced colours it is framed
+ * as its neighbour is, with a pixel less room at each side, so its words stand where they did. A press on either moves
+ * no focus while the caret is in the letter or a field, as on the letter's tools: there a focus moved as the press
+ * begins would bring the new look's tab bar back under the bar, which lifts the bar before the press ends, so the press
+ * would miss; the chooser and the sheet each take the focus as they open. With no field holding the caret the tab bar
+ * is drawn already and the press is the browser's own, so what it opens takes the focus from the button pressed, with
+ * no focus ring round it, as after any press. Not from 768 pixels up, where there is no tab bar.
  */
-function PhoneBar({ onSeeEmail, sheetOpen, carry }: { onSeeEmail: (opener: HTMLButtonElement) => void; sheetOpen: boolean; carry: FocusCarry }) {
+function PhoneBar({ onSeeEmail, sheetOpen, onPick, chooserOpen, carry }: { onSeeEmail: (opener: HTMLButtonElement) => void; sheetOpen: boolean; onPick: () => void; chooserOpen: boolean; carry: FocusCarry }) {
   return (
     <div className="flex gap-2 px-3.5 py-2.5">
       <button
         ref={carry.hold('pick')}
         type="button"
-        aria-disabled="true"
-        className={cn(NOT_YET, LINE_NOT_YET, 'inline-flex min-h-[50px] flex-none items-center justify-center gap-[7px] rounded-lg border-[1.5px] px-3 text-base font-semibold leading-tight')}
+        data-slot="pick-step"
+        aria-haspopup="dialog"
+        aria-expanded={chooserOpen}
+        onMouseDown={(event) => {
+          if (isTextField(document.activeElement)) event.preventDefault()
+        }}
+        onClick={onPick}
+        className={cn(PICK_READY, 'group inline-flex min-h-[50px] flex-none items-center justify-center gap-[7px] rounded-lg border-[1.5px] px-3 text-base font-semibold leading-tight')}
       >
         <Bookmark className="size-[19px] flex-none" aria-hidden="true" />
         <span className="text-left">Pick a template</span>
+        <span data-slot="pick-ring" aria-hidden="true" className={PICK_RING} />
       </button>
       <button
         ref={carry.hold('see')}
         type="button"
         aria-haspopup="dialog"
         aria-expanded={sheetOpen}
+        onMouseDown={(event) => {
+          if (isTextField(document.activeElement)) event.preventDefault()
+        }}
         onClick={(event) => onSeeEmail(event.currentTarget)}
         className="inline-flex min-h-[50px] min-w-0 flex-1 items-center justify-center gap-2 rounded-lg border border-transparent bg-brand-navy px-[11px] text-base font-semibold leading-tight text-white outline-none focus-visible:ring-3 focus-visible:ring-focus focus-visible:ring-offset-2"
       >

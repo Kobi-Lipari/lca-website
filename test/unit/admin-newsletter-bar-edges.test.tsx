@@ -11,7 +11,10 @@
 // - The inbox preview line: its 150 characters held by a paste the page
 //   takes over, cleared to nothing, kept in the sheet's email on a phone, and
 //   sent as the page goes, with More options open.
-// - The phone's "Pick a template": no press, key or touch acts on it.
+// - The phone's "Pick a template": a press, a key and a touch open the chooser
+//   once, which asks for the last newsletters and nothing else; a press on it
+//   or on "See the email" moves no focus while a field holds the caret, and
+//   is left as it is when none does, as one on the computer's first step is.
 // - The order of Tab through the page with the bar, at a computer's and a
 //   phone's width, and More options' own words under the plain-language
 //   rules (no dash, no old initials, no 24-hour time).
@@ -332,7 +335,7 @@ describe('the inbox preview line', () => {
 })
 
 describe('the phone\'s "Pick a template"', () => {
-  it('is not available: no press, key or touch acts on it, and it opens and asks for nothing', async () => {
+  it('opens the chooser once on a press, a key and a touch, and asks for the last newsletters and nothing else', async () => {
     windowAt(390)
     await thePage()
     const pick = within(theBar()).getByRole('button', { name: 'Pick a template' })
@@ -347,11 +350,33 @@ describe('the phone\'s "Pick a template"', () => {
     key(pick, ' ')
     fireEvent.keyUp(pick, { key: ' ' })
     await settle()
-    expect(focused()).toBe(pick)
-    expect(screen.queryByRole('dialog')).toBeNull()
+    const chooser = screen.getByRole('dialog', { name: 'Pick a template to start from' })
+    expect(screen.getAllByRole('dialog')).toEqual([chooser])
+    expect(chooser.contains(focused())).toBe(true)
     expect(screen.queryByRole('menu')).toBeNull()
-    expect(pick.hasAttribute('aria-expanded')).toBe(false)
-    expect(calls.slice(before)).toEqual([])
+    expect(pick.getAttribute('aria-expanded')).toBe('true')
+    expect(calls.slice(before)).toEqual(['GET /api/admin/mail/newsletter/issues'])
+  })
+
+  it('moves no focus on a press of it or of "See the email" while a field holds the caret, so the tab bar cannot come back under the bar before the press ends, and leaves the press as it is when none does, and on the computer\'s first step', async () => {
+    const move = windowAt(390)
+    await thePage()
+    // The browser's own step on a press, the focus moved to what was pressed, is held back on the phone's two buttons
+    // while the caret is in the letter or a field: there it would bring back the tab bar, which lifts the bar under the
+    // press.
+    act(() => screen.getByRole('textbox', { name: 'Subject' }).focus())
+    for (const name of ['Pick a template', 'See the email']) {
+      expect(fireEvent.mouseDown(within(theBar()).getByRole('button', { name }), { button: 0 }), name).toBe(false)
+    }
+    // With no field holding the caret the tab bar is drawn already, and the press is the browser's own: what it opens
+    // then takes the focus from the button pressed, so no focus ring is drawn round it after a press.
+    act(() => focused().blur())
+    for (const name of ['Pick a template', 'See the email']) {
+      expect(fireEvent.mouseDown(within(theBar()).getByRole('button', { name }), { button: 0 }), name).toBe(true)
+    }
+    // From 768 pixels up there is no tab bar, and the step's press is the browser's own.
+    move(1440)
+    expect(fireEvent.mouseDown(within(theBar()).getByRole('button', { name: '1 Pick a template to start from' }), { button: 0 })).toBe(true)
   })
 })
 

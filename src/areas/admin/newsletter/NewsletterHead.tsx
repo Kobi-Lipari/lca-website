@@ -102,6 +102,9 @@ function wordsOf(line: SaveLine): { quiet: string; urgent: string; after: string
       return { quiet: '', urgent: line.words, after: '' }
     case 'conflict':
       return { quiet: '', urgent: `${conflictWords(line)}.`, after: afterConflict(line) }
+    case 'started':
+      // A letter the chooser started (page step 5, second part), said once the page has drawn it.
+      return { quiet: `Started from ${line.from}`, urgent: '', after: '' }
     default:
       return { quiet: '', urgent: '', after: '' }
   }
