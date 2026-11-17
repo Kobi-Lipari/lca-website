@@ -61,6 +61,8 @@ import {
   newsletterIssueSaveRequestSchema,
   newsletterIssuesResponseSchema,
   newsletterIssueStartRequestSchema,
+  newsletterTestLetterRequestSchema,
+  newsletterTestLetterResponseSchema,
 } from './newsletter'
 import {
   batchRegistrationRequestSchema,
@@ -125,7 +127,11 @@ export const contracts = {
     POST: { response: newsletterStopResponseSchema },
   },
   'admin/mail/newsletter/test': {
-    POST: { request: newsletterTestRequestSchema, response: newsletterTestResponseSchema },
+    // Today's form, and the newsletter's own page's test of the stored letter, taken only while MAIL_PAGE_ON is set.
+    POST: {
+      request: newsletterTestRequestSchema.or(newsletterTestLetterRequestSchema),
+      response: newsletterTestResponseSchema.or(newsletterTestLetterResponseSchema),
+    },
   },
   'admin/tournaments': {
     POST: { request: createTournamentRequestSchema, response: adminTournamentResponseSchema },

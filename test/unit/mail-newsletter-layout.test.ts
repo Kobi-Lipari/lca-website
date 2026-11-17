@@ -475,8 +475,10 @@ describe('the footer', () => {
   })
 
   // WS16 part two's page step 4 gives the layout its first reader outside domain/: the newsletter page's side preview,
-  // which draws the email with it (K's decision 29). Nothing under functions/ or workers/ reads it yet.
-  it('is read by the navy layout and the page\'s side preview alone: nothing else under src/, functions/ or workers/ imports the layout or reads the follow line yet', () => {
+  // which draws the email with it (K's decision 29). Page step 6 gives it its first reader on the server, the test of the
+  // stored letter, which draws the email it sends with it; nothing under workers/ reads it, so the daily-emails worker
+  // bundles none of it.
+  it('is read by the navy layout, the page\'s side preview and the test of the stored letter alone: nothing else under src/, functions/ or workers/ imports the layout or reads the follow line yet', () => {
     const files = (dir: string): string[] =>
       readdirSync(join(ROOT, dir))
         .filter((name) => !name.startsWith('.') && name !== 'node_modules')
@@ -484,7 +486,9 @@ describe('the footer', () => {
     const readers = ['src', 'functions', 'workers', 'domain']
       .flatMap(files)
       .filter((file) => /\.(?:ts|tsx)$/.test(file) && /newsletterLayout|NEWSLETTER_FOLLOW_LINE/.test(read(file)))
-    expect(readers.sort()).toEqual(['domain/mail/footer.ts', 'domain/mail/newsletterLayout.ts', 'src/areas/admin/newsletter/SidePreview.tsx'])
+    expect(readers.sort()).toEqual([
+      'domain/mail/footer.ts', 'domain/mail/newsletterLayout.ts', 'functions/api/admin/mail/newsletter/test.ts', 'src/areas/admin/newsletter/SidePreview.tsx',
+    ])
   })
 })
 

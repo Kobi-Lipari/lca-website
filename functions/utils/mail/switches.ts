@@ -34,8 +34,10 @@ export const MAIL_LISTS_ON = true
 /**
  * Set: the newsletter's own page on the server, the four methods that read, save and start a letter and list the last
  * ones (functions/api/admin/mail/newsletter/issue.ts, issue/start.ts and issues.ts), which answer 404 while it is unset,
- * before reading anything. Turned on with mailPage in src/lib/features.ts, in the same change, and only while
- * MAIL_LISTS_ON is set; test/unit/mail-switches.test.ts holds the two equal and holds it to MAIL_LISTS_ON.
+ * before reading anything, and the test of the stored letter, the second form of the newsletter's test
+ * (functions/api/admin/mail/newsletter/test.ts), which is refused while it is unset as any body today's form does not
+ * take. Turned on with mailPage in src/lib/features.ts, in the same change, and only while MAIL_LISTS_ON is set;
+ * test/unit/mail-switches.test.ts holds the two equal and holds it to MAIL_LISTS_ON.
  */
 export const MAIL_PAGE_ON = false
 
