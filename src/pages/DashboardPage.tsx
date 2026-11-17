@@ -337,9 +337,6 @@ export function DashboardPage() {
                 <h2 className="flex items-center gap-2 text-lg font-bold text-ink">
                   <Building2 className="size-5 text-gold-ink" /> Clubs in your region
                 </h2>
-                <p className="mt-1 text-sm text-muted-foreground">
-                  As regional representative you can update these clubs' pages and news.
-                </p>
                 {/* With clubKeepers on, the way into My region (WS09 step 11). */}
                 {FEATURES.clubKeepers && (
                   <Button asChild variant="outline" className="mt-3 min-h-11 px-4">

@@ -283,7 +283,7 @@ describe('My region with clubKeepers on: the page', () => {
     // Who else keeps each region is in the answer, but the board draws no such line, so the page leaves it out.
     expect(document.body.textContent).not.toContain('Player Four')
     // The bar in the server's words.
-    expect(bar().textContent).toBe('This month· Next monthly check lands Mon, Dec 7, 2026· 1 of 3 checked in the last 90 days· 2 not checked in 90 days'
+    expect(bar().textContent).toBe('This month· Next monthly check due Mon, Dec 7, 2026· 1 of 3 checked in the last 90 days· 2 not checked in 90 days'
       + 'Confirm all still accurate')
   })
 
@@ -433,7 +433,7 @@ describe('My region with clubKeepers on: the page', () => {
     await page()
     expect(screen.getByText('No clubs are in your region yet.')).toBeTruthy()
     expect(screen.getAllByRole('heading', { level: 1 }).map((h) => h.textContent)).toEqual(['My region'])
-    expect(bar().textContent).toBe('This month· Next monthly check lands Mon, Dec 7, 2026')
+    expect(bar().textContent).toBe('This month· Next monthly check due Mon, Dec 7, 2026')
     cleanup()
 
     // One club.
