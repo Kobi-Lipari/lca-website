@@ -8,7 +8,12 @@
 // one gives, writes one log line that names no club and no person, and goes
 // on as it did before 0066, as the member delete does for the mail tables
 // of 0060. Any other error is not caught. test/unit/club-tables-lagging-run.test.ts
-// runs the four on a database built to 0060 alone.
+// runs the four on a database built to 0060 alone. The rate limit
+// (functions/utils/rateLimit.ts, WS09 step 25) reads migration 0071's table
+// on the monthly check's confirm endpoints, live wherever CLUB_KEEPERS_ON is
+// on, and catches a missing table in the same way;
+// test/integration/rate-limit-lagging-run.test.ts runs them on a database
+// with no rate_limits table.
 
 /** True when a D1 error says a table or a column is not there: "no such table: x" or "no such column: x". */
 export function isMissingTableOrColumn(err: unknown): boolean {

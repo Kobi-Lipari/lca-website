@@ -19,7 +19,9 @@
 // link onward, told by the answer's status: where logging in lets the person
 // do the same from My region (410, 400 and 503), "Log in to My region",
 // which sends them on to /workspace/region once signed in; where it would
-// not help (403 and 404), "Go to the home page". Its two calls live in
+// not help (403 and 404), "Go to the home page". A link opened too often in
+// an hour from one place (429, WS09 step 25) is said in the server's words
+// too, with "Go to the home page". Its two calls live in
 // src/areas/clubs/api.ts.
 //
 // The token rides in the address, so the page keeps it there alone: it is
@@ -34,7 +36,7 @@ import { ApiError, confirmClubByLink, getClubLink } from '@/lib/api'
 import { NO_STATEMENT } from '@domain/clubs/monthlyCheck'
 
 /** The statuses the server refuses a link with, each said in the server's own words. */
-const REFUSALS = new Set([400, 403, 404, 410, 503])
+const REFUSALS = new Set([400, 403, 404, 410, 429, 503])
 
 /** The refusals where logging in lets the person mark the club from My region: an expired link, one that cannot be read, no key. */
 const LOG_IN_HELPS = new Set([400, 410, 503])

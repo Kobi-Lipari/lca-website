@@ -110,6 +110,9 @@ export const A11Y_EMPTY_SECRETS = [
   'SES_ACCESS_KEY_ID',
   'SES_SECRET_ACCESS_KEY',
   'SES_SNS_TOPIC_ARN',
+  // The spam check's two keys: with none, as on the Preview environment until K sets them, a form that checks refuses in words.
+  'TURNSTILE_SECRET_KEY',
+  'VITE_TURNSTILE_SITE_KEY',
   // The secret of the expiring tokens in links: with none, as on the Preview environment until K sets it, no token is made.
   'SIGNING_SECRET',
   'SIGNING_SECRET_PREVIOUS',

@@ -55,6 +55,12 @@ export interface Env {
    * Preview environment or the daily-emails worker. Without it the receiver answers 404 to everything.
    */
   SES_SNS_TOPIC_ARN?: string
+  /**
+   * The secret of the spam check's provider (functions/utils/spamCheck.ts), which checks on the server the token a
+   * public form's widget hands it. Set by K, with the site key beside it (VITE_TURNSTILE_SITE_KEY, read by the page),
+   * before the first public form goes on. Without it every form that checks refuses in words.
+   */
+  TURNSTILE_SECRET_KEY?: string
 }
 
 export interface MemberRow {

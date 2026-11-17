@@ -108,7 +108,8 @@ describe('0070_club_event_approval.sql on a database that holds rows', () => {
 
   it('runs straight after 0069, the last file, with foreign keys on and every reference whole', () => {
     expect(BEFORE.at(-1)).toBe('0069_club_check_marks.sql')
-    expect(migrationFiles().at(-1)).toBe(FILE)
+    // Changed at WS09 step 25: 0071 follows it now, so it is the file straight after 0069 rather than the last.
+    expect(migrationFiles()[migrationFiles().indexOf(FILE) - 1]).toBe(BEFORE.at(-1))
     expect(foreignKeysOn(db)).toBe(1)
     expect(all(db, 'PRAGMA foreign_key_check')).toEqual([])
   })
@@ -234,8 +235,9 @@ describe('the member delete on either side of 0070', () => {
 describe('drizzle/meta', () => {
   it('records the change as the journal\'s sixteenth entry, with its snapshot, and the file\'s header names the staged file', () => {
     const journal = JSON.parse(readFileSync(join(ROOT, 'drizzle/meta/_journal.json'), 'utf8')) as { entries: Array<{ idx: number; tag: string }> }
-    expect(journal.entries).toHaveLength(16)
-    expect(journal.entries.at(-1)).toMatchObject({ idx: 15, tag: '0015_club_event_approval' })
+    // Changed at WS09 step 25: the rate limits entry follows it, so the journal holds 17 and this one is the sixteenth.
+    expect(journal.entries).toHaveLength(17)
+    expect(journal.entries[15]).toMatchObject({ idx: 15, tag: '0015_club_event_approval' })
     expect(existsSync(join(ROOT, 'drizzle/meta/0015_snapshot.json'))).toBe(true)
     const header = readFileSync(join(MIGRATIONS_DIR, FILE), 'utf8')
     expect(header.split('\n')[0]).toBe('-- 0070_club_event_approval.sql')

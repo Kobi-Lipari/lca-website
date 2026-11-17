@@ -113,6 +113,13 @@
       "when": 1794771685500,
       "tag": "0015_club_event_approval",
       "breakpoints": true
+    },
+    {
+      "idx": 16,
+      "version": "6",
+      "when": 1794924849880,
+      "tag": "0016_rate_limits",
+      "breakpoints": true
     }
   ]
 }

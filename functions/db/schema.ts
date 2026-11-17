@@ -819,3 +819,15 @@ export const clubCheckMarks = sqliteTable('club_check_marks', {
 (table) => [
   primaryKey({ columns: [table.memberId, table.month], name: 'club_check_marks_member_id_month_pk' }),
 ])
+
+/**
+ * The shared rate limit behind functions/utils/rateLimit.ts, as the brief's live-mode section writes it: one row for
+ * each route, place and hour. `bucket` is a keyed hash of the route, the visitor's network address (or the member's id)
+ * and the hour, so the address itself is never stored; `hits` counts the calls in that hour and `window_start` is the
+ * hour's start in UTC, "2026-11-17 15:00:00". Rows of an hour that has ended are deleted as calls come in.
+ */
+export const rateLimits = sqliteTable('rate_limits', {
+  bucket: text().primaryKey(),
+  hits: integer().notNull(),
+  windowStart: text('window_start').notNull(),
+})

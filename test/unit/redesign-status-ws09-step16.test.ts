@@ -347,7 +347,8 @@ describe('REDESIGN_STATUS.md, WS09 step 16: the parts against the files', () => 
     expect(pins).toContain('Not moved: `test/unit/routes.test.ts`, 103 handler files; `test/unit/contracts-pending.ts`, `PENDING_COUNT` 107')
     expect(read('test/unit/redesign-status-ws08-step2-claims.test.ts')).toContain('    expect([...keys.slice(0, 4)].sort()).toEqual(keys.slice(0, 4))\n')
     expect(read('test/unit/automation-runs-lagging-run.test.ts')).toContain('.toEqual([RUN_MARKS_UNCLEARED_LOG, APPROVALS_UNCLEARED_LOG])')
-    expect(read('test/unit/drizzle-baseline.test.ts')).toContain("expect(sql.at(-1)).toBe('0070_club_event_approval.sql')")
+    // Changed at WS09 step 25, whose 0071 is the last file now; this step's 0070 stands in the migrations folder.
+    expect(read('test/unit/drizzle-baseline.test.ts')).toMatch(/expect\(sql\.at\(-1\)\)\.toBe\('00(?:70_club_event_approval|71_rate_limits)\.sql'\)/)
   })
 
   it('gives the lint as unchanged and the build\'s figures', () => {
