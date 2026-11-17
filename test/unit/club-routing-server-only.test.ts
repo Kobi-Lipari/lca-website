@@ -33,9 +33,13 @@ describe('who keeps a club is for server code only', () => {
   })
 
   it('only the save notice reads it among the server\'s own files, and it names no mail service', () => {
-    const readers = sourceFiles('functions')
+    const all = sourceFiles('functions')
       .filter((file) => relative(ROOT, join(ROOT, file)) !== 'functions/utils/clubs/routing.ts')
       .filter((file) => /from '\.\/routing'|clubs\/routing'/.test(read(file)))
+    // The club page's author line (WS09 step 20) reads who keeps the club and answers words alone, a first name and
+    // last initial at most, through functions/api/clubs/[id]/page.ts; the mail's readers are the two below.
+    expect(all).toContain('functions/utils/clubs/authorLine.ts')
+    const readers = all.filter((file) => file !== 'functions/utils/clubs/authorLine.ts')
     // The monthly check (WS09 step 14) reads the seat rule the other way round, each holder with their clubs.
     expect(readers).toEqual(['functions/utils/clubs/emails.ts', 'functions/utils/clubs/monthlyCheck.ts'])
     const notice = read('functions/utils/clubs/emails.ts')
