@@ -4,11 +4,10 @@
 // them after the preview on Monday, November 16, 2026, drawn with made-up
 // champions:
 //
-// - A champion's wins run across in one list: under the name and its
-//   summary on a narrower screen, and from a computer's width (lg, 1024
-//   pixels) in a column of their own to the right of them. Each win keeps
-//   its year, its section, its Co-champion mark and its note together, as
-//   one item that wraps as a piece.
+// - A champion's wins run across in one list under the name and its
+//   summary, at every width, as K chose on Tuesday, November 17, 2026.
+//   Each win keeps its year, its section, its Co-champion mark and its
+//   note together, as one item that wraps as a piece.
 // - A note that is a chess title is written in its short form before the
 //   name, "FM Player Four", with its full words for a screen reader, which
 //   hears "FIDE Master Player Four", and no longer beside the year it was
@@ -159,23 +158,18 @@ describe('a champion\'s entry', () => {
     for (const item of [...five, ...seven]) expect([...item.classList]).toEqual(['flex', 'max-w-full', 'flex-wrap', 'items-baseline', 'gap-x-2'])
   })
 
-  it('runs the wins across in one list, under the name and from a computer\'s width to the right of it: nine wins are nine items of one list', async () => {
+  it('runs the wins across in one list under the name and its summary, at every width: nine wins are nine items of one list', async () => {
     await draw(MANY)
     const { list, items } = winsOf('state-player-nine')
     expect(items.map((item) => item.textContent)).toEqual(NINE_YEARS.map(String))
-    // From lg the list keeps its own height at the top of the entry, so rows that wrap stay one under another rather than spread down the photo.
-    expect([...list.classList]).toEqual(['mt-2', 'flex', 'flex-wrap', 'gap-x-4', 'gap-y-1', 'text-sm', 'text-ink', 'lg:mt-0', 'lg:pt-1', 'lg:self-start'])
+    expect([...list.classList]).toEqual(['mt-2', 'flex', 'flex-wrap', 'gap-x-4', 'gap-y-1', 'text-sm', 'text-ink'])
     for (const item of items) expect([...item.classList]).toEqual(['flex', 'max-w-full', 'flex-wrap', 'items-baseline', 'gap-x-2'])
-    // The text column: the name and its summary first, then the wins, side by side from lg up only.
+    // The text column: the name, its summary, then the wins under them.
     const column = list.parentElement!
-    expect([...column.classList]).toEqual(['min-w-0', 'flex-1', 'lg:grid', 'lg:grid-cols-[20rem_minmax(0,1fr)]', 'lg:gap-x-8'])
-    expect(column.children).toHaveLength(2)
-    const [named, wins] = [...column.children]
-    expect(wins).toBe(list)
-    expect([...named.classList]).toEqual(['min-w-0'])
-    expect([...named.children].map((c) => [c.tagName, c.textContent])).toEqual([['H3', 'Player Nine'], ['P', 'Latest title in 1972, first in 1955, 9 titles in all']])
-    // Below lg the wins stay under the name: no step at a tablet's width.
-    expect(entry('state-player-nine').outerHTML).not.toMatch(/\bmd:/)
+    expect([...column.classList]).toEqual(['min-w-0', 'flex-1'])
+    expect([...column.children].map((c) => [c.tagName, c.textContent])).toEqual([['H3', 'Player Nine'], ['P', 'Latest title in 1972, first in 1955, 9 titles in all'], ['UL', NINE_YEARS.join('')]])
+    // No step at any width: no class in the entry starts with a breakpoint's name.
+    expect(entry('state-player-nine').outerHTML).not.toMatch(/\b(?:sm|md|lg|xl|2xl):/)
   })
 })
 
