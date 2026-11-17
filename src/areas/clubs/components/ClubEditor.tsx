@@ -15,7 +15,8 @@
 //
 // Beside the form stands the preview column, which updates as the person
 // types: how the page shows up in a search and when it is shared, its card
-// in LCA's club directory, and the page's checklist. It is sticky beside the
+// in LCA's club directory, and the page's checklist; and, while the new club
+// pages are on (clubPagesOn), the page itself first (PagePreview.tsx). It is sticky beside the
 // form at wide widths, and on a phone it folds under one Preview button
 // after the form, which says whether it is open.
 //
@@ -102,6 +103,7 @@ import { EditorBasics, EditorRest, type Differs } from '@/areas/clubs/components
 import { EditorHelp, EditorHelpButton } from '@/areas/clubs/components/EditorHelp'
 import { EditorPlaces } from '@/areas/clubs/components/EditorPlaces'
 import { PageChecklist } from '@/areas/clubs/components/PageChecklist'
+import { PagePreview } from '@/areas/clubs/components/PagePreview'
 import { SearchPreview } from '@/areas/clubs/components/SearchPreview'
 import { SharePreview } from '@/areas/clubs/components/SharePreview'
 import type { UpdateClubRequest } from '@domain/contracts'
@@ -689,6 +691,13 @@ export function ClubEditor({
           <span className="hidden lg:inline">Preview</span>
         </h2>
         <div id="club-editor-previews" data-slot="editor-previews" className={cn('space-y-6', !previewOpen && 'hidden lg:block')}>
+          {/* The page itself, drawn with the new page's parts, only while the new club pages are on (WS09 step 21). */}
+          {clubPagesOn() && (
+            <PagePreview
+              own={own} clubId={club.id} address={values.slug.trim() || club.slug || club.id} values={values} colour={ownColour(colour)}
+              logo={logo} point={point} point2={point2} second={second}
+            />
+          )}
           <SearchPreview
             own={own} name={values.name} city={values.city} about={values.aboutText} statement={values.howWeMeetText}
             address={values.slug.trim() || club.slug || club.id}

@@ -172,7 +172,7 @@ describe('REDESIGN_STATUS.md, WS09 step 20: the block', () => {
       expect(beyond, piece).toContain(piece)
     }
     for (const file of [...HELD, 'src/App.tsx', 'src/lib/features.ts', 'test/unit/contracts-pending.ts', 'functions/utils/clubs/publicAnswer.ts', 'functions/utils/events/publicAnswer.ts']) {
-      expect(read(file), file).not.toMatch(/clubPage|getClubPage|authorLine|nearestClubs|clubPageSections/)
+      expect(read(file), file).not.toMatch(/clubPage(?!sOn\b)|getClubPage|authorLine|nearestClubs|clubPageSections/)
     }
   })
 })
