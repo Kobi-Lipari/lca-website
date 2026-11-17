@@ -5,12 +5,23 @@ import { useAuth } from '@/contexts/auth-context'
 import { MediaManagerAnswerContext } from '@/areas/admin/mediaManagerAnswer'
 import { canManageClub, isViewOnlyAdmin, keepsAnyClub, toolsHomeFor, type MemberRole } from '@/areas/admin/roles'
 import { useMediaManager } from '@/areas/admin/useMediaManager'
+import { regionEventsOn } from '@/areas/clubs/switches'
+import { useManagesEvent } from '@/areas/clubs/useManagesEvent'
 import { FEATURES } from '@/lib/features'
 
 interface RoleProtectedRouteProps {
   children: ReactNode
   roles?: MemberRole[]
   requireClubMatch?: boolean
+  /**
+   * Lets in only a person who may open this event's manage page. With
+   * regionEvents on, a person the rules below leave out is let in when the
+   * server says they manage the event (useManagesEvent), as a regional
+   * representative runs the club events of their region whatever their role
+   * (WS09 step 19); while that answer is on the way the route shows its
+   * loading line. With regionEvents off nothing is asked and the rules are
+   * as before.
+   */
   requireTournamentAccess?: boolean
   /**
    * On a role mismatch, send the person to their own tools page (workspace
@@ -105,6 +116,14 @@ export function RoleProtectedRoute({
   // Asked only with mailLists on, for a route that lets the media manager in, and for a signed-in member whose role
   // Admin does not let in or an LCA officer who holds a seat; called ahead of every return below, so on every draw.
   const mediaManager = useMediaManager(!!allowMediaManager)
+  // With regionEvents on, a signed-in member, never a guest, whom the event's rules below leave out is asked about on the
+  // server; called ahead of every return below, so on every draw. With it off nothing is asked.
+  const tournamentRefused = !!requireTournamentAccess && !!id && !canAccessTournament(role, id, directedTournamentIds)
+  const rolesRefused = !!roles && !roles.includes(role) && !(allowDirectors && directedTournamentIds.length > 0)
+  const askManager = regionEventsOn() && !!requireTournamentAccess && !!id && !!user && !loading && !memberLoading &&
+    !!member && member.role !== 'guest' && (tournamentRefused || rolesRefused)
+  const eventManager = useManagesEvent(askManager, id, member?.id)
+  const letInAsManager = askManager && eventManager.manages
 
   if (loading || memberLoading) {
     return <StillLoading />
@@ -132,11 +151,13 @@ export function RoleProtectedRoute({
     id &&
     !canAccessTournament(role, id, directedTournamentIds)
   ) {
-    return <Navigate to="/dashboard" replace />
+    if (askManager && eventManager.asking) return <StillLoading />
+    if (!letInAsManager) return <Navigate to="/dashboard" replace />
   }
 
   const isDirector = directedTournamentIds.length > 0
-  if (roles && !roles.includes(role) && !(allowDirectors && isDirector)) {
+  if (roles && !roles.includes(role) && !(allowDirectors && isDirector) && !letInAsManager) {
+    if (askManager && eventManager.asking) return <StillLoading />
     // The media manager is let in by the server's answer, never by a guess: until it comes, nothing of the page is drawn
     // and nobody is sent away, and anyone it does not name is sent where today's rule sends them.
     if (allowMediaManager && FEATURES.mailLists && mediaManager.asking) return <StillLoading />

@@ -15,6 +15,13 @@
 import { formatDate, zonedParts, type DateInput } from '../format/date'
 import { formatTime } from '../format/clock'
 
+/**
+ * The words for a club whose listing does not say how it meets: the monthly
+ * check's email and the page its Still accurate link opens both show them, so
+ * the person reads on the page what the email said.
+ */
+export const NO_STATEMENT = 'How the club meets is not listed yet.'
+
 /** The hour of the day, in Central time, the monthly check lands at. */
 export const CHECK_HOUR = 8
 

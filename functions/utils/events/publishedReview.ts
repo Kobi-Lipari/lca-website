@@ -124,6 +124,25 @@ function publishedReviewEmail(siteUrl: string, event: NoticeEvent): EmailMessage
 }
 
 /**
+ * The LCA admins' addresses, the one rule D22's notice writes to them by:
+ * every member whose role is lca_admin and whose email holds an "@",
+ * ordered by address, each address once however its letters are cased, as
+ * the member typed it. Submit for LCA review (WS09 step 18) writes to the
+ * same people by calling this.
+ */
+export async function lcaAdminAddresses(db: D1Database): Promise<string[]> {
+  const { results: admins } = await db
+    .prepare("SELECT email, full_name FROM members WHERE role = 'lca_admin' AND email LIKE '%@%' ORDER BY email")
+    .all<{ email: string; full_name: string }>()
+  const addresses = new Map<string, string>()
+  for (const admin of admins) {
+    const address = admin.email.trim()
+    if (!addresses.has(address.toLowerCase())) addresses.set(address.toLowerCase(), address)
+  }
+  return [...addresses.values()]
+}
+
+/**
  * D22's notice for one event. When the event's creator holds the standing
  * director grant now and this call sets the mark, it sends one email to each
  * LCA admin's address, never one message to several, so no admin sees
@@ -165,14 +184,7 @@ export async function sendPublishedReviewNotice(
       .first<NoticeEvent>()
     if (!event) return { notified, sent }
 
-    const { results: admins } = await env.DB
-      .prepare("SELECT email, full_name FROM members WHERE role = 'lca_admin' AND email LIKE '%@%' ORDER BY email")
-      .all<{ email: string; full_name: string }>()
-    const addresses = new Map<string, string>()
-    for (const admin of admins) {
-      const address = admin.email.trim()
-      if (!addresses.has(address.toLowerCase())) addresses.set(address.toLowerCase(), address)
-    }
+    const addresses = await lcaAdminAddresses(env.DB)
 
     const message = publishedReviewEmail(resolveSiteUrl(env), event)
     let index = 0

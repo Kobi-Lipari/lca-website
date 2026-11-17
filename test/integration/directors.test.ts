@@ -18,7 +18,12 @@
 // test/integration/tournament-create.test.ts reads it, so each case runs in
 // the state its describe names, and canAssignDirectors is wrapped the same way
 // for the one case that makes it refuse or allow, to hold that it alone
-// decides. Every case reads the stored rows after the call.
+// decides. Every case reads the stored rows after the call. Since WS09 step
+// 17, with REGION_EVENTS_ON set through a getter on its own module, a
+// regional representative names and removes directors on a club event in
+// their region they drafted, and on no club rep's own event there; another
+// region's representative, and the same representative with the constant
+// unset, are refused with today's words.
 import { afterEach, beforeEach, describe, it, expect, vi } from 'vitest'
 import { env } from 'cloudflare:test'
 import { flushWaitUntil, invoke, resetHarness } from './harness'
@@ -45,6 +50,7 @@ import { onRequestGet as membersGet } from '../../functions/api/admin/members'
 
 const flags = vi.hoisted(() => ({
   rolesOn: false,
+  regionOn: false,
   /** What canAssignDirectors answers: its own answer, or no or yes whatever it is asked. */
   assign: 'real' as 'real' | 'refuse' | 'allow',
   /** What canAssignDirectors was asked, call by call. */
@@ -56,6 +62,15 @@ vi.mock('../../functions/utils/events/creation', async (importOriginal) => {
     ...real,
     get CREATION_ROLES_ON() {
       return flags.rolesOn
+    },
+  }
+})
+vi.mock('../../functions/utils/clubs/pages', async (importOriginal) => {
+  const real = await importOriginal<typeof import('../../functions/utils/clubs/pages')>()
+  return {
+    ...real,
+    get REGION_EVENTS_ON() {
+      return flags.regionOn
     },
   }
 })
@@ -73,6 +88,7 @@ vi.mock('../../domain/events/creation', async (importOriginal) => {
 beforeEach(resetHarness)
 afterEach(() => {
   flags.rolesOn = false
+  flags.regionOn = false
   flags.assign = 'real'
   flags.asked = []
 })
@@ -563,5 +579,77 @@ describe('naming with CREATION_ROLES_ON unset, as today', () => {
     expect(await removed.json()).toEqual({ error: NAMING_WORDS })
     expect(await directorsOf(event)).toEqual([president])
     expect(await logCount()).toBe(log)
+  })
+})
+
+describe('naming by a regional representative (WS09 step 17)', () => {
+  let seq = 0
+  const REGION = 'Example Bayou Region'
+
+  /** A club in the region. */
+  async function clubIn(region: string): Promise<string> {
+    const id = await seedClub({ name: `Example Chess Club ${++seq}` })
+    await env.DB.prepare('UPDATE clubs SET region = ? WHERE id = ?').bind(region, id).run()
+    return id
+  }
+
+  /** A member who holds a regional seat over the region now. */
+  async function representativeOf(region: string): Promise<string> {
+    const id = await seedMember()
+    const seat = `seat-directors-${++seq}`
+    await env.DB.prepare(
+      `INSERT INTO board_members (id, role, name, sort_order, slug, category, is_active)
+       VALUES (?, 'Example Region Representative', '', 99, ?, 'regional_rep', 1)`,
+    ).bind(seat, seat).run()
+    await env.DB.prepare('INSERT INTO seat_regions (seat_id, region) VALUES (?, ?)').bind(seat, region).run()
+    await env.DB.prepare('INSERT INTO board_seat_assignments (id, seat_id, member_id) VALUES (?, ?, ?)').bind(`term-directors-${++seq}`, seat, id).run()
+    return id
+  }
+
+  it.each([false, true])('names and removes a director on a club event in the region they drafted, each in the activity log, the director\'s role unchanged, CREATION_ROLES_ON %s', async (rolesOn) => {
+    flags.regionOn = true
+    flags.rolesOn = rolesOn
+    const club = await clubIn(REGION)
+    const representative = await representativeOf(REGION)
+    const draft = await seedTournament({ clubId: club, createdBy: representative, entryFee: 0, isVisible: false })
+    const helper = await seedMember()
+    expect((await nameDirector(representative, draft, helper)).status).toBe(201)
+    expect(await directorsOf(draft)).toEqual([helper])
+    expect((await removeNamed(representative, draft, helper)).status).toBe(200)
+    expect(await directorsOf(draft)).toEqual([])
+    expect((await logOf('director_assign', draft)).map((r) => [r.actor_id, r.target_member_id])).toEqual([[representative, helper]])
+    expect((await logOf('director_remove', draft)).map((r) => [r.actor_id, r.target_member_id])).toEqual([[representative, helper]])
+    expect((await env.DB.prepare('SELECT role FROM members WHERE id = ?').bind(helper).first<{ role: string }>())?.role).toBe('member')
+  })
+
+  it('is refused on a club rep\'s own event in the region, which the representative otherwise runs, with today\'s words, and nothing is written', async () => {
+    flags.regionOn = true
+    const club = await clubIn(REGION)
+    const rep = await seedMember({ role: 'club_rep', clubId: club })
+    const representative = await representativeOf(REGION)
+    const event = await seedTournament({ clubId: club, createdBy: rep, entryFee: 0, isVisible: false })
+    const log = await logCount()
+    const named = await nameDirector(representative, event, await seedMember())
+    expect(named.status).toBe(403)
+    expect(await named.json()).toEqual({ error: NAMING_WORDS })
+    // The representative runs the event, so the list of its directors is open to them.
+    expect((await invoke(getDirectors, { as: representative, params: { id: event } })).status).toBe(200)
+    expect(await directorsOf(event)).toEqual([])
+    expect(await logCount()).toBe(log)
+  })
+
+  it('refuses another region\'s representative, and the same representative with REGION_EVENTS_ON unset, with today\'s words', async () => {
+    const club = await clubIn(REGION)
+    const representative = await representativeOf(REGION)
+    const other = await representativeOf('Example Far Region')
+    const draft = await seedTournament({ clubId: club, createdBy: representative, entryFee: 0, isVisible: false })
+    const helper = await seedMember()
+    for (const [label, as, regionOn] of [['another region', other, true], ['the constant unset', representative, false]] as const) {
+      flags.regionOn = regionOn
+      const named = await nameDirector(as, draft, helper)
+      expect(named.status, label).toBe(403)
+      expect(await named.json(), label).toEqual({ error: NAMING_WORDS })
+    }
+    expect(await directorsOf(draft)).toEqual([])
   })
 })

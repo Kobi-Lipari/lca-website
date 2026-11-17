@@ -16,12 +16,18 @@
 // on the way Still accurate is marked busy rather than disabled, so the
 // focus stays on it; a confirm that failed says so in words on the card.
 // Open goes to the club's page in My region by the club's id (WS09 step 12).
+//
+// With regionEvents on (WS09 step 19) a club whose events wait in LCA review
+// says so in words, "Event in LCA review" or "2 events in LCA review", from
+// the server's count (`inReview`, sent only while REGION_EVENTS_ON is set);
+// with none in review, or with the switch off, the card is as before.
 import { Link } from 'react-router-dom'
 
 import { Button } from '@/components/ui/button'
 import { LCA } from '@/lib/brand'
 import { initialsOf } from '@/areas/clubs/region'
 import type { RegionClub } from '@domain/contracts'
+import { regionEventsOn } from '@/areas/clubs/switches'
 
 /** A control on the card: 44px tall, a visible ring on focus. */
 const CONTROL = 'min-h-11 px-4 whitespace-normal'
@@ -38,6 +44,11 @@ const STAMP_DONE = 'border border-hairline text-ink'
 function bandOf(color: string | null): string {
   const own = color?.trim().toLowerCase()
   return own && own !== LCA.gold ? own : LCA.navy
+}
+
+/** The card's line for its events in LCA review. */
+function inReviewWords(n: number): string {
+  return n === 1 ? 'Event in LCA review' : `${n} events in LCA review`
 }
 
 export function RegionClubCard({ club, busy, error, onConfirm }: {
@@ -73,6 +84,9 @@ export function RegionClubCard({ club, busy, error, onConfirm }: {
             {club.lastCheckWords}
           </span>
         </p>
+        {regionEventsOn() && (club.inReview ?? 0) > 0 && (
+          <p className="break-words text-sm font-medium text-ink">{inReviewWords(club.inReview ?? 0)}</p>
+        )}
         {error && <p className="break-words text-sm font-medium text-ink">{error}</p>}
         <div className="flex flex-wrap gap-2">
           <Button

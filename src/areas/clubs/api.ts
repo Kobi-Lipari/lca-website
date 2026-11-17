@@ -123,6 +123,10 @@ export interface ApiAdminClubTournament extends ApiClubTournament {
   end_date: string | null
   is_visible: number
   registration_status: string | null
+  /** The approval wait's three columns, answered only while REGION_EVENTS_ON is set on the server. */
+  needs_lca_approval?: number
+  approval_requested_at?: string | null
+  approved_at?: string | null
 }
 
 /**
@@ -152,6 +156,8 @@ export async function adminGetClub(id: string): Promise<{
   tournaments: ApiAdminClubTournament[]
   /** Answered only while CLUB_KEEPERS_ON is set on the server. */
   places?: ApiClubPlace[]
+  /** What the person may do with the club's events, answered only while REGION_EVENTS_ON is set on the server. */
+  eventRights?: AdminClubResponse['eventRights']
 }> {
   const response = await fetch(`/api/admin/clubs/${encodeURIComponent(id)}`, {
     headers: await authHeaders(),
