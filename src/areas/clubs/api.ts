@@ -11,6 +11,8 @@
 
 import { authHeaders, handleResponse } from '@/lib/http'
 import type { ApiAdminMember } from '@/areas/membership/api'
+import type { AdminClubResponse, ClubConfirmResponse, ClubPlace, UpdateClubRequest, WorkspaceRegionResponse } from '@domain/contracts'
+import type { ClubLinkConfirmResponse, ClubLinkResponse, MonthlyCheckResponse } from '@domain/contracts'
 
 export interface ApiClubDetail {
   id: string
@@ -123,17 +125,138 @@ export interface ApiAdminClubTournament extends ApiClubTournament {
   registration_status: string | null
 }
 
-/** GET /api/admin/clubs/:id — club reps (own club) and admins. */
+/**
+ * The club as the admin answers give it: today's columns, and while
+ * CLUB_KEEPERS_ON is set on the server the listing's new ones as well
+ * (adminClubRowSchema in domain/contracts/clubs.ts), each optional here
+ * because an answer with the constant unset carries none of them.
+ */
+export type ApiClubListing = ApiClubDetail & Partial<Omit<AdminClubResponse['club'], keyof ApiClubDetail>>
+
+/** One of the club's places, first place first, as the admin endpoints answer it. */
+export type ApiClubPlace = ClubPlace
+
+/**
+ * GET /api/admin/clubs/:id: club reps (own club), the region's representative
+ * and admins. While CLUB_KEEPERS_ON is set on the server the value may be the
+ * club's page address as well as its id (Your club's page asks by it). The
+ * value is sent as one part of the path, so a typed address never reaches
+ * another endpoint.
+ */
 export async function adminGetClub(id: string): Promise<{
-  club: ApiClubDetail
+  club: ApiClubListing
   officers: ApiAdminClubOfficer[]
   roster: ApiAdminMember[]
+  /** Set only for a person a regional seat alone admits: the empty roster is held back, not empty. */
+  rosterKeptBack?: true
   tournaments: ApiAdminClubTournament[]
+  /** Answered only while CLUB_KEEPERS_ON is set on the server. */
+  places?: ApiClubPlace[]
 }> {
-  const response = await fetch(`/api/admin/clubs/${id}`, {
+  const response = await fetch(`/api/admin/clubs/${encodeURIComponent(id)}`, {
     headers: await authHeaders(),
   })
   return handleResponse(response)
+}
+
+/**
+ * The club editor's one save: PATCH /api/admin/clubs/:id with the listing's
+ * fields and, when sent, its places (updateClubRequestSchema), written by
+ * the server in one batch, so a press saves all of it or none of it.
+ * Answers the club as saved, and its places as saved when they were sent.
+ */
+export async function saveClubListing(id: string, body: UpdateClubRequest): Promise<{ club: ApiClubListing; places?: ApiClubPlace[] }> {
+  const response = await fetch(`/api/admin/clubs/${id}`, {
+    method: 'PATCH',
+    headers: await authHeaders(),
+    body: JSON.stringify(body),
+  })
+  return handleResponse<{ club: ApiClubListing; places?: ApiClubPlace[] }>(response)
+}
+
+/**
+ * My region's answer, GET /api/workspace/region (WS09 step 11's page): the
+ * cards in the server's order with their words, This month and the regions.
+ * Answered only while CLUB_KEEPERS_ON is set on the server, and only to a
+ * holder of an active regional seat or an LCA admin; everyone else gets 403
+ * in words, which the page draws.
+ */
+export async function getWorkspaceRegion(): Promise<WorkspaceRegionResponse> {
+  const response = await fetch(`/api/workspace/region`, {
+    headers: await authHeaders(),
+  })
+  return handleResponse<WorkspaceRegionResponse>(response)
+}
+
+/**
+ * Still accurate for one club, POST /api/admin/clubs/:id/confirm, with no
+ * field of its own: the body is `{}`. Answers the club's new last check and
+ * its words for the card ("Checked Nov 2026").
+ */
+export async function confirmClubStillAccurate(id: string): Promise<ClubConfirmResponse> {
+  const response = await fetch(`/api/admin/clubs/${encodeURIComponent(id)}/confirm`, {
+    method: 'POST',
+    headers: await authHeaders(),
+    body: JSON.stringify({}),
+  })
+  return handleResponse<ClubConfirmResponse>(response)
+}
+
+/**
+ * The club a Still accurate link in the monthly check names, GET
+ * /api/clubs/confirm/:token (WS09 step 14's page), which changes nothing.
+ * No sign-in: the token is the key, so no Authorization header is sent, and
+ * no referrer goes with the call, so the token rides in its own address alone.
+ */
+export async function getClubLink(token: string): Promise<ClubLinkResponse> {
+  const response = await fetch(`/api/clubs/confirm/${encodeURIComponent(token)}`, {
+    headers: { Accept: 'application/json' },
+    referrerPolicy: 'no-referrer',
+  })
+  return handleResponse<ClubLinkResponse>(response)
+}
+
+/**
+ * Still accurate by the link, POST /api/clubs/confirm/:token, with the body
+ * `{}` and no sign-in. Answers the club and the month it is marked as
+ * checked for, in words.
+ */
+export async function confirmClubByLink(token: string): Promise<ClubLinkConfirmResponse> {
+  const response = await fetch(`/api/clubs/confirm/${encodeURIComponent(token)}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+    referrerPolicy: 'no-referrer',
+    body: '{}',
+  })
+  return handleResponse<ClubLinkConfirmResponse>(response)
+}
+
+/**
+ * How many people this month's check goes to, for the LCA admin's one
+ * question in My region: POST /api/admin/clubs/monthly-check with `send`
+ * false, which sends nothing.
+ */
+export async function countMonthlyCheck(): Promise<MonthlyCheckResponse> {
+  const response = await fetch('/api/admin/clubs/monthly-check', {
+    method: 'POST',
+    headers: await authHeaders(),
+    body: JSON.stringify({ send: false }),
+  })
+  return handleResponse<MonthlyCheckResponse>(response)
+}
+
+/**
+ * Sends this month's check now, the LCA admin's button: POST
+ * /api/admin/clubs/monthly-check with `send` true. Answers how many emails
+ * went, how many did not and how many people were not reached.
+ */
+export async function sendMonthlyCheck(): Promise<MonthlyCheckResponse> {
+  const response = await fetch('/api/admin/clubs/monthly-check', {
+    method: 'POST',
+    headers: await authHeaders(),
+    body: JSON.stringify({ send: true }),
+  })
+  return handleResponse<MonthlyCheckResponse>(response)
 }
 
 export async function adminCreateClub(body: {

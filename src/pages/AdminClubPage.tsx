@@ -1,9 +1,7 @@
 // src/pages/AdminClubPage.tsx
-import { useEffect, useRef, useState, type ChangeEvent, type FormEvent } from 'react'
-import { Link, useParams, useSearchParams } from 'react-router-dom'
-import {
-  ArrowLeft, Building2, EyeOff, Newspaper, Palette, Trash2, Trophy, Upload, UserPlus, Users,
-} from 'lucide-react'
+import { lazy, Suspense, useEffect, useRef, useState, type ChangeEvent, type FormEvent } from 'react'
+import { Link, useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom'
+import { ArrowLeft, Building2, EyeOff, Newspaper, Palette, Trophy, Upload, UserPlus, Users } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -22,17 +20,23 @@ import {
   type ApiAdminMember,
   type ApiClubDetail,
   type ApiClubNews,
+  type ApiClubPlace,
 } from '@/lib/api'
 import { useAuth } from '@/contexts/auth-context'
 import { isViewOnlyAdmin, toolsHomeFor } from '@/areas/admin/roles'
 import { REGIONS } from '@/lib/regions'
 import { ClubLocationPicker } from '@/areas/clubs/components/ClubLocationPicker'
+// The News tab's form and list, which a club's page in My region draws too.
+import { ClubNewsPanel } from '@/areas/clubs/components/ClubNewsPanel'
 import { clubTextColor, clubTextOnDark } from '@/areas/clubs/clubColors'
 import { resizeImageToFit } from '@/lib/resizeImage'
 import { cn } from '@/lib/utils'
 import { usePageTitle } from '@/hooks/usePageTitle'
 import { LCA } from '@/lib/brand'
 import { ViewOnlyFieldset, ViewOnlyNote } from '@/lib/viewOnly'
+import { keepersOn } from '@/areas/clubs/switches'
+// The one club editor, fetched only when the Details tab draws it, with clubKeepers on.
+const ClubEditor = lazy(() => import('@/areas/clubs/components/ClubEditor').then((m) => ({ default: m.ClubEditor })))
 
 const goldButtonClass = 'bg-lca-gold font-semibold text-brand-navy hover:bg-lca-gold/90'
 
@@ -40,7 +44,7 @@ type ClubTab = 'details' | 'news' | 'roster' | 'tournaments'
 
 export function AdminClubPage() {
   const { id } = useParams<{ id: string }>()
-  const { role } = useAuth()
+  const { role, member } = useAuth()
   const isAdmin = role === 'lca_admin'
   const toolsHome = toolsHomeFor(role)
   // Regional representatives reach this page through their board seat, not a
@@ -49,11 +53,17 @@ export function AdminClubPage() {
   const backLabel = isAdmin ? 'All clubs' : toolsHome === '/dashboard' ? 'My profile' : toolsHome.startsWith('/admin') ? 'Admin panel' : 'Workspace'
   const showTournaments = isAdmin || isViewOnlyAdmin(role) || role === 'club_rep'
   const [params, setParams] = useSearchParams()
+  const navigate = useNavigate()
+  // The address's query (the open tab), kept for a move to the club's id's address without loading again on each tab.
+  const { search } = useLocation()
+  const searchNow = useRef(search)
+  useEffect(() => { searchNow.current = search }, [search])
 
   const [club, setClub] = useState<ApiClubDetail | null>(null)
-  const [roster, setRoster] = useState<ApiAdminMember[]>([])
+  const [roster, setRoster] = useState<ApiAdminMember[] | null>([]) // null: the roster is kept back from this person
   const [tournaments, setTournaments] = useState<ApiAdminClubTournament[]>([])
   const [officers, setOfficers] = useState<ApiAdminClubOfficer[]>([])
+  const [places, setPlaces] = useState<ApiClubPlace[]>([])
   const [officerForm, setOfficerForm] = useState({ memberId: '', title: '' })
   const [officerBusy, setOfficerBusy] = useState(false)
   const [loading, setLoading] = useState(true)
@@ -93,16 +103,28 @@ export function AdminClubPage() {
 
   useEffect(() => {
     if (!id) return
+    // Set when the club answered for a page address moves the page to its id's address, where it loads again.
+    let moved = false
     async function load() {
       try {
         const [clubData, newsData] = await Promise.all([
           adminGetClub(id!),
-          adminGetClubNews(id!),
+          adminGetClubNews(id!).then((list) => ({ list }), (failed: unknown) => ({ failed })),
         ])
         const c = clubData.club
+        // With CLUB_KEEPERS_ON set the GET also finds a club by its page address, and every
+        // other call here takes the club's id alone, so the page moves to the id's address,
+        // in place of this one, before it draws anything.
+        if (c.id !== id) {
+          moved = true
+          navigate({ pathname: `/admin/clubs/${encodeURIComponent(c.id)}`, search: searchNow.current }, { replace: true })
+          return
+        }
+        if ('failed' in newsData) throw newsData.failed
         setClub(c)
         setTournaments(clubData.tournaments ?? [])
         setOfficers(clubData.officers ?? [])
+        setPlaces(clubData.places ?? [])
         setForm({
           name: c.name,
           city: c.city,
@@ -114,16 +136,16 @@ export function AdminClubPage() {
           imageUrl: c.image_url ?? '',
           region: c.region ?? '',
         })
-        setRoster(clubData.roster ?? [])
-        setNews(newsData)
+        setRoster(clubData.rosterKeptBack ? null : clubData.roster ?? [])
+        setNews(newsData.list)
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to load club')
       } finally {
-        setLoading(false)
+        if (!moved) setLoading(false)
       }
     }
     load()
-  }, [id])
+  }, [id, navigate])
 
   async function handleSaveClub(e: FormEvent) {
     e.preventDefault()
@@ -255,7 +277,7 @@ export function AdminClubPage() {
   const tabs: { id: ClubTab; label: string; icon: typeof Users }[] = [
     { id: 'details',     label: 'Club details',  icon: Building2  },
     { id: 'news',        label: 'News',           icon: Newspaper  },
-    { id: 'roster',      label: `Roster & officers (${roster.length})`, icon: Users },
+    { id: 'roster',      label: roster === null ? 'Roster & officers' : `Roster & officers (${roster.length})`, icon: Users },
     ...(showTournaments ? [{ id: 'tournaments' as const, label: 'Tournaments', icon: Trophy }] : []),
   ]
 
@@ -322,7 +344,7 @@ export function AdminClubPage() {
 
         {/* ── Details tab ── */}
         <ViewOnlyNote />
-        {tab === 'details' && (
+        {tab === 'details' && !keepersOn() && (
           <ViewOnlyFieldset>
           <form onSubmit={handleSaveClub} className="space-y-6">
             <div className="rounded-xl border bg-card p-6 shadow-sm">
@@ -476,88 +498,91 @@ export function AdminClubPage() {
           </div>
           </ViewOnlyFieldset>
         )}
+        {/*
+          The editor shuts its own fields and Save for an observer and leaves Help open to them.
+          Its words say "your" only to the club's own rep, whom this page lets in at the club's
+          id as before; an LCA admin, an observer and a region's representative read "the club's".
+        */}
+        {tab === 'details' && keepersOn() && (
+          <Suspense fallback={<p className="text-muted-foreground">Loading the editor…</p>}>
+            <ClubEditor
+              club={club}
+              places={places}
+              own={role === 'club_rep' && !!member?.club_id && member.club_id === club.id}
+              isAdmin={isAdmin}
+              showAdminFields={isAdmin || isViewOnlyAdmin(role)}
+              viewOnly={isViewOnlyAdmin(role)}
+              onSaved={(saved, savedPlaces) => {
+                setClub(saved)
+                setPlaces(savedPlaces)
+                // The header's band follows a colour the editor saved.
+                setForm((p) => ({ ...p, color: saved.color ?? LCA.gold, imageUrl: saved.image_url ?? '' }))
+              }}
+            />
+          </Suspense>
+        )}
 
         {/* ── News tab ── */}
         {tab === 'news' && (
           <ViewOnlyFieldset>
-          <div className="space-y-4">
             {/*
               Posted news was previously invisible here — the tab only offered a
               form, so anything already published could not be reviewed or
               removed from the admin panel at all.
             */}
-            <div className="rounded-xl border bg-card p-6 shadow-sm">
-              <div className="mb-4 flex items-center gap-2">
-                <Newspaper className="size-5 text-gold-ink" />
-                <h2 className="text-base font-semibold text-ink">
-                  Posted news · {news.length}
-                </h2>
-              </div>
-              {news.length === 0 ? (
-                <p className="text-sm text-muted-foreground">
-                  Nothing posted yet. Anything you publish below appears on the club's public page.
-                </p>
-              ) : (
-                <ul className="divide-y">
-                  {news.map((item) => (
-                    <li key={item.id} className="flex items-start justify-between gap-4 py-3 first:pt-0 last:pb-0">
-                      <div className="min-w-0">
-                        <p className="font-medium text-ink">{item.title}</p>
-                        <p className="mt-0.5 text-xs text-muted-foreground">{item.news_date}</p>
-                        <p className="mt-1 text-sm text-muted-foreground">{item.excerpt}</p>
-                      </div>
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        className="flex-shrink-0 text-bad hover:bg-bad-50"
-                        disabled={newsDeletingId === item.id}
-                        onClick={() => handleDeleteNews(item)}
-                      >
-                        <Trash2 className="mr-1.5 size-3.5" />
-                        {newsDeletingId === item.id ? 'Deleting…' : 'Delete'}
-                      </Button>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
-
-          <form onSubmit={handlePostNews} className="rounded-xl border bg-card p-6 shadow-sm">
-            <div className="mb-4 flex items-center gap-2">
-              <Newspaper className="size-5 text-gold-ink" />
-              <h2 className="text-base font-semibold text-ink">Post club news</h2>
-            </div>
-            <div className="space-y-4">
-              <div className="space-y-1.5">
-                <Label htmlFor="news-title">Title</Label>
-                <Input id="news-title" value={newsForm.title} onChange={(e) => setNewsForm((p) => ({ ...p, title: e.target.value }))} required />
-              </div>
-              <div className="space-y-1.5">
-                <Label htmlFor="news-date">Date</Label>
-                <Input id="news-date" type="date" value={newsForm.newsDate} onChange={(e) => setNewsForm((p) => ({ ...p, newsDate: e.target.value }))} required />
-              </div>
-              <div className="space-y-1.5">
-                <Label htmlFor="news-excerpt">Excerpt</Label>
-                <textarea
-                  id="news-excerpt"
-                  className="min-h-[90px] w-full rounded-md border bg-background px-3 py-2 text-sm"
-                  value={newsForm.excerpt}
-                  onChange={(e) => setNewsForm((p) => ({ ...p, excerpt: e.target.value }))}
-                  required
-                />
-              </div>
-            </div>
-            <Button type="submit" className={cn('mt-4', goldButtonClass)} disabled={newsSaving}>
-              {newsSaving ? 'Posting…' : 'Post news'}
-            </Button>
-          </form>
-          </div>
+            <ClubNewsPanel
+              news={news}
+              newsForm={newsForm}
+              setNewsForm={setNewsForm}
+              newsSaving={newsSaving}
+              newsDeletingId={newsDeletingId}
+              handleDeleteNews={handleDeleteNews}
+              handlePostNews={handlePostNews}
+            />
           </ViewOnlyFieldset>
         )}
 
+        {/* ── Roster & officers tab, for a person a regional seat alone admits ── */}
+        {/* The server keeps the roster and the officers' emails from them, and
+            they add and remove no officer, so the tab says so in words in
+            place of an empty roster, and lists the officers by name and role. */}
+        {tab === 'roster' && roster === null && (
+          <div className="space-y-6">
+            <div className="rounded-xl border bg-card p-6 shadow-sm">
+              <div className="mb-1 flex items-center gap-2">
+                <EyeOff className="size-5 text-muted-foreground" />
+                <h2 className="text-base font-semibold text-ink">Club roster</h2>
+              </div>
+              <p className="text-sm text-muted-foreground">
+                {'A club\'s roster is kept for LCA admins and the club\'s own rep. To add or remove an officer, ask an LCA admin or the club\'s own rep.'}
+              </p>
+            </div>
+
+            <div className="rounded-xl border bg-card p-6 shadow-sm">
+              <div className="mb-1 flex items-center gap-2">
+                <Users className="size-5 text-muted-foreground" />
+                <h2 className="text-base font-semibold text-ink">Officers</h2>
+              </div>
+              <p className="mb-4 text-sm text-muted-foreground">
+                {'Listed on the club\'s public page by name and role.'}
+              </p>
+              {officers.length > 0 ? (
+                <ul className="divide-y rounded-lg border">
+                  {officers.map((o) => (
+                    <li key={o.id} className="px-3 py-2.5">
+                      <p className="text-sm font-medium">{o.full_name} <span className="font-normal text-muted-foreground">· {o.role}</span></p>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="text-sm text-muted-foreground">No officers are listed for this club.</p>
+              )}
+            </div>
+          </div>
+        )}
+
         {/* ── Roster & officers tab ── */}
-        {tab === 'roster' && (
+        {tab === 'roster' && roster !== null && (
           <ViewOnlyFieldset>
           <div className="space-y-6">
             <div className="rounded-xl border bg-card p-6 shadow-sm">
@@ -649,7 +674,9 @@ export function AdminClubPage() {
           </ViewOnlyFieldset>
         )}
 
-        {/* ── Tournaments tab (includes hidden drafts) ── */}
+        {/* ── Tournaments tab (includes hidden drafts, except for a person a
+            regional seat alone admits, roster === null, whom the server
+            answers the published ones only) ── */}
         {tab === 'tournaments' && (
           <div className="space-y-4">
             <div className="flex flex-wrap items-center justify-between gap-2">
@@ -667,7 +694,9 @@ export function AdminClubPage() {
                 <Trophy className="mx-auto mb-3 size-8 text-muted-foreground" />
                 <p className="font-medium text-ink">No tournaments yet</p>
                 <p className="mt-1 text-sm text-muted-foreground">
-                  Tournaments you create for {club.name} will show up here, including drafts.
+                  {roster === null
+                    ? `Published tournaments of ${club.name} show up here. Drafts stay with LCA admins and the club's own rep.`
+                    : `Tournaments you create for ${club.name} will show up here, including drafts.`}
                 </p>
               </div>
             ) : (

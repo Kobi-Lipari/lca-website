@@ -12,7 +12,23 @@
 // test/unit/contracts-pending.ts; when you add a contract, take its line out
 // of that list and lower the count pinned there.
 import type { ZodType } from 'zod'
-import { clubDetailResponseSchema } from './clubs'
+import {
+  adminClubResponseSchema,
+  clubConfirmRequestSchema,
+  clubConfirmResponseSchema,
+  clubDetailResponseSchema,
+  clubLinkConfirmRequestSchema,
+  clubLinkConfirmResponseSchema,
+  clubLinkResponseSchema,
+  clubListResponseSchema,
+  clubPlacesRequestSchema,
+  clubPlacesResponseSchema,
+  monthlyCheckRequestSchema,
+  monthlyCheckResponseSchema,
+  updateClubRequestSchema,
+  updateClubResponseSchema,
+  workspaceRegionResponseSchema,
+} from './clubs'
 import {
   adminTournamentResponseSchema,
   clearinghouseQuerySchema,
@@ -78,6 +94,19 @@ export const contracts = {
   tournaments: {
     GET: { response: tournamentsListResponseSchema },
   },
+  'admin/clubs/[id]': {
+    GET: { response: adminClubResponseSchema },
+    PATCH: { request: updateClubRequestSchema, response: updateClubResponseSchema },
+  },
+  'admin/clubs/[id]/confirm': {
+    POST: { request: clubConfirmRequestSchema, response: clubConfirmResponseSchema },
+  },
+  'admin/clubs/[id]/places': {
+    PUT: { request: clubPlacesRequestSchema, response: clubPlacesResponseSchema },
+  },
+  'admin/clubs/monthly-check': {
+    POST: { request: monthlyCheckRequestSchema, response: monthlyCheckResponseSchema },
+  },
   'admin/mail/newsletter': {
     GET: { response: newsletterSummaryResponseSchema },
     POST: { request: newsletterRequestSchema, response: newsletterResponseSchema },
@@ -122,8 +151,15 @@ export const contracts = {
   clearinghouse: {
     GET: { query: clearinghouseQuerySchema, response: clearinghouseResponseSchema },
   },
+  clubs: {
+    GET: { response: clubListResponseSchema },
+  },
   'clubs/[id]': {
     GET: { response: clubDetailResponseSchema },
+  },
+  'clubs/confirm/[token]': {
+    GET: { response: clubLinkResponseSchema },
+    POST: { request: clubLinkConfirmRequestSchema, response: clubLinkConfirmResponseSchema },
   },
   'mail/preferences/[token]': {
     GET: { response: emailChoicesResponseSchema },
@@ -159,6 +195,9 @@ export const contracts = {
   },
   'tournaments/[id]': {
     GET: { response: tournamentDetailResponseSchema },
+  },
+  'workspace/region': {
+    GET: { response: workspaceRegionResponseSchema },
   },
 } satisfies Record<string, RouteContracts>
 

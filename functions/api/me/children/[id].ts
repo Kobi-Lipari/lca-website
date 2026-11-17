@@ -1,10 +1,14 @@
-// functions/api/me/children/[id].ts — edit or remove one of your children.
+// functions/api/me/children/[id].ts: edit or remove one of your children.
 import type { Env } from '../../../types'
 import { isResponse, requireAuthedMember } from '../../../utils/auth'
 import { listChildren } from '../../../utils/family'
 import { validateFullName } from '../../../utils/admin/members'
 import { isValidUscfId, refreshUscfSoon } from '../../../utils/uscf'
 import { errorResponse, handleOptions, jsonResponse, parseJsonBody } from '../../../utils/response'
+import { isMissingTableOrColumn } from '../../../utils/clubs/migrationLag'
+
+/** The one log line for the club references of migration 0066 a child profile's delete could not clear; it names no one. */
+export const CHILD_CLUB_REFERENCES_UNCLEARED_LOG = 'child profile delete: the club tables of migration 0066 could not be read; the delete goes on without them'
 
 interface EditChildBody {
   fullName?: string
@@ -79,9 +83,30 @@ export const onRequestDelete: PagesFunction<Env> = async (context) => {
     )
   }
 
-  await context.env.DB.prepare('DELETE FROM members WHERE id = ? AND guardian_id = ?')
-    .bind(childId, authed.member.id)
-    .run()
+  // Migration 0066's references to a member, none with a delete action, are
+  // cleared in one batch with the profile, as the admin's member delete
+  // clears them (functions/api/admin/members/[id].ts): a club's last save
+  // and last check keep their dates and lose the name, a report or a rep
+  // request decided keeps its outcome, and the profile's own rep requests
+  // go. A child's profile is not a club's keeper, so these are empty in
+  // practice; before 0066 has run the profile is deleted on its own, with
+  // one log line.
+  try {
+    await context.env.DB.batch([
+      context.env.DB.prepare('UPDATE clubs SET told_by = NULL WHERE told_by = ?').bind(childId),
+      context.env.DB.prepare('UPDATE clubs SET confirmed_by = NULL WHERE confirmed_by = ?').bind(childId),
+      context.env.DB.prepare('UPDATE club_reports SET resolved_by = NULL WHERE resolved_by = ?').bind(childId),
+      context.env.DB.prepare('UPDATE club_rep_requests SET decided_by = NULL WHERE decided_by = ?').bind(childId),
+      context.env.DB.prepare('DELETE FROM club_rep_requests WHERE member_id = ?').bind(childId),
+      context.env.DB.prepare('DELETE FROM members WHERE id = ? AND guardian_id = ?').bind(childId, authed.member.id),
+    ])
+  } catch (err) {
+    if (!isMissingTableOrColumn(err)) throw err
+    console.warn(CHILD_CLUB_REFERENCES_UNCLEARED_LOG)
+    await context.env.DB.prepare('DELETE FROM members WHERE id = ? AND guardian_id = ?')
+      .bind(childId, authed.member.id)
+      .run()
+  }
 
   return jsonResponse({ children: await listChildren(context.env.DB, authed.member.id) })
 }

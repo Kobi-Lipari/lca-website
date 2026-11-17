@@ -39,6 +39,9 @@ export type AdminAction =
   // A newsletter stopped before it had all gone (WS16); the audit page gives
   // it a label with the newsletter's tab.
   | 'group_email_stopped'
+  // A press of "Send this month's check now" that sent (WS09): who pressed
+  // it, the month in words and the counts, never an address or a link.
+  | 'club_monthly_check_sent'
   | 'ticket_reply'
   // Board seats: logged so the officer history can always be rebuilt.
   | 'seat_assign'

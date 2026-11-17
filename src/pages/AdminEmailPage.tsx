@@ -1,5 +1,5 @@
 // src/pages/AdminEmailPage.tsx
-import { useEffect, useId, useMemo, useState, type ReactNode } from 'react'
+import { Fragment, useEffect, useId, useMemo, useState, type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import {
   Mail, Send, Users, CheckCircle2, XCircle, Clock,
@@ -193,12 +193,40 @@ function sentAt(createdAt: string): string {
   return `${formatDate(createdAt, { stored: 'utc', year: true })} · ${formatTime(createdAt, { stored: 'utc' })}`
 }
 
+/** A large row's line clips what falls before its left edge, where a piece that starts a line keeps its separator. */
+const ROW_CLIP = 'overflow-hidden'
+
+/**
+ * The pieces of a large row's line, with mailLists on: a wrapping row in which each piece after the first carries its
+ * " · " before it, in the gap between pieces. The row starts one gap to the left of the line, which ROW_CLIP clips, so a
+ * piece that starts a line has its separator in the clipped gap and shows none, and no line ends on one; a piece never
+ * breaks inside itself ("112 recipients", "2 failed"). Each piece is its own element and the separators are hidden from
+ * a screen reader. No script and no measuring.
+ */
+function RowPieces({ pieces }: { pieces: Array<{ words: string; className?: string }> }) {
+  return (
+    <span className="-ml-2.5 flex flex-wrap">
+      {pieces.map((piece, i) => (
+        <Fragment key={i}>
+          {i > 0 && ' '}
+          <span className={cn(i > 0 && 'relative', 'ml-2.5 whitespace-nowrap', piece.className)}>
+            {i > 0 && <span aria-hidden="true" className="absolute right-full w-2.5 text-center">·</span>}
+            {i > 0 && ' '}
+            {piece.words}
+          </span>
+        </Fragment>
+      ))}
+    </span>
+  )
+}
+
 /**
  * One send in the history's style. With mailLists on its count keeps its number with its noun, and a newsletter's row
  * can carry `extra`, why it waits, beside its own counts, and `large` draws its words at 14px; with the switch off it is today's row.
- * A `large` row never ends a line on its separator: each " · " travels with what follows it, the time, the count, the
- * failed count and the share, so a line breaks before one of them whole. `waiting`, which the tab gives the sending
- * newsletter while the server says it waits, reads "Waiting" in place of "Sending…".
+ * A `large` row never starts or ends a line on its separator: its pieces, the date, the time and the count, and the
+ * sent count, the failed count and the share, wrap as whole pieces (see RowPieces), so a line breaks only between them.
+ * `waiting`, which the tab gives the sending newsletter while the server says it waits, reads "Waiting" in place of
+ * "Sending…".
  */
 function CampaignRow({ c, extra, large, waiting }: { c: ApiCampaign; extra?: ReactNode; large?: boolean; waiting?: boolean }) {
   const meta = waiting ? WAITING_META : STATUS_META[c.status] ?? STATUS_META.sending
@@ -206,17 +234,19 @@ function CampaignRow({ c, extra, large, waiting }: { c: ApiCampaign; extra?: Rea
   const pct = c.total_recipients > 0
     ? Math.round(((c.sent_count + c.failed_count) / c.total_recipients) * 100)
     : 0
-  /** The words after a separator, kept on one line with it in a large row. */
-  const after = (words: ReactNode) => <span className="whitespace-nowrap">· {words}</span>
 
   return (
     <div className="rounded-xl border bg-card p-4 shadow-sm">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <p className="truncate font-medium text-ink">{c.subject}</p>
-          <p className={cn('mt-0.5', large ? 'text-sm' : 'text-xs', 'text-muted-foreground')}>
+          <p className={cn('mt-0.5', large ? 'text-sm' : 'text-xs', 'text-muted-foreground', large && ROW_CLIP)}>
             {large ? (
-              <>{formatDate(c.created_at, { stored: 'utc', year: true })} {after(formatTime(c.created_at, { stored: 'utc' }))} {after(`${c.total_recipients} recipients`)}</>
+              <RowPieces pieces={[
+                { words: formatDate(c.created_at, { stored: 'utc', year: true }) },
+                { words: formatTime(c.created_at, { stored: 'utc' }) },
+                { words: `${c.total_recipients} recipients` },
+              ]} />
             ) : (
               <>{sentAt(c.created_at)} · {FEATURES.mailLists ? <span className="whitespace-nowrap">{c.total_recipients} recipients</span> : <>{c.total_recipients} recipients</>}</>
             )}
@@ -230,17 +260,21 @@ function CampaignRow({ c, extra, large, waiting }: { c: ApiCampaign; extra?: Rea
         <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
           <div className="h-full rounded-full bg-lca-gold transition-all" style={{ width: `${pct}%` }} />
         </div>
-        <p className={cn('mt-1', large ? 'text-sm' : 'text-[11px]', 'text-muted-foreground')}>
-          {c.sent_count} sent
-          {large ? (
-            <>{c.failed_count > 0 && <span className="text-bad"> {after(`${c.failed_count} failed`)}</span>} {after(`${pct}%`)}</>
-          ) : (
-            <>
-              {c.failed_count > 0 && <span className="text-bad"> · {c.failed_count} failed</span>}
-              {' '}· {pct}%
-            </>
-          )}
-        </p>
+        {large ? (
+          <p className={cn('mt-1 text-sm text-muted-foreground', ROW_CLIP)}>
+            <RowPieces pieces={[
+              { words: `${c.sent_count} sent` },
+              ...(c.failed_count > 0 ? [{ words: `${c.failed_count} failed`, className: 'text-bad' }] : []),
+              { words: `${pct}%` },
+            ]} />
+          </p>
+        ) : (
+          <p className="mt-1 text-[11px] text-muted-foreground">
+            {c.sent_count} sent
+            {c.failed_count > 0 && <span className="text-bad"> · {c.failed_count} failed</span>}
+            {' '}· {pct}%
+          </p>
+        )}
         {extra}
       </div>
     </div>
@@ -269,7 +303,7 @@ function SesTestChoice({ checked, onChange }: { checked: boolean; onChange: (on:
   const { role } = useAuth()
   if (role !== 'lca_admin') return null
   return (
-    <label className="mt-2 flex min-h-6 items-center gap-2 text-sm text-ink">
+    <label className={cn('mt-2 flex min-h-6 items-center gap-2 text-sm text-ink', PHONE_TALL)}>
       <input type="checkbox" className="size-4 accent-ink" checked={checked} onChange={(e) => onChange(e.target.checked)} />
       Send the test through Amazon SES
     </label>
@@ -701,7 +735,8 @@ export function AdminEmailPage({ embedded = false, mediaManager }: { embedded?: 
                         <button type="button" aria-expanded={whoOpen} aria-controls={whoId} onClick={() => setWhoOpen((open) => !open)} className={cn(OPENER, '-ml-1.5')}>
                           Who gets it <ChevronDown className={cn('size-3.5 transition-transform', whoOpen && 'rotate-180')} aria-hidden="true" />
                         </button>
-                        <p id={whoId} hidden={!whoOpen} className="rounded-lg border p-2 text-muted-foreground">
+                        {/* Plain words 6px under the opener, as the test note sits under the test box: the group's 4px under the opener and 2px here. */}
+                        <p id={whoId} hidden={!whoOpen} className="mt-0.5 text-sm text-ink">
                           Every address on an account with an active membership, once. Left out: {newsletter.summary.turnedOff + newsletter.summary.stoppedAll} who turned the newsletter off and {newsletter.summary.doNotSend} that no longer receive mail.
                         </p>
                         <p>It goes from {newsletter.from}.</p>
@@ -729,7 +764,7 @@ export function AdminEmailPage({ embedded = false, mediaManager }: { embedded?: 
 
               <div>
                 <Label className={nl ? 'text-sm' : 'text-xs'}>Subject</Label>
-                <Input className="mt-1" value={subject} onChange={(e) => setSubject(e.target.value)} placeholder="e.g. Fall tournament registration is open" />
+                <Input className={cn('mt-1', nl && PHONE_TALL)} value={subject} onChange={(e) => setSubject(e.target.value)} placeholder="e.g. Fall tournament registration is open" />
               </div>
 
               <div>
@@ -741,7 +776,7 @@ export function AdminEmailPage({ embedded = false, mediaManager }: { embedded?: 
                   </button>
                 </div>
                 <div className="mt-1">
-                  <RichTextEditor content={body} onChange={setBody} />
+                  <RichTextEditor content={body} onChange={setBody} tallOnPhone={nl} />
                 </div>
                 {showPreview && (
                   <div className="mt-3">

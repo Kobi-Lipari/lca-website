@@ -15,8 +15,13 @@
 //   definition is as it was; it holds no CHECK and no data statement;
 // - run a second time it stops at its first statement and changes nothing,
 //   so it runs once, as wrangler runs every migration;
-// - drizzle/meta: the journal's eleventh entry and 0010_snapshot.json, which
-//   follows 0009's and differs from it by the one table alone.
+// - run last, after the clubs work's 0065 to 0069, as production and the
+//   preview database take it, it adds the same table, index and keys and
+//   changes nothing else, so it does not depend on its order with them;
+// - drizzle/meta: the journal entry its header names, found by its tag
+//   (0015_newsletter_issues since main was brought in, staged again after
+//   the clubs work's 0010 to 0014), and that entry's snapshot, which follows
+//   the one before it and differs from it by the one table alone.
 // Every name and address here is made up.
 import { readdirSync, readFileSync } from 'node:fs'
 import { join } from 'node:path'
@@ -210,6 +215,31 @@ describe('0061\'s table and its rules', () => {
   })
 })
 
+describe('0061 run last, after the clubs work\'s 0065 to 0069, as production and the preview database take it', () => {
+  it('adds the same table, index and keys on a database built from every other migration, and changes nothing else', () => {
+    const others = migrationFiles().filter((f) => f !== FILE)
+    expect(others.filter((f) => f > FILE)).toEqual(expect.arrayContaining(['0065_club_regions.sql', '0069_club_check_marks.sql']))
+    const db = openMigratedDb({ files: others })
+    insertRows(db)
+    const rowsBefore = contents(db)
+    const schemaBefore = schemaRows(db)
+    applyMigrations(db, [FILE])
+    const schemaAfter = schemaRows(db)
+    expect(foreignKeysOn(db)).toBe(1)
+    expect(all(db, 'PRAGMA foreign_key_check')).toEqual([])
+    const added = Object.keys(schemaAfter).filter((key) => !(key in schemaBefore))
+    expect(added.sort()).toEqual(['index newsletter_issues_one_open', 'index sqlite_autoindex_newsletter_issues_1', `table ${TABLE}`])
+    for (const [key, row] of Object.entries(schemaBefore)) expect(schemaAfter[key], key).toEqual(row)
+    const rowsAfter = contents(db)
+    for (const table of Object.keys(rowsBefore)) expect(rowsAfter[table], table).toEqual(rowsBefore[table])
+    expect(rowsAfter[TABLE]).toEqual([])
+    // The same table, index and keys as the files give in the order of their names, which a new database takes.
+    const inOrder = schemaRows(openMigratedDb())
+    for (const key of added) expect(schemaAfter[key], key).toEqual(inOrder[key])
+    expect(columnsOf(db, TABLE).map((c) => c.name)).toEqual(COLUMNS)
+  })
+})
+
 // ── drizzle/meta ─────────────────────────────────────────────────────
 
 const META = join(__dirname, '../../drizzle/meta')
@@ -226,12 +256,19 @@ const journal = JSON.parse(readFileSync(join(META, '_journal.json'), 'utf8')) as
   entries: Array<{ idx: number; version: string; when: number; tag: string; breakpoints: boolean }>
 }
 
+/** The journal's entry for 0061, found by its tag, so a merge that stages it again under a later number needs no new search. */
+const entries = journal.entries.filter((e) => e.tag.endsWith('_newsletter_issues'))
+const idx = entries[0]?.idx ?? -1
+
 describe('drizzle/meta records 0061', () => {
-  it('gives the journal an eleventh entry, 0010_newsletter_issues, written after 0009\'s, in the form of the others', () => {
+  it('gives the journal one entry for it, found by its tag, written after the one before it, in the form of the others', () => {
     expect(journal.entries.map((e) => e.idx)).toEqual(journal.entries.map((_, i) => i))
-    const entry = journal.entries[10]
-    expect(entry).toEqual({ idx: 10, version: '6', when: expect.any(Number), tag: '0010_newsletter_issues', breakpoints: true })
-    expect(entry.when).toBeGreaterThan(journal.entries[9].when)
+    expect(entries).toHaveLength(1)
+    const entry = entries[0]
+    expect(entry).toEqual({ idx, version: '6', when: expect.any(Number), tag: `${String(idx).padStart(4, '0')}_newsletter_issues`, breakpoints: true })
+    // Staged again as 0015 when main was brought in, after the clubs work's 0010 to 0014.
+    expect(entry.tag).toBe('0015_newsletter_issues')
+    expect(entry.when).toBeGreaterThan(journal.entries[idx - 1].when)
     // The generator ran on Friday, November 13, 2026, in UTC, or later.
     expect(entry.when).toBeGreaterThanOrEqual(Date.UTC(2026, 10, 13))
     // The migration's header names the staged file the journal's tag names, and says it was written by the generator.
@@ -241,19 +278,19 @@ describe('drizzle/meta records 0061', () => {
     expect(text).toContain('Written by drizzle-kit from functions/db/schema.ts (npm run db:generate)')
   })
 
-  it('makes 0010_snapshot.json follow 0009\'s, and no other snapshot follow 0009\'s', () => {
+  it('makes its snapshot follow the one before it, and no other snapshot follow that one', () => {
     const files = readdirSync(META).filter((f) => f.endsWith('_snapshot.json')).sort()
-    expect(files.slice(0, 11)).toEqual(Array.from({ length: 11 }, (_, i) => `${String(i).padStart(4, '0')}_snapshot.json`))
+    expect(files).toEqual(journal.entries.map((e) => `${String(e.idx).padStart(4, '0')}_snapshot.json`))
     const snapshots = files.map((_, i) => snapshot(i))
     expect(new Set(snapshots.map((s) => s.id)).size).toBe(snapshots.length)
-    expect(snapshot(10).prevId).toBe(snapshot(9).id)
-    expect(snapshots.filter((s) => s.prevId === snapshot(9).id).map((s) => s.id)).toEqual([snapshot(10).id])
-    expect([snapshot(10).version, snapshot(10).dialect]).toEqual([snapshot(9).version, snapshot(9).dialect])
+    expect(snapshot(idx).prevId).toBe(snapshot(idx - 1).id)
+    expect(snapshots.filter((s) => s.prevId === snapshot(idx - 1).id).map((s) => s.id)).toEqual([snapshot(idx).id])
+    expect([snapshot(idx).version, snapshot(idx).dialect]).toEqual([snapshot(idx - 1).version, snapshot(idx - 1).dialect])
   })
 
-  it('differs from 0009\'s by the one table alone, its columns, keys and index as the migration writes them', () => {
-    const was = snapshot(9)
-    const now = snapshot(10)
+  it('differs from the snapshot before it by the one table alone, its columns, keys and index as the migration writes them', () => {
+    const was = snapshot(idx - 1)
+    const now = snapshot(idx)
     const rest = (s: Snapshot) => {
       const copy = structuredClone(s) as Partial<Snapshot>
       delete copy.id

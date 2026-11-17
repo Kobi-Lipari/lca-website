@@ -40,6 +40,10 @@
 //   own record has arrived; and an officer who types Group email's address
 //   keeps it while the answer is on the way, and goes to Admin once it says
 //   no, with no wait for an officer who holds no seat.
+// - Before the switch-on (F5), the header's badge reads "View only, except
+//   the newsletter" for an officer who holds the seat, with mailLists on and
+//   the answer yes, and "View only" for everyone else, as today, byte for
+//   byte with mailLists off.
 // Every name, address, subject and seat title here is made up but the seat's
 // own, "Media manager", whose link name the code keys on.
 import { act, cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react'
@@ -505,7 +509,8 @@ describe('an LCA officer who holds the Media manager seat (checkpoint M\'s revie
     for (const section of ['Members', 'Board seats', 'Tournaments', 'Clubs', 'News posts', 'Group email', 'Site banners', 'Support tickets', 'Admin activity']) {
       expect(sections, section).toContain(section)
     }
-    expect(screen.getByText('View only')).toBeTruthy()
+    // Since the fix before the switch-on (F5) their header's badge says the newsletter is theirs to send.
+    expect(screen.getByText('View only, except the newsletter')).toBeTruthy()
     // The media manager's form: the newsletter's tab alone, no Specific people, no Send history, and no box to type an address in.
     await screen.findByText('9 addresses will get it.')
     expect(screen.getAllByRole('tab').map((t) => t.textContent)).toEqual(['The LCA newsletter list'])
@@ -729,6 +734,63 @@ describe('the recent sends under the media manager\'s form, after the pictures o
       expect(screen.queryByText('No campaigns sent yet.'), role).toBeNull()
       expect(screen.queryByRole('heading', { name: 'Send history' }), role).toBeNull()
       cleanup()
+    }
+  }, 60_000)
+})
+
+describe('the header\'s badge for an LCA officer who holds the Media manager seat, before the switch-on (F5)', () => {
+  const BADGE = 'rounded-full border border-white/25 px-2.5 py-0.5 text-xs text-white/85'
+  /** The words of the header's badge in a drawing, or null when the header draws none. */
+  const badgeOf = (markup: string) => new RegExp(`<span class="${BADGE.replace(/[./]/g, '\\$&')}">([^<]*)</span>`).exec(markup)?.[1] ?? null
+
+  beforeEach(() => {
+    on('GET', '/api/admin/members', { status: 200, body: { members: [] } })
+    on('GET', '/api/clubs', { status: 200, body: { clubs: [] } })
+    on('GET', '/api/admin/board-seats', { status: 200, body: { seats: [], holders: [], history: [] } })
+    on('GET', '/api/admin/campaigns', { status: 200, body: { campaigns: [] } })
+  })
+
+  it('reads "View only, except the newsletter" for an officer who holds the seat, with mailLists on and the seat\'s answer true', async () => {
+    flags.mailLists = true
+    const who = person({ role: 'lca_officer', seats: [MEDIA_MANAGER] })
+    for (const path of ['/admin', '/admin/members', '/admin/email']) {
+      expect(badgeOf((await drawnAdmin(AdminPage, path, who, { mediaManager: true, secondFactor: true })).markup), path).toBe('View only, except the newsletter')
+    }
+    // And in the whole site, with the route's own answer.
+    on('GET', ASK_URL, { status: 200, body: { mediaManager: true, secondFactor: true } })
+    await site('/admin/email', person({ role: 'lca_officer', seats: [MEDIA_MANAGER] }))
+    await groupEmail()
+    expect(screen.getByText('View only, except the newsletter')).toBeTruthy()
+    expect(screen.queryByText('View only')).toBeNull()
+  }, 60_000)
+
+  it('reads "View only" for every other officer, for an officer while the answer is on the way, and for an LCA observer, with mailLists on', async () => {
+    flags.mailLists = true
+    const holder = person({ role: 'lca_officer', seats: [MEDIA_MANAGER] })
+    expect(badgeOf((await drawnAdmin(AdminPage, '/admin/members', holder, { mediaManager: false, secondFactor: true })).markup)).toBe('View only')
+    expect(badgeOf((await drawnAdmin(AdminPage, '/admin/members', person({ role: 'lca_officer' }))).markup)).toBe('View only')
+    expect(badgeOf((await drawnAdmin(AdminPage, '/admin/members', person({ role: 'lca_observer', seats: [MEDIA_MANAGER] }), { mediaManager: true, secondFactor: true })).markup)).toBe('View only')
+    // While the answer is on the way the route hands down asking, with no yes.
+    const later = held({ status: 200, body: { mediaManager: true, secondFactor: true } })
+    on('GET', ASK_URL, later.answer)
+    await site('/admin/members', person({ role: 'lca_officer', seats: [MEDIA_MANAGER] }))
+    await screen.findByRole('heading', { level: 2, name: 'Members' }, { timeout: 10_000 })
+    expect(screen.getByText('View only')).toBeTruthy()
+    await later.release()
+    await settle()
+    expect(screen.getByText('View only, except the newsletter')).toBeTruthy()
+  }, 60_000)
+
+  it('reads "View only" byte for byte as today\'s with mailLists off, beside the copy of Admin as stored, even with an answer of yes handed down', async () => {
+    flags.mailLists = false
+    for (const role of ['lca_officer', 'lca_observer'] as const) {
+      const who = person({ role, seats: [MEDIA_MANAGER] })
+      for (const answer of [undefined, { mediaManager: true, secondFactor: true }]) {
+        const today = await drawnAdmin(AdminPageToday, '/admin/members', who, answer)
+        const now = await drawnAdmin(AdminPage, '/admin/members', who, answer)
+        expect(now, role).toEqual(today)
+        expect(badgeOf(now.markup), role).toBe('View only')
+      }
     }
   }, 60_000)
 })

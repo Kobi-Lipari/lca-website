@@ -86,10 +86,14 @@ describe('the generate guard reads every spelling', () => {
 })
 
 describe('scripts/db/build-local-sqlite.ts', () => {
-  it('writes one database holding the 37 tables and the eight triggers, built from all 62 migrations', () => {
+  // Each build applies every migration, so these two cases grow with each one added: about a second here, and past the
+  // default five on a busy runner. They get room, as the repository's other long cases do.
+  const BUILD_TIME = 30_000
+
+  it('writes one database holding the 43 tables and the eight triggers, built from all 67 migrations', () => {
     const out = join(scratch(), 'nested/introspect.sqlite')
-    expect(buildLocalSqlite(out)).toEqual({ files: 62, tables: 37 })
-    expect(migrationFiles()).toHaveLength(62)
+    expect(buildLocalSqlite(out)).toEqual({ files: 67, tables: 43 })
+    expect(migrationFiles()).toHaveLength(67)
     const db = new DatabaseSync(out, { readOnly: true })
     const names = (type: string) => (db.prepare('SELECT name FROM sqlite_master WHERE type = ? ORDER BY name').all(type) as Array<{ name: string }>).map((r) => r.name)
     expect(names('trigger')).toEqual([
@@ -101,7 +105,7 @@ describe('scripts/db/build-local-sqlite.ts', () => {
     expect(names('view')).toEqual([])
     expect(names('table')).toEqual(expect.arrayContaining(['members', 'tournaments', 'tournament_directors', 'tournament_sections', 'tournament_schedules', 'tournament_schedule_rounds']))
     db.close()
-  })
+  }, BUILD_TIME)
 
   it('starts clean every time', () => {
     const out = join(scratch(), 'introspect.sqlite')
@@ -109,11 +113,11 @@ describe('scripts/db/build-local-sqlite.ts', () => {
     const db = new DatabaseSync(out)
     db.exec('CREATE TABLE leftover (id text)')
     db.close()
-    expect(buildLocalSqlite(out).tables).toBe(37)
+    expect(buildLocalSqlite(out).tables).toBe(43)
     const again = new DatabaseSync(out, { readOnly: true })
     expect(again.prepare("SELECT COUNT(*) AS n FROM sqlite_master WHERE name = 'leftover'").get()).toEqual({ n: 0 })
     again.close()
-  })
+  }, BUILD_TIME)
 
   it('is ignored by git, while the drizzle snapshot is not', () => {
     const ignored = (p: string) => spawnSync('git', ['check-ignore', '-q', p], { cwd: ROOT }).status === 0
@@ -143,7 +147,7 @@ describe('drizzle.config.ts filter, run through drizzle-kit pull', () => {
     expect(schema).toContain('sqliteTable("members"')
     expect(schema).toContain('counter_note')
     expect(schema).not.toMatch(/d1_migrations|_cf_KV|sqlite_sequence/)
-    expect((schema.match(/= sqliteTable\(/g) ?? []).length).toBe(38)
+    expect((schema.match(/= sqliteTable\(/g) ?? []).length).toBe(44)
   }, 60_000)
 })
 
@@ -192,12 +196,12 @@ describe('the runners', () => {
     expect(existsSync(join(ROOT, 'migrations/meta'))).toBe(false)
   })
 
-  it('does not change what wrangler runs: 62 files, one duplicate 0022 prefix, the last 0061', () => {
+  it('does not change what wrangler runs: 67 files, one duplicate 0022 prefix, the last 0069', () => {
     const sql = readdirSync(join(ROOT, 'migrations')).filter((f) => f.endsWith('.sql')).sort()
-    expect(sql).toHaveLength(62)
+    expect(sql).toHaveLength(67)
     expect(sql[0].startsWith('0001_')).toBe(true)
     expect(sql.filter((f) => f.startsWith('0022_'))).toHaveLength(2)
-    expect(sql.at(-1)).toBe('0061_newsletter_issues.sql')
+    expect(sql.at(-1)).toBe('0069_club_check_marks.sql')
   })
 })
 

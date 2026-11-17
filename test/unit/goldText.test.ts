@@ -759,7 +759,10 @@ describe('the gold guard on the tree', () => {
     expect(result.stylePill).toEqual([])
     // clubTextColor gives the gold-ink token for brand gold, and each of the five sits on a light ground.
     expect(result.styleInk).toEqual([
-      'src/pages/AdminClubPage.tsx:406 the style colour color: clubTextColor(color) -> light',
+      // Line 406 until WS09 step 7, whose six lines above it (the editor's import, its
+      // switch, its places and its comment) move it to 412, and to 428 in
+      // checkpoint T's review, whose move to the club's id's address sits above it.
+      'src/pages/AdminClubPage.tsx:428 the style colour color: clubTextColor(color) -> light',
       // Lines 239, 293 and 335 until the Phase 0 trim, whose switch import, its
       // reading and the contact link's branches above them move them to 248, 302 and 349.
       'src/pages/ClubDetailPage.tsx:248 the style colour color: textColor -> light',
@@ -817,9 +820,9 @@ describe('the gold guard on the tree', () => {
       `src/components/layout/MobileMenu.tsx:${sheet} <AppearanceControl> on=light -> light`,
       `src/components/layout/SiteFooter.tsx:${newFooter} <AppearanceControl> on=navy (its default) -> navy`,
       'src/pages/AboutPage.tsx:47 <ThickThinRule> on=light (its default) -> light',
-      'src/pages/AdminEmailPage.tsx:717 <MultiSelectDropdown> on=light (its default) -> light',
-      'src/pages/AdminEmailPage.tsx:718 <MultiSelectDropdown> on=light (its default) -> light',
-      'src/pages/AdminEmailPage.tsx:724 <MultiSelectDropdown> on=light (its default) -> light',
+      'src/pages/AdminEmailPage.tsx:752 <MultiSelectDropdown> on=light (its default) -> light',
+      'src/pages/AdminEmailPage.tsx:753 <MultiSelectDropdown> on=light (its default) -> light',
+      'src/pages/AdminEmailPage.tsx:759 <MultiSelectDropdown> on=light (its default) -> light',
       'src/pages/AnnualMeetingPage.tsx:135 <ThickThinRule> on=light (its default) -> light',
       'src/pages/BoardPage.tsx:334 <ThickThinRule> on=light (its default) -> light',
       'src/pages/BoardPage.tsx:390 <ThickThinRule> on=light (its default) -> light',
@@ -1244,7 +1247,7 @@ describe('the gold guard on the tree without its allowlist, and on a copy of the
     [
       'the audit log\'s rows, which read six listed badges, moved onto navy',
       { file: 'src/areas/admin/components/AuditLogPanel.tsx', from: 'rounded-xl border bg-card`}>', to: 'rounded-xl border bg-brand-navy`}>' },
-      'src/areas/admin/components/AuditLogPanel.tsx:272 ',
+      'src/areas/admin/components/AuditLogPanel.tsx:275 ',
       'reads text-gold-ink-badge through meta.className on a navy ground',
     ],
   ])('fails on %s', (_, change, where, message) => {

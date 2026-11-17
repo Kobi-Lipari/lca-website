@@ -411,8 +411,9 @@ describe('the plain-language rules over the chooser and its question', () => {
       expect(text).not.toMatch(oldName)
       expect(text).not.toMatch(/\d\.5\b/)
       expect(text).not.toMatch(/\b\d{1,2}:\d{2}\b(?!\s?[AP]M)/)
+      // A refusal's time on an earlier day than the run's reads "on Monday, November 16, 2026 at 2:17 PM", its weekday in full.
       for (const day of text.matchAll(/\b(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]* \d{1,2}\b/g)) {
-        expect(text.slice(Math.max(0, day.index - 5), day.index), day[0]).toMatch(/(?:Mon|Tue|Wed|Thu|Fri|Sat|Sun), $/)
+        expect(text.slice(Math.max(0, day.index - 11), day.index), day[0]).toMatch(/\b(?:Mon|Tue|Wed|Thu|Fri|Sat|Sun)[a-z]*, $/)
       }
       // The tournament templates are the tournament send-outs'; the two lines under the board's chooser are Help's.
       expect(text).not.toMatch(/tournament announcement/i)

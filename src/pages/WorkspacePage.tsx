@@ -32,6 +32,7 @@ import {
 } from '@/lib/api'
 import { ROLE_LABELS, WORKSPACE_ROLES } from '@/areas/admin/roles'
 import { FEATURES } from '@/lib/features'
+import { keepersOn } from '@/areas/clubs/switches'
 import { cn } from '@/lib/utils'
 import { usePageTitle } from '@/hooks/usePageTitle'
 import { GOLD_BUTTON as GOLD } from '@/lib/brand'
@@ -139,6 +140,8 @@ function MyClubPanel({ clubId, onShowEvents }: { clubId: string; onShowEvents: (
   if (!data) return <p className="text-muted-foreground" role="status">Loading…</p>
 
   const { club, roster, officers, tournaments } = data
+  // With clubKeepers on, editing the club opens Your club's page, by its page address or, with none, its id (WS09 step 9).
+  const editTo = keepersOn() ? `/my/club/${club.slug || club.id}` : `/admin/clubs/${club.id}`
   const upcoming = tournaments.filter((t) => t.status !== 'completed')
   const drafts = tournaments.filter((t) => t.is_visible === 0 && t.status !== 'completed')
 
@@ -169,7 +172,7 @@ function MyClubPanel({ clubId, onShowEvents }: { clubId: string; onShowEvents: (
               <Link to={`/clubs/${club.id}`}><ExternalLink className="mr-1.5 size-3.5" /> Public page</Link>
             </Button>
             <Button asChild size="sm" className={GOLD}>
-              <Link to={`/admin/clubs/${club.id}`}>Edit club</Link>
+              <Link to={editTo}>Edit club</Link>
             </Button>
           </div>
         </div>
@@ -177,7 +180,7 @@ function MyClubPanel({ clubId, onShowEvents }: { clubId: string; onShowEvents: (
         {gaps.length > 0 && (
           <p className="mt-4 rounded-lg bg-muted/40 px-3 py-2 text-sm text-muted-foreground">
             Your public page is missing {listPhrase(gaps)}.{' '}
-            <Link to={`/admin/clubs/${club.id}`} className="font-medium text-ink underline-offset-2 hover:underline">Add {gaps.length > 1 ? 'them' : 'it'}</Link>
+            <Link to={editTo} className="font-medium text-ink underline-offset-2 hover:underline">Add {gaps.length > 1 ? 'them' : 'it'}</Link>
           </p>
         )}
       </div>

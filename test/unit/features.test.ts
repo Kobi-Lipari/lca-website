@@ -8,10 +8,15 @@
 // it is turned on with CREATION_ROLES_ON in functions/utils/events/creation.ts,
 // in the same change that takes its name out of WS08
 // (test/unit/creation-switch.test.ts holds the two equal). WS16's switches,
-// mailLists and mailPage, are held off in WS16 below; each is turned on
-// with its constant in functions/utils/mail/switches.ts, MAIL_LISTS_ON and
-// MAIL_PAGE_ON, in the same change that takes its name out of WS16
-// (test/unit/mail-switches.test.ts holds each pair equal).
+// mailLists and mailPage, are each turned on with its constant in
+// functions/utils/mail/switches.ts, MAIL_LISTS_ON and MAIL_PAGE_ON, in the
+// same change that takes its name out of WS16 below
+// (test/unit/mail-switches.test.ts holds each pair equal): mailLists is out
+// since the switch-on change, and mailPage is held off there.
+// WS09's three switches, newClubs, clubKeepers and regionEvents, are held off
+// in WS09 below; each is turned on with its constant in
+// functions/utils/clubs/pages.ts, in the same change that takes its name out
+// of WS09, and in the order test/unit/club-pages-switch.test.ts holds.
 import { describe, expect, it } from 'vitest'
 import { FEATURES } from '@/lib/features'
 
@@ -40,8 +45,11 @@ const EARLIER = ['clubTournaments', 'tournamentQuickFilters', 'externalTags'] as
 /** The first part of WS08, tournament creation: its switch, held off until that part is done. */
 const WS08 = ['standingDirectors'] as const
 
-/** WS16, the mail engine and the LCA newsletter, and the newsletter's own page: each switch held off until it is switched on. */
-const WS16 = ['mailLists', 'mailPage'] as const
+/** WS16, the mail engine and the LCA newsletter, and the newsletter's own page: each switch held off until it is switched on; mailLists left the list at the switch-on change. */
+const WS16 = ['mailPage'] as const
+
+/** WS09, clubs as living listings: its three switches, held off until each is turned on in its order. */
+const WS09 = ['newClubs', 'clubKeepers', 'regionEvents'] as const
 
 describe('feature switches', () => {
   it.each(PHASE_0)('%s exists, is a boolean and is off', (key) => {
@@ -62,6 +70,12 @@ describe('feature switches', () => {
     expect(FEATURES[key]).toBe(false)
   })
 
+  it.each(WS09)('%s exists, is a boolean and is off', (key) => {
+    expect(Object.hasOwn(FEATURES, key)).toBe(true)
+    expect(typeof FEATURES[key]).toBe('boolean')
+    expect(FEATURES[key]).toBe(false)
+  })
+
   // Only that they exist: these switches are turned on outside the redesign.
   it.each(EARLIER)('%s is still there and is a boolean', (key) => {
     expect(Object.hasOwn(FEATURES, key)).toBe(true)
@@ -69,8 +83,8 @@ describe('feature switches', () => {
   })
 
   // A subset check, not an exact one: later work adds its own switches here.
-  it('holds every earlier switch, every Phase 0 switch, WS08\'s and WS16\'s', () => {
-    expect(Object.keys(FEATURES)).toEqual(expect.arrayContaining([...EARLIER, ...PHASE_0, ...WS08, ...WS16]))
+  it('holds every earlier switch, every Phase 0 switch, WS08\'s, WS16\'s and WS09\'s', () => {
+    expect(Object.keys(FEATURES)).toEqual(expect.arrayContaining([...EARLIER, ...PHASE_0, ...WS08, ...WS16, ...WS09]))
   })
 
   it('runs in node, the default test environment', () => {

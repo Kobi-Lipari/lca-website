@@ -2,7 +2,7 @@
 import type { Env } from '../../types'
 import { isResponse, requireAdmin, requireAdminView } from '../../utils/auth'
 import { errorResponse, handleOptions, jsonResponse, parseJsonBody } from '../../utils/response'
-import { applyPostEdits, POST_LIST_COLUMNS, uniqueSlug, type PostBody } from '../../utils/posts'
+import { applyPostEdits, checkPostBody, POST_LIST_COLUMNS, uniqueSlug, type PostBody } from '../../utils/posts'
 
 export const onRequestOptions: PagesFunction<Env> = async () => handleOptions()
 
@@ -23,11 +23,15 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
   if (isResponse(authed)) return authed
 
   const body = await parseJsonBody<PostBody>(context.request)
+  // Hold every field to its kind before the draft row is written, so a body
+  // made by hand cannot throw past the title read below or leave a row behind.
+  const fieldError = checkPostBody(body)
+  if (fieldError) return errorResponse(fieldError, 400)
   const title = body?.title?.trim()
-  if (!body || !title) return errorResponse('A title is required', 400)
+  if (!title) return errorResponse('A title is required', 400)
 
   const id = `post-${crypto.randomUUID()}`
-  const slug = await uniqueSlug(context.env.DB, body.slug?.trim() || title)
+  const slug = await uniqueSlug(context.env.DB, body?.slug?.trim() || title)
   await context.env.DB.prepare(
     `INSERT INTO lca_posts (id, slug, title, created_by, updated_by) VALUES (?, ?, ?, ?, ?)`,
   ).bind(id, slug, title, authed.member.id, authed.member.id).run()

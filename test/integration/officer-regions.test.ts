@@ -181,7 +181,11 @@ describe('regional representatives', () => {
     const mine = await invoke(mySeatsGet, { as: rep })
     const body = await mine.json<{ seats: { id: string; regions: string[] }[]; managedClubs: { id: string }[] }>()
     expect(body.seats[0].regions).toEqual(['Bayou Region', 'South Central Louisiana'])
-    expect(body.managedClubs.map((c) => c.id).sort()).toEqual([bayou, southCentral].sort())
+    // Every club in the two regions, the clubs migration 0065 places there
+    // among them, and none elsewhere or without a region.
+    const inRegions = (await env.DB.prepare("SELECT id FROM clubs WHERE region IN ('Bayou Region', 'South Central Louisiana')").all<{ id: string }>()).results.map((r) => r.id)
+    expect(inRegions).toEqual(expect.arrayContaining([bayou, southCentral]))
+    expect(body.managedClubs.map((c) => c.id).sort()).toEqual(inRegions.sort())
 
     // The member's own account is untouched by the seat.
     const row = await env.DB.prepare('SELECT role, club_id FROM members WHERE id = ?').bind(rep).first<{ role: string; club_id: string | null }>()

@@ -136,7 +136,7 @@ const EXTENDED: ReadonlyArray<readonly [string, string, string]> = [
 const entry = (list: string, name: string) => entries(list === 'decisions' ? decisions : followUps).find((l) => head(l) === name) ?? ''
 
 describe("REDESIGN_STATUS.md, checkpoint M's review: the section's new bullets", () => {
-  it('ends checkpoint M\'s section with the review\'s bullets, in order, after the pull request\'s text, each once', () => {
+  it('ends checkpoint M\'s section with the review\'s bullets, in order, after the pull request\'s text, each once, but for the switch-on change\'s one line after them', () => {
     const names = ["- **The pull request's text.**", "- **The review's fixes.**", "- **Files of the review's fixes.**", "- **Pins moved in the review's fixes.**", "- **Build after the review's fixes.**", "- **Worker after the review's fixes.**", '- Checks at the end of the checkpoint:']
     const at = names.map((n) => checkpoint.indexOf(`\n${n}`))
     for (const [i, n] of names.entries()) {
@@ -144,7 +144,8 @@ describe("REDESIGN_STATUS.md, checkpoint M's review: the section's new bullets",
       expect(checkpoint.split('\n').filter((l) => l.startsWith(n)), n).toHaveLength(1)
     }
     expect([...at].sort((a, b) => a - b)).toEqual(at)
-    expect(checkpoint.trimEnd().split('\n').at(-1)!.startsWith('- Checks at the end of the checkpoint:')).toBe(true)
+    // The switch-on change writes its one line after the Checks line, as checkpoint M's section asks.
+    expect(checkpoint.trimEnd().split('\n').filter((l) => !l.startsWith('- **Switched on (WS16 step 8).**')).at(-1)!.startsWith('- Checks at the end of the checkpoint:')).toBe(true)
   })
 
   it('gives each item of the round by its number, in order, a sub-bullet of its own, and K\'s items under K1', () => {
@@ -302,9 +303,14 @@ describe("REDESIGN_STATUS.md, checkpoint M's review: files, pins, build, worker 
 })
 
 describe("REDESIGN_STATUS.md, checkpoint M's review: the opening, the PR line and the pull request's text", () => {
-  it('names draft pull request 126 in the PR line and in the section\'s first sentence, with the day it was opened', () => {
-    expect(prLine).toContain('from draft pull request 126, opened from this branch on Thursday, November 12, 2026 once WS16 step 8 was built')
-    expect(opening.startsWith('**Not merged yet: checkpoint M waits for its merge into `main`** (draft pull request 126). Draft pull request 126 was opened from this branch on Thursday, November 12, 2026')).toBe(true)
+  it('names draft pull request 126 in the PR line and in the section\'s first sentence, with the day it was opened, or once merged its merge', () => {
+    // Before the merge, the day it was opened; once merged, the merge commit and its day, as the record of the merge writes them.
+    const opened = prLine.includes('from draft pull request 126, opened from this branch on Thursday, November 12, 2026 once WS16 step 8 was built')
+    const merged = prLine.includes('was draft pull request 126, merged into `main` as `d2c5ec0` on Thursday, November 12, 2026')
+    expect(opened || merged, prLine).toBe(true)
+    const waiting = opening.startsWith('**Not merged yet: checkpoint M waits for its merge into `main`** (draft pull request 126). Draft pull request 126 was opened from this branch on Thursday, November 12, 2026')
+    const done = opening.startsWith('**Merged into `main` as `d2c5ec0` on Thursday, November 12, 2026 at 3:26 PM UTC** (pull request 126, a merge commit on head `1cf41c2`)')
+    expect(waiting || done, opening.slice(0, 160)).toBe(true)
   })
 
   it('names in the opening, in the same sentence, the three changes that wait for neither switch', () => {

@@ -3,7 +3,7 @@ import { Navigate, useLocation, useParams } from 'react-router-dom'
 
 import { useAuth } from '@/contexts/auth-context'
 import { MediaManagerAnswerContext } from '@/areas/admin/mediaManagerAnswer'
-import { canManageClub, isViewOnlyAdmin, toolsHomeFor, type MemberRole } from '@/areas/admin/roles'
+import { canManageClub, isViewOnlyAdmin, keepsAnyClub, toolsHomeFor, type MemberRole } from '@/areas/admin/roles'
 import { useMediaManager } from '@/areas/admin/useMediaManager'
 import { FEATURES } from '@/lib/features'
 
@@ -30,6 +30,24 @@ interface RoleProtectedRouteProps {
    * nothing and nothing is asked.
    */
   allowMediaManager?: boolean
+  /**
+   * Lets in only a person who keeps a club: an LCA admin, a club's rep who
+   * has a club, or a member whose regional seat covers a club, as
+   * canManageClub admits them. The route's address names the club by its
+   * page address, which the sign-in does not load, so the page itself checks
+   * the club it is answered against the same rule, and the server decides
+   * (WS09 step 9).
+   */
+  keepsAClub?: boolean
+  /**
+   * Lets in only a holder of an active regional seat, whatever their role,
+   * or an LCA admin, as the server's My region does: the seats the sign-in
+   * loads from GET /api/board/my-seats are each held now on an active seat,
+   * so one of the regional representative's kind is the server's rule. A
+   * guest is let in by no seat. The server decides, and the page says its
+   * refusal in words (WS09 step 11).
+   */
+  requireSeat?: boolean
 }
 
 /** What the route shows while a session, or the media manager's answer, is on the way. */
@@ -53,6 +71,13 @@ function canAccessTournament(
   return false
 }
 
+/** An LCA admin, or a member other than a guest who holds an active regional seat: the rule of GET /api/workspace/region. */
+function holdsRegionalSeat(role: MemberRole, accountRole: string | null | undefined, seats: ReadonlyArray<{ category: string }>): boolean {
+  if (role === 'lca_admin') return true
+  if (accountRole === 'guest') return false
+  return seats.some((seat) => seat.category === 'regional_rep')
+}
+
 export function RoleProtectedRoute({
   children,
   roles,
@@ -61,6 +86,8 @@ export function RoleProtectedRoute({
   fallbackToToolsHome,
   allowDirectors,
   allowMediaManager,
+  keepsAClub,
+  requireSeat,
 }: RoleProtectedRouteProps) {
   const {
     user,
@@ -70,6 +97,7 @@ export function RoleProtectedRoute({
     memberLoading,
     directedTournamentIds,
     managedClubs,
+    seats,
     mfaRequired,
   } = useAuth()
   const location = useLocation()
@@ -88,6 +116,14 @@ export function RoleProtectedRoute({
 
   const regionalClubIds = managedClubs.map((c) => c.id)
   if (requireClubMatch && id && !isViewOnlyAdmin(role) && !canManageClub(role, member?.club_id, id, regionalClubIds)) {
+    return <Navigate to="/dashboard" replace />
+  }
+
+  if (keepsAClub && !keepsAnyClub(role, member?.club_id, regionalClubIds)) {
+    return <Navigate to="/dashboard" replace />
+  }
+
+  if (requireSeat && !holdsRegionalSeat(role, member?.role, seats)) {
     return <Navigate to="/dashboard" replace />
   }
 

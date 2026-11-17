@@ -42,7 +42,12 @@ const DATE = /\b(January|February|March|April|May|June|July|August|September|Oct
 const WEEKDAY = /(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday), $/
 
 const HEADING = '## Phase 0: the public-answer trim'
-const section = status.slice(status.indexOf(HEADING))
+// The trim's section runs to the next "## " heading: it was the last of the
+// file, and read to the end, until the News posts' cleaner's section came
+// after it.
+const trimStart = status.indexOf(HEADING)
+const afterTrim = status.indexOf('\n## ', trimStart + HEADING.length)
+const section = afterTrim < 0 ? status.slice(trimStart) : status.slice(trimStart, afterTrim)
 const between = (text: string, from: string, to: string) => {
   const start = text.indexOf(from)
   if (start < 0) return ''
@@ -92,10 +97,10 @@ const written = [
 ]
 
 describe('REDESIGN_STATUS.md, the Phase 0 trim: where its section stands', () => {
-  it('is one section, after WS15, and the last of the file', () => {
+  it('is one section, after WS15, and followed by the News posts\' cleaner\'s section', () => {
     expect(status.split(HEADING)).toHaveLength(2)
     expect(status.indexOf(HEADING)).toBeGreaterThan(status.indexOf('\n## WS15: Scanner 2.0'))
-    expect(section.slice(HEADING.length)).not.toMatch(/\n## /)
+    expect(status.slice(afterTrim + 1).startsWith('## Phase 0: the News posts\' cleaner\n')).toBe(true)
   })
 
   it('opens with its status, branch and pull request, not merged yet, in words other than the merge-pending phrase', () => {

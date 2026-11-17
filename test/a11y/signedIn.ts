@@ -16,6 +16,11 @@
 //   unless the person in test/unit/fixtures/navPersonas.ts gives a body; no
 //   page calls either yet, and the second, which is public, is answered for
 //   the visitor who is signed out as well
+// - GET /api/me/media-manager, answered for everyone signed in as the server
+//   answers anyone who does not hold the Media manager seat, which no one
+//   here holds: not the media manager, and the session's own second factor.
+//   With mailLists on, today's header asks it once for a seat holder whose
+//   role Admin does not let in (WS16 step 6)
 //
 // Every other request goes on to the local server as before, carrying the
 // planted token, which the server cannot check: it answers a public call as
@@ -156,6 +161,7 @@ function answersFor(person: NavPersona): Map<string, [number, unknown]> {
     answers.set('GET /api/me', [200, person.answers.me])
     answers.set('GET /api/board/my-seats', [200, person.answers.mySeats])
     answers.set('GET /api/me/event-mode', [200, person.answers.eventMode])
+    answers.set('GET /api/me/media-manager', [200, { mediaManager: false, secondFactor: person.aal === 'aal2' }])
   }
   return answers
 }

@@ -34,6 +34,14 @@ export interface Env {
   MAIL_LINK_SECRET?: string
   MAIL_LINK_SECRET_PREVIOUS?: string
   /**
+   * The secret the expiring tokens in links are signed and sealed with (functions/utils/tokens.ts), and, only while it
+   * is being changed, the one before it, so tokens made under the old secret keep reading; nothing is made under it.
+   * Set by K, one value for production and a different one for the Preview environment, each made from 32 random bytes
+   * or more. Without it no token is made and every token read answers that the key is missing.
+   */
+  SIGNING_SECRET?: string
+  SIGNING_SECRET_PREVIOUS?: string
+  /**
    * Amazon SES's sending key, its id and its secret (functions/utils/mail/ses.ts), for K's own AWS account. Secrets of
    * the production environment and of the daily-emails worker alone, set by K; never on the Preview environment, where
    * a message handed to Amazon SES makes no request and is answered as a missing key.

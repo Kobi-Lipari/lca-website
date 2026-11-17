@@ -1,8 +1,8 @@
 {
+  "id": "42c869e7-4959-485e-9331-a2698bc0e2ab",
+  "prevId": "490e56bf-a8ad-4c6a-aee9-daefceb6b962",
   "version": "6",
   "dialect": "sqlite",
-  "id": "64648200-21c0-42cd-a180-324bf6efa928",
-  "prevId": "490e56bf-a8ad-4c6a-aee9-daefceb6b962",
   "tables": {
     "admin_audit_log": {
       "name": "admin_audit_log",
@@ -94,28 +94,28 @@
         "admin_audit_log_actor_id_members_id_fk": {
           "name": "admin_audit_log_actor_id_members_id_fk",
           "tableFrom": "admin_audit_log",
-          "tableTo": "members",
           "columnsFrom": [
             "actor_id"
           ],
+          "tableTo": "members",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "no action"
         },
         "admin_audit_log_target_member_id_members_id_fk": {
           "name": "admin_audit_log_target_member_id_members_id_fk",
           "tableFrom": "admin_audit_log",
-          "tableTo": "members",
           "columnsFrom": [
             "target_member_id"
           ],
+          "tableTo": "members",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "no action"
         }
       },
       "compositePrimaryKeys": {},
@@ -285,8 +285,8 @@
             "seat_id",
             "member_id"
           ],
-          "isUnique": true,
-          "where": "ended_at IS NULL"
+          "where": "ended_at IS NULL",
+          "isUnique": true
         },
         "idx_seat_assignments_member": {
           "name": "idx_seat_assignments_member",
@@ -301,41 +301,41 @@
         "board_seat_assignments_seat_id_board_members_id_fk": {
           "name": "board_seat_assignments_seat_id_board_members_id_fk",
           "tableFrom": "board_seat_assignments",
-          "tableTo": "board_members",
           "columnsFrom": [
             "seat_id"
           ],
+          "tableTo": "board_members",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "cascade"
         },
         "board_seat_assignments_member_id_members_id_fk": {
           "name": "board_seat_assignments_member_id_members_id_fk",
           "tableFrom": "board_seat_assignments",
-          "tableTo": "members",
           "columnsFrom": [
             "member_id"
           ],
+          "tableTo": "members",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "cascade"
         },
         "board_seat_assignments_appointed_by_members_id_fk": {
           "name": "board_seat_assignments_appointed_by_members_id_fk",
           "tableFrom": "board_seat_assignments",
-          "tableTo": "members",
           "columnsFrom": [
             "appointed_by"
           ],
+          "tableTo": "members",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "no action"
         }
       },
       "compositePrimaryKeys": {},
@@ -527,15 +527,15 @@
         "club_news_club_id_clubs_id_fk": {
           "name": "club_news_club_id_clubs_id_fk",
           "tableFrom": "club_news",
-          "tableTo": "clubs",
           "columnsFrom": [
             "club_id"
           ],
+          "tableTo": "clubs",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "no action"
         }
       },
       "compositePrimaryKeys": {},
@@ -595,28 +595,28 @@
         "club_officers_club_id_clubs_id_fk": {
           "name": "club_officers_club_id_clubs_id_fk",
           "tableFrom": "club_officers",
-          "tableTo": "clubs",
           "columnsFrom": [
             "club_id"
           ],
+          "tableTo": "clubs",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "no action"
         },
         "club_officers_member_id_members_id_fk": {
           "name": "club_officers_member_id_members_id_fk",
           "tableFrom": "club_officers",
-          "tableTo": "members",
           "columnsFrom": [
             "member_id"
           ],
+          "tableTo": "members",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "no action"
         }
       },
       "compositePrimaryKeys": {},
@@ -893,28 +893,28 @@
         "email_campaign_recipients_campaign_id_email_campaigns_id_fk": {
           "name": "email_campaign_recipients_campaign_id_email_campaigns_id_fk",
           "tableFrom": "email_campaign_recipients",
-          "tableTo": "email_campaigns",
           "columnsFrom": [
             "campaign_id"
           ],
+          "tableTo": "email_campaigns",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "no action"
         },
         "email_campaign_recipients_member_id_members_id_fk": {
           "name": "email_campaign_recipients_member_id_members_id_fk",
           "tableFrom": "email_campaign_recipients",
-          "tableTo": "members",
           "columnsFrom": [
             "member_id"
           ],
+          "tableTo": "members",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "no action"
         }
       },
       "compositePrimaryKeys": {},
@@ -1035,15 +1035,15 @@
         "email_campaigns_created_by_members_id_fk": {
           "name": "email_campaigns_created_by_members_id_fk",
           "tableFrom": "email_campaigns",
-          "tableTo": "members",
           "columnsFrom": [
             "created_by"
           ],
+          "tableTo": "members",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "no action"
         }
       },
       "compositePrimaryKeys": {},
@@ -1286,28 +1286,28 @@
         "lca_posts_created_by_members_id_fk": {
           "name": "lca_posts_created_by_members_id_fk",
           "tableFrom": "lca_posts",
-          "tableTo": "members",
           "columnsFrom": [
             "created_by"
           ],
+          "tableTo": "members",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "no action"
         },
         "lca_posts_updated_by_members_id_fk": {
           "name": "lca_posts_updated_by_members_id_fk",
           "tableFrom": "lca_posts",
-          "tableTo": "members",
           "columnsFrom": [
             "updated_by"
           ],
+          "tableTo": "members",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "no action"
         }
       },
       "compositePrimaryKeys": {},
@@ -1461,28 +1461,28 @@
         "mail_list_choices_contact_id_mail_contacts_id_fk": {
           "name": "mail_list_choices_contact_id_mail_contacts_id_fk",
           "tableFrom": "mail_list_choices",
-          "tableTo": "mail_contacts",
           "columnsFrom": [
             "contact_id"
           ],
+          "tableTo": "mail_contacts",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "cascade"
         },
         "mail_list_choices_list_id_mail_lists_id_fk": {
           "name": "mail_list_choices_list_id_mail_lists_id_fk",
           "tableFrom": "mail_list_choices",
-          "tableTo": "mail_lists",
           "columnsFrom": [
             "list_id"
           ],
+          "tableTo": "mail_lists",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "cascade"
         }
       },
       "compositePrimaryKeys": {
@@ -1550,15 +1550,15 @@
         "mail_lists_club_id_clubs_id_fk": {
           "name": "mail_lists_club_id_clubs_id_fk",
           "tableFrom": "mail_lists",
-          "tableTo": "clubs",
           "columnsFrom": [
             "club_id"
           ],
+          "tableTo": "clubs",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "no action"
         }
       },
       "compositePrimaryKeys": {},
@@ -1713,234 +1713,28 @@
         "members_club_id_clubs_id_fk": {
           "name": "members_club_id_clubs_id_fk",
           "tableFrom": "members",
-          "tableTo": "clubs",
           "columnsFrom": [
             "club_id"
           ],
+          "tableTo": "clubs",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "no action"
         },
         "members_guardian_id_members_id_fk": {
           "name": "members_guardian_id_members_id_fk",
           "tableFrom": "members",
-          "tableTo": "members",
           "columnsFrom": [
             "guardian_id"
           ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "checkConstraints": {}
-    },
-    "newsletter_issues": {
-      "name": "newsletter_issues",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "text",
-          "primaryKey": true,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "list_id": {
-          "name": "list_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "month_label": {
-          "name": "month_label",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": "''"
-        },
-        "subject": {
-          "name": "subject",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": "''"
-        },
-        "preheader": {
-          "name": "preheader",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": "''"
-        },
-        "body_html": {
-          "name": "body_html",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": "''"
-        },
-        "version": {
-          "name": "version",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": 1
-        },
-        "created_by": {
-          "name": "created_by",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": "(datetime('now'))"
-        },
-        "updated_by": {
-          "name": "updated_by",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "updated_at": {
-          "name": "updated_at",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": "(datetime('now'))"
-        },
-        "campaign_id": {
-          "name": "campaign_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "set_aside_at": {
-          "name": "set_aside_at",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "send_at": {
-          "name": "send_at",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "scheduled_by": {
-          "name": "scheduled_by",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "scheduled_at": {
-          "name": "scheduled_at",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "link_check": {
-          "name": "link_check",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "held_reason": {
-          "name": "held_reason",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "pinned_at": {
-          "name": "pinned_at",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "pinned_name": {
-          "name": "pinned_name",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        }
-      },
-      "indexes": {
-        "newsletter_issues_one_open": {
-          "name": "newsletter_issues_one_open",
-          "columns": [
-            "list_id"
-          ],
-          "isUnique": true,
-          "where": "campaign_id IS NULL AND set_aside_at IS NULL"
-        }
-      },
-      "foreignKeys": {
-        "newsletter_issues_created_by_members_id_fk": {
-          "name": "newsletter_issues_created_by_members_id_fk",
-          "tableFrom": "newsletter_issues",
           "tableTo": "members",
-          "columnsFrom": [
-            "created_by"
-          ],
           "columnsTo": [
             "id"
           ],
-          "onDelete": "set null",
-          "onUpdate": "no action"
-        },
-        "newsletter_issues_updated_by_members_id_fk": {
-          "name": "newsletter_issues_updated_by_members_id_fk",
-          "tableFrom": "newsletter_issues",
-          "tableTo": "members",
-          "columnsFrom": [
-            "updated_by"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "set null",
-          "onUpdate": "no action"
-        },
-        "newsletter_issues_scheduled_by_members_id_fk": {
-          "name": "newsletter_issues_scheduled_by_members_id_fk",
-          "tableFrom": "newsletter_issues",
-          "tableTo": "members",
-          "columnsFrom": [
-            "scheduled_by"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "set null",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "no action"
         }
       },
       "compositePrimaryKeys": {},
@@ -2029,15 +1823,15 @@
         "payments_member_id_members_id_fk": {
           "name": "payments_member_id_members_id_fk",
           "tableFrom": "payments",
-          "tableTo": "members",
           "columnsFrom": [
             "member_id"
           ],
+          "tableTo": "members",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "no action"
         }
       },
       "compositePrimaryKeys": {},
@@ -2182,54 +1976,54 @@
         "registrations_tournament_id_tournaments_id_fk": {
           "name": "registrations_tournament_id_tournaments_id_fk",
           "tableFrom": "registrations",
-          "tableTo": "tournaments",
           "columnsFrom": [
             "tournament_id"
           ],
+          "tableTo": "tournaments",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "no action"
         },
         "registrations_member_id_members_id_fk": {
           "name": "registrations_member_id_members_id_fk",
           "tableFrom": "registrations",
-          "tableTo": "members",
           "columnsFrom": [
             "member_id"
           ],
+          "tableTo": "members",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "no action"
         },
         "registrations_section_id_tournament_sections_id_fk": {
           "name": "registrations_section_id_tournament_sections_id_fk",
           "tableFrom": "registrations",
-          "tableTo": "tournament_sections",
           "columnsFrom": [
             "section_id"
           ],
+          "tableTo": "tournament_sections",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "no action"
         },
         "registrations_schedule_id_tournament_schedules_id_fk": {
           "name": "registrations_schedule_id_tournament_schedules_id_fk",
           "tableFrom": "registrations",
-          "tableTo": "tournament_schedules",
           "columnsFrom": [
             "schedule_id"
           ],
+          "tableTo": "tournament_schedules",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "no action"
         }
       },
       "compositePrimaryKeys": {},
@@ -2267,15 +2061,15 @@
         "scan_usage_member_id_members_id_fk": {
           "name": "scan_usage_member_id_members_id_fk",
           "tableFrom": "scan_usage",
-          "tableTo": "members",
           "columnsFrom": [
             "member_id"
           ],
+          "tableTo": "members",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "no action"
         }
       },
       "compositePrimaryKeys": {
@@ -2321,15 +2115,15 @@
         "seat_regions_seat_id_board_members_id_fk": {
           "name": "seat_regions_seat_id_board_members_id_fk",
           "tableFrom": "seat_regions",
-          "tableTo": "board_members",
           "columnsFrom": [
             "seat_id"
           ],
+          "tableTo": "board_members",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "cascade"
         }
       },
       "compositePrimaryKeys": {
@@ -2599,15 +2393,15 @@
         "state_champions_tournament_id_tournaments_id_fk": {
           "name": "state_champions_tournament_id_tournaments_id_fk",
           "tableFrom": "state_champions",
-          "tableTo": "tournaments",
           "columnsFrom": [
             "tournament_id"
           ],
+          "tableTo": "tournaments",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "set null",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "set null"
         }
       },
       "compositePrimaryKeys": {},
@@ -2704,28 +2498,28 @@
         "support_messages_ticket_id_support_tickets_id_fk": {
           "name": "support_messages_ticket_id_support_tickets_id_fk",
           "tableFrom": "support_messages",
-          "tableTo": "support_tickets",
           "columnsFrom": [
             "ticket_id"
           ],
+          "tableTo": "support_tickets",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "cascade"
         },
         "support_messages_logged_by_members_id_fk": {
           "name": "support_messages_logged_by_members_id_fk",
           "tableFrom": "support_messages",
-          "tableTo": "members",
           "columnsFrom": [
             "logged_by"
           ],
+          "tableTo": "members",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "no action"
         }
       },
       "compositePrimaryKeys": {},
@@ -2857,28 +2651,28 @@
         "support_tickets_member_id_members_id_fk": {
           "name": "support_tickets_member_id_members_id_fk",
           "tableFrom": "support_tickets",
-          "tableTo": "members",
           "columnsFrom": [
             "member_id"
           ],
+          "tableTo": "members",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "set null",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "set null"
         },
         "support_tickets_seat_id_board_members_id_fk": {
           "name": "support_tickets_seat_id_board_members_id_fk",
           "tableFrom": "support_tickets",
-          "tableTo": "board_members",
           "columnsFrom": [
             "seat_id"
           ],
+          "tableTo": "board_members",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "no action"
         }
       },
       "compositePrimaryKeys": {},
@@ -2938,28 +2732,28 @@
         "tournament_attendee_reminders_tournament_id_tournaments_id_fk": {
           "name": "tournament_attendee_reminders_tournament_id_tournaments_id_fk",
           "tableFrom": "tournament_attendee_reminders",
-          "tableTo": "tournaments",
           "columnsFrom": [
             "tournament_id"
           ],
+          "tableTo": "tournaments",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "cascade"
         },
         "tournament_attendee_reminders_member_id_members_id_fk": {
           "name": "tournament_attendee_reminders_member_id_members_id_fk",
           "tableFrom": "tournament_attendee_reminders",
-          "tableTo": "members",
           "columnsFrom": [
             "member_id"
           ],
+          "tableTo": "members",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "cascade"
         }
       },
       "compositePrimaryKeys": {},
@@ -3005,28 +2799,28 @@
         "tournament_directors_tournament_id_tournaments_id_fk": {
           "name": "tournament_directors_tournament_id_tournaments_id_fk",
           "tableFrom": "tournament_directors",
-          "tableTo": "tournaments",
           "columnsFrom": [
             "tournament_id"
           ],
+          "tableTo": "tournaments",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "cascade"
         },
         "tournament_directors_member_id_members_id_fk": {
           "name": "tournament_directors_member_id_members_id_fk",
           "tableFrom": "tournament_directors",
-          "tableTo": "members",
           "columnsFrom": [
             "member_id"
           ],
+          "tableTo": "members",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "cascade"
         }
       },
       "compositePrimaryKeys": {
@@ -3123,41 +2917,41 @@
         "tournament_games_tournament_id_tournaments_id_fk": {
           "name": "tournament_games_tournament_id_tournaments_id_fk",
           "tableFrom": "tournament_games",
-          "tableTo": "tournaments",
           "columnsFrom": [
             "tournament_id"
           ],
+          "tableTo": "tournaments",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "cascade"
         },
         "tournament_games_white_member_id_members_id_fk": {
           "name": "tournament_games_white_member_id_members_id_fk",
           "tableFrom": "tournament_games",
-          "tableTo": "members",
           "columnsFrom": [
             "white_member_id"
           ],
+          "tableTo": "members",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "no action"
         },
         "tournament_games_black_member_id_members_id_fk": {
           "name": "tournament_games_black_member_id_members_id_fk",
           "tableFrom": "tournament_games",
-          "tableTo": "members",
           "columnsFrom": [
             "black_member_id"
           ],
+          "tableTo": "members",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "no action"
         }
       },
       "compositePrimaryKeys": {},
@@ -3247,28 +3041,28 @@
         "tournament_reminders_member_id_members_id_fk": {
           "name": "tournament_reminders_member_id_members_id_fk",
           "tableFrom": "tournament_reminders",
-          "tableTo": "members",
           "columnsFrom": [
             "member_id"
           ],
+          "tableTo": "members",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "cascade"
         },
         "tournament_reminders_tournament_id_tournaments_id_fk": {
           "name": "tournament_reminders_tournament_id_tournaments_id_fk",
           "tableFrom": "tournament_reminders",
-          "tableTo": "tournaments",
           "columnsFrom": [
             "tournament_id"
           ],
+          "tableTo": "tournaments",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "cascade"
         }
       },
       "compositePrimaryKeys": {},
@@ -3312,15 +3106,15 @@
         "tournament_schedule_rounds_schedule_id_tournament_schedules_id_fk": {
           "name": "tournament_schedule_rounds_schedule_id_tournament_schedules_id_fk",
           "tableFrom": "tournament_schedule_rounds",
-          "tableTo": "tournament_schedules",
           "columnsFrom": [
             "schedule_id"
           ],
+          "tableTo": "tournament_schedules",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "cascade"
         }
       },
       "compositePrimaryKeys": {
@@ -3420,23 +3214,23 @@
           "columns": [
             "tournament_id"
           ],
-          "isUnique": true,
-          "where": "is_primary = 1 AND archived_at IS NULL"
+          "where": "is_primary = 1 AND archived_at IS NULL",
+          "isUnique": true
         }
       },
       "foreignKeys": {
         "tournament_schedules_tournament_id_tournaments_id_fk": {
           "name": "tournament_schedules_tournament_id_tournaments_id_fk",
           "tableFrom": "tournament_schedules",
-          "tableTo": "tournaments",
           "columnsFrom": [
             "tournament_id"
           ],
+          "tableTo": "tournaments",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "cascade"
         }
       },
       "compositePrimaryKeys": {},
@@ -3598,23 +3392,23 @@
             "tournament_id",
             "name"
           ],
-          "isUnique": true,
-          "where": "archived_at IS NULL"
+          "where": "archived_at IS NULL",
+          "isUnique": true
         }
       },
       "foreignKeys": {
         "tournament_sections_tournament_id_tournaments_id_fk": {
           "name": "tournament_sections_tournament_id_tournaments_id_fk",
           "tableFrom": "tournament_sections",
-          "tableTo": "tournaments",
           "columnsFrom": [
             "tournament_id"
           ],
+          "tableTo": "tournaments",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "cascade"
         }
       },
       "compositePrimaryKeys": {},
@@ -3969,28 +3763,28 @@
         "tournaments_club_id_clubs_id_fk": {
           "name": "tournaments_club_id_clubs_id_fk",
           "tableFrom": "tournaments",
-          "tableTo": "clubs",
           "columnsFrom": [
             "club_id"
           ],
+          "tableTo": "clubs",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "no action"
         },
         "tournaments_created_by_members_id_fk": {
           "name": "tournaments_created_by_members_id_fk",
           "tableFrom": "tournaments",
-          "tableTo": "members",
           "columnsFrom": [
             "created_by"
           ],
+          "tableTo": "members",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "no action"
         }
       },
       "compositePrimaryKeys": {},
@@ -4090,15 +3884,15 @@
         "uscf_rating_history_member_id_members_id_fk": {
           "name": "uscf_rating_history_member_id_members_id_fk",
           "tableFrom": "uscf_rating_history",
-          "tableTo": "members",
           "columnsFrom": [
             "member_id"
           ],
+          "tableTo": "members",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "no action"
         }
       },
       "compositePrimaryKeys": {},
@@ -4109,9 +3903,9 @@
   "views": {},
   "enums": {},
   "_meta": {
+    "columns": {},
     "schemas": {},
-    "tables": {},
-    "columns": {}
+    "tables": {}
   },
   "internal": {
     "indexes": {

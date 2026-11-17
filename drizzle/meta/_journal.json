@@ -75,8 +75,43 @@
     {
       "idx": 10,
       "version": "6",
-      "when": 1794569606599,
-      "tag": "0010_newsletter_issues",
+      "when": 1794548159684,
+      "tag": "0010_club_regions",
+      "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "6",
+      "when": 1794555549452,
+      "tag": "0011_club_pages",
+      "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "6",
+      "when": 1794563863646,
+      "tag": "0012_club_pages_seed",
+      "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "6",
+      "when": 1794717352272,
+      "tag": "0013_automation_runs",
+      "breakpoints": true
+    },
+    {
+      "idx": 14,
+      "version": "6",
+      "when": 1794736990595,
+      "tag": "0014_club_check_marks",
+      "breakpoints": true
+    },
+    {
+      "idx": 15,
+      "version": "6",
+      "when": 1794932187213,
+      "tag": "0015_newsletter_issues",
       "breakpoints": true
     }
   ]

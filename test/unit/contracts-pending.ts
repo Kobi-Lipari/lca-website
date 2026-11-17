@@ -14,7 +14,7 @@
 // only, or move to the coverage test's excluded list with that reason, is
 // decided when each is next changed.
 
-export const PENDING_COUNT = 110
+export const PENDING_COUNT = 107
 
 export const PENDING_CONTRACTS: readonly string[] = [
   'GET admin/announcement',
@@ -33,8 +33,6 @@ export const PENDING_CONTRACTS: readonly string[] = [
   'PATCH admin/champions/[id]',
   'DELETE admin/champions/[id]',
   'POST admin/clubs',
-  'GET admin/clubs/[id]',
-  'PATCH admin/clubs/[id]',
   'DELETE admin/clubs/[id]',
   'POST admin/clubs/[id]/logo',
   'GET admin/clubs/[id]/news',
@@ -86,7 +84,6 @@ export const PENDING_CONTRACTS: readonly string[] = [
   'PATCH board/tickets/[id]',
   'DELETE board/tickets/[id]',
   'GET champions',
-  'GET clubs',
   'GET clubs/[id]/logo', // serves an image
   'GET contact',
   'POST contact',

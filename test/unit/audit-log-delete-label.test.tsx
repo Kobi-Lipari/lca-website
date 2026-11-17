@@ -122,3 +122,20 @@ describe('the Events filter', () => {
     expect(screen.getAllByText('Deleted event', { selector: 'span' })).toHaveLength(1)
   })
 })
+
+describe('the club_edit row and the notice key of its detail (K\'s decision 7 of Sunday, November 15, 2026)', () => {
+  it('draws the changed fields alone, with the key true, false or absent, and never the key', async () => {
+    api.rows = [
+      row('club_edit', 'Example Chess Club', { club_id: 'fx-1', fields: ['cost_text', 'weekend_play'], notice: true }),
+      row('club_edit', 'Example Chess Club', { club_id: 'fx-2', fields: ['welcome_text'], notice: false }),
+      row('club_edit', 'Example Chess Club', { club_id: 'fx-3', fields: ['description'] }),
+    ]
+    render(<AuditLogPanel />)
+    await screen.findByText(/Changed cost text, weekend play/)
+    expect(screen.getByText(/Changed welcome text/)).toBeTruthy()
+    expect(screen.getByText(/Changed description/)).toBeTruthy()
+    const drawn = document.body.textContent ?? ''
+    expect(drawn).not.toMatch(/notice/i)
+    expect(drawn).not.toMatch(/\btrue\b|\bfalse\b/)
+  })
+})

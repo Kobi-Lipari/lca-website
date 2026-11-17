@@ -7,13 +7,24 @@
 //   npm run db:generate -- <name>            schema change, written by drizzle-kit
 //   npm run db:generate -- <name> --custom   hand-written migration (data, or a
 //                                            change drizzle-kit must not write)
+//   npm run db:generate -- <name> --number 0065
+//                                            either of the above, with the file
+//                                            given that four-digit prefix
+//
+// Two streams of work can each hold a run of numbers (migrations/README.md
+// says which). --number gives the new file the number its stream holds, so
+// nobody renames a file by hand or takes a number another stream holds. A
+// number that is not four digits, or that a file in migrations/ already
+// has, is refused before drizzle-kit runs, and nothing is written. Without
+// --number the file is numbered as before.
 //
 // How it works:
 // 1. drizzle-kit generate writes into the staging folder drizzle/ (its own
 //    numbering) and records a snapshot in drizzle/meta.
-// 2. The new file is numbered after the highest prefix in migrations/ (0052
-//    next), given a header comment, and written to migrations/. The staging
-//    SQL is removed; drizzle/meta is kept and committed.
+// 2. The new file is numbered after the highest prefix in migrations/, or
+//    with the prefix --number names. It gets a header comment and is written
+//    to migrations/. The staging SQL is removed; drizzle/meta is kept and
+//    committed.
 // 3. A generated file containing DROP TABLE, __new_ or PRAGMA foreign_keys
 //    is refused. That is drizzle-kit rebuilding a SQLite table to add or
 //    change a constraint, and on D1 the DROP TABLE deletes the rows of every
@@ -107,6 +118,22 @@ export function nextMigrationNumber(files: string[]): string {
     if (m) highest = Math.max(highest, Number(m[1]))
   }
   return String(highest + 1).padStart(4, '0')
+}
+
+/**
+ * Why a number given with --number cannot be used, in words, or null when it
+ * can: it must be four digits from 0001 to 9999, and no file in the folder
+ * may already start with it.
+ */
+export function numberProblem(number: string, files: string[]): string | null {
+  if (!/^\d{4}$/.test(number) || number === '0000') {
+    return `--number takes a four-digit number from 0001 to 9999, such as 0065; "${number}" is not one. Nothing was written.`
+  }
+  const taken = files.filter((f) => f.startsWith(`${number}_`) && f.endsWith('.sql')).sort()
+  if (taken.length > 0) {
+    return `--number ${number} is already used by migrations/${taken.join(' and migrations/')}. Pick a number no file has. Nothing was written.`
+  }
+  return null
 }
 
 /** A migration name as a file name: lower case, words joined by underscores. */
@@ -212,6 +239,8 @@ export function runDrizzleKit(args: string[], root: string, options: KitRunOptio
 export interface GenerateOptions {
   name: string
   custom?: boolean
+  /** The four-digit prefix the new file takes (--number); left out, the highest prefix in migrations/ plus one. */
+  number?: string
   root?: string
   migrationsDir?: string
   stagingDir?: string
@@ -258,8 +287,11 @@ function restoreStaging(staging: string, before: StagingState): void {
   if (before.journal !== null) writeFileSync(join(staging, 'meta/_journal.json'), before.journal)
 }
 
+/** The options a run works from, every one filled in; the number stays optional, since leaving it out numbers as before. */
+type RunOptions = Required<Omit<GenerateOptions, 'number'>>
+
 /** One drizzle-kit run; the new staging file, or null when nothing changed. */
-function kitStep(args: string[], options: Required<GenerateOptions>): { staged: string | null; failure?: string } {
+function kitStep(args: string[], options: RunOptions): { staged: string | null; failure?: string } {
   const before = stagingState(options.stagingDir)
   const result = options.runKit(args, options.root)
   const added = [...stagingState(options.stagingDir).sql].filter((f) => !before.sql.has(f))
@@ -276,7 +308,7 @@ function kitStep(args: string[], options: Required<GenerateOptions>): { staged: 
 
 export function generateMigration(input: GenerateOptions): GenerateResult {
   const root = input.root ?? ROOT
-  const options: Required<GenerateOptions> = {
+  const options: RunOptions = {
     name: input.name,
     custom: input.custom ?? false,
     root,
@@ -285,7 +317,13 @@ export function generateMigration(input: GenerateOptions): GenerateResult {
     runKit: input.runKit ?? runDrizzleKit,
   }
   const slug = slugName(options.name)
-  if (!slug) return { ok: false, message: 'Give the migration a name: npm run db:generate -- <name> [--custom]' }
+  if (!slug) return { ok: false, message: 'Give the migration a name: npm run db:generate -- <name> [--custom] [--number NNNN]' }
+  // A given number is checked before drizzle-kit runs, so a refusal leaves
+  // drizzle/ and migrations/ exactly as they were.
+  if (input.number !== undefined) {
+    const problem = numberProblem(input.number, readdirSync(options.migrationsDir))
+    if (problem) return { ok: false, message: problem }
+  }
 
   const before = stagingState(options.stagingDir)
   const first = kitStep(['generate', '--name', slug], options)
@@ -317,7 +355,7 @@ export function generateMigration(input: GenerateOptions): GenerateResult {
       .replace(/^-- Custom SQL migration file, put your code below! --\s*/m, '')
   }
 
-  const file = `${nextMigrationNumber(readdirSync(options.migrationsDir))}_${slug}.sql`
+  const file = `${input.number ?? nextMigrationNumber(readdirSync(options.migrationsDir))}_${slug}.sql`
   const target = join(options.migrationsDir, file)
   if (existsSync(target)) {
     restoreStaging(options.stagingDir, before)
@@ -331,9 +369,49 @@ export function generateMigration(input: GenerateOptions): GenerateResult {
   return { ok: true, file, message: `Wrote migrations/${file}. ${next}` }
 }
 
+export interface GenerateArguments {
+  name: string
+  custom: boolean
+  number?: string
+  /** Set when the arguments cannot be read, in words. */
+  problem?: string
+}
+
+/**
+ * The command line after `npm run db:generate --`: the name's words, --custom,
+ * and --number with its value, as `--number 0065` or `--number=0065`. Without
+ * --number the answer has no number, so the file is numbered as before.
+ */
+export function readArguments(argv: string[]): GenerateArguments {
+  const words: string[] = []
+  let custom = false
+  let number: string | undefined
+  let given = 0
+  for (let i = 0; i < argv.length; i++) {
+    const arg = argv[i]
+    if (arg === '--custom') custom = true
+    else if (arg === '--number') {
+      given++
+      number = argv[i + 1]?.startsWith('--') ? undefined : argv[i + 1]
+      if (number !== undefined) i++
+    } else if (arg.startsWith('--number=')) {
+      given++
+      number = arg.slice('--number='.length)
+    } else words.push(arg)
+  }
+  const out: GenerateArguments = { name: words.join(' '), custom }
+  if (given === 0) return out
+  if (given > 1) return { ...out, problem: 'Give --number once. Nothing was written.' }
+  if (number === undefined || number === '') return { ...out, problem: 'Give --number its four-digit number, such as --number 0065. Nothing was written.' }
+  return { ...out, number }
+}
+
 function main(argv: string[]): number {
-  const custom = argv.includes('--custom')
-  const name = argv.filter((a) => a !== '--custom').join(' ')
+  const { name, custom, number, problem } = readArguments(argv)
+  if (problem) {
+    console.error(problem)
+    return 1
+  }
   // From a terminal drizzle-kit gets it, so it can ask whether a column was
   // renamed; anywhere else (CI, a pipe) its output is captured and its
   // "Error:" lines stop the run.
@@ -341,6 +419,7 @@ function main(argv: string[]): number {
   const result = generateMigration({
     name,
     custom,
+    number,
     runKit: (args, root) => runDrizzleKit(args, root, { interactive }),
   })
   if (result.ok) console.log(result.message)

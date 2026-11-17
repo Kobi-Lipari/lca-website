@@ -20,13 +20,20 @@ function normalizeUrl(raw: string): string {
   return `https://${trimmed}`
 }
 
+/**
+ * `tallOnPhone`, which Group email's newsletter tab alone passes (with mailLists on), makes each toolbar button at
+ * least 44px tall under 40rem, so a finger finds it; every other use leaves it out and keeps today's toolbar.
+ */
 export function RichTextEditor({
   content,
   onChange,
+  tallOnPhone,
 }: {
   content: string
   onChange: (html: string) => void
+  tallOnPhone?: boolean
 }) {
+  const tool = tallOnPhone ? 'max-sm:min-h-11' : undefined
   const editor = useEditor({
     extensions: [StarterKit, Link.configure({ openOnClick: false })],
     content,
@@ -51,23 +58,24 @@ export function RichTextEditor({
   return (
     <div className="rounded-md border bg-background">
       <div className="flex flex-wrap gap-1 border-b p-1.5">
-        <Toggle size="sm" pressed={editor.isActive('bold')} onPressedChange={() => editor.chain().focus().toggleBold().run()}>
+        <Toggle size="sm" className={tool} pressed={editor.isActive('bold')} onPressedChange={() => editor.chain().focus().toggleBold().run()}>
           <Bold className="size-3.5" />
         </Toggle>
-        <Toggle size="sm" pressed={editor.isActive('italic')} onPressedChange={() => editor.chain().focus().toggleItalic().run()}>
+        <Toggle size="sm" className={tool} pressed={editor.isActive('italic')} onPressedChange={() => editor.chain().focus().toggleItalic().run()}>
           <Italic className="size-3.5" />
         </Toggle>
-        <Toggle size="sm" pressed={editor.isActive('heading', { level: 2 })} onPressedChange={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}>
+        <Toggle size="sm" className={tool} pressed={editor.isActive('heading', { level: 2 })} onPressedChange={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}>
           <Heading2 className="size-3.5" />
         </Toggle>
-        <Toggle size="sm" pressed={editor.isActive('bulletList')} onPressedChange={() => editor.chain().focus().toggleBulletList().run()}>
+        <Toggle size="sm" className={tool} pressed={editor.isActive('bulletList')} onPressedChange={() => editor.chain().focus().toggleBulletList().run()}>
           <List className="size-3.5" />
         </Toggle>
-        <Toggle size="sm" pressed={editor.isActive('orderedList')} onPressedChange={() => editor.chain().focus().toggleOrderedList().run()}>
+        <Toggle size="sm" className={tool} pressed={editor.isActive('orderedList')} onPressedChange={() => editor.chain().focus().toggleOrderedList().run()}>
           <ListOrdered className="size-3.5" />
         </Toggle>
         <Toggle
           size="sm"
+          className={tool}
           pressed={editor.isActive('link')}
           onPressedChange={() => {
             const url = window.prompt('Link URL')
