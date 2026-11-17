@@ -15,13 +15,16 @@
 //   definition is as it was; it holds no CHECK and no data statement;
 // - run a second time it stops at its first statement and changes nothing,
 //   so it runs once, as wrangler runs every migration;
-// - run last, after the clubs work's 0065 to 0069, as production and the
-//   preview database take it, it adds the same table, index and keys and
-//   changes nothing else, so it does not depend on its order with them;
+// - run last, after the clubs work's 0065 to 0070, as production takes it,
+//   it adds the same table, index and keys and changes nothing else, so it
+//   does not depend on its order with them; and when it runs after 0069 and
+//   before 0070, the preview database's order if 0070 reaches it after 0061,
+//   the whole schema is the same too;
 // - drizzle/meta: the journal entry its header names, found by its tag
-//   (0015_newsletter_issues since main was brought in, staged again after
-//   the clubs work's 0010 to 0014), and that entry's snapshot, which follows
-//   the one before it and differs from it by the one table alone.
+//   (0016_newsletter_issues since main was brought in a second time, staged
+//   again after the clubs work's 0010 to 0015), and that entry's snapshot,
+//   which follows the one before it and differs from it by the one table
+//   alone.
 // Every name and address here is made up.
 import { readdirSync, readFileSync } from 'node:fs'
 import { join } from 'node:path'
@@ -215,10 +218,10 @@ describe('0061\'s table and its rules', () => {
   })
 })
 
-describe('0061 run last, after the clubs work\'s 0065 to 0069, as production and the preview database take it', () => {
+describe('0061 run last, after the clubs work\'s 0065 to 0070, as production takes it, and between 0069 and 0070', () => {
   it('adds the same table, index and keys on a database built from every other migration, and changes nothing else', () => {
     const others = migrationFiles().filter((f) => f !== FILE)
-    expect(others.filter((f) => f > FILE)).toEqual(expect.arrayContaining(['0065_club_regions.sql', '0069_club_check_marks.sql']))
+    expect(others.filter((f) => f > FILE)).toEqual(expect.arrayContaining(['0065_club_regions.sql', '0069_club_check_marks.sql', '0070_club_event_approval.sql']))
     const db = openMigratedDb({ files: others })
     insertRows(db)
     const rowsBefore = contents(db)
@@ -237,6 +240,17 @@ describe('0061 run last, after the clubs work\'s 0065 to 0069, as production and
     const inOrder = schemaRows(openMigratedDb())
     for (const key of added) expect(schemaAfter[key], key).toEqual(inOrder[key])
     expect(columnsOf(db, TABLE).map((c) => c.name)).toEqual(COLUMNS)
+  })
+
+  it('gives the whole schema of the name order when 0061 runs after 0069 and before 0070, the preview database\'s order if 0070 reaches it after 0061', () => {
+    const files = migrationFiles()
+    const preview = [...files.filter((f) => f !== FILE && f < '0070'), FILE, ...files.filter((f) => f >= '0070')]
+    // The files on either side of 0061, not the end of the list, so a later migration leaves this case as it is.
+    const at = preview.indexOf(FILE)
+    expect(preview.slice(at - 1, at + 2)).toEqual(['0069_club_check_marks.sql', FILE, '0070_club_event_approval.sql'])
+    const db = openMigratedDb({ files: preview })
+    expect(all(db, 'PRAGMA foreign_key_check')).toEqual([])
+    expect(schemaRows(db)).toEqual(schemaRows(openMigratedDb()))
   })
 })
 
@@ -266,8 +280,8 @@ describe('drizzle/meta records 0061', () => {
     expect(entries).toHaveLength(1)
     const entry = entries[0]
     expect(entry).toEqual({ idx, version: '6', when: expect.any(Number), tag: `${String(idx).padStart(4, '0')}_newsletter_issues`, breakpoints: true })
-    // Staged again as 0015 when main was brought in, after the clubs work's 0010 to 0014.
-    expect(entry.tag).toBe('0015_newsletter_issues')
+    // Staged again as 0016 when main was brought in a second time, after the clubs work's 0010 to 0015.
+    expect(entry.tag).toBe('0016_newsletter_issues')
     expect(entry.when).toBeGreaterThan(journal.entries[idx - 1].when)
     // The generator ran on Friday, November 13, 2026, in UTC, or later.
     expect(entry.when).toBeGreaterThanOrEqual(Date.UTC(2026, 10, 13))

@@ -43,7 +43,7 @@ import {
 import { cn } from '@/lib/utils'
 import { FEATURES } from '@/lib/features'
 import { useAuth } from '@/contexts/auth-context'
-import { canUseMailing, isViewOnlyAdmin, toolsHomeFor } from '@/areas/admin/roles'
+import { canAccessAdmin, canUseMailing, isViewOnlyAdmin, toolsHomeFor, WORKSPACE_ROLES } from '@/areas/admin/roles'
 import { ViewOnlyFieldset, ViewOnlyNote } from '@/lib/viewOnly'
 import { useViewOnly } from '@/hooks/useViewOnly'
 import { StandingsTable } from '@/areas/live/components/StandingsTable'
@@ -57,6 +57,9 @@ import { PrizeWinners } from '@/areas/events/components/PrizeWinners'
 import { FeeNotice, FeeNoticeStatus } from '@/areas/admin/components/FeeNotice'
 import { FEES_NEED_PAYOUT_ACCOUNT, feesRaised } from '@domain/events/creation'
 import { tierFees } from '@domain/events/sections'
+import { approvalState, WAITING_FOR_APPROVAL } from '@domain/events/approval'
+import { ApprovalWait, type WaitingEvent } from '@/areas/clubs/components/ApprovalWait'
+import { regionEventsOn } from '@/areas/clubs/switches'
 
 const goldButtonClass = 'bg-lca-gold font-semibold text-brand-navy hover:bg-lca-gold/90'
 
@@ -249,6 +252,10 @@ export function TournamentManagePage() {
   const { role: authRole, member: authMember, directedTournamentIds } = useAuth()
   // Someone directing an event with an ordinary member account works from the workspace.
   const backHref = authRole === 'member' ? '/workspace?tab=events' : toolsHomeFor(authRole, 'tournaments')
+  // With regionEvents on, a person no tools page lets in (a regional
+  // representative who is a plain member and directs no event, whom the
+  // workspace would turn away) goes back to My region instead.
+  const backToRegion = regionEventsOn() && !canAccessAdmin(authRole) && !WORKSPACE_ROLES.includes(authRole) && directedTournamentIds.length === 0
   // LCA Officers see events like an observer but without the mailing tools.
   const noEmailTab = isViewOnlyAdmin(authRole) && !canUseMailing(authRole)
   const visibleTabs = noEmailTab ? TABS.filter((t) => t.id !== 'email') : TABS
@@ -356,6 +363,10 @@ export function TournamentManagePage() {
   // red strip; and a failed ask's words, the red strip's own, which the
   // status line says while the panel shows, until the next press.
   const [creation, setCreation] = useState<ApiTournamentCreation | null>(null)
+  // With regionEvents on: who the server lets move the event through the LCA
+  // admins' wait (the manage answer's `approval`, sent only while
+  // REGION_EVENTS_ON is set); null when the answer carries none.
+  const [approval, setApproval] = useState<NonNullable<ManageData['approval']> | null>(null)
   const [payoutAsked, setPayoutAsked] = useState(false)
   const [feeRefused, setFeeRefused] = useState(false)
   const [askFailure, setAskFailure] = useState<string | null>(null)
@@ -374,6 +385,7 @@ export function TournamentManagePage() {
   function applyManage(data: ManageData) {
     const t = data.tournament
     setTournament(t)
+    setApproval(data.approval ?? null)
     splitRoster(data.roster ?? [])
     setGames(data.games)
     setStandings(data.standings)
@@ -688,6 +700,60 @@ export function TournamentManagePage() {
   // same, draws it too.
   const raised = FEATURES.standingDirectors && !!creation && !creation.canChargeFees && !!snap && typedAboveLoaded(snap)
   const feeNoticeShows = raised || feeRefused
+
+  // With regionEvents on, a representative's club event shows the LCA admins'
+  // wait, read from the event's own columns through approvalState, with the
+  // moves the server's answer allows; until it is approved, Publish is not
+  // drawn and the reason stands in its place. With it off, or for an event
+  // not marked, the page is as before.
+  const waitingEvent: WaitingEvent | null = regionEventsOn() && approval && tournament && id
+    ? {
+        id,
+        name: tournament.name,
+        needs_lca_approval: tournament.needs_lca_approval ?? 0,
+        approval_requested_at: tournament.approval_requested_at ?? null,
+        approved_at: tournament.approved_at ?? null,
+      }
+    : null
+  const waitState = waitingEvent ? approvalState(waitingEvent) : 'not_marked'
+  const publishHeld = waitState === 'draft' || waitState === 'in_review'
+  /** A move went through: the event's four columns as the answer gives them, and once approved it is public, as the move wrote it. */
+  function applyApproval(answer: { needs_lca_approval: 0 | 1; approval_requested_at: string | null; approved_at: string | null; approved_by: string | null }) {
+    setTournament((now) => (now ? {
+      ...now,
+      needs_lca_approval: answer.needs_lca_approval,
+      approval_requested_at: answer.approval_requested_at,
+      approved_at: answer.approved_at,
+      approved_by: answer.approved_by,
+      ...(answer.approved_at ? { is_visible: 1 } : {}),
+    } : now))
+    if (answer.approved_at) {
+      setIsVisible(true)
+      setSnapshot((now) => (now ? { ...now, isVisible: true } : now))
+    }
+  }
+  /**
+   * The server refused a move with 409, so the event is not as the page drew
+   * it: the manage answer is read again and the wait's part of it applied,
+   * the event's four columns and who may move it, leaving every field a
+   * person may be typing in as it is. A read that fails changes nothing; the
+   * panel's status line already says why nothing changed.
+   */
+  async function rereadWait() {
+    if (!id) return
+    try {
+      const data = await adminGetTournamentManage(id)
+      setApproval(data.approval ?? null)
+      applyApproval({
+        needs_lca_approval: data.tournament.needs_lca_approval === 1 ? 1 : 0,
+        approval_requested_at: data.tournament.approval_requested_at ?? null,
+        approved_at: data.tournament.approved_at ?? null,
+        approved_by: data.tournament.approved_by ?? null,
+      })
+    } catch {
+      // Nothing more to say: the status line has the server's words.
+    }
+  }
   // A failed ask's words go with the panel that drew them, so a panel drawn
   // again later says its title and not an old failure.
   if (askFailure && !feeNoticeShows) setAskFailure(null)
@@ -1281,8 +1347,8 @@ export function TournamentManagePage() {
       {/* Hero */}
       <section className="border-b-4 border-lca-gold bg-brand-navy text-white">
         <div className="mx-auto max-w-6xl px-6 py-12">
-          <Link to={backHref} className="inline-flex items-center gap-1.5 text-sm text-white/70 hover:text-lca-gold">
-            <ArrowLeft className="size-4" />All Tournaments
+          <Link to={backToRegion ? '/workspace/region' : backHref} className="inline-flex items-center gap-1.5 text-sm text-white/70 hover:text-lca-gold">
+            <ArrowLeft className="size-4" />{backToRegion ? 'My region' : 'All Tournaments'}
           </Link>
           <div className="mt-4 flex items-start justify-between gap-4 flex-wrap">
             <div className="flex items-center gap-3">
@@ -1365,6 +1431,10 @@ export function TournamentManagePage() {
           <p className="rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
             {error}
           </p>
+        )}
+
+        {waitingEvent && approval && waitState !== 'not_marked' && (
+          <ApprovalWait event={waitingEvent} maySubmit={approval.maySubmit} mayDecide={approval.mayDecide} onMoved={applyApproval} onStale={() => { void rereadWait() }} help />
         )}
 
         <ViewOnlyNote viewOnly={viewOnly}>View only: you can see everything about this event and email its entrants from the Email tab. Changes are made by the organizers.</ViewOnlyNote>
@@ -1735,6 +1805,12 @@ export function TournamentManagePage() {
                 )}
               </div>
               <div className="grid gap-6 sm:grid-cols-2">
+                {publishHeld ? (
+                  <div className="space-y-2">
+                    <Label>Visibility</Label>
+                    <p className="text-sm text-ink">Hidden (draft). {WAITING_FOR_APPROVAL}</p>
+                  </div>
+                ) : (
                 <div className="space-y-2">
                   <Label>Visibility</Label>
                   <div className="flex gap-2">
@@ -1750,6 +1826,7 @@ export function TournamentManagePage() {
                     >Hidden (draft)</button>
                   </div>
                 </div>
+                )}
                 <div className="space-y-2">
                   <Label>Registration status</Label>
                   <select

@@ -366,7 +366,11 @@ describe('REDESIGN_STATUS.md, WS09 step 14: the Checks line', () => {
 
   it('counts as many cases for each new test as the file holds', () => {
     const files = bullet(block, '- **Files.**')
-    for (const file of NEW_TESTS) expect(writtenCount(files, file), file).toBe(casesIn(file))
+    // The link's test and the page's test grow at WS09 checkpoint V, whose block counts them anew.
+    const grown = ws09.includes('\n### WS09 checkpoint V: what checkpoint U\'s pictures asked\n') ? [LINK_TEST, PAGE_TEST] : []
+    // The two monthly-check files grow at checkpoint V's review, whose block counts them anew.
+    const grownInReview = ws09.includes('\n### WS09 checkpoint V: the review of the whole and its fixes\n') ? [EMAILS_TEST, EDGES_TEST] : []
+    for (const file of NEW_TESTS.filter((f) => !grown.includes(f) && !grownInReview.includes(f))) expect(writtenCount(files, file), file).toBe(casesIn(file))
   })
 
   it('gives unit counts that add up: the base\'s, the new files\' and the three cases grown with no change', () => {

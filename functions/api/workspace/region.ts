@@ -24,12 +24,19 @@
 // functions/utils/clubs/memberView.ts) is counted only the club's visible
 // events, so the count never tells that hidden drafts exist.
 //
+// While REGION_EVENTS_ON is set (WS09 step 19) each card also counts the
+// club's events in LCA review, `inReview`, and This month their sum, and
+// every event of a club the person keeps is counted, drafts among them,
+// since the person runs them; with it unset the answer is as before, with
+// no query more.
+//
 // While CLUB_KEEPERS_ON is unset everyone gets 403 in words before anything
 // is read: no sign in is checked and no query is made.
 import type { Env, MemberRow } from '../../types'
 import { isResponse, requireAuthedMember } from '../../utils/auth'
 import { errorResponse, handleOptions, jsonResponse } from '../../utils/response'
 import { CLUB_KEEPERS_ON } from '../../utils/clubs/pages'
+import { REGION_EVENTS_ON } from '../../utils/clubs/pages'
 import { getRegionalClubIds } from '../../utils/admin/permissions'
 import { admittedByRegionAlone } from '../../utils/clubs/memberView'
 import { checkCounts, checkWords, needsCheck, sortRegionCards } from '../../../domain/clubs/regionCards'
@@ -107,6 +114,32 @@ async function eventCounts(db: D1Database, clubIds: string[], draftsShown: strin
   return counts
 }
 
+/**
+ * Each club's count of events in LCA review: marked for approval
+ * (needs_lca_approval 1), sent (approval_requested_at set) and not approved
+ * (approved_at empty), as approvalState in domain/events/approval.ts reads
+ * the in_review state, an empty or blank time read as not set. Read only
+ * while REGION_EVENTS_ON is set.
+ */
+async function reviewCounts(db: D1Database, clubIds: string[]): Promise<Map<string, number>> {
+  const counts = new Map<string, number>()
+  if (clubIds.length === 0) return counts
+  const { results } = await db
+    .prepare(
+      `SELECT club_id, COUNT(*) AS n
+         FROM tournaments
+        WHERE club_id IN (SELECT value FROM json_each(?1))
+          AND needs_lca_approval = 1
+          AND approval_requested_at IS NOT NULL AND TRIM(approval_requested_at) <> ''
+          AND (approved_at IS NULL OR TRIM(approved_at) = '')
+        GROUP BY club_id`,
+    )
+    .bind(JSON.stringify(clubIds))
+    .all<{ club_id: string; n: number }>()
+  for (const row of results ?? []) counts.set(row.club_id, Number(row.n))
+  return counts
+}
+
 /** Who keeps each region besides the person: the holders of active seats over it, by name and seat title; a guest, whom both endpoints refuse, is never named. */
 async function keepersOf(db: D1Database, regions: string[], memberId: string): Promise<WorkspaceRegionResponse['regions']> {
   if (regions.length === 0) return []
@@ -155,7 +188,12 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
 
   const rows = await clubsFor(db, member)
   const ids = rows.map((r) => r.id)
-  const counts = await eventCounts(db, ids, ids.filter((id) => !admittedByRegionAlone(member, id)))
+  // While REGION_EVENTS_ON is set the person runs every event of the clubs
+  // they keep (canManageTournament), drafts among them, so each is counted;
+  // and the events in LCA review are counted for each club, by one query more.
+  const regionEvents = REGION_EVENTS_ON
+  const counts = await eventCounts(db, ids, regionEvents ? ids : ids.filter((id) => !admittedByRegionAlone(member, id)))
+  const inReview = regionEvents ? await reviewCounts(db, ids) : null
   const now = Date.now()
   const cards: RegionClub[] = sortRegionCards(rows.map((row) => ({
     id: row.id,
@@ -170,6 +208,7 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
     needsCheck: needsCheck(row.last_confirmed_at, now),
     events: counts.get(row.id) ?? 0,
     openItems: [],
+    ...(inReview ? { inReview: inReview.get(row.id) ?? 0 } : {}),
   })))
 
   // The regions the seats cover, an empty one among them, and for an LCA admin every region a club is in.
@@ -182,5 +221,7 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
     thisMonth: { nextCheck: nextCheckWords(now), ...checkCounts(cards) },
     regions: await keepersOf(db, [...regions].sort(byText), member.id),
   }
+  // This month's count of the events in LCA review, only while REGION_EVENTS_ON is set.
+  if (inReview) answer.thisMonth.inReview = [...inReview.values()].reduce((sum, n) => sum + n, 0)
   return jsonResponse(answer)
 }

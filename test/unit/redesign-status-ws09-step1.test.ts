@@ -236,7 +236,7 @@ describe('REDESIGN_STATUS.md, WS09 step 1: the step block', () => {
     const headings = sectionLines.filter((l) => l.startsWith('### '))
     const FIXED = [MAP, STEP, ...LISTS]
     for (const fixed of FIXED) expect(headings.filter((h) => h === fixed), fixed).toHaveLength(1)
-    for (const h of headings.filter((l) => !FIXED.includes(l))) expect(/^### (?:WS09 step (?:[1-9]|[1-3]\d): \S|Checkpoint [S-Z]: WS09 |WS09 checkpoint T: \S|WS09 checkpoint U: \S|WS09 checkpoint S, after K's second answer: \S|WS09 checkpoint S, after K's answers: \S)/.test(h), h).toBe(true)
+    for (const h of headings.filter((l) => !FIXED.includes(l))) expect(/^### (?:WS09 step (?:[1-9]|[1-3]\d): \S|Checkpoint [S-Z]: WS09 |WS09 checkpoint T: \S|WS09 checkpoint U: \S|WS09 checkpoint V: \S|WS09 checkpoint S, after K's second answer: \S|WS09 checkpoint S, after K's answers: \S)/.test(h), h).toBe(true)
   })
 
   it('has every part, in order', () => {
@@ -319,7 +319,7 @@ describe('REDESIGN_STATUS.md, WS09 step 1: the lists', () => {
   it('tags every entry of the four lists in the form the record keeps', () => {
     for (const list of [decisions, verify, followUps]) {
       expect(entries(list).length).toBeGreaterThan(0)
-      for (const entry of entries(list)) expect(entry).toMatch(/^- \*\*[^*]+ \(WS09 (?:step (?:[1-9]|[1-3]\d)|checkpoint S)\)\.\*\* \S|^- \*\*[^*]+ \(WS09 checkpoint U\)\.\*\* \S/)
+      for (const entry of entries(list)) expect(entry).toMatch(/^- \*\*[^*]+ \(WS09 checkpoint V\)\.\*\* \S|^- \*\*[^*]+ \(WS09 (?:step (?:[1-9]|[1-3]\d)|checkpoint S)\)\.\*\* \S|^- \*\*[^*]+ \(WS09 checkpoint U\)\.\*\* \S/)
     }
     expect(deviations).toContain('None in WS09 step 1.')
   })

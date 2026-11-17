@@ -11,10 +11,15 @@
 // this file and passes it, read inside the handler at each request and never
 // copied into a variable of its own module, as the trim's handlers pass
 // CLUB_EMAIL_HIDDEN, so a test can turn it on through a getter on the mocked
-// module. Nothing here reads a setting of the environment.
+// module. REGION_EVENTS_ON, the regional representatives' switch, is read
+// here, inside regionClubIdsOf and draftedInRegion at each call,
+// through its module, whatever rolesOn is. Nothing here reads a setting of
+// the environment.
 
-import type { CreationGrant, CreationPerson } from '../../../domain/events/creation'
+import { regionAlone, type CreationGrant, type CreationPerson } from '../../../domain/events/creation'
 import type { MemberRow } from '../../types'
+import { getRegionalClubIds } from '../admin/permissions'
+import { REGION_EVENTS_ON } from '../clubs/pages'
 
 /**
  * Set: standing directors and the president may create events, a creator is written as the event's first director,
@@ -52,36 +57,113 @@ export async function holdsPresidentSeat(db: D1Database, memberId: string): Prom
 export type GrantMember = Pick<MemberRow, 'id' | 'role' | 'club_id'>
 
 /**
- * The grant the member creates with, in this order: lca_admin gives admin;
- * then, only with rolesOn, the President seat gives president, and the
- * tournament_director role gives standing_director; then club_rep with a
- * club gives club_rep; anyone else, none. The seat wins over a role because
- * the seat is the grant and members.role is unchanged (D20, D21). A club
- * rep's right on its own club's events is not part of the grant but the
- * person's repClubId (creationPerson), so a club rep who holds the seat
- * loses nothing. With rolesOn false the seat is never read.
+ * The clubs the member's active regional seats keep, read by
+ * getRegionalClubIds (functions/utils/admin/permissions.ts), the one seat
+ * rule, which reads a seat's added regions with its own; empty for a guest,
+ * as canManageClub refuses one. Read only while REGION_EVENTS_ON is set,
+ * whatever CREATION_ROLES_ON is; until then no query is made and the list
+ * is empty.
  */
-export async function creationGrant(db: D1Database, member: GrantMember, rolesOn: boolean): Promise<CreationGrant> {
+export async function regionClubIdsOf(db: D1Database, member: GrantMember): Promise<string[]> {
+  if (!REGION_EVENTS_ON || member.role === 'guest') return []
+  return getRegionalClubIds(db, member.id)
+}
+
+/** The grant, with the member's regional clubs asked for only when no stronger grant answers first. */
+async function grantOf(db: D1Database, member: GrantMember, rolesOn: boolean, regions: () => Promise<readonly string[]>): Promise<CreationGrant> {
   if (member.role === 'lca_admin') return 'admin'
   if (rolesOn) {
     if (await holdsPresidentSeat(db, member.id)) return 'president'
     if (member.role === 'tournament_director') return 'standing_director'
   }
   if (member.role === 'club_rep' && member.club_id) return 'club_rep'
+  if ((await regions()).length > 0) return 'regional_rep'
   return 'none'
+}
+
+/**
+ * The grant the member creates with, in this order: lca_admin gives admin;
+ * then, only with rolesOn, the President seat gives president, and the
+ * tournament_director role gives standing_director; then club_rep with a
+ * club gives club_rep; then, only while REGION_EVENTS_ON is set, an active
+ * regional seat that keeps a club gives regional_rep; anyone else, none.
+ * The seat wins over a role because the seat is the grant and members.role
+ * is unchanged (D20, D21). A club rep's right on its own club's events is
+ * not part of the grant but the person's repClubId (creationPerson), so a
+ * club rep who holds the seat loses nothing. With rolesOn false the
+ * President seat is never read, and with REGION_EVENTS_ON unset no regional
+ * seat is.
+ */
+export async function creationGrant(db: D1Database, member: GrantMember, rolesOn: boolean): Promise<CreationGrant> {
+  return grantOf(db, member, rolesOn, () => regionClubIdsOf(db, member))
 }
 
 /**
  * The person the rules in domain/events/creation.ts ask about: the grant,
  * the member's id, and the club they manage as its club rep, beside the
- * grant whatever it is.
+ * grant whatever it is; and, only while REGION_EVENTS_ON is set, the clubs
+ * their regional seats keep, read once, beside the grant whatever it is.
+ * With REGION_EVENTS_ON unset regionClubIds is left out, read by the rules
+ * as no club, and the person is exactly as before.
  */
 export async function creationPerson(db: D1Database, member: GrantMember, rolesOn: boolean): Promise<CreationPerson> {
-  return {
-    grant: await creationGrant(db, member, rolesOn),
-    memberId: member.id,
-    repClubId: member.role === 'club_rep' ? (member.club_id ?? null) : null,
-  }
+  const repClubId = member.role === 'club_rep' ? (member.club_id ?? null) : null
+  if (!REGION_EVENTS_ON) return { grant: await creationGrant(db, member, rolesOn), memberId: member.id, repClubId }
+  const regionClubIds = await regionClubIdsOf(db, member)
+  return { grant: await grantOf(db, member, rolesOn, async () => regionClubIds), memberId: member.id, repClubId, regionClubIds }
+}
+
+/**
+ * Whether the member drafted the club event (tournaments.created_by is
+ * theirs) and their regional seats keep its club: the representative's
+ * standing on their own draft, whatever its state, which lets them change its
+ * membership switch as canAssignDirectors lets them name its directors. False
+ * with no query while REGION_EVENTS_ON is unset, for an LCA-run event and for
+ * an event the member did not create.
+ */
+export async function draftedInRegion(db: D1Database, member: GrantMember, event: { clubId: string | null; createdBy: string | null }): Promise<boolean> {
+  if (!REGION_EVENTS_ON || event.clubId === null || event.createdBy !== member.id) return false
+  return (await regionClubIdsOf(db, member)).includes(event.clubId)
+}
+
+/**
+ * Whether the directors' answers (GET, POST and DELETE
+ * /api/admin/tournaments/[id]/directors and the manage answer) leave out
+ * each director's email for the member, only while REGION_EVENTS_ON is set.
+ * An observer (the caller says so, from isObserver), an LCA admin and the
+ * club's own rep read the emails on every event, and with no director there
+ * is nothing to leave out. On an event marked for approval (the mark the
+ * number 1, as mayList reads it, approved or not) everyone else is left
+ * without them, one of the event's own directors included: a representative
+ * drafts every such event and names its directors, so a director there may
+ * have been named by the representative or by someone the representative
+ * named. On an event not marked, one of its own directors reads them, and
+ * anyone else is left without them only when their one standing on the event
+ * is the region, as regionAlone reads it on the person creationPerson builds.
+ * A regional representative who is a plain member may read no member's email
+ * anywhere else. The mark is asked only past the observer, the LCA admin and
+ * the club's own rep, and the person only past the mark and the directors,
+ * unless the caller has built it already. The event's club and its mark are
+ * the caller's to find: the manage answer has both on the event row it
+ * loads; GET of the directors reads both in one statement for anyone but an
+ * observer and an LCA admin, so one of the event's own directors costs that
+ * read there; POST and DELETE take the club from their gate and read the
+ * mark alone when it is asked.
+ */
+export async function directorEmailsHidden(
+  db: D1Database,
+  member: GrantMember,
+  event: { clubId: string | null; directorIds: readonly string[]; mark: () => Promise<number | null | undefined> },
+  observer: boolean,
+  rolesOn: boolean,
+  built?: CreationPerson,
+): Promise<boolean> {
+  if (!REGION_EVENTS_ON || observer || event.directorIds.length === 0) return false
+  if (member.role === 'lca_admin') return false
+  if (member.role === 'club_rep' && member.club_id != null && member.club_id === event.clubId) return false
+  if ((await event.mark()) === 1) return true
+  if (event.directorIds.includes(member.id)) return false
+  return regionAlone(built ?? await creationPerson(db, member, rolesOn), event.clubId)
 }
 
 /**

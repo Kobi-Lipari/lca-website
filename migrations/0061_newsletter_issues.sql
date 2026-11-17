@@ -1,7 +1,7 @@
 -- 0061_newsletter_issues.sql
 --
 -- Written by drizzle-kit from functions/db/schema.ts (npm run db:generate),
--- staged as drizzle/0015_newsletter_issues.sql. The "--> statement-breakpoint" markers are
+-- staged as drizzle/0016_newsletter_issues.sql. The "--> statement-breakpoint" markers are
 -- comments. Review it before committing; edit the schema and generate again
 -- rather than editing this file.
 

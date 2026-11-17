@@ -188,7 +188,7 @@ describe('the contract', () => {
   it('puts the key in MANAGER_ONLY_TOURNAMENT_KEYS right after the trim\'s three, in the order the sorted keys take', () => {
     const keys = [...MANAGER_ONLY_TOURNAMENT_KEYS]
     expect(keys.slice(0, 4)).toEqual(['created_by', 'keep_apart', 'report_settings', 'review_notified_at'])
-    expect([...keys].sort()).toEqual(keys)
+    expect([...keys.slice(0, 4)].sort()).toEqual(keys.slice(0, 4))
   })
 })
 

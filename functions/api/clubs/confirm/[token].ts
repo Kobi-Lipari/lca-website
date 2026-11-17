@@ -7,7 +7,10 @@
 // member's id and nothing else (functions/utils/tokens.ts).
 //
 // - GET changes nothing, so a mail scanner that opens the link stamps
-//   nothing: it answers the club's name and town while the link is good.
+//   nothing: it answers the club's name and town while the link is good,
+//   with how the club meets in the listing's own public words (statement,
+//   null when there are none), which the email itself shows, so a holder of
+//   a good link learns nothing new from it.
 // - POST checks, at that moment, that the person is an LCA admin or still
 //   holds an active regional seat whose regions cover the club, and then
 //   makes the one write Still accurate makes everywhere
@@ -22,7 +25,8 @@
 //   400 LINK_FORGED   a token that is not ours, cut short, changed, or made
 //                     for another purpose: the same words for each, so
 //                     nothing is learned from them
-//   410 LINK_EXPIRED  a good token past its 30 days; the page offers Log in
+//   410 LINK_EXPIRED  a good token past its 30 days; the page offers a way
+//                     to log in to My region
 //   503 LINK_NO_KEY   no signing secret on this deployment
 //   404 CLUB_GONE     the club has been deleted since the email
 //   404 MEMBER_GONE   the person's account has been deleted since the email
@@ -38,6 +42,7 @@ import { errorResponse, handleOptions, jsonResponse, parseBody } from '../../../
 import { CLUB_KEEPERS_ON } from '../../../utils/clubs/pages'
 import { CONFIRM_PURPOSE } from '../../../utils/clubs/monthlyCheck'
 import { markStillAccurate } from '../../../utils/clubs/stillAccurate'
+import { oneLine } from '../../../utils/clubs/emails'
 import { isRegionalRepFor } from '../../../utils/admin/permissions'
 import { readToken } from '../../../utils/tokens'
 import { monthInWords } from '../../../../domain/clubs/monthlyCheck'
@@ -75,8 +80,11 @@ function withLinkHeaders(response: Response): Response {
   return response
 }
 
+/** The club a good link names, as its row is read once the token holds. */
+type LinkClub = { id: string; name: string; city: string; how_we_meet_text: string | null }
+
 /** The club and the person a good link names, or the answer that refuses it. */
-async function opened(context: Parameters<PagesFunction<Env>>[0]): Promise<{ club: { id: string; name: string; city: string }; memberId: string } | Response> {
+async function opened(context: Parameters<PagesFunction<Env>>[0]): Promise<{ club: LinkClub; memberId: string } | Response> {
   const token = typeof context.params.token === 'string' ? context.params.token : ''
   const read = await readToken(
     { current: context.env.SIGNING_SECRET, previous: context.env.SIGNING_SECRET_PREVIOUS },
@@ -93,7 +101,7 @@ async function opened(context: Parameters<PagesFunction<Env>>[0]): Promise<{ clu
   if (typeof clubId !== 'string' || clubId === '' || typeof memberId !== 'string' || memberId === '') return refuse(LINK_FORGED, 400)
 
   const db = context.env.DB
-  const club = await db.prepare('SELECT id, name, city FROM clubs WHERE id = ?').bind(clubId).first<{ id: string; name: string; city: string }>()
+  const club = await db.prepare('SELECT id, name, city, how_we_meet_text FROM clubs WHERE id = ?').bind(clubId).first<LinkClub>()
   if (!club) return refuse(CLUB_GONE, 404)
   const member = await db.prepare('SELECT id, role FROM members WHERE id = ?').bind(memberId).first<{ id: string; role: string }>()
   if (!member) return refuse(MEMBER_GONE, 404)
@@ -110,7 +118,9 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
   if (!CLUB_KEEPERS_ON) return withLinkHeaders(errorResponse(LINK_CLOSED, 403))
   const link = await opened(context)
   if (link instanceof Response) return link
-  const body: ClubLinkResponse = { name: link.club.name, city: link.club.city }
+  // The listing's own public words, as one line, and null for none or only white space.
+  const statement = link.club.how_we_meet_text === null ? null : oneLine(link.club.how_we_meet_text) || null
+  const body: ClubLinkResponse = { name: link.club.name, city: link.club.city, statement }
   return answer(body)
 }
 

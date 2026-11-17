@@ -178,7 +178,7 @@ describe('the fee rule names no role, as the block and the decision say', () => 
     const person = callsOf(patchFn, save, 'creationPerson')
     const decide = callsOf(patchFn, save, 'canChargeFees')
     expect(person.map((c) => flat(c.getText(save)))).toEqual(['creationPerson(context.env.DB, authResult.member, rolesOn)'])
-    expect(decide.map((c) => flat(c.getText(save)))).toEqual(['canChargeFees(person, { clubId: existing.clubId, createdBy: existing.createdBy }, rolesOn)'])
+    expect(decide.map((c) => flat(c.getText(save)))).toEqual(['canChargeFees(person, { clubId: existing.clubId, createdBy: existing.createdBy, needsLcaApproval: existing.needsLcaApproval }, rolesOn)'])
     for (const call of [...person, ...decide]) expect(call.getStart(save) >= feeRule!.getStart(save) && call.getEnd() <= feeRule!.getEnd()).toBe(true)
     const refusals = callsOf(feeRule!, save, 'errorResponse').map((c) => flat(c.getText(save)))
     expect(refusals).toEqual(['errorResponse(FEES_NEED_PAYOUT_ACCOUNT, 403)'])

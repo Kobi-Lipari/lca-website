@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "339d34a9-5826-4b98-a6fe-943b4955fabc",
+  "id": "32683d22-c9ba-4347-9e4e-53f5926b20d1",
   "prevId": "2eba59ab-508f-4009-af7d-d42f4e4e8016",
   "tables": {
     "admin_audit_log": {
@@ -2397,212 +2397,6 @@
       "uniqueConstraints": {},
       "checkConstraints": {}
     },
-    "newsletter_issues": {
-      "name": "newsletter_issues",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "text",
-          "primaryKey": true,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "list_id": {
-          "name": "list_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "month_label": {
-          "name": "month_label",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": "''"
-        },
-        "subject": {
-          "name": "subject",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": "''"
-        },
-        "preheader": {
-          "name": "preheader",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": "''"
-        },
-        "body_html": {
-          "name": "body_html",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": "''"
-        },
-        "version": {
-          "name": "version",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": 1
-        },
-        "created_by": {
-          "name": "created_by",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": "(datetime('now'))"
-        },
-        "updated_by": {
-          "name": "updated_by",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "updated_at": {
-          "name": "updated_at",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": "(datetime('now'))"
-        },
-        "campaign_id": {
-          "name": "campaign_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "set_aside_at": {
-          "name": "set_aside_at",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "send_at": {
-          "name": "send_at",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "scheduled_by": {
-          "name": "scheduled_by",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "scheduled_at": {
-          "name": "scheduled_at",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "link_check": {
-          "name": "link_check",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "held_reason": {
-          "name": "held_reason",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "pinned_at": {
-          "name": "pinned_at",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "pinned_name": {
-          "name": "pinned_name",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        }
-      },
-      "indexes": {
-        "newsletter_issues_one_open": {
-          "name": "newsletter_issues_one_open",
-          "columns": [
-            "list_id"
-          ],
-          "isUnique": true,
-          "where": "campaign_id IS NULL AND set_aside_at IS NULL"
-        }
-      },
-      "foreignKeys": {
-        "newsletter_issues_created_by_members_id_fk": {
-          "name": "newsletter_issues_created_by_members_id_fk",
-          "tableFrom": "newsletter_issues",
-          "tableTo": "members",
-          "columnsFrom": [
-            "created_by"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "set null",
-          "onUpdate": "no action"
-        },
-        "newsletter_issues_updated_by_members_id_fk": {
-          "name": "newsletter_issues_updated_by_members_id_fk",
-          "tableFrom": "newsletter_issues",
-          "tableTo": "members",
-          "columnsFrom": [
-            "updated_by"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "set null",
-          "onUpdate": "no action"
-        },
-        "newsletter_issues_scheduled_by_members_id_fk": {
-          "name": "newsletter_issues_scheduled_by_members_id_fk",
-          "tableFrom": "newsletter_issues",
-          "tableTo": "members",
-          "columnsFrom": [
-            "scheduled_by"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "set null",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "checkConstraints": {}
-    },
     "payments": {
       "name": "payments",
       "columns": {
@@ -4603,6 +4397,35 @@
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
+        },
+        "needs_lca_approval": {
+          "name": "needs_lca_approval",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 0
+        },
+        "approval_requested_at": {
+          "name": "approval_requested_at",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "approved_at": {
+          "name": "approved_at",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "approved_by": {
+          "name": "approved_by",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
         }
       },
       "indexes": {
@@ -4641,6 +4464,19 @@
           "tableTo": "members",
           "columnsFrom": [
             "created_by"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "tournaments_approved_by_members_id_fk": {
+          "name": "tournaments_approved_by_members_id_fk",
+          "tableFrom": "tournaments",
+          "tableTo": "members",
+          "columnsFrom": [
+            "approved_by"
           ],
           "columnsTo": [
             "id"

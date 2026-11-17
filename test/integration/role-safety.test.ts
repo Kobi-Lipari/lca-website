@@ -5,12 +5,15 @@
 // they direct (WS08 step 5). CREATION_ROLES_ON is false in the tree; the
 // creation roles' case reads it through a getter on the mocked module, as
 // test/integration/tournament-create.test.ts does, and every other case runs
-// with it unset, as before.
+// with it unset, as before. The approval wait's cases (WS09 step 18) read
+// REGION_EVENTS_ON, false in the tree, through a getter on its own module in
+// the same way.
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { env } from 'cloudflare:test'
 import { errorBodySchema } from '../../domain/contracts'
 import { expectContract, invoke, resetHarness } from './harness'
 import { seedAdmin, seedClub, seedMember, seedPresident, seedRegistration, seedTournament, seedTournamentDirector } from './factories'
+import { noWaits } from './mailRuns'
 
 import { onRequestPatch as registrationPatch } from '../../functions/api/registrations/[id]'
 import { onRequestDelete as tournamentDelete, onRequestPatch as tournamentPatch } from '../../functions/api/admin/tournaments/[id]'
@@ -19,8 +22,9 @@ import { onRequestPatch as clubPatch } from '../../functions/api/admin/clubs/[id
 import { onRequestPut as clubPlacesPut } from '../../functions/api/admin/clubs/[id]/places'
 import { onRequestPost as supportPost } from '../../functions/api/support'
 import { onRequestDelete as adminTicketDelete } from '../../functions/api/admin/support/[id]'
+import { onRequestPost as approvalPost } from '../../functions/api/admin/tournaments/[id]/approval'
 
-const flags = vi.hoisted(() => ({ rolesOn: false, keepersOn: false }))
+const flags = vi.hoisted(() => ({ rolesOn: false, keepersOn: false, regionOn: false }))
 vi.mock('../../functions/utils/events/creation', async (importOriginal) => {
   const real = await importOriginal<typeof import('../../functions/utils/events/creation')>()
   return {
@@ -39,6 +43,9 @@ vi.mock('../../functions/utils/clubs/pages', async (importOriginal) => {
     get CLUB_KEEPERS_ON() {
       return flags.keepersOn
     },
+    get REGION_EVENTS_ON() {
+      return flags.regionOn
+    },
   }
 })
 
@@ -46,6 +53,7 @@ beforeEach(resetHarness)
 afterEach(() => {
   flags.rolesOn = false
   flags.keepersOn = false
+  flags.regionOn = false
 })
 
 async function logCount(action: string): Promise<number> {
@@ -207,5 +215,86 @@ describe('creation roles', () => {
     }
     // The event, its two directors and the activity log are as they were: no row for any of the four.
     expect(await stored()).toEqual(before)
+  })
+})
+
+describe('the approval wait (WS09 step 18)', () => {
+  beforeEach(() => {
+    flags.regionOn = true
+    // The LCA admins' emails go 400ms apart; the pause is not waited for here.
+    noWaits()
+  })
+  afterEach(() => {
+    vi.restoreAllMocks()
+  })
+
+  /** A representative's club event in the region, drafted by them and marked for an LCA admin's approval. */
+  async function waitingEvent() {
+    const clubId = await seedClub({ name: 'Example Chess Club' })
+    await env.DB.prepare("UPDATE clubs SET region = 'Example Bayou Region' WHERE id = ?").bind(clubId).run()
+    const representative = await seedMember({ fullName: 'Player One' })
+    const seat = `seat-safety-${representative}`
+    await env.DB.prepare(
+      "INSERT INTO board_members (id, role, name, sort_order, slug, category, is_active) VALUES (?, 'Example Region Representative', '', 99, ?, 'regional_rep', 1)",
+    ).bind(seat, seat).run()
+    await env.DB.prepare("INSERT INTO seat_regions (seat_id, region) VALUES (?, 'Example Bayou Region')").bind(seat).run()
+    await env.DB.prepare('INSERT INTO board_seat_assignments (id, seat_id, member_id) VALUES (?, ?, ?)').bind(`term-${seat}`, seat, representative).run()
+    const tournamentId = await seedTournament({ clubId, createdBy: representative, entryFee: 0, sections: [{ name: 'Open', entryFee: 0 }], isVisible: false })
+    await env.DB.prepare('UPDATE tournaments SET needs_lca_approval = 1 WHERE id = ?').bind(tournamentId).run()
+    const rep = await seedMember({ role: 'club_rep', clubId })
+    const director = await seedMember()
+    await seedTournamentDirector(tournamentId, director)
+    return { tournamentId, representative, rep, director, admin: await seedAdmin() }
+  }
+  const move = (as: string | undefined, id: string, body: unknown, aal: 'aal1' | 'aal2' = 'aal2') => invoke(approvalPost, { method: 'POST', as, params: { id }, body, aal })
+  const wait = (id: string) => env.DB.prepare('SELECT approval_requested_at, approved_at, approved_by, is_visible FROM tournaments WHERE id = ?').bind(id).first()
+  const allRows = async () => (await env.DB.prepare('SELECT COUNT(*) AS n FROM admin_audit_log').first<{ n: number }>())?.n
+
+  it('approve and ask for changes need an LCA admin with a second factor: without it the admin gets requireAdmin\'s refusal, the representative, a club rep and a director 403, signed out 401, each refusal is { error } and writes no row', async () => {
+    const { tournamentId, representative, rep, director, admin } = await waitingEvent()
+    expect((await move(representative, tournamentId, { action: 'submit' })).status).toBe(200)
+    const before = { wait: await wait(tournamentId), log: await allRows() }
+    for (const body of [{ action: 'approve' }, { action: 'ask_changes', note: 'Example note' }]) {
+      const noFactor = await move(admin, tournamentId, body, 'aal1')
+      expect(noFactor.status, body.action).toBe(403)
+      expect(await noFactor.json(), body.action).toEqual({
+        error: 'Two-factor authentication is required for admin access. Set it up in your account security settings.',
+        mfaRequired: true,
+      })
+      for (const who of [representative, rep, director]) {
+        const res = await move(who, tournamentId, body)
+        expect(res.status, `${who} ${body.action}`).toBe(403)
+        expect(await expectContract(res, errorBodySchema)).toEqual({ error: 'Forbidden' })
+      }
+      const signedOut = await move(undefined, tournamentId, body)
+      expect(signedOut.status, body.action).toBe(401)
+      await expectContract(signedOut, errorBodySchema)
+    }
+    expect({ wait: await wait(tournamentId), log: await allRows() }).toEqual(before)
+  })
+
+  it('each move that goes through writes one row in the activity log, naming who made it, and a move that changes nothing or is refused writes none', async () => {
+    const { tournamentId, representative, admin } = await waitingEvent()
+    const rowsOf = async (action: string) => (await env.DB.prepare("SELECT COUNT(*) AS n FROM admin_audit_log WHERE action = ? AND json_extract(detail, '$.tournament_id') = ?")
+      .bind(action, tournamentId).first<{ n: number }>())?.n
+    expect((await move(representative, tournamentId, { action: 'submit' })).status).toBe(200)
+    expect(await rowsOf('tournament_submitted')).toBe(1)
+    // A second submit changes nothing, and an approve without the second factor is refused: no row for either.
+    expect((await move(representative, tournamentId, { action: 'submit' })).status).toBe(200)
+    expect((await move(admin, tournamentId, { action: 'approve' }, 'aal1')).status).toBe(403)
+    expect(await rowsOf('tournament_submitted')).toBe(1)
+    expect(await rowsOf('tournament_approved')).toBe(0)
+    expect((await move(admin, tournamentId, { action: 'ask_changes', note: 'Example note' })).status).toBe(200)
+    expect(await rowsOf('tournament_changes_asked')).toBe(1)
+    expect((await move(admin, tournamentId, { action: 'approve' })).status).toBe(200)
+    expect((await move(admin, tournamentId, { action: 'approve' })).status).toBe(409)
+    expect(await rowsOf('tournament_approved')).toBe(1)
+    const { results } = await env.DB.prepare("SELECT actor_id, action, detail FROM admin_audit_log WHERE action LIKE 'tournament_%' AND json_extract(detail, '$.tournament_id') = ? ORDER BY rowid")
+      .bind(tournamentId).all<{ actor_id: string; action: string; detail: string }>()
+    expect(results.map((r) => [r.actor_id, r.action, JSON.parse(r.detail)])).toEqual([
+      [representative, 'tournament_submitted', { tournament_id: tournamentId }],
+      [admin, 'tournament_changes_asked', { tournament_id: tournamentId }],
+      [admin, 'tournament_approved', { tournament_id: tournamentId }],
+    ])
   })
 })

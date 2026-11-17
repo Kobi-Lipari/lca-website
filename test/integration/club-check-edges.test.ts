@@ -10,9 +10,10 @@
 //   club as the page shows an admin;
 // - (b) the do-not-send gate, read once for a run, with the mail engine's
 //   rules off and on;
-// - (c) a send worth another try in the middle of a run, a press that meets
-//   one, a person with no address on a press, and the Central day boundaries
-//   of the mark's month;
+// - (c) a send worth another try in the middle of a run, under today's rule
+//   (a 500) and under the mail engine's rules (a 503, while a 500 there is
+//   never tried again), a press that meets one, a person with no address on
+//   a press, and the Central day boundaries of the mark's month;
 // - (d) the words of an email drawn from a club name and a statement that
 //   carry markup, and a club with no statement;
 // - (e) the button's role-safety: no sign-in, a wrong role and an admin
@@ -22,9 +23,11 @@
 //   a club's card, an inactive seat, and a body the contract refuses;
 // - (g) the mark table: its columns, its key and its member rule.
 //
-// CLUB_KEEPERS_ON and the mail engine's switch are set through getters on
-// mocked modules; the keys are made up and written here, and every club,
-// person and address is made up.
+// CLUB_KEEPERS_ON and both mail switches, MAIL_LISTS_ON and MAIL_SENDER, are
+// set through getters on mocked modules, the mail switches at today's values
+// unless a case sets them, so each case runs the same whatever the two ship
+// as; the keys are made up and written here, and every club, person and
+// address is made up.
 import { env } from 'cloudflare:test'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { onRequestPost as buttonConfirm } from '../../functions/api/admin/clubs/[id]/confirm'
@@ -37,7 +40,7 @@ import { seedAdmin, seedClub, seedMember } from './factories'
 import { emailBehavior, emailOutbox, invoke, resetHarness } from './harness'
 import { countingDb } from './mailRuns'
 
-const flags = vi.hoisted(() => ({ keepersOn: true, listsOn: false }))
+const flags = vi.hoisted(() => ({ keepersOn: true, listsOn: false, sender: 'resend' as 'resend' | 'ses' }))
 vi.mock('../../functions/utils/clubs/pages', async (importOriginal) => {
   const real = await importOriginal<typeof import('../../functions/utils/clubs/pages')>()
   return {
@@ -53,6 +56,9 @@ vi.mock('../../functions/utils/mail/switches', async (importOriginal) => {
     ...real,
     get MAIL_LISTS_ON() {
       return flags.listsOn
+    },
+    get MAIL_SENDER() {
+      return flags.sender
     },
   }
 })
@@ -118,6 +124,7 @@ beforeEach(async () => {
   resetHarness()
   flags.keepersOn = true
   flags.listsOn = false
+  flags.sender = 'resend'
   await env.DB.batch([
     env.DB.prepare('DELETE FROM board_seat_assignments'),
     env.DB.prepare('DELETE FROM club_check_marks'),
@@ -235,7 +242,9 @@ describe('(b) the do-not-send gate is read once for a run', () => {
 })
 
 describe('(c) the middle of a run, and the Central day', () => {
-  it('a send worth another try ends the run, gives its mark back, leaves the rest unclaimed, and the next run sends all three', async () => {
+  it('under today\'s rule, the engine\'s rules off: a send worth another try, a 500, ends the run, gives its mark back, leaves the rest unclaimed, and the next run sends all three', async () => {
+    flags.listsOn = false
+    flags.sender = 'resend'
     const first = await holder('Player A')
     const second = await holder('Player B')
     const third = await holder('Player C')
@@ -254,7 +263,9 @@ describe('(c) the middle of a run, and the Central day', () => {
     expect(await markRows()).toHaveLength(3)
   })
 
-  it('a press that meets a send worth another try ends there, counts the rest as not reached, and touches no mark', async () => {
+  it('under today\'s rule, the engine\'s rules off: a press that meets a send worth another try, a 500, ends there, counts the rest as not reached, and touches no mark', async () => {
+    flags.listsOn = false
+    flags.sender = 'resend'
     const people = [await holder('Player A'), await holder('Player B'), await holder('Player C')]
     emailBehavior.succeed = false
     emailBehavior.status = 500
@@ -263,6 +274,54 @@ describe('(c) the middle of a run, and the Central day', () => {
     const answer = await runMonthlyCheck(keyed(db), DEC_3, true, FAST)
     expect(answer).toMatchObject({ people: 3, sent: 0, notSent: 1, notReached: 2 })
     expect(ran.filter((r) => /club_check_marks/.test(r.sql))).toEqual([])
+    expect(await markRows()).toEqual([])
+  })
+
+  it('under the engine\'s rules: a send worth another try, a 503, ends the run, gives its mark back, leaves the rest unclaimed, and the next run sends all three', async () => {
+    flags.listsOn = true
+    const first = await holder('Player A')
+    const second = await holder('Player B')
+    const third = await holder('Player C')
+    emailBehavior.succeed = false
+    emailBehavior.status = 503
+    emailBehavior.failFor = [first.email]
+    const run = await runMonthlyCheck(keyed(), DEC_7_8AM, false, FAST)
+    expect(run).toMatchObject({ people: 3, sent: 0, notSent: 1, notReached: 2 })
+    expect(await markRows()).toEqual([])
+    emailBehavior.succeed = true
+    expect((await runMonthlyCheck(keyed(), new Date('2026-12-07T14:05:00Z'), false, FAST)).sent).toBe(3)
+    for (const who of [first, second, third]) expect(mailTo(who.email), who.email).toHaveLength(1)
+    expect(await markRows()).toHaveLength(3)
+  })
+
+  it('under the engine\'s rules: a 500 is never tried again, so its mark is kept and the run goes on to the others', async () => {
+    flags.listsOn = true
+    const first = await holder('Player A')
+    const second = await holder('Player B')
+    const third = await holder('Player C')
+    emailBehavior.succeed = false
+    emailBehavior.status = 500
+    emailBehavior.failFor = [first.email]
+    const run = await runMonthlyCheck(keyed(), DEC_7_8AM, false, FAST)
+    expect(run).toMatchObject({ people: 3, sent: 2, notSent: 1, notReached: 0 })
+    expect((await markRows()).map((r) => r.member_id).sort()).toEqual([first.id, second.id, third.id].sort())
+    for (const who of [second, third]) expect(mailTo(who.email), who.email).toHaveLength(1)
+    emailBehavior.succeed = true
+    expect((await runMonthlyCheck(keyed(), new Date('2026-12-07T14:05:00Z'), false, FAST)).stopped).toBe('nobody')
+    expect(mailTo(first.email)).toHaveLength(0)
+  })
+
+  it('under the engine\'s rules: a press that meets a 503 ends there and touches no mark, and one that meets a 500 goes on', async () => {
+    flags.listsOn = true
+    const people = [await holder('Player A'), await holder('Player B'), await holder('Player C')]
+    emailBehavior.succeed = false
+    emailBehavior.status = 503
+    emailBehavior.failFor = [people[0].email]
+    const held = await runMonthlyCheck(keyed(), DEC_3, true, FAST)
+    expect(held).toMatchObject({ people: 3, sent: 0, notSent: 1, notReached: 2 })
+    emailBehavior.status = 500
+    const goneOn = await runMonthlyCheck(keyed(), DEC_3, true, FAST)
+    expect(goneOn).toMatchObject({ people: 3, sent: 2, notSent: 1, notReached: 0 })
     expect(await markRows()).toEqual([])
   })
 

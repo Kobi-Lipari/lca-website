@@ -19,9 +19,11 @@ import { nextCheckWords } from '../../domain/clubs/monthlyCheck'
 import type { WorkspaceRegionResponse } from '../../domain/contracts/clubs'
 import type { Env } from '../../functions/types'
 import { emailOutbox, fetchCount, flushWaitUntil, invoke, resetHarness, type Aal } from './harness'
+import { countingDb } from './mailRuns'
+import { workspaceRegionResponseSchema } from '../../domain/contracts/clubs'
 import { seedAdmin, seedClub, seedMember, seedTournament } from './factories'
 
-const flags = vi.hoisted(() => ({ keepersOn: true }))
+const flags = vi.hoisted(() => ({ keepersOn: true, regionOn: false }))
 vi.mock('../../functions/utils/clubs/pages', async (importOriginal) => {
   const real = await importOriginal<typeof import('../../functions/utils/clubs/pages')>()
   return {
@@ -29,15 +31,21 @@ vi.mock('../../functions/utils/clubs/pages', async (importOriginal) => {
     get CLUB_KEEPERS_ON() {
       return flags.keepersOn
     },
+    // WS09 step 19's cases set it; every other case runs with it unset, as it ships.
+    get REGION_EVENTS_ON() {
+      return flags.regionOn
+    },
   }
 })
 
 beforeEach(() => {
   resetHarness()
   flags.keepersOn = true
+  flags.regionOn = false
 })
 afterEach(() => {
   flags.keepersOn = false
+  flags.regionOn = false
 })
 
 const newRegion = () => `Example Region ${crypto.randomUUID().slice(0, 8)}`
@@ -455,5 +463,102 @@ describe('POST /api/admin/clubs/[id]/confirm: Still accurate', () => {
     const stale = await invoke(adminClubPatch, { method: 'PATCH', as: admin, aal: 'aal2', params: { id: 'bunkie-chess-club' }, body: { toldUpdatedAt: '2020-01-01 00:00:00', costText: 'Free' } })
     expect(stale.status).toBe(409)
     expect(await stale.json()).toEqual({ error: SAVED_SINCE })
+  })
+})
+
+/** An event of the club in a state of the LCA admins' wait, its times as datetime('now') writes them, or blank. */
+async function waitingEvent(clubId: string, state: 'draft' | 'review' | 'approved' | 'blank', opts: { visible?: boolean } = {}): Promise<string> {
+  const id = await seedTournament({ clubId, isVisible: opts.visible ?? state === 'approved', name: `Example Club Quads ${crypto.randomUUID().slice(0, 6)}` })
+  const [requested, approved] = state === 'draft' ? [null, null]
+    : state === 'review' ? ['2026-11-14 18:00:00', null]
+      : state === 'approved' ? ['2026-11-14 18:00:00', '2026-11-16 15:00:00']
+        : ['2026-11-14 18:00:00', '  ']
+  await env.DB.prepare('UPDATE tournaments SET needs_lca_approval = 1, approval_requested_at = ?, approved_at = ? WHERE id = ?').bind(requested, approved, id).run()
+  return id
+}
+
+describe('GET /api/workspace/region with REGION_EVENTS_ON set (WS09 step 19): the events in LCA review', () => {
+  it('counts each club\'s events in LCA review on its card, and their sum in This month: one, two and none', async () => {
+    flags.regionOn = true
+    const region = newRegion()
+    const one = await club(region, 'Example Alpha Club')
+    const two = await club(region, 'Example Bravo Club')
+    const none = await club(region, 'Example Charlie Club')
+    const holder = await seedMember({ fullName: 'Player One' })
+    await seat(holder, [region])
+    await waitingEvent(one, 'review')
+    await waitingEvent(two, 'review')
+    await waitingEvent(two, 'review')
+    await waitingEvent(two, 'draft')
+    await waitingEvent(two, 'approved')
+    await waitingEvent(none, 'draft')
+    await seedTournament({ clubId: none })
+    const read = await answer(holder)
+    expect(workspaceRegionResponseSchema.safeParse(read).success).toBe(true)
+    const byId = new Map(read.clubs.map((c) => [c.id, c]))
+    expect(byId.get(one)?.inReview).toBe(1)
+    expect(byId.get(two)?.inReview).toBe(2)
+    expect(byId.get(none)?.inReview).toBe(0)
+    expect(read.thisMonth.inReview).toBe(3)
+    // The open items stay empty, so Confirm all and the cards' order are as before.
+    for (const card of read.clubs) expect(card.openItems).toEqual([])
+  })
+
+  it('counts an event as in review only while it is marked, sent and not approved, a blank time read as not set', async () => {
+    flags.regionOn = true
+    const region = newRegion()
+    const clubId = await club(region)
+    const holder = await seedMember({ fullName: 'Player One' })
+    await seat(holder, [region])
+    await waitingEvent(clubId, 'blank')
+    const unmarked = await seedTournament({ clubId })
+    await env.DB.prepare('UPDATE tournaments SET approval_requested_at = \'2026-11-14 18:00:00\' WHERE id = ?').bind(unmarked).run()
+    const blankSent = await waitingEvent(clubId, 'draft')
+    await env.DB.prepare('UPDATE tournaments SET approval_requested_at = \' \' WHERE id = ?').bind(blankSent).run()
+    const read = await answer(holder)
+    expect(read.clubs[0].inReview).toBe(1)
+    expect(read.thisMonth.inReview).toBe(1)
+  })
+
+  it('counts every event of the clubs a representative keeps, hidden drafts among them, since they run them, and gives an LCA admin every club\'s', async () => {
+    flags.regionOn = true
+    const region = newRegion()
+    const clubId = await club(region)
+    const holder = await seedMember({ fullName: 'Player One' })
+    await seat(holder, [region])
+    await seedTournament({ clubId })
+    await waitingEvent(clubId, 'draft')
+    await waitingEvent(clubId, 'review')
+    const read = await answer(holder)
+    expect(read.clubs[0].events).toBe(3)
+    expect(read.clubs[0].inReview).toBe(1)
+    const admin = await answer(await seedAdmin(), 'aal2')
+    expect(admin.clubs.find((c) => c.id === clubId)?.inReview).toBe(1)
+    expect(admin.thisMonth.inReview).toBeGreaterThanOrEqual(1)
+  })
+
+  it('with the constant unset the answer is the base\'s, byte for byte, with no query more, and with it set exactly one query more', async () => {
+    const region = newRegion()
+    const clubId = await club(region)
+    const holder = await seedMember({ fullName: 'Player One' })
+    await seat(holder, [region])
+    await seedTournament({ clubId })
+    await waitingEvent(clubId, 'draft')
+    await waitingEvent(clubId, 'review')
+    const off = countingDb()
+    const before = await invoke(regionGet, { as: holder, aal: 'aal1', env: { DB: off.db } })
+    expect(before.status).toBe(200)
+    const body = await before.json<WorkspaceRegionResponse>()
+    // The base's card and This month, key for key: no count of events in review, and the hidden drafts not counted.
+    expect(Object.keys(body.clubs[0])).toEqual(['id', 'name', 'city', 'region', 'color', 'logoUrl', 'statement', 'lastConfirmedAt', 'lastCheckWords', 'needsCheck', 'events', 'openItems'])
+    expect(Object.keys(body.thisMonth)).toEqual(['nextCheck', 'checked', 'notChecked'])
+    expect(body.clubs[0].events).toBe(1)
+    expect(off.ran.some((r) => r.sql.includes('needs_lca_approval'))).toBe(false)
+    flags.regionOn = true
+    const on = countingDb()
+    expect((await invoke(regionGet, { as: holder, aal: 'aal1', env: { DB: on.db } })).status).toBe(200)
+    expect(on.ran).toHaveLength(off.ran.length + 1)
+    expect(on.ran.filter((r) => r.sql.includes('needs_lca_approval'))).toHaveLength(1)
+    expect(on.ran.filter((r) => !r.sql.includes('needs_lca_approval')).map((r) => r.sql)).toEqual(off.ran.map((r) => r.sql))
   })
 })
