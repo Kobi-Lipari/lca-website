@@ -41,6 +41,16 @@ export function clip(text: string, max: number): string {
   return flat.length > max ? `${flat.slice(0, max - 1).trimEnd()}…` : flat
 }
 
+/**
+ * A page's address on this site, as its canonical link and og:url give it:
+ * the site's own origin, by resolveSiteUrl, and the path the request names,
+ * as a URL writes it. The sitemap (functions/sitemap.xml.ts) gives each page
+ * by this same function, so its addresses are the canonical links.
+ */
+export function pageAddress(env: SiteEnv, request: Request): string {
+  return `${resolveSiteUrl(env, request)}${new URL(request.url).pathname}`
+}
+
 export function withLinkPreview(
   shell: Response,
   preview: LinkPreview,
@@ -51,7 +61,7 @@ export function withLinkPreview(
   if (!shell.ok || !contentType.includes('text/html')) return shell
 
   const site = resolveSiteUrl(env, request)
-  const pageUrl = `${site}${new URL(request.url).pathname}`
+  const pageUrl = pageAddress(env, request)
   const title = clip(preview.title, 90)
   const description = clip(preview.description, 200)
   const image = preview.image
