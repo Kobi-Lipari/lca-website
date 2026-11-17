@@ -18,6 +18,12 @@ export interface LinkPreview {
   /** Square logos preview better as a small card than a stretched banner. */
   imageIsSquare?: boolean
   type?: 'website' | 'article'
+  /**
+   * HTML written inside the shell's root element, for a reader that runs no
+   * script; the app replaces it when it draws. The caller escapes every word
+   * in it. With none, the root element is left as the shell has it.
+   */
+  root?: string
 }
 
 const SITE_NAME = 'Louisiana Chess Association'
@@ -30,7 +36,7 @@ function escapeAttr(value: string): string {
     .replace(/>/g, '&gt;')
 }
 
-function clip(text: string, max: number): string {
+export function clip(text: string, max: number): string {
   const flat = text.replace(/\s+/g, ' ').trim()
   return flat.length > max ? `${flat.slice(0, max - 1).trimEnd()}…` : flat
 }
@@ -69,7 +75,16 @@ export function withLinkPreview(
     `<meta name="twitter:image" content="${escapeAttr(image)}" />`,
   ].join('\n    ')
 
-  return new HTMLRewriter()
+  const rewriter = new HTMLRewriter()
+  const root = preview.root
+  if (root !== undefined) {
+    rewriter.on('#root', {
+      element(el) {
+        el.setInnerContent(root, { html: true })
+      },
+    })
+  }
+  return rewriter
     .on('title', {
       element(el) {
         el.setInnerContent(`${title} | ${SITE_NAME}`)

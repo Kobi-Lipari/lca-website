@@ -199,7 +199,8 @@ describe('REDESIGN_STATUS.md, WS09 step 20: the parts against the files', () => 
       '`confirm`', '`logo` and `page`', '`RESERVED_SLUGS` already holds all three', 'no stored slug changes', '`clubNamedBy`',
     ]) expect(finding, piece).toContain(piece)
     for (const word of ['confirm', 'logo', 'page']) expect(RESERVED_SLUGS, word).toContain(word)
-    const code = codeOf(HANDLER)
+    // WS09 step 23 moved the order into functions/utils/clubs/pageAnswer.ts, which the handler and the new route both call.
+    const code = codeOf('functions/utils/clubs/pageAnswer.ts')
     const order = ['FROM clubs WHERE slug = ?', 'FROM club_slug_history WHERE old_slug = ?', 'FROM clubs WHERE id = ?'].map((sql) => code.indexOf(sql))
     for (const at of order) expect(at).toBeGreaterThan(-1)
     expect([...order].sort((a, b) => a - b)).toEqual(order)
@@ -211,7 +212,8 @@ describe('REDESIGN_STATUS.md, WS09 step 20: the parts against the files', () => 
     for (const piece of ['never a spread of a row', 'no `contact_email` or any other email address', 'no officer, no roster, no member\'s id, no count of members', 'no `told_by` or `confirmed_by`', 'With `CLUB_EMAIL_HIDDEN` unset or set']) {
       expect(never, piece).toContain(piece)
     }
-    expect(codeOf(HANDLER)).not.toMatch(/\.\.\.club\b|\.\.\.row\b|contact_email|club_officers|CLUB_EMAIL_HIDDEN/)
+    // WS09 step 23 moved the answer's reads into functions/utils/clubs/pageAnswer.ts: the ban reads the handler and the shared file.
+    for (const file of [HANDLER, 'functions/utils/clubs/pageAnswer.ts']) expect(codeOf(file), file).not.toMatch(/\.\.\.club\b|\.\.\.row\b|contact_email|club_officers|CLUB_EMAIL_HIDDEN/)
     const author = bullet(block, '- **The author line.**')
     for (const piece of [
       '"Kept by the club\'s rep, {first name and last initial}"', '"This club hasn\'t named a rep yet · Kept by {name}, the {region} representative"',
@@ -231,11 +233,11 @@ describe('REDESIGN_STATUS.md, WS09 step 20: the parts against the files', () => 
     }
     expect(read(AUTHOR)).toContain('`As told by the club, updated ${month}`')
     expect(bullet(block, '- **Places.**')).toContain('`name`, `street`, `note`, `latitude` and `longitude`')
-    expect(codeOf(HANDLER)).toContain('SELECT name, street, note, latitude, longitude FROM club_places WHERE club_id = ? ORDER BY sort, id LIMIT 2')
+    expect(codeOf('functions/utils/clubs/pageAnswer.ts')).toContain('SELECT name, street, note, latitude, longitude FROM club_places WHERE club_id = ? ORDER BY sort, id LIMIT 2')
     const events = bullet(block, '- **Events.**')
     for (const piece of ['`${listedWhere(\'t\')}`', '`LISTED`', '`registered_count`', '`GET /api/clearinghouse`', 'lines 390 to 405']) expect(events, piece).toContain(piece)
-    expect(read('test/unit/listing-rule.test.ts')).toContain('\'functions/api/clubs/[id]/page.ts\']')
-    expect(codeOf(HANDLER)).toContain('WHERE t.club_id = ? AND ${listedWhere(\'t\')}')
+    expect(read('test/unit/listing-rule.test.ts')).toContain('\'functions/utils/clubs/pageAnswer.ts\']')
+    expect(codeOf('functions/utils/clubs/pageAnswer.ts')).toContain('WHERE t.club_id = ? AND ${listedWhere(\'t\')}')
     expect(bullet(block, '- **News.**')).toContain('`club_news` has no draft or published column')
     const nearest = bullet(block, '- **The nearest clubs.**')
     for (const piece of ['`milesBetween`', '"about N mi"', '"less than 1 mi"', 'Ties go by name and then id']) expect(nearest, piece).toContain(piece)

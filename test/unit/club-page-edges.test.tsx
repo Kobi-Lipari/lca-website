@@ -177,7 +177,8 @@ describe('the page\'s title', () => {
     answers({ [`/api/clubs/${CLUB_SLUG}/page`]: bareAnswer() })
     const view = open(`/clubs/${CLUB_SLUG}`)
     await screen.findByRole('heading', { level: 1, name: 'Example Chess Club' })
-    expect(document.title).toBe(`Example Chess Club · Chess club in Example City, Louisiana · ${SITE_NAME}`)
+    // The title is set in an effect, which may run a moment after the heading is drawn.
+    await waitFor(() => expect(document.title).toBe(`Example Chess Club · Chess club in Example City, Louisiana · ${SITE_NAME}`))
     view.unmount()
     expect(document.title).toBe('Before the club')
   })
@@ -186,7 +187,7 @@ describe('the page\'s title', () => {
     answers({})
     open('/clubs/no-such-club')
     await screen.findByRole('heading', { level: 1, name: 'Club not found' })
-    expect(document.title).toBe(`Club not found · ${SITE_NAME}`)
+    await waitFor(() => expect(document.title).toBe(`Club not found · ${SITE_NAME}`))
   })
 })
 

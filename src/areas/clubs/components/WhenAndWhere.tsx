@@ -20,6 +20,7 @@ import { cn } from '@/lib/utils'
 import { CLEAR_OF_BARS, WORD_LINK, hasWords } from '@/areas/clubs/clubPage'
 import { directionsUrl } from '@/areas/clubs/clubMap'
 import { SectionHeading } from '@/areas/clubs/components/ClubAbout'
+import { STATEMENT_LABEL, whenAndWhereHeading } from '@domain/clubs/pageWords'
 import type { ClubPageResponse } from '@domain/contracts'
 
 type Place = ClubPageResponse['places'][number]
@@ -60,11 +61,11 @@ export function WhenAndWhere({
   id?: string
 }) {
   const meets = statement?.trim() ? statement.trim() : null
-  const label = 'How the club meets'
+  const label = STATEMENT_LABEL
   return (
     <section id={id} className={cn('border-y border-hairline bg-surface-2', compact ? 'px-3 py-3' : cn(CLEAR_OF_BARS, 'py-8'))}>
       <div className={cn('mx-auto max-w-6xl', !compact && 'px-4 sm:px-6')}>
-        <SectionHeading compact={compact}>{`When and where ${name} meets`}</SectionHeading>
+        <SectionHeading compact={compact}>{whenAndWhereHeading(name)}</SectionHeading>
         <div className={cn('mt-4 grid gap-6', !compact && '@3xl:grid-cols-[minmax(0,1fr)_26rem] @3xl:gap-10')}>
           <div className="min-w-0">
             {meets && (

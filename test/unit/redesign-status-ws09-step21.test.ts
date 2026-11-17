@@ -216,7 +216,8 @@ describe('REDESIGN_STATUS.md, WS09 step 21: the parts against the files', () => 
     for (const piece of ['"Chess club in {city}, Louisiana · {region}"', 'no bracket, no "not listed", no empty box, no Suggest an update', 'the line ends at Louisiana', '"Chess club in Louisiana"', 'never on the club\'s colour']) {
       expect(bare, piece).toContain(piece)
     }
-    expect(read(PLAIN)).toContain('return area ? `${place} · ${area}` : place')
+    // WS09 step 23 moved the line's words into domain/clubs/pageWords.ts, which the page and the server's page both read.
+    expect(read('domain/clubs/pageWords.ts')).toContain('return area ? `${place} · ${area}` : place')
     const keeper = bullet(block, '- **The keeper\'s line.**')
     for (const piece of ['`keeperFor`', '"This is your club\'s page · Edit"', '"You can edit this page as the {region} representative · Edit"', '`/my/club/{slug}`', '`/workspace/region/clubs/{id}`', 'only while `clubKeepers` is on', 'no new endpoint and no new key']) {
       expect(keeper, piece).toContain(piece)

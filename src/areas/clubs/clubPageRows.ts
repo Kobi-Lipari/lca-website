@@ -68,12 +68,12 @@ export function eventCount(event: Pick<ClubPageEvent, 'max_players' | 'registere
   return event.registered_count > 0 ? `${event.registered_count} registered` : null
 }
 
-/** The event's date with its weekday and year, and its last day too for an event of more than one day. */
-export function eventDates(event: Pick<ClubPageEvent, 'date' | 'end_date'>): string {
-  const first = formatDate(event.date, { year: true })
-  if (!event.end_date || event.end_date === event.date) return first
-  return `${first} to ${formatDate(event.end_date, { year: true })}`
-}
+/**
+ * The event's date with its weekday and year, and its last day too for an
+ * event of more than one day. Its words live in domain/clubs/pageWords.ts,
+ * which the page the server writes before any script reads too.
+ */
+export { eventDates } from '@domain/clubs/pageWords'
 
 /** A news row's date with its weekday and year, or null when it cannot be read as a date. */
 export function newsDate(value: string): string | null {

@@ -16,6 +16,7 @@ import { Check, ExternalLink } from 'lucide-react'
 
 import { cn } from '@/lib/utils'
 import { CLEAR_OF_BARS, WORD_LINK, hasWords, oneSentence, paragraphs, siteOf, webLink } from '@/areas/clubs/clubPage'
+import { ABOUT_LABELS, ABOUT_TICKS, aboutHeading } from '@domain/clubs/pageWords'
 import type { ClubPageResponse } from '@domain/contracts'
 
 type About = ClubPageResponse['about']
@@ -61,15 +62,15 @@ export function ClubAbout({
   const text = about.text?.trim() ?? ''
   const single = text !== '' && oneSentence(text)
   const links = linksOf(about)
-  const ticks = [about.weekend_play && 'The club plays on weekends', about.scholastic_friendly && 'Scholastic friendly'].filter((t): t is string => !!t)
+  const ticks = [about.weekend_play && ABOUT_TICKS.weekendPlay, about.scholastic_friendly && ABOUT_TICKS.scholasticFriendly].filter((t): t is string => !!t)
 
   const facts: ReactNode[] = []
   if (hasWords(about.cost)) {
-    facts.push(<Fact key="cost" label="Cost" compact={compact}><p className="whitespace-pre-line">{about.cost.trim()}</p></Fact>)
+    facts.push(<Fact key="cost" label={ABOUT_LABELS.cost} compact={compact}><p className="whitespace-pre-line">{about.cost.trim()}</p></Fact>)
   }
   if (hasWords(about.welcome) || ticks.length > 0) {
     facts.push(
-      <Fact key="welcome" label="Who is welcome" compact={compact}>
+      <Fact key="welcome" label={ABOUT_LABELS.welcome} compact={compact}>
         {hasWords(about.welcome) && <p className="whitespace-pre-line">{about.welcome.trim()}</p>}
         {ticks.length > 0 && (
           <ul className="space-y-1">
@@ -83,7 +84,7 @@ export function ClubAbout({
   }
   if (links.length > 0) {
     facts.push(
-      <Fact key="online" label="Find us online" compact={compact}>
+      <Fact key="online" label={ABOUT_LABELS.online} compact={compact}>
         <ul>
           {links.map((link) => (
             <li key={link.href}>
@@ -102,7 +103,7 @@ export function ClubAbout({
     )
   }
 
-  const heading = `About ${name}`
+  const heading = aboutHeading(name)
   const words = single ? (
     <p className={cn('break-words text-ink', compact ? 'text-base' : 'text-xl leading-normal @3xl:text-[21px]')}>{text}</p>
   ) : text ? (

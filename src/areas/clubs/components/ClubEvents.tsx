@@ -20,6 +20,7 @@ import { cn } from '@/lib/utils'
 import { CLEAR_OF_BARS, CONTROL, WORD_LINK } from '@/areas/clubs/clubPage'
 import { eventAddress, eventCount, eventDates, eventState, offersRegister } from '@/areas/clubs/clubPageRows'
 import { SectionHeading } from '@/areas/clubs/components/ClubAbout'
+import { EVENTS_HEADING } from '@domain/clubs/pageWords'
 import type { ClubPageEvent } from '@domain/contracts'
 
 function EventRow({ event }: { event: ClubPageEvent }) {
@@ -58,7 +59,7 @@ export function ClubEvents({ id, events }: { id: string; events: readonly ClubPa
   return (
     <section id={id} className={cn(CLEAR_OF_BARS, 'py-8')}>
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
-        <SectionHeading compact={false}>Events</SectionHeading>
+        <SectionHeading compact={false}>{EVENTS_HEADING}</SectionHeading>
         <ul className="mt-2">
           {events.map((event) => <EventRow key={event.id} event={event} />)}
         </ul>

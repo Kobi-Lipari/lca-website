@@ -62,16 +62,10 @@ export function drawnSections(sections: readonly string[], rows: SectionRows = {
 
 /**
  * The one line the site writes under the club's name: "Chess club in
- * {city}, Louisiana · {region}". With no region the line ends at
- * Louisiana, and with no city it reads "Chess club in Louisiana", so it
- * never says "null" and never ends on a dot.
+ * {city}, Louisiana · {region}". Its words live in domain/clubs/pageWords.ts,
+ * which the page the server writes before any script reads too.
  */
-export function cityLine(city: string | null | undefined, region: string | null | undefined): string {
-  const town = (city ?? '').trim()
-  const place = town ? `Chess club in ${town}, Louisiana` : 'Chess club in Louisiana'
-  const area = (region ?? '').trim()
-  return area ? `${place} · ${area}` : place
-}
+export { cityLine } from '@domain/clubs/pageWords'
 
 /**
  * A club's initials, for its tile on the page's cover and the card a shared
