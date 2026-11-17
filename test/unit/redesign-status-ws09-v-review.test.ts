@@ -207,6 +207,7 @@ describe('REDESIGN_STATUS.md, Checkpoint V: what it is and what it asks of K', (
       '"What an approval covers afterwards, for K."', '"A save after approval (WS09 step 18)."', '`SUBMITS_A_DAY` in `functions/api/admin/tournaments/[id]/approval.ts`, which K may change',
       'no send to more than about 40 people at once', '"Emailing a club event\'s entrants (WS09 step 17)."', '100 emails a day', '`SIGNING_SECRET` set in Cloudflare by K\'s own hands',
       '"Owed before clubKeepers goes on, K\'s own."', '`regionEvents` and `REGION_EVENTS_ON` go on together, in one change', '`switchOrderProblems`',
+      'K\'s answers, decision 10 of Tuesday, November 17, 2026', 'may go on sooner than the site\'s move to Amazon SES', 'not metered against the sending service\'s day',
     ]) expect(owed, piece).toContain(piece)
     for (const start of [
       '- **A save after approval (WS09 step 18).** ', '- **Emailing a club event\'s entrants (WS09 step 17).** ', '- **K\'s signing secret, owed before clubKeepers goes on (WS09 step 13).** ',

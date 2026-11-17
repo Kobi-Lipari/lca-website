@@ -4,7 +4,7 @@
 // switch-on: what it wrote in the WS16 section, read from the record alone.
 // It reads only the WS16 section and the date line, and no count from the
 // code: the block "Before the switch-on: the newsletter tab's last rough
-// spots" at the section's end, its bullets in their order, the five spots and
+// spots" after the section's four lists, its bullets in their order, the five spots and
 // what was not built, the files with each test file's count beside it and
 // the sums against the base's in the Checks line, the pins it moved, the
 // build's and the worker's figures, the pull request's text with its short
@@ -62,7 +62,8 @@ const ws16 = between(status, `\n${HEADING}\n`, '\n## Phase 0:')
 const sectionLines = ws16.split('\n')
 const BLOCK_HEADING = "### Before the switch-on: the newsletter tab's last rough spots"
 const CHECKPOINT = '### Checkpoint M: WS16 steps 1 to 8'
-const block = ws16.includes(`\n${BLOCK_HEADING}\n`) ? ws16.slice(ws16.indexOf(`\n${BLOCK_HEADING}\n`) + 1) : ''
+/** The block, to the next heading of the section, so the switch-on change's block after it is not read as this one's. */
+const block = ws16.includes(`\n${BLOCK_HEADING}\n`) ? between(ws16, `\n${BLOCK_HEADING}\n`, '\n### ').slice(1) : ''
 const checkpoint = between(ws16, `\n${CHECKPOINT}\n`, '\n### ').slice(1)
 const opening = checkpoint.split('\n')[2] ?? ''
 const firstSentence = block.split('\n')[2] ?? ''
@@ -103,7 +104,7 @@ const MOVED = [
 ]
 
 describe('REDESIGN_STATUS.md, before the switch-on: the block', () => {
-  it('sits at the end of the WS16 section, after checkpoint M\'s section and its lists, once, with its bullets in order, each once, and the Checks line last', () => {
+  it('sits after checkpoint M\'s section and its lists, once, with its bullets in order, each once, and the Checks line last', () => {
     expect(ws16.split(`\n${BLOCK_HEADING}\n`)).toHaveLength(2)
     expect(ws16.indexOf(`\n${BLOCK_HEADING}\n`)).toBeGreaterThan(ws16.indexOf(`\n${CHECKPOINT}\n`))
     expect(ws16.indexOf(`\n${BLOCK_HEADING}\n`)).toBeGreaterThan(ws16.indexOf('\n### WS16 follow-ups\n'))
@@ -250,8 +251,15 @@ describe('REDESIGN_STATUS.md, before the switch-on: the merge in checkpoint M\'s
   })
 
   it('gives the PR line checkpoint M\'s merge and the Status line its tail, the rest of each as it was', () => {
-    expect(prLine).toBe('**PR:** checkpoint M (steps 1 to 8) was draft pull request 126, merged into `main` as `d2c5ec0` on Thursday, November 12, 2026; checkpoint N (steps 9 to 11) and checkpoint O (WS16 step 12) come after it, each merged on its own.')
-    expect(statusLine).toBe('**Status:** in progress: part one, the mail engine and the first LCA newsletter, twelve steps in three checkpoints (checkpoint M for steps 1 to 8, checkpoint N for steps 9 to 11, checkpoint O for step 12); steps 1 to 8 are built and merged, switched off.')
+    // Once the switch-on change is made, the PR line names it and the Status line's tail says it switches them on.
+    expect([
+      '**PR:** checkpoint M (steps 1 to 8) was draft pull request 126, merged into `main` as `d2c5ec0` on Thursday, November 12, 2026; checkpoint N (steps 9 to 11) and checkpoint O (WS16 step 12) come after it, each merged on its own.',
+      '**PR:** checkpoint M (steps 1 to 8) was draft pull request 126, merged into `main` as `d2c5ec0` on Thursday, November 12, 2026; the switch-on change, a pull request of its own, turns the newsletter list on; checkpoint N (steps 9 to 11) and checkpoint O (WS16 step 12) come after it, each merged on its own.',
+    ]).toContain(prLine)
+    expect([
+      '**Status:** in progress: part one, the mail engine and the first LCA newsletter, twelve steps in three checkpoints (checkpoint M for steps 1 to 8, checkpoint N for steps 9 to 11, checkpoint O for step 12); steps 1 to 8 are built and merged, switched off.',
+      '**Status:** in progress: part one, the mail engine and the first LCA newsletter, twelve steps in three checkpoints (checkpoint M for steps 1 to 8, checkpoint N for steps 9 to 11, checkpoint O for step 12); steps 1 to 8 are built and merged, switched on by the switch-on change.',
+    ]).toContain(statusLine)
   })
 })
 
