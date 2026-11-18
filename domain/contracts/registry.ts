@@ -30,6 +30,7 @@ import {
   workspaceRegionResponseSchema,
 } from './clubs'
 import { clubContactRequestSchema, clubContactResponseSchema } from './clubContact'
+import { clubReplyRequestSchema, clubReplyResponseSchema, clubReplySentResponseSchema } from './clubReply'
 import { clubPageResponseSchema } from './clubPage'
 import {
   adminTournamentResponseSchema,
@@ -163,6 +164,10 @@ export const contracts = {
   'clubs/confirm/[token]': {
     GET: { response: clubLinkResponseSchema },
     POST: { request: clubLinkConfirmRequestSchema, response: clubLinkConfirmResponseSchema },
+  },
+  'clubs/reply/[token]': {
+    GET: { response: clubReplyResponseSchema },
+    POST: { request: clubReplyRequestSchema, response: clubReplySentResponseSchema },
   },
   'mail/preferences/[token]': {
     GET: { response: emailChoicesResponseSchema },

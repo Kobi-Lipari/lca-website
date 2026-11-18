@@ -217,7 +217,8 @@ describe('REDESIGN_STATUS.md, WS09 step 26: the parts against the files', () => 
       expect(goes, piece).toContain(piece)
     }
     expect(goes).toContain(`"${wordsOf(RULES, 'CONTACT_NOT_SENT')}"`)
-    expect(goes).toContain(`"${wordsOf(EMAILS, 'RELAY_OWN_MAIL_LINE')}"`)
+    // Moved at WS09 step 27, whose Reply through LCA changed the line's words: this block keeps the words it shipped with.
+    expect(goes).toContain('"To answer, write to them at the address above. An answer from your own mail shows them your address."')
     const relay = codeOf(RELAY)
     expect(relay).toContain('const own = await clubAddressOf(env.DB, club.id)')
     expect(relay.indexOf('clubAddressOf(env.DB, club.id)')).toBeLessThan(relay.indexOf('regionRepresentativesOf(env.DB, club.id)'))

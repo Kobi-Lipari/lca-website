@@ -51,7 +51,9 @@ describe('the limit and the spam check, as the tree holds them', () => {
     const importsOf = (target: string) => server.filter((f) => f !== target && new RegExp(`['"][./]+(?:utils/)?${target.split('/').pop()!.replace('.ts', '')}['"]`).test(read(f)))
     // The contact relay (WS09 step 26) is the first form to call both.
     const CONTACT = 'functions/api/clubs/[id]/contact.ts'
-    expect(importsOf(LIMIT).sort()).toEqual([CONTACT, CONFIRM, SPAM].sort())
+    // Reply through LCA (WS09 step 27) calls the limit too, counted by the member, and not the spam check.
+    const REPLY = 'functions/api/clubs/reply/[token].ts'
+    expect(importsOf(LIMIT).sort()).toEqual([CONTACT, CONFIRM, REPLY, SPAM].sort())
     expect(importsOf(SPAM)).toEqual([CONTACT])
     expect(codeOf(CONFIRM)).toContain('const counted = await limit(context.env, context.request, LINK_LIMIT_ROUTE, { perHour: LINK_CALLS_AN_HOUR })')
     // Only once the token holds: after the forged link's refusal and before the club is read.

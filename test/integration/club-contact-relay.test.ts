@@ -238,9 +238,10 @@ describe('where a message goes', () => {
       const mail = emailOutbox.find((e) => e.to === rep.email)!
       expect(mail.text).toContain(`${club.name} has no connected email yet, so this message came to you as the ${club.region} representative.`)
       expect(mail.text).toContain(RELAY_OWN_MAIL_LINE)
-      expect(mail.text).toContain(`Their email: ${words.email}`)
+      // Moved at WS09 step 27: Reply through LCA stands where the visitor's address stood, which is in no part of the copy.
+      expect(`${mail.subject}${mail.html}${mail.text}`).not.toContain(words.email)
       expect(mail.html).toContain('not to the person who wrote')
-      // The visitor's address is in the body alone; the reply-to is the site's own.
+      // The visitor's address is in no part of this copy; the reply-to is the site's own.
       expect(replyToOf(rep.email)).toEqual([[DEFAULT_REPLY_TO]])
       // One email to each person: no representative sees another's address.
       for (const other of club.reps.filter((r) => r !== rep)) expect(`${mail.html}${mail.text}`).not.toContain(other.email)
@@ -499,7 +500,9 @@ describe('never an open relay', () => {
       expect((await send(club.slug, words)).status).toBe(200)
       const [mail] = emailOutbox
       expect(mail.html).not.toMatch(/<script>|<img src=x|<b>Player<\/b>/)
-      for (const piece of ['&lt;b&gt;Player&lt;/b&gt; &quot;One&quot; &amp; &#39;Two&#39;', '&lt;script&gt;alert(1)&lt;/script&gt;', '&lt;img src=x onerror=&quot;y()&quot;&gt;', '&amp; &lt;/td&gt;&lt;/table&gt;', words.email.replace(/&/g, '&amp;').replace(/'/g, '&#39;')]) {
+      // Moved at WS09 step 27: the visitor's address stands, escaped, in the club's own copy alone.
+      const typedAddress = club.email ? [words.email.replace(/&/g, '&amp;').replace(/'/g, '&#39;')] : []
+      for (const piece of ['&lt;b&gt;Player&lt;/b&gt; &quot;One&quot; &amp; &#39;Two&#39;', '&lt;script&gt;alert(1)&lt;/script&gt;', '&lt;img src=x onerror=&quot;y()&quot;&gt;', '&amp; &lt;/td&gt;&lt;/table&gt;', ...typedAddress]) {
         expect(mail.html, piece).toContain(piece)
       }
       expect(mail.text).toContain(`From: ${words.name}`)

@@ -340,9 +340,11 @@ describe('calls through the barrel send what they sent before', () => {
 
   it('asks what the member may create and sends a payout request, signed in, to the two paths added since the split', async () => {
     const { getTournamentCreation, requestPayoutAccount, ApiError } = await import('@/lib/api')
-    // The contact relay's path (WS09 step 26) is held on its own, so the list of the paths before it reads as it did.
+    // The contact relay's path (WS09 step 26) and Reply through LCA's (WS09 step 27) are held on their own, so the list
+    // of the paths before them reads as it did.
     expect(ADDED.paths).toContain('/api/clubs/*/contact')
-    expect([...ADDED.paths].filter((p) => p !== '/api/clubs/*/contact').sort()).toEqual([
+    expect(ADDED.paths).toContain('/api/clubs/reply/*')
+    expect([...ADDED.paths].filter((p) => p !== '/api/clubs/*/contact' && p !== '/api/clubs/reply/*').sort()).toEqual([
       '/api/admin/clubs/*/confirm', '/api/admin/clubs/monthly-check', '/api/admin/mail/newsletter', '/api/admin/mail/newsletter/stop', '/api/admin/mail/newsletter/test',
       '/api/admin/tournaments/*/approval', '/api/clubs/*/page', '/api/clubs/confirm/*', '/api/mail/preferences/*', '/api/mail/unsubscribe/*', '/api/me/media-manager', '/api/me/payout-request', '/api/me/tournament-creation', '/api/workspace/region',
     ])

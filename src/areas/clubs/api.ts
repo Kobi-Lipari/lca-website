@@ -12,7 +12,9 @@
 import { authHeaders, handleResponse } from '@/lib/http'
 import type { ApiAdminMember } from '@/areas/membership/api'
 import type { AdminClubResponse, ClubConfirmResponse, ClubPlace, UpdateClubRequest, WorkspaceRegionResponse } from '@domain/contracts'
-import type { ClubContactRequest, ClubContactResponse, ClubLinkConfirmResponse, ClubLinkResponse, ClubPageResponse, MonthlyCheckResponse } from '@domain/contracts'
+import type {
+  ClubContactRequest, ClubContactResponse, ClubLinkConfirmResponse, ClubLinkResponse, ClubPageResponse, ClubReplyRequest, ClubReplyResponse, ClubReplySentResponse, MonthlyCheckResponse,
+} from '@domain/contracts'
 
 export interface ApiClubDetail {
   id: string
@@ -264,6 +266,37 @@ export async function confirmClubByLink(token: string): Promise<ClubLinkConfirmR
     body: '{}',
   })
   return handleResponse<ClubLinkConfirmResponse>(response)
+}
+
+/**
+ * The message a Reply through LCA link answers, GET /api/clubs/reply/:token
+ * (WS09 step 27): the visitor's first name, the club and the first lines of
+ * the message, never an address. Sent with the sign-in, since only the
+ * region's representative and the LCA admins are let in, and with no
+ * referrer, so the token rides in its own address alone.
+ */
+export async function getClubReply(token: string): Promise<ClubReplyResponse> {
+  const response = await fetch(`/api/clubs/reply/${encodeURIComponent(token)}`, {
+    headers: await authHeaders(),
+    referrerPolicy: 'no-referrer',
+  })
+  return handleResponse<ClubReplyResponse>(response)
+}
+
+/**
+ * The answer's words, POST /api/clubs/reply/:token, with the sign-in. The
+ * server sends them to the visitor from LCA's own address; nothing in the
+ * body can name a recipient. A refusal throws an ApiError with its status and
+ * words.
+ */
+export async function sendClubReply(token: string, body: ClubReplyRequest): Promise<ClubReplySentResponse> {
+  const response = await fetch(`/api/clubs/reply/${encodeURIComponent(token)}`, {
+    method: 'POST',
+    headers: await authHeaders(),
+    referrerPolicy: 'no-referrer',
+    body: JSON.stringify(body),
+  })
+  return handleResponse<ClubReplySentResponse>(response)
 }
 
 /**

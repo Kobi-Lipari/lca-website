@@ -13,9 +13,12 @@
 // not be reached. Only when no keeper's address takes the message is the
 // visitor told it could not be sent.
 //
-// The visitor's address is the reply-to on the club's own copy alone; on a
-// representative's or an admin's copy it stands in the body, and the reply-to
-// is the site's own. No recipient, copy or subject ever comes from the
+// The visitor's address is the reply-to on the club's own copy alone, and
+// stands in that copy's body. A representative's or an admin's copy carries
+// it nowhere (WS09 step 27): Reply through LCA stands in its place, a link to
+// /clubs/reply/{token} whose token is sealed by ./reply.ts, made once for the
+// message and only when a copy goes to a representative or an admin, and the
+// reply-to is the site's own. No recipient, copy or subject ever comes from the
 // request, and no copy goes to the address the visitor typed, even where it
 // is a keeper's own. The words of every copy are drawn in ./emails.ts by
 // renderEmail, and every copy goes through sendEmail, one email to each
@@ -32,6 +35,7 @@
 // an address works.
 import { sendEmail, type EmailEnv } from '../email'
 import { resolveSiteUrl } from '../site'
+import { replyLink } from './reply'
 import {
   lcaAdmins, regionRepresentativesOf, relayCopyEmail, type Keeper, type RelayCopyKind, type RelayedMessage, type RelayReason,
 } from './emails'
@@ -67,7 +71,7 @@ export async function relayKind(db: D1Database, clubId: string): Promise<Contact
 /** What came of a message: some keeper's address took it, or none did. */
 export type RelayOutcome = 'sent' | 'not_sent'
 
-type RelayEnv = EmailEnv & { DB: D1Database; SITE_URL?: string }
+type RelayEnv = EmailEnv & { DB: D1Database; SITE_URL?: string; SIGNING_SECRET?: string; SIGNING_SECRET_PREVIOUS?: string }
 
 /** The club a message is for, as the endpoint found it. */
 export interface RelayClub {
@@ -87,13 +91,17 @@ export async function relayMessage(env: RelayEnv, request: Request, club: RelayC
   // Each address is tried once, whichever keeper it belongs to, and the visitor's own is never tried.
   const tried = new Set<string>([typed])
   let sends = 0
+  // The Reply through LCA link, sealed once for the message the first time a representative's or an admin's copy needs it.
+  let link: Promise<string | null> | null = null
+  const linkFor = () => (link ??= replyLink(env, siteUrl, visitor, club.id))
 
   const sendTo = async (address: string, kind: RelayCopyKind, reason: RelayReason): Promise<boolean> => {
     const key = address.trim().toLowerCase()
     if (tried.has(key)) return false
     tried.add(key)
     if (sends++ > 0) await new Promise((resolve) => setTimeout(resolve, SEND_INTERVAL_MS))
-    const copy = relayCopyEmail({ siteUrl, clubName: club.name, region: club.region, kind, reason, visitor })
+    const replyUrl = kind === 'club' ? null : await linkFor()
+    const copy = relayCopyEmail({ siteUrl, clubName: club.name, region: club.region, kind, reason, visitor, replyUrl })
     try {
       await sendEmail(env, { ...copy, to: address, ...(kind === 'club' ? { replyTo: visitor.email.trim() } : {}) })
       return true

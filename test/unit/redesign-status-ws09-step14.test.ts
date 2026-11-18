@@ -339,7 +339,8 @@ describe('REDESIGN_STATUS.md, WS09 step 14: the parts against the files', () => 
     const pins = bullet(block, '- **Pins moved.**')
     for (const file of MOVED) expect(pins, file).toContain(`\`${file}\``)
     expect(pins).toContain('Not moved: `test/unit/contracts-pending.ts`, `PENDING_COUNT` 107')
-    expect(read('test/unit/automation-runs-lagging-run.test.ts')).toContain('const IMPORTERS: string[] = [\'functions/api/clubs/confirm/[token].ts\', \'functions/utils/clubs/monthlyCheck.ts\']')
+    // Moved at WS09 step 27, whose link's file joins the list after these two: they stand first, and a later step may add more.
+    expect(read('test/unit/automation-runs-lagging-run.test.ts')).toMatch(/const IMPORTERS: string\[\] = \['functions\/api\/clubs\/confirm\/\[token\]\.ts', 'functions\/utils\/clubs\/monthlyCheck\.ts'(?:, '[^']+')*\]/)
     expect(read('test/unit/club-routing-server-only.test.ts')).toContain('expect(readers).toEqual([\'functions/utils/clubs/emails.ts\', \'functions/utils/clubs/monthlyCheck.ts\'])')
   })
 

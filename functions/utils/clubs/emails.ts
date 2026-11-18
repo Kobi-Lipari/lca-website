@@ -32,6 +32,11 @@
 // page (relayCopyEmail, WS09 step 26), sent by functions/utils/clubs/relay.ts:
 // to the club's own address, else to the region's representatives, else to
 // the LCA admins.
+//
+// And so is the answer a representative or an LCA admin sends through Reply
+// through LCA (clubReplyEmail, WS09 step 27), sent by
+// functions/api/clubs/reply/[token].ts to the visitor's address the sealed
+// link holds, from LCA's own address and with LCA's own reply-to.
 
 import { trySendEmail, type EmailEnv, type EmailMessage } from '../email'
 import { emailDetails, emailQuote, escapeHtml, p, renderEmail } from '../emailLayout'
@@ -517,8 +522,20 @@ export const RELAY_CLUB_HEADING = 'A message for your club'
 /** The heading of a representative's and an admin's copy. */
 export const RELAY_KEEPER_HEADING = 'A message for a club you look after'
 
-/** The line on a representative's and an admin's copy: the visitor sees whatever address an answer comes from. */
-export const RELAY_OWN_MAIL_LINE = 'To answer, write to them at the address above. An answer from your own mail shows them your address.'
+/**
+ * The line on a representative's and an admin's copy (WS09 step 27): the visitor's address is not in the copy, and
+ * an answer goes through the site, so neither side sees the other's address.
+ */
+export const RELAY_OWN_MAIL_LINE = 'To answer, use Reply through LCA. Your answer goes to them from LCA\'s own address, so they never see yours and you never see theirs.'
+
+/** The link's words on a representative's and an admin's copy, where the visitor's address stood. */
+export const RELAY_REPLY_LABEL = 'Reply through LCA'
+
+/**
+ * The line in place of the link while the site has no signing key: no link is made, and the visitor's address is not
+ * put in the copy instead, so the message cannot be answered from it.
+ */
+export const RELAY_NO_LINK_LINE = 'This message cannot be answered from this email: the site could not make its Reply through LCA link. Their address is kept private, so it is not shown here.'
 
 /**
  * The opening of a representative's or an admin's copy: why the message came
@@ -537,13 +554,15 @@ export function relayOpening(club: string, kind: Exclude<RelayCopyKind, 'club'>,
  * One copy of a message a visitor sent from a club's page. The subject is
  * fixed words with the club's name, never anything the visitor typed. Every
  * word the visitor typed is escaped in the HTML and written as text in the
- * plain part; their name and address stand as one line each. The club's own
- * copy is answered straight back to the visitor (the relay sets the reply-to);
- * a representative's or an admin's copy carries the visitor's address in its
- * body alone, says why it came to them and that an answer from their own mail
- * shows their address, and its footer says a reply to the email itself does
- * not reach the visitor. Its `to` is empty, as every template's is, and is
- * filled for each person by the relay.
+ * plain part; their name stands as one line. The club's own copy carries the
+ * visitor's address and is answered straight back to the visitor (the relay
+ * sets the reply-to). A representative's or an admin's copy (WS09 step 27)
+ * carries no address of the visitor anywhere: Reply through LCA stands in its
+ * place, a link to the reply page (replyUrl), or, while the site has no
+ * signing key and no link can be made, the line that says so. It says why
+ * the message came to them, and its footer says a reply to the email itself
+ * does not reach the visitor. Its `to` is empty, as every template's is, and
+ * is filled for each person by the relay.
  */
 export function relayCopyEmail(data: {
   siteUrl: string
@@ -552,18 +571,23 @@ export function relayCopyEmail(data: {
   kind: RelayCopyKind
   reason: RelayReason
   visitor: RelayedMessage
+  /** The Reply through LCA link, on a representative's and an admin's copy; null when none could be made. */
+  replyUrl?: string | null
 }): EmailMessage {
   const clubName = oneLine(data.clubName)
   const name = oneLine(data.visitor.name)
   const email = data.visitor.email.trim()
   const message = data.visitor.message.trim()
-  const heading = data.kind === 'club' ? RELAY_CLUB_HEADING : RELAY_KEEPER_HEADING
+  const club = data.kind === 'club'
+  const link = club ? null : data.replyUrl ?? null
+  const heading = club ? RELAY_CLUB_HEADING : RELAY_KEEPER_HEADING
   const intro = `Someone wrote to ${clubName} from the club's page on the Louisiana Chess Association website.`
   const lead = data.kind === 'club' ? [intro] : [relayOpening(clubName, data.kind, data.reason, data.region), intro]
-  const after = data.kind === 'club' ? 'Reply to this email to answer them. Your own address stays private until you do.' : RELAY_OWN_MAIL_LINE
-  const footer = data.kind === 'club'
+  const after = club ? 'Reply to this email to answer them. Your own address stays private until you do.' : link ? RELAY_OWN_MAIL_LINE : RELAY_NO_LINK_LINE
+  const footer = club
     ? 'A reply to this email goes to the person who wrote.'
     : 'A reply to this email goes to the Louisiana Chess Association, not to the person who wrote.'
+  const details: Array<[string, string]> = club ? [['From', name], ['Their email', email]] : [['From', name]]
   return {
     to: '',
     subject: `A message for ${clubName} from the LCA website`,
@@ -571,25 +595,87 @@ export function relayCopyEmail(data: {
       siteUrl: data.siteUrl,
       heading,
       preheader: `A message for ${clubName}`,
-      body: lead.map((line) => p(escapeHtml(line))).join('') + emailDetails([
-        ['From', name],
-        ['Their email', email],
-      ]) + emailQuote(message, 'Message') + p(escapeHtml(after)),
+      body: lead.map((line) => p(escapeHtml(line))).join('') + emailDetails(details) + emailQuote(message, 'Message') + p(escapeHtml(after)),
+      ...(link ? { cta: { label: RELAY_REPLY_LABEL, url: link } } : {}),
       footerNote: escapeHtml(footer),
     }),
     text: [
       `${heading}.`,
       '',
       ...lead.flatMap((line) => [line, '']),
-      `From: ${name}`,
-      `Their email: ${email}`,
+      ...details.map(([label, value]) => `${label}: ${value}`),
       '',
       'Message:',
       message,
       '',
       after,
+      ...(link ? ['', `${RELAY_REPLY_LABEL}: ${link}`] : []),
       '',
       footer,
+    ].join('\n'),
+  }
+}
+
+// ── Reply through LCA (WS09 step 27) ─────────────────────────────
+
+/** How an answer is signed: by the role alone, never by a name (K's decision 12). */
+export function replySignOff(by: { kind: 'region'; region: string } | { kind: 'lca' }): string {
+  return by.kind === 'region' ? `LCA ${oneLine(by.region)} representative` : 'Louisiana Chess Association'
+}
+
+/** The heading of the answer the visitor gets. */
+export const REPLY_HEADING = 'An answer to your message'
+
+/**
+ * The answer a representative or an LCA admin sends through Reply through
+ * LCA, to the visitor. The subject is fixed words with the club's name. The
+ * answer's words are the volunteer's, escaped in the HTML and written as text
+ * in the plain part; the first lines the visitor wrote stand above them, so
+ * they know which message is answered. It is signed by the role alone and
+ * carries no name and no address of the volunteer. Its last line says the
+ * email comes from LCA's own address and that the club's page is the way to
+ * write to the club again. Its `to` is empty, as every template's is, and is
+ * filled by the endpoint from the sealed link alone.
+ */
+export function clubReplyEmail(data: {
+  siteUrl: string
+  clubName: string
+  clubUrl: string
+  firstName: string
+  excerpt: string
+  answer: string
+  signOff: string
+}): EmailMessage {
+  const clubName = oneLine(data.clubName)
+  const first = oneLine(data.firstName)
+  const answer = data.answer.trim()
+  const intro = `You wrote to ${clubName} from the club's page on the Louisiana Chess Association website. Here is the answer.`
+  const last = `This email comes from the Louisiana Chess Association's own address. To write to ${clubName} again, use the club's page: ${data.clubUrl}`
+  return {
+    to: '',
+    subject: `An answer to your message to ${clubName}`,
+    html: renderEmail({
+      siteUrl: data.siteUrl,
+      heading: REPLY_HEADING,
+      preheader: `An answer to your message to ${clubName}`,
+      body: p(`Hi ${escapeHtml(first)},`) + p(escapeHtml(intro)) + emailQuote(data.excerpt, 'You wrote') + emailQuote(answer, 'Answer') + p(escapeHtml(data.signOff)),
+      // The footer is outside the body's styled part, so its link carries the navy the layout's own footer links use.
+      footerNote: `${escapeHtml(`This email comes from the Louisiana Chess Association's own address. To write to ${clubName} again, use `)}<a href="${escapeHtml(data.clubUrl)}" style="color:#1a2744;text-decoration:underline;">the club's page</a>.`,
+    }),
+    text: [
+      `Hi ${first},`,
+      '',
+      intro,
+      '',
+      'You wrote:',
+      data.excerpt,
+      '',
+      'Answer:',
+      answer,
+      '',
+      data.signOff,
+      '',
+      last,
     ].join('\n'),
   }
 }

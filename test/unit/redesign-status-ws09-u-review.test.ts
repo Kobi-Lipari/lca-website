@@ -155,7 +155,8 @@ describe('REDESIGN_STATUS.md, Checkpoint U: what it is and what it asks of K', (
       expect(sql.match(/CREATE TABLE/g), file).toHaveLength(1)
       expect(sql, file).not.toMatch(/^\s*(?:DROP|ALTER|UPDATE|DELETE|INSERT)\b/m)
     }
-    expect(read('public/_headers').split('\n').filter((l) => l.startsWith('/'))).toEqual(['/clubs/confirm/*'])
+    // The headers file named one address at checkpoint U; WS09 step 27 adds the Reply through LCA page's, after it.
+    expect(read('public/_headers').split('\n').filter((l) => l.startsWith('/'))).toEqual(['/clubs/confirm/*', '/clubs/reply/*'])
   })
 
   it('names what is owed before clubKeepers goes on as K\'s own, step 15 by agreement, and the days for the merge', () => {
