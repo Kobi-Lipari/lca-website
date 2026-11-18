@@ -310,15 +310,15 @@ export function FootBar({ phone, bigger, count, moreOptions, onSeeEmail, sheetOp
 
 /**
  * The bar's status line (page step 6), under the steps: one polite region, on the page whenever the steps are, so each
- * change is read out where the person is, the focus left where it was. It keeps one line's room (31 pixels) whether it
- * says anything or not, so the bar does not grow as words come, and the page keeps that room too (useRoomForTheBar).
- * A test sent has a tick beside its words and nothing sent a mark of its own, each beside words that say it; a test
- * on its way is heard and not drawn, since the step says so itself. The words stay until the next press of either
- * step.
+ * change is read out where the person is, the focus left where it was. Empty, it takes no room, so the bar stands at
+ * its usual height and covers nothing of the letter's foot; with words, the bar is a line taller, and the page keeps
+ * that room too (useRoomForTheBar). Its words run the bar's width, so an answer is one line on a computer. A test sent
+ * has a tick beside its words and nothing sent a mark of its own, each beside words that say it; a test on its way is
+ * heard and not drawn, since the step says so itself. The words stay until the next press of either step.
  */
 function BarLine({ said }: { said?: BarSaid | null }) {
   return (
-    <p role="status" aria-atomic="true" data-slot="bar-said" className="mx-auto min-h-[31px] max-w-[1198px] px-6 text-[15px] leading-snug text-ink">
+    <p role="status" aria-atomic="true" data-slot="bar-said" className="mx-auto max-w-[1198px] px-6 text-[15px] leading-snug text-ink">
       {said &&
         (said.tone === 'busy' ? (
           <span className="sr-only">{said.words}</span>

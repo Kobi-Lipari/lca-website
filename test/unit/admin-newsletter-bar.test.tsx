@@ -325,12 +325,14 @@ describe('the bar at the foot, from 768 pixels up', () => {
     }
   })
 
-  it('keeps one line\'s room for its status line before it says anything, so the bar does not grow when words come', async () => {
+  it('gives its status line no room while it says nothing, so the bar stands at its usual height and covers nothing of the letter\'s foot', async () => {
     windowAt(1440)
     await thePage()
     const line = theBar().querySelector('[data-slot="bar-said"]') as HTMLElement
     expect(line.textContent).toBe('')
-    expect(line.className.split(/\s+/)).toContain('min-h-[31px]')
+    // A height kept for an empty line made the bar 31 pixels taller at rest, over "Pull to make taller", "Make bigger" and the count.
+    expect(line.className.split(/\s+/).filter((name) => /^(min-)?h-/.test(name))).toEqual([])
+    expect(line.children).toHaveLength(0)
   })
 })
 
