@@ -125,10 +125,14 @@ describe('REDESIGN_STATUS.md, WS09 switch-on of regionEvents on main\'s tree: ag
       '"WS09 switch-on: the approval judges the person before it reads the body"', '`test/a11y/builds.spec.ts`', '`REDESIGN_STATUS.md`', 'the WS09 Status line',
       '"WS09 switch-on: on main\'s tree"', 'after a semicolon',
     ]) expect(pick, piece).toContain(piece)
-    // The file holds the one list, and the block quotes it as the file holds it; what it names moves with the switches.
+    // The file holds the one list, and the block quotes it as its own tree held it. Since main was taken in, in the block after this one, the list has grown: the exact line is held while this block is the section's latest, and after it every name the block quotes still stands in the file's list, in the same order.
     const spec = read('test/a11y/builds.spec.ts').split('\n').filter((l) => l.startsWith('const SHIPPED_ON = '))
     expect(spec).toHaveLength(1)
-    expect(pick).toContain(`\`${spec[0]}\``)
+    const namesIn = (line: string) => (/\[([^\]]*)\]/.exec(line)?.[1] ?? '').split(',').map((n) => n.trim()).filter(Boolean)
+    const quoted = namesIn(/`const SHIPPED_ON = \[[^\]]*\]`/.exec(pick)?.[0] ?? '')
+    expect(quoted.length).toBeGreaterThan(0)
+    if (latest) expect(pick).toContain(`\`${spec[0]}\``)
+    else expect(namesIn(spec[0]).filter((n) => quoted.includes(n))).toEqual(quoted)
   })
 
   it('says what goes on and what stays off, and names the two tests that hold the order check as shipped', () => {
