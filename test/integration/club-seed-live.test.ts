@@ -14,16 +14,34 @@
 //   rows in those tables go with it and no other club's do;
 // - a club's rep, a member and a visitor do not delete it, and nothing moves.
 // No endpoint is new in this step, so the role cases are those of the delete.
+// The two cases that read a public club answer set CLUB_EMAIL_HIDDEN
+// themselves, through a getter on the mocked module, and check both states:
+// unset, the answer carries today's 13 keys; set, the same 13 without
+// contact_email, and still no new column.
 // Every person here is made up.
 import { env } from 'cloudflare:test'
-import { beforeEach, describe, expect, it } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { onRequestGet as clubListGet } from '../../functions/api/clubs'
 import { onRequestGet as clubGet } from '../../functions/api/clubs/[id]'
 import { onRequestDelete as clubDelete, onRequestGet as adminClubGet } from '../../functions/api/admin/clubs/[id]'
 import { seedAdmin, seedMember } from './factories'
 import { invoke, resetHarness } from './harness'
 
+const flags = vi.hoisted(() => ({ clubEmailHidden: false }))
+vi.mock('../../functions/utils/clubs/publicAnswer', async (importOriginal) => {
+  const real = await importOriginal<typeof import('../../functions/utils/clubs/publicAnswer')>()
+  return {
+    ...real,
+    get CLUB_EMAIL_HIDDEN() {
+      return flags.clubEmailHidden
+    },
+  }
+})
+
 beforeEach(resetHarness)
+afterEach(() => {
+  flags.clubEmailHidden = false
+})
 
 /** A long or a short dash, written by code so that this file holds neither. */
 const DASHES = new RegExp(`[${String.fromCharCode(0x2013, 0x2014)}]`)
@@ -34,6 +52,8 @@ const TODAYS_13 = [
   'id', 'name', 'city', 'location', 'description', 'meeting_schedule', 'contact_email',
   'created_at', 'color', 'image_url', 'region', 'latitude', 'longitude',
 ]
+/** Today's 13 keys without contact_email: what a public club answer carries once CLUB_EMAIL_HIDDEN is set. */
+const WITHOUT_EMAIL = TODAYS_13.filter((c) => c !== 'contact_email')
 const ADDED_15 = [
   'slug', 'about_text', 'how_we_meet_text', 'cost_text', 'welcome_text', 'weekend_play', 'scholastic_friendly', 'contact_name_public',
   'facebook_url', 'website_url', 'other_url', 'told_updated_at', 'told_by', 'last_confirmed_at', 'confirmed_by',
@@ -81,41 +101,57 @@ describe('the seed on D1', () => {
 })
 
 describe('the answers with every switch off, over the seeded clubs', () => {
-  it('the public list and a public club answer carry no new column, and the two mended clubs read one apostrophe', async () => {
+  it('the public list and a public club answer carry no new column, and the two mended clubs read one apostrophe, with the email shown or hidden', async () => {
     const admin = await seedAdmin()
-    for (const as of [undefined, admin]) {
-      const list = await invoke(clubListGet, { as })
-      expect(list.status).toBe(200)
-      const listText = await list.response.text()
-      expect(listText).not.toContain('\'\'')
-      const { clubs } = JSON.parse(listText) as { clubs: Array<Record<string, unknown>> }
-      expect(clubs).toHaveLength(25)
-      for (const column of ADDED_15) expect(listText, column).not.toContain(`"${column}"`)
-      // None of the seeded statements or About texts is read by an answer under a key of its own.
-      for (const key of ['how_we_meet_text', 'about_text', 'told_updated_at', 'places']) expect(listText).not.toContain(`"${key}"`)
+    // Once with CLUB_EMAIL_HIDDEN unset, where a public club answer carries today's 13 keys, and once set, where it carries them without contact_email.
+    for (const hidden of [false, true]) {
+      flags.clubEmailHidden = hidden
+      const state = hidden ? 'CLUB_EMAIL_HIDDEN set' : 'CLUB_EMAIL_HIDDEN unset'
+      for (const as of [undefined, admin]) {
+        const list = await invoke(clubListGet, { as })
+        expect(list.status, state).toBe(200)
+        const listText = await list.response.text()
+        expect(listText, state).not.toContain('\'\'')
+        const { clubs } = JSON.parse(listText) as { clubs: Array<Record<string, unknown>> }
+        expect(clubs, state).toHaveLength(25)
+        for (const column of ADDED_15) expect(listText, `${state}: ${column}`).not.toContain(`"${column}"`)
+        // None of the seeded statements or About texts is read by an answer under a key of its own.
+        for (const key of ['how_we_meet_text', 'about_text', 'told_updated_at', 'places']) expect(listText, `${state}: ${key}`).not.toContain(`"${key}"`)
 
-      for (const [id, description, location] of [
-        ['slidell', 'Meets Fridays at 7 PM at St. Luke\'s, 910 Cross Gates Blvd., Slidell, LA 70461, Classroom 3.', 'St. Luke\'s, 910 Cross Gates Blvd., Slidell, LA 70461'],
-        ['mandeville-chess-club', 'Meets Mondays at 5:00 PM at George\'s Mexican Restaurant.', 'George\'s Mexican Restaurant, Mandeville, LA'],
-      ] as const) {
-        const one = await invoke(clubGet, { as, params: { id } })
-        expect(one.status, id).toBe(200)
-        const text = await one.response.text()
-        const { club } = JSON.parse(text) as { club: Record<string, unknown> }
-        expect(Object.keys(club), id).toEqual(TODAYS_13)
-        expect({ description: club.description, location: club.location }, id).toEqual({ description, location })
-        for (const column of ADDED_15) expect(text, `${id} carries ${column}`).not.toContain(`"${column}"`)
+        for (const [id, description, location] of [
+          ['slidell', 'Meets Fridays at 7 PM at St. Luke\'s, 910 Cross Gates Blvd., Slidell, LA 70461, Classroom 3.', 'St. Luke\'s, 910 Cross Gates Blvd., Slidell, LA 70461'],
+          ['mandeville-chess-club', 'Meets Mondays at 5:00 PM at George\'s Mexican Restaurant.', 'George\'s Mexican Restaurant, Mandeville, LA'],
+        ] as const) {
+          const one = await invoke(clubGet, { as, params: { id } })
+          expect(one.status, `${state}: ${id}`).toBe(200)
+          const text = await one.response.text()
+          const { club } = JSON.parse(text) as { club: Record<string, unknown> }
+          expect(Object.keys(club), `${state}: ${id}`).toEqual(hidden ? WITHOUT_EMAIL : TODAYS_13)
+          expect({ description: club.description, location: club.location }, `${state}: ${id}`).toEqual({ description, location })
+          for (const column of ADDED_15) expect(text, `${state}: ${id} carries ${column}`).not.toContain(`"${column}"`)
+        }
       }
     }
   })
 
-  it('a club the seed did not change reads as it did, and carries no new column', async () => {
+  it('a club the seed did not change reads as it did, and carries no new column, with the email shown or hidden', async () => {
+    // CLUB_EMAIL_HIDDEN unset: today's 13 keys.
     const one = await invoke(clubGet, { params: { id: 'houma-chess-club' } })
     expect(one.status).toBe(200)
     const { club } = await one.json<{ club: Record<string, unknown> }>()
     expect(Object.keys(club)).toEqual(TODAYS_13)
     expect(club.description).toBe('Meets Mondays 6:00-8:30 PM at Terrebonne Parish North Library.')
     expect(club.meeting_schedule).toBe('Mondays 6:00-8:30 PM')
+    // CLUB_EMAIL_HIDDEN set: the same club without contact_email, and no new column.
+    flags.clubEmailHidden = true
+    const hidden = await invoke(clubGet, { params: { id: 'houma-chess-club' } })
+    expect(hidden.status).toBe(200)
+    const hiddenText = await hidden.response.text()
+    const { club: hiddenClub } = JSON.parse(hiddenText) as { club: Record<string, unknown> }
+    expect(Object.keys(hiddenClub)).toEqual(WITHOUT_EMAIL)
+    expect(hiddenClub.description).toBe('Meets Mondays 6:00-8:30 PM at Terrebonne Parish North Library.')
+    expect(hiddenClub.meeting_schedule).toBe('Mondays 6:00-8:30 PM')
+    for (const column of ADDED_15) expect(hiddenText, column).not.toContain(`"${column}"`)
   })
 
   it('the admin club answer for a seeded club carries exactly today\'s 13 keys', async () => {

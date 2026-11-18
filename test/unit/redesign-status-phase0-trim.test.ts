@@ -12,6 +12,10 @@
 // It reads this section and those lines alone, never every table row or
 // heading of the file, and the record alone, never the code, so a later
 // workstream that changes a file the trim touched changes nothing here.
+// Since the club email switch-on the section ends with that change's block,
+// whose own words test/unit/redesign-status-phase0-club-email-switch-on.test.ts
+// holds; here it is held to its place, to the Status and PR lines it made
+// true and to the sentence it added to the first follow-up.
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
@@ -42,6 +46,13 @@ const DATE = /\b(January|February|March|April|May|June|July|August|September|Oct
 const WEEKDAY = /(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday), $/
 
 const HEADING = '## Phase 0: the public-answer trim'
+/** The club email switch-on's block, the section's last heading since that change. */
+const SWITCH_ON = '### The switch-on: the club email switch turned on'
+/** The trim's merge, as the Status and PR lines give it since the club email switch-on. */
+const TRIM_MERGED = 'merged into `main` as `0018039` on Tuesday, November 3, 2026 at 6:34 PM UTC.'
+/** The sentence the club email switch-on added to the end of the first follow-up. */
+const CLUB_EMAIL_DONE =
+  'Done for `clubEmailHidden` on Monday, November 16, 2026: K looked at it on a preview with `CLUB_EMAIL_HIDDEN` set and said yes (decision 68), and the change in the block "The switch-on: the club email switch turned on" below turns the two on together; `rosterShortNames` stays off until K answers the two questions.'
 // The trim's section runs to the next "## " heading: it was the last of the
 // file, and read to the end, until the News posts' cleaner's section came
 // after it.
@@ -103,23 +114,26 @@ describe('REDESIGN_STATUS.md, the Phase 0 trim: where its section stands', () =>
     expect(status.slice(afterTrim + 1).startsWith('## Phase 0: the News posts\' cleaner\n')).toBe(true)
   })
 
-  it('opens with its status, branch and pull request, not merged yet, in words other than the merge-pending phrase', () => {
+  it('opens with its status, branch and pull request, now merged into main, in words other than the merge-pending phrase', () => {
     const statusLine = section.split('\n').find((l) => l.startsWith('**Status:**')) ?? ''
-    expect(statusLine.startsWith('**Status:** built on branch `phase0/public-answer-trim` on Tuesday, November 3, 2026, from WS02 step 9\'s commit `b7c11e6`; not merged yet.')).toBe(true)
+    expect(statusLine.startsWith(`**Status:** built on branch \`phase0/public-answer-trim\` on Tuesday, November 3, 2026, from WS02 step 9's commit \`b7c11e6\`; ${TRIM_MERGED}`)).toBe(true)
     // WS02 step 9's pull request merged first; then main was merged into the branch and the trim's own pull request opened.
     for (const piece of [
       'pull request, 119, merged into `main` as `27fe278` on Tuesday, November 3, 2026 at 11:46 AM UTC', '`main` was then merged into this branch as `157ecd2`',
       'draft pull request 120 was opened from the branch on Tuesday, November 3, 2026 at 4:00 PM UTC',
       '**Branch:** `phase0/public-answer-trim`, cut from `b7c11e6`, with `2da1513`, the trim; `157ecd2`, the merge of `main`; `190e118`',
-      '**PR:** draft pull request 120, not merged into `main` yet.',
+      `**PR:** pull request 120, ${TRIM_MERGED}`,
     ]) expect(statusLine, piece).toContain(piece)
     expect(statusLine).not.toContain('none yet')
     expect(statusLine).not.toContain('is opened once')
+    // The trim merged as 0018039; since the club email switch-on the line says so, and nowhere that it is not merged.
+    expect(statusLine.split(TRIM_MERGED)).toHaveLength(3)
+    expect(statusLine).not.toContain('not merged')
   })
 
-  it('holds its four sections in order, each heading starting "### Phase 0 ", and every entry in them tagged (Phase 0)', () => {
+  it('holds its four lists in order, each heading starting "### Phase 0 ", every entry in them tagged (Phase 0), and then the club email switch-on\'s block', () => {
     const headings = section.split('\n').filter((l) => l.startsWith('### '))
-    expect(headings).toEqual(['### Phase 0 decisions', '### Phase 0 deviations from the brief', '### Phase 0 verify items resolved', '### Phase 0 follow-ups'])
+    expect(headings).toEqual(['### Phase 0 decisions', '### Phase 0 deviations from the brief', '### Phase 0 verify items resolved', '### Phase 0 follow-ups', SWITCH_ON])
     for (const name of ['Phase 0 decisions', 'Phase 0 deviations from the brief', 'Phase 0 verify items resolved', 'Phase 0 follow-ups']) {
       const own = entries(subsection(name))
       expect(own.length, name).toBeGreaterThanOrEqual(4)
@@ -228,6 +242,11 @@ describe('REDESIGN_STATUS.md, the Phase 0 trim: what it records', () => {
     for (const piece of ['Q14', 'Q38', 'WS09', 'WS05', 'The next WS02 step records this merge', 'US Chess ID', 'its print page\'s standings', 'K answers the two questions the roster rule leaves']) {
       expect(followUps, piece).toContain(piece)
     }
+    // The first follow-up's club email half is done, in one sentence at its end; its roster half stays open.
+    const first = entries(followUps)[0] ?? ''
+    expect(first.startsWith('- **K looks at a preview with `clubEmailHidden` on, then with `rosterShortNames` on, and turns each on (Phase 0).**')).toBe(true)
+    expect(first.endsWith(` ${CLUB_EMAIL_DONE}`)).toBe(true)
+    expect(first.split(CLUB_EMAIL_DONE)).toHaveLength(2)
     expect(section).not.toMatch(/\bone question\b/)
     const deviations = subsection('Phase 0 deviations from the brief')
     for (const piece of ['brief line 3295', '`test/unit/contracts-pending.ts`', '`registrations.grade`', '`publicName`']) {

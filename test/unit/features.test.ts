@@ -34,7 +34,6 @@ const PHASE_0 = [
   'homeLive',
   'homeWeek',
   'homeRecap',
-  'clubEmailHidden',
   'rosterShortNames',
 ] as const
 
