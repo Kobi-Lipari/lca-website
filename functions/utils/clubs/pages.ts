@@ -21,7 +21,7 @@
  * only once newLook and clubEmailHidden are on;
  * test/unit/club-pages-switch.test.ts holds the two equal and the order.
  */
-export const CLUB_PAGES_ON = false
+export const CLUB_PAGES_ON = true
 
 /**
  * Set: the one club editor, Your club's page, My region, Still accurate and

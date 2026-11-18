@@ -41,7 +41,7 @@ const SWITCHES = {
    * focus ring, and the new date, time and score formats. It also shows the
    * home page hero as one still picture, with no slideshow and no timer.
    */
-  newLook: false,
+  newLook: true,
 
   /**
    * The Heritage Club look on About, Board, Bylaws, Minutes, Annual meeting
@@ -50,7 +50,7 @@ const SWITCHES = {
    * them in the base look. The look itself shows only when newLook is on as
    * well.
    */
-  themeHeritage: false,
+  themeHeritage: true,
 
   /**
    * The Bright Scholastic look on the Scholastic pages. Off until the
@@ -64,7 +64,7 @@ const SWITCHES = {
    * footer, plus the tablet header and, on phones, the top bar, bottom tab
    * bar and menu sheet. One switch, so a phone is never left without a menu.
    */
-  newNav: false,
+  newNav: true,
 
   /**
    * The Search button in the header, its search panel (also opened with
@@ -171,10 +171,10 @@ const SWITCHES = {
   // test/unit/features.test.ts holds them off in PHASE_0 as well.
 
   /** Today's club page offers "Contact this club through LCA" in place of the club's email. */
-  clubEmailHidden: false,
+  clubEmailHidden: true,
 
   /** Today's event page lists entrants under 18 by first name and last initial to anyone not running it. */
-  rosterShortNames: false,
+  rosterShortNames: true,
 
   /** The new live pages: pairings, standings, My board, Find your board, the hall TV and the print kit. */
   newLive: false,
@@ -198,7 +198,7 @@ const SWITCHES = {
   adminHome: false,
 
   /** The new clubs directory and club pages; the new menus and footer read it for their club rows too. */
-  newClubs: false,
+  newClubs: true,
 
   /** The new News page, results index and /about/champions; the new menus read it for State champions too. */
   newNews: false,

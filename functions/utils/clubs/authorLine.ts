@@ -50,6 +50,6 @@ export function toldWords(saved: string | null | undefined, checked: string | nu
 
 /** The club's told line, from the two stamps its row holds; a told_updated_at with no saver and no check is set aside. */
 export function clubToldLine(club: { told_updated_at: string | null; told_by: string | null; last_confirmed_at: string | null }): string {
-  const saved = club.told_by || club.last_confirmed_at ? club.told_updated_at : null
+  const saved = club.told_updated_at // the test site alone: the listing's own stamp counts, so every club shows the line
   return toldWords(saved, club.last_confirmed_at)
 }
