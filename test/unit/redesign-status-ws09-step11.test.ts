@@ -186,7 +186,8 @@ describe('REDESIGN_STATUS.md, WS09 step 11: the parts', () => {
     expect(guard).toContain('if (accountRole === \'guest\') return false')
     expect(read('functions/api/board/my-seats.ts')).toContain('AND a.ended_at IS NULL\n        AND s.is_active = 1')
     const dashboard = codeOf(DASHBOARD)
-    expect(dashboard).toContain('{FEATURES.clubKeepers && (\n                  <Button asChild variant="outline" className="mt-3 min-h-11 px-4">\n                    <Link to="/workspace/region">Open My region</Link>')
+    // The switch-on on main's tree offers a guest account no Open My region.
+    expect(dashboard).toContain('{FEATURES.clubKeepers && authMember?.role !== \'guest\' && (\n                  <Button asChild variant="outline" className="mt-3 min-h-11 px-4">\n                    <Link to="/workspace/region">Open My region</Link>')
     // K's decision 10 of Tuesday, November 17, 2026 removed the sentence from the dashboard.
     expect(read(DASHBOARD)).not.toContain('As regional representative you can update these clubs\' pages and news.')
   })

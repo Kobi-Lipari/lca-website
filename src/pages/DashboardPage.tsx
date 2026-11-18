@@ -331,33 +331,49 @@ export function DashboardPage() {
               </div>
             )}
 
-            {/* Regional representatives manage every club in their region. */}
+            {/* Regional representatives manage every club in their region. A
+                guest account is offered no Open My region: My region's guard
+                and its answer turn a guest away, seat or no seat. Nor is a
+                guest drawn a club's Manage link, since the server refuses a
+                guest the club's admin page: each club is a plain row. */}
             {role !== 'lca_admin' && managedClubs.length > 0 && (
               <div className="mb-8 rounded-xl border bg-card p-6 shadow-sm">
                 <h2 className="flex items-center gap-2 text-lg font-bold text-ink">
                   <Building2 className="size-5 text-gold-ink" /> Clubs in your region
                 </h2>
                 {/* With clubKeepers on, the way into My region (WS09 step 11). */}
-                {FEATURES.clubKeepers && (
+                {FEATURES.clubKeepers && authMember?.role !== 'guest' && (
                   <Button asChild variant="outline" className="mt-3 min-h-11 px-4">
                     <Link to="/workspace/region">Open My region</Link>
                   </Button>
                 )}
                 <ul className="mt-4 grid gap-2 sm:grid-cols-2">
-                  {managedClubs.map((c) => (
-                    <li key={c.id}>
-                      <Link
-                        to={`/admin/clubs/${c.id}`}
-                        className="flex items-center justify-between gap-3 rounded-lg border px-3 py-2.5 text-sm transition-colors hover:border-ink/40 hover:bg-muted/40"
+                  {managedClubs.map((c) =>
+                    authMember?.role === 'guest' ? (
+                      <li
+                        key={c.id}
+                        className="flex items-center justify-between gap-3 rounded-lg border px-3 py-2.5 text-sm"
                       >
                         <span className="min-w-0">
                           <span className="block truncate font-medium text-ink">{c.name}</span>
                           {c.region && <span className="block text-xs text-muted-foreground">{c.region}</span>}
                         </span>
-                        <span className="flex-shrink-0 text-xs font-medium text-ink">Manage →</span>
-                      </Link>
-                    </li>
-                  ))}
+                      </li>
+                    ) : (
+                      <li key={c.id}>
+                        <Link
+                          to={`/admin/clubs/${c.id}`}
+                          className="flex items-center justify-between gap-3 rounded-lg border px-3 py-2.5 text-sm transition-colors hover:border-ink/40 hover:bg-muted/40"
+                        >
+                          <span className="min-w-0">
+                            <span className="block truncate font-medium text-ink">{c.name}</span>
+                            {c.region && <span className="block text-xs text-muted-foreground">{c.region}</span>}
+                          </span>
+                          <span className="flex-shrink-0 text-xs font-medium text-ink">Manage →</span>
+                        </Link>
+                      </li>
+                    ),
+                  )}
                 </ul>
               </div>
             )}
