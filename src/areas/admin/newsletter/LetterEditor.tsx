@@ -12,9 +12,10 @@
 // third press makes plain words again; each change is read out. Link takes
 // its address in a small field on the page, never the browser's prompt, the
 // words chosen staying marked meanwhile, and takes only an address the
-// email's cleaner keeps, saying in words when it cannot. The Add menu reads "Add an event or line" and holds a line in this
-// half: the event joins it in page step 5 and the photo, with the board's
-// own name, in page step 12 (K's choice 5). Each thing that opens takes the
+// email's cleaner keeps, saying in words when it cannot. The Add menu reads "Add an event or line" and holds "An event", which
+// opens a small form under the tools (AddEventForm.tsx) that puts one line in
+// the letter, and "A line"; the photo, with the board's own name, joins it in
+// page step 12 (K's choice 5). Each thing that opens takes the
 // focus, closes on Escape and gives the focus back.
 //
 // The letter: the navy band with the rook, "LCA Newsletter" and the month,
@@ -56,6 +57,8 @@ import { Bold, ChevronDown, Expand, Heading, Italic, Link2, List, Pencil, Plus, 
 import { letterParts, PART_PROMPTS } from '@domain/mail/letter'
 import { LcaMark } from '@/components/LcaMark'
 import { cn } from '@/lib/utils'
+import { AddEventForm } from './AddEventForm'
+import { EMPTY_EVENT } from './eventLine'
 import { InThisIssue } from './InThisIssue'
 import { keepableAddress, keepVisible, MONTH_LABEL_MAX } from './letterRules'
 
@@ -422,13 +425,18 @@ function LinkField({ editor, id, onClose }: { editor: Editor; id: string; onClos
   )
 }
 
+/** The Add menu's rows, in the order the button's name gives them. */
+const ADD_ROWS = ['An event', 'A line'] as const
+
 /**
- * The Add menu's list: one line, "A line", in this half. It takes the focus when it opens; Escape closes it and gives
- * the focus back to its button, and a press anywhere else closes it where the person pressed.
+ * The Add menu's list: "An event", then "A line". It takes the focus into its first row when it opens; the arrow keys,
+ * Home and End move between the rows; Escape closes it and gives the focus back to its button, and a press anywhere
+ * else closes it where the person pressed.
  */
-function AddMenuList({ id, anchor, onLine, onClose, onDismiss }: {
+function AddMenuList({ id, anchor, onEvent, onLine, onClose, onDismiss }: {
   id: string
   anchor: RefObject<HTMLButtonElement | null>
+  onEvent: () => void
   onLine: () => void
   onClose: () => void
   onDismiss: () => void
@@ -463,22 +471,30 @@ function AddMenuList({ id, anchor, onLine, onClose, onDismiss }: {
           onClose()
         } else if (['ArrowDown', 'ArrowUp', 'Home', 'End'].includes(event.key)) {
           event.preventDefault()
-          first.current?.focus()
+          const rows = [...(box.current?.querySelectorAll<HTMLButtonElement>('[role="menuitem"]') ?? [])]
+          const at = rows.indexOf(document.activeElement as HTMLButtonElement)
+          const last = rows.length - 1
+          const next = event.key === 'Home' ? 0 : event.key === 'End' ? last
+            : event.key === 'ArrowDown' ? (at < 0 || at === last ? 0 : at + 1) : (at <= 0 ? last : at - 1)
+          rows[next]?.focus()
         } else if (event.key === 'Tab') {
           onClose()
         }
       }}
     >
-      <button
-        ref={first}
-        type="button"
-        role="menuitem"
-        tabIndex={-1}
-        onClick={onLine}
-        className="flex min-h-11 w-full items-center rounded-md px-3 text-left text-[14.5px] font-semibold text-ink outline-none hover:bg-muted focus-visible:bg-muted focus-visible:ring-3 focus-visible:ring-focus"
-      >
-        A line
-      </button>
+      {ADD_ROWS.map((row, index) => (
+        <button
+          key={row}
+          ref={index === 0 ? first : undefined}
+          type="button"
+          role="menuitem"
+          tabIndex={-1}
+          onClick={row === 'An event' ? onEvent : onLine}
+          className="flex min-h-11 w-full items-center rounded-md px-3 text-left text-[14.5px] font-semibold text-ink outline-none hover:bg-muted focus-visible:bg-muted focus-visible:ring-3 focus-visible:ring-focus"
+        >
+          {row}
+        </button>
+      ))}
     </div>
   )
 }
@@ -508,6 +524,10 @@ export function LetterEditor({ initialHtml, month, onMonthChange, onChange, bigg
   const [activeTool, setActiveTool] = useState(0)
   const [linkOpen, setLinkOpen] = useState(false)
   const [addOpen, setAddOpen] = useState(false)
+  const [eventOpen, setEventOpen] = useState(false)
+  // The event form's words, kept here so the form closed by Link opens again as it was left.
+  const [eventValues, setEventValues] = useState(EMPTY_EVENT)
+  const [eventOpened, setEventOpened] = useState(0)
   const [said, setSaid] = useState('')
   const [height, setHeight] = useState(firstSheetHeight)
   const [editingMonth, setEditingMonth] = useState(false)
@@ -531,6 +551,7 @@ export function LetterEditor({ initialHtml, month, onMonthChange, onChange, bigg
   const ready = useRef(onReady)
   const linkId = useId()
   const addId = useId()
+  const eventId = useId()
   const sheetId = useId()
 
   useEffect(() => {
@@ -664,6 +685,12 @@ export function LetterEditor({ initialHtml, month, onMonthChange, onChange, bigg
     addTool.current?.focus()
   }
 
+  function closeEvent(to: 'add' | 'letter') {
+    setEventOpen(false)
+    setEventValues(EMPTY_EVENT)
+    if (to === 'add') addTool.current?.focus()
+  }
+
   function startMonth() {
     monthOpen.current = true
     setMonthDraft(month)
@@ -775,6 +802,7 @@ export function LetterEditor({ initialHtml, month, onMonthChange, onChange, bigg
             popup={{ expanded: linkOpen, controls: linkId }}
             onPress={() => {
               setAddOpen(false)
+              setEventOpen(false)
               setLinkOpen((open) => !open)
             }}
             icon={<Link2 className={icon} aria-hidden="true" />}
@@ -809,6 +837,11 @@ export function LetterEditor({ initialHtml, month, onMonthChange, onChange, bigg
                 anchor={addTool}
                 onClose={closeAdd}
                 onDismiss={() => setAddOpen(false)}
+                onEvent={() => {
+                  setAddOpen(false)
+                  setEventOpen(true)
+                  setEventOpened((n) => n + 1)
+                }}
                 onLine={() => {
                   setAddOpen(false)
                   editor.chain().focus().setHorizontalRule().run()
@@ -819,6 +852,9 @@ export function LetterEditor({ initialHtml, month, onMonthChange, onChange, bigg
           <span className="sr-only" role="status">{said}</span>
         </div>
         {linkOpen && <LinkField editor={editor} id={linkId} onClose={closeLink} />}
+        {eventOpen && (
+          <AddEventForm editor={editor} id={eventId} values={eventValues} onValues={setEventValues} opened={eventOpened} onClose={closeEvent} />
+        )}
       </div>
 
       <div
