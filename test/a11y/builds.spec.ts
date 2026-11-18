@@ -26,7 +26,7 @@ import { A11Y_VARIANTS, ROOT } from './global-setup'
 const SWITCHES_ON = ['newLook', 'themeHeritage', 'newNav', 'siteSearch', 'eventStrip', 'eventStripLive', 'liveMarker']
 
 /** The switches src/lib/features.ts itself ships on, and so on in both builds, each since the change that turned it on. */
-const SHIPPED_ON = ['clubEmailHidden', 'mailLists']
+const SHIPPED_ON = ['clubEmailHidden', 'mailLists', 'clubKeepers']
 
 /** The build folder of the project the test is running in. */
 function variantOf(project: string) {

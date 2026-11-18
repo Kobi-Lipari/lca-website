@@ -330,10 +330,12 @@ describe('REDESIGN_STATUS.md, WS09 step 9: the parts', () => {
     for (const piece of [
       '"off: the route sends to the dashboard and /manage/club is today\'s"', '`test/unit/your-club-route.test.tsx`', 'compares with the base\'s own answer', 'No switch is added',
     ]) expect(ships, piece).toContain(piece)
-    expect(read('src/lib/features.ts')).toContain('  clubKeepers: false,')
+    // clubKeepers went on in the block "WS09 switch-on: clubKeepers and CLUB_KEEPERS_ON", so this step holds only that it is declared.
+    expect(read('src/lib/features.ts')).toMatch(/^ {2}clubKeepers: (?:false|true),$/m)
     // clubEmailHidden is the Phase 0 trim's switch, turned on by a change of its own, so this step holds only that it is declared.
     expect(read('src/lib/features.ts')).toMatch(/^ {2}clubEmailHidden: (?:false|true),$/m)
-    expect(read('functions/utils/clubs/pages.ts')).toContain('export const CLUB_KEEPERS_ON = false')
+    // CLUB_KEEPERS_ON went on in the block "WS09 switch-on: clubKeepers and CLUB_KEEPERS_ON", so this step holds only that it is declared.
+    expect(read('functions/utils/clubs/pages.ts')).toMatch(/^export const CLUB_KEEPERS_ON = (?:false|true)$/m)
     expect(read('test/unit/your-club-route.test.tsx')).toContain('  it(\'off: the route sends to the dashboard and /manage/club is today\\\'s\', async () => {')
   })
 
