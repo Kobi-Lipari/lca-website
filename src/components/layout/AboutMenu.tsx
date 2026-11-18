@@ -5,8 +5,8 @@
 // src/lib/nav.ts and "LCA on Facebook ↗" below them. Board & regions, Bylaws
 // & rules and Minutes open the About page's tabs once newAbout is on, and
 // State champions its champions tab once newNews is on; until then each
-// opens today's page. When the header's row is too tight to hold Donate, it
-// becomes the menu's last row, above the Facebook row.
+// opens today's page. Donate is always the menu's last row, above the
+// Facebook row, since the header's bar never holds it (decision 68).
 //
 // The row of the page a visitor is on is marked "You are here", beside its
 // title, and carries aria-current="page", which a screen reader announces in
@@ -38,8 +38,6 @@ interface AboutMenuProps {
   current: boolean
   /** The classes of the row's sections, which the button shares. */
   buttonClassName: string
-  /** The bar is too tight for Donate, so it is the menu's last row. */
-  squeezed: boolean
   /** Opens the donation dialog, handed the control the focus goes back to when it closes. */
   onDonate: (from: HTMLElement | null) => void
 }
@@ -55,13 +53,13 @@ function currentRow(pathname: string, rows: readonly NavEntry[]): NavId | null {
   return best?.id ?? null
 }
 
-export function AboutMenu({ current, buttonClassName, squeezed, onDonate }: AboutMenuProps) {
+export function AboutMenu({ current, buttonClassName, onDonate }: AboutMenuProps) {
   const wrapperRef = useRef<HTMLDivElement>(null)
   const buttonRef = useRef<HTMLButtonElement>(null)
   const panelRef = useRef<HTMLDivElement>(null)
   const menu = useNavMenu({ wrapper: wrapperRef, button: buttonRef, panel: panelRef })
   const { pathname } = useLocation()
-  const { rows, footer } = aboutMenu(squeezed)
+  const { rows, footer } = aboutMenu()
   const entries = rows.map((id) => navEntry(id))
   const here = currentRow(pathname, entries)
   const facebook = navEntry(footer)
@@ -97,6 +95,10 @@ export function AboutMenu({ current, buttonClassName, squeezed, onDonate }: Abou
                     type="button"
                     onClick={() => {
                       menu.close()
+                      // The row goes with the panel, so About holds the focus
+                      // until the dialog takes it, never the page's body; the
+                      // page is not scrolled for it, as the bar is in view.
+                      buttonRef.current?.focus({ preventScroll: true })
                       onDonate(buttonRef.current)
                     }}
                     className="flex min-h-11 w-full items-center rounded-lg px-3 text-left text-[15px] font-medium hover:bg-muted"

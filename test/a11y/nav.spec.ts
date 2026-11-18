@@ -42,17 +42,19 @@
 //   tall that keeps its height and its place when the page scrolls, led by
 //   the brand link named for the home page with the rook mark hidden from
 //   screen readers and on no plate, then the six sections with 12 pixels a
-//   side, then Donate, Log in and Join LCA, nothing overlapping or wrapping
-//   and nothing wider than the window; the section a page is in marked with
-//   aria-current and a line that moves nothing, and in forced colours, which
-//   draw no such line, underlined instead, as a section under the pointer
-//   is, the underline moving nothing either; the About menu by mouse and
-//   by keyboard, its current row's "You are here" in the light look and in
-//   dark mode; the row giving way at 1024 pixels, Donate into the About
-//   menu first and then the two-line name; the gold slot by the member's
-//   status (signed out, active, ending in 20 days, expired); the My LCA
-//   menu's rows for three people and Log out from it; the page Log in hands
-//   to /login; Donate's dialog; and --header-h, with the scroll padding
+//   side, then Log in and Join LCA and no Donate, nothing overlapping or
+//   wrapping and nothing wider than the window; the section a page is in
+//   marked with aria-current and a line that moves nothing, and in forced
+//   colours, which draw no such line, underlined instead, as a section under
+//   the pointer is, the underline moving nothing either; the About menu by
+//   mouse and by keyboard, its seven rows and then Donate, its last row
+//   (decision 68), its current row's "You are here" in the light look and
+//   in dark mode; the row giving way at 1024 pixels, the two-line name its
+//   one step, Donate the About menu's last row at either level; the gold
+//   slot by the member's status (signed out, active, ending in 20 days,
+//   expired); the My LCA menu's rows for three people and Log out from it;
+//   the page Log in hands to /login; Donate's dialog from the About menu,
+//   reached by the keyboard; and --header-h, with the scroll padding
 //   that keeps a control reached by Tab clear of the header. Below 1024
 //   pixels today's header stands in, at 390 and 768, and on a11y-off today's
 //   header marks the page it is on, in the bar, the More menu and the
@@ -70,11 +72,12 @@
 //   answer comes, the dialog opened again with its amount and its button
 //   back, and Continue then moving the tab to the payment page; and the row
 //   giving way exactly where its parts stop fitting inside its padding, by
-//   the layout's own measure, half a pixel either side of each step,
-//   signed out at 1024 pixels and as an expired member at 1280; a tab left
-//   open across a deploy, whose donation dialog's file has gone, reloading
-//   once on the first press of Donate and then opening the dialog; and on
-//   a11y-off, the page's root with no --header-h and no scroll padding.
+//   the layout's own measure, half a pixel either side of its one step, the
+//   name's, signed out at 1024 pixels and as an expired member at 1280; a
+//   tab left open across a deploy, whose donation dialog's file has gone,
+//   reloading once on the first press of the About menu's Donate and then
+//   opening the dialog; and on a11y-off, the page's root with no --header-h
+//   and no scroll padding.
 // - The tablet header, the phone's app bar and the Menu sheet (WS02 step 6),
 //   which the a11y-on build draws below 1024 pixels, where the checks of
 //   today's header standing in above now note what they did not read, or
@@ -85,8 +88,10 @@
 //   wider than the window, --header-h 56 and no nav named Main. The tablet
 //   header at 768, 900 and 1023, signed out and as an active member: one row
 //   64 pixels tall, Tournaments and Clubs alone in its nav with aria-current
-//   and the line on the page's own, Donate opening the donation dialog, Log
-//   in or the My LCA menu, the Menu button, --header-h 64. The sheet at 390
+//   and the line on the page's own, Log in or the My LCA menu, the Menu
+//   button and no Donate, --header-h 64; and at 900 Donate two taps away,
+//   Menu and then the first of the drawer's three buttons, opening the
+//   donation dialog with the focus back on Menu. The sheet at 390
 //   by 844, the window's own box, and the drawer at 768 by 1024 and 1023 by
 //   800, 400 pixels wide against the window's right edge over a scrim: named
 //   Menu, opening on "Close menu", holding the focus inside it both ways,
@@ -938,6 +943,15 @@ async function openHeader(page: Page, route: string) {
 const aboutButton = (page: Page) => siteHeader(page).getByRole('button', { name: NEW_NAMES.about })
 /** The panel the About menu draws while it is open. */
 const aboutPanel = (page: Page) => siteHeader(page).locator('[data-slot="about-menu"]')
+/**
+ * Presses Donate as a person does in the desktop header: About, then the
+ * About menu's last row, the one Donate the desktop header draws (decision
+ * 68). A helper read only by checks marked as the new header's.
+ */
+async function pressDonate(page: Page) {
+  await aboutButton(page).click()
+  await aboutPanel(page).getByRole('button', { name: NEW_NAMES.donate }).click()
+}
 /** The panel the My LCA menu draws while it is open. */
 const myLcaPanel = (page: Page) => siteHeader(page).locator('[data-slot="my-lca-menu"]')
 
@@ -992,19 +1006,18 @@ function rowAsDrawn(page: Page) {
       header: { top: box.top, bottom: box.bottom, width: box.width, height: box.height, ground: getComputedStyle(header).backgroundColor, scrollWidth: header.scrollWidth, clientWidth: header.clientWidth },
       brand: { ...part(brand), name: brand.getAttribute('aria-label'), ground: getComputedStyle(brand).backgroundColor, markFirst: !!mark && brand.firstElementChild === mark, markHidden: mark?.getAttribute('aria-hidden') ?? null, markGround: mark ? getComputedStyle(mark).backgroundColor : null },
       sections: [...header.querySelectorAll('[data-slot="site-header-sections"] > a, [data-slot="site-header-sections"] > div > button')].map(part),
-      utilities: [...header.querySelectorAll('[data-slot="site-header-donate"] > *, [data-slot="site-header-account"] > a, [data-slot="site-header-account"] > div > button')].map(part),
+      utilities: [...header.querySelectorAll('[data-slot="site-header-account"] > a, [data-slot="site-header-account"] > div > button')].map(part),
     }
   }, SITE)
 }
 
-/** How far the row has given way: whether Donate and the two-line name are drawn, and what stays in the bar. */
+/** How far the row has given way: whether the two-line name is drawn, and what stays in the bar. */
 function squeezeAsDrawn(page: Page) {
   return page.evaluate((site) => {
     const header = document.querySelector(site.header)!
     const drawn = (el: Element | null) => !!el && !(el as HTMLElement).hidden && el.getBoundingClientRect().width > 0
     const inBar = (el: Element) => drawn(el) && el.getBoundingClientRect().right <= window.innerWidth && el.getBoundingClientRect().bottom <= header.getBoundingClientRect().bottom
     return {
-      donate: drawn(header.querySelector('[data-slot="site-header-donate"]')),
       name: drawn(header.querySelector('[data-slot="site-header-name"]')),
       sections: [...header.querySelectorAll('[data-slot="site-header-sections"] > a, [data-slot="site-header-sections"] > div > button')].filter(inBar).length,
       account: [...header.querySelectorAll('[data-slot="site-header-account"] > a, [data-slot="site-header-account"] > div > button')].filter(inBar).map((el) => (el.textContent ?? '').trim()),
@@ -1018,7 +1031,7 @@ function squeezeAsDrawn(page: Page) {
 test.describe('the new desktop header with the chrome on', () => {
   test.use({ reducedMotion: 'reduce' })
 
-  test('a11y-on at 1024, 1280 and 1440 by 800, signed out: one navy row 64 pixels tall that keeps its height and its place when the page scrolls 600 pixels, led by the brand link named for the home page with its mark hidden and no plate, then the six sections with 12 pixels a side, then Donate, Log in and Join LCA, nothing overlapping or wrapping and nothing wider than the window', async ({ page, external }, testInfo) => {
+  test('a11y-on at 1024, 1280 and 1440 by 800, signed out: one navy row 64 pixels tall that keeps its height and its place when the page scrolls 600 pixels, led by the brand link named for the home page with its mark hidden and no plate, then the six sections with 12 pixels a side, then Log in and Join LCA, with no Donate in the bar, nothing overlapping or wrapping and nothing wider than the window', async ({ page, external }, testInfo) => {
     only(testInfo, ON, 'the new header comes with the chrome, on a11y-on')
     onlyNew(testInfo, 'header', DESKTOP, 'the new header\'s row, from 1024 pixels up')
     const seen: Record<string, unknown> = {}
@@ -1028,6 +1041,9 @@ test.describe('the new desktop header with the chrome on', () => {
       await expect(siteHeader(page), `${width}: one header`).toHaveCount(1)
       await expect(brandLink(page)).toHaveAccessibleName(NEW_NAMES.home)
       await expect(rookMark(page)).toHaveCount(1)
+      // Donate is the About menu's last row, never a control of the bar (decision 68).
+      await expect(siteHeader(page).getByRole('button', { name: NEW_NAMES.donate }), `${width}: no Donate in the bar`).toHaveCount(0)
+      await expect(siteHeader(page).getByRole('link', { name: NEW_NAMES.donate }), `${width}: no Donate in the bar`).toHaveCount(0)
       const drawn = await rowAsDrawn(page)
       // One navy row, 64 pixels tall, no wider than the window.
       expect(drawn.header.height, `${width}`).toBe(64)
@@ -1043,7 +1059,7 @@ test.describe('the new desktop header with the chrome on', () => {
       // The six sections in order, 12 pixels a side, then the utilities in theirs.
       expect(drawn.sections.map((s) => s.words), `${width}`).toEqual([...SECTION_WORDS])
       for (const s of drawn.sections) expect(s.padding, `${width}: ${s.words}`).toEqual(['12px', '12px'])
-      expect(drawn.utilities.map((u) => u.words), `${width}`).toEqual([NEW_NAMES.donate, CHROME_NAMES.logIn, CHROME_NAMES.joinLca])
+      expect(drawn.utilities.map((u) => u.words), `${width}`).toEqual([CHROME_NAMES.logIn, CHROME_NAMES.joinLca])
       // One row: every part inside the header, each after the one before it, and every word on one line.
       const parts = [drawn.brand, ...drawn.sections, ...drawn.utilities]
       for (const [i, p] of parts.entries()) {
@@ -1139,7 +1155,7 @@ test.describe('the new desktop header with the chrome on', () => {
     expect(external).toEqual([])
   })
 
-  test('a11y-on at 1280 on /governance/minutes, light and dark: a click opens the About menu, with aria-expanded and aria-controls naming its panel; its seven rows and LCA on Facebook ↗ in order, Minutes marked "You are here", rgb(112, 87, 24) on rgb(243, 238, 220) at 13 pixels and weight 600 in the light look, and in the menu\'s ink in dark mode, on a white or a #1a2744 ground; a hover opens nothing; a click outside and a change of page close it', async ({ page, external }, testInfo) => {
+  test('a11y-on at 1280 on /governance/minutes, light and dark: a click opens the About menu, with aria-expanded and aria-controls naming its panel; its seven rows, then Donate, a button never marked as the page, and LCA on Facebook ↗ in order, Minutes marked "You are here", rgb(112, 87, 24) on rgb(243, 238, 220) at 13 pixels and weight 600 in the light look, and in the menu\'s ink in dark mode, on a white or a #1a2744 ground; a hover opens nothing; a click outside and a change of page close it', async ({ page, external }, testInfo) => {
     only(testInfo, ON, 'the new header comes with the chrome, on a11y-on')
     onlyNew(testInfo, 'header', [1280], 'the new header\'s About menu')
     const seen: Record<string, unknown> = {}
@@ -1163,7 +1179,9 @@ test.describe('the new desktop header with the chrome on', () => {
       await expect(panel).toBeVisible()
       expect(await about.getAttribute('aria-controls')).toBe(await panel.getAttribute('id'))
       const rows = await rowsOf(panel)
-      expect(rows.map((r) => [r.words, r.href]), scheme).toEqual(ABOUT_ROWS.map(([words, href]) => [words, href]))
+      // The seven rows, then Donate, the menu's last row (decision 68), a button that opens the donation dialog.
+      expect(rows.map((r) => [r.words, r.href]), scheme).toEqual([...ABOUT_ROWS.map(([words, href]) => [words, href]), [NEW_NAMES.donate, null]])
+      expect(rows.at(-1), `${scheme}: Donate, never marked as the page`).toEqual({ words: NEW_NAMES.donate, href: null, current: null, kind: 'button' })
       expect(rows.filter((r) => r.current === 'page').map((r) => r.words), `${scheme}: the one current row`).toEqual(['Minutes'])
       const facebook = panel.getByRole('link', { name: FACEBOOK_ROW[0] })
       await expect(facebook).toHaveAttribute('href', FACEBOOK_ROW[1])
@@ -1212,7 +1230,7 @@ test.describe('the new desktop header with the chrome on', () => {
     expect(external).toEqual([])
   })
 
-  test('a11y-on at 1280 on /governance/minutes: the About menu by keyboard, Enter and Space toggle it, ArrowDown opens it on its first row and ArrowUp on its last, the arrow keys move through its rows and wrap, Home and End reach the first and the last, Esc closes it and gives the focus back to About, and Tab past its last row closes it', async ({ page, external }, testInfo) => {
+  test('a11y-on at 1280 on /governance/minutes: the About menu by keyboard, Enter and Space toggle it, ArrowDown opens it on its first row and ArrowUp on its last, the arrow keys move through its rows and wrap, Home and End reach the first and the last, Esc closes it and gives the focus back to About, a second ArrowUp from the last row reaches Donate, and Tab past its last row closes it and reaches Log in', async ({ page, external }, testInfo) => {
     only(testInfo, ON, 'the new header comes with the chrome, on a11y-on')
     onlyNew(testInfo, 'header', [1280], 'the new header\'s About menu')
     await openHeader(page, '/governance/minutes')
@@ -1249,21 +1267,43 @@ test.describe('the new desktop header with the chrome on', () => {
     await expect(about, 'Esc gives the focus back to About').toBeFocused()
     await page.keyboard.press('ArrowUp')
     await expect(last, 'ArrowUp opens it on its last row').toBeFocused()
+    // The row above the Facebook row is Donate, the menu's last row (decision 68): About, then ArrowUp twice.
+    await page.keyboard.press('ArrowUp')
+    await expect(panel.getByRole('button', { name: NEW_NAMES.donate }), 'a second ArrowUp reaches Donate').toBeFocused()
+    await page.keyboard.press('ArrowDown')
+    await expect(last).toBeFocused()
     await page.keyboard.press('Tab')
-    await expect(siteHeader(page).getByRole('button', { name: NEW_NAMES.donate }), 'Tab goes on in the page\'s order').toBeFocused()
+    await expect(siteHeader(page).getByRole('link', { name: CHROME_NAMES.logIn }), 'Tab goes on in the page\'s order, to Log in, the bar holding no Donate').toBeFocused()
     await expect(about).toHaveAttribute('aria-expanded', 'false')
     await expect(panel).toHaveCount(0)
     expect(external).toEqual([])
   })
 
-  test('a11y-on at 1024 by 800, signed out: as the row gets tighter it gives way in its order, Donate first, to the About menu\'s last row above LCA on Facebook ↗, where it opens the donation dialog, then the two-line name, the brand link keeping its name; no section, Log in or Join LCA leaves the bar, and the window and the header\'s height stay as they were', async ({ page, external }, testInfo) => {
+  test('a11y-on at 1024 by 800, signed out: as the row gets tighter its one step is the two-line name, hidden while the brand link keeps its name; Donate is never in the bar but the About menu\'s last row above LCA on Facebook ↗ at both levels, where it opens the donation dialog; no section, Log in or Join LCA leaves the bar, and the window and the header\'s height stay as they were', async ({ page, external }, testInfo) => {
     only(testInfo, ON, 'the new header comes with the chrome, on a11y-on')
     onlyNew(testInfo, 'header', [1024], 'the new header\'s squeeze')
     await page.setViewportSize({ width: 1024, height: 800 })
     await openQuiet(page, '/')
     const words = siteHeader(page).locator('[data-slot="site-header-name"]')
-    const steps: { spacing: number; donate: boolean; name: boolean }[] = []
-    let triedTheMenu = false
+    const steps: { spacing: number; name: boolean }[] = []
+    /** The About menu at a level: its rows end with Donate, a button above the Facebook row, which opens the one dialog and gives the focus back to About. */
+    const donateInTheMenu = async (at: string) => {
+      await aboutButton(page).click()
+      const panel = aboutPanel(page)
+      await expect(panel).toBeVisible()
+      const rows = await rowsOf(panel)
+      expect(rows.map((r) => r.words), at).toEqual([...ABOUT_ROWS.map(([title]) => title), NEW_NAMES.donate])
+      expect(rows.at(-1)?.kind, at).toBe('button')
+      await expect(panel.getByRole('link', { name: FACEBOOK_ROW[0] })).toBeVisible()
+      await panel.getByRole('button', { name: NEW_NAMES.donate }).click()
+      const dialog = page.getByRole('dialog', { name: 'Support the Louisiana Chess Association' })
+      await expect(dialog).toBeVisible()
+      await expect(page.getByRole('dialog')).toHaveCount(1)
+      await page.keyboard.press('Escape')
+      await expect(dialog).toHaveCount(0)
+      await expect(aboutButton(page), `${at}: the focus back on About, whose row opened it`).toBeFocused()
+    }
+    let triedHidden = false
     let after = 0
     // The row made tighter a pixel of letter spacing at a time on its two-line name, the window and the header as they are.
     for (let spacing = 0; spacing <= 60 && after < 3; spacing++) {
@@ -1273,47 +1313,34 @@ test.describe('the new desktop header with the chrome on', () => {
       await frames(page)
       await frames(page)
       const now = await squeezeAsDrawn(page)
-      steps.push({ spacing, donate: now.donate, name: now.name })
+      steps.push({ spacing, name: now.name })
       const at = `at ${spacing} pixels of letter spacing`
       expect(now.window, at).toEqual({ width: 1024, height: 800 })
       expect(now.height, at).toBe(64)
       expect(now.fits, `${at}: nothing runs past the header`).toBe(true)
       expect(now.sections, `${at}: all six sections in the bar`).toBe(6)
       expect(now.account, `${at}: Log in and Join LCA in the bar`).toEqual([CHROME_NAMES.logIn, CHROME_NAMES.joinLca])
-      if (!now.donate && now.name && !triedTheMenu) {
-        // Donate has left the bar: it is the About menu's last row, above the Facebook row, and opens the same dialog.
-        triedTheMenu = true
-        await aboutButton(page).click()
-        const panel = aboutPanel(page)
-        await expect(panel).toBeVisible()
-        const rows = await rowsOf(panel)
-        expect(rows.map((r) => r.words), at).toEqual([...ABOUT_ROWS.map(([title]) => title), NEW_NAMES.donate])
-        expect(rows.at(-1)?.kind).toBe('button')
-        await expect(panel.getByRole('link', { name: FACEBOOK_ROW[0] })).toBeVisible()
-        await panel.getByRole('button', { name: NEW_NAMES.donate }).click()
-        const dialog = page.getByRole('dialog', { name: 'Support the Louisiana Chess Association' })
-        await expect(dialog).toBeVisible()
-        await expect(page.getByRole('dialog')).toHaveCount(1)
-        await page.keyboard.press('Escape')
-        await expect(dialog).toHaveCount(0)
-        await expect(aboutButton(page), 'the focus back on About, whose row opened it').toBeFocused()
-      }
+      await expect(siteHeader(page).getByRole('button', { name: NEW_NAMES.donate }), `${at}: no Donate in the bar`).toHaveCount(0)
+      // With everything in the bar, Donate is the About menu's last row (decision 68).
+      if (spacing === 0) await donateInTheMenu(`${at}, everything in the bar`)
       if (!now.name) {
-        // The name is hidden; the link keeps its name and its mark.
+        // The name is hidden; the link keeps its name and its mark, and Donate is still the menu's last row.
         await expect(brandLink(page)).toHaveAccessibleName(NEW_NAMES.home)
         await expect(rookMark(page)).toBeVisible()
+        if (!triedHidden) {
+          triedHidden = true
+          await donateInTheMenu(`${at}, the name hidden`)
+        }
         after++
       }
     }
     await testInfo.attach('squeeze-steps.json', { body: JSON.stringify(steps, null, 2), contentType: 'application/json' })
-    // The order: everything in the bar, then Donate gone, then the name too, and never back while the row stays tight.
-    const level = (s: { donate: boolean; name: boolean }) => (s.donate && s.name ? 0 : !s.donate && s.name ? 1 : !s.donate && !s.name ? 2 : -1)
-    const levels = steps.map(level)
+    // The order: everything in the bar, then the name hidden, and never back while the row stays tight.
+    const levels = steps.map((s) => (s.name ? 0 : 1))
     expect(levels[0], 'everything in the bar at first').toBe(0)
-    expect(levels, 'Donate never goes before the name, and nothing comes back').toEqual([...levels].sort((a, b) => a - b))
-    expect(levels).not.toContain(-1)
-    expect(new Set(levels)).toEqual(new Set([0, 1, 2]))
-    expect(triedTheMenu).toBe(true)
+    expect(levels, 'the name never comes back while the row stays tight').toEqual([...levels].sort((a, b) => a - b))
+    expect(new Set(levels)).toEqual(new Set([0, 1]))
+    expect(triedHidden).toBe(true)
     expect(external).toEqual([])
   })
 
@@ -1434,7 +1461,7 @@ test.describe('the new desktop header with the chrome on', () => {
     expect(external).toEqual([])
   })
 
-  test('a11y-on at 1280: Donate in the bar opens today\'s donation dialog, drawn once, and Esc closes it with nothing sent and the focus back on Donate', async ({ page, external }, testInfo) => {
+  test('a11y-on at 1280: Donate, the About menu\'s last row and in no other place in the bar, reached by the keyboard with About and ArrowUp twice, opens today\'s donation dialog on Enter, drawn once, and Esc closes it with nothing sent and the focus back on About', async ({ page, external }, testInfo) => {
     only(testInfo, ON, 'the new header comes with the chrome, on a11y-on')
     onlyNew(testInfo, 'header', [1280], 'the new header\'s Donate')
     const sent: string[] = []
@@ -1442,15 +1469,23 @@ test.describe('the new desktop header with the chrome on', () => {
       if (new URL(request.url()).pathname.startsWith('/api/donations')) sent.push(`${request.method()} ${request.url()}`)
     })
     await openQuiet(page, '/')
-    const donate = siteHeader(page).getByRole('button', { name: NEW_NAMES.donate })
-    await donate.click()
+    await expect(siteHeader(page).getByRole('button', { name: NEW_NAMES.donate }), 'no Donate in the bar').toHaveCount(0)
+    const about = aboutButton(page)
+    await keyboardFocus(page, about)
+    // ArrowUp opens the menu on its last row, LCA on Facebook ↗; the row above it is Donate.
+    await page.keyboard.press('ArrowUp')
+    await page.keyboard.press('ArrowUp')
+    const donate = aboutPanel(page).getByRole('button', { name: NEW_NAMES.donate })
+    await expect(donate).toBeFocused()
+    await page.keyboard.press('Enter')
     const dialog = page.getByRole('dialog', { name: 'Support the Louisiana Chess Association' })
     await expect(dialog).toBeVisible()
     await expect(page.getByRole('dialog')).toHaveCount(1)
+    await expect(aboutPanel(page), 'the menu closed as its row was pressed').toHaveCount(0)
     await expect(dialog.getByRole('button', { name: 'Continue to payment' })).toBeVisible()
     await page.keyboard.press('Escape')
     await expect(dialog).toHaveCount(0)
-    await expect(donate).toBeFocused()
+    await expect(about).toBeFocused()
     expect(sent, 'nothing sent').toEqual([])
     expect(external).toEqual([])
   })
@@ -1591,20 +1626,20 @@ function headerState(page: Page) {
 }
 
 /**
- * The row's level as drawn and its room by the layout's own measure: the
- * free space the utilities' auto margin takes up, how far the utilities run
- * past the row's padding, and the name's width while it is drawn.
+ * The row's level as drawn, 0 with the two-line name and 1 with it hidden,
+ * and its room by the layout's own measure: the free space the utilities'
+ * auto margin takes up, how far the utilities run past the row's padding,
+ * and the name's width while it is drawn.
  */
 function rowRoom(page: Page) {
   return page.evaluate((site) => {
     const header = document.querySelector(site.header)!
     const row = header.querySelector('[data-slot="site-header-row"]') as HTMLElement
     const name = header.querySelector('[data-slot="site-header-name"]') as HTMLElement
-    const donate = header.querySelector('[data-slot="site-header-donate"]') as HTMLElement
     const utilities = row.lastElementChild as HTMLElement
     const end = row.getBoundingClientRect().right - parseFloat(getComputedStyle(row).paddingRight)
     return {
-      level: name.hidden ? 2 : donate.hidden ? 1 : 0,
+      level: name.hidden ? 1 : 0,
       free: parseFloat(getComputedStyle(utilities).marginLeft),
       over: utilities.getBoundingClientRect().right - end,
       name: name.getBoundingClientRect().width,
@@ -1730,7 +1765,7 @@ test.describe('the new desktop header at its edges', () => {
     page.on('popup', (popup) => popups.push(popup.url()))
     await page.setViewportSize({ width: 1280, height: 800 })
     await openQuiet(page, '/')
-    await siteHeader(page).getByRole('button', { name: NEW_NAMES.donate }).click()
+    await pressDonate(page)
     const dialog = page.getByRole('dialog', { name: 'Support the Louisiana Chess Association' })
     await expect(dialog).toBeVisible()
     await dialog.getByLabel('Amount (USD)').fill('25')
@@ -1776,8 +1811,7 @@ test.describe('the new desktop header at its edges', () => {
     await page.setViewportSize({ width: 1280, height: 800 })
     await openQuiet(page, '/')
     const home = page.url()
-    const donate = siteHeader(page).getByRole('button', { name: NEW_NAMES.donate })
-    await donate.click()
+    await pressDonate(page)
     const dialog = page.getByRole('dialog', { name: 'Support the Louisiana Chess Association' })
     await expect(dialog).toBeVisible()
     await dialog.getByLabel('Amount (USD)').fill('25')
@@ -1786,12 +1820,12 @@ test.describe('the new desktop header at its edges', () => {
     // The donor changes their mind while the checkout is asked for.
     await page.keyboard.press('Escape')
     await expect(dialog).toHaveCount(0)
-    await expect(donate).toBeFocused()
+    await expect(aboutButton(page), 'the focus back on About, whose Donate row opened the dialog').toBeFocused()
     const answered = page.waitForResponse((response) => new URL(response.url()).pathname === '/api/donations/checkout')
     answerFirst()
     await answered
-    // Opened again, the button comes back once the answer has been taken in, and the tab never left.
-    await donate.click()
+    // Opened again from the About menu, the button comes back once the answer has been taken in, and the tab never left.
+    await pressDonate(page)
     await expect(dialog.getByRole('button', { name: 'Continue to payment' })).toBeEnabled()
     await expect(dialog.getByLabel('Amount (USD)')).toHaveValue('25')
     expect(page.url(), 'this tab stayed where it was').toBe(home)
@@ -1808,7 +1842,7 @@ test.describe('the new desktop header at its edges', () => {
 
   for (const [key, width] of [['signed-out', 1024], ['expired-member', 1280]] as const) {
     const person = navPersona(key)
-    test(`a11y-on at ${width} by 800, ${person.title}: the row gives way exactly where its parts stop fitting inside its padding, by the layout's own measure, half a pixel either side of each step`, async ({ page, external, baseURL }, testInfo) => {
+    test(`a11y-on at ${width} by 800, ${person.title}: the row gives way exactly where its parts stop fitting inside its padding, by the layout's own measure, half a pixel either side of its one step, the name's, with no Donate in the bar`, async ({ page, external, baseURL }, testInfo) => {
       only(testInfo, ON, 'the new header comes with the chrome, on a11y-on')
       onlyNew(testInfo, 'header', [width], 'the new header\'s squeeze')
       await page.setViewportSize({ width, height: 800 })
@@ -1831,10 +1865,11 @@ test.describe('the new desktop header at its edges', () => {
         await frames(page)
       }
       const seen: Record<string, unknown>[] = []
+      await expect(siteHeader(page).getByRole('button', { name: NEW_NAMES.donate }), 'no Donate in the bar').toHaveCount(0)
       const start = await rowRoom(page)
       expect(start.level, 'everything in the bar at first').toBe(0)
-      // Half a pixel short of the edge, then half a pixel past it: first Donate's step, then the name's.
-      for (const [step, level] of [[0, 1], [1, 2]] as const) {
+      // Half a pixel short of the edge, then half a pixel past it: the name's step, the row's one.
+      for (const [step, level] of [[0, 1]] as const) {
         const at = await rowRoom(page)
         expect(at.level).toBe(step)
         const edge = at.name + at.free
@@ -1858,7 +1893,7 @@ test.describe('the new desktop header at its edges', () => {
     })
   }
 
-  test('a11y-on at 1280: a tab left open across a deploy, whose donation dialog\'s file has gone, reloads once on the first press of Donate, and then opens the dialog', async ({ page, external }, testInfo) => {
+  test('a11y-on at 1280: a tab left open across a deploy, whose donation dialog\'s file has gone, reloads once on the first press of the About menu\'s Donate, and then opens the dialog', async ({ page, external }, testInfo) => {
     only(testInfo, ON, 'the new header comes with the chrome, on a11y-on')
     onlyNew(testInfo, 'header', [1280], 'the new header\'s Donate')
     // The first ask for the dialog's file meets the gone file of an older build; every later ask is answered as the build answers it.
@@ -1871,11 +1906,11 @@ test.describe('the new desktop header at its edges', () => {
     await openQuiet(page, '/')
     expect(await page.evaluate(() => window.sessionStorage.getItem('lca-stale-reload'))).toBeNull()
     const reloaded = page.waitForEvent('load')
-    await siteHeader(page).getByRole('button', { name: NEW_NAMES.donate }).click()
+    await pressDonate(page)
     await reloaded
-    await expect(siteHeader(page).getByRole('button', { name: NEW_NAMES.donate })).toBeVisible()
+    await expect(aboutButton(page), 'the header drawn again after the reload').toBeVisible()
     expect(await page.evaluate(() => window.sessionStorage.getItem('lca-stale-reload')), 'the one reload this tab gets').not.toBeNull()
-    await siteHeader(page).getByRole('button', { name: NEW_NAMES.donate }).click()
+    await pressDonate(page)
     const dialog = page.getByRole('dialog', { name: 'Support the Louisiana Chess Association' })
     await expect(dialog).toBeVisible()
     await expect(page.getByText('Something went wrong')).toHaveCount(0)
@@ -2115,7 +2150,7 @@ test.describe('the tablet header, the phone\'s app bar and the Menu sheet with t
   })
 
   for (const key of ['signed-out', 'active-member'] as const) {
-    test(`a11y-on at 768, 900 and 1023 by 1024, ${navPersona(key).title}: the tablet header, one row 64 pixels tall, the brand link named for the home page, Tournaments and Clubs alone in its nav, aria-current and the line on the page's own and none on /, Donate opening today's donation dialog, ${key === 'signed-out' ? 'Log in' : 'the My LCA menu'} and the Menu button, nothing overlapping or wrapping, no tab bar, --header-h 64 pixels`, async ({ page, external, baseURL }, testInfo) => {
+    test(`a11y-on at 768, 900 and 1023 by 1024, ${navPersona(key).title}: the tablet header, one row 64 pixels tall, the brand link named for the home page, Tournaments and Clubs alone in its nav, aria-current and the line on the page's own and none on /, ${key === 'signed-out' ? 'Log in' : 'the My LCA menu'} and the Menu button, five controls and no Donate, nothing overlapping or wrapping, no tab bar, --header-h 64 pixels`, async ({ page, external, baseURL }, testInfo) => {
       only(testInfo, ON, 'the tablet header comes with the chrome, on a11y-on')
       onlyNew(testInfo, 'header', TABLET, 'the tablet header, from 768 to 1023 pixels')
       const person = navPersona(key)
@@ -2143,37 +2178,54 @@ test.describe('the tablet header, the phone\'s app bar and the Menu sheet with t
           expect(drawn.nav?.map((l) => l.words), where).toEqual(SECTION_WORDS.slice(0, 2))
           expect(drawn.nav?.filter((l) => l.current === 'page').map((l) => l.words), where).toEqual(current ? [current] : [])
           for (const l of drawn.nav ?? []) expect(drawnShadows(l.line), `${where}: ${l.words}'s line`).toEqual(l.words === current ? [SECTION_LINE] : [])
-          // The row: the brand link, the two sections, Donate, Log in or My LCA, and Menu.
-          const account = drawn.controls[4]
-          expect(drawn.controls.map((c) => c.words).filter((_, i) => i !== 4), where).toEqual([NEW_NAMES.home, ...SECTION_WORDS.slice(0, 2), NEW_NAMES.donate, NEW_NAMES.menu])
+          // The row: the brand link, the two sections, Log in or My LCA, and Menu; Donate is the drawer's (decision 68).
+          const account = drawn.controls[3]
+          expect(drawn.controls.map((c) => c.words).filter((_, i) => i !== 3), where).toEqual([NEW_NAMES.home, ...SECTION_WORDS.slice(0, 2), NEW_NAMES.menu])
           if (person.user) expect(account.words, where).toBe(NEW_NAMES.myLca)
           else expect([account.href, account.words.length > 0], `${where}: the link to the sign-in page`).toEqual(['/login', true])
-          expect(drawn.controls, `${where}: six controls`).toHaveLength(6)
+          expect(drawn.controls, `${where}: five controls`).toHaveLength(5)
           expectOneRow(drawn, where)
           await expect(page.getByRole('navigation', { name: 'Main', exact: true }), `${where}: the one nav named Main, the bar's, so no tab bar`).toHaveCount(1)
           expect(drawn.written, where).toBe('64px')
           seen[where] = { drawn }
         }
       }
-      // Donate opens today's donation dialog in one press, and Esc closes it with nothing sent and the focus back on Donate.
-      const sent: string[] = []
-      page.on('request', (request) => {
-        if (new URL(request.url()).pathname.startsWith('/api/donations')) sent.push(`${request.method()} ${request.url()}`)
-      })
-      const donate = siteHeader(page).getByRole('button', { name: NEW_NAMES.donate })
-      await donate.click()
-      const dialog = page.getByRole('dialog', { name: 'Support the Louisiana Chess Association' })
-      await expect(dialog).toBeVisible()
-      await expect(page.getByRole('dialog')).toHaveCount(1)
-      await page.keyboard.press('Escape')
-      await expect(dialog).toHaveCount(0)
-      await expect(donate).toBeFocused()
-      expect(sent, 'nothing sent').toEqual([])
       await testInfo.attach(`tablet-header-${key}.json`, { body: JSON.stringify(seen, null, 2), contentType: 'application/json' })
       expect(visit.apiErrors).toEqual([])
       expect(external).toEqual([])
     })
   }
+
+  test('a11y-on at 900 by 1024, signed out: no Donate in the tablet header\'s row; Donate two taps away, Menu and then the first of the drawer\'s three buttons, which opens today\'s donation dialog; Esc closes it with nothing sent and the focus back on Menu', async ({ page, external }, testInfo) => {
+    only(testInfo, ON, 'the tablet header comes with the chrome, on a11y-on')
+    onlyNew(testInfo, 'header', [900], 'the tablet header and its drawer')
+    const sent: string[] = []
+    page.on('request', (request) => {
+      if (new URL(request.url()).pathname.startsWith('/api/donations')) sent.push(`${request.method()} ${request.url()}`)
+    })
+    await page.setViewportSize({ width: 900, height: 1024 })
+    await openQuiet(page, '/')
+    await expect(siteHeader(page)).toHaveAttribute('data-form', 'tablet')
+    // The tablet has no About menu, so its Donate is the drawer's (decision 68).
+    await expect(siteHeader(page).getByRole('button', { name: NEW_NAMES.donate }), 'no Donate in the row').toHaveCount(0)
+    await expect(siteHeader(page).getByRole('link', { name: NEW_NAMES.donate }), 'no Donate in the row').toHaveCount(0)
+    // The first tap: Menu, which opens the drawer.
+    const { menu, sheet } = await openSheet(page)
+    await expect(sheet).toHaveAttribute('data-shape', 'drawer')
+    const buttons = sheet.locator('[data-slot="menu-sheet-buttons"] > *')
+    await expect(buttons).toHaveText([NEW_NAMES.donate, CHROME_NAMES.logIn, CHROME_NAMES.joinLca])
+    // The second tap: Donate, the first of the three buttons after the sections.
+    await buttons.first().click()
+    const dialog = page.getByRole('dialog', { name: 'Support the Louisiana Chess Association' })
+    await expect(dialog).toBeVisible()
+    await expect(sheet).toHaveCount(0)
+    await expect(page.getByRole('dialog')).toHaveCount(1)
+    await page.keyboard.press('Escape')
+    await expect(dialog).toHaveCount(0)
+    await expect(menu).toBeFocused()
+    expect(sent, 'nothing sent').toEqual([])
+    expect(external).toEqual([])
+  })
 
   for (const [width, height] of [[390, 844], [768, 1024], [1023, 800]] as const) {
     const drawer = width >= 768
@@ -2603,7 +2655,7 @@ test.describe('the tablet header, the phone\'s app bar and the Menu sheet with t
       await openHeader(page, '/clubs')
       const row = siteHeader(page).locator('[data-slot="site-header-row"]').locator('a, button')
       const count = await row.count()
-      expect(count, 'the brand link, two sections, Donate, Log in and Menu').toBe(6)
+      expect(count, 'the brand link, two sections, Log in and Menu').toBe(5)
       for (let i = 0; i < count; i++) {
         const r = await ringOnGround(page, row.nth(i))
         seen[`${scheme} tablet ${r.name}`] = r
