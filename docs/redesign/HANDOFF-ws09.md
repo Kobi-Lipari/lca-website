@@ -2,7 +2,17 @@
 
 Written on Saturday, November 14, 2026, for whoever takes this stream over. The whole project's handoff is `HANDOFF.md`; the rules where the two streams meet are `STREAMS.md`. This file holds only what is the clubs stream's own.
 
-## Where it stands (Wednesday, November 18, 2026, about 7:30 PM UTC)
+## Where it stands (Wednesday, November 18, 2026, about 11:20 PM UTC)
+
+- **Live:** the clubs switch-on (pull request 139). K saved `SIGNING_SECRET` in the site's settings that evening and the live site reads it since 9:17 PM UTC, so all five of K's signed-in steps can be tried; K has not tried them yet.
+- **The club events switch-on, draft pull request 140**, is ready on tonight's main: `redesign/ws09-region-on` at `915a9ba` holds a merge of main at `34d0732` (after the mail stream's 137, 138 and 136) and one record commit, and its tree is the tree the full check passed on (unit 11,267 in 482 files; integration 3,252 passing and 1 todo in 168 files; the browser run 660 and 337). It merges on Thursday, November 19, 2026 at about 3:00 PM UTC (9:00 AM Central) on K's decision 13, K reminded beforehand with the three things to know. If main moves before then, main is taken in again and the full check made again.
+- **Thursday's order, agreed with the mail stream:** 140 at 3:00 PM UTC; their 142 from 5:00 PM UTC; their 143 at 7:00 PM UTC; this stream's 141 at 9:00 PM UTC or later, only on K's yes. Nothing merges within two hours of anything else.
+- **The public event page's mend, draft pull request 141** (`redesign/event-page-phone` at `9dde4ff`), waits for K's yes on a numbered choice. Before any merge it takes main in and is gated again.
+- **Asked by K and not yet planned:** the site's seven regions do not match the five regional seats (New Orleans Metro; Baton Rouge / East Central; Lafayette / South Central; Lake Charles / Southwestern; North Louisiana). K wants the regions changed to the seats' titles and the clubs put into them. Three choices are with K (when, the names, where three groups of clubs go). It will need a migration (number 0072 unless the mail stream needs it), `domain/clubs/regions.ts`, the map and many tests, on main and on checkpoints W and X.
+- **Held:** step 28 and every new large step. K reported 88% of the week's usage spent and wrote "wait for next week"; the lead reads that as no new big work before next week and has asked K to confirm.
+- **Still owed by K:** the region buttons of each seat in Admin, Board seats, for the demo; each board member signed in to the site once; the yes on pull request 141; the three choices on the regions.
+
+## Where it stood at about 7:30 PM UTC on Wednesday, November 18, 2026
 
 - **Live:** the clubs switch-on (pull request 139, main `35ef23f`, live since 5:17 PM UTC). K has the five signed-in steps. The live site shows `SIGNING_SECRET` is not set yet.
 - **The club events switch-on, draft pull request 140** (`redesign/ws09-region-on` at `bcd2265`), merges Thursday morning, November 19, 2026, at least two hours after the mail stream's last merge of the night (their 137 merged at 7:12 PM UTC; 138 follows at about 9:12 PM UTC and 136 at about 11:12 PM UTC), K told the time first. Its join with main as it will stand after those three is made on the local branch `redesign/ws09-region-on-join` (two files joined by hand: the list of switches that ship on, and one test's opening comment) and is being gated; once 136 is on main the real merge is made from that same tree, checked by tree id.
