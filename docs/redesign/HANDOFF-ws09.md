@@ -2,7 +2,15 @@
 
 Written on Saturday, November 14, 2026, for whoever takes this stream over. The whole project's handoff is `HANDOFF.md`; the rules where the two streams meet are `STREAMS.md`. This file holds only what is the clubs stream's own.
 
-## Where it stands (Wednesday, November 18, 2026, about 5:20 PM UTC)
+## Where it stands (Wednesday, November 18, 2026, about 7:30 PM UTC)
+
+- **Live:** the clubs switch-on (pull request 139, main `35ef23f`, live since 5:17 PM UTC). K has the five signed-in steps. The live site shows `SIGNING_SECRET` is not set yet.
+- **The club events switch-on, draft pull request 140** (`redesign/ws09-region-on` at `bcd2265`), merges Thursday morning, November 19, 2026, at least two hours after the mail stream's last merge of the night (their 137 merged at 7:12 PM UTC; 138 follows at about 9:12 PM UTC and 136 at about 11:12 PM UTC), K told the time first. Its join with main as it will stand after those three is made on the local branch `redesign/ws09-region-on-join` (two files joined by hand: the list of switches that ship on, and one test's opening comment) and is being gated; once 136 is on main the real merge is made from that same tree, checked by tree id.
+- **The public event page's mend, draft pull request 141** (`redesign/event-page-phone` at `9dde4ff`), waits for K's yes: no sideways scroll on a phone, the sections box reachable by keyboard and named in both looks, six places saying US Chess (K was told of two), two browser cases of WS01 step 32 moved in place with their owner's word. K has the pictures and one numbered choice. Before any merge it takes main in, after 140, and is gated again.
+- **Checkpoint X's branch** (`redesign/ws09-clubs-x`) is at `1747c58` (step 27). **Step 28 is held:** K reported 88% of the week's usage spent; the lead put a choice (meeting first, recommended, or also start step 28) and follows "meeting first" until K says otherwise. Step 28's launch note is written.
+- **Still owed by K:** `SIGNING_SECRET` in the site's settings; the region of the Baton Rouge and East Central seat; each board member signed in to the site once; the yes on pull request 141.
+
+## Where it stood at about 5:20 PM UTC on Wednesday, November 18, 2026
 
 - **The clubs switch-on is live.** Pull request 139 merged at 5:10 PM UTC on K's decision 13: main is `35ef23f`, whose tree is `01d05ed`'s. The new build was served by 5:17 PM UTC, and the signed-out live check passed (My region, Still accurate and the monthly check ask for a sign-in; the public list is unchanged). The live site shows `SIGNING_SECRET` is not set yet. K has the five signed-in steps.
 - **The club events switch-on is draft pull request 140** (`redesign/ws09-region-on` at `bcd2265`). The mail stream's pull requests 137 and 138 merge first; this branch then takes main in, the list of switches that ship on is joined by hand, and the full check is made again. It merges Thursday morning, November 19, 2026 at the earliest, two hours clear of the mail stream's last merge, K told the time and the three things to know beforehand.
