@@ -367,9 +367,10 @@ describe('REDESIGN_STATUS.md, WS09 switch-on of regionEvents: the pins', () => {
     const pins = bullet(block, '- **Pins moved.**')
     const sweep = read('test/integration/media-manager-reach.test.ts')
     expect(casesIn('test/integration/media-manager-reach.test.ts')).toBe(4)
-    expect(sweep).toContain('with nothing written and nothing sent, with REGION_EVENTS_ON set as it ships and unset\', async () => {')
-    expect(sweep).toContain('    expect(await sweep()).toEqual([\'POST tournaments/[id]/approval.ts: 400\'])\n')
-    expect(sweep).toContain('    region.on = false\n    expect(await sweep()).toEqual([])\n')
+    // The sweep's exception is gone again: the block "WS09 switch-on: the approval judges the person first" put the file back as it was before this switch-on.
+    expect(sweep).not.toContain('with nothing written and nothing sent, with REGION_EVENTS_ON set as it ships and unset\', async () => {')
+    expect(sweep).not.toContain('    expect(await sweep()).toEqual([\'POST tournaments/[id]/approval.ts: 400\'])\n')
+    expect(sweep).not.toContain('    region.on = false\n    expect(await sweep()).toEqual([])\n')
     expect(pins).toContain('`test/integration/media-manager-reach.test.ts` (4)')
     const timing = read('test/unit/region-events-pages.test.tsx')
     expect(casesIn('test/unit/region-events-pages.test.tsx')).toBe(27)

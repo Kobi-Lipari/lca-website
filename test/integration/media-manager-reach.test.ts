@@ -9,10 +9,7 @@
 // the holder may pass, and every other method answers 403 with nothing
 // written and nothing sent, whatever the method, the address or the body. A
 // handler file added to Admin later is swept at once; one a media manager
-// should reach has to be named in ALLOWED here, in the same change. One
-// answer differs with REGION_EVENTS_ON set: the approval endpoint answers a
-// body it does not take with 400 before it judges the person, and refuses
-// the holder each body it takes with 403.
+// should reach has to be named in ALLOWED here, in the same change.
 //
 // MAIL_LISTS_ON and the module's other constants are read through getters on
 // the mocked functions/utils/mail/switches, set before every case. Nothing
@@ -40,18 +37,6 @@ vi.mock('../../functions/utils/mail/switches', async (importOriginal) => {
     },
     get COMPLAINT_STOPS_OTHER_SENDERS() {
       return flags.complaintStops
-    },
-  }
-})
-// REGION_EVENTS_ON as it ships, set, unless a case sets it itself; the
-// representatives' approval endpoint is among the handlers swept.
-const region = vi.hoisted(() => ({ on: true }))
-vi.mock('../../functions/utils/clubs/pages', async (importOriginal) => {
-  const real = await importOriginal<typeof import('../../functions/utils/clubs/pages')>()
-  return {
-    ...real,
-    get REGION_EVENTS_ON() {
-      return region.on
     },
   }
 })
@@ -105,7 +90,6 @@ beforeEach(async () => {
   flags.sender = 'resend'
   flags.plan = 'free'
   flags.complaintStops = true
-  region.on = true
   await env.DB.prepare(`DELETE FROM board_members WHERE id LIKE 'seat-%'`).run()
 })
 
@@ -117,32 +101,18 @@ describe('the media manager\'s reach, swept over every handler of Admin', () => 
     expect(swept.length).toBeGreaterThanOrEqual(60)
   })
 
-  it('answers every method outside the newsletter\'s 403, the holder signed in with a second factor, with nothing written and nothing sent, with REGION_EVENTS_ON set as it ships and unset', async () => {
+  it('answers every method outside the newsletter\'s 403, the holder signed in with a second factor, with nothing written and nothing sent', async () => {
     const holder = await seedMember({ fullName: 'Player One' })
     await seedSeat({ slug: MEDIA_MANAGER_SEAT, role: 'Media manager' }, [holder])
     const event = await seedTournament({ name: 'Sample Winter Open' })
     const before = await traces()
-    const sweep = async () => {
-      const answers: string[] = []
-      for (const { file, method, handler } of swept) {
-        const options: InvokeOptions = { method, params: { ...PARAMS, id: event }, path: '/api/test?section=Open', as: holder, body: method === 'GET' || method === 'DELETE' ? undefined : {} }
-        const res = await invoke(handler, options)
-        if (res.status !== 403) answers.push(`${method} ${file}: ${res.status}`)
-      }
-      return answers
+    const answers: string[] = []
+    for (const { file, method, handler } of swept) {
+      const options: InvokeOptions = { method, params: { ...PARAMS, id: event }, path: '/api/test?section=Open', as: holder, body: method === 'GET' || method === 'DELETE' ? undefined : {} }
+      const res = await invoke(handler, options)
+      if (res.status !== 403) answers.push(`${method} ${file}: ${res.status}`)
     }
-    // With REGION_EVENTS_ON set, the approval endpoint reads its body before it
-    // judges the person, so the sweep's empty body meets its 400 there; each
-    // body it takes is refused the holder with 403, as the three calls below hold.
-    region.on = true
-    expect(await sweep()).toEqual(['POST tournaments/[id]/approval.ts: 400'])
-    const approval = swept.find((s) => s.file === 'tournaments/[id]/approval.ts' && s.method === 'POST')!
-    for (const body of [{ action: 'submit' }, { action: 'approve' }, { action: 'ask_changes', note: 'Please add the time control.' }]) {
-      const res = await invoke(approval.handler, { method: 'POST', params: { id: event }, as: holder, body })
-      expect(res.status, body.action).toBe(403)
-    }
-    region.on = false
-    expect(await sweep()).toEqual([])
+    expect(answers).toEqual([])
     expect(await traces()).toEqual(before)
   })
 
