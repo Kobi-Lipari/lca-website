@@ -1,10 +1,10 @@
 // src/components/DonateButton.tsx
 //
 // The donation dialog: an amount, then Stripe's checkout for it. The new
-// header opens it from its Donate button, and from the About menu's Donate
-// row when the bar is too tight to hold the button, until the Give page
-// exists behind newMembership; DonateButton is the dialog with its own
-// trigger, as it has always been drawn.
+// header opens it from the About menu's Donate row, and in its tablet form
+// from the drawer's Donate, never from a button in its bar (decision 68),
+// until the Give page exists behind newMembership; DonateButton is the
+// dialog with its own trigger, as it has always been drawn.
 //
 // The dialog sends the donor to the checkout in the same tab. It used to
 // open the checkout in a new tab once the request came back, and browsers,

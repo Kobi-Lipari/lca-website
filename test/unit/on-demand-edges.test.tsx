@@ -94,6 +94,18 @@ function pageStands() {
   expect(screen.queryByText('Something went wrong')).toBeNull()
 }
 
+/**
+ * Opens the About menu by a click and presses its Donate row, as a person
+ * does in the desktop form, where Donate is the menu's last row (decision
+ * 68); gives back the About button.
+ */
+function donateFromTheAboutMenu() {
+  const about = banner().getByRole('button', { name: 'About' })
+  fireEvent.click(about)
+  press(within(document.getElementById(about.getAttribute('aria-controls')!)!).getByRole('button', { name: 'Donate' }))
+  return about
+}
+
 /** Opens the sheet from the bar's Menu button and presses its Donate, as a person does. */
 async function donateFromTheSheet() {
   const menu = press(banner().getByRole('button', { name: 'Menu' }))
@@ -175,15 +187,15 @@ describe.each([
 })
 
 describe('the notice\'s Dismiss', () => {
-  it('in the desktop form, puts the notice away and gives the focus back to Donate, which asked for the form', async () => {
+  it('in the desktop form, puts the notice away and gives the focus back to About, whose Donate row asked for the form', async () => {
     drawApp(<SiteHeader />)
-    const donate = press(banner().getByRole('button', { name: 'Donate' }))
+    const about = donateFromTheAboutMenu()
     const notice = await screen.findByRole('alert')
     const dismiss = within(notice).getByRole('button', { name: 'Dismiss' })
     press(dismiss)
     expect(screen.queryByRole('alert')).toBeNull()
     expect(dismiss.isConnected).toBe(false)
-    expect(document.activeElement, 'the focus once the notice is put away').toBe(donate)
+    expect(document.activeElement, 'the focus once the notice is put away').toBe(about)
     pageStands()
   })
 
@@ -201,7 +213,7 @@ describe('the notice\'s Dismiss', () => {
 describe('a part asked for again after its notice was put away', () => {
   it('fails as before: the notice back once, the bar told each time, and no dialog', async () => {
     drawApp(<SiteHeader />)
-    const donate = press(banner().getByRole('button', { name: 'Donate' }))
+    donateFromTheAboutMenu()
     for (let ask = 1; ask <= 3; ask++) {
       const notice = await screen.findByRole('alert')
       expect(screen.getAllByRole('alert'), `ask ${ask}`).toHaveLength(1)
@@ -210,7 +222,8 @@ describe('a part asked for again after its notice was put away', () => {
       expect(ownLines(), `ask ${ask}`).toHaveLength(ask)
       fireEvent.click(within(notice).getByRole('button', { name: 'Dismiss' }))
       expect(screen.queryByRole('alert')).toBeNull()
-      press(donate)
+      // Asked for again as a person asks for it in the desktop form: About opened once more, then its Donate row.
+      donateFromTheAboutMenu()
     }
     pageStands()
   })
