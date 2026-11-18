@@ -270,19 +270,16 @@ function HonorRoll({ kind, heading, intro, champions, entries, query, frameHook 
                     <Trophy className="size-8 text-muted-foreground" />
                   </div>
                 )}
-                {/* The name and its summary, then the wins in one row across: under the name, and from lg in a column to its right. */}
-                <div className="min-w-0 flex-1 lg:grid lg:grid-cols-[20rem_minmax(0,1fr)] lg:gap-x-8">
-                  <div className="min-w-0">
-                    <h3 className="text-lg font-bold text-ink">{e.chessTitle && <ChessTitleShort title={e.chessTitle} />}{e.name}</h3>
-                    <p className="text-sm text-muted-foreground">
-                      {e.wins.length > 1
-                        ? <>Latest title in {e.lastYear}, first in {e.firstYear}, {e.wins.length} titles in all</>
-                        : <>Won in {e.firstYear}</>}
-                    </p>
-                  </div>
-                  {/* Each win stays one flex item, so its section, mark and note wrap together and its link never sits in running text.
-                      From lg the list keeps its own height at the top, so rows that wrap stay one under another beside the photo. */}
-                  <ul className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-sm text-ink lg:mt-0 lg:pt-1 lg:self-start">
+                {/* The name and its summary, then the wins in one row across, under them at every width. */}
+                <div className="min-w-0 flex-1">
+                  <h3 className="text-lg font-bold text-ink">{e.chessTitle && <ChessTitleShort title={e.chessTitle} />}{e.name}</h3>
+                  <p className="text-sm text-muted-foreground">
+                    {e.wins.length > 1
+                      ? <>Latest title in {e.lastYear}, first in {e.firstYear}, {e.wins.length} titles in all</>
+                      : <>Won in {e.firstYear}</>}
+                  </p>
+                  {/* Each win stays one flex item, so its section, mark and note wrap together and its link never sits in running text. */}
+                  <ul className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-sm text-ink">
                     {e.wins.map((w) => (
                       <li key={w.id} className="flex max-w-full flex-wrap items-baseline gap-x-2">
                         <span className="font-semibold tabular-nums">{w.year}</span>

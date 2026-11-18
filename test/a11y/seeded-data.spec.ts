@@ -230,20 +230,29 @@ test.describe('the pages that show it', () => {
     await expect(page.getByText('No pairings published yet')).toBeVisible()
   })
 
-  test('the champions page shows the score with ½, and at 1280 pixels a champion\'s wins sit to the right of the name, each row close under the last', async ({ page }) => {
+  test('the champions page shows the score with ½, and at 1280 pixels as at 900 a champion\'s wins sit in a row of their own under the name, each row close under the last', async ({ page }) => {
     await page.goto('/champions')
     await expect(page.getByText('Won with 2½ of 3.').first()).toBeVisible()
-    // Dex Webster's seven scholastic wins, from the migrations, wrap into two rows or more
-    // beside the name; the rows stay together at the top of the entry, not spread down its photo.
-    const laid = await page.locator('#scholastic-dex-webster').evaluate((entry) => {
-      const name = entry.querySelector('h3')!.getBoundingClientRect()
-      const wins = entry.querySelector('ul')!
-      const tops = [...wins.querySelectorAll(':scope > li')].map((win) => Math.round(win.getBoundingClientRect().top))
-      return { right: wins.getBoundingClientRect().left >= name.right, rows: [...new Set(tops)].sort((a, b) => a - b) }
-    })
-    expect(laid.right).toBe(true)
-    expect(laid.rows.length).toBeGreaterThan(1)
-    for (const [i, top] of laid.rows.entries()) if (i > 0) expect(top - laid.rows[i - 1], `row ${i + 1} of ${laid.rows.join(', ')}`).toBeLessThanOrEqual(28)
+    // Dex Webster's seven scholastic wins, from the migrations, sit under the name's summary at
+    // every width, starting where the name starts and never to its right. They fit one row at
+    // 1280 pixels and wrap at 900, where each row stays close under the last, not spread down
+    // the entry's photo.
+    for (const width of [1280, 900]) {
+      await page.setViewportSize({ width, height: 720 })
+      const laid = await page.locator('#scholastic-dex-webster').evaluate((entry) => {
+        const name = entry.querySelector('h3')!.getBoundingClientRect()
+        const summary = entry.querySelector('h3 + p')!.getBoundingClientRect()
+        const wins = entry.querySelector('ul')!
+        const list = wins.getBoundingClientRect()
+        const tops = [...wins.querySelectorAll(':scope > li')].map((win) => Math.round(win.getBoundingClientRect().top))
+        return { left: Math.round(list.left - name.left), under: Math.round(list.top - summary.bottom), wins: tops.length, rows: [...new Set(tops)].sort((a, b) => a - b) }
+      })
+      expect(laid.left, `at ${width}: the wins' left edge less the name's`).toBe(0)
+      expect(laid.under, `at ${width}: the wins' top less the summary's bottom`).toBeGreaterThanOrEqual(0)
+      expect(laid.rows.length, `at ${width}: the rows of wins`).toBeGreaterThan(width === 900 ? 1 : 0)
+      expect(laid.rows.length, `at ${width}: some row holds more than one win`).toBeLessThan(laid.wins)
+      for (const [i, top] of laid.rows.entries()) if (i > 0) expect(top - laid.rows[i - 1], `at ${width}: row ${i + 1} of ${laid.rows.join(', ')}`).toBeLessThanOrEqual(28)
+    }
   })
 
   test('the news page lists the pinned notice first', async ({ page }) => {

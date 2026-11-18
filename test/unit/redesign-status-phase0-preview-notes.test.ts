@@ -2,17 +2,19 @@
 //
 // REDESIGN_STATUS.md, K's notes from the preview: the section "Phase 0: K's
 // notes from the preview", the record's last, and the date line's date it
-// moved. It reads that section and the date line, and holds four of the
+// moved. It reads that section and the date line, and holds six of the
 // section's claims against the code itself: the seal's two circles, the
-// About menu's last row, the header with no Donate slot, and the chess title
-// read from a note. Pinned here: the section's place, its Status, Branch and
-// PR lines, its opening, its bullets in their order and the key words of
-// each, the files with each unit test file's count in the record's form, the
-// pins moved, what the gate still owes, the merge-pending phrase left on its
-// one line, and the plain-language rules on all of it. It holds the new
-// test's count by this file's own cases, and every other figure by its form
-// or by the words the section gives it. Its banned patterns are built from
-// split strings, so this file holds none of them, and it is plain ASCII.
+// About menu's last row, the header with no Donate slot, the chess title
+// read from a note, the Champions entry with no class that starts with lg:,
+// and the state list's opening words, kept as they were. Pinned here: the
+// section's place, its Status, Branch and PR lines, its opening, K's answers
+// of decision 72, its bullets in their order and the key words of each, the
+// files with each unit test file's count in the record's form, the pins
+// moved, what the gate still owes, the merge-pending phrase left on its one
+// line, and the plain-language rules on all of it. It holds the new test's
+// count by this file's own cases, and every other figure by its form or by
+// the words the section gives it. Its banned patterns are built from split
+// strings, so this file holds none of them, and it is plain ASCII.
 import { createHash } from 'node:crypto'
 import { readdirSync, readFileSync } from 'node:fs'
 import { join, resolve } from 'node:path'
@@ -97,7 +99,7 @@ const proseOf = (text: string) => text.replace(/`[^`\n]*`/g, '``')
 const escaped = (text: string) => text.replace(/[.*+?^${}()|[\]\\/]/g, '\\$&')
 
 const BULLETS = [
-  '- **The seal.**', '- **Donate.**', '- **The Champions page.**', '- **What a visitor meets, by width and look.**', '- **What ships with every switch off.**',
+  '- **K\'s answers, decision 72.**', '- **The seal.**', '- **Donate.**', '- **The Champions page.**', '- **What a visitor meets, by width and look.**', '- **What ships with every switch off.**',
   '- **Where it differs from the brief and the boards.**', '- **The earlier lines it overtakes.**', '- **Follow-ups.**', '- **Files.**', '- **Pins moved.**',
   '- **Build.**', '- **Lint.**', '- **The browser run.**', "- **The pull request's text.**", '- Checks:',
 ]
@@ -151,12 +153,14 @@ describe('REDESIGN_STATUS.md, K\'s notes from the preview: where the section sta
     expect(dateLine).toContain('the Phase 0 public-answer trim is built on its own branch from step 9 and not merged yet')
   })
 
-  it('opens on K\'s three notes and their two decisions, only the Champions page changing with every switch off, and K\'s yes before the merge', () => {
+  it('opens on K\'s three notes, their two decisions and K\'s answers of decision 72, only the Champions page changing with every switch off, and K\'s yes before the merge', () => {
     const opening = lines[6] ?? ''
     for (const piece of [
       'A change of its own, outside the workstreams', 'the throwaway preview `preview-switches` on Monday, November 16, 2026',
       'decisions 68 and 70 of `docs/redesign/ws16-k-decisions.md` on the branch `redesign/docs-phase2`', 'K\'s "for ring 1"', 'K\'s "for donate 1", both decision 68',
       'to the right of the name from a computer\'s width and under it below that', '"FM Nicholas Matta"', 'K\'s "do 2 for the champions page fix", decision 70',
+      'K\'s answers of Tuesday, November 17, 2026 to the pictures of this change, decision 72 of the same file, keep all of that but where the years sit',
+      'they run in a row of their own under the name and its summary at every width.',
       'With every switch off only the Champions page changes, for every visitor in both looks', 'the seal is drawn only with `themeHeritage` and `newLook` on',
       'the new header only with `newNav` and `newLook` on', 'brief 0.2 asks K\'s yes before the merge (Q34), and the merge waits for K\'s word.',
     ]) expect(opening, piece).toContain(piece)
@@ -164,7 +168,7 @@ describe('REDESIGN_STATUS.md, K\'s notes from the preview: where the section sta
 })
 
 describe('REDESIGN_STATUS.md, K\'s notes from the preview: what it records, and the code it names', () => {
-  it('holds its fifteen bullets in order, each once, its Checks line last, and nothing after the opening but bullets, the lines under them and the quoted text', () => {
+  it('holds its sixteen bullets in order, each once, its Checks line last, and nothing after the opening but bullets, the lines under them and the quoted text', () => {
     const places = BULLETS.map((name) => section.indexOf(`\n${name}`))
     for (const [i, name] of BULLETS.entries()) {
       expect(places[i], name).toBeGreaterThan(-1)
@@ -175,6 +179,30 @@ describe('REDESIGN_STATUS.md, K\'s notes from the preview: what it records, and 
     const first = lines.findIndex((l) => l.startsWith('- **'))
     expect(first).toBe(8)
     for (const l of lines.slice(first).filter((l) => l !== '')) expect(/^(?:- | {2}- | {2}>(?: |$))/.test(l), l).toBe(true)
+  })
+
+  it('records K\'s answers of Tuesday, November 17, 2026 as decision 72: K\'s words as written, the six choices in order, one clause each, why the opening words stay, and the page still writes them', () => {
+    const answers = bullet('- **K\'s answers, decision 72.**')
+    expect(answers.split('\n')).toHaveLength(1)
+    for (const piece of [
+      'went to K on Tuesday, November 17, 2026 at 8:31 AM UTC', 'K answered the same day at about 2:25 PM UTC',
+      ': "2. Let\'s make them all look like the one does in 900 pixels wide where the years of championship is its own line. Rest as recommended." So:',
+      'where decision 70 and this change\'s first commit put them to the right of the name from 1024 pixels',
+      'for one reason only, that from 1024 pixels the titles sat to the right of the name', 'so the words are true as they stand and are kept',
+      'K is told so in plain words and can still ask for the other words',
+    ]) expect(answers, piece).toContain(piece)
+    const CHOICES = [
+      ' 1, the seal keeps its one thin gold ring, the outer one, as drawn;',
+      ' 2, on the Champions page a champion\'s years run in a row of their own under the name and its summary at every width, as the page drew them at 900 pixels,',
+      ' 3, the reigning champion\'s card stays as it is;', ' 4, on a tablet Donate stays the first of the Menu drawer\'s buttons;',
+      ' 5, the state list\'s opening words, "A champion who won more than once has each title under their name.", stay exactly as they are;',
+      ' and 6, a heading copied from the page is left as it is, for the screen reader\'s sake.',
+    ]
+    const places = CHOICES.map((choice) => answers.indexOf(choice))
+    for (const choice of CHOICES) expect(answers.split(choice), choice).toHaveLength(2)
+    expect([...places].sort((a, b) => a - b)).toEqual(places)
+    // The opening words that stay, as the state list still writes them.
+    expect(code('src/pages/ChampionsPage.tsx')).toContain('A champion who won more than once has each title under their name."')
   })
 
   it('records the one ring kept, and the seal draws it: two circles, the disc at r 49 and the ring at r 45.5 with a line of 1.25, the inner ring gone', () => {
@@ -215,12 +243,13 @@ describe('REDESIGN_STATUS.md, K\'s notes from the preview: what it records, and 
     expect(code('src/components/layout/AboutMenu.tsx')).not.toMatch(/\bsqueezed\b/)
   })
 
-  it('records the Champions page, and the code reads the title K\'s example names from the data the migrations hold, and no other note', () => {
+  it('records the Champions page, its entry with no class that starts with lg:, and the code reads the title K\'s example names from the data the migrations hold, and no other note', () => {
     const page = bullet('- **The Champions page.**')
     for (const piece of [
       '`CHESS_TITLES`', '`CHESS_TITLE_SHORT`', 'GM, IM, FM, CM, NM, WGM, WIM, WFM and WCM', '`chessTitleOf(note)`', 'in any letter case and with its spaces tidied',
       '"FM" alone, "FIDE Master, co-champion", a tiebreak or a section records none', '`chessTitle`, from their newest win on that list whose note records one',
-      'every win keeps its note as written', 'from 1024 pixels (`lg`) the name and summary take a column 20rem wide', 'below 1024 they run under the name',
+      'every win keeps its note as written', 'then the wins in one list across, under them at every width', 'the column keeps its classes at `ccf65c3`, `min-w-0 flex-1`',
+      'no class of the entry starts with `lg:`, so no width draws the wins beside the name (decision 72)',
       'an `abbr` hidden from screen readers', 'a sighted visitor reads "FM Nicholas Matta"', 'the heading\'s accessible name is "FIDE Master Nicholas Matta"',
       'any other note stays with its own year', 'a note that is not a title on its own line under the name',
       '`migrations/0056_champions_import.sql` line 23', '2025, 2024, 2023, 2022 and 2020', '`migrations/0058_state_champion_2026.sql` line 14',
@@ -229,7 +258,18 @@ describe('REDESIGN_STATUS.md, K\'s notes from the preview: what it records, and 
     expect(chessTitleOf('FIDE Master')).toBe('FIDE Master')
     expect(CHESS_TITLE_SHORT['FIDE Master']).toBe('FM')
     for (const note of ['FM', 'FIDE Master, co-champion', 'tiebreaks over Player Six', '', null]) expect(chessTitleOf(note), String(note)).toBeNull()
-    expect(code('src/pages/ChampionsPage.tsx')).toContain('lg:grid lg:grid-cols-[20rem_minmax(0,1fr)]')
+    // The entry as the source writes it, from its list item to the end of the list: the text column has the classes it had at
+    // ccf65c3, and no class in the entry starts with lg:, so no width draws the wins beside the name.
+    const source = code('src/pages/ChampionsPage.tsx')
+    const from = source.indexOf('<li key={e.anchor}')
+    expect(from).toBeGreaterThan(0)
+    const entrySource = source.slice(from, source.indexOf('</ol>', from))
+    const classes = [...entrySource.matchAll(/className="([^"]*)"/g)].flatMap((m) => m[1].split(/\s+/))
+    expect(classes).toContain('flex-wrap')
+    expect(classes.filter((c) => c.startsWith('lg:'))).toEqual([])
+    expect(entrySource).not.toMatch(/\blg:/)
+    expect(entrySource).toContain('<div className="min-w-0 flex-1">')
+    expect(section).not.toMatch(/20rem|lg:[\w[]/)
     // The rows the section reads from: Matta's title, the 2026 champion with no note.
     const m56 = code('migrations/0056_champions_import.sql').split('\n')
     expect(m56[22]).toContain("2025, 'Louisiana State Champion', 'Nicholas Matta', 'FIDE Master'")
@@ -254,6 +294,7 @@ describe('REDESIGN_STATUS.md, K\'s notes from the preview: what it records, and 
     expect(subs(meets).map((l) => WIDTHS.findIndex((w) => l.startsWith(w)))).toEqual([0, 1, 2, 3, 4])
     for (const piece of [
       'Read from the code, every switch off but where a switch is named.', 'never Donate', 'State champions, Contact and Donate, then LCA on Facebook',
+      'on the Champions page each champion\'s years run across in a row of their own under the name and its summary, as on a tablet',
       'never marked "You are here"', 'About, ArrowUp twice and Enter', 'the focus is back on About when it closes',
       '892.5 pixels signed out, 825.4 as an active member and 908.8 as an expired member', 'with 83.5, 150.6 and 67.2 to spare',
       'a phone on its side at 844 or 812 among them', 'five controls, the brand link, Tournaments, Clubs, Log in or My LCA, and Menu, where it held six',
@@ -301,18 +342,21 @@ describe('REDESIGN_STATUS.md, K\'s notes from the preview: what it records, and 
     ]) expect(all.filter((l) => l.startsWith(head)), head).toHaveLength(1)
   })
 
-  it('gives its six follow-ups: the preview\'s champions, the Polgar photo, the tablet\'s Donate, K\'s three defaults, the admin\'s form and what is left for K', () => {
+  it('gives its four follow-ups: the preview\'s champions, the Polgar photo, the admin\'s form and what is left for K, with nothing K has answered still asked', () => {
     const items = subs(bullet('- **Follow-ups.**'))
-    expect(items).toHaveLength(6)
+    expect(items).toHaveLength(4)
     const pieces = [
       ['The preview database holds an older champions import', 'Nicholas Matta\'s 2022 to 2024 rows are missing there and four 2011 rows are wrong', 'needs K\'s yes by name', 'a local database built from the migrations alone', '"Fixture State Champion" (`scripts/seed/fixtures.sql` lines 182 to 188)'],
       ['K\'s data question, outside this change', 'the 2009 Polgar representative\'s row uses the 2009 Denker representative\'s photo', '`migrations/0056_champions_import.sql` lines 183 and 184', 'Nothing here changes it.'],
-      ['The tablet\'s Donate', 'the picture of the drawer at 900 pixels'],
-      ['K confirms three defaults with pictures', 'the outer one, r 45.5', 'at 1x and 2x', 'starts at 1024 pixels, not 768', 'the reigning card'],
       ['`src/areas/admin/components/ChampionsPanel.tsx`', '"5.5/6"', '(line 114)', '"at their first win" (line 120)', 'now shows before the name'],
-      ['For K:', 'US Chess\'s other master titles', '"FM" finds nobody in Find a name', 'no plain companion on the screen', 'the form K picked', 'shows its year twice'],
+      [
+        'For K:', 'US Chess\'s other master titles', '"FM" finds nobody in Find a name', 'no plain companion on the screen', 'the form K picked', 'shows its year twice',
+        'Answered in decision 72: a heading copied from the page', '"FMFIDE Master Nicholas Matta"', 'is left as it is, for the screen reader\'s sake.',
+      ],
     ]
     for (const [i, words] of pieces.entries()) for (const piece of words) expect(items[i], piece).toContain(piece)
+    // What decision 72 answered is asked no more: the tablet's Donate, the three defaults and the opening words.
+    for (const asked of ['K confirms', 'right column', 'keep or reword']) expect(items.join('\n'), asked).not.toContain(asked)
   })
 })
 
@@ -346,25 +390,31 @@ describe('REDESIGN_STATUS.md, K\'s notes from the preview: files, pins and what 
     const pins = items.join('\n')
     for (const words of [
       'three circles, r 49, 45.5 and 30, are now two, r 49 and 45.5', 'two of brand gold on no fill, are now one',
-      '10371 and `332b30c247f6297030e31b6ce4121918d3c881b74a911242f372db7df5bd4919`', 'are now 10763 and `7cb48c2bb2762741113ab548ebe03a45df262b44beb5f6c95157d124e5c0a6a2`',
+      '10371 and `332b30c247f6297030e31b6ce4121918d3c881b74a911242f372db7df5bd4919`', 'are now 10430 and `8a8410b37bc482e79cc639dd818a4afdcb76e35af74be5063683c0361be337dc`',
       'from lines 40, 41, 52 and 53 to 43, 44, 55 and 56', 'the squeeze\'s levels go from 0, 1 and 2 to 0 and 1', 'the About menu\'s rows gain Donate before the Facebook row',
       'leaves it for Log in', 'goes to About, or to Menu at 1023', '`squeezed={false}` dropped', 'from six to five', 'from seven stops to six', 'the row\'s steps from two to one',
       'stay at 74, 104, 154 and 183', 'No record test\'s pin moves',
     ]) expect(pins, words).toContain(words)
     // The stored page's new values are the fixture's, at the lines the section gives.
     const fixture = code('test/unit/fixtures/heritage-pages-today.ts').split('\n')
-    for (const n of [43, 44, 55, 56]) expect(fixture[n - 1], `line ${n}`).toContain("{ length: 10763, sha256: '7cb48c2bb2762741113ab548ebe03a45df262b44beb5f6c95157d124e5c0a6a2' }")
+    for (const n of [43, 44, 55, 56]) expect(fixture[n - 1], `line ${n}`).toContain("{ length: 10430, sha256: '8a8410b37bc482e79cc639dd818a4afdcb76e35af74be5063683c0361be337dc' }")
   })
 
   it('says the build, the lint and the browser run as done here or owed to the gate, with the baseline\'s sha256, and gives the pull request\'s text', () => {
     const build = bullet('- **Build.**')
-    for (const piece of ['Not run for this record', 'is owed', 'the base\'s 206 files', 'no file is added under `src/`', '`deploy-worker.yml` does not run on the merge']) expect(build, piece).toContain(piece)
+    for (const piece of [
+      'Not run for this record', 'is owed', 'the base\'s 206 files', 'no file is added under `src/`', 'the stylesheet holds one rule more than at `ccf65c3`, `no-underline`',
+      '`deploy-worker.yml` does not run on the merge',
+    ]) expect(build, piece).toContain(piece)
     const lint = bullet('- **Lint.**')
     for (const piece of ['`npx eslint` on the 29 code and test files this change touches found nothing', '`npx tsc --noEmit -p tsconfig.app.json` found nothing', 'The gate\'s `npm run lint` is owed', 'the base\'s 13 errors and 12 warnings', 'over 1,129 files']) {
       expect(lint, piece).toContain(piece)
     }
     const browser = bullet('- **The browser run.**')
-    for (const piece of ['Not run for this record', 'is owed', '997 tests, 660 that run and 337 that skip', 'the base\'s 995, 659 and 336', 'the drawer\'s Donate at 900', 'clean under axe in the five looks at 1280 and 390']) {
+    for (const piece of [
+      'Not run for this record', 'is owed', '997 tests, 660 that run and 337 that skip', 'the base\'s 995, 659 and 336', 'the drawer\'s Donate at 900', 'clean under axe in the five looks at 1280 and 390',
+      'at 1280 and at 900 pixels that Dex Webster\'s scholastic wins sit under the name\'s summary, starting where the name starts, never to its right',
+    ]) {
       expect(browser, piece).toContain(piece)
     }
     const BASELINE = 'ce04ac06f0b3906739738413ef7aa3a21b0e8b0b9e3fe1c09dbca15f9f4dcbef'
@@ -377,9 +427,14 @@ describe('REDESIGN_STATUS.md, K\'s notes from the preview: files, pins and what 
     const headings = quoted.filter((l) => /^ {2}> \*\*[^*]+\*\*$/.test(l)).map((l) => l.slice(4))
     expect(headings).toEqual(['**What this is**', '**What the merge does to production**', '**What K does before and after**', '**Checks**', '**What comes after**'])
     const text = quoted.join('\n')
-    for (const piece of ['"for ring 1"', '"for donate 1"', '"do 2 for the champions page fix", decision 70', 'Only the Champions page changes, for every visitor', '"FIDE Master Nicholas Matta"', 'four defaults', 'Left for the gate\'s figures', 'revert this change\'s merge commit']) {
+    for (const piece of [
+      '"for ring 1"', '"for donate 1"', '"do 2 for the champions page fix", decision 70', 'Only the Champions page changes, for every visitor', '"FIDE Master Nicholas Matta"',
+      '(decision 72), so the second commit puts them in a row of their own under the name at every width', 'K answered the six choices on Tuesday, November 17, 2026 (decision 72)',
+      'K looks at the new pictures of the Champions page', 'Left for the gate\'s figures', 'revert this change\'s merge commit',
+    ]) {
       expect(text, piece).toContain(piece)
     }
+    expect(text).not.toMatch(/right column|four defaults|From 1024 pixels/)
   })
 
   it('gives the Checks line: the runs by name and the record\'s readers done, eslint and the app\'s type check clean, and the gate with its one browser run owed', () => {
