@@ -5,7 +5,7 @@
 // answered by a stand-in for fetch. Each thing this half opens takes the
 // focus when it opens, closes on Escape and gives the focus back to the
 // control that opened it:
-// - the Add menu ("Add an event or line"), whose one line, chosen, goes into
+// - the Add menu ("Add an event or line"), whose line, chosen, goes into
 //   the letter, where the focus then is;
 // - the link's field, which refuses in words an address the email cannot
 //   keep, and puts a kept one in the letter;
@@ -115,6 +115,7 @@ const ADMIN = {
 } as unknown as AuthContextValue
 
 beforeEach(() => {
+  window.localStorage.setItem('lca-newsletter-page-help', 'shown') // Help has been seen once, so it does not open by itself here.
   answers = {}
   puts = []
   vi.stubGlobal('fetch', vi.fn(async (url: string, init?: RequestInit) => {
@@ -161,15 +162,15 @@ const focused = () => document.activeElement as HTMLElement
 const key = (target: Element, name: string, more: Record<string, unknown> = {}) => fireEvent.keyDown(target, { key: name, ...more })
 
 describe('the Add menu', () => {
-  it('takes the focus to its line when it opens, closes on Escape and gives the focus back', async () => {
+  it('takes the focus to its first row when it opens, closes on Escape and gives the focus back', async () => {
     await thePage()
     const add = screen.getByRole('button', { name: /Add an event or line/ })
     expect(add.getAttribute('aria-haspopup')).toBe('menu')
     fireEvent.click(add)
     const menu = screen.getByRole('menu', { name: 'Add' })
     expect(add.getAttribute('aria-expanded')).toBe('true')
-    expect(within(menu).getAllByRole('menuitem').map((i) => i.textContent)).toEqual(['A line'])
-    expect(focused().textContent).toBe('A line')
+    expect(within(menu).getAllByRole('menuitem').map((i) => i.textContent)).toEqual(['An event', 'A line'])
+    expect(focused().textContent).toBe('An event')
     key(focused(), 'ArrowDown')
     expect(focused().textContent).toBe('A line')
     key(focused(), 'Escape')
