@@ -148,7 +148,8 @@ describe('REDESIGN_STATUS.md, WS09 checkpoint U merged and live', () => {
     // Checkpoint U no longer waits; checkpoint V's review moves the Status line to V waiting for K's word.
     expect(statusLine).not.toMatch(/checkpoint U[^;]*waits for K's word for its merge/)
     expect(prLine).not.toContain('checkpoint U waits for K\'s word')
-    expect(prLine.match(/pull request \d+/g)).toEqual(['pull request 130', 'pull request 131', 'pull request 132'])
+    // Read only while this block is the latest: the switch-on's block names checkpoint V's own pull request.
+    if (latest) expect(prLine.match(/pull request \d+/g)).toEqual(['pull request 130', 'pull request 131', 'pull request 132'])
   })
 })
 
@@ -258,8 +259,9 @@ describe('REDESIGN_STATUS.md, WS09 checkpoint V, what checkpoint U\'s pictures a
     for (const piece of ['Nothing a person meets', '`clubKeepers` is `false`', '`/clubs/confirm/:token` is still not registered', 'My region still sends everyone to the dashboard', '`CLUB_KEEPERS_ON` is `false`', 'refuse 403 before anything is read, with no query made', 'no email is sent', 'No switch is added']) {
       expect(ships, piece).toContain(piece)
     }
-    expect(read('functions/utils/clubs/pages.ts')).toContain('export const CLUB_KEEPERS_ON = false')
-    expect(read('src/lib/features.ts')).toContain('  clubKeepers: false,')
+    // clubKeepers and CLUB_KEEPERS_ON went on together in the block "WS09 switch-on: clubKeepers and CLUB_KEEPERS_ON", so this step holds only that each is declared.
+    expect(read('functions/utils/clubs/pages.ts')).toMatch(/^export const CLUB_KEEPERS_ON = (?:false|true)$/m)
+    expect(read('src/lib/features.ts')).toMatch(/^ {2}clubKeepers: (?:false|true),$/m)
     expect(read('src/App.tsx')).toContain('{FEATURES.clubKeepers && <Route path="/clubs/confirm/:token" element={<ClubConfirmPage />} />}')
     const does = bullet(block, '- **What the merge does.**')
     for (const piece of ['No migration, no route and no endpoint', '103 handler files', '`PENDING_COUNT` 107', '`deploy-worker.yml`']) expect(does, piece).toContain(piece)

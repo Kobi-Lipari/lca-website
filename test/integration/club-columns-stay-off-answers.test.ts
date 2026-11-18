@@ -61,6 +61,18 @@ const SENTINELS = [
   '2026-11-02 18:00:00', '2026-11-02 18:05:00',
 ]
 
+// "Every switch off" includes CLUB_KEEPERS_ON, which the file holds unset itself through a getter on the mocked module.
+const keepers = vi.hoisted(() => ({ keepersOn: false }))
+vi.mock('../../functions/utils/clubs/pages', async (importOriginal) => {
+  const real = await importOriginal<typeof import('../../functions/utils/clubs/pages')>()
+  return {
+    ...real,
+    get CLUB_KEEPERS_ON() {
+      return keepers.keepersOn
+    },
+  }
+})
+
 /** A made up club with every one of the 15 new columns filled, and the two members its told_by and confirmed_by name. */
 async function filledClub(id: string, name: string) {
   const saver = await seedMember({ fullName: 'Player One', email: `saver.${id}@example.org` })

@@ -3,9 +3,10 @@
 // The way into My region (WS09 step 11): the Dashboard's "Clubs in your
 // region" block gains "Open My region" with clubKeepers on, and with it off,
 // which is how the step ships, the block is drawn for a seat holder exactly
-// as on the base and not at all for a member without a seat, and the
-// Dashboard never calls My region's answer. The real Dashboard runs with
-// fetch stubbed; every name and club here is made up.
+// as on the base, but for the sentence K's decision 10 removed, and not at
+// all for a member without a seat, and the Dashboard never calls My
+// region's answer. The real Dashboard runs with fetch stubbed; every name
+// and club here is made up.
 import { cleanup, render, screen, within } from '@testing-library/react'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
@@ -38,8 +39,8 @@ const MANAGED = [
   { id: 'example-chess-club', name: 'Example Chess Club', region: 'Bayou Region' },
   { id: 'example-knights-club', name: 'Example Knights Club', region: null },
 ]
-/** The block as the base draws it for this seat holder: its heading, its sentence and a link to each club's admin page. */
-const BASE_TEXT = ' Clubs in your regionAs regional representative you can update these clubs\' pages and news.Example Chess ClubBayou RegionManage →Example Knights ClubManage →'
+/** The block as the base draws it for this seat holder, less the sentence K's decision 10 removed: its heading and a link to each club's admin page. */
+const BASE_TEXT = ' Clubs in your regionExample Chess ClubBayou RegionManage →Example Knights ClubManage →'
 const BASE_LINKS = [['Example Chess ClubBayou RegionManage →', '/admin/clubs/example-chess-club'], ['Example Knights ClubManage →', '/admin/clubs/example-knights-club']]
 
 let asked: string[] = []
@@ -110,6 +111,8 @@ describe('the Dashboard\'s way into My region', () => {
     expect(link.getAttribute('href')).toBe('/workspace/region')
     expect(link.className.split(' ')).toContain('min-h-11')
     expect(linksOf(card)).toEqual([['Open My region', '/workspace/region'], ...BASE_LINKS])
+    // No sentence with the switch on either: the link follows the heading.
+    expect(card.textContent).toBe(BASE_TEXT.replace(' Clubs in your region', ' Clubs in your regionOpen My region'))
     // The Dashboard links to the page and asks nothing of it.
     expect(asked.filter((u) => u.includes('/api/workspace/region'))).toEqual([])
     flags.clubKeepers = false
