@@ -94,7 +94,8 @@ describe('REDESIGN_STATUS.md, WS16 part two: Help and "Add an event", its place 
     const at = status.indexOf(`\n${BLOCK}\n`)
     expect(at).toBeGreaterThan(status.indexOf(`\n${BEFORE}\n`))
     expect(status.indexOf(`\n${BEFORE}\n`)).toBeGreaterThan(-1)
-    expect(status.indexOf(`\n${AFTER}\n`, at)).toBe(at + 1 + block.length)
+    // A later part of the same page step may put its own block between this one and the decisions.
+    expect(status.indexOf(`\n${AFTER}\n`, at)).toBeGreaterThanOrEqual(at + 1 + block.length)
     expect(blockLines[0]).toBe(BLOCK)
     expect(blockLines.filter((l) => /^#{1,6} /.test(l))).toEqual([BLOCK])
     // A part of a page step, so the page steps' own count, which the part's other record tests read, passes over it.
