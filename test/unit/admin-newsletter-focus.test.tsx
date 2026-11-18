@@ -115,6 +115,7 @@ const ADMIN = {
 } as unknown as AuthContextValue
 
 beforeEach(() => {
+  window.localStorage.setItem('lca-newsletter-page-help', 'shown') // Help has been seen once, so it does not open by itself here.
   answers = {}
   puts = []
   vi.stubGlobal('fetch', vi.fn(async (url: string, init?: RequestInit) => {
