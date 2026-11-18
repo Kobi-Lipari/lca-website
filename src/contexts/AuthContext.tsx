@@ -171,6 +171,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const loadsInFlight = useRef(0)
   /** The access token of the session last set, so a load that ends marks the session that is current then. */
   const currentToken = useRef<string | null>(null)
+  /** The member in hand, for the sign-in listener, which outlives any one draw. */
+  const memberInHand = useRef<ApiMember | null>(null)
+  /** The user of the session the listener last heard, so it can tell the same person coming back from a new one. */
+  const lastUserId = useRef<string | null>(null)
+
+  useEffect(() => {
+    memberInHand.current = member
+  }, [member])
 
   const profileLoadStarted = useCallback(() => {
     loadsInFlight.current += 1
@@ -231,6 +239,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (_event, nextSession) => {
       currentToken.current = nextSession?.access_token ?? null
+      const sameUser = !!nextSession?.user && lastUserId.current === nextSession.user.id
+      lastUserId.current = nextSession?.user?.id ?? null
       setSession(nextSession)
       setUser(nextSession?.user ?? null)
       setLoading(false)
@@ -246,7 +256,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           setSeats(data.seats)
           setManagedClubs(data.managedClubs)
           setDirectedTournaments(data.directedTournaments ?? [])
-        } catch {
+        } catch (err) {
+          // The same person coming back to the tab while the line is down, or
+          // while the server cannot answer (no answer, a 5xx, or a 408 or 429
+          // asking to come back later), keeps the member already in hand, so
+          // a guarded page is not taken away. A plain no from the server (a
+          // 401 or any other 4xx), a different person or no member yet clears
+          // as before.
+          const status = err instanceof ApiError ? err.status : null
+          const couldNotAnswer = status === null || status >= 500 || status === 408 || status === 429
+          if (couldNotAnswer && sameUser && memberInHand.current) return
           setMember(null)
           setSeats([])
           setManagedClubs([])
