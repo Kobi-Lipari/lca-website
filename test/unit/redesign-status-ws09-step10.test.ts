@@ -298,8 +298,9 @@ describe('REDESIGN_STATUS.md, WS09 step 10: the parts', () => {
     ]) expect(ships, piece).toContain(piece)
     expect(read(REGION)).toContain('export const REGION_CLOSED = \'My region is not open yet.\'')
     expect(read(CONFIRM)).toContain('export const CONFIRM_CLOSED = \'Still accurate cannot be used yet.\'')
-    expect(read('src/lib/features.ts')).toContain('  clubKeepers: false,')
-    expect(read('functions/utils/clubs/pages.ts')).toContain('export const CLUB_KEEPERS_ON = false')
+    // clubKeepers and CLUB_KEEPERS_ON went on together in the block "WS09 switch-on: clubKeepers and CLUB_KEEPERS_ON", so this step holds only that each is declared.
+    expect(read('src/lib/features.ts')).toMatch(/^ {2}clubKeepers: (?:false|true),$/m)
+    expect(read('functions/utils/clubs/pages.ts')).toMatch(/^export const CLUB_KEEPERS_ON = (?:false|true)$/m)
     expect(read(INTEGRATION)).toContain('  it(\'all 403 with the constant unset: both endpoints answer every kind of person 403 in words, an LCA admin included, before any query or sign in\', async () => {')
   })
 

@@ -1,10 +1,10 @@
 // @vitest-environment jsdom
 //
 // A club in My region (WS09 step 12), through the site's own routes in
-// src/App.tsx at /workspace/region/clubs/:id. With clubKeepers off, which is
-// how the step ships, the route sends every kind of person to the dashboard,
-// the page's file is never fetched and no call is made. With it on, which
-// this file turns on through a getter on the mocked FEATURES, an LCA admin
+// src/App.tsx at /workspace/region/clubs/:id. With clubKeepers off the route
+// sends every kind of person to the dashboard, the page's file is never
+// fetched and no call is made. With it on, which this file sets through a
+// getter on the mocked FEATURES as it sets it off, an LCA admin
 // and a holder of an active regional seat whose regions hold the club get
 // in; another region's representative, a club's own rep with no seat over
 // it, a plain member and a guest are sent away. The page draws three tabs
@@ -173,7 +173,7 @@ const tabNames = () => screen.getAllByRole('button').filter((b) => b.closest('se
 const statusText = () => screen.getAllByRole('status').map((s) => s.textContent).join(' ')
 const header = () => screen.getByRole('heading', { level: 1 }).closest('section') as HTMLElement
 
-describe('a club in My region with clubKeepers off, as the step ships', () => {
+describe('a club in My region with clubKeepers off', () => {
   it('sends every kind of person to the dashboard, fetches no file of the page and calls no answer', async () => {
     flags.clubKeepers = false
     for (const person of Object.keys(PEOPLE) as Person[]) {
@@ -190,7 +190,8 @@ describe('a club in My region with clubKeepers off, as the step ships', () => {
     const app = read('src/App.tsx')
     expect(app).toContain('const MyRegionClubPage = lazy(() => import(\'@/pages/MyRegionClubPage\').then(m => ({ default: m.MyRegionClubPage })))')
     expect(app).toContain('<Route path="/workspace/region/clubs/:id" element={FEATURES.clubKeepers ? <RoleProtectedRoute requireSeat requireClubMatch><MyRegionClubPage /></RoleProtectedRoute> : <Navigate to="/dashboard" replace />} />')
-    expect(read('src/lib/features.ts')).toContain('  clubKeepers: false,')
+    // clubKeepers went on with CLUB_KEEPERS_ON at the switch-on, so this holds only that it is declared; the cases above set it themselves.
+    expect(read('src/lib/features.ts')).toMatch(/^ {2}clubKeepers: (?:false|true),$/m)
   })
 })
 

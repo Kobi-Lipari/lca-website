@@ -33,7 +33,12 @@
 // list, in either view, and today's date in the calendar. The state filter's
 // button says whether its menu is open, with aria-expanded.
 // The switches are flipped inside this one file, through getters on the
-// mocked FEATURES, so both sides are drawn from the same code.
+// mocked FEATURES, so both sides are drawn from the same code. A club's page
+// is drawn with clubEmailHidden off, where the address is the contact link in
+// the club's colour, and once with it on, where the address is not drawn and
+// the page offers "Contact this club through LCA" twice, to /contact, in no
+// colour a club picked; the file sets clubEmailHidden itself, so what the
+// shipped switch holds changes none of its cases.
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react'
@@ -44,7 +49,7 @@ import type { AuthContextValue } from '@/contexts/AuthContext'
 import type { UnifiedTournament } from '@/areas/events/clearinghouse'
 import type { ApiChild, ApiClubDetail, ApiClubListItem, ApiMyRegistration, ApiTournamentDetail, ApiTournamentPairing } from '@/lib/api'
 
-const flags = vi.hoisted(() => ({ newLook: false, clubTournaments: false }))
+const flags = vi.hoisted(() => ({ newLook: false, clubTournaments: false, clubEmailHidden: false }))
 vi.mock('@/lib/features', async (importOriginal) => {
   const real = await importOriginal<typeof import('@/lib/features')>()
   return {
@@ -56,6 +61,9 @@ vi.mock('@/lib/features', async (importOriginal) => {
       },
       get clubTournaments() {
         return flags.clubTournaments
+      },
+      get clubEmailHidden() {
+        return flags.clubEmailHidden
       },
     },
   }
@@ -108,6 +116,7 @@ afterEach(() => {
   vi.unstubAllGlobals()
   flags.newLook = false
   flags.clubTournaments = false
+  flags.clubEmailHidden = false
 })
 
 async function renderClubs() {
@@ -258,8 +267,8 @@ const CLUB: ApiClubDetail = {
   image_url: null, region: 'South Central Louisiana', latitude: null, longitude: null,
 }
 
-/** A club's page with an officer, a news item and a contact link, all three drawn in the club's colour. */
-async function renderClubPage(color: string) {
+/** A club's page with an officer and a news item, drawn and settled, in the state of clubEmailHidden that is set. */
+async function drawClubPage(color: string) {
   api.getClub.mockResolvedValue({
     club: { ...CLUB, color },
     officers: [{ role: 'president', full_name: 'Avery Fixture' }],
@@ -272,6 +281,11 @@ async function renderClubPage(color: string) {
     </MemoryRouter>,
   )
   await screen.findByRole('heading', { level: 1, name: 'Fixture Capital Chess Club' })
+}
+
+/** A club's page with an officer, a news item and a contact link, all three drawn in the club's colour (clubEmailHidden off). */
+async function renderClubPage(color: string) {
+  await drawClubPage(color)
   return {
     role: screen.getByText('President'),
     date: screen.getByText('Sat, Oct 24, 2026'),
@@ -280,12 +294,29 @@ async function renderClubPage(color: string) {
 }
 
 describe('a club\'s page, where an officer\'s role, a news date and the contact link are in the club\'s colour', () => {
-  it('with newLook off draws each as it did: its classes as before and the club\'s colour', async () => {
+  it('with newLook off draws each as it did: its classes as before and the club\'s colour, and with clubEmailHidden on offers the contact form in place of the address', async () => {
+    // With clubEmailHidden off: the address is the contact link, in the club's colour.
     const words = await renderClubPage('#1f4e79')
     expect(words.role.className).toBe('text-sm')
     expect(words.date.className).toBe('text-xs font-medium')
     expect(words.contact.className).toBe('hover:underline')
     for (const el of Object.values(words)) expect(el.style.color).toBe('rgb(31, 78, 121)')
+    // With clubEmailHidden on: the address is not drawn, no link is a mailto, and the page offers the contact form twice, in no colour a club picked.
+    cleanup()
+    flags.clubEmailHidden = true
+    await drawClubPage('#1f4e79')
+    expect(screen.queryByRole('link', { name: 'capital-club@example.org' })).toBeNull()
+    expect(document.body.textContent).not.toContain('capital-club@example.org')
+    expect(document.querySelectorAll('a[href^="mailto:"]')).toHaveLength(0)
+    const forms = screen.getAllByRole('link', { name: 'Contact this club through LCA' })
+    expect(forms).toHaveLength(2)
+    for (const form of forms) {
+      expect(form.getAttribute('href')).toBe('/contact')
+      expect(form.style.color).toBe('')
+      expect(form.hasAttribute('style')).toBe(false)
+    }
+    // The officer's role and the news date stay in the club's colour.
+    for (const el of [screen.getByText('President'), screen.getByText('Sat, Oct 24, 2026')]) expect(el.style.color).toBe('rgb(31, 78, 121)')
   })
 
   it('under the new look gives a colour the club picked way to the look\'s ink on a dark ground, keeping its own colour on a light one', async () => {

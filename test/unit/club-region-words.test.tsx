@@ -4,7 +4,8 @@
 // club page. A person admitted to a club by a regional seat alone adds and
 // removes no officer (answer 2 (a)), so the dashboard's card of the clubs in
 // their region and Board seats' sentence on what a seat's holder manages no
-// longer name officers. And on the public Clubs page a club card's line of
+// longer name officers; since K's decision 10 the card has no sentence at
+// all, with clubKeepers off and on. And on the public Clubs page a club card's line of
 // city and region wraps onto a second line instead of being cut short
 // (answer 6 (a)), while the card's other lines are as before.
 import { cleanup, render, screen } from '@testing-library/react'
@@ -14,6 +15,18 @@ import { AuthContext } from '@/contexts/auth-context'
 import type { AuthContextValue } from '@/contexts/AuthContext'
 import type { ApiClubListItem } from '@/lib/api'
 
+// The clubs switch is set by the one case that reads it and put back after;
+// every other case sees the switches as they are.
+const flags = vi.hoisted(() => ({ clubKeepers: undefined as boolean | undefined }))
+vi.mock('@/lib/features', async (importOriginal) => {
+  const real = await importOriginal<typeof import('@/lib/features')>()
+  return {
+    ...real,
+    FEATURES: new Proxy(real.FEATURES, {
+      get: (target, key) => (key === 'clubKeepers' && flags.clubKeepers !== undefined ? flags.clubKeepers : Reflect.get(target, key)),
+    }),
+  }
+})
 const api = vi.hoisted(() => ({
   getClubs: vi.fn(),
   adminGetBoardSeats: vi.fn(),
@@ -80,19 +93,30 @@ afterEach(() => {
 })
 
 describe('the two sentences on what a regional seat\'s holder manages', () => {
-  it('the dashboard\'s card of the clubs in the region names pages and news, and no officers', async () => {
-    render(
-      <AuthContext.Provider value={authFor()}>
-        <MemoryRouter initialEntries={['/dashboard']}>
-          <Routes><Route path="/dashboard" element={<DashboardPage />} /></Routes>
-        </MemoryRouter>
-      </AuthContext.Provider>,
-    )
-    const heading = await screen.findByRole('heading', { level: 2, name: 'Clubs in your region' })
-    const card = heading.parentElement as HTMLElement
-    expect(card.textContent).toContain('As regional representative you can update these clubs\' pages and news.')
-    expect(card.textContent).not.toMatch(/officer/i)
-    expect(screen.getByRole('link', { name: /Example Chess Club/ }).getAttribute('href')).toBe('/admin/clubs/example-chess-club')
+  it('the dashboard\'s card of the clubs in the region has no sentence, with clubKeepers off and on, and names no officers', async () => {
+    try {
+      for (const on of [false, true]) {
+        flags.clubKeepers = on
+        render(
+          <AuthContext.Provider value={authFor()}>
+            <MemoryRouter initialEntries={['/dashboard']}>
+              <Routes><Route path="/dashboard" element={<DashboardPage />} /></Routes>
+            </MemoryRouter>
+          </AuthContext.Provider>,
+        )
+        const heading = await screen.findByRole('heading', { level: 2, name: 'Clubs in your region' })
+        const card = heading.parentElement as HTMLElement
+        // K's decision 10 removed the sentence and the element that held it: the heading is followed by Open My region or the list.
+        expect(card.textContent).not.toContain('As regional representative')
+        expect(card.querySelectorAll('p')).toHaveLength(0)
+        expect(heading.nextElementSibling?.textContent).toBe(on ? 'Open My region' : 'Example Chess ClubBayou RegionManage →')
+        expect(card.textContent).not.toMatch(/officer/i)
+        expect(screen.getByRole('link', { name: /Example Chess Club/ }).getAttribute('href')).toBe('/admin/clubs/example-chess-club')
+        cleanup()
+      }
+    } finally {
+      flags.clubKeepers = undefined
+    }
   })
 
   it('Board seats says a holder manages the club page, news and logo, and no officers', async () => {
