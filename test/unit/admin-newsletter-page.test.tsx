@@ -15,7 +15,7 @@
 //   media manager without a second factor is told so in the newsletter tab's
 //   words, and no call is made. Nobody here sees a "View only" badge.
 // - The head: the crumb, the title, the month with the letter's state in a
-//   word, the saved line, Help not yet available, Admin sections.
+//   word, the saved line, Help, Admin sections.
 // - From shows a name alone; "In this issue" follows the headings; the
 //   count card with and without a count; the month takes the subject with
 //   it while the subject is still the old month's own.
@@ -184,6 +184,7 @@ beforeEach(() => {
   calls = []
   answers = {}
   window.localStorage.clear()
+  window.localStorage.setItem('lca-newsletter-page-help', 'shown') // Help has been seen once, so it does not open by itself here.
   vi.stubGlobal('fetch', vi.fn(async (url: string, init?: RequestInit) => {
     const method = init?.method ?? 'GET'
     calls.push({ url, method, body: init?.body ? JSON.parse(String(init.body)) : null })
@@ -280,7 +281,7 @@ describe('who is let in, and who is sent where', () => {
 })
 
 describe('the head, From and the count', () => {
-  it('draws the crumb, the title, the month with its state in a word, the saved line, Help not yet available and Admin sections', async () => {
+  it('draws the crumb, the title, the month with its state in a word, the saved line, Help and Admin sections', async () => {
     vi.useFakeTimers({ toFake: ['Date'] })
     vi.setSystemTime(new Date('2026-11-13T21:00:00Z'))
     await site('/admin/newsletter', person({ role: 'lca_admin' }))
@@ -290,8 +291,9 @@ describe('the head, From and the count', () => {
     expect(within(crumb).getByText('Newsletter').getAttribute('aria-current')).toBe('page')
     expect(screen.getByText('December 2026', { selector: 'b' }).parentElement?.textContent).toBe(`December 2026 ${String.fromCharCode(0xb7)} Draft`)
     expect(document.querySelector('[data-slot="saved-line"]')?.textContent).toBe('Saved automatically at 2:15 PM')
-    const help = screen.getByRole('button', { name: 'Help, not yet available' }) as HTMLButtonElement
-    expect(help.disabled).toBe(true)
+    const help = screen.getByRole('button', { name: 'Help' }) as HTMLButtonElement
+    expect(help.disabled).toBe(false)
+    expect(help.getAttribute('aria-haspopup')).toBe('dialog')
     expect(screen.getByRole('link', { name: 'Admin sections' }).getAttribute('href')).toBe('/admin')
   })
 

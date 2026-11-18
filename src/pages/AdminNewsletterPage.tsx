@@ -36,8 +36,9 @@
 // first by the chooser's own path, then asks for a test of the stored letter
 // to the person's own address, and the bar's status line says what came of
 // it in words. Step 3, Send, is drawn and not yet available, and a press on
-// it says why there. Saving, starting and the test are useIssue's. Help
-// comes with a later part.
+// it says why there. Saving, starting and the test are useIssue's. Help, in
+// the head once the letter is on the page, opens a walkthrough of the page
+// in six steps (HelpWalkthrough.tsx).
 //
 // By the window's width, at the site's own breakpoints: from 1024 pixels up
 // the computer's page, the letter with the email beside it; under 1024 the
@@ -72,7 +73,8 @@ import { EmailSheet, SidePreview, type PreviewView } from '@/areas/admin/newslet
 import { TemplateChooser, type ChooserBusy, type Choice } from '@/areas/admin/newsletter/TemplateChooser'
 import { holdsWords, useIssue, type Issue, type LetterDraft, type SavedFirst, type StartOutcome, type TestOutcome } from '@/areas/admin/newsletter/useIssue'
 import { usePageTitle } from '@/hooks/usePageTitle'
-import { useTabletScreen } from '@/hooks/useWideScreen'
+import { useTabletScreen, useWideScreen } from '@/hooks/useWideScreen'
+import { HelpWalkthrough } from '@/areas/admin/newsletter/HelpWalkthrough'
 import { getNewsletter } from '@/lib/api'
 import { cn } from '@/lib/utils'
 
@@ -88,6 +90,35 @@ const PREVIEW_PAUSE_MS = 400
  * says only a change to a region already there.
  */
 const STARTED_PAUSE_MS = 250
+
+/**
+ * The one key this page keeps in the browser: that its Help has opened by itself once. The page's own, not the Group
+ * email tab's 'lca-newsletter-help'. Nothing about it is stored on the server.
+ */
+const HELP_SHOWN_KEY = 'lca-newsletter-page-help'
+
+/** Whether Help has opened by itself in this browser before; a browser that refuses storage reads as yes, so Help starts closed. */
+function helpShownBefore(): boolean {
+  try {
+    return window.localStorage.getItem(HELP_SHOWN_KEY) !== null
+  } catch {
+    return true
+  }
+}
+
+/**
+ * Writes the key, and says whether it held. A browser that reads its storage but refuses to write to it (full, or some
+ * private windows) would otherwise open Help by itself on every visit; it counts as already shown, and opens Help from
+ * its button alone.
+ */
+function rememberHelpShown(): boolean {
+  try {
+    window.localStorage.setItem(HELP_SHOWN_KEY, 'shown')
+    return true
+  } catch {
+    return false
+  }
+}
 
 /**
  * The page's ground under the head: the board's desk, a warm tint over the site's own ground, in every look. Each
@@ -442,11 +473,17 @@ function NewsletterLetter({ issue, reach, view, onView, previewHidden, onPreview
   const [testing, setTesting] = useState(false)
   const [barSaid, setBarSaid] = useState<BarSaid | null>(null)
   // The first step's cue plays once only, as the page opens on its first letter when that letter holds no words, from
-  // the moment the letter is drawn until something is written.
+  // the moment the letter is drawn until something is written. It is held while Help is open: Help opening by itself
+  // turns on in the same update as `drawn`, so the cue first plays as Help closes, if the letter still holds no words
+  // and the focus is not in the bar (FootBar's usePickCue), and Help opened over a cue that is playing stops it.
   const [opensEmpty] = useState(() => issue.letterKey === 1 && !holdsWords(issue.letter))
   const [drawn, setDrawn] = useState(false)
+  // Help's walkthrough, and Help itself, which takes the focus back as it closes.
+  const [helpOpen, setHelpOpen] = useState(false)
+  const helpButton = useRef<HTMLButtonElement>(null)
   // Under 768 pixels the phone's bar, "See the email" in it, and More options at the page's end.
   const phone = !useTabletScreen()
+  const wide = useWideScreen()
   const carry = useFocusCarry()
   const desk = useRef<HTMLDivElement>(null)
   const side = useRef<HTMLDivElement>(null)
@@ -663,6 +700,9 @@ function NewsletterLetter({ issue, reach, view, onView, previewHidden, onPreview
         sheetOpen={sheetOpen}
         phone={phone}
         seeRef={carry.hold('see')}
+        onHelp={() => setHelpOpen(true)}
+        helpOpen={helpOpen}
+        helpRef={helpButton}
       />
       <div
         className={cn(
@@ -700,6 +740,10 @@ function NewsletterLetter({ issue, reach, view, onView, previewHidden, onPreview
               onReady={(html) => {
                 setPreview((now) => ({ ...now, bodyHtml: html }))
                 setDrawn(true)
+                // Help opens by itself once in this browser, as the letter is first drawn on a ready page; the key is
+                // written as it opens, so from then on it opens from its button alone. Where the key cannot be written,
+                // it does not open by itself at all.
+                if (!helpShownBefore() && rememberHelpShown()) setHelpOpen(true)
               }}
             />
             {/* On a phone More options is a part of the page at its end, under the letter and its size row. */}
@@ -739,7 +783,7 @@ function NewsletterLetter({ issue, reach, view, onView, previewHidden, onPreview
         sheetOpen={sheetOpen}
         onPick={openChooser}
         chooserOpen={chooserOpen}
-        cue={opensEmpty && drawn && !holdsWords(words)}
+        cue={opensEmpty && drawn && !helpOpen && !holdsWords(words)}
         carry={carry}
         onTest={() => void sendTest()}
         testing={testing}
@@ -763,6 +807,8 @@ function NewsletterLetter({ issue, reach, view, onView, previewHidden, onPreview
         asking={asking}
         onAnswer={answer}
       />
+      {/* Help's walkthrough. Send on the bar is drawn quiet and sends nothing yet, so Help does not tell a person to send. */}
+      {helpOpen && <HelpWalkthrough width={wide ? 'desk' : phone ? 'phone' : 'tablet'} sendReady={false} onClose={() => setHelpOpen(false)} opener={() => helpButton.current} notice={<SavedLineNotice line={issue.line} />} />}
     </div>
   )
 }
