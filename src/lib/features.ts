@@ -236,10 +236,14 @@ const SWITCHES = {
   /** Regional representatives create and run their clubs' events, which wait for an LCA admin's approval. */
   regionEvents: false,
 
-  // Redesign, mail. On since the switch-on change.
+  // Redesign, mail. mailLists is on since the switch-on change; mailPage stays
+  // off until a change of its own turns it on.
 
   /** The LCA newsletter list in Group email, with the unsubscribe link, the email preferences page and the footer every optional email carries, and the media manager's way in to it: Admin with Group email alone and a Group email link in the account menu. */
   mailLists: true,
+
+  /** The newsletter's own page, where the LCA admins, the president and the media manager write, save and start a letter and send themselves a test of it; it needs mailLists on. */
+  mailPage: false,
 } as const
 
 /** The name of one switch. */
