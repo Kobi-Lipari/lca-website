@@ -63,7 +63,9 @@ const part = (heading: string) => {
   const at = ws09.indexOf(`\n${heading}\n`)
   return at < 0 ? '' : between(ws09.slice(at + 1), heading, '\n### ')
 }
-const PREVIOUS = '### WS09 step 24: the sitemap'
+// Checkpoint W's three later blocks stand between step 24's and this one since
+// checkpoint X took them in, the last of them straight before this block.
+const PREVIOUS = '### Checkpoint W: WS09 the written page reads as a page'
 const STEP = '### WS09 step 25: the limit and the spam check'
 const LISTS = ['### WS09 decisions', '### WS09 deviations from the brief', '### WS09 verify items resolved', '### WS09 follow-ups']
 const block = part(STEP)
