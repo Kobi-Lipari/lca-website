@@ -18,10 +18,12 @@ const CONTRACT_TESTS_DIR = join(ROOT, 'test/integration/contracts')
 
 /**
  * Handlers left out of the contract list, keyed "METHOD /path" as served.
- * Page routes answer with the site's HTML, or the sitemap's XML, not JSON,
- * so a zod contract has nothing to check.
+ * Page routes answer with the site's HTML, the sitemap's XML or the robots
+ * file's plain text, not JSON, so a zod contract has nothing to check.
  */
 const EXCLUDED: Record<string, string> = {
+  'GET /robots.txt':
+    "Page route: serves the plain text robots.txt that names the sitemap to search engines, or passes on to the site's HTML, not JSON.",
   'GET /sitemap.xml':
     "Page route: serves the sitemap's XML, the site's club and event page addresses for search engines, or passes on to the site's HTML, not JSON.",
   'GET /tournaments/[id]':
@@ -161,6 +163,7 @@ describe('contract coverage', () => {
     expect(pageRoutes.map((e) => e.file).sort()).toEqual([
       'functions/clubs/[id].ts',
       'functions/news/[slug].ts',
+      'functions/robots.txt.ts',
       'functions/sitemap.xml.ts',
       'functions/tournaments/[id].ts',
     ])

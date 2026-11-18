@@ -74,6 +74,8 @@ describe('collectRoutes on the real functions folder', () => {
     expect(real.filter((r) => r.startsWith('api/')).length).toBe(105)
     // functions/sitemap.xml.ts, the sitemap, is a page route outside api (WS09 step 24), so the count of api files stands.
     expect(real).toEqual(expect.arrayContaining(['tournaments/[id]', 'clubs/[id]', 'news/[slug]', 'sitemap.xml']))
+    // functions/robots.txt.ts, the robots file that names the sitemap, is a page route outside api too (checkpoint W, K's decision 11).
+    expect(real).toContain('robots.txt')
   })
 
   it('serves the manage page from admin/tournaments/[id]/manage', () => {

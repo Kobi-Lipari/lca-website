@@ -48,10 +48,11 @@ function sourcesUnder(dir: string): Array<{ path: string; text: string }> {
 }
 
 describe('the sitemap route in the tree', () => {
-  it('is one of the four handler files outside functions/api, the three link previews and itself', () => {
+  it('is one of the five handler files outside functions/api, the three link previews, the robots file and itself', () => {
     expect(pageRouteFiles()).toEqual([
       'functions/clubs/[id].ts',
       'functions/news/[slug].ts',
+      'functions/robots.txt.ts',
       'functions/sitemap.xml.ts',
       'functions/tournaments/[id].ts',
     ])
