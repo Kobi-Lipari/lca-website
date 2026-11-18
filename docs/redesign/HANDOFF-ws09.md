@@ -2,7 +2,16 @@
 
 Written on Saturday, November 14, 2026, for whoever takes this stream over. The whole project's handoff is `HANDOFF.md`; the rules where the two streams meet are `STREAMS.md`. This file holds only what is the clubs stream's own.
 
-## Where it stands (Wednesday, November 18, 2026, about 9:50 AM UTC)
+## Where it stands (Wednesday, November 18, 2026, about 3:20 PM UTC)
+
+- **Pull request 135 is merged:** main is `c84ec68` (3:10 PM UTC by the commit's own time), the same tree as `a45c951`, so the clubs switch-on's gate stands.
+- **The clubs switch-on is draft pull request 139** (`redesign/ws09-keepers-on` at `01d05ed`). K's word for it is decision 13 in `ws09-k-decisions.md` ("continue as you say"): it merges not before 5:10 PM UTC, once its two checks are green, with K told the time beforehand so that K can say stop. After it: the signed-out live check, K's five signed-in steps, the mail stream's lead told.
+- **The club events switch-on** (`redesign/ws09-region-on` at `bcd2265`) opens as a pull request only after 139 merged and went cleanly; it merges Thursday morning, K told the time and the three things to know beforehand.
+- **Decision 13 adds, after Thursday's items:** a small pull request of its own for the public event page (the sideways scroll at 390 pixels and its two labels of the old initials); a step that lets a board seat's holder in on a guest account (My region and their clubs' pages), its file list agreed with the mail stream's lead before the build; the test site remade without its own "Last checked" line; then the full plan goes on.
+- **Checkpoint X's branch** (`redesign/ws09-clubs-x`) is at `655bd3d`; step 27, Reply through LCA, is being built on it.
+- **Still owed by K:** `SIGNING_SECRET` in the site's settings; the region of the Baton Rouge and East Central seat; member accounts for the board.
+
+## Where it stood at about 9:50 AM UTC on Wednesday, November 18, 2026
 
 - **Both switch-on branches stay ready on the real tree, gated green and pushed, with no pull request yet:** `redesign/ws09-keepers-on` at `01d05ed` (opens when pull request 135 is merged and live; merges on K's word, two hours after 135 at the earliest) and `redesign/ws09-region-on` at `bcd2265` (opens only after the clubs switch-on merged and went cleanly; K's word Thursday morning). Their pull request texts are written. Main is still `498ec7f`, and 135's head `a45c951`.
 - **Checkpoint W's branch** (`redesign/ws09-clubs-w`) is at `216e7ae`: steps 20 to 24's sitemap; what K's look at the test site asked; `robots.txt` naming the sitemap, behind `CLUB_PAGES_ON` (K's decision 11, choice 3 a); and the written page reading as a page before the app draws or with scripts off (one constant style element of 780 bytes inside the written wrapper, no colour and no font of its own, gone when the app draws). Each gated green. Still to come on W once main holds 135 and the clubs switch-on: main merged in, the browser half as a third build, W's section, its review and its pull request.
