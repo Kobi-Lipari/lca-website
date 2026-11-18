@@ -62,6 +62,18 @@ const ADDED_15 = [
 const count = async (sql: string, ...args: Array<string | number>) =>
   (await env.DB.prepare(sql).bind(...args).first<{ n: number }>())?.n
 
+// "Every switch off" includes CLUB_KEEPERS_ON, which the file holds unset itself through a getter on the mocked module.
+const keepers = vi.hoisted(() => ({ keepersOn: false }))
+vi.mock('../../functions/utils/clubs/pages', async (importOriginal) => {
+  const real = await importOriginal<typeof import('../../functions/utils/clubs/pages')>()
+  return {
+    ...real,
+    get CLUB_KEEPERS_ON() {
+      return keepers.keepersOn
+    },
+  }
+})
+
 describe('the seed on D1', () => {
   it('holds the seed\'s figures', async () => {
     expect(await count('SELECT COUNT(*) AS n FROM clubs')).toBe(25)

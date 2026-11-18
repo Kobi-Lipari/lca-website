@@ -230,8 +230,8 @@ const SWITCHES = {
   // test/unit/club-pages-switch.test.ts holds: clubEmailHidden first, then
   // clubKeepers, then regionEvents, then newClubs with newLook on.
 
-  /** The one club editor, Your club's page, My region and the monthly check, for the people who keep club listings. */
-  clubKeepers: false,
+  /** The one club editor, Your club's page, My region and the monthly check, for the people who keep club listings. On, together with CLUB_KEEPERS_ON. */
+  clubKeepers: true,
 
   /** Regional representatives create and run their clubs' events, which wait for an LCA admin's approval. */
   regionEvents: false,

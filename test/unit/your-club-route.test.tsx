@@ -252,7 +252,8 @@ describe('Your club\'s page: the ways in, with clubKeepers on', () => {
     expect(screen.queryByRole('button', { name: 'Save and publish' })).toBeNull()
     // The club is not this person's own, so the page is not called theirs.
     expect(screen.getAllByRole('heading', { level: 1 }).map((h) => h.textContent)).toEqual(['The club\'s page'])
-    expect(document.activeElement).toBe(screen.getByRole('heading', { level: 1 }))
+    // The heading takes the focus in an effect after the words draw, so wait for it.
+    await waitFor(() => expect(document.activeElement).toBe(screen.getByRole('heading', { level: 1 })))
   })
 
   it('says an address no club has in words, with a way back, and never sends an address of another form', async () => {
