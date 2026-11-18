@@ -9,7 +9,8 @@
 //   siteSearch, eventStrip, eventStripLive and liveMarker; nothing in
 //   a11y-off), read from the feature module the site itself loaded, and every
 //   other switch is as the site ships it in both: off, but for mailLists,
-//   which src/lib/features.ts ships on since WS16's switch-on change
+//   which src/lib/features.ts ships on since WS16's switch-on change, and
+//   mailPage, on since the page's own switch-on change
 // - /__fixtures/:name exists in both test builds, draws the base look for
 //   every name today, tells a visitor which names exist for an unknown one,
 //   and follows the plain-language rules: a weekday on the date, "7:00 PM",
@@ -25,8 +26,8 @@ import { A11Y_VARIANTS, ROOT } from './global-setup'
 /** The switches the a11y-on build turns on, in the order test/a11y/global-setup.ts gives them. */
 const SWITCHES_ON = ['newLook', 'themeHeritage', 'newNav', 'siteSearch', 'eventStrip', 'eventStripLive', 'liveMarker']
 
-/** The switches src/lib/features.ts itself ships on, and so on in both builds: mailLists, since WS16's switch-on change. */
-const SHIPPED_ON = ['mailLists']
+/** The switches src/lib/features.ts itself ships on, and so on in both builds: mailLists, since WS16's switch-on change, and mailPage, since the page's own switch-on change. */
+const SHIPPED_ON = ['mailLists', 'mailPage']
 
 /** The build folder of the project the test is running in. */
 function variantOf(project: string) {

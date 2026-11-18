@@ -12,7 +12,8 @@
 // functions/utils/mail/switches.ts, MAIL_LISTS_ON and MAIL_PAGE_ON, in the
 // same change that takes its name out of WS16 below
 // (test/unit/mail-switches.test.ts holds each pair equal): mailLists is out
-// since the switch-on change, and mailPage is held off there.
+// since the switch-on change, and mailPage since the page's own switch-on
+// change.
 // WS09's three switches, newClubs, clubKeepers and regionEvents, are held off
 // in WS09 below; each is turned on with its constant in
 // functions/utils/clubs/pages.ts, in the same change that takes its name out
@@ -45,8 +46,8 @@ const EARLIER = ['clubTournaments', 'tournamentQuickFilters', 'externalTags'] as
 /** The first part of WS08, tournament creation: its switch, held off until that part is done. */
 const WS08 = ['standingDirectors'] as const
 
-/** WS16, the mail engine and the LCA newsletter, and the newsletter's own page: each switch held off until it is switched on; mailLists left the list at the switch-on change. */
-const WS16 = ['mailPage'] as const
+/** WS16, the mail engine and the LCA newsletter, and the newsletter's own page: each switch held off until it is switched on; mailLists left the list at the switch-on change, and mailPage at the page's own switch-on change. */
+const WS16 = [] as const
 
 /** WS09, clubs as living listings: its three switches, held off until each is turned on in its order. */
 const WS09 = ['newClubs', 'clubKeepers', 'regionEvents'] as const
