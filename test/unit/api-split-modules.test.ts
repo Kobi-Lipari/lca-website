@@ -340,7 +340,9 @@ describe('calls through the barrel send what they sent before', () => {
 
   it('asks what the member may create and sends a payout request, signed in, to the two paths added since the split', async () => {
     const { getTournamentCreation, requestPayoutAccount, ApiError } = await import('@/lib/api')
-    expect([...ADDED.paths].sort()).toEqual([
+    // The contact relay's path (WS09 step 26) is held on its own, so the list of the paths before it reads as it did.
+    expect(ADDED.paths).toContain('/api/clubs/*/contact')
+    expect([...ADDED.paths].filter((p) => p !== '/api/clubs/*/contact').sort()).toEqual([
       '/api/admin/clubs/*/confirm', '/api/admin/clubs/monthly-check', '/api/admin/mail/newsletter', '/api/admin/mail/newsletter/stop', '/api/admin/mail/newsletter/test',
       '/api/admin/tournaments/*/approval', '/api/clubs/*/page', '/api/clubs/confirm/*', '/api/mail/preferences/*', '/api/mail/unsubscribe/*', '/api/me/media-manager', '/api/me/payout-request', '/api/me/tournament-creation', '/api/workspace/region',
     ])

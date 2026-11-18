@@ -188,9 +188,10 @@ describe('the cover', () => {
     await draw()
     const filled = [...document.querySelectorAll<HTMLElement>('[style]')].filter((el) => el.style.backgroundColor !== '')
     expect(filled.map((el) => el.style.backgroundColor)).toEqual(['rgb(46, 107, 79)'])
-    expect(screen.getByRole('link', { name: 'Contact the club' }).getAttribute('href')).toBe('/contact')
+    // Contact the club leads to the page's own form (WS09 step 26), which closes the page's sections.
+    expect(screen.getByRole('link', { name: 'Contact the club' }).getAttribute('href')).toBe('#contact')
     expect(screen.queryByRole('button', { name: /Follow/ })).toBeNull()
-    expect(screen.getAllByRole('heading', { level: 2 }).map((h) => h.textContent)).toEqual(['About Example Chess Club', 'When and where Example Chess Club meets', 'Events', 'Club news'])
+    expect(screen.getAllByRole('heading', { level: 2 }).map((h) => h.textContent)).toEqual(['About Example Chess Club', 'When and where Example Chess Club meets', 'Events', 'Club news', 'Contact'])
   })
 
   it('shares through the visitor\'s own share sheet where the browser has one, and says what happened', async () => {

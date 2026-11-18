@@ -47,10 +47,12 @@ describe('the limit and the spam check, as the tree holds them', () => {
     expect(codeOf(SPAM)).not.toMatch(/headers\.get|ADDRESS_HEADER/)
   })
 
-  it('the one caller of the limit is the confirm endpoint, and nothing calls the spam check yet', () => {
+  it('the callers of the limit are the confirm endpoint and the contact relay, and the relay is the one caller of the spam check', () => {
     const importsOf = (target: string) => server.filter((f) => f !== target && new RegExp(`['"][./]+(?:utils/)?${target.split('/').pop()!.replace('.ts', '')}['"]`).test(read(f)))
-    expect(importsOf(LIMIT).sort()).toEqual([CONFIRM, SPAM])
-    expect(importsOf(SPAM)).toEqual([])
+    // The contact relay (WS09 step 26) is the first form to call both.
+    const CONTACT = 'functions/api/clubs/[id]/contact.ts'
+    expect(importsOf(LIMIT).sort()).toEqual([CONTACT, CONFIRM, SPAM].sort())
+    expect(importsOf(SPAM)).toEqual([CONTACT])
     expect(codeOf(CONFIRM)).toContain('const counted = await limit(context.env, context.request, LINK_LIMIT_ROUTE, { perHour: LINK_CALLS_AN_HOUR })')
     // Only once the token holds: after the forged link's refusal and before the club is read.
     const code = codeOf(CONFIRM)

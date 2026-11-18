@@ -325,7 +325,7 @@ describe('GET /api/clubs/[id]/page: what it carries', () => {
     const set = await ask(undefined, club.id)
     expect(set).toEqual(unset)
     expect(unset.body).not.toContain('club.contact@example.org')
-    expect(JSON.parse(unset.body).contact).toEqual({ name: 'Contact P.' })
+    expect(JSON.parse(unset.body).contact).toEqual({ name: 'Contact P.', goes_to: 'club' })
   })
 
   it('a place\'s name and street are in the answer and no email address is, two places at most in the editor\'s order, by named columns', async () => {

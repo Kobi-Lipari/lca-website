@@ -188,18 +188,18 @@ describe('what the answer carries beyond what the page draws', () => {
     const page = draw(restAnswer({ sections: ['about', 'when_and_where', 'events', 'contact'] }))
     expect(page.querySelector('#news')).toBeNull()
     expect(within(page).queryByRole('heading', { name: 'Club news' })).toBeNull()
-    expect([...page.querySelectorAll('nav[aria-label="On this page"] a')].map((a) => a.textContent)).toEqual(['About', 'When and where', 'Events'])
+    expect([...page.querySelectorAll('nav[aria-label="On this page"] a')].map((a) => a.textContent)).toEqual(['About', 'When and where', 'Events', 'Contact'])
     cleanup()
     const named = draw(restAnswer({ sections: ['about', 'when_and_where', 'news', 'contact'], news: [] }))
     expect(named.querySelector('#news')).toBeNull()
-    expect([...named.querySelectorAll('nav[aria-label="On this page"] a')].map((a) => a.textContent)).toEqual(['About', 'When and where'])
+    expect([...named.querySelectorAll('nav[aria-label="On this page"] a')].map((a) => a.textContent)).toEqual(['About', 'When and where', 'Contact'])
     // The nearest clubs are no section of the answer: they appear with a club to name, whichever sections it names.
     expect(named.querySelector('[data-slot="nearby-clubs"]')).not.toBeNull()
   })
 
   it('keeps the nearest clubs, the foot line and the nav steady when events and news are both empty', () => {
     const page = draw(restAnswer({ events: [], news: [] }))
-    expect([...page.querySelectorAll('section')].map((s) => s.id)).toEqual(['about', 'when-and-where'])
+    expect([...page.querySelectorAll('section')].map((s) => s.id)).toEqual(['about', 'when-and-where', 'contact'])
     expect(page.querySelector('[data-slot="nearby-clubs"]')).not.toBeNull()
     expect(page.querySelector('[data-slot="club-foot"]')).not.toBeNull()
     expect(wordsOf(page)).not.toMatch(/No events|No news|Nothing yet|Register/i)

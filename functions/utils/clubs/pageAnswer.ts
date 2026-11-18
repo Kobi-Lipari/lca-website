@@ -22,13 +22,16 @@
 // The answer is built from named columns, never a spread of a row, and
 // carries no email address, officer, roster, member's id, count of members,
 // keeper's id or name, told_by, confirmed_by, stored stamp or column of the
-// approval wait. Who keeps the club is not in it at all (K's decision 12).
+// approval wait. Who keeps the club is not in it at all (K's decision 12):
+// where a message from the Contact form goes is one word of a closed list,
+// read by relayKind in ./relay.ts (WS09 step 26), never a name or an address.
 // The told line comes as words, "Last checked" and a month
 // (functions/utils/clubs/authorLine.ts). The events are the club's listed
 // events, through listedWhere, with the keys a visitor's event answers
 // already carry; the news rows are today's club answer's, by its rule.
 import { clubToldLine } from './authorLine'
 import { nearestClubs } from './nearest'
+import { relayKind } from './relay'
 import { listedWhere } from '../events/listing'
 import { clubPageSections, filled } from '../../../domain/clubs/sections'
 import type { ClubPageEvent, ClubPageResponse } from '../../../domain/contracts/clubPage'
@@ -168,6 +171,8 @@ export async function clubPageAnswer(db: D1Database, club: PageClub): Promise<Cl
 
   const told = clubToldLine(club)
   const nearest = await nearestClubs(db, club.id)
+  // Where the Contact form's message goes, as one word: never who, never an address (WS09 step 26).
+  const goesTo = await relayKind(db, club.id)
 
   const about = {
     text: text(club.about_text),
@@ -219,7 +224,7 @@ export async function clubPageAnswer(db: D1Database, club: PageClub): Promise<Cl
     about,
     statement: { text: statement, told },
     places: placeRows,
-    contact: { name: text(club.contact_name_public) },
+    contact: { name: text(club.contact_name_public), goes_to: goesTo },
     events: eventRows,
     news: newsRows,
     nearest,

@@ -10,6 +10,7 @@
 // words: the told line is drawn as given. A component
 // file exports only components, so these live here.
 import type { ClubPageResponse } from '@domain/contracts'
+import { CONTACT_HEADING } from '@domain/clubs/pageWords'
 
 /** A control of the page: 44 pixels tall at least, with the look's focus ring. */
 export const CONTROL = 'inline-flex min-h-11 items-center gap-2 rounded-md px-4 text-sm font-semibold outline-none focus-visible:ring-3 focus-visible:ring-focus'
@@ -30,15 +31,81 @@ export const CLEAR_OF_BARS = 'scroll-mt-[calc(3.5rem_+_var(--header-h,4.0625rem)
 /** The same room for every control and section inside the page. */
 export const CONTROLS_CLEAR_OF_BARS = '[&_:is(a,button,[tabindex],section)]:scroll-mt-[calc(3.5rem_+_var(--header-h,4.0625rem)_-_var(--header-h,0px))]'
 
-/** The sections the page draws, in the nav's order. Contact and Photos come with later steps. */
-export const DRAWN_SECTIONS = ['about', 'when_and_where', 'events', 'news'] as const
+/** The sections the page draws, in the nav's order. Contact came with WS09 step 26; Photos comes with a later step. */
+export const DRAWN_SECTIONS = ['about', 'when_and_where', 'events', 'news', 'contact'] as const
 export type DrawnSection = (typeof DRAWN_SECTIONS)[number]
 
 /** Each drawn section's name in the section nav. */
-export const SECTION_LABELS: Record<DrawnSection, string> = { about: 'About', when_and_where: 'When and where', events: 'Events', news: 'News' }
+export const SECTION_LABELS: Record<DrawnSection, string> = { about: 'About', when_and_where: 'When and where', events: 'Events', news: 'News', contact: CONTACT_HEADING }
 
 /** Each drawn section's id on the page, so /clubs/example-chess-club#when-and-where can be shared. */
-export const SECTION_IDS: Record<DrawnSection, string> = { about: 'about', when_and_where: 'when-and-where', events: 'events', news: 'news' }
+export const SECTION_IDS: Record<DrawnSection, string> = { about: 'about', when_and_where: 'when-and-where', events: 'events', news: 'news', contact: 'contact' }
+
+/** The id of the Contact section's heading, where Contact the club and Message the club take the focus. */
+export const CONTACT_HEADING_ID = 'club-contact-heading'
+
+/**
+ * What Contact the club and Message the club do besides following their link
+ * to #contact: the focus goes to the Contact heading, so a screen reader reads
+ * the heading and then the line saying where the message goes, and the next
+ * Tab reaches the form's first field. It moves once the link's own move to
+ * #contact is done, since a browser moves the focus to the page itself when it
+ * follows a link to a part of the page that takes no focus. The page keeps
+ * room above the section for the bars, so the heading is never under one.
+ */
+export function focusContactForm(): void {
+  window.setTimeout(() => document.getElementById(CONTACT_HEADING_ID)?.focus({ preventScroll: true }), 0)
+}
+
+/** How long the check waits for the dock: it hides while a text field has the focus and comes back once one does not. */
+export const DOCK_SETTLES_MS = 80
+
+/**
+ * Keeps a control that has just taken the focus clear of the bars: the
+ * sticky section nav above (SectionNav.tsx) and the dock below, whose height
+ * the dock writes to --bottom-chrome-h. A browser scrolls a control into view
+ * only when it is out of the window, so one already in the window but under
+ * a bar stays hidden; and the dock, which hides while a text field has the
+ * focus, comes back over a button the focus moves to from one. So the check
+ * is made once the dock has settled, and scrolls the page by the part a bar
+ * covers. A control with no box, as in a test, is left where it is. The
+ * check reads the control's own page when it runs, so a page that has gone
+ * by then (left, or a test's page taken down) is left alone.
+ */
+export function keepFocusClearOfBars(control: Element): void {
+  clearOfBarsOnceSettled(control, (page) => page.activeElement === control)
+}
+
+/**
+ * Brings words that have just been written into sight, clear of the same
+ * bars and by the same measure: a status a person must read where they are,
+ * such as the Contact form's refusal, which takes no focus. The page moves
+ * by the least that shows the words whole, and only when some part of them
+ * is out of the window or under a bar. The site sets no smooth scrolling
+ * (and the new look turns any off where less motion is asked for), so the
+ * move is a jump, never animated.
+ */
+export function bringClearOfBars(words: Element): void {
+  clearOfBarsOnceSettled(words, () => words.isConnected)
+}
+
+/** The measure both checks make once the dock has settled, while the part is still wanted on its page. */
+function clearOfBarsOnceSettled(part: Element, wanted: (page: Document) => boolean): void {
+  window.setTimeout(() => {
+    const page = part.ownerDocument
+    const view = page.defaultView
+    if (!view || !wanted(page)) return
+    const box = part.getBoundingClientRect()
+    if (box.height === 0) return
+    const dock = parseFloat(view.getComputedStyle(page.documentElement).getPropertyValue('--bottom-chrome-h')) || 0
+    const bottom = view.innerHeight - dock
+    const nav = page.querySelector('[data-slot="club-section-nav"]')?.getBoundingClientRect()
+    const top = nav && nav.top >= 0 && nav.top < view.innerHeight / 2 ? nav.bottom : 0
+    const room = 8
+    if (box.bottom > bottom - room) view.scrollBy({ top: box.bottom - bottom + room })
+    else if (box.top < top + room) view.scrollBy({ top: box.top - top - room })
+  }, DOCK_SETTLES_MS)
+}
 
 /** How many of the answer's events and news rows there are; none where it is not said, as in the editor's preview. */
 export interface SectionRows {

@@ -13,6 +13,7 @@
 import { z } from 'zod'
 import { idSchema, isoDateSchema } from './common'
 import { registrationStatusSchema, tournamentStatusSchema } from './events'
+import { CONTACT_GOES_TO } from '../clubs/contactMessage'
 
 /** The sections a club page names, in its nav's order (domain/clubs/sections.ts). */
 export const clubPageSectionSchema = z.enum(['about', 'when_and_where', 'events', 'news', 'photos', 'contact'])
@@ -71,8 +72,12 @@ export const clubPageResponseSchema = z.strictObject({
     latitude: z.number().nullable(),
     longitude: z.number().nullable(),
   })).max(2),
-  /** The contact name the club chose to show; its email is never answered. */
-  contact: z.strictObject({ name: z.string().nullable() }),
+  /**
+   * The contact name the club chose to show; its email is never answered. goes_to says where a message from the
+   * page's Contact form goes (WS09 step 26), as one word of a closed list: the club's own address, the region's
+   * representative, or LCA. It never names a person, an address, how many people, or whether an address works.
+   */
+  contact: z.strictObject({ name: z.string().nullable(), goes_to: z.enum(CONTACT_GOES_TO) }),
   events: z.array(clubPageEventSchema),
   news: z.array(z.strictObject({
     id: idSchema,

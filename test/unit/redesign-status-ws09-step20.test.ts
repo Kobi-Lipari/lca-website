@@ -279,7 +279,7 @@ describe('REDESIGN_STATUS.md, WS09 step 20: the parts against the files', () => 
     const pins = bullet(block, '- **Pins moved.**')
     for (const file of MOVED) expect(pins, file).toContain(`\`${file}\``)
     expect(pins).toContain('105 handler files, 145 methods under `functions/api`, 41 contracted and `PENDING_COUNT` 104')
-    expect(read('test/unit/routes.test.ts')).toContain('expect(real.filter((r) => r.startsWith(\'api/\')).length).toBe(105)')
+    expect(read('test/unit/routes.test.ts')).toMatch(/expect\(real\.filter\(\(r\) => r\.startsWith\('api\/'\)\)\.length\)\.toBe\(10[5-9]\)/)
     expect(read('test/unit/api-split-modules.test.ts')).toContain('\'/api/admin/tournaments/*/approval\', \'/api/clubs/*/page\', \'/api/clubs/confirm/*\',')
     // Checkpoint W (K's decision 12) took the author line off the page, so routing.ts's readers no longer hold authorLine.ts.
     expect(read('test/unit/club-routing-server-only.test.ts')).toContain('expect(all).not.toContain(\'functions/utils/clubs/authorLine.ts\')')

@@ -27,11 +27,19 @@
 // functions/api/admin/tournaments/[id]/approval.ts: Submit for LCA review
 // writes to the LCA admins, and Approve and publish and Ask for changes to
 // the person who drafted the event.
+//
+// And so are the three copies of a message a visitor sends from a club's
+// page (relayCopyEmail, WS09 step 26), sent by functions/utils/clubs/relay.ts:
+// to the club's own address, else to the region's representatives, else to
+// the LCA admins.
 
 import { trySendEmail, type EmailEnv, type EmailMessage } from '../email'
 import { emailDetails, emailQuote, escapeHtml, p, renderEmail } from '../emailLayout'
 import { resolveSiteUrl } from '../site'
 import { regionRepresentativesOf, representativesOfRegion } from './routing'
+// The contact relay (./relay.ts) reads the region's representatives and the LCA admins through this file, the one reader
+// of the routing among the club mail's files with the monthly check.
+export { lcaAdmins, regionRepresentativesOf, type Keeper } from './routing'
 import { formatDate } from '../../../domain/format/date'
 import { NO_STATEMENT } from '../../../domain/clubs/monthlyCheck'
 
@@ -484,6 +492,104 @@ export function changesAskedEmail(event: WaitingEvent & { fullName: string; note
       again,
       '',
       `Open the event: ${words.manageUrl}`,
+    ].join('\n'),
+  }
+}
+
+// ── The contact relay (WS09 step 26) ─────────────────────────────
+
+/** What a visitor typed into a club's Contact form, after the contract's check. */
+export interface RelayedMessage {
+  name: string
+  email: string
+  message: string
+}
+
+/** Who a copy goes to: the club's own address, a representative of its region, or an LCA admin. */
+export type RelayCopyKind = 'club' | 'region' | 'lca'
+
+/** Why a copy goes to a representative or an admin: the club has no address on file, or its address took nothing. */
+export type RelayReason = 'no_address' | 'unreachable'
+
+/** The heading of the club's own copy. */
+export const RELAY_CLUB_HEADING = 'A message for your club'
+
+/** The heading of a representative's and an admin's copy. */
+export const RELAY_KEEPER_HEADING = 'A message for a club you look after'
+
+/** The line on a representative's and an admin's copy: the visitor sees whatever address an answer comes from. */
+export const RELAY_OWN_MAIL_LINE = 'To answer, write to them at the address above. An answer from your own mail shows them your address.'
+
+/**
+ * The opening of a representative's or an admin's copy: why the message came
+ * to them and not to the club. {Club} has no connected email yet, or its
+ * email could not be reached, so the message came to them as the region's
+ * representative, or as an LCA admin while no one holds the region's seat.
+ */
+export function relayOpening(club: string, kind: Exclude<RelayCopyKind, 'club'>, reason: RelayReason, region: string | null): string {
+  const why = reason === 'no_address' ? `${club} has no connected email yet` : `${club}'s email could not be reached`
+  if (kind === 'lca') return `${why}, so this message came to you as an LCA admin.`
+  const area = region ? oneLine(region) : ''
+  return area ? `${why}, so this message came to you as the ${area} representative.` : `${why}, so this message came to you as the region's representative.`
+}
+
+/**
+ * One copy of a message a visitor sent from a club's page. The subject is
+ * fixed words with the club's name, never anything the visitor typed. Every
+ * word the visitor typed is escaped in the HTML and written as text in the
+ * plain part; their name and address stand as one line each. The club's own
+ * copy is answered straight back to the visitor (the relay sets the reply-to);
+ * a representative's or an admin's copy carries the visitor's address in its
+ * body alone, says why it came to them and that an answer from their own mail
+ * shows their address, and its footer says a reply to the email itself does
+ * not reach the visitor. Its `to` is empty, as every template's is, and is
+ * filled for each person by the relay.
+ */
+export function relayCopyEmail(data: {
+  siteUrl: string
+  clubName: string
+  region: string | null
+  kind: RelayCopyKind
+  reason: RelayReason
+  visitor: RelayedMessage
+}): EmailMessage {
+  const clubName = oneLine(data.clubName)
+  const name = oneLine(data.visitor.name)
+  const email = data.visitor.email.trim()
+  const message = data.visitor.message.trim()
+  const heading = data.kind === 'club' ? RELAY_CLUB_HEADING : RELAY_KEEPER_HEADING
+  const intro = `Someone wrote to ${clubName} from the club's page on the Louisiana Chess Association website.`
+  const lead = data.kind === 'club' ? [intro] : [relayOpening(clubName, data.kind, data.reason, data.region), intro]
+  const after = data.kind === 'club' ? 'Reply to this email to answer them. Your own address stays private until you do.' : RELAY_OWN_MAIL_LINE
+  const footer = data.kind === 'club'
+    ? 'A reply to this email goes to the person who wrote.'
+    : 'A reply to this email goes to the Louisiana Chess Association, not to the person who wrote.'
+  return {
+    to: '',
+    subject: `A message for ${clubName} from the LCA website`,
+    html: renderEmail({
+      siteUrl: data.siteUrl,
+      heading,
+      preheader: `A message for ${clubName}`,
+      body: lead.map((line) => p(escapeHtml(line))).join('') + emailDetails([
+        ['From', name],
+        ['Their email', email],
+      ]) + emailQuote(message, 'Message') + p(escapeHtml(after)),
+      footerNote: escapeHtml(footer),
+    }),
+    text: [
+      `${heading}.`,
+      '',
+      ...lead.flatMap((line) => [line, '']),
+      `From: ${name}`,
+      `Their email: ${email}`,
+      '',
+      'Message:',
+      message,
+      '',
+      after,
+      '',
+      footer,
     ].join('\n'),
   }
 }

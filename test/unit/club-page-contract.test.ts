@@ -18,7 +18,7 @@ const sample = () => ({
   about: { text: 'A made up club.', cost: null, welcome: null, facebook: null, website: null, other: null, weekend_play: false, scholastic_friendly: false },
   statement: { text: 'Tuesdays at 7:00 PM', told: 'Last checked November 2026' },
   places: [place],
-  contact: { name: 'Contact P.' },
+  contact: { name: 'Contact P.', goes_to: 'club' },
   events: [event],
   news: [{ id: 'news-1', title: 'Example News', excerpt: 'Example excerpt', news_date: '2026-11-01' }],
   nearest: [near],

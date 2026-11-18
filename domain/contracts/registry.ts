@@ -29,6 +29,7 @@ import {
   updateClubResponseSchema,
   workspaceRegionResponseSchema,
 } from './clubs'
+import { clubContactRequestSchema, clubContactResponseSchema } from './clubContact'
 import { clubPageResponseSchema } from './clubPage'
 import {
   adminTournamentResponseSchema,
@@ -152,6 +153,9 @@ export const contracts = {
   },
   'clubs/[id]': {
     GET: { response: clubDetailResponseSchema },
+  },
+  'clubs/[id]/contact': {
+    POST: { request: clubContactRequestSchema, response: clubContactResponseSchema },
   },
   'clubs/[id]/page': {
     GET: { response: clubPageResponseSchema },

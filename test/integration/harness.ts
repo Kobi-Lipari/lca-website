@@ -591,14 +591,16 @@ export function installFetchInterceptor(): void {
     }
 
     // The spam check's provider, at its siteverify address (WS09 step 25): a form-encoded POST of the secret and the
-    // token, answered from spamCheckBehavior. 'none' waits until the caller gives up, as a provider that never answers.
+    // token, answered from spamCheckBehavior. 'none' waits until the caller gives up, as a provider that never answers;
+    // a caller that passes no signal could never give up, so it is refused at once rather than left waiting (WS09 step 26).
     if (url.hostname === 'challenges.cloudflare.com' && url.pathname === '/turnstile/v0/siteverify') {
       spamCheckRequests.push(Object.fromEntries(new URLSearchParams(await request.text())))
       if (spamCheckBehavior.answer === 'none') {
+        const signal = init?.signal
+        // Thrown, not a returned rejection, as the scanner's catch point below explains.
+        if (!signal || signal.aborted) throw new Error('harness: the spam check gave up waiting')
         return new Promise<Response>((_, reject) => {
-          const signal = init?.signal
-          if (signal?.aborted) reject(new Error('harness: the spam check gave up waiting'))
-          signal?.addEventListener('abort', () => reject(new Error('harness: the spam check gave up waiting')))
+          signal.addEventListener('abort', () => reject(new Error('harness: the spam check gave up waiting')))
         })
       }
       if (spamCheckBehavior.answer === 'fail') return Response.json({ success: false, 'error-codes': ['invalid-input-response'] })

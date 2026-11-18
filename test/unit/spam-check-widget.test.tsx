@@ -152,11 +152,11 @@ describe('where the provider\'s address is', () => {
     readdirSync(join(ROOT, dir), { withFileTypes: true }).flatMap((e) => (e.isDirectory() ? walk(`${dir}/${e.name}`) : [`${dir}/${e.name}`]))
   const site = walk('src').filter((f) => /\.(?:tsx?|css|html)$/.test(f))
 
-  it('is in one file of the site\'s code, the script loader, which only the widget imports, and no page draws the widget yet', () => {
+  it('is in one file of the site\'s code, the script loader, which only the widget imports, and the one form that draws the widget is the contact relay\'s', () => {
     expect(site.filter((f) => read(f).includes('challenges.cloudflare.com'))).toEqual(['src/areas/clubs/spamCheckScript.ts'])
     expect(site.filter((f) => /spamCheckScript['"]/.test(read(f)))).toEqual(['src/areas/clubs/components/SpamCheck.tsx'])
-    // Nothing imports the widget, so the build leaves both files out and the provider's address is in no file it writes.
-    expect(site.filter((f) => /components\/SpamCheck['"]|['"]\.\/SpamCheck['"]/.test(read(f)))).toEqual([])
+    // The contact relay's form (WS09 step 26) is the one importer, inside the club page's own chunk, never the main script.
+    expect(site.filter((f) => /components\/SpamCheck['"]|['"]\.\/SpamCheck['"]/.test(read(f)))).toEqual(['src/areas/clubs/components/ContactRelayForm.tsx'])
     expect(read('index.html')).not.toContain('challenges.cloudflare.com')
   })
 })

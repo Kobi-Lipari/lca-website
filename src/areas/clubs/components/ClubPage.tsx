@@ -11,10 +11,11 @@
 // initials and its h1, the section nav, About and When and
 // where, then (WS09 step 22) the club's events and its news, each only with
 // a row to draw, the nearest clubs where the answer gives any, and the foot
-// line with Copy link. On a phone with the new chrome the club bar in the
-// dock holds Directions. Contact and Photos come with the steps that build
-// them; until then the page draws no block for them and the nav lists
-// neither, whatever the answer names. The told line and a nearest club's
+// line with Copy link, with Contact and its form (WS09 step 26) after the
+// club's news. On a phone with the new chrome the club bar in the dock holds
+// Directions and Message the club. Photos comes with the step that builds
+// it; until then the page draws no block for it and the nav does not list
+// it, whatever the answer names. The told line and a nearest club's
 // distance are the server's words, drawn as given; the cover
 // takes its colour from the answer. The page has one status, under the
 // cover's buttons, which says what Share or Copy link did. While it
@@ -52,6 +53,7 @@ import { ClubCover } from '@/areas/clubs/components/ClubCover'
 import { ClubEvents } from '@/areas/clubs/components/ClubEvents'
 import { ClubFootLine } from '@/areas/clubs/components/ClubFootLine'
 import { ClubNews } from '@/areas/clubs/components/ClubNews'
+import { ClubContact } from '@/areas/clubs/components/ContactRelayForm'
 import { LCAMap } from '@/areas/clubs/components/LCAMap'
 import { NearbyClubs } from '@/areas/clubs/components/NearbyClubs'
 import { SectionNav } from '@/areas/clubs/components/SectionNav'
@@ -221,6 +223,9 @@ export function ClubPageView({
         )}
         {sections.includes('events') && <ClubEvents id={SECTION_IDS.events} events={answer.events} />}
         {sections.includes('news') && <ClubNews id={SECTION_IDS.news} news={answer.news} />}
+        {sections.includes('contact') && (
+          <ClubContact id={SECTION_IDS.contact} address={club.slug} region={club.region} goesTo={answer.contact.goes_to} />
+        )}
         {answer.nearest.length > 0 && <NearbyClubs city={club.city} nearest={answer.nearest} />}
         <ClubFootLine name={club.name} city={club.city} address={link} said={said} onCopy={() => { void copyFromFoot() }} />
       </div>

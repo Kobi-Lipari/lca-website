@@ -12,7 +12,7 @@
 import { authHeaders, handleResponse } from '@/lib/http'
 import type { ApiAdminMember } from '@/areas/membership/api'
 import type { AdminClubResponse, ClubConfirmResponse, ClubPlace, UpdateClubRequest, WorkspaceRegionResponse } from '@domain/contracts'
-import type { ClubLinkConfirmResponse, ClubLinkResponse, ClubPageResponse, MonthlyCheckResponse } from '@domain/contracts'
+import type { ClubContactRequest, ClubContactResponse, ClubLinkConfirmResponse, ClubLinkResponse, ClubPageResponse, MonthlyCheckResponse } from '@domain/contracts'
 
 export interface ApiClubDetail {
   id: string
@@ -96,6 +96,22 @@ export async function getClubPage(address: string): Promise<ClubPageResponse> {
     headers: await authHeaders(),
   })
   return handleResponse<ClubPageResponse>(response)
+}
+
+/**
+ * A message to a club from its page's Contact form, POST
+ * /api/clubs/:address/contact (WS09 step 26): the visitor's name, address and
+ * message, and the spam check's token. The server relays it by email and
+ * keeps none of it. Sent with no sign-in, since the answer is the same for
+ * everyone. A refusal throws an ApiError with its status and words.
+ */
+export async function sendClubMessage(address: string, body: ClubContactRequest): Promise<ClubContactResponse> {
+  const response = await fetch(`/api/clubs/${encodeURIComponent(address)}/contact`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  })
+  return handleResponse<ClubContactResponse>(response)
 }
 
 export async function adminUpdateClub(

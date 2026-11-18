@@ -13,6 +13,13 @@
 // name is printed nowhere beside it, and no explaining sentence sits beside
 // the control. The provider's frame is given a title in words where it has
 // none. Nothing moves on by itself.
+//
+// Two mends of WS09 step 26, for the first form that draws it: once the
+// widget fails it is taken off the page, and anything it hands back after
+// that is ignored, so a failed widget can never fill the form behind the
+// failure's words; and a form whose send the server refused changes
+// `refresh`, which clears the token, since a token is good once, and draws
+// the widget afresh for a new one.
 import { useEffect, useRef, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { loadSpamCheckScript } from '../spamCheckScript'
@@ -27,9 +34,11 @@ interface SpamCheckProps {
   onToken: (token: string | null) => void
   /** The site key; the build's own by default. */
   siteKey?: string
+  /** Changed by the form after the server refuses a send: the token is cleared and the widget drawn afresh. */
+  refresh?: number
 }
 
-export function SpamCheck({ onToken, siteKey = import.meta.env.VITE_TURNSTILE_SITE_KEY }: SpamCheckProps) {
+export function SpamCheck({ onToken, siteKey = import.meta.env.VITE_TURNSTILE_SITE_KEY, refresh = 0 }: SpamCheckProps) {
   const box = useRef<HTMLDivElement>(null)
   const again = useRef<HTMLButtonElement>(null)
   const [failed, setFailed] = useState(false)
@@ -58,11 +67,20 @@ export function SpamCheck({ onToken, siteKey = import.meta.env.VITE_TURNSTILE_SI
     }
     let gone = false
     let widgetId: string | undefined
+    const removeWidget = () => {
+      if (widgetId === undefined) return
+      const id = widgetId
+      widgetId = undefined
+      try { window.turnstile?.remove(id) } catch { /* the widget is already gone */ }
+    }
     const fail = () => {
       if (gone) return
+      // From here on this widget is done with: whatever it hands back later is ignored, and it leaves the page.
+      gone = true
       const active = document.activeElement
       if (active && container.contains(active)) focusNext.current = 'again'
       tell.current(null)
+      removeWidget()
       setFailed(true)
     }
     // The provider's frame, given a title in words wherever it arrives without one.
@@ -81,6 +99,11 @@ export function SpamCheck({ onToken, siteKey = import.meta.env.VITE_TURNSTILE_SI
           'expired-callback': () => { if (!gone) tell.current(null) },
           'timeout-callback': () => { if (!gone) tell.current(null) },
         }) ?? undefined
+        // A widget that failed while it was being drawn is taken away as soon as its id is known.
+        if (gone) {
+          removeWidget()
+          return
+        }
         for (const frame of container.querySelectorAll('iframe')) if (!frame.title) frame.title = FRAME_TITLE
       } catch {
         fail()
@@ -89,11 +112,9 @@ export function SpamCheck({ onToken, siteKey = import.meta.env.VITE_TURNSTILE_SI
     return () => {
       gone = true
       titles.disconnect()
-      if (widgetId !== undefined) {
-        try { window.turnstile?.remove(widgetId) } catch { /* the widget is already gone */ }
-      }
+      removeWidget()
     }
-  }, [siteKey, attempt])
+  }, [siteKey, attempt, refresh])
 
   const showFailed = failed || !siteKey
 

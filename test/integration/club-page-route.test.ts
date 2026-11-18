@@ -221,9 +221,10 @@ describe('GET /clubs/[id] with CLUB_PAGES_ON set: the head and the body', () => 
     expect(plainOf(rootOf(html))).toBe([
       '<main><h1>Example Chess Club Bare</h1><p>Chess club in Example City, Louisiana</p><p>Tuesdays at 7:00 PM</p>',
       '<section><h2>About Example Chess Club Bare</h2><p>A friendly made up club.</p></section>',
-      '<section><h2>When and where Example Chess Club Bare meets</h2><ul><li><p>Example Library</p></li></ul></section></main>',
+      '<section><h2>When and where Example Chess Club Bare meets</h2><ul><li><p>Example Library</p></li></ul></section>',
+      '<section><h2>Contact</h2><p>You can send the club a message through this site. Its address stays private.</p></section></main>',
     ].join(''))
-    for (const word of ['Events', 'News', 'Contact', 'Cost', 'Who is welcome', 'Find us online', 'not listed', 'Contact P.']) expect(rootOf(html), word).not.toContain(word)
+    for (const word of ['Events', 'News', 'Cost', 'Who is welcome', 'Find us online', 'not listed', 'Contact P.']) expect(rootOf(html), word).not.toContain(word)
     const ld = jsonLdOf(html)
     for (const key of ['geo', 'sameAs', 'event', 'image']) expect(ld, key).not.toHaveProperty(key)
     expect(ld.address).toEqual({ '@type': 'PostalAddress', addressLocality: 'Example City', addressRegion: 'LA', addressCountry: 'US' })
@@ -234,7 +235,7 @@ describe('GET /clubs/[id] with CLUB_PAGES_ON set: the head and the body', () => 
     // A club with nothing but its name: the h1 and the line under it, and a description from that line.
     const empty = await makeClub({ name: 'Example Chess Club Empty' })
     const emptyHtml = await served({ part: empty.slug ?? '' })
-    expect(plainOf(rootOf(emptyHtml))).toBe('<main><h1>Example Chess Club Empty</h1><p>Chess club in Example City, Louisiana</p></main>')
+    expect(plainOf(rootOf(emptyHtml))).toBe('<main><h1>Example Chess Club Empty</h1><p>Chess club in Example City, Louisiana</p><section><h2>Contact</h2><p>You can send the club a message through this site. Its address stays private.</p></section></main>')
     expect(jsonLdOf(emptyHtml).description).toBe('Chess club in Example City, Louisiana')
   })
 
