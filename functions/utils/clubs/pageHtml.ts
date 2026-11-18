@@ -8,12 +8,17 @@
 // written inside the shell's root element, which the app replaces when it
 // draws, so nobody meets the page twice.
 //
-// The body is plain HTML with no style and no script: the club's name as the
-// h1, the line under it, how it meets in its own words, About, its places
-// and its events with their dates, each only where the answer has something
-// to put under it. It writes no Contact section (WS09 step 26 brings it), no
-// email address, no officer and no roster: the answer carries none. Every
-// word a club or a keeper typed is escaped for where it lands: for HTML text
+// The body is plain HTML with no script: the club's name as the h1, the line
+// under it, how it meets in its own words, About, its places and its events
+// with their dates, each only where the answer has something to put under
+// it. Its wrapper carries one small style element of fixed text (checkpoint
+// W), so a reader before the app draws, or with no script at all, meets a
+// plain page rather than one dense block; the styling names the wrapper
+// alone and goes with it when the app draws. It sets no colour and no type,
+// so the page keeps the site's own. The body writes no Contact section (WS09
+// step 26 brings it), no email address, no officer and no roster: the
+// answer carries none. Every word a club or a keeper typed is escaped for
+// where it lands, and none enters the style element: for HTML text
 // and attributes in the body, and in the JSON-LD block every "<", ">", "&"
 // and line separator is written as a JSON escape, so no value can end the
 // block or start a tag. The words the app's page also writes come from
@@ -200,14 +205,45 @@ function eventsHtml(answer: ClubPageResponse): string[] {
   return [`<section><h2>${EVENTS_HEADING}</h2><ul>${rows.join('')}</ul></section>`]
 }
 
+/** The attribute that marks the written body's wrapper: the styling below names it, and nothing the app draws uses it. */
+export const WRITTEN_PAGE_MARK = 'data-club-written-page'
+
+const WRAPPER = `main[${WRITTEN_PAGE_MARK}]`
+
 /**
- * The body written inside the shell's root element: the club's name as the
- * h1, the line under it and how it meets, then About, When and where and
- * Events, each only where the answer has something to put under it.
+ * The written body's styling, fixed text with nothing of a club or a reader
+ * in it: a measure of at most 42rem in the middle of the window with room
+ * around it, the name as the largest heading and the section headings a
+ * step above the text, air between paragraphs, lists and sections, bullets
+ * back on the lists and an underline on links. Sizes are in rem, so a
+ * reader's own text size is kept, and no height is set. No colour, no
+ * ground and no type: those stay the site's own in the light and the dark.
+ * Every rule starts at the wrapper, so it touches nothing of the app's page,
+ * and it sits inside the root element the app empties when it draws.
+ */
+export const WRITTEN_PAGE_STYLE = [
+  `${WRAPPER}{box-sizing:border-box;max-width:42rem;margin:0 auto;padding:2rem 1rem 3rem;overflow-wrap:anywhere}`,
+  `${WRAPPER} h1{font-size:2rem;font-weight:700;line-height:1.2;margin:0 0 0.5rem}`,
+  `${WRAPPER} h2{font-size:1.375rem;font-weight:700;line-height:1.3;margin:2.5rem 0 0.75rem}`,
+  `${WRAPPER} h3{font-size:1.125rem;font-weight:700;line-height:1.4;margin:1.5rem 0 0.5rem}`,
+  `${WRAPPER} p{margin:0 0 1rem}`,
+  `${WRAPPER} ul{list-style:disc;margin:0 0 1rem;padding-left:1.5rem}`,
+  `${WRAPPER} li{margin:0 0 1rem}`,
+  `${WRAPPER} li h3{margin:0 0 0.25rem}`,
+  `${WRAPPER} li p{margin:0 0 0.25rem}`,
+  `${WRAPPER} a{text-decoration:underline}`,
+].join('')
+
+/**
+ * The body written inside the shell's root element: the wrapper with its
+ * styling, then the club's name as the h1, the line under it and how it
+ * meets, then About, When and where and Events, each only where the answer
+ * has something to put under it.
  */
 export function clubPageBody(answer: ClubPageResponse): string {
   const { club } = answer
   const top = [`<h1>${escapeHtml(club.name)}</h1>`, `<p>${escapeHtml(cityLine(club.city, club.region))}</p>`]
   if (hasWords(answer.statement.text)) top.push(...paragraphsOf(answer.statement.text))
-  return `<main>${[...top, ...aboutHtml(answer), ...placesHtml(answer), ...eventsHtml(answer)].join('')}</main>`
+  const words = [...top, ...aboutHtml(answer), ...placesHtml(answer), ...eventsHtml(answer)].join('')
+  return `<main ${WRITTEN_PAGE_MARK}><style>${WRITTEN_PAGE_STYLE}</style>${words}</main>`
 }

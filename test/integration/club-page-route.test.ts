@@ -124,6 +124,8 @@ const between = (text: string, from: string, to: string) => {
   return end < 0 ? '' : text.slice(start + from.length, end)
 }
 const rootOf = (html: string) => between(html, '<div id="root">', '</div>\n')
+/** The written body with its wrapper's mark and its style element taken out: its words, their order and their tags. */
+const plainOf = (root: string) => root.replace(/^<main data-club-written-page><style>[^<]*<\/style>/, '<main>')
 const headOf = (html: string) => between(html, '<head>', '</head>')
 const count = (text: string, piece: string) => text.split(piece).length - 1
 const jsonLdOf = (html: string) => JSON.parse(between(html, '<script type="application/ld+json">', '</script>')) as Record<string, unknown>
@@ -207,7 +209,7 @@ describe('GET /clubs/[id] with CLUB_PAGES_ON set: the head and the body', () => 
     expect(html).not.toContain('Example Hidden Draft')
     expect(count(body, '<h1')).toBe(1)
     // The body sits inside the root element, before the app's script.
-    expect(html.indexOf('<div id="root"><main>')).toBeGreaterThan(-1)
+    expect(html.search(/<div id="root"><main[\s>]/)).toBeGreaterThan(-1)
     expect(html.indexOf('</main></div>')).toBeLessThan(html.indexOf('<script type="module"'))
   })
 
@@ -216,7 +218,7 @@ describe('GET /clubs/[id] with CLUB_PAGES_ON set: the head and the body', () => 
     const club = await makeClub({ name: 'Example Chess Club Bare' })
     await giveBasics(club.id)
     const html = await served({ part: club.slug ?? '' })
-    expect(rootOf(html)).toBe([
+    expect(plainOf(rootOf(html))).toBe([
       '<main><h1>Example Chess Club Bare</h1><p>Chess club in Example City, Louisiana</p><p>Tuesdays at 7:00 PM</p>',
       '<section><h2>About Example Chess Club Bare</h2><p>A friendly made up club.</p></section>',
       '<section><h2>When and where Example Chess Club Bare meets</h2><ul><li><p>Example Library</p></li></ul></section></main>',
@@ -232,7 +234,7 @@ describe('GET /clubs/[id] with CLUB_PAGES_ON set: the head and the body', () => 
     // A club with nothing but its name: the h1 and the line under it, and a description from that line.
     const empty = await makeClub({ name: 'Example Chess Club Empty' })
     const emptyHtml = await served({ part: empty.slug ?? '' })
-    expect(rootOf(emptyHtml)).toBe('<main><h1>Example Chess Club Empty</h1><p>Chess club in Example City, Louisiana</p></main>')
+    expect(plainOf(rootOf(emptyHtml))).toBe('<main><h1>Example Chess Club Empty</h1><p>Chess club in Example City, Louisiana</p></main>')
     expect(jsonLdOf(emptyHtml).description).toBe('Chess club in Example City, Louisiana')
   })
 
@@ -246,9 +248,9 @@ describe('GET /clubs/[id] with CLUB_PAGES_ON set: the head and the body', () => 
       '<title>', 'property="og:url"', 'rel="canonical"', 'name="twitter:title"', 'name="twitter:description"', 'name="twitter:image"', 'property="og:title"',
       'property="og:description"', 'property="og:image"', 'property="og:type"', 'name="twitter:card"', 'name="description"', '<script type="application/ld+json">',
     ]) expect(count(html, tag), tag).toBe(1)
-    // The only scripts are the shell's own and the JSON-LD block, which is data; nothing carries a style or a handler.
+    // The only scripts are the shell's own and the JSON-LD block, which is data; the body's one style element is its wrapper's, and nothing carries a style attribute or a handler.
     expect(count(html, '<script')).toBe(count(SHELL, '<script') + 1)
-    expect(rootOf(html)).not.toMatch(/<script|<style|\sstyle=|\son[a-z]+=|javascript:/i)
+    expect(plainOf(rootOf(html))).not.toMatch(/<script|<style|\sstyle=|\son[a-z]+=|javascript:/i)
     // The route adds no header of its own to the shell's.
     expect(res.headers).toEqual({ 'content-type': 'text/html; charset=utf-8' })
   })

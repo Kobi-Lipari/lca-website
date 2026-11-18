@@ -73,6 +73,8 @@ const between = (text: string, from: string, to: string) => {
   return end < 0 ? '' : text.slice(start + from.length, end)
 }
 const rootOf = (html: string) => between(html, '<div id="root">', '</div>\n')
+/** The written body with its wrapper's mark and its style element taken out: its words, their order and their tags. */
+const plainOf = (root: string) => root.replace(/^<main data-club-written-page><style>[^<]*<\/style>/, '<main>')
 const headOf = (html: string) => between(html, '<head>', '</head>')
 const count = (text: string, piece: string) => text.split(piece).length - 1
 interface JsonLd {
@@ -335,7 +337,7 @@ describe('empty and stale data', () => {
               facebook_url = 'ftp://example.org/chess', website_url = 'javascript:alert(1)', other_url = 'https://user:secret@example.org/chess' WHERE id = ?`,
     ).bind(club.id).run()
     const html = (await route(club.slug ?? '')).text
-    expect(rootOf(html)).toBe(`<main><h1>${(await env.DB.prepare('SELECT name FROM clubs WHERE id = ?').bind(club.id).first<{ name: string }>())?.name}</h1><p>Chess club in Example City, Louisiana</p></main>`)
+    expect(plainOf(rootOf(html))).toBe(`<main><h1>${(await env.DB.prepare('SELECT name FROM clubs WHERE id = ?').bind(club.id).first<{ name: string }>())?.name}</h1><p>Chess club in Example City, Louisiana</p></main>`)
     expect(html).not.toMatch(/secret|javascript:|ftp:/)
     const ld = jsonLdOf(html)
     expect(ld).not.toHaveProperty('sameAs')
