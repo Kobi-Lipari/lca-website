@@ -5,11 +5,12 @@
 // exports is called as the active holder of the Media manager seat, signed in
 // with a second factor, with MAIL_LISTS_ON set. Beside the named cases of
 // media-manager.test.ts this holds the grant to WS16's own endpoints as Admin
-// grows: the three newsletter files under mail/ are the only handler files
-// the holder may pass, and every other method answers 403 with nothing
-// written and nothing sent, whatever the method, the address or the body. A
-// handler file added to Admin later is swept at once; one a media manager
-// should reach has to be named in ALLOWED here, in the same change.
+// grows: the newsletter's files under mail/, the three of part one and the
+// three of the newsletter's own page (WS16 part two, page step 3), are the
+// only handler files the holder may pass, and every other method answers 403
+// with nothing written and nothing sent, whatever the method, the address or
+// the body. A handler file added to Admin later is swept at once; one a media
+// manager should reach has to be named in ALLOWED here, in the same change.
 //
 // MAIL_LISTS_ON and the module's other constants are read through getters on
 // the mocked functions/utils/mail/switches, set before every case. Nothing
@@ -45,8 +46,11 @@ type Handler = Parameters<typeof invoke>[0]
 
 const modules = import.meta.glob('../../functions/api/admin/**/*.ts', { eager: true }) as Record<string, Record<string, unknown>>
 
-/** The handler files the media manager may pass, by path under functions/api/admin. */
-const ALLOWED = ['mail/newsletter.ts', 'mail/newsletter/stop.ts', 'mail/newsletter/test.ts']
+/** The handler files the media manager may pass, by path under functions/api/admin: part one's three, then the newsletter page's three. */
+const ALLOWED = [
+  'mail/newsletter.ts', 'mail/newsletter/stop.ts', 'mail/newsletter/test.ts',
+  'mail/newsletter/issue.ts', 'mail/newsletter/issue/start.ts', 'mail/newsletter/issues.ts',
+]
 
 const METHODS: Record<string, string> = { Get: 'GET', Post: 'POST', Put: 'PUT', Patch: 'PATCH', Delete: 'DELETE' }
 const ID = 'sample-id'
@@ -94,7 +98,7 @@ beforeEach(async () => {
 })
 
 describe('the media manager\'s reach, swept over every handler of Admin', () => {
-  it('finds the handler files, the newsletter\'s three among them, so a glob that finds nothing cannot pass', () => {
+  it('finds the handler files, the newsletter\'s six among them, so a glob that finds nothing cannot pass', () => {
     const files = Object.keys(modules).map((p) => p.replace('../../functions/api/admin/', ''))
     for (const allowed of ALLOWED) expect(files).toContain(allowed)
     expect(files.filter((f) => !ALLOWED.includes(f)).length).toBeGreaterThanOrEqual(40)

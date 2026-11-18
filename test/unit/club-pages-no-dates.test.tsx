@@ -126,7 +126,7 @@ describe('My region draws no weekly claims', () => {
       thisMonth: { ...ANSWER.thisMonth, nextCheck: { day: '2027-01-04', date: 'Mon, Jan 4, 2027', time: '8:00 AM' }, checked: 0, notChecked: 1 },
     }
     const words = await draw()
-    expect(words).toContain('Next monthly check lands Mon, Jan 4, 2027')
+    expect(words).toContain('Next monthly check due Mon, Jan 4, 2027')
     expect(words).toContain('Not checked since Jun 2026')
     expect(words).not.toMatch(/2031|Mar 2031/)
   })

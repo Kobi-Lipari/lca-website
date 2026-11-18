@@ -1,7 +1,7 @@
 // src/areas/clubs/components/ThisMonthBar.tsx
 //
 // My region's This month bar (WS09 step 11), as the board Work-H draws it:
-// "This month · Next monthly check lands Mon, Dec 7, 2026 · 3 of 5 checked
+// "This month · Next monthly check due Mon, Dec 7, 2026 · 3 of 5 checked
 // in the last 90 days · 2 not checked in 90 days", with Confirm all still
 // accurate at its end while any club needs a check. The date and its weekday
 // come from the server as words, and the counts are the server's, moved by
@@ -45,7 +45,7 @@ export function ThisMonthBar({ thisMonth, hasClubs, toConfirm, running, onConfir
   const [asking, setAsking] = useState(false)
   const total = thisMonth.checked + thisMonth.notChecked
   const parts = [
-    `Next monthly check lands ${thisMonth.nextCheck.date}`,
+    `Next monthly check due ${thisMonth.nextCheck.date}`,
     ...(hasClubs ? [`${thisMonth.checked} of ${total} checked in the last 90 days`, `${thisMonth.notChecked} not checked in 90 days`] : []),
     ...(regionEventsOn() && (thisMonth.inReview ?? 0) > 0 ? [thisMonth.inReview === 1 ? '1 event in review' : `${thisMonth.inReview} events in review`] : []),
   ]

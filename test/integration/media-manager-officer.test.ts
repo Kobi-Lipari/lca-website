@@ -20,15 +20,16 @@
 //   and no seat is read.
 // - (c) GET /api/me/media-manager reads true for them by the same rule.
 // - (d) Every Admin handler swept as an officer who holds the seat: the
-//   three newsletter files answer, and every other method answers exactly
+//   newsletter's files (part one's three, and the page's three while
+//   MAIL_PAGE_ON is set, as it ships) answer, and every other method answers exactly
 //   what it answers an officer without the seat, writing the same and
 //   sending nothing.
 // - (e) requireMailer and today's five campaign methods do not change: an
 //   officer who holds the seat still gets the officer's words from each.
-// - The sweep (d) is also made with no second factor, where the three
-//   newsletter files refuse both officers, the seat holder in the media
+// - The sweep (d) is also made with no second factor, where the
+//   newsletter's files refuse both officers, the seat holder in the media
 //   manager's own words, and with MAIL_LISTS_ON unset, where every method,
-//   the three files among them, answers the two officers alike.
+//   the newsletter's files among them, answers the two officers alike.
 // - (f) The edges of the seat: another seat, or this one while it is not
 //   active; two officers who hold it together; a term that ends between two
 //   requests; an LCA admin and the president who also hold it, who send as
@@ -213,7 +214,11 @@ describe('(c) GET /api/me/media-manager', () => {
 
 describe('(d) every Admin handler, swept as an officer who holds the seat', () => {
   const modules = import.meta.glob('../../functions/api/admin/**/*.ts', { eager: true }) as Record<string, Record<string, unknown>>
-  const NEWSLETTER_FILES = ['mail/newsletter.ts', 'mail/newsletter/stop.ts', 'mail/newsletter/test.ts']
+  // Part one's three files, then the page's three, which answer with MAIL_PAGE_ON set as it ships.
+  const NEWSLETTER_FILES = [
+    'mail/newsletter.ts', 'mail/newsletter/stop.ts', 'mail/newsletter/test.ts',
+    'mail/newsletter/issue.ts', 'mail/newsletter/issue/start.ts', 'mail/newsletter/issues.ts',
+  ]
   const METHODS: Record<string, string> = { Get: 'GET', Post: 'POST', Put: 'PUT', Patch: 'PATCH', Delete: 'DELETE' }
   const ID = 'sample-id'
   const PARAMS = { id: ID, memberId: ID, newsId: ID, officerId: ID, gameId: ID, round: '1' }
@@ -228,8 +233,8 @@ describe('(d) every Admin handler, swept as an officer who holds the seat', () =
 
   /**
    * Every handler asked as an officer who holds the seat and as one without it, with the session's assurance level given.
-   * Every method outside the three newsletter files must answer the one as the other, the answers that name the caller
-   * read with the two officers' ids made one; the three files are returned for the case to hold.
+   * Every method outside the newsletter's files must answer the one as the other, the answers that name the caller
+   * read with the two officers' ids made one; the newsletter's files are returned for the case to hold.
    */
   async function sweep(aal: 'aal1' | 'aal2'): Promise<{ differ: string[]; newsletter: Record<string, { without: Written; withSeat: Written }> }> {
     await env.DB.prepare(`DELETE FROM board_members WHERE id LIKE 'seat-%'`).run()
@@ -257,15 +262,18 @@ describe('(d) every Admin handler, swept as an officer who holds the seat', () =
     return { differ, newsletter }
   }
 
-  it('lets the three newsletter files answer, and answers every other method exactly as it answers an officer without the seat, sending nothing', async () => {
+  it('lets the newsletter\'s files answer, and answers every other method exactly as it answers an officer without the seat, sending nothing', async () => {
     const { differ, newsletter } = await sweep('aal2')
     expect(differ).toEqual([])
     const answering = Object.entries(newsletter).filter(([, a]) => a.withSeat.status !== 403).map(([name]) => name)
-    expect(answering.sort()).toEqual(['GET mail/newsletter.ts', 'POST mail/newsletter.ts', 'POST mail/newsletter/stop.ts', 'POST mail/newsletter/test.ts'])
+    expect(answering.sort()).toEqual([
+      'GET mail/newsletter.ts', 'GET mail/newsletter/issue.ts', 'GET mail/newsletter/issues.ts', 'POST mail/newsletter.ts',
+      'POST mail/newsletter/issue/start.ts', 'POST mail/newsletter/stop.ts', 'POST mail/newsletter/test.ts', 'PUT mail/newsletter/issue.ts',
+    ])
     for (const [name, a] of Object.entries(newsletter)) expect(a.without.status, `${name} without the seat`).toBe(403)
   })
 
-  it('answers every other method as it answers an officer without the seat, also when the session has no second factor, and the three newsletter files refuse both, the seat holder in the media manager\'s own words', async () => {
+  it('answers every other method as it answers an officer without the seat, also when the session has no second factor, and the newsletter\'s files refuse both, the seat holder in the media manager\'s own words', async () => {
     const { differ, newsletter } = await sweep('aal1')
     expect(differ).toEqual([])
     for (const [name, a] of Object.entries(newsletter)) {
@@ -274,7 +282,7 @@ describe('(d) every Admin handler, swept as an officer who holds the seat', () =
     }
   })
 
-  it('with MAIL_LISTS_ON unset answers every method, the three newsletter files included, byte for byte as it answers an officer without the seat', async () => {
+  it('with MAIL_LISTS_ON unset answers every method, the newsletter\'s files included, byte for byte as it answers an officer without the seat', async () => {
     flags.listsOn = false
     for (const aal of ['aal2', 'aal1'] as const) {
       const { differ, newsletter } = await sweep(aal)

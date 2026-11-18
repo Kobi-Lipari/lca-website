@@ -13,6 +13,8 @@ import { errorResponse } from '../response'
  * (checkpoint M's review).
  */
 export { ALREADY_SENDING, WAITS_FOR_SES } from '../../../domain/mail/newsletterWords'
+/** The refusals of a test of the stored letter (WS16 part two, page step 6), held in the same file, which the page reads too. */
+export { TEST_NO_SUBJECT, TEST_NO_SUBJECT_OR_WORDS, TEST_NO_WORDS, testTooLong } from '../../../domain/mail/newsletterWords'
 export const LINK_KEY_MISSING = 'Not sent: the mail link key is missing on this deployment.'
 export const NOBODY_ON_THE_LIST = 'Nobody is on the newsletter list right now.'
 export const NOTHING_SENDING = 'No newsletter is sending.'

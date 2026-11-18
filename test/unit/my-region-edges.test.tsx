@@ -286,7 +286,7 @@ describe('My region: the same words for the person signed in', () => {
     for (const at of ['2026-12-07T06:00:00Z', '2026-11-01T06:30:00Z']) {
       vi.setSystemTime(new Date(at))
       await page()
-      expect(barText()).toContain('Next monthly check lands Mon, Dec 7, 2026')
+      expect(barText()).toContain('Next monthly check due Mon, Dec 7, 2026')
       expect(stampOf('Example Chess Club')).toBe('Checked Nov 2026')
       expect(stampOf('Example Rooks Club')).toBe('Not checked yet')
       cleanup()
