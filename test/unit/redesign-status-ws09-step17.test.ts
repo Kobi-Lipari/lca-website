@@ -179,7 +179,8 @@ describe('REDESIGN_STATUS.md, WS09 step 17: the block', () => {
       expect(tail).toBe('checkpoints S and T merged into `main` on Sun, Nov 15, 2026, and checkpoint U, steps 10 to 14 with the two small steps of K\'s decision 7, merged on the same day as pull request 132, and all three are live; checkpoint V is under way on `redesign/ws09-clubs-v`, its first step mending, behind `clubKeepers`, what checkpoint U\'s pictures showed, WS09 step 16 giving the regional representative\'s grant and the four columns of the approval wait, and WS09 step 17 the representative\'s club events on the server, created, named and run in the region and held back from listing until an LCA admin approves them, both behind `regionEvents`; WS09 step 15 follows as a pull request of its own; steps 1 to 14, 16 and 17, K\'s answers to checkpoint S\'s review and K\'s second answer, the Clubs page on a narrow phone, are built.')
     }
     expect(tail).toMatch(/\bbuilt\.$/)
-    expect(prLine.match(/pull request \d+/g)).toEqual(['pull request 130', 'pull request 131', 'pull request 132'])
+    // Read only while this block is the latest: the switch-on's block names checkpoint V's own pull request.
+    if (latest) expect(prLine.match(/pull request \d+/g)).toEqual(['pull request 130', 'pull request 131', 'pull request 132'])
   })
 
   it('opens by saying where the step sits, that step 15 is still to come, K\'s answer and what it builds', () => {

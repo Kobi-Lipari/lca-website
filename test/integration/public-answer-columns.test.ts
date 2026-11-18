@@ -9,21 +9,41 @@
 //   migrations seed answers its row exactly as its 13 columns read it;
 // - who asks changes nothing: signed out, a member and an LCA admin get
 //   the same 13 keys.
+// The file sets CLUB_EMAIL_HIDDEN itself, through a getter on the mocked
+// module, and checks both states: unset, the answer carries contact_email
+// as stored; set, it carries the same 12 keys without it, for everyone.
 import { env } from 'cloudflare:test'
-import { beforeEach, describe, expect, it } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { clubRowSchema } from '../../domain/contracts'
 import { onRequestGet as clubGet } from '../../functions/api/clubs/[id]'
 import { PUBLIC_CLUB_COLUMNS, publicClubAnswer } from '../../functions/utils/clubs/publicAnswer'
 import { seedAdmin, seedClub, seedMember, seedTournament } from './factories'
 import { invoke, resetHarness } from './harness'
 
+const flags = vi.hoisted(() => ({ clubEmailHidden: false }))
+vi.mock('../../functions/utils/clubs/publicAnswer', async (importOriginal) => {
+  const real = await importOriginal<typeof import('../../functions/utils/clubs/publicAnswer')>()
+  return {
+    ...real,
+    get CLUB_EMAIL_HIDDEN() {
+      return flags.clubEmailHidden
+    },
+  }
+})
+
 beforeEach(resetHarness)
+afterEach(() => {
+  flags.clubEmailHidden = false
+})
 
 /** Today's 13 columns of clubs, in the table's own order. */
 const COLUMNS = [
   'id', 'name', 'city', 'location', 'description', 'meeting_schedule', 'contact_email',
   'created_at', 'color', 'image_url', 'region', 'latitude', 'longitude',
 ]
+
+/** The 12 keys the answer carries once CLUB_EMAIL_HIDDEN is set: today's 13 without contact_email. */
+const WITHOUT_EMAIL = COLUMNS.filter((c) => c !== 'contact_email')
 
 /** The club page's 15 columns, which migration 0066 adds after today's 13 and no public answer carries. */
 const ADDED_BY_0066 = [
@@ -83,16 +103,25 @@ describe('the public club answer names its columns', () => {
     expect(Object.keys(clubRowSchema.shape)).toEqual(COLUMNS)
   })
 
-  it('a column added to clubs never reaches the public answer', async () => {
+  it('a column added to clubs never reaches the public answer, with the email shown or hidden', async () => {
     const id = await seedExampleClub()
     await withThrowawayColumn(async () => {
       await env.DB.prepare(`UPDATE clubs SET ${THROWAWAY} = 'not for the public' WHERE id = ?`).bind(id).run()
+      // CLUB_EMAIL_HIDDEN unset: today's 13 keys.
       const result = await invoke(clubGet, { params: { id } })
       expect(result.status).toBe(200)
       const text = await result.response.text()
       expect(Object.keys((JSON.parse(text) as { club: object }).club)).toEqual(COLUMNS)
       expect(text).not.toContain(THROWAWAY)
       expect(text).not.toContain('not for the public')
+      // CLUB_EMAIL_HIDDEN set: the 12 keys, and the column and its value are still absent.
+      flags.clubEmailHidden = true
+      const hidden = await invoke(clubGet, { params: { id } })
+      expect(hidden.status).toBe(200)
+      const hiddenText = await hidden.response.text()
+      expect(Object.keys((JSON.parse(hiddenText) as { club: object }).club)).toEqual(WITHOUT_EMAIL)
+      expect(hiddenText).not.toContain(THROWAWAY)
+      expect(hiddenText).not.toContain('not for the public')
     })
   })
 
@@ -107,18 +136,23 @@ describe('the public club answer names its columns', () => {
     })
   })
 
-  it('gives signed out visitors, a member and an LCA admin the same 13 keys', async () => {
+  it('gives signed out visitors, a member and an LCA admin the same 13 keys, and the same 12 once the email is hidden', async () => {
     const id = await seedExampleClub()
     const member = await seedMember()
     const admin = await seedAdmin()
-    const bodies: string[] = []
-    for (const as of [undefined, member, admin]) {
-      const result = await invoke(clubGet, { params: { id }, as })
-      expect(result.status, as ?? 'signed out').toBe(200)
-      bodies.push(await result.response.text())
+    // Once with CLUB_EMAIL_HIDDEN unset, where the three get the 13 keys, and once set, where they get the 12.
+    for (const hidden of [false, true]) {
+      flags.clubEmailHidden = hidden
+      const state = hidden ? 'CLUB_EMAIL_HIDDEN set' : 'CLUB_EMAIL_HIDDEN unset'
+      const bodies: string[] = []
+      for (const as of [undefined, member, admin]) {
+        const result = await invoke(clubGet, { params: { id }, as })
+        expect(result.status, `${state}, ${as ?? 'signed out'}`).toBe(200)
+        bodies.push(await result.response.text())
+      }
+      expect(Object.keys((JSON.parse(bodies[0]) as { club: object }).club), state).toEqual(hidden ? WITHOUT_EMAIL : COLUMNS)
+      expect(new Set(bodies).size, state).toBe(1)
     }
-    expect(Object.keys((JSON.parse(bodies[0]) as { club: object }).club)).toEqual(COLUMNS)
-    expect(new Set(bodies).size).toBe(1)
   })
 })
 
@@ -129,14 +163,21 @@ describe('the public club answer names its columns: edges', () => {
     await env.DB.prepare('ALTER TABLE clubs ADD COLUMN region_code TEXT').run()
     try {
       await env.DB.prepare(`UPDATE clubs SET contact_email_backup = 'old@example.org', region_code = 'EX' WHERE id = ?`).bind(id).run()
-      const result = await invoke(clubGet, { params: { id } })
-      expect(result.status).toBe(200)
-      const text = await result.response.text()
-      const { club } = JSON.parse(text) as { club: Record<string, unknown> }
-      expect(Object.keys(club)).toEqual(COLUMNS)
-      expect(club).toMatchObject({ location: null, meeting_schedule: null, image_url: null, region: null, latitude: null, longitude: null })
-      expect(text).not.toContain('old@example.org')
-      expect(text).not.toContain('region_code')
+      // Once with CLUB_EMAIL_HIDDEN unset, where contact_email stays as a null key, and once set, where it is left out.
+      for (const hidden of [false, true]) {
+        flags.clubEmailHidden = hidden
+        const state = hidden ? 'CLUB_EMAIL_HIDDEN set' : 'CLUB_EMAIL_HIDDEN unset'
+        const result = await invoke(clubGet, { params: { id } })
+        expect(result.status, state).toBe(200)
+        const text = await result.response.text()
+        const { club } = JSON.parse(text) as { club: Record<string, unknown> }
+        expect(Object.keys(club), state).toEqual(hidden ? WITHOUT_EMAIL : COLUMNS)
+        expect(club, state).toMatchObject({ location: null, meeting_schedule: null, image_url: null, region: null, latitude: null, longitude: null })
+        if (!hidden) expect(club, state).toMatchObject({ contact_email: null })
+        expect(text, state).not.toContain('old@example.org')
+        expect(text, state).not.toContain('contact_email_backup')
+        expect(text, state).not.toContain('region_code')
+      }
     } finally {
       await env.DB.prepare('ALTER TABLE clubs DROP COLUMN contact_email_backup').run()
       await env.DB.prepare('ALTER TABLE clubs DROP COLUMN region_code').run()
@@ -168,21 +209,36 @@ describe('the public club answer names its columns: edges', () => {
 })
 
 describe('the public club answer is today\'s, byte for byte', () => {
-  it('the answer is today\'s, byte for byte', async () => {
+  it('the answer is today\'s, byte for byte, and with the email hidden the same without the one key', async () => {
     const id = await seedExampleClub()
+    // CLUB_EMAIL_HIDDEN unset: the stored text.
     const result = await invoke(clubGet, { params: { id } })
     expect(result.status).toBe(200)
     expect(await result.response.text()).toBe(STORED)
+    // CLUB_EMAIL_HIDDEN set: the same text with the one key cut out and nothing else changed.
+    const withoutEmailKey = STORED.replace('"contact_email":"club@example.org",', '')
+    expect(withoutEmailKey).not.toBe(STORED)
+    expect(withoutEmailKey.length).toBe(STORED.length - '"contact_email":"club@example.org",'.length)
+    flags.clubEmailHidden = true
+    const hidden = await invoke(clubGet, { params: { id } })
+    expect(hidden.status).toBe(200)
+    expect(await hidden.response.text()).toBe(withoutEmailKey)
   })
 
-  it('answers every club the migrations seed with its row exactly as its 13 columns read it', async () => {
+  it('answers every club the migrations seed with its row exactly as its 13 columns read it, and without contact_email once it is hidden', async () => {
     const { results } = await env.DB.prepare(`SELECT ${COLUMNS.join(', ')} FROM clubs ORDER BY id`).all<Record<string, unknown>>()
     expect(results.length).toBeGreaterThan(20)
-    for (const row of results) {
-      const result = await invoke(clubGet, { params: { id: String(row.id) } })
-      expect(result.status, String(row.id)).toBe(200)
-      const body = JSON.parse(await result.response.text()) as { club: unknown }
-      expect(JSON.stringify(body.club), String(row.id)).toBe(JSON.stringify(row))
+    // Once with CLUB_EMAIL_HIDDEN unset, where each answer is its row, and once set, where it is its row without contact_email, in the same order.
+    for (const hidden of [false, true]) {
+      flags.clubEmailHidden = hidden
+      const state = hidden ? 'CLUB_EMAIL_HIDDEN set' : 'CLUB_EMAIL_HIDDEN unset'
+      for (const row of results) {
+        const result = await invoke(clubGet, { params: { id: String(row.id) } })
+        expect(result.status, `${state}, ${String(row.id)}`).toBe(200)
+        const body = JSON.parse(await result.response.text()) as { club: unknown }
+        const expected = hidden ? Object.fromEntries(Object.entries(row).filter(([key]) => key !== 'contact_email')) : row
+        expect(JSON.stringify(body.club), `${state}, ${String(row.id)}`).toBe(JSON.stringify(expected))
+      }
     }
   })
 

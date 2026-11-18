@@ -12,9 +12,13 @@
 // - nothing here reads a slug: a club whose slug is NULL, as every club is
 //   until step 5 fills them, is answered, searched, renamed and listed as
 //   before.
+// The file sets CLUB_EMAIL_HIDDEN itself, through a getter on the mocked
+// module, and the case that reads a public club answer's keys checks both
+// states: unset, the answer carries today's 13 keys; set, the same 13
+// without contact_email, and still no new column.
 // Every club, person and address here is made up.
 import { env } from 'cloudflare:test'
-import { beforeEach, describe, expect, it } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { onRequestGet as clubListGet } from '../../functions/api/clubs'
 import { onRequestGet as clubGet } from '../../functions/api/clubs/[id]'
 import { onRequestPost as adminClubCreate } from '../../functions/api/admin/clubs'
@@ -24,12 +28,28 @@ import { answerSearch } from '../../functions/utils/search'
 import { seedAdmin, seedClub, seedMember } from './factories'
 import { invoke, resetHarness } from './harness'
 
+const flags = vi.hoisted(() => ({ clubEmailHidden: false }))
+vi.mock('../../functions/utils/clubs/publicAnswer', async (importOriginal) => {
+  const real = await importOriginal<typeof import('../../functions/utils/clubs/publicAnswer')>()
+  return {
+    ...real,
+    get CLUB_EMAIL_HIDDEN() {
+      return flags.clubEmailHidden
+    },
+  }
+})
+
 beforeEach(resetHarness)
+afterEach(() => {
+  flags.clubEmailHidden = false
+})
 
 const TODAYS_13 = [
   'id', 'name', 'city', 'location', 'description', 'meeting_schedule', 'contact_email',
   'created_at', 'color', 'image_url', 'region', 'latitude', 'longitude',
 ]
+/** Today's 13 keys without contact_email: what a public club answer carries once CLUB_EMAIL_HIDDEN is set. */
+const WITHOUT_EMAIL = TODAYS_13.filter((c) => c !== 'contact_email')
 const ADDED_15 = [
   'slug', 'about_text', 'how_we_meet_text', 'cost_text', 'welcome_text', 'weekend_play', 'scholastic_friendly', 'contact_name_public',
   'facebook_url', 'website_url', 'other_url', 'told_updated_at', 'told_by', 'last_confirmed_at', 'confirmed_by',
@@ -40,6 +60,18 @@ const SENTINELS = [
   'Sentinel Contact Name', 'https://facebook.example.org/sentinel', 'https://sentinel.example.org', 'https://other.example.org/sentinel',
   '2026-11-02 18:00:00', '2026-11-02 18:05:00',
 ]
+
+// "Every switch off" includes CLUB_KEEPERS_ON, which the file holds unset itself through a getter on the mocked module.
+const keepers = vi.hoisted(() => ({ keepersOn: false }))
+vi.mock('../../functions/utils/clubs/pages', async (importOriginal) => {
+  const real = await importOriginal<typeof import('../../functions/utils/clubs/pages')>()
+  return {
+    ...real,
+    get CLUB_KEEPERS_ON() {
+      return keepers.keepersOn
+    },
+  }
+})
 
 /** A made up club with every one of the 15 new columns filled, and the two members its told_by and confirmed_by name. */
 async function filledClub(id: string, name: string) {
@@ -63,18 +95,23 @@ function expectNoNewColumn(text: string, label: string) {
 }
 
 describe('the answers live with every switch off, with the 15 new columns filled', () => {
-  it('the public club list and a public club answer carry no new column, for a visitor and an admin', async () => {
+  it('the public club list and a public club answer carry no new column, for a visitor and an admin, with the email shown or hidden', async () => {
     const admin = await seedAdmin()
     await filledClub('example-filled-club', 'Example Filled Club')
-    for (const as of [undefined, admin]) {
-      const list = await invoke(clubListGet, { as })
-      expect(list.status).toBe(200)
-      expectNoNewColumn(await list.response.text(), 'GET /api/clubs')
-      const one = await invoke(clubGet, { as, params: { id: 'example-filled-club' } })
-      expect(one.status).toBe(200)
-      const text = await one.response.text()
-      expectNoNewColumn(text, 'GET /api/clubs/[id]')
-      expect(Object.keys((JSON.parse(text) as { club: object }).club)).toEqual(TODAYS_13)
+    // Once with CLUB_EMAIL_HIDDEN unset, where a public club answer carries today's 13 keys, and once set, where it carries them without contact_email.
+    for (const hidden of [false, true]) {
+      flags.clubEmailHidden = hidden
+      const state = hidden ? 'CLUB_EMAIL_HIDDEN set' : 'CLUB_EMAIL_HIDDEN unset'
+      for (const as of [undefined, admin]) {
+        const list = await invoke(clubListGet, { as })
+        expect(list.status, state).toBe(200)
+        expectNoNewColumn(await list.response.text(), `${state}: GET /api/clubs`)
+        const one = await invoke(clubGet, { as, params: { id: 'example-filled-club' } })
+        expect(one.status, state).toBe(200)
+        const text = await one.response.text()
+        expectNoNewColumn(text, `${state}: GET /api/clubs/[id]`)
+        expect(Object.keys((JSON.parse(text) as { club: object }).club), state).toEqual(hidden ? WITHOUT_EMAIL : TODAYS_13)
+      }
     }
   })
 
