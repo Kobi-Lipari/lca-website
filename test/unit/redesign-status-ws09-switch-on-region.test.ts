@@ -5,9 +5,9 @@
 // functions/utils/clubs/pages.ts, in the block "WS09 switch-on: regionEvents
 // and REGION_EVENTS_ON". Like the other record tests of WS09, this file
 // reads only the WS09 section, from its heading to the WS10 heading. Pinned
-// here: the block, right after the two wordings K chose and before the four
-// lists while it is the section's latest; its parts in order; the two lines
-// as they ship, on, and the order check empty, which this file alone holds
+// here: the block, right after the two wordings K chose and the block on
+// main's tree, and before the four lists while it is the section's latest;
+// its parts in order; the two lines as they ship, on, and the order check empty, which this file alone holds
 // beside the list of test/unit/features.test.ts; every reader of the two
 // lines; the claims against the files and the tests each line of What a
 // person meets names; what a representative may do and what mail it can
@@ -70,6 +70,7 @@ const part = (heading: string) => {
   return at < 0 ? '' : between(ws09.slice(at + 1), heading, '\n### ')
 }
 const WORDS = '### WS09 switch-on: the two wordings K chose'
+const MAIN = '### WS09 switch-on: on main\'s tree'
 const BLOCK = '### WS09 switch-on: regionEvents and REGION_EVENTS_ON'
 const LISTS = ['### WS09 decisions', '### WS09 deviations from the brief', '### WS09 verify items resolved', '### WS09 follow-ups']
 const block = part(BLOCK)
@@ -128,10 +129,12 @@ function filesUnder(dir: string): string[] {
 }
 
 describe('REDESIGN_STATUS.md, WS09 switch-on of regionEvents: the block', () => {
-  it('sits once, right after the two wordings K chose, and before the four lists while it is the latest', () => {
+  it('sits once, right after the two wordings K chose and the block on main\'s tree, and before the four lists while it is the latest', () => {
     expect(block).not.toBe('')
     expect(ws09.split(`\n${BLOCK}\n`)).toHaveLength(2)
-    expect(headings[headings.indexOf(WORDS) + 1]).toBe(BLOCK)
+    // On main's own tree the block "WS09 switch-on: on main's tree" stands between the two wordings and this one.
+    expect(headings.indexOf(WORDS)).toBeGreaterThan(-1)
+    expect(headings[headings.indexOf(MAIN) + 1]).toBe(BLOCK)
     if (latest) expect(headings[headings.indexOf(BLOCK) + 1]).toBe(LISTS[0])
     expect(read(recordTest('step1'))).toContain('|WS09 switch-on: \\S|')
   })
@@ -385,7 +388,8 @@ describe('REDESIGN_STATUS.md, WS09 switch-on of regionEvents: the pins', () => {
   })
 
   it('adds the one name to the browser builds\' list of switches that ship on', () => {
-    expect(read('test/a11y/builds.spec.ts')).toMatch(/^const SHIPPED_ON = \['clubEmailHidden', 'clubKeepers', 'regionEvents'\]$/m)
+    // On main's tree the list holds the base's names in the base's order; this case holds only that the one name is in it.
+    expect(read('test/a11y/builds.spec.ts')).toMatch(/^const SHIPPED_ON = \[[^\]]*'regionEvents'[^\]]*\]$/m)
     expect(bullet(block, '- **Pins moved.**')).toContain('the one name `regionEvents` added to `SHIPPED_ON`')
   })
 })
