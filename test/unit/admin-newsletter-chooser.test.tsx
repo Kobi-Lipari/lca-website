@@ -1107,7 +1107,8 @@ describe('the wiggle', () => {
     expect(isWiggle(wiggle)).toBe(true)
     expect(wiggle.on.getAttribute('data-slot')).toBe('pick-step')
     expect(wiggle.on.contains(pickWide())).toBe(true)
-    expect(wiggle.on.textContent).toBe('1Pick a template to start from')
+    // The mark's 1, then the step's own unseen number its name reads, then its words.
+    expect(wiggle.on.textContent).toBe('11 Pick a template to start from')
     expect(wiggle.options.duration).toBe(1000)
     expect(wiggle.frames.map((frame) => frame.transform)).toEqual(['rotate(0deg)', 'rotate(-2deg)', 'rotate(2deg)', 'rotate(-2deg)', 'rotate(1.5deg)', 'rotate(0deg)'])
     // Nothing is said to a screen reader for it, and nothing beside the step is asked to move. Since page step 6 the bar

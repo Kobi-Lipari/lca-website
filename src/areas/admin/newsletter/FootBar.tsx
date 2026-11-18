@@ -8,12 +8,17 @@
 // steps, 1 "Pick a template to start from", 2 "Send a test to me" and
 // 3 "Send to 155 people", the gold one, with its small arrow; the four spread
 // across the bar's width with even gaps, the bar held to the page's own
-// width. Where the bar is too narrow for the board's words on one line, the
-// steps' words run on to a second line; narrower still, as on a tablet held
-// upright, More options is the board's own small form, its mark over
-// "Options", and Send gives up its arrow, so the four still stand in one row
-// from 768 pixels up. Each form follows the bar's own width, so it is right
-// at every width and zoom.
+// width. Every word stands on one line. As the bar narrows, the first step
+// reads "Pick a template", then More options reads "Options", then the board's
+// narrow form: no marks, More options its small form, its mark over
+// "Options", and Send keeps its arrow; on the narrowest tablets its sides and
+// its first step are a little smaller, so the four still stand in one row
+// from 768 pixels up. Where even that does not fit, at a text size a person
+// has raised, the first two steps' words run on and Send's count stands
+// under "Send to", its arrow kept. Each form follows the bar's own width, in
+// rem, so it is right at every width and text size, and never chooses a wider
+// form than at 16 pixels of text (a pixel floor in each condition), since the
+// steps' words are in pixels and do not shrink with a smaller text size.
 //
 // Under 768 pixels, on a phone (board P20): "Pick a template" and "See the
 // email", which opens the email's sheet; More options sits at the page's end
@@ -176,27 +181,45 @@ function usePickCue(bar: RefObject<HTMLElement | null>, cue: boolean) {
  */
 const GOLD_NOT_YET = 'bg-lca-gold text-brand-navy grayscale-60'
 
-/** A step's number, 32 pixels round, as the board's revision 15 draws it. */
-function Mark({ id, children }: { id: string; children: ReactNode }) {
+/**
+ * A step's number, 32 pixels round, as the board's revision 15 draws it. Not drawn in the narrow form; the number its
+ * step's name reads is the button's own (StepNumber), hidden by the same condition, so the name says only what is drawn.
+ */
+function Mark({ children }: { children: ReactNode }) {
   return (
-    <span id={id} aria-hidden="true" className="flex size-8 flex-none items-center justify-center rounded-full bg-brand-navy text-[17px] font-bold leading-none text-white">
+    <span aria-hidden="true" className="flex size-8 flex-none items-center justify-center rounded-full bg-brand-navy text-[17px] font-bold leading-none text-white @max-[59.375rem]:hidden @max-[950px]:hidden">
       {children}
     </span>
   )
 }
 
-/** "Send to 155 people", or "Send" while the count is not known; the count's number and noun on a line of their own when the words run on. */
+/**
+ * The step's number in its name, unseen, hidden with the mark in the narrow form. The space after it stays outside it,
+ * as the name rule trims one inside; at the start of the drawn words a browser draws no space there.
+ */
+function StepNumber({ children }: { children: ReactNode }) {
+  return (
+    <>
+      <span className="sr-only @max-[59.375rem]:hidden @max-[950px]:hidden">{children}</span>{' '}
+    </>
+  )
+}
+
+/**
+ * "Send to 155 people", or "Send" while the count is not known. In the raised-text form the count stands on a line of
+ * its own under "Send to", the space between kept outside it so the name still reads the words whole.
+ */
 function SendWords({ count }: { count: number | null | 'failed' }) {
   if (typeof count !== 'number') return <>Send</>
   return (
     <>
-      Send to{' '}
-      <span className="@max-[1104px]:block">
-        {count.toLocaleString('en-US')} {count === 1 ? 'person' : 'people'}
-      </span>
+      Send to <span className="@max-[45.5rem]:block @max-[728px]:block">{count.toLocaleString('en-US')} {count === 1 ? 'person' : 'people'}</span>
     </>
   )
 }
+
+/** Step 2's words not drawn: unseen, and in the raised-text form (the condition Send's count goes under) no room. */
+const UNSEEN_WORDS = 'invisible @max-[45.5rem]:hidden @max-[728px]:hidden'
 
 /** The bar's own height at the site's usual spacing, which the room a control keeps below it is set by: 96 and 144 pixels. */
 const USUAL_HEIGHT = { phone: 71, wide: 76 }
@@ -335,11 +358,19 @@ function BarLine({ said }: { said?: BarSaid | null }) {
 
 /**
  * The bar from 768 pixels up. Its row is the container its four controls read their form from, each form taken where
- * the one before it would leave less than 20 pixels between two controls: the board's own from 1104 pixels of row up, a
- * window 1152 wide; the steps' words on two lines under it; More options' words on two lines under 886, a window of 934;
- * under 845, a window of 893, as on a tablet held upright, More options the board's small form, the first step's words
- * at the board's narrower size, and Send without its arrow. Where a person's own text spacing makes the words wider than
- * the forms allow for, the four narrow and run their words on to more lines, and the row stays one.
+ * the one before it would leave less than 20 pixels between two controls, measured in a browser at the usual text size:
+ * the board's own words from the top; "Pick a template" short under 68.625rem of row, a window of 1146; "Options" short
+ * under 61.875rem, a window of 1038; the board's narrow form, with no marks, under 59.375rem, a window of 998. On the
+ * narrowest tablets the row's sides are 16 pixels under a window of 50.625rem (810), and under 47.625rem of row, a window
+ * of 794, the first step's words are 16 pixels. Under 45.5rem of row, a width the usual text size never gives from 768
+ * pixels up but a raised one does, the raised-text form: the narrow form with Send's count under "Send to", its arrow
+ * kept, so the bar grows taller and never past the window's edge. Where the window is under 30rem, as text near double
+ * the usual size makes a tablet (the row cannot read its own width, so the window's is used), the row wraps, so Send
+ * takes a line of its own where the four do not fit on one. The first two steps' words are never held to one line:
+ * each form leaves room for them on one, and they run on only where the row is too short for them, as a person's own
+ * text spacing can make it at any width. Each width has a floor of its own pixels at the usual text size, the class
+ * given under both (as @max-[59.375rem]:hidden @max-[950px]:hidden, never a math function inside the condition, which
+ * a browser that cannot read it would drop whole), so a text size set under 16 pixels takes each form where 16 would.
  */
 function WideBar({
   count, moreOptions, onPick, chooserOpen, carry, onTest, testing, onSendNotYet,
@@ -348,64 +379,69 @@ function WideBar({
 }) {
   const id = useId()
   return (
-    <div className="@container mx-auto flex min-h-[75px] max-w-[1198px] items-center justify-between gap-x-3 px-6 py-2">
+    <div className="@container mx-auto flex min-h-[75px] max-w-[1198px] items-center justify-between gap-x-3 px-6 py-2 max-[50.625rem]:px-4 max-[810px]:px-4 max-[30rem]:flex-wrap max-[480px]:flex-wrap max-[30rem]:gap-y-2 max-[480px]:gap-y-2">
       {moreOptions}
       {/* The first step, its mark with it, as the board's figure of the wiggle draws the two turning together. */}
       <div data-slot="pick-step" className="flex flex-initial items-center gap-2.5">
-        <Mark id={`${id}-1`}>1</Mark>
+        <Mark>1</Mark>
         <button
           ref={carry.hold('pick')}
           type="button"
           aria-haspopup="dialog"
           aria-expanded={chooserOpen}
-          aria-labelledby={`${id}-1 ${id}-1-words`}
+          aria-labelledby={`${id}-1-words`}
           onClick={onPick}
           className={cn(
             PICK_READY,
             'group inline-flex min-h-[52px] items-center gap-2.5 rounded-lg border-[1.5px] pl-[9px] pr-2.5 text-[17.5px] font-semibold leading-tight',
-            '@max-[845px]:min-h-[50px] @max-[845px]:gap-2 @max-[845px]:px-3 @max-[845px]:text-base',
+            '@max-[47.625rem]:min-h-[50px] @max-[762px]:min-h-[50px] @max-[47.625rem]:gap-2 @max-[762px]:gap-2 @max-[47.625rem]:px-3 @max-[762px]:px-3 @max-[47.625rem]:text-base @max-[762px]:text-base',
           )}
         >
-          <Bookmark className="size-[21px] flex-none @max-[845px]:size-[19px]" aria-hidden="true" />
+          <Bookmark className="size-[21px] flex-none @max-[47.625rem]:size-[19px] @max-[762px]:size-[19px]" aria-hidden="true" />
           <span id={`${id}-1-words`} className="text-left">
-            Pick a template <span className="@max-[1104px]:block">to start from</span>
+            <StepNumber>1</StepNumber>Pick a template <span className="@max-[68.625rem]:hidden @max-[1098px]:hidden">to start from</span>
           </span>
-          <ChevronUp className={cn('size-[18px] flex-none @max-[845px]:size-4', chooserOpen && 'rotate-180')} aria-hidden="true" />
+          <ChevronUp className={cn('size-[18px] flex-none @max-[47.625rem]:size-4 @max-[762px]:size-4', chooserOpen && 'rotate-180')} aria-hidden="true" />
           <span data-slot="pick-ring" aria-hidden="true" className={PICK_RING} />
         </button>
       </div>
       <div className="flex flex-initial items-center gap-2.5">
-        <Mark id={`${id}-2`}>2</Mark>
+        <Mark>2</Mark>
         {/* While a test is on its way the step says so and is not available, keeping the focus where it is. */}
         <button
           type="button"
           aria-disabled={testing || undefined}
-          aria-labelledby={`${id}-2 ${id}-2-words`}
+          aria-labelledby={`${id}-2-words`}
           onClick={() => {
             if (!testing) onTest()
           }}
           className={cn(TEST_READY, 'inline-flex min-h-[46px] items-center gap-2 rounded-lg border px-[15px] text-[15px] font-semibold leading-tight', testing && 'cursor-default')}
         >
           <Mail className="size-[15px] flex-none" aria-hidden="true" />
+          {/*
+            Both words in one cell, the ones not drawn unseen and unread, so the step keeps its width as they change. In
+            the raised-text form, where the words run on, the ones not drawn take no room, or their longest word would
+            hold the step wide and push Send past the window.
+          */}
           <span id={`${id}-2-words`} className="text-left">
-            {testing ? (
-              <>
-                Sending <span className="@max-[1104px]:block">a test</span>
-              </>
-            ) : (
-              <>
-                Send a test <span className="@max-[1104px]:block">to me</span>
-              </>
-            )}
+            <StepNumber>2</StepNumber>
+            <span className="inline-grid">
+              <span data-slot="test-words" className={cn('col-start-1 row-start-1', testing && UNSEEN_WORDS)} aria-hidden={testing || undefined}>
+                Send a test to me
+              </span>
+              <span data-slot="test-words" className={cn('col-start-1 row-start-1', !testing && UNSEEN_WORDS)} aria-hidden={!testing || undefined}>
+                Sending a test
+              </span>
+            </span>
           </span>
         </button>
       </div>
       <div className="flex flex-initial items-center gap-2.5">
-        <Mark id={`${id}-3`}>3</Mark>
+        <Mark>3</Mark>
         <button
           type="button"
           aria-disabled="true"
-          aria-labelledby={`${id}-3 ${id}-3-words`}
+          aria-labelledby={`${id}-3-words`}
           onClick={onSendNotYet}
           className={cn(NOT_YET, 'inline-flex rounded-lg')}
         >
@@ -418,12 +454,13 @@ function WideBar({
           >
             <span className="flex items-center gap-2 px-3.5">
               <Send className="size-[18px] flex-none" aria-hidden="true" />
-              <span id={`${id}-3-words`} className="text-left">
+              <span id={`${id}-3-words`} className="whitespace-nowrap text-left">
+                <StepNumber>3</StepNumber>
                 <SendWords count={count} />
               </span>
             </span>
             {/* The board's small arrow, for the other ways to send, which come with sending later: drawn, part of Send. */}
-            <span className="flex w-[42px] flex-none items-center justify-center border-l border-brand-navy/30 forced-colors:border-[GrayText] @max-[845px]:hidden" aria-hidden="true">
+            <span className="flex w-[42px] flex-none items-center justify-center border-l border-brand-navy/30 forced-colors:border-[GrayText]" aria-hidden="true">
               <ChevronDown className="size-[15px]" />
             </span>
           </span>
@@ -436,7 +473,10 @@ function WideBar({
 /**
  * The phone's bar (board P20): "Pick a template", which opens the chooser, at its own width, with no chevron, as the
  * board draws it, and "See the email" in the rest of the row. Each keeps the board's 50 pixels of height, and on the
- * narrowest windows the words of "See the email" run on to a second line rather than past the bar. The board's soft
+ * narrowest windows the words of "See the email" run on to a second line rather than past the bar; where the row is
+ * under 18rem, as a raised text size makes it on a phone, each button takes a row of its own, the row's width: wide enough
+ * that with the text spacing raised too, "Pick a template" at its own width never squeezes "See the email" to a word a
+ * line past its edge (a 384 pixel phone at 20 pixels of text), and narrower than a 320 pixel phone's row at 16. The board's soft
  * white edge above the bar is not drawn: it would fade the words, and the edge of a control with the focus, just above
  * the bar. "See the email" has a border of no colour, as the site's own buttons have, so in forced colours it is framed
  * as its neighbour is, with a pixel less room at each side, so its words stand where they did. A press on either moves
@@ -448,7 +488,7 @@ function WideBar({
  */
 function PhoneBar({ onSeeEmail, sheetOpen, onPick, chooserOpen, carry }: { onSeeEmail: (opener: HTMLButtonElement) => void; sheetOpen: boolean; onPick: () => void; chooserOpen: boolean; carry: FocusCarry }) {
   return (
-    <div className="flex gap-2 px-3.5 py-2.5">
+    <div className="@container flex flex-wrap gap-2 px-3.5 py-2.5">
       <button
         ref={carry.hold('pick')}
         type="button"
@@ -459,7 +499,7 @@ function PhoneBar({ onSeeEmail, sheetOpen, onPick, chooserOpen, carry }: { onSee
           if (isTextField(document.activeElement)) event.preventDefault()
         }}
         onClick={onPick}
-        className={cn(PICK_READY, 'group inline-flex min-h-[50px] flex-none items-center justify-center gap-[7px] rounded-lg border-[1.5px] px-3 text-base font-semibold leading-tight')}
+        className={cn(PICK_READY, 'group inline-flex min-h-[50px] flex-none items-center justify-center gap-[7px] rounded-lg border-[1.5px] px-3 text-base font-semibold leading-tight @max-[18rem]:basis-full')}
       >
         <Bookmark className="size-[19px] flex-none" aria-hidden="true" />
         <span className="text-left">Pick a template</span>
@@ -474,7 +514,7 @@ function PhoneBar({ onSeeEmail, sheetOpen, onPick, chooserOpen, carry }: { onSee
           if (isTextField(document.activeElement)) event.preventDefault()
         }}
         onClick={(event) => onSeeEmail(event.currentTarget)}
-        className="inline-flex min-h-[50px] min-w-0 flex-1 items-center justify-center gap-2 rounded-lg border border-transparent bg-brand-navy px-[11px] text-base font-semibold leading-tight text-white outline-none focus-visible:ring-3 focus-visible:ring-focus focus-visible:ring-offset-2"
+        className="inline-flex min-h-[50px] min-w-0 flex-1 items-center @max-[18rem]:basis-full justify-center gap-2 rounded-lg border border-transparent bg-brand-navy px-[11px] text-base font-semibold leading-tight text-white outline-none focus-visible:ring-3 focus-visible:ring-focus focus-visible:ring-offset-2"
       >
         <Eye className="size-[18px] flex-none" aria-hidden="true" />
         <span className="text-balance text-left">See the email</span>
