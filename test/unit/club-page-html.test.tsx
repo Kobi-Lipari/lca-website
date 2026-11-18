@@ -26,6 +26,8 @@ const ROOT = resolve(__dirname, '../..')
 const read = (path: string) => readFileSync(join(ROOT, path), 'utf8')
 /** A file's code with its comments taken out. */
 const codeOf = (file: string) => read(file).replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '')
+/** The written body with its wrapper's mark and its style element taken out: its words, their order and their tags. */
+const plainOf = (body: string) => body.replace(/^<main data-club-written-page><style>[^<]*<\/style>/, '<main>')
 
 afterEach(() => cleanup())
 
@@ -34,9 +36,8 @@ function bare(): ClubPageResponse {
   return {
     club: { id: 'example-chess-club', slug: 'example-chess-club', name: 'Example Chess Club', city: 'Example City', region: null, color: '#1a2744', logo: null },
     sections: ['about', 'when_and_where', 'contact'],
-    author: 'Kept by the club\'s rep, Player O.',
     about: { text: 'A made up club.', cost: null, welcome: null, facebook: null, website: null, other: null, weekend_play: false, scholastic_friendly: false },
-    statement: { text: 'Tuesdays at 7:00 PM', told: 'As told by the club, updated November 2026' },
+    statement: { text: 'Tuesdays at 7:00 PM', told: 'Last checked November 2026' },
     places: [{ name: 'Example Library', street: null, note: null, latitude: null, longitude: null }],
     contact: { name: 'Player One' },
     events: [],
@@ -82,7 +83,7 @@ describe('the words the server\'s page shares with the app\'s', () => {
 
 describe('the server\'s page in strings', () => {
   it('writes the bare club\'s own sections and nothing else: no News, no Contact, no told line', () => {
-    const body = clubPageBody(bare())
+    const body = plainOf(clubPageBody(bare()))
     expect(body).toBe('<main><h1>Example Chess Club</h1><p>Chess club in Example City, Louisiana</p><p>Tuesdays at 7:00 PM</p>'
       + '<section><h2>About Example Chess Club</h2><p>A made up club.</p></section>'
       + '<section><h2>When and where Example Chess Club meets</h2><ul><li><p>Example Library</p></li></ul></section></main>')
@@ -90,7 +91,7 @@ describe('the server\'s page in strings', () => {
 
   it('writes no heading with nothing under it: a link the page would not draw writes no About', () => {
     const answer = { ...bare(), about: { ...bare().about, text: null, other: 'https://user@example.org' }, places: [] }
-    expect(clubPageBody(answer)).toBe('<main><h1>Example Chess Club</h1><p>Chess club in Example City, Louisiana</p><p>Tuesdays at 7:00 PM</p></main>')
+    expect(plainOf(clubPageBody(answer))).toBe('<main><h1>Example Chess Club</h1><p>Chess club in Example City, Louisiana</p><p>Tuesdays at 7:00 PM</p></main>')
   })
 
   it('escapes a club\'s words for HTML text and attributes', () => {

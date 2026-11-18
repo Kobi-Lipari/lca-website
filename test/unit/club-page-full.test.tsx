@@ -153,7 +153,7 @@ describe('When and where', () => {
     expect(within(where).getByRole('heading', { level: 2 }).textContent).toBe('When and where Example Chess Club meets')
     expect(where.querySelector('figure blockquote')?.textContent).toBe(STATEMENT_LONG)
     expect(where.querySelector('figcaption')?.textContent).toBe('How the club meets')
-    expect(within(where).getByText('As told by the club, updated October 2026')).toBeTruthy()
+    expect(within(where).getByText('Last checked October 2026')).toBeTruthy()
     const rows = within(within(where).getByRole('list', { name: 'The club\'s places' })).getAllByRole('listitem')
     expect(rows.map((row) => [...row.querySelectorAll('p')].map((p) => p.textContent))).toEqual([
       ['Example Library', '1 Example Street, Example City', 'Meeting room past the front desk.'],

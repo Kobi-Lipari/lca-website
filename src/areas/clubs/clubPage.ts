@@ -7,7 +7,7 @@
 // address the page goes by and the one it gives to Share and Copy link, and
 // whether the person reading is one of the club's keepers. The page draws
 // what GET /api/clubs/:address/page answers and builds none of the server's
-// words: the author line and the told line are drawn as given. A component
+// words: the told line is drawn as given. A component
 // file exports only components, so these live here.
 import type { ClubPageResponse } from '@domain/contracts'
 

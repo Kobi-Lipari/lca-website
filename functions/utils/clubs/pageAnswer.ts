@@ -21,12 +21,13 @@
 //
 // The answer is built from named columns, never a spread of a row, and
 // carries no email address, officer, roster, member's id, count of members,
-// keeper's id, told_by, confirmed_by, month of the last check or column of
-// the approval wait. The author line and the told line come as words
+// keeper's id or name, told_by, confirmed_by, stored stamp or column of the
+// approval wait. Who keeps the club is not in it at all (K's decision 12).
+// The told line comes as words, "Last checked" and a month
 // (functions/utils/clubs/authorLine.ts). The events are the club's listed
 // events, through listedWhere, with the keys a visitor's event answers
 // already carry; the news rows are today's club answer's, by its rule.
-import { clubAuthorLine, clubToldLine } from './authorLine'
+import { clubToldLine } from './authorLine'
 import { nearestClubs } from './nearest'
 import { listedWhere } from '../events/listing'
 import { clubPageSections, filled } from '../../../domain/clubs/sections'
@@ -41,9 +42,9 @@ const DEFAULT_GOLD = '#c8a94a'
 /** The longest address part looked up; anything longer names no club. */
 export const ADDRESS_MAX = 200
 
-/** The club's columns this answer reads, by name. told_by is read for the told line and never answered. */
+/** The club's columns this answer reads, by name. The two stamps and told_by are read for the told line's month and never answered. */
 const PAGE_COLUMNS = `id, name, city, region, color, image_url, slug, about_text, how_we_meet_text, cost_text, welcome_text,
-  weekend_play, scholastic_friendly, contact_name_public, facebook_url, website_url, other_url, told_updated_at, told_by`
+  weekend_play, scholastic_friendly, contact_name_public, facebook_url, website_url, other_url, told_updated_at, told_by, last_confirmed_at`
 
 /** A club as the page's answer reads it. */
 export interface PageClub {
@@ -66,6 +67,7 @@ export interface PageClub {
   other_url: string | null
   told_updated_at: string | null
   told_by: string | null
+  last_confirmed_at: string | null
 }
 
 /** The address part as the slug rule writes a slug: trimmed and in lower case. */
@@ -164,8 +166,7 @@ export async function clubPageAnswer(db: D1Database, club: PageClub): Promise<Cl
     .bind(club.id)
     .all<{ id: string; title: string; excerpt: string; news_date: string }>()
 
-  const author = await clubAuthorLine(db, club)
-  const told = await clubToldLine(db, club)
+  const told = clubToldLine(club)
   const nearest = await nearestClubs(db, club.id)
 
   const about = {
@@ -215,7 +216,6 @@ export async function clubPageAnswer(db: D1Database, club: PageClub): Promise<Cl
       news: newsRows.length,
       photos: 0,
     }),
-    author,
     about,
     statement: { text: statement, told },
     places: placeRows,

@@ -68,7 +68,9 @@ describe('GET /api/clubs/[id]/page keeps its contract', () => {
     expect(body.sections).toEqual(['about', 'when_and_where', 'events', 'news', 'contact'])
     expect(body.places).toHaveLength(2)
     expect(body.events).toHaveLength(1)
-    expect(body.author).toBe('Kept by the club\'s rep, Rita S.')
+    // Who keeps the club is not in the answer (K's decision 12): the contract has no such key and the body names no keeper.
+    expect(Object.keys(body)).not.toContain('author')
+    expect(JSON.stringify(body)).not.toMatch(/Kept by|Rita/)
   })
 
   it('answers a bare club and a seeded one', async () => {

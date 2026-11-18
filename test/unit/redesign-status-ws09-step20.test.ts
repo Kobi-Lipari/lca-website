@@ -219,10 +219,11 @@ describe('REDESIGN_STATUS.md, WS09 step 20: the parts against the files', () => 
       '"Kept by the club\'s rep, {first name and last initial}"', '"This club hasn\'t named a rep yet · Kept by {name}, the {region} representative"',
       '"Kept by LCA admins until the {region} seat is filled"', 'line 2095', '`firstNameLastInitial`', '`guardian_id`', '`registrations.grade`', 'is never named', '"Kept by the club\'s rep"',
     ]) expect(author, piece).toContain(piece)
+    // Checkpoint W (K's decision 12) took the author line off the page and out of the answer: the file builds none of it now.
     const words = read(AUTHOR)
-    expect(codeOf(AUTHOR)).toContain('m.guardian_id IS NOT NULL\n               OR EXISTS (SELECT 1 FROM registrations r WHERE r.member_id = m.id AND r.grade IS NOT NULL)')
+    expect(codeOf(AUTHOR)).not.toContain('m.guardian_id IS NOT NULL')
     for (const piece of ['`Kept by the club\'s rep, ${name}`', '`This club hasn\'t named a rep yet · Kept by ${keeper}`', '`Kept by LCA admins until the ${place} seat is filled`']) {
-      expect(words, piece).toContain(piece)
+      expect(words, piece).not.toContain(piece)
     }
   })
 
@@ -231,7 +232,8 @@ describe('REDESIGN_STATUS.md, WS09 step 20: the parts against the files', () => 
     for (const piece of ['"As told by the club, updated {month}"', '"As told to LCA, {month}"', '`monthInWords`', 'A representative\'s save reads "As told to LCA"', 'line 2098']) {
       expect(told, piece).toContain(piece)
     }
-    expect(read(AUTHOR)).toContain('`As told by the club, updated ${month}`')
+    // Checkpoint W (K's decision 12) worded the told line "Last checked" and its month.
+    expect(read(AUTHOR)).toContain('`Last checked ${month}`')
     expect(bullet(block, '- **Places.**')).toContain('`name`, `street`, `note`, `latitude` and `longitude`')
     expect(codeOf('functions/utils/clubs/pageAnswer.ts')).toContain('SELECT name, street, note, latitude, longitude FROM club_places WHERE club_id = ? ORDER BY sort, id LIMIT 2')
     const events = bullet(block, '- **Events.**')
@@ -279,7 +281,8 @@ describe('REDESIGN_STATUS.md, WS09 step 20: the parts against the files', () => 
     expect(pins).toContain('105 handler files, 145 methods under `functions/api`, 41 contracted and `PENDING_COUNT` 104')
     expect(read('test/unit/routes.test.ts')).toContain('expect(real.filter((r) => r.startsWith(\'api/\')).length).toBe(105)')
     expect(read('test/unit/api-split-modules.test.ts')).toContain('\'/api/admin/tournaments/*/approval\', \'/api/clubs/*/page\', \'/api/clubs/confirm/*\',')
-    expect(read('test/unit/club-routing-server-only.test.ts')).toContain('expect(all).toContain(\'functions/utils/clubs/authorLine.ts\')')
+    // Checkpoint W (K's decision 12) took the author line off the page, so routing.ts's readers no longer hold authorLine.ts.
+    expect(read('test/unit/club-routing-server-only.test.ts')).toContain('expect(all).not.toContain(\'functions/utils/clubs/authorLine.ts\')')
     expect(read('test/unit/contracts-pending.ts')).toContain('export const PENDING_COUNT = 104')
     if (!latest) return
     expect(Object.values(contracts).reduce((n, route) => n + Object.keys(route).length, 0)).toBe(41)

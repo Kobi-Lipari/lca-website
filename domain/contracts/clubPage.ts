@@ -7,9 +7,9 @@
 //
 // The answer is built from named columns alone and carries no email address
 // of any kind, no officer, no roster, no member's id, no count of members,
-// no keeper's id, no told_by or confirmed_by, no month of the last check and
-// none of the approval wait's columns. The two lines about who keeps the
-// page and whose words it shows come as words built on the server.
+// no keeper's id or name, no told_by or confirmed_by, no stored stamp and
+// none of the approval wait's columns. Who keeps the club is not answered at
+// all (K's decision 12); the told line comes as words built on the server.
 import { z } from 'zod'
 import { idSchema, isoDateSchema } from './common'
 import { registrationStatusSchema, tournamentStatusSchema } from './events'
@@ -48,8 +48,6 @@ export const clubPageResponseSchema = z.strictObject({
     logo: z.string().nullable(),
   }),
   sections: z.array(clubPageSectionSchema),
-  /** "Kept by the club's rep, Player O." and the like, as words alone. */
-  author: z.string(),
   about: z.strictObject({
     text: z.string().nullable(),
     cost: z.string().nullable(),
@@ -62,7 +60,7 @@ export const clubPageResponseSchema = z.strictObject({
   }),
   statement: z.strictObject({
     text: z.string().nullable(),
-    /** "As told by the club, updated November 2026" or "As told to LCA, November 2026". */
+    /** "Last checked November 2026", the month of the later of the last save and the last Still accurate; empty for no line. */
     told: z.string(),
   }),
   places: z.array(z.strictObject({

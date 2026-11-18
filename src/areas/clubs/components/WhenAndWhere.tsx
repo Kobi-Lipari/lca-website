@@ -2,13 +2,13 @@
 //
 // The new club page's When and where (WS09 step 21): how the club meets,
 // quoted in the club's own words, with the told line under it as the server
-// words it ("As told by the club, updated November 2026", or "As told to
-// LCA, November 2026" while it is what an LCA admin entered); then a map of
-// the club's places, up to two, and a row for each place with the club's
-// note for first-timers and Directions, which opens the place's point in the
-// visitor's own maps app. The page works out no meeting date and draws no
-// Tonight and no month of a check: the statement is the club's words and
-// the told line is the server's, each drawn as given, and a time the club
+// words it (the month the listing was last checked, by K's decision 12), and
+// none when the server gives none; then a map of the club's places, up to
+// two, and a row for each place with the club's note for first-timers and
+// Directions, which opens the place's point in the visitor's own maps app.
+// The page works out no meeting date and draws no Tonight: the statement is
+// the club's words and the told line is the server's month, each drawn as
+// given, never worked out here, and a time the club
 // wrote stays as the club wrote it. A place with no point has its row and no
 // Directions. The map is the page's to pass (ClubPage.tsx), so the editor's
 // preview column, which draws this section from the form (compact), draws
