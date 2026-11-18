@@ -2,7 +2,7 @@
 
 Written on Saturday, November 14, 2026, for whoever takes this stream over. The whole project's handoff is `HANDOFF.md`; the rules where the two streams meet are `STREAMS.md`. This file holds only what is the clubs stream's own.
 
-## Where it stands (Wednesday, November 18, 2026, about 3:20 PM UTC)
+## Where it stands (Wednesday, November 18, 2026, about 3:15 PM UTC)
 
 - **Pull request 135 is merged:** main is `c84ec68` (3:10 PM UTC by the commit's own time), the same tree as `a45c951`, so the clubs switch-on's gate stands.
 - **The clubs switch-on is draft pull request 139** (`redesign/ws09-keepers-on` at `01d05ed`). K's word for it is decision 13 in `ws09-k-decisions.md` ("continue as you say"): it merges not before 5:10 PM UTC, once its two checks are green, with K told the time beforehand so that K can say stop. After it: the signed-out live check, K's five signed-in steps, the mail stream's lead told.
