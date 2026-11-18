@@ -2,7 +2,16 @@
 
 Written on Saturday, November 14, 2026, for whoever takes this stream over. The whole project's handoff is `HANDOFF.md`; the rules where the two streams meet are `STREAMS.md`. This file holds only what is the clubs stream's own.
 
-## Where it stands (Wednesday, November 18, 2026, about 5:30 AM UTC)
+## Where it stands (Wednesday, November 18, 2026, about 9:50 AM UTC)
+
+- **Both switch-on branches stay ready on the real tree, gated green and pushed, with no pull request yet:** `redesign/ws09-keepers-on` at `01d05ed` (opens when pull request 135 is merged and live; merges on K's word, two hours after 135 at the earliest) and `redesign/ws09-region-on` at `bcd2265` (opens only after the clubs switch-on merged and went cleanly; K's word Thursday morning). Their pull request texts are written. Main is still `498ec7f`, and 135's head `a45c951`.
+- **Checkpoint W's branch** (`redesign/ws09-clubs-w`) is at `216e7ae`: steps 20 to 24's sitemap; what K's look at the test site asked; `robots.txt` naming the sitemap, behind `CLUB_PAGES_ON` (K's decision 11, choice 3 a); and the written page reading as a page before the app draws or with scripts off (one constant style element of 780 bytes inside the written wrapper, no colour and no font of its own, gone when the app draws). Each gated green. Still to come on W once main holds 135 and the clubs switch-on: main merged in, the browser half as a third build, W's section, its review and its pull request.
+- **The test site** (`https://preview-clubs.lca-website.pages.dev`, signed out only, the preview database) runs W's head: branch `preview-clubs` at `f926955`, never merged.
+- **Checkpoint X's branch** (`redesign/ws09-clubs-x`) is at `01fb87d`: step 25, the merge of W's newer commits (one file conflicted, the record; the merged tree asked for one test constant), gated green. **Running there:** step 26, the contact relay, with K's decision 12 in it: the form says where a message goes without naming a volunteer.
+- **The gate runs in parts** and was taken up twice after restarts of the machine; three restarts in the night, none since about 3:53 AM UTC.
+- **Waiting on K:** the word on pull request 135 in the mail stream's chat; then the word on the clubs switch-on, with the guest's plain rows (they ship with every switch off); a choice on the live public event page's sideways scroll at 390 pixels; the rule for "Last checked" on a club nobody has checked; `SIGNING_SECRET` in the site's settings; the region of the Baton Rouge and East Central seat; member accounts for the board.
+
+## Where it stood at about 5:30 AM UTC on Wednesday, November 18, 2026
 
 - **Both switch-on branches are ready on the real tree, gated green and pushed; neither has a pull request yet.**
   - `redesign/ws09-keepers-on` at `01d05ed`: the clubs switch-on, on `a45c951` (pull request 135's head, which holds main). Its pull request opens when 135 is merged and live; it merges on K's word, two hours after 135 at the earliest. Title and text are written.
