@@ -2,7 +2,16 @@
 
 Written on Saturday, November 14, 2026, for whoever takes this stream over. The whole project's handoff is `HANDOFF.md`; the rules where the two streams meet are `STREAMS.md`. This file holds only what is the clubs stream's own.
 
-## Where it stands (Wednesday, November 18, 2026, about 3:15 PM UTC)
+## Where it stands (Wednesday, November 18, 2026, about 5:20 PM UTC)
+
+- **The clubs switch-on is live.** Pull request 139 merged at 5:10 PM UTC on K's decision 13: main is `35ef23f`, whose tree is `01d05ed`'s. The new build was served by 5:17 PM UTC, and the signed-out live check passed (My region, Still accurate and the monthly check ask for a sign-in; the public list is unchanged). The live site shows `SIGNING_SECRET` is not set yet. K has the five signed-in steps.
+- **The club events switch-on is draft pull request 140** (`redesign/ws09-region-on` at `bcd2265`). The mail stream's pull requests 137 and 138 merge first; this branch then takes main in, the list of switches that ship on is joined by hand, and the full check is made again. It merges Thursday morning, November 19, 2026 at the earliest, two hours clear of the mail stream's last merge, K told the time and the three things to know beforehand.
+- **Checkpoint X's branch** (`redesign/ws09-clubs-x`) is at `1747c58`: step 27, Reply through LCA, gated green (unit 11,467 in 507 files; integration 3,095 passing and 1 todo in 183 files). An LCA admin with no seat over the club's region is asked a second factor to answer as LCA. Step 28's launch note is written (`ws09-28/extra.txt` in the lead's scratch folder).
+- **Being built:** the public event page's small mend (K's decision 13, choice 2 a) on `redesign/event-page-phone`, cut from `01d05ed`: the sideways scroll on a phone, and the page's six places that print the old initials (K was told of two; the pull request says so).
+- **No guest step is built:** a guest in the code is only a walk-in entered at the door of an event, a record nobody can sign in to. The lead's correction is written under decision 13.
+- **Still owed by K:** `SIGNING_SECRET` in the site's settings; the region of the Baton Rouge and East Central seat; each board member signed in to the site once.
+
+## Where it stood at about 3:15 PM UTC on Wednesday, November 18, 2026
 
 - **Pull request 135 is merged:** main is `c84ec68` (3:10 PM UTC by the commit's own time), the same tree as `a45c951`, so the clubs switch-on's gate stands.
 - **The clubs switch-on is draft pull request 139** (`redesign/ws09-keepers-on` at `01d05ed`). K's word for it is decision 13 in `ws09-k-decisions.md` ("continue as you say"): it merges not before 5:10 PM UTC, once its two checks are green, with K told the time beforehand so that K can say stop. After it: the signed-out live check, K's five signed-in steps, the mail stream's lead told.
