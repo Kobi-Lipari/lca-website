@@ -344,7 +344,8 @@ describe('the media manager, with mailLists on', () => {
     await site('/admin/email', person({ seats: [MEDIA_MANAGER] }))
     await groupEmail()
     const links = accountMenu()
-    expect(links.slice(links.indexOf('Board inbox'))).toEqual(['Board inbox', 'Group email'])
+    // mailPage ships on since the page's own switch-on change, so the newsletter's own page follows Group email.
+    expect(links.slice(links.indexOf('Board inbox'))).toEqual(['Board inbox', 'Group email', 'Newsletter'])
     expect(screen.getByRole('menuitem', { name: 'Group email' }).getAttribute('href')).toBe('/admin/email')
     expect(asks()).toHaveLength(1)
   }, 30_000)

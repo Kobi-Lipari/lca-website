@@ -403,7 +403,12 @@ describe('where the tree draws the rook and the official logo', () => {
     // WS02 step 5's new header leads with it too (SiteHeader.tsx, D1's place in the record), and WS02 step 6's
     // phone app bar (MobileAppBar.tsx, D1's place in the record as well); the tablet header is SiteHeader.tsx's narrower form.
     // WS02 step 8's new footer draws the official logo in the footer's brand block (SiteFooter.tsx), D1's place for it.
+    // WS16 part two's page step 4 draws the rook where the newsletter email draws it, on the letter's navy band
+    // (LetterEditor.tsx), and as the sender's mark above the preview of that email (SidePreview.tsx), as K's approved
+    // board Newsletter-Page-4 draws both; the record's page step 4 block names the two places.
     expect(importers('@/components/LcaMark')).toEqual([
+      'src/areas/admin/newsletter/LetterEditor.tsx',
+      'src/areas/admin/newsletter/SidePreview.tsx',
       'src/components/Seal.tsx',
       'src/components/StatusBadge.tsx',
       'src/components/layout/MobileAppBar.tsx',

@@ -34,7 +34,9 @@ import type { MemberRole } from '@/areas/admin/roles'
 import { AuthContext } from '@/contexts/auth-context'
 import type { AuthContextValue } from '@/contexts/AuthContext'
 
-const flags = vi.hoisted(() => ({ newLook: false, newNav: false }))
+// mailPage ships on since the page's own switch-on change; it is held off
+// here, since this file holds the header with every switch off.
+const flags = vi.hoisted(() => ({ newLook: false, newNav: false, mailPage: false }))
 vi.mock('@/lib/features', async (importOriginal) => {
   const real = await importOriginal<typeof import('@/lib/features')>()
   return {
@@ -46,6 +48,9 @@ vi.mock('@/lib/features', async (importOriginal) => {
       },
       get newNav() {
         return flags.newNav
+      },
+      get mailPage() {
+        return flags.mailPage
       },
     },
   }

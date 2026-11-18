@@ -441,7 +441,8 @@ describe('REDESIGN_STATUS.md, WS09 checkpoint V: the review of the whole and its
     expect(read('test/unit/redesign-status-ws09-step14.test.ts')).toContain('? [EMAILS_TEST, EDGES_TEST] : []')
     expect(read('test/unit/redesign-status-ws09-step19.test.ts')).toContain('[PAGES_TEST, ANSWERS_TEST, \'test/unit/approval-wait-panel.test.tsx\', \'test/unit/region-events-steps.test.tsx\'] : []')
     expect(read('test/unit/redesign-status-ws09-v-asked.test.ts')).toContain('expect(statusLine).not.toMatch(/checkpoint U[^;]*waits for K\'s word for its merge/)')
-    expect(read('test/unit/goldText.test.ts')).toContain('expect(result.badgeUses).toHaveLength(33)')
+    // 33 at this review; 34 with the newsletter's own page, whose "In this issue" label is one more (WS16 part two, page step 4).
+    expect(read('test/unit/goldText.test.ts')).toContain('expect(result.badgeUses).toHaveLength(34)')
     expect(read('test/unit/contracts-pending.ts')).toContain('export const PENDING_COUNT = 104')
   })
 

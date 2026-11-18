@@ -7,7 +7,10 @@
 // same words, as the adding of one, and removes nothing. An LCA admin, an
 // observer and the club's own rep, a seat holder too, get today's answer
 // byte for byte and remove an officer as before.
-import { describe, it, expect } from 'vitest'
+// Today's answer is the one with CLUB_KEEPERS_ON unset, which the file holds
+// itself through a getter on the mocked module; the same answers with it set
+// are test/integration/club-roster-kept-back-keepers.test.ts.
+import { describe, it, expect, vi } from 'vitest'
 import { env } from 'cloudflare:test'
 import { invoke } from './harness'
 import { seedAdmin, seedClub, seedMember, seedTournament } from './factories'
@@ -16,6 +19,17 @@ import { onRequestGet as adminClubGet } from '../../functions/api/admin/clubs/[i
 import { onRequestPost as officersPost } from '../../functions/api/admin/clubs/[id]/officers'
 import { onRequestDelete as officerDelete } from '../../functions/api/admin/clubs/[id]/officers/[officerId]'
 import { ROSTER_KEPT_BACK } from '../../functions/utils/clubs/memberView'
+
+const flags = vi.hoisted(() => ({ keepersOn: false }))
+vi.mock('../../functions/utils/clubs/pages', async (importOriginal) => {
+  const real = await importOriginal<typeof import('../../functions/utils/clubs/pages')>()
+  return {
+    ...real,
+    get CLUB_KEEPERS_ON() {
+      return flags.keepersOn
+    },
+  }
+})
 
 const REGION = 'Bayou Region'
 

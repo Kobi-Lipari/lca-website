@@ -167,7 +167,8 @@ describe('REDESIGN_STATUS.md, WS09 step 11: the parts', () => {
     }
     // The held files and the switches are as on the base: no line of this step in them.
     for (const file of ['src/components/layout/Navbar.tsx', 'src/pages/AdminPage.tsx', 'src/pages/AdminEmailPage.tsx', 'src/lib/features.ts']) expect(read(file), file).not.toMatch(/MyRegion|workspace\/region|WS09 step 11/)
-    expect(read('src/lib/features.ts')).toContain('  clubKeepers: false,')
+    // clubKeepers went on in the block "WS09 switch-on: clubKeepers and CLUB_KEEPERS_ON", so this step holds only that it is declared.
+    expect(read('src/lib/features.ts')).toMatch(/^ {2}clubKeepers: (?:false|true),$/m)
   })
 
   it('names the way in as the route and the guard hold it', () => {
@@ -185,8 +186,10 @@ describe('REDESIGN_STATUS.md, WS09 step 11: the parts', () => {
     expect(guard).toContain('if (accountRole === \'guest\') return false')
     expect(read('functions/api/board/my-seats.ts')).toContain('AND a.ended_at IS NULL\n        AND s.is_active = 1')
     const dashboard = codeOf(DASHBOARD)
-    expect(dashboard).toContain('{FEATURES.clubKeepers && (\n                  <Button asChild variant="outline" className="mt-3 min-h-11 px-4">\n                    <Link to="/workspace/region">Open My region</Link>')
-    expect(read(DASHBOARD)).toContain('As regional representative you can update these clubs\' pages and news.')
+    // The switch-on on main's tree offers a guest account no Open My region.
+    expect(dashboard).toContain('{FEATURES.clubKeepers && authMember?.role !== \'guest\' && (\n                  <Button asChild variant="outline" className="mt-3 min-h-11 px-4">\n                    <Link to="/workspace/region">Open My region</Link>')
+    // K's decision 10 of Tuesday, November 17, 2026 removed the sentence from the dashboard.
+    expect(read(DASHBOARD)).not.toContain('As regional representative you can update these clubs\' pages and news.')
   })
 
   it('names the cards, Still accurate and Confirm all as the files hold them', () => {

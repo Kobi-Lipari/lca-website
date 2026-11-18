@@ -230,7 +230,8 @@ describe('REDESIGN_STATUS.md, WS09 checkpoint S after K\'s answers: its claims a
     for (const piece of [DASHBOARD_NEW, SEATS_NEW, '`src/pages/DashboardPage.tsx` line 340', '`src/areas/admin/components/BoardSeatsPanel.tsx` lines 323 and 324', '`test/unit/club-region-words.test.tsx`']) {
       expect(two, piece).toContain(piece)
     }
-    expect(flat(DASHBOARD)).toContain(DASHBOARD_NEW)
+    // K's decision 10 of Tuesday, November 17, 2026 removed the sentence from the dashboard.
+    expect(flat(DASHBOARD)).not.toContain(DASHBOARD_NEW)
     expect(flat(DASHBOARD)).not.toContain(DASHBOARD_OLD)
     expect(flat(SEATS)).toContain(SEATS_NEW)
     expect(flat(SEATS)).not.toContain(SEATS_OLD)

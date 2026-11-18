@@ -50,10 +50,11 @@ To change the schema:
    the staging folder `drizzle/`; the script numbers it after the highest
    prefix here (the sections tables were `0052`, `requires_lca_membership`
    was `0054`, the 2026 champion `0058`, the ticket kinds `0059`, the mail
-   lists `0060`, the club regions `0065`, the club pages `0066`, the club
-   pages seed `0067`, the automation runs `0068`, the club check marks `0069`, the club event approval `0070`; `0071` is next), adds a
-   header and writes it here as `0071_club_notes.sql`. Commit it together with the new
-   snapshot in `drizzle/meta`.
+   lists `0060`, the newsletter's letters `0061`, the club regions `0065`, the
+   club pages `0066`, the club pages seed `0067`, the automation runs `0068`,
+   the club check marks `0069`, the club event approval `0070`; `0071` is
+   next), adds a header and writes it here as `0071_club_notes.sql`. Commit it
+   together with the new snapshot in `drizzle/meta`.
 3. Read the file, run `npm run db:migrate:local` and `npm run test:all`.
 
 To give the file a number of its own, add `--number` and four digits

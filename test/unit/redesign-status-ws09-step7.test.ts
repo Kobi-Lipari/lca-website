@@ -303,7 +303,8 @@ describe('REDESIGN_STATUS.md, WS09 step 7: the parts', () => {
     for (const piece of ['an LCA admin, an observer, the club\'s rep and the region\'s representative', '`test/unit/club-editor-off.test.tsx`', 'never fetched', 'No switch is added']) {
       expect(ships, piece).toContain(piece)
     }
-    expect(read('src/lib/features.ts')).toContain('  clubKeepers: false,')
+    // clubKeepers went on in the block "WS09 switch-on: clubKeepers and CLUB_KEEPERS_ON", so this step holds only that it is declared.
+    expect(read('src/lib/features.ts')).toMatch(/^ {2}clubKeepers: (?:false|true),$/m)
     const page = read(PAGE)
     expect(page).toContain('        {tab === \'details\' && !keepersOn() && (')
     expect(page).toContain('        {tab === \'details\' && keepersOn() && (')

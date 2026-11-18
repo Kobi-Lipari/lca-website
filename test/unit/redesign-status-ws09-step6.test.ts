@@ -292,7 +292,8 @@ describe('REDESIGN_STATUS.md, WS09 step 6: the parts', () => {
       'an LCA admin, an observer, the club\'s rep and a person admitted by the region alone', 'byte for byte', 'no stamp and no email',
       '"The new club page fields cannot be saved yet."', '"A club\'s places cannot be saved yet."', 'No switch is added',
     ]) expect(ships, piece).toContain(piece)
-    expect(read('functions/utils/clubs/pages.ts')).toContain('export const CLUB_KEEPERS_ON = false')
+    // CLUB_KEEPERS_ON went on in the block "WS09 switch-on: clubKeepers and CLUB_KEEPERS_ON", so this step holds only that it is declared.
+    expect(read('functions/utils/clubs/pages.ts')).toMatch(/^export const CLUB_KEEPERS_ON = (?:false|true)$/m)
     for (const file of [HANDLER, PLACES]) {
       expect(read(file), file).toContain('import { CLUB_KEEPERS_ON } from')
       expect(read(file), file).not.toMatch(/^(?:const|let|var|export const) \w+ = CLUB_KEEPERS_ON/m)
