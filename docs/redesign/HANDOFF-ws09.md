@@ -7,9 +7,10 @@ Written on Saturday, November 14, 2026, for whoever takes this stream over. The 
 - **Pull request 135 is merged:** main is `c84ec68` (3:10 PM UTC by the commit's own time), the same tree as `a45c951`, so the clubs switch-on's gate stands.
 - **The clubs switch-on is draft pull request 139** (`redesign/ws09-keepers-on` at `01d05ed`). K's word for it is decision 13 in `ws09-k-decisions.md` ("continue as you say"): it merges not before 5:10 PM UTC, once its two checks are green, with K told the time beforehand so that K can say stop. After it: the signed-out live check, K's five signed-in steps, the mail stream's lead told.
 - **The club events switch-on** (`redesign/ws09-region-on` at `bcd2265`) opens as a pull request only after 139 merged and went cleanly; it merges Thursday morning, K told the time and the three things to know beforehand.
-- **Decision 13 adds, after Thursday's items:** a small pull request of its own for the public event page (the sideways scroll at 390 pixels and its two labels of the old initials); a step that lets a board seat's holder in on a guest account (My region and their clubs' pages), its file list agreed with the mail stream's lead before the build; the test site remade without its own "Last checked" line; then the full plan goes on.
+- **Decision 13 adds, after Thursday's items:** a small pull request of its own for the public event page (the sideways scroll at 390 pixels and its two labels of the old initials); the test site remade without its own "Last checked" line; then the full plan goes on.
 - **Checkpoint X's branch** (`redesign/ws09-clubs-x`) is at `655bd3d`; step 27, Reply through LCA, is being built on it.
-- **Still owed by K:** `SIGNING_SECRET` in the site's settings; the region of the Baton Rouge and East Central seat; member accounts for the board.
+- **No guest step is built:** a guest in the code is only a walk-in entered at the door of an event, a record nobody can sign in to; every account a person signs in to is let in by its seat or its club. The lead's correction is written under decision 13.
+- **Still owed by K:** `SIGNING_SECRET` in the site's settings; the region of the Baton Rouge and East Central seat; each board member signed in to the site once, so that the account exists.
 
 ## Where it stood at about 9:50 AM UTC on Wednesday, November 18, 2026
 
