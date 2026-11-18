@@ -104,6 +104,8 @@ export type SaveLine =
   | { kind: 'saving' }
   | { kind: 'saved'; at: string }
   | { kind: 'failed' }
+  /** A save the server answered 401: the sign-in has ended, so trying again from this page can only fail. */
+  | { kind: 'signed-out' }
   | { kind: 'refused'; words: string }
   | { kind: 'conflict'; reason: 'changed' | 'sent' | 'set_aside'; by: string | null; at: string; readFailures: number }
   | { kind: 'started'; from: string }
@@ -389,7 +391,7 @@ function createKeeper(report: Report) {
    * A line that says a save failed, or that one is on its way, goes back to the last save once there is nothing left to
    * save; it is called only while no save is on its way.
    */
-  const settled = (now: SaveLine): SaveLine => (now.kind === 'failed' || now.kind === 'refused' || now.kind === 'saving' ? lastSave() : now)
+  const settled = (now: SaveLine): SaveLine => (now.kind === 'failed' || now.kind === 'signed-out' || now.kind === 'refused' || now.kind === 'saving' ? lastSave() : now)
 
   function stopPause() {
     window.clearTimeout(pause)
@@ -559,7 +561,8 @@ function createKeeper(report: Report) {
         if (words) refused = { draft: sent, words }
         else unanswered.push(sent)
         lastOutcome = words ? 'refused' : 'failed'
-        say(words ? { kind: 'refused', words } : { kind: 'failed' })
+        const signedOut = error instanceof ApiError && error.status === 401
+        say(words ? { kind: 'refused', words } : signedOut ? { kind: 'signed-out' } : { kind: 'failed' })
         // Words typed while the save sent to learn who changed the letter was on its way go now, to meet the refusal.
         if (after) startSave()
         landed()
@@ -732,7 +735,8 @@ function createKeeper(report: Report) {
         save(true)
         continue
       }
-      if (sent) return lastOutcome === 'refused' ? 'refused' : 'failed'
+      // A save that landed with words typed while it was on its way: those words go now, as the next save.
+      if (sent && lastOutcome !== 'saved') return lastOutcome === 'refused' ? 'refused' : 'failed'
       if (refused && same(now, refused.draft)) {
         report.line({ kind: 'refused', words: refused.words })
         return 'refused'

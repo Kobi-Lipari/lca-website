@@ -321,7 +321,7 @@ describe('your last newsletters, at their edges', () => {
     await thePage()
     const dialog = await openFrom(pickWide())
     const lines = within(dialog).getAllByRole('listitem').slice(4).map((item) => item.textContent?.replace(/Use this$/, ''))
-    expect(lines).toEqual(stamps.map(([, day], n) => `Example month ${n + 1}Set aside ${day}`))
+    expect(lines).toEqual(stamps.map(([, day], n) => `Example month ${n + 1}Replaced by a newer letter on ${day}`))
   })
 
   it('draws no choice for a row with no letter or send behind it, says a send with no count without one, and keeps rows that tie in the server\'s order', async () => {
@@ -339,9 +339,9 @@ describe('your last newsletters, at their edges', () => {
     const lines = within(dialog).getAllByRole('listitem').slice(4).map((item) => item.textContent?.replace(/Use this$/, ''))
     expect(lines).toEqual([
       'Sample send oneSent Mon, Nov 16, 2026',
-      'Example: tie oneSet aside Mon, Nov 16, 2026 at 2:15 PM',
-      'Example: tie oneSet aside Mon, Nov 16, 2026 at 2:15 PM',
-      'Example: tie twoSet aside Mon, Nov 16, 2026 at 2:15 PM',
+      'Example: tie oneReplaced by a newer letter on Mon, Nov 16, 2026 at 2:15 PM',
+      'Example: tie oneReplaced by a newer letter on Mon, Nov 16, 2026 at 2:15 PM',
+      'Example: tie twoReplaced by a newer letter on Mon, Nov 16, 2026 at 2:15 PM',
     ])
     expect(within(dialog).queryByText('Example: nothing behind it')).toBeNull()
     // The same letter twice, as a tie can make it, is no duplicate key.

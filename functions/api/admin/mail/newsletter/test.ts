@@ -162,9 +162,18 @@ function isOwnAddress(typed: string, own: string | null | undefined): boolean {
  */
 function testWords(result: Exclude<SendResult, { ok: true }>): string {
   if (result.fromSes) return result.error
-  const answered = result.status !== undefined && !result.refused && !result.gateUnread && !result.waitForSes && !result.limitRefused && !result.noAnswer
-  return answered ? `Resend ${result.status}: ${result.error}` : wordsUnderRules(result)
+  return serviceAnswered(result) ? `Resend ${result.status}: ${result.error}` : wordsUnderRules(result)
 }
+
+/** Whether the failure is the mail service's own answer (Resend's status or Amazon SES's words), not a refusal by the rules. */
+function serviceAnswered(result: Exclude<SendResult, { ok: true }>): boolean {
+  if (result.fromSes) return true
+  return result.status !== undefined && !result.refused && !result.gateUnread && !result.waitForSes && !result.limitRefused && !result.noAnswer
+}
+
+/** The page's answer when the mail service itself did not take the test: plain words, the service's own detail kept out. */
+export const TEST_SERVICE_REFUSED =
+  "The test could not be sent: the mail service did not take it. Try again in a few minutes, or ask the site's admin if it keeps happening."
 
 /**
  * Whether a body names a letter, the newsletter's own page's form: a JSON object with an issueId of its own, whatever
@@ -236,7 +245,7 @@ async function testOfLetter(context: Parameters<PagesFunction<Env>>[0], authed: 
     html,
     shape: 'campaign',
   })
-  if (!result.ok) return errorResponse(`Failed to send test email: ${testWords(result)}`, 502)
+  if (!result.ok) return errorResponse(serviceAnswered(result) ? TEST_SERVICE_REFUSED : `Failed to send test email: ${testWords(result)}`, 502)
 
   const body: NewsletterTestLetterResponse = { sent: true, to }
   return jsonResponse(body)

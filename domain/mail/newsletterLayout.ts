@@ -29,8 +29,9 @@
 //   fewer than two parts;
 // - the letter, serif words on white, each part's heading in sans under a
 //   short rule;
-// - the footer on cream: the builder's footer, then the newsletter's follow
-//   line from domain/mail/footer.ts, and nothing after it. No postal address
+// - the footer on cream: the person's own footer from domain/mail/footer.ts,
+//   then the newsletter's follow line from the same file, and nothing after
+//   it. No postal address
 //   and no slot for one (K's decision 23). The line today's layout writes
 //   under every email, the association's name with the site's, is not drawn:
 //   the band names LCA.

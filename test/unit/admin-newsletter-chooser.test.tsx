@@ -553,7 +553,7 @@ describe('your last newsletters', () => {
     expect(focused()).toBe(within(dialog).getByRole('heading', { name: 'Your last newsletters' }))
     await settle()
     expect(issueReads()).toBe(2)
-    expect(buttonFor('Example: November 2026, set aside Mon, Nov 16, 2026 at 2:15 PM')).toBeTruthy()
+    expect(buttonFor('Example: November 2026, replaced by a newer letter on Mon, Nov 16, 2026 at 2:15 PM')).toBeTruthy()
     expect(within(dialog).queryByRole('button', { name: 'Try again' })).toBeNull()
   })
 
@@ -594,8 +594,8 @@ describe('your last newsletters', () => {
     const dialog = await openFrom(pickWide())
     const named = within(dialog).getAllByRole('button', { name: /^Use this: December 2026/ }).map((button) => button.getAttribute('aria-label'))
     expect(named).toEqual([
-      'Use this: December 2026, set aside by Player One on Mon, Nov 16, 2026 at 2:15 PM, 1 of 2 alike',
-      'Use this: December 2026, set aside by Player One on Mon, Nov 16, 2026 at 2:15 PM, 2 of 2 alike',
+      'Use this: December 2026, set aside by Player One on Mon, Nov 16, 2026 at 2:15 PM, the 1st of 2 with this name',
+      'Use this: December 2026, set aside by Player One on Mon, Nov 16, 2026 at 2:15 PM, the 2nd of 2 with this name',
       'Use this: December 2026, set aside by Player One on Mon, Nov 16, 2026 at 12:05 PM',
     ])
     // What is drawn is each row's own words; the place is for a screen reader, the rows standing newest first.
@@ -605,7 +605,7 @@ describe('your last newsletters', () => {
       'December 2026Set aside by Player One on Mon, Nov 16, 2026 at 2:15 PM',
       'December 2026Set aside by Player One on Mon, Nov 16, 2026 at 12:05 PM',
     ])
-    fireEvent.click(buttonFor('December 2026, set aside by Player One on Mon, Nov 16, 2026 at 2:15 PM, 2 of 2 alike'))
+    fireEvent.click(buttonFor('December 2026, set aside by Player One on Mon, Nov 16, 2026 at 2:15 PM, the 2nd of 2 with this name'))
     await settle(80)
     expect(starts).toEqual([{ from: { issueId: 'sample-letter-8' }, monthLabel: MONTH }])
   })
@@ -618,7 +618,7 @@ describe('your last newsletters', () => {
     const buttons = within(dialog).getAllByRole('button')
     expect(buttons).toHaveLength(25)
     act(() => buttons[24].focus())
-    expect(focused().getAttribute('aria-label')).toBe('Use this: Example month 20, set aside Mon, Nov 16, 2026 at 2:15 PM')
+    expect(focused().getAttribute('aria-label')).toBe('Use this: Example month 20, replaced by a newer letter on Mon, Nov 16, 2026 at 2:15 PM')
     // The choices are the chooser's own scroller, under its head, which holds Close.
     const choices = buttons[24].closest('.overflow-y-auto')
     expect(choices).toBeTruthy()
@@ -828,7 +828,7 @@ describe('starting a letter', () => {
     const expected: Array<[string, unknown]> = [
       ['Blank letter', 'blank'], ['Monthly newsletter', 'monthly'], ['Results and thanks', 'results-and-thanks'], ['Short notice', 'short-notice'],
       ['November 2026, sent Mon, Nov 16, 2026 to 155 members', { issueId: 'sample-letter-7' }],
-      ['October 2026, set aside Mon, Nov 16, 2026 at 2:15 PM', { issueId: 'sample-letter-6' }],
+      ['October 2026, replaced by a newer letter on Mon, Nov 16, 2026 at 2:15 PM', { issueId: 'sample-letter-6' }],
       ['Sample plain subject, sent Mon, Nov 16, 2026 to 12 members', { campaignId: 'campaign-sample-5' }],
     ]
     for (const [name, from] of expected) {
@@ -878,7 +878,7 @@ describe('starting a letter', () => {
       expect(quietLine(), String(width)).toBe('Started from Results and thanks')
     }
     // A past letter names its month, and the blank letter is "a blank letter".
-    for (const [name, words] of [['Example: November 2026, set aside Mon, Nov 16, 2026 at 2:15 PM', 'Started from Example: November 2026'], ['Blank letter', 'Started from a blank letter']]) {
+    for (const [name, words] of [['Example: November 2026, replaced by a newer letter on Mon, Nov 16, 2026 at 2:15 PM', 'Started from Example: November 2026'], ['Blank letter', 'Started from a blank letter']]) {
       await again()
       windowAt(1440)
       on('GET', ISSUE_URL, { status: 200, body: emptyLetter() })

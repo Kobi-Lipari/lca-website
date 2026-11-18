@@ -98,6 +98,8 @@ function wordsOf(line: SaveLine): { quiet: string; urgent: string; after: string
       return { quiet: savedWords(line.at), urgent: '', after: '' }
     case 'failed':
       return { quiet: '', urgent: 'Could not save', after: '' }
+    case 'signed-out':
+      return { quiet: '', urgent: 'Your sign-in has ended, so this is not saved.', after: 'Copy your words, then sign in again.' }
     case 'refused':
       return { quiet: '', urgent: line.words, after: '' }
     case 'conflict':
@@ -150,7 +152,15 @@ export function SavedLine({ line, onTryAgain, onShowTheirs, className }: SavedLi
         </span>
       </span>
       {line.kind === 'failed' && (
-        <button type="button" className={LINE_BUTTON} onClick={onTryAgain}>
+        <button
+          type="button"
+          className={LINE_BUTTON}
+          onClick={() => {
+            onTryAgain()
+            // The button goes as the save does, so the focus goes back to the letter, whose editor keeps its caret.
+            document.querySelector<HTMLElement>('[role="textbox"][aria-label="The letter"]')?.focus()
+          }}
+        >
           Try again
         </button>
       )}

@@ -583,6 +583,49 @@ describe('the question before their letter takes the place of the person\'s word
     expect(editorOf().getHTML()).toContain('<p>Mine</p>')
   })
 
+  it('gives the focus to the letter once Try again after "The letter could not be read" has read it, never to the page\'s body', async () => {
+    on('GET', ISSUE_URL, { status: 500, body: { error: 'Something went wrong' } }, { status: 200, body: letter() })
+    await act(async () => {
+      render(
+        <AuthContext.Provider value={ADMIN}>
+          <MemoryRouter initialEntries={['/admin/newsletter']}>
+            <App />
+          </MemoryRouter>
+        </AuthContext.Provider>,
+      )
+    })
+    const again = await screen.findByRole('button', { name: 'Try again' }, { timeout: 10_000 })
+    expect(screen.getByRole('alert').textContent).toContain('The letter could not be read.')
+    act(() => again.focus())
+    key(again, 'Enter')
+    fireEvent.click(again)
+    expect(focused()).not.toBe(document.body)
+    await screen.findByRole('toolbar', { name: 'Writing tools' })
+    await settle(100)
+    expect(focused()).not.toBe(document.body)
+    expect(screen.getByRole('textbox', { name: 'The letter' }).contains(focused())).toBe(true)
+  })
+
+  it('gives the focus back to the letter, its caret where it was, when Try again on the saved line is pressed by keyboard', async () => {
+    on('PUT', ISSUE_URL, { status: 500, body: { error: 'Something went wrong' } }, { status: 200, body: { id: 'sample-letter-1', version: 4, savedAt: '2026-11-13 21:00:00', bodyHtml: null } })
+    await thePage()
+    await act(async () => {
+      editorOf().chain().focus('end').insertContent('<p>Mine</p>').run()
+    })
+    await settle(2300)
+    const savedLine = () => document.querySelector('[data-slot="saved-line"]') as HTMLElement
+    expect(within(savedLine()).getByRole('alert').textContent).toBe('Could not save')
+    const caret = editorOf().state.selection.from
+    const again = within(savedLine()).getByRole('button', { name: 'Try again' })
+    act(() => again.focus())
+    key(again, 'Enter')
+    fireEvent.click(again)
+    await settle(100)
+    expect(focused()).not.toBe(document.body)
+    expect(screen.getByRole('textbox', { name: 'The letter' }).contains(focused())).toBe(true)
+    expect(editorOf().state.selection.from).toBe(caret)
+  })
+
   it('closes alone on Escape while the letter fills the window, which stays, and gives the focus back to its button there', async () => {
     on('PUT', ISSUE_URL, { status: 409, body: { error: 'x', reason: 'changed', changedBy: 'Player Two', changedAt: '2026-11-13 20:17:00' } })
     await thePage()

@@ -324,6 +324,14 @@ describe('the bar at the foot, from 768 pixels up', () => {
       expect(within(moreRows()!).queryByRole('alert')).toBeNull()
     }
   })
+
+  it('keeps one line\'s room for its status line before it says anything, so the bar does not grow when words come', async () => {
+    windowAt(1440)
+    await thePage()
+    const line = theBar().querySelector('[data-slot="bar-said"]') as HTMLElement
+    expect(line.textContent).toBe('')
+    expect(line.className.split(/\s+/)).toContain('min-h-[31px]')
+  })
 })
 
 describe('the bar on a phone, under 768 pixels', () => {

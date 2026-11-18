@@ -208,7 +208,8 @@ function Frames({ email, onLoaded }: { email: string; onLoaded?: () => void }) {
     }
   }
   return (
-    <div className="relative h-full w-full bg-background">
+    // A ring round the box while the email's frame holds the focus, since the frame's own document shows none.
+    <div className="relative h-full w-full bg-background focus-within:ring-3 focus-within:ring-focus">
       {([0, 1] as const).map((index) => (
         <iframe
           key={`${index}-${writes[index]}`}

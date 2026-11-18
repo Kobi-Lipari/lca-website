@@ -515,6 +515,39 @@ describe('(b) replays, stale reads and races', () => {
   })
 })
 
+describe('(b2) the store\'s own rules: the version on a set-aside, and one list\'s letters kept to that list', () => {
+  it('refuses a start when a save lands between its read and its set-aside: nothing is set aside and the saved words stay open', async () => {
+    const one = await seedMember({ fullName: 'Player One', role: 'lca_admin' })
+    const two = await seedMember({ fullName: 'Player Two', role: 'lca_admin' })
+    const made = await (await save(one, { bodyHtml: `${LETTER}<p>Sample words before.</p>` })).json<{ id: string }>()
+    const later = `${LETTER}<p>Sample words saved while the start was on its way.</p>`
+    const landedSave = () =>
+      env.DB.prepare(`UPDATE newsletter_issues SET body_html = ?2, version = version + 1, updated_by = ?3, updated_at = datetime('now') WHERE id = ?1`)
+        .bind(made.id, later, two).run()
+    const before = await counts()
+    const res = await start(one, 'monthly', 'January 2027', {}, { env: { DB: betweenDb(landedSave) } })
+    expect(res.status).toBe(409)
+    expect(await rows()).toEqual([expect.objectContaining({ id: made.id, version: 2, body_html: later, campaign_id: null, set_aside_at: null })])
+    expect(await counts()).toEqual(before)
+  })
+
+  it('shows none of a second list\'s letters, open or past, on the newsletter\'s read or in the chooser\'s past letters', async () => {
+    const admin = await seedAdmin()
+    await seedLetter({ id: 'issue-other-open', listId: OTHER_LIST, subject: 'Sample other list open' })
+    await seedLetter({ id: 'issue-other-aside', listId: OTHER_LIST, subject: 'Sample other list aside', setAsideAt: '2026-11-03 15:00:00' })
+    await seedSend({ id: 'campaign-other-sent', listId: OTHER_LIST })
+    await seedLetter({ id: 'issue-other-sent', listId: OTHER_LIST, subject: 'Sample other list sent', campaignId: 'campaign-other-sent' })
+    await seedLetter({ id: 'issue-own-aside', subject: 'Sample own aside', setAsideAt: '2026-11-04 15:00:00' })
+
+    const read = await (await invoke(issueGet, { as: admin })).response.clone().text()
+    expect(read).not.toMatch(/issue-other-|Sample other list/)
+    const past = await invoke(issuesGet, { as: admin })
+    const pastText = await past.response.clone().text()
+    expect(pastText).not.toMatch(/issue-other-|Sample other list/)
+    expect((await past.json<{ issues: Row[] }>()).issues).toMatchObject([{ issueId: 'issue-own-aside', state: 'set_aside' }])
+  })
+})
+
 describe('(c) a letter made by hand to get live markup into the table', () => {
   const HOSTILE = [
     '<svg><style><img src=x onerror=alert(1)></style></svg><p>Sample</p>',

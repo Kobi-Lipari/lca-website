@@ -38,7 +38,7 @@ import { NEWSLETTER_LIST_ID } from '../../domain/mail/lists'
 import { EMAIL_MAX_BYTES, renderNewsletter } from '../../domain/mail/newsletterLayout'
 import { TEST_NO_SUBJECT, TEST_NO_SUBJECT_OR_WORDS, TEST_NO_WORDS, testTooLong } from '../../domain/mail/newsletterWords'
 import { onRequestPut as issuePut } from '../../functions/api/admin/mail/newsletter/issue'
-import { onRequestPost as testPost } from '../../functions/api/admin/mail/newsletter/test'
+import { onRequestPost as testPost, TEST_SERVICE_REFUSED } from '../../functions/api/admin/mail/newsletter/test'
 import { onRequestGet as preferencesGet } from '../../functions/api/mail/preferences/[token]'
 import { onRequestGet as unsubscribeGet } from '../../functions/api/mail/unsubscribe/[token]'
 import { listMessage, NO_CLEAR_ANSWER_WORDS } from '../../functions/utils/admin/campaigns'
@@ -442,14 +442,16 @@ describe('(f) the link key and the mail service', () => {
     expect(emailOutbox).toEqual([])
   })
 
-  it('answers a refusal by the service with 502 in today\'s words, and a lost answer with the no-clear-answer words, trying once for one press', async () => {
+  it('answers a refusal by the service with 502 in plain words that keep the service\'s own detail out, and a lost answer with the no-clear-answer words, trying once for one press', async () => {
     const admin = await seedAdmin()
     const letter = await saved(admin)
     emailBehavior.succeed = false
     emailBehavior.status = 500
     const refused = await testOf(admin, letter)
     expect(refused.status).toBe(502)
-    expect((await refused.json<{ error: string }>()).error).toMatch(/^Failed to send test email: Resend 500: /)
+    const text = await refused.response.clone().text()
+    expect(JSON.parse(text)).toEqual({ error: TEST_SERVICE_REFUSED })
+    expect(text).not.toMatch(/Resend|Amazon|SES/)
     expect(emailOutbox).toEqual([])
     resetHarness()
     emailBehavior.loseAnswer = 1
@@ -457,6 +459,23 @@ describe('(f) the link key and the mail service', () => {
     expect(lost.status).toBe(502)
     expect(await lost.json()).toEqual({ error: `Failed to send test email: ${NO_CLEAR_ANSWER_WORDS}` })
     expect(emailOutbox).toHaveLength(1)
+  })
+
+  it('answers today\'s form refused by the service in today\'s words, byte for byte, with the switch either way', async () => {
+    const admin = await seedAdmin()
+    const to = address('reader')
+    const bodies: string[] = []
+    for (const pageOn of [false, true]) {
+      flags.pageOn = pageOn
+      resetHarness()
+      emailBehavior.succeed = false
+      emailBehavior.status = 500
+      const res = await invoke(testPost, { method: 'POST', as: admin, body: { to, ...TODAY } })
+      expect(res.status, String(pageOn)).toBe(502)
+      bodies.push(await res.response.clone().text())
+    }
+    expect(bodies[1]).toBe(bodies[0])
+    expect(JSON.parse(bodies[0]).error).toMatch(/^Failed to send test email: Resend 500: /)
   })
 
   it('sends one test for one press and two for two, each to the same address with the same contact\'s links', async () => {

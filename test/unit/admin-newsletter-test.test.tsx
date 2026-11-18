@@ -337,6 +337,31 @@ describe('step 2, "Send a test to me", from 768 pixels up', () => {
     }
   })
 
+  it('with words typed while its first save is on its way, takes that save as landed, saves the newest words without another keystroke, then sends one test', async () => {
+    windowAt(1440)
+    const first = later()
+    on('PUT', ISSUE_URL, first.answer, { status: 200, body: { id: 'sample-letter-1', version: 5, savedAt: '2026-11-16 20:21:00', bodyHtml: null } })
+    await thePage()
+    fireEvent.change(subject(), { target: { value: 'Sample subject four' } })
+    fireEvent.click(testStep())
+    await settle()
+    expect(puts).toHaveLength(1)
+    // Typed while the first save is held.
+    fireEvent.change(subject(), { target: { value: 'Sample subject four and more' } })
+    await settle()
+    await first.give({ status: 200, body: { id: 'sample-letter-1', version: 4, savedAt: '2026-11-16 20:20:00', bodyHtml: null } })
+    // The newer words are on their way at once, so the line does not say they are saved.
+    expect(puts).toHaveLength(2)
+    expect(puts[1]).toMatchObject({ version: 4, subject: 'Sample subject four and more' })
+    await settle()
+    expect(urgentLine()).not.toContain('Could not save')
+    expect(statusLine().textContent).not.toContain('could not be saved')
+    expect(tests).toEqual([{ issueId: 'sample-letter-1', version: 5 }])
+    expect(statusLine().textContent).toBe(`Test sent to ${ADDRESS}.`)
+    expect(savedLine().textContent).toContain('Saved')
+    expect(puts).toHaveLength(2)
+  })
+
   it('says the server\'s own words for a test it refuses, and that the test could not be sent for an answer with none', async () => {
     const cases: Array<[string, Given, string]> = [
       ['a letter with no words', { status: 400, body: { error: TEST_NO_WORDS } }, TEST_NO_WORDS],

@@ -405,6 +405,22 @@ describe('the refusals, each in words, none tried again by itself', () => {
     act(() => result.current.edit(words()))
     expect(result.current.line).toEqual({ kind: 'saved', at: '2026-11-13 20:15:00' })
   })
+
+  it('says a sign-in that has ended in its own words, once, with no Try again that could only fail', async () => {
+    const { result } = await opened()
+    puts.push({ status: 401, body: { error: 'Unauthorized' } })
+    act(() => result.current.edit(words({ bodyHtml: `${BODY}<p>Sample</p>` })))
+    await wait(SAVE_PAUSE_MS)
+    expect(saves()).toHaveLength(1)
+    render(<SavedLine line={result.current.line} onTryAgain={() => {}} onShowTheirs={() => {}} />)
+    expect(screen.getByRole('alert').textContent).toBe('Your sign-in has ended, so this is not saved. Copy your words, then sign in again.')
+    expect(screen.getByRole('status').textContent).toBe('')
+    expect(screen.queryByRole('button', { name: 'Try again' })).toBeNull()
+    expect(document.querySelector('[data-slot="saved-line"]')!.textContent).toBe('Your sign-in has ended, so this is not saved. Copy your words, then sign in again.')
+    // Nothing is tried again by itself.
+    await wait(SAVE_PAUSE_MS * 3)
+    expect(saves()).toHaveLength(1)
+  })
 })
 
 describe('the words in the saved line', () => {

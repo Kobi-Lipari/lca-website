@@ -313,6 +313,13 @@ describe('the email\'s sheet on its own', () => {
     expect(focused()).toBe(sheetOf())
   })
 
+  it('shows where the focus is while the email\'s frame holds it: the frames\' box carries the focus ring round it', () => {
+    render(<Stand />)
+    fireEvent.click(screen.getByRole('button', { name: 'Open the sheet' }))
+    const box = framesIn(sheetOf())[0].parentElement as HTMLElement
+    for (const look of ['focus-within:ring-3', 'focus-within:ring-focus']) expect(box.className.split(/\s+/), look).toContain(look)
+  })
+
   it('gives each link in the frame its style, tabindex -1 and a jump link\'s address alone, so a ping or a target written on one never reaches it', () => {
     // A letter made by hand whose links carry what no stored letter can: the frame's copy keeps none of it.
     const body = [
@@ -359,6 +366,33 @@ describe('the sheet on the page', () => {
     await settle()
     expect(within(document.querySelector('[data-slot="saved-line"]') as HTMLElement).getByRole('alert').textContent).toBe(refusal)
     expect(screen.getByRole('button', { name: 'Show their letter' })).toBeTruthy()
+  })
+
+  it('says a test\'s answer that comes while it is open in a polite region of its own, once, out of reach of nothing it hides', async () => {
+    windowAt(820)
+    let answerTest: (answer: Response) => void = () => {}
+    const plain = vi.mocked(fetch).getMockImplementation()!
+    vi.stubGlobal('fetch', vi.fn(async (url: string, init?: RequestInit) => {
+      if (url === '/api/admin/mail/newsletter/test') return new Promise<Response>((resolve) => { answerTest = resolve })
+      return plain(url, init)
+    }))
+    await thePage()
+    fireEvent.click(within(screen.getByRole('region', { name: 'Pick, check and send' })).getByRole('button', { name: '2 Send a test to me' }))
+    await settle()
+    fireEvent.click(screen.getAllByRole('button', { name: 'See the email' })[0])
+    const sheet = sheetOf()
+    const region = within(sheet).getByRole('status')
+    // Nothing is said as it opens: what the bar said before is not said again.
+    expect(region.textContent).toBe('')
+    await act(async () => {
+      answerTest(new Response(JSON.stringify({ sent: true, to: 'admin@example.org' }), { status: 200 }))
+    })
+    await settle()
+    expect(region.textContent).toBe('Test sent to admin@example.org.')
+    expect(region.getAttribute('aria-live') ?? 'polite').toBe('polite')
+    expect(region.closest('[inert], [aria-hidden="true"], [hidden]')).toBeNull()
+    // Said once in the sheet: the bar's own line is behind the sheet, out of a screen reader's reach while it is open.
+    expect(within(sheet).getAllByText('Test sent to admin@example.org.')).toHaveLength(1)
   })
 
   it('shows the letter as it stands: words typed just before it opened are in the email on show once the pause has passed', async () => {

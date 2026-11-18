@@ -272,6 +272,8 @@ describe('who is let in, and who is sent where', () => {
     await thePage()
     const line = await screen.findByRole('link', { name: SECOND_FACTOR_LINE })
     expect(line.getAttribute('href')).toBe('/account/security')
+    // The link is 44 pixels tall, as every other control on the page is on a phone.
+    expect(line.className.split(' ')).toEqual(expect.arrayContaining(['inline-flex', 'min-h-11', 'items-center']))
     expect(newsletterCalls()).toEqual([])
     expect(document.querySelector('[data-slot="letter-sheet"]')).toBeNull()
   })

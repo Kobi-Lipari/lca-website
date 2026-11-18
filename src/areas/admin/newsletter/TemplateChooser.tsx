@@ -201,7 +201,7 @@ function pastLine(row: ApiLastNewsletter): string {
     case 'failed':
       return by ? `Not sent: the send by ${by} failed on ${when}` : `Not sent: the send failed on ${when}`
     case 'set_aside':
-      return by ? `Set aside by ${by} on ${when}` : `Set aside ${when}`
+      return by ? `Set aside by ${by} on ${when}` : `Replaced by a newer letter on ${when}`
   }
 }
 
@@ -222,11 +222,18 @@ function pastChoice(row: ApiLastNewsletter): Choice | null {
   return choice
 }
 
+/** A place as it is said: "1st", "2nd", "3rd", "4th", "11th", "22nd". */
+function nth(n: number): string {
+  const tens = n % 100
+  const end = tens >= 11 && tens <= 13 ? 'th' : ({ 1: 'st', 2: 'nd', 3: 'rd' } as Record<number, string>)[n % 10] ?? 'th'
+  return `${n}${end}`
+}
+
 /**
  * The name of each past row's "Use this": its choice's, and where two rows still read alike, as two letters set aside by
  * one person in one minute, its place among those alike, newest first as the server lists them, "Use this: December
- * 2026, set aside by Player One on Mon, Nov 16, 2026 at 2:15 PM, 2 of 2 alike", so a screen reader can tell each from
- * the others. A row with no choice has no name.
+ * 2026, set aside by Player One on Mon, Nov 16, 2026 at 2:15 PM, the 2nd of 2 with this name", so a screen reader can
+ * tell each from the others. A row with no choice has no name.
  */
 function pastLabels(choices: ReadonlyArray<Choice | null>): string[] {
   const alike = new Map<string, number>()
@@ -238,7 +245,7 @@ function pastLabels(choices: ReadonlyArray<Choice | null>): string[] {
     if (of === 1) return `Use this: ${it.name}`
     const at = (seen.get(it.name) ?? 0) + 1
     seen.set(it.name, at)
-    return `Use this: ${it.name}, ${at} of ${of} alike`
+    return `Use this: ${it.name}, the ${nth(at)} of ${of} with this name`
   })
 }
 

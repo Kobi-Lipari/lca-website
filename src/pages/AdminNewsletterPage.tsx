@@ -56,7 +56,7 @@
 // then the letter's top with "Show the email", is the dialog, so the saved
 // line in the head is one element whatever the letter's size.
 
-import { useEffect, useRef, useState, type KeyboardEvent } from 'react'
+import { useCallback, useEffect, useRef, useState, type KeyboardEvent } from 'react'
 import { Link, Navigate } from 'react-router-dom'
 import { defaultSubject } from '@domain/mail/letter'
 import { TEST_NO_WORDS, WAITS_FOR_SES } from '@domain/mail/newsletterWords'
@@ -172,6 +172,21 @@ function testSaid(outcome: TestOutcome): BarSaid | null {
     default:
       return null
   }
+}
+
+/**
+ * What the email's sheet says of a test while it hides the page, whose bar line is then out of a screen reader's reach:
+ * only what the bar has come to say since the sheet opened, once, in a polite line of the sheet's own. A test on its
+ * way is heard and not drawn, as on the bar.
+ */
+function SheetTestNotice({ said }: { said: BarSaid | null }) {
+  const [asOpened] = useState(said)
+  const now = said !== asOpened ? said : null
+  return (
+    <p role="status" aria-atomic="true" className={cn('text-[15px] leading-snug text-ink', now && now.tone !== 'busy' && 'mt-2')} data-slot="sheet-test-said">
+      {now && <span className={now.tone === 'busy' ? 'sr-only' : undefined}>{now.words}</span>}
+    </p>
+  )
 }
 
 /** Every control the keyboard stops on inside a part of the page, in the page's order. */
@@ -315,6 +330,8 @@ function NewsletterDesk({ mayCall }: { mayCall: boolean }) {
   const [view, setView] = useState<PreviewView>('phone')
   const [previewHidden, setPreviewHidden] = useState(false)
   const [replaced, setReplaced] = useState(false)
+  /** Takes the focus once, when the line is first drawn, and not again on a later draw. */
+  const focusWhenDrawn = useCallback((node: HTMLElement | null) => node?.focus(), [])
 
   useEffect(() => {
     if (!mayCall) return
@@ -339,12 +356,15 @@ function NewsletterDesk({ mayCall }: { mayCall: boolean }) {
         <div className="mx-auto max-w-[1198px] px-4 py-6 sm:px-6">
           {!mayCall ? (
             <p className="text-[15px] text-ink">
-              <Link to="/account/security" className="rounded-sm font-medium underline underline-offset-2 outline-none hover:no-underline focus-visible:ring-3 focus-visible:ring-focus">
+              <Link to="/account/security" className="inline-flex min-h-11 items-center rounded-sm font-medium underline underline-offset-2 outline-none hover:no-underline focus-visible:ring-3 focus-visible:ring-focus">
                 {SECOND_FACTOR_LINE}
               </Link>
             </p>
           ) : issue.status === 'loading' ? (
-            <p role="status" className="text-[15px] text-ink">Loading the letter...</p>
+            // After Try again, the focus waits here while the letter is read, then goes into the letter (autoFocus below).
+            <p role="status" tabIndex={-1} ref={replaced ? focusWhenDrawn : undefined} className="text-[15px] text-ink outline-none">
+              Loading the letter...
+            </p>
           ) : (
             <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[15px] text-ink">
               <p role="alert">
@@ -352,7 +372,10 @@ function NewsletterDesk({ mayCall }: { mayCall: boolean }) {
               </p>
               <button
                 type="button"
-                onClick={issue.reload}
+                onClick={() => {
+                  setReplaced(true)
+                  issue.reload()
+                }}
                 className="inline-flex min-h-11 items-center rounded-md px-2 font-semibold underline underline-offset-3 outline-none hover:no-underline focus-visible:ring-3 focus-visible:ring-focus"
               >
                 Try again
@@ -699,7 +722,12 @@ function NewsletterLetter({ issue, reach, view, onView, previewHidden, onPreview
         open={sheetOpen}
         onOpenChange={setSheetOpen}
         letter={preview}
-        notice={<SavedLineNotice line={issue.line} />}
+        notice={
+          <>
+            <SavedLineNotice line={issue.line} />
+            <SheetTestNotice said={barSaid} />
+          </>
+        }
         returnFocus={() => [opener.current, carry.find('see'), ...(side.current?.querySelectorAll<HTMLElement>('button') ?? [])]}
       />
       <FootBar
