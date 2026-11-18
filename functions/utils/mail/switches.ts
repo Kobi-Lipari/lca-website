@@ -37,9 +37,10 @@ export const MAIL_LISTS_ON = true
  * before reading anything, and the test of the stored letter, the second form of the newsletter's test
  * (functions/api/admin/mail/newsletter/test.ts), which is refused while it is unset as any body today's form does not
  * take. Turned on with mailPage in src/lib/features.ts, in the same change, and only while MAIL_LISTS_ON is set;
- * test/unit/mail-switches.test.ts holds the two equal and holds it to MAIL_LISTS_ON.
+ * test/unit/mail-switches.test.ts holds the two equal and holds it to MAIL_LISTS_ON. Set since the page's own
+ * switch-on change; turned off again with mailPage, in one change, and the letters stay in their table.
  */
-export const MAIL_PAGE_ON = false
+export const MAIL_PAGE_ON = true
 
 /**
  * Which service sends every email: 'resend' today. It changes only in a pull request of its own (the cutover, whose
