@@ -212,13 +212,13 @@ async function renderTournament() {
 }
 
 describe('the tournament page of an event with published pairings', () => {
-  it('with newLook off draws what it drew: navy words on the hero\'s button, a grid with no column template below 1024 pixels, and a plain table box', async () => {
+  it('with newLook off draws navy words on the hero\'s button, as it did, a grid whose one column below 1024 pixels may shrink as under the new look, and the table\'s box the same named region in the tab order', async () => {
     const { link, box, grid } = await renderTournament()
     expect(link.className).toContain('border-lca-gold/50 bg-lca-gold/15 text-ink hover:bg-lca-gold/25')
     expect(link.className).not.toContain('text-white')
-    expect(grid.className).toBe('grid gap-8 lg:grid-cols-3')
+    expect(grid.className).toBe('grid grid-cols-1 gap-8 lg:grid-cols-3')
     expect(box.className).toBe('mt-4 overflow-x-auto rounded-xl border')
-    for (const attr of ['role', 'tabindex', 'aria-label']) expect(box.hasAttribute(attr), attr).toBe(false)
+    expect(['role', 'tabindex', 'aria-label'].map((attr) => box.getAttribute(attr))).toEqual(['region', '0', 'Sections'])
   })
 
   it('under the new look gives the button white words, lets the column shrink, and makes the table\'s box a named region in the tab order', async () => {

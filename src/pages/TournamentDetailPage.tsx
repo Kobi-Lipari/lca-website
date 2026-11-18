@@ -89,7 +89,7 @@ function RegistrationModal({
           </div>
           {member.uscf_id && (
             <div className="flex justify-between">
-              <span className="text-muted-foreground">USCF ID</span>
+              <span className="text-muted-foreground">US Chess ID</span>
               <span className="font-medium">{member.uscf_id}</span>
             </div>
           )}
@@ -307,7 +307,7 @@ export function TournamentDetailPage() {
     if (!id || !selectedSection) return
     if (!user) { navigate('/login', { state: { from: location.pathname } }); return }
     if (tournament?.is_rated && !authMember?.uscf_id) {
-      setRegisterError('This is a USCF-rated tournament. Add your USCF ID to your profile before registering.')
+      setRegisterError('This is a US Chess-rated tournament. Add your US Chess ID to your profile before registering.')
       return
     }
     const section = tournament?.sections.find((s) => s.name === selectedSection)
@@ -541,7 +541,7 @@ export function TournamentDetailPage() {
                   'rounded-full px-2.5 py-0.5 text-xs font-medium',
                   isRated ? 'bg-blue-500/20 text-blue-200' : 'bg-white/10 text-white/60',
                 )}>
-                  {isRated ? 'USCF Rated' : 'Unrated'}
+                  {isRated ? 'US Chess rated' : 'Unrated'}
                 </span>
                 {regStatus === 'open' && tournament.status === 'upcoming' && (
                   <span className="rounded-full bg-emerald-500/20 px-2.5 py-0.5 text-xs font-medium text-emerald-300">
@@ -610,10 +610,10 @@ export function TournamentDetailPage() {
 
       {/* ── Body ── */}
       <section className="mx-auto max-w-6xl px-6 py-10">
-        {/* Under the new look the one column below 1024 pixels may be
-            narrower than its widest item, so on a phone the sections table
-            scrolls in its own box rather than the whole page sideways. */}
-        <div className={FEATURES.newLook ? 'grid grid-cols-1 gap-8 lg:grid-cols-3' : 'grid gap-8 lg:grid-cols-3'}>
+        {/* The one column below 1024 pixels may be narrower than its widest
+            item, so on a phone the sections table scrolls in its own box and
+            not the whole page sideways. */}
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
 
           {/* ── Main column ── */}
           <div className="space-y-8 lg:col-span-2">
@@ -663,9 +663,9 @@ export function TournamentDetailPage() {
             {/* Sections */}
             <div>
               <h2 className="text-xl font-bold text-ink">Sections</h2>
-              {/* Under the new look the box the table scrolls in is a named
-                  region in the tab order, so a keyboard can scroll it. */}
-              <div className="mt-4 overflow-x-auto rounded-xl border" {...(FEATURES.newLook ? { tabIndex: 0, role: 'region', 'aria-label': 'Sections' } : {})}>
+              {/* The box the table scrolls in is a named region in the tab
+                  order, so a keyboard can reach it and scroll it. */}
+              <div className="mt-4 overflow-x-auto rounded-xl border" tabIndex={0} role="region" aria-label="Sections">
                 <table className="w-full min-w-[480px] text-left text-sm">
                   <thead>
                     <tr className="border-b bg-muted/50">
@@ -756,7 +756,7 @@ export function TournamentDetailPage() {
                                 </p>
                                 {player.uscf_id && (
                                   <p className="text-xs text-muted-foreground">
-                                    USCF {player.uscf_id}
+                                    US Chess ID {player.uscf_id}
                                   </p>
                                 )}
                               </div>
@@ -812,10 +812,10 @@ export function TournamentDetailPage() {
                       {tournament.max_players ? `${activeRoster.length} of ${tournament.max_players}` : activeRoster.length}
                     </dd>
                   </div>
-                  <div className="flex justify-between">
+                  <div className="flex justify-between gap-4">
                     <dt className="text-muted-foreground">Format</dt>
-                    <dd className="font-medium">
-                      {tournament.rounds}-round Swiss{isRated ? ', USCF-rated' : ', unrated'}
+                    <dd className="text-right font-medium">
+                      {tournament.rounds}-round Swiss{isRated ? ', US Chess-rated' : ', unrated'}
                     </dd>
                   </div>
                   {tournament.time_control && (
@@ -933,7 +933,7 @@ export function TournamentDetailPage() {
                           {registerError}
                           {isRated && !authMember?.uscf_id && user && (
                             <Link to="/dashboard" className="mt-2 block font-medium underline">
-                              Add USCF ID to your profile →
+                              Add US Chess ID to your profile →
                             </Link>
                           )}
                         </div>
