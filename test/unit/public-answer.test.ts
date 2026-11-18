@@ -34,8 +34,8 @@ import {
 import { publicClubAnswer } from '../../functions/utils/clubs/publicAnswer'
 import { eventsManagedBy, publicRoster, publicTournamentAnswer, type RosterRead } from '../../functions/utils/events/publicAnswer'
 
-// The trim's three keys, and review_notified_at, which WS08 step 2 added.
-const MANAGERS_ONLY = ['created_by', 'keep_apart', 'report_settings', 'review_notified_at']
+// The trim's three keys, review_notified_at, which WS08 step 2 added, and the four of the approval wait, which WS09 step 16 added.
+const MANAGERS_ONLY = ['created_by', 'keep_apart', 'report_settings', 'review_notified_at', 'needs_lca_approval', 'approval_requested_at', 'approved_at', 'approved_by']
 
 /** A tournament answer with the four keys and a few others. */
 const answer = () => ({ id: 't1', name: 'Fall Open', club_id: 'c1', created_by: 'm9', keep_apart: 'family', report_settings: '{"affiliateId":"A6000001"}', review_notified_at: '2026-11-03 21:00:00', sections: [] })
@@ -205,8 +205,8 @@ const optionalKeys = (shape: Record<string, { safeParse: (v: unknown) => { succe
 
 describe('the contracts', () => {
   it('make the four optional on the public list row and the public detail, and nothing else', () => {
-    expect(optionalKeys(tournamentListItemSchema.shape)).toEqual(MANAGERS_ONLY)
-    expect(optionalKeys(tournamentDetailSchema.shape)).toEqual(MANAGERS_ONLY)
+    expect(optionalKeys(tournamentListItemSchema.shape)).toEqual([...MANAGERS_ONLY].sort())
+    expect(optionalKeys(tournamentDetailSchema.shape)).toEqual([...MANAGERS_ONLY].sort())
   })
 
   it('keep every key required on the admin\'s answers and the manage page\'s', () => {
@@ -214,8 +214,8 @@ describe('the contracts', () => {
     expect(optionalKeys(tournamentManageResponseSchema.shape.tournament.shape)).toEqual([])
   })
 
-  it('keep 46 keys in the public row, the four among them', () => {
-    expect(Object.keys(tournamentListItemSchema.shape)).toHaveLength(46)
+  it('keep 50 keys in the public row, the eight among them', () => {
+    expect(Object.keys(tournamentListItemSchema.shape)).toHaveLength(50)
     expect(Object.keys(tournamentListItemSchema.shape)).toEqual(expect.arrayContaining(MANAGERS_ONLY))
   })
 

@@ -4,8 +4,13 @@
 // functions/utils/clubs/monthlyCheck.ts on D1 built from the migrations, and
 // the LCA admin's button, POST /api/admin/clubs/monthly-check, through the
 // real handler. CLUB_KEEPERS_ON is set through a getter on the mocked
-// module; the signing key is made up and written here. Each case passes its
-// own now, and every seat, club, person and address is made up.
+// module, and so are both mail switches, MAIL_LISTS_ON and MAIL_SENDER, at
+// today's values unless a case sets them, so each case runs the same
+// whatever the two ship as; a case that turns on the mail engine's rules
+// says so in its title, where a send worth another try is a 503 and a 500
+// is never tried again. The signing key is made up and written here. Each
+// case passes its own now, and every seat, club, person and address is made
+// up.
 import { env } from 'cloudflare:test'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import {
@@ -19,13 +24,25 @@ import { seedAdmin, seedClub, seedMember } from './factories'
 import { emailBehavior, emailOutbox, invoke, resetHarness } from './harness'
 import { countingDb } from './mailRuns'
 
-const flags = vi.hoisted(() => ({ keepersOn: true }))
+const flags = vi.hoisted(() => ({ keepersOn: true, listsOn: false, sender: 'resend' as 'resend' | 'ses' }))
 vi.mock('../../functions/utils/clubs/pages', async (importOriginal) => {
   const real = await importOriginal<typeof import('../../functions/utils/clubs/pages')>()
   return {
     ...real,
     get CLUB_KEEPERS_ON() {
       return flags.keepersOn
+    },
+  }
+})
+vi.mock('../../functions/utils/mail/switches', async (importOriginal) => {
+  const real = await importOriginal<typeof import('../../functions/utils/mail/switches')>()
+  return {
+    ...real,
+    get MAIL_LISTS_ON() {
+      return flags.listsOn
+    },
+    get MAIL_SENDER() {
+      return flags.sender
     },
   }
 })
@@ -89,6 +106,8 @@ const tokensIn = (text: string | undefined) => [...(text ?? '').matchAll(/Still 
 beforeEach(async () => {
   resetHarness()
   flags.keepersOn = true
+  flags.listsOn = false
+  flags.sender = 'resend'
   await env.DB.batch([
     env.DB.prepare('DELETE FROM board_seat_assignments'),
     env.DB.prepare('DELETE FROM club_check_marks'),
@@ -267,7 +286,9 @@ describe('the mark: claimed before the send, given back only when another try is
     expect(await markCount()).toBe(2)
   })
 
-  it('a send worth another try gives the mark back and the next call sends', async () => {
+  it('under today\'s rule, the engine\'s rules off: a send worth another try, a 500, gives the mark back and the next call sends', async () => {
+    flags.listsOn = false
+    flags.sender = 'resend'
     const who = await holder()
     emailBehavior.succeed = false
     emailBehavior.status = 500
@@ -280,6 +301,40 @@ describe('the mark: claimed before the send, given back only when another try is
     expect(second).toMatchObject({ sent: 1 })
     expect(mailTo(who.email)).toHaveLength(1)
     expect(await markCount()).toBe(1)
+  })
+
+  it('under the engine\'s rules: a send worth another try, a 503, gives the mark back and ends the run, and the next call sends', async () => {
+    flags.listsOn = true
+    const who = await holder('Player One')
+    const other = await holder('Player Two')
+    emailBehavior.succeed = false
+    emailBehavior.status = 503
+    emailBehavior.failFor = [who.email, other.email]
+    const first = await runMonthlyCheck(keyed(), DEC_7_8AM, false, FAST)
+    expect(first).toMatchObject({ sent: 0, notSent: 1, notReached: 1 })
+    expect(await markCount()).toBe(0)
+    emailBehavior.succeed = true
+    const second = await runMonthlyCheck(keyed(), new Date('2026-12-07T14:05:00Z'), false, FAST)
+    expect(second).toMatchObject({ sent: 2 })
+    expect(mailTo(who.email)).toHaveLength(1)
+    expect(mailTo(other.email)).toHaveLength(1)
+    expect(await markCount()).toBe(2)
+  })
+
+  it('under the engine\'s rules: a 500 keeps the mark, the run goes on to the next person, and the first is not tried again that month', async () => {
+    flags.listsOn = true
+    const who = await holder('Player One')
+    const other = await holder('Player Two')
+    emailBehavior.succeed = false
+    emailBehavior.status = 500
+    emailBehavior.failFor = [who.email]
+    const first = await runMonthlyCheck(keyed(), DEC_7_8AM, false, FAST)
+    expect(first).toMatchObject({ sent: 1, notSent: 1, notReached: 0 })
+    expect(await markCount()).toBe(2)
+    expect(mailTo(other.email)).toHaveLength(1)
+    emailBehavior.succeed = true
+    expect((await runMonthlyCheck(keyed(), new Date('2026-12-07T14:05:00Z'), false, FAST)).stopped).toBe('nobody')
+    expect(mailTo(who.email)).toHaveLength(0)
   })
 
   it('one that will never go is not tried again that month', async () => {

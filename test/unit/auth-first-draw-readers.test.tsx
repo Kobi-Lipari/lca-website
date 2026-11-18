@@ -14,7 +14,7 @@
 //   a visitor with no session is offered nothing, in every draw
 // - useMediaManager, with mailLists on in this file alone: it asks nothing
 //   while the member is on its way, asks once the member is in hand, and
-//   with mailLists as it ships asks nothing at all
+//   with mailLists off asks nothing at all
 //
 // Every person, club and token here is made up.
 import { useLayoutEffect, type ReactNode } from 'react'
@@ -273,7 +273,7 @@ describe('useMediaManager in the first draw', () => {
     expect(getMediaManager).toHaveBeenCalledTimes(1)
   })
 
-  it('with mailLists as it ships: asks nothing at all, before the member and after', async () => {
+  it('with mailLists off: asks nothing at all, before the member and after', async () => {
     const { release } = await reload(navPersona('active-member'), '/somewhere', null, true)
     await settle()
     await release()

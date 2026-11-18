@@ -15,7 +15,9 @@
 // The event's managers are the people canManageTournament
 // (functions/utils/admin/permissions.ts) names, and the observers: an LCA
 // admin and an observer manage every event, a club rep the events of their
-// own club, and anyone but a guest the events they are assigned to direct.
+// own club, anyone but a guest the events they are assigned to direct, and,
+// while REGION_EVENTS_ON is set, a regional representative the club events
+// of their region (WS09 step 17).
 // Both handlers answer through toTournamentResponse first, as
 // test/unit/sections-reader-audit.test.ts holds them to.
 
@@ -69,13 +71,18 @@ export interface ManagedEvent {
  * and an observer manage them all; a club rep the events of their own club;
  * anyone but a guest the events they are assigned to direct; someone signed
  * out, none. The viewer's assignments are read once, never once an event.
+ * regionClubIds are the clubs the viewer's regional seats keep, which the
+ * caller reads once (regionClubIdsOf) and which are empty while
+ * REGION_EVENTS_ON is unset: a representative manages every event of those
+ * clubs, as canManageTournament's region branch gives it.
  */
-export async function eventsManagedBy(db: D1Database, viewer: ListViewer | null): Promise<(event: ManagedEvent) => boolean> {
+export async function eventsManagedBy(db: D1Database, viewer: ListViewer | null, regionClubIds: readonly string[] = []): Promise<(event: ManagedEvent) => boolean> {
   if (!viewer) return () => false
   if (viewer.role === 'lca_admin' || isObserver(viewer)) return () => true
   const directed = new Set(viewer.role === 'guest' ? [] : await getDirectedTournamentIds(db, viewer.id))
+  const region = new Set(viewer.role === 'guest' ? [] : regionClubIds)
   return (event) =>
-    (viewer.role === 'club_rep' && !!event.club_id && viewer.clubId === event.club_id) || directed.has(event.id)
+    (viewer.role === 'club_rep' && !!event.club_id && viewer.clubId === event.club_id) || directed.has(event.id) || (!!event.club_id && region.has(event.club_id))
 }
 
 /**

@@ -247,7 +247,8 @@ describe('the order of the notice: the grant, then the mark, then the reads, the
   })
 
   it('reads the event with its creator\'s name in one statement, and every admin\'s address in the one the record quotes, ordered by address, before the first send', () => {
-    const prepared = callsOf(send, notice, 'prepare').map((c) => flat((c.arguments[0] as ts.StringLiteral).text))
+    // Since WS09 step 18 the admins' statement sits in lcaAdminAddresses, which the notice calls and Submit for LCA review shares.
+    const prepared = [send, functionNamed(notice, 'lcaAdminAddresses')].flatMap((fn) => callsOf(fn, notice, 'prepare')).map((c) => flat((c.arguments[0] as ts.StringLiteral).text))
     const admins = quoted(noticePart).find((q) => q.startsWith('SELECT email'))
     expect(admins).toBe("SELECT email, full_name FROM members WHERE role = 'lca_admin' AND email LIKE '%@%' ORDER BY email")
     expect(prepared).toEqual(expect.arrayContaining([

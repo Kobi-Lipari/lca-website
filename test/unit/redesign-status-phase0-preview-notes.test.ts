@@ -448,6 +448,8 @@ describe('REDESIGN_STATUS.md, K\'s notes from the preview: files, pins and what 
       expect(checks.split(piece), piece).toHaveLength(2)
     }
     expect(checks).toContain('`test/a11y/baseline.json` unchanged')
+    // Main brought in before the gate: said once, at the line's end, with where the gate's own figures are.
+    expect(checks.endsWith("`main` at `498ec7f`, with pull requests 133 and 134, was merged into the branch on Wednesday, November 18, 2026, no file meeting; the gate's figures, taken on the merged tree, are in the pull request's text.")).toBe(true)
   })
 })
 

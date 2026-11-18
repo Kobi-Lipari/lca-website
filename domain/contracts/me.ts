@@ -18,11 +18,12 @@ import { z } from 'zod'
 import { idSchema } from './common'
 
 /**
- * The grant a person creates with, the five CreationGrant names in
+ * The grant a person creates with, the six CreationGrant names in
  * domain/events/creation.ts. The president and the standing director count
- * only while CREATION_ROLES_ON is set, and read as none until then.
+ * only while CREATION_ROLES_ON is set, and the regional representative only
+ * while REGION_EVENTS_ON is set, and each reads as none until then.
  */
-export const creationGrantSchema = z.enum(['admin', 'president', 'standing_director', 'club_rep', 'none'])
+export const creationGrantSchema = z.enum(['admin', 'president', 'standing_director', 'club_rep', 'regional_rep', 'none'])
 
 /**
  * GET /api/me/tournament-creation: the person's grant; canCreate, whether

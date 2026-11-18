@@ -10,6 +10,12 @@
 //   three calls the helper answers: POST /api/me, GET /api/me and GET
 //   /api/board/my-seats, and for nothing else; nothing goes to the fake
 //   sign-in address
+// - with mailLists on, today's header asks one thing more, once, for a seat
+//   holder Admin does not let in, or an LCA officer who holds a seat
+//   (checkpoint M's review): GET /api/me/media-manager (WS16 step 6),
+//   which the helper answers as the server answers anyone who does not hold
+//   the Media manager seat, not the media manager, so the person's account
+//   links stay those the list gives them
 // - what the context works out from the person's answers is what the
 //   person's list says it holds: the role, the board seat, the clubs a
 //   regional seat covers and the events the person directs
@@ -30,7 +36,7 @@ import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-li
 import { MemoryRouter } from 'react-router-dom'
 import { createClient, type SupabaseClient, type User } from '@supabase/supabase-js'
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { MEMBER_ROLES } from '@/areas/admin/roles'
+import { MEMBER_ROLES, canAccessAdmin } from '@/areas/admin/roles'
 import { AuthProvider, type AuthContextValue } from '@/contexts/AuthContext'
 import { AuthContext, useAuth } from '@/contexts/auth-context'
 import { Navbar } from '@/components/layout/Navbar'
@@ -129,6 +135,7 @@ function visit(person: NavPersona, options: { aal?: 'aal1' | 'aal2'; hold?: Prom
       if (answers && call === 'POST /api/me') return json(answers.synced, 201)
       if (answers && call === 'GET /api/me') return json(answers.me)
       if (answers && call === 'GET /api/board/my-seats') return json(answers.mySeats)
+      if (answers && call === 'GET /api/me/media-manager') return json({ mediaManager: false, secondFactor: (options.aal ?? person.aal) === 'aal2' })
       // What the test servers answer anything else a planted token asks for.
       return json({ error: 'Unauthorized' }, 401)
     }),
@@ -220,8 +227,12 @@ describe('the planted session, read by the site\'s sign-in context and drawn by 
     expect(accountLinks()).toEqual([...person.todaysRoleLinks])
 
     const ANSWERED = ['POST /api/me', 'GET /api/me', 'GET /api/board/my-seats']
+    // The media manager's question, asked by the account menu with mailLists on for a seat holder Admin does not let in,
+    // or an LCA officer who holds a seat, and answered no, as the helper answers it.
+    const officerWithSeat = holds.role === 'lca_officer' && (person.answers?.mySeats.seats.length ?? 0) > 0
+    const ASKED = FEATURES.mailLists && holds.isBoardMember && (!canAccessAdmin(holds.role) || officerWithSeat) ? ['GET /api/me/media-manager'] : []
     for (const call of ANSWERED) expect(record.calls, call).toContain(call)
-    expect(record.calls.filter((call) => !ANSWERED.includes(call))).toEqual([])
+    expect(record.calls.filter((call) => !ANSWERED.includes(call))).toEqual(ASKED)
     expect(record.signInCalls).toEqual([])
   })
 

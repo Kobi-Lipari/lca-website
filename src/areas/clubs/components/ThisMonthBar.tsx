@@ -5,9 +5,14 @@
 // in the last 90 days · 2 not checked in 90 days", with Confirm all still
 // accurate at its end while any club needs a check. The date and its weekday
 // come from the server as words, and the counts are the server's, moved by
-// the page as clubs are marked, so the bar makes no date. The board's
-// reports and events in review join the bar once later steps give them
-// their rows. The parts wrap onto further lines on a narrow phone.
+// the page as clubs are marked, so the bar makes no date. With regionEvents
+// on (WS09 step 19) the events in LCA review join it, "1 event in review" or
+// "2 events in review", from the server's count, sent only while
+// REGION_EVENTS_ON is set, and only when there is one; the board's reports
+// join it once a later step gives them their rows. Below the width where the bar sits on one line (lg, 1024px),
+// the parts stand one under another with no dot, so no line starts with a
+// separator; from that width up they read in one line, dots between. The
+// dots are never read aloud.
 //
 // Confirm all asks one plain question first, in a dialog built from the
 // site's own dialog parts (src/components/ui/dialog.tsx, which the scanner
@@ -21,6 +26,7 @@ import * as DialogPrimitive from '@radix-ui/react-dialog'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogClose, DialogDescription, DialogOverlay, DialogPortal, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { clubsWord } from '@/areas/clubs/region'
+import { regionEventsOn } from '@/areas/clubs/switches'
 import type { WorkspaceRegionResponse } from '@domain/contracts'
 
 const CONTROL = 'min-h-11 px-4 whitespace-normal'
@@ -41,13 +47,14 @@ export function ThisMonthBar({ thisMonth, hasClubs, toConfirm, running, onConfir
   const parts = [
     `Next monthly check lands ${thisMonth.nextCheck.date}`,
     ...(hasClubs ? [`${thisMonth.checked} of ${total} checked in the last 90 days`, `${thisMonth.notChecked} not checked in 90 days`] : []),
+    ...(regionEventsOn() && (thisMonth.inReview ?? 0) > 0 ? [thisMonth.inReview === 1 ? '1 event in review' : `${thisMonth.inReview} events in review`] : []),
   ]
   return (
     <section aria-labelledby="this-month-title" className="flex min-w-0 flex-wrap items-center justify-between gap-3 rounded-xl border bg-card p-4 shadow-sm">
-      <div className="flex min-w-0 flex-wrap items-baseline gap-x-1.5 gap-y-1 text-sm text-ink">
+      <div className="flex min-w-0 flex-col gap-y-1 text-sm text-ink lg:flex-row lg:flex-wrap lg:items-baseline lg:gap-x-1.5">
         <h2 id="this-month-title" ref={headingRef} tabIndex={-1} className="text-sm font-semibold outline-none">This month</h2>
         {parts.map((part) => (
-          <p key={part} className="min-w-0 break-words"><span aria-hidden="true">· </span>{part}</p>
+          <p key={part} className="min-w-0 break-words"><span aria-hidden="true" className="hidden lg:inline">· </span>{part}</p>
         ))}
       </div>
       <Dialog open={asking && toConfirm > 0} onOpenChange={setAsking}>

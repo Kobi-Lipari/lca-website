@@ -147,6 +147,14 @@ export const tournaments = sqliteTable('tournaments', {
   requiresLcaMembership: integer('requires_lca_membership').default(1).notNull(),
   // When the D22 notice to the LCA admins went, at this event's first publish; it is sent only while NULL (0059).
   reviewNotifiedAt: text('review_notified_at'),
+  // A regional representative's club event waits for an LCA admin's approval
+  // before it lists (0070): 1 marks the wait, and the three columns after it
+  // say when it was asked for, when it was given and by whom. Nothing writes
+  // them yet; the public answers leave all four out (MANAGER_ONLY_TOURNAMENT_KEYS).
+  needsLcaApproval: integer('needs_lca_approval').default(0).notNull(),
+  approvalRequestedAt: text('approval_requested_at'),
+  approvedAt: text('approved_at'),
+  approvedBy: text('approved_by').references(() => members.id),
 },
 (table) => [
   index('idx_tournaments_club_id').on(table.clubId),

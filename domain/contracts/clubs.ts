@@ -351,6 +351,23 @@ const keeperColumnsShape = {
 export const adminClubRowSchema = z.strictObject({ ...clubRowSchema.shape, ...keeperColumnsShape })
 
 /**
+ * What a person may do with a club's events (functions/utils/clubs/eventRights.ts),
+ * which GET /api/admin/clubs/[id] answers as `eventRights` only while
+ * REGION_EVENTS_ON is set: `add`, whether the create admits them for the
+ * club, 'for_approval' where the event they create waits for an LCA admin's
+ * approval and runs at $0; `manage`, whether they run the club's events;
+ * `decide`, whether they approve the club's waiting events or ask for
+ * changes (an LCA admin); and `askPayout`, whether a payout request can go
+ * through (CREATION_ROLES_ON).
+ */
+export const clubEventRightsSchema = z.strictObject({
+  add: z.enum(['no', 'yes', 'for_approval']),
+  manage: z.boolean(),
+  decide: z.boolean(),
+  askPayout: z.boolean(),
+})
+
+/**
  * GET /api/admin/clubs/[id] (adminGetClub), for an LCA admin, an observer,
  * the club's rep and the representative for its region. The officers carry
  * their email and the roster its members for all but a person admitted by
@@ -385,8 +402,14 @@ export const adminClubResponseSchema = z.strictObject({
     status: tournamentStatusSchema,
     is_visible: flagSchema,
     registration_status: registrationStatusSchema,
+    /** The three columns of the approval wait, answered only while REGION_EVENTS_ON is set (WS09 step 19); a blank time reads as null. */
+    needs_lca_approval: flagSchema.optional(),
+    approval_requested_at: storedTimestampSchema.nullable().optional(),
+    approved_at: storedTimestampSchema.nullable().optional(),
   })),
   places: z.array(clubPlaceSchema).optional(),
+  /** What the person may do with the club's events, answered only while REGION_EVENTS_ON is set (WS09 step 19). */
+  eventRights: clubEventRightsSchema.optional(),
 })
 
 /**
@@ -437,6 +460,8 @@ export const regionClubSchema = z.strictObject({
   needsCheck: z.boolean(),
   events: z.number().int().nonnegative(),
   openItems: z.array(z.never()),
+  /** How many of the club's events wait in LCA review (marked, sent and not approved), answered only while REGION_EVENTS_ON is set (WS09 step 19). */
+  inReview: z.number().int().nonnegative().optional(),
 })
 
 /** A region My region covers, and who else keeps it: the name and seat title of each other holder of an active seat over it. */
@@ -458,6 +483,8 @@ export const workspaceRegionResponseSchema = z.strictObject({
     nextCheck: z.strictObject({ day: isoDateSchema, date: z.string(), time: z.string() }),
     checked: z.number().int().nonnegative(),
     notChecked: z.number().int().nonnegative(),
+    /** How many events of all the clubs wait in LCA review, answered only while REGION_EVENTS_ON is set (WS09 step 19). */
+    inReview: z.number().int().nonnegative().optional(),
   }),
   regions: z.array(regionKeepersSchema),
 })
@@ -465,11 +492,15 @@ export const workspaceRegionResponseSchema = z.strictObject({
 /**
  * GET /api/clubs/confirm/[token], the page a Still accurate link in the
  * monthly check opens: the club the good link names, by its listing's name
- * and town. Nothing else: no id, no person and no address.
+ * and town, and how it meets in the listing's own public words (`statement`,
+ * as one line, null when the listing has none), the same words the email
+ * shows, so the person sees what they vouch for. Nothing else: no id, no
+ * person and no address.
  */
 export const clubLinkResponseSchema = z.strictObject({
   name: z.string(),
   city: z.string(),
+  statement: z.string().nullable(),
 })
 
 /**
@@ -521,3 +552,4 @@ export type ClubPlace = z.infer<typeof clubPlaceSchema>
 export type ClubConfirmResponse = z.infer<typeof clubConfirmResponseSchema>
 export type WorkspaceRegionResponse = z.infer<typeof workspaceRegionResponseSchema>
 export type RegionClub = z.infer<typeof regionClubSchema>
+export type ClubEventRights = z.infer<typeof clubEventRightsSchema>

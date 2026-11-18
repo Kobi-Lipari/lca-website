@@ -238,6 +238,14 @@ const managedTournamentListItemSchema = z.strictObject({
   keep_apart: keepApartSchema,
   report_settings: storedJsonTextSchema.nullable(),
   is_state_championship: flagSchema,
+  /** 1: a regional representative's club event that waits for an LCA admin's approval before it lists (0070); 0 for every other. */
+  needs_lca_approval: flagSchema,
+  /** When the approval was asked for; null until then. */
+  approval_requested_at: storedTimestampSchema.nullable(),
+  /** When an LCA admin approved the event; null until then. */
+  approved_at: storedTimestampSchema.nullable(),
+  /** The LCA admin who approved it; null until then. */
+  approved_by: idSchema.nullable(),
   /** 1: entering needs a current LCA membership (domain/membership/requirement.ts). */
   requires_lca_membership: flagSchema,
   /** When the D22 notice went to the LCA admins, at the event's first publish; null until then. */
@@ -251,11 +259,16 @@ const managedTournamentListItemSchema = z.strictObject({
  * /api/tournaments and GET /api/tournaments/[id], carry only for the people
  * who manage the event (an LCA admin, an observer, the organizing club's rep
  * and an assigned director): created_by, keep_apart and report_settings
- * since the Phase 0 trim, and review_notified_at since WS08 step 2. For
- * anyone else, signed out included, the answer leaves these keys out rather
- * than sending them empty. The admin answers always carry them.
+ * since the Phase 0 trim, review_notified_at since WS08 step 2, and the
+ * four columns of the approval wait since WS09 step 16, approved_by a
+ * member's id among them. For anyone else, signed out included, the answer
+ * leaves these keys out rather than sending them empty. The admin answers
+ * always carry them.
  */
-export const MANAGER_ONLY_TOURNAMENT_KEYS = ['created_by', 'keep_apart', 'report_settings', 'review_notified_at'] as const
+export const MANAGER_ONLY_TOURNAMENT_KEYS = [
+  'created_by', 'keep_apart', 'report_settings', 'review_notified_at',
+  'needs_lca_approval', 'approval_requested_at', 'approved_at', 'approved_by',
+] as const
 
 /** The same keys as the mask zod's partial() takes. */
 const managerOnly = Object.fromEntries(MANAGER_ONLY_TOURNAMENT_KEYS.map((key) => [key, true])) as {
@@ -520,8 +533,9 @@ export const prizeAwardSchema = z.strictObject({
  * the live sections from the table (archived ones are not offered for
  * entry), round_schedule and the schedules from the schedule tables,
  * custom_details read into an array, and how many players wait for a spot.
- * created_by, keep_apart, report_settings and review_notified_at are there
- * only when the viewer manages the event (MANAGER_ONLY_TOURNAMENT_KEYS).
+ * created_by, keep_apart, report_settings, review_notified_at and the four
+ * columns of the approval wait are there only when the viewer manages the
+ * event (MANAGER_ONLY_TOURNAMENT_KEYS).
  */
 export const tournamentDetailSchema = adminTournamentSchema
   .partial(managerOnly)
@@ -606,8 +620,50 @@ export const tournamentManageResponseSchema = z.strictObject({
   directors: z.array(z.strictObject({
     member_id: idSchema,
     full_name: z.string(),
-    email: z.string(),
+    /** null while REGION_EVENTS_ON is set for a viewer whose standing on the event's club is the region alone. */
+    email: z.string().nullable(),
   })),
+  /**
+   * Who may move the event through the LCA admins' wait, answered only while
+   * REGION_EVENTS_ON is set (WS09 step 19): maySubmit, Submit for LCA review,
+   * for the person who drafted it in their region or an LCA admin;
+   * mayDecide, Approve and publish and Ask for changes, for an LCA admin.
+   * Both false for an event not marked and for one approved.
+   */
+  approval: z.strictObject({ maySubmit: z.boolean(), mayDecide: z.boolean() }).optional(),
+})
+
+/**
+ * POST and DELETE /api/admin/tournaments/[id]/directors
+ * (adminAssignTournamentDirector, adminRemoveTournamentDirector): the member
+ * to name as one of the event's directors, or to remove. Optional here, so a
+ * body without it still gets the endpoint's own words, "memberId is
+ * required".
+ */
+export const tournamentDirectorRequestSchema = z.looseObject({
+  memberId: z.string().optional(),
+})
+
+/** One of an event's directors, as the directors endpoint lists them. */
+export const tournamentDirectorSchema = z.strictObject({
+  tournament_id: idSchema,
+  member_id: idSchema,
+  assigned_at: storedTimestampSchema,
+  full_name: z.string(),
+  /**
+   * null while REGION_EVENTS_ON is set for a caller whose standing on the
+   * event's club is the region alone, who may not read members' emails.
+   */
+  email: z.string().nullable(),
+})
+
+/**
+ * GET, POST and DELETE /api/admin/tournaments/[id]/directors
+ * (adminGetTournamentDirectors and the two above): every director of the
+ * event, after the naming or the removal for the two writes.
+ */
+export const tournamentDirectorsResponseSchema = z.strictObject({
+  directors: z.array(tournamentDirectorSchema),
 })
 
 /**
@@ -622,6 +678,47 @@ export const registrationSettingsRequestSchema = z.looseObject({
   reminder_1_enabled: z.boolean().optional(),
   reminder_2_days_before: z.number().int().min(0).optional(),
   reminder_2_enabled: z.boolean().optional(),
+})
+
+/** The longest note Ask for changes takes, in characters, once trimmed. */
+export const APPROVAL_NOTE_MAX = 500
+
+/** The words for a note that is empty, or only spaces, on Ask for changes. */
+export const APPROVAL_NOTE_EMPTY = 'Write what needs to change before you send it back.'
+
+/** The words for a note longer than APPROVAL_NOTE_MAX. */
+export const APPROVAL_NOTE_TOO_LONG = 'Keep the note to 500 characters or fewer.'
+
+/**
+ * POST /api/admin/tournaments/[id]/approval (WS09 step 18): one of the
+ * three moves of a representative's club event through the LCA admins'
+ * wait. Strict, unlike the other request schemas, since no page sends it
+ * yet: a key it does not name is refused, and so is a note on submit or
+ * approve. Ask for changes needs its note, plain text, trimmed, 1 to 500
+ * characters; it goes in the email to the person who drafted the event and
+ * is kept nowhere.
+ */
+export const tournamentApprovalRequestSchema = z.discriminatedUnion('action', [
+  z.strictObject({ action: z.literal('submit') }),
+  z.strictObject({ action: z.literal('approve') }),
+  z.strictObject({
+    action: z.literal('ask_changes'),
+    note: z.string().trim().min(1, APPROVAL_NOTE_EMPTY).max(APPROVAL_NOTE_MAX, APPROVAL_NOTE_TOO_LONG),
+  }),
+])
+
+/**
+ * POST /api/admin/tournaments/[id]/approval: where the event stands after
+ * the move, by the wait's four columns, and whether the email went, in
+ * words a page can show. No person's id but approved_by, which the
+ * managers' answers already carry.
+ */
+export const tournamentApprovalResponseSchema = z.strictObject({
+  needs_lca_approval: flagSchema,
+  approval_requested_at: storedTimestampSchema.nullable(),
+  approved_at: storedTimestampSchema.nullable(),
+  approved_by: idSchema.nullable(),
+  email: z.string().min(1),
 })
 
 /** US Chess crosstable codes: W, L, D played; X forfeit win, F forfeit loss; B full bye, H half bye; U unplayed. */
@@ -770,3 +867,7 @@ export type TournamentManageResponse = z.infer<typeof tournamentManageResponseSc
 export type RegistrationSettingsRequest = z.infer<typeof registrationSettingsRequestSchema>
 export type RatingReportResponse = z.infer<typeof ratingReportResponseSchema>
 export type ClearinghouseResponse = z.infer<typeof clearinghouseResponseSchema>
+export type TournamentDirectorRequest = z.infer<typeof tournamentDirectorRequestSchema>
+export type TournamentDirectorsResponse = z.infer<typeof tournamentDirectorsResponseSchema>
+export type TournamentApprovalRequest = z.infer<typeof tournamentApprovalRequestSchema>
+export type TournamentApprovalResponse = z.infer<typeof tournamentApprovalResponseSchema>

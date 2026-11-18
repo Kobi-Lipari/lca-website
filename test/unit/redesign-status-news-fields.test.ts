@@ -52,10 +52,10 @@ describe('REDESIGN_STATUS.md, the News posts\' links and fields: where its secti
     expect(section).not.toMatch(/\n### /)
   })
 
-  it('opens with its status, branch and pull request, built and not merged, the pull request a draft', () => {
-    expect(lines[2]).toBe('**Status:** built on branch `fix/news-posts-fields` on Friday, November 13, 2026, from `13a2c36`, the merge of pull request 128; not merged yet.')
+  it('opens with its status, branch and pull request, now merged into main', () => {
+    expect(lines[2]).toBe('**Status:** built on branch `fix/news-posts-fields` on Friday, November 13, 2026, from `13a2c36`, the merge of pull request 128; merged into `main` as `f914d8f` on Friday, November 13, 2026.')
     expect(lines[3]).toBe('**Branch:** `fix/news-posts-fields`, cut from `main` at `13a2c36` on Friday, November 13, 2026.')
-    expect(lines[4]).toBe('**PR:** draft pull request 129, opened from this branch on Friday, November 13, 2026; not merged yet.')
+    expect(lines[4]).toBe('**PR:** draft pull request 129, opened from this branch on Friday, November 13, 2026; merged into `main` as `f914d8f` on Friday, November 13, 2026.')
   })
 
   it('gives the date line a date on or after the day it was written, the line\'s pinned start and end kept', () => {

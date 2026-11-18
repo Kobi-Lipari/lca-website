@@ -290,7 +290,8 @@ describe('REDESIGN_STATUS.md, WS09 checkpoint U, the save notice at most once an
   it('counts as many cases for each new test as the file holds', () => {
     const files = bullet(block, '- **Files.**')
     for (const file of NEW_TESTS) expect(writtenCount(files, file), file).toBe(casesIn(file))
-    for (const [file, count] of CHANGED_TESTS) expect(casesIn(file), file).toBe(count)
+    // WS09 step 18 adds the approval wait's two cases to role-safety.test.ts, so its count is read only while this block is the latest.
+    for (const [file, count] of CHANGED_TESTS) if (latestBlock === BLOCK || file !== 'test/integration/role-safety.test.ts') expect(casesIn(file), file).toBe(count)
   })
 
   it('gives unit counts that add up: the base\'s and the new files\'', () => {
