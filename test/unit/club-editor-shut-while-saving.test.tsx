@@ -41,7 +41,7 @@ const CLUB_URL = `/api/admin/clubs/${ID}`
 const CLUB = {
   id: ID, name: 'Example Chess Club', city: 'Example City', location: 'Example Library, 1 Example Street',
   description: 'A friendly made-up club.', meeting_schedule: 'Tuesdays at 7:00 PM', contact_email: 'club@example.org',
-  created_at: '2026-01-01 12:00:00', color: '#1f4e79', image_url: null, region: 'Bayou Region', latitude: 30.1, longitude: -91.2,
+  created_at: '2026-01-01 12:00:00', color: '#1f4e79', image_url: null, region: 'Lafayette / South Central', latitude: 30.1, longitude: -91.2,
   slug: 'example-chess', about_text: 'A friendly made-up club.', how_we_meet_text: 'Tuesdays at 7:00 PM',
   cost_text: null, welcome_text: null, weekend_play: 0, scholastic_friendly: 0, contact_name_public: 'Player One', facebook_url: null,
   website_url: null, other_url: null, told_updated_at: null, told_by: null, last_confirmed_at: null, confirmed_by: null,
@@ -236,11 +236,11 @@ describe('the club editor while a save runs: the controls that keep the focus', 
     expect(fireEvent.keyDown(region, { key: 'Tab' })).toBe(true)
     expect(fireEvent.mouseDown(region)).toBe(false)
     fireEvent.change(region, { target: { value: 'North Louisiana' } })
-    expect(region.value).toBe('Bayou Region')
+    expect(region.value).toBe('Lafayette / South Central')
     await run.endSave()
     const patches = seen.filter((s) => s.call === `PATCH ${CLUB_URL}`)
     expect(patches).toHaveLength(1)
-    expect((patches[0].body as { region: string }).region).toBe('Bayou Region')
+    expect((patches[0].body as { region: string }).region).toBe('Lafayette / South Central')
     // Plain again, the list takes a choice, which the next press would send.
     expect(region.hasAttribute('aria-disabled')).toBe(false)
     expect(fireEvent.mouseDown(region)).toBe(true)

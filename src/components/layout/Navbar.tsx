@@ -106,6 +106,11 @@ function useAccountLinks(): NavLink[] {
   if (mayBeMediaManager && mediaManager.mediaManager) {
     links.push({ label: 'Group email', href: '/admin/email' })
   }
+  // The newsletter's own page, with mailPage on, for those it lets in: the LCA
+  // admins, the president (lca_observer) and the media manager.
+  if (FEATURES.mailPage && (role === 'lca_admin' || role === 'lca_observer' || (mayBeMediaManager && mediaManager.mediaManager))) {
+    links.push({ label: 'Newsletter', href: '/admin/newsletter' })
+  }
   // Regional representatives manage their region's clubs from the dashboard.
   if (role !== 'lca_admin' && managedClubs.length > 0) {
     links.push({ label: 'My region\u2019s clubs', href: '/dashboard' })

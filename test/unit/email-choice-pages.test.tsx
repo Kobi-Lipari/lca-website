@@ -316,7 +316,7 @@ describe('the email preferences page', () => {
     fireEvent.click(box('LCA newsletter'))
     fireEvent.click(screen.getByRole('button', { name: 'Save my choices' }))
     await waitFor(() => expect(status.textContent).toBe('Saved.'))
-    expect(document.activeElement).toBe(status)
+    await waitFor(() => expect(document.activeElement).toBe(status))
     expect(calls.map((c) => c.method)).toEqual(['GET', 'PATCH'])
     expect(calls[1]).toEqual({
       url: PREFERENCES_URL, method: 'PATCH', headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
@@ -412,7 +412,7 @@ describe('checkpoint M\'s review (K\'s decision 52, part B)', () => {
     expect(status.getAttribute('class')).toMatch(/(?:^|\s)focus:ring-3 focus:ring-ring(?:\s|$)/)
     fireEvent.click(screen.getByRole('button', { name: 'Save my choices' }))
     await waitFor(() => expect(status.textContent).toBe('Saved.'))
-    expect(document.activeElement).toBe(status)
+    await waitFor(() => expect(document.activeElement).toBe(status))
     const drawnBox = status.firstElementChild!
     expect(drawnBox.getAttribute('class')).toMatch(/(?=.*\bborder\b)(?=.*\bbg-ok-50\b)(?=.*\bp-3\b)/)
     expect(drawnBox.querySelector('svg')!.getAttribute('aria-hidden')).toBe('true')

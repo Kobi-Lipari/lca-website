@@ -36,8 +36,9 @@
 //   on a page the section owns that none of its links is, the section's own
 //   control carries aria-current="true" instead, so a screen reader still
 //   hears which section the page is in (WS02 step 7);
-// - the bar's buttons in the bar's order: Donate, Log in or My LCA, and
-//   Join LCA or Renew by the member's status, the gold Button;
+// - the buttons, in headerUtilities' order: Donate, which neither bar draws
+//   in its own row (decision 68), Log in or My LCA, and Join LCA or Renew by
+//   the member's status, the gold Button;
 // - for someone signed in, today's role rows and the Admin row the person
 //   holds, as the My LCA menu has them, and last Log out, which signs the
 //   person out and goes to the home page, as the My LCA menu's does;
