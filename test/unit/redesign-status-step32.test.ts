@@ -308,8 +308,8 @@ describe('REDESIGN_STATUS.md, step 32: the step block', () => {
     expect(read('src/pages/ClubDetailPage.tsx').match(/clubTextOnDark\(club\.color\)/g)).toHaveLength(3)
     expect(read('src/pages/AdminClubPage.tsx').match(/clubTextOnDark\(color\)/g)).toHaveLength(1)
     const detail = read('src/pages/TournamentDetailPage.tsx')
-    expect(detail).toContain('FEATURES.newLook ? \'grid grid-cols-1 gap-8 lg:grid-cols-3\' : \'grid gap-8 lg:grid-cols-3\'')
-    expect(detail).toContain('tabIndex: 0, role: \'region\', \'aria-label\': \'Sections\'')
+    expect(detail).toContain('<div className="grid grid-cols-1 gap-8 lg:grid-cols-3">')
+    expect(detail).toContain('tabIndex={0} role="region" aria-label="Sections"')
   })
 
   it('records the toggles that say their state with every switch off, and the code holds each', () => {
