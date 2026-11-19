@@ -10,7 +10,7 @@
 // tier. The database half, functions/utils/events/creation.ts, is held to its
 // order here against a stand-in for the database, and on a D1 database built
 // from the migrations in test/integration/creation-grant.test.ts.
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import {
   canAssignDirectors,
   canChargeFees,
@@ -26,6 +26,19 @@ import {
 } from '../../domain/events/creation'
 import type { TierFees } from '../../domain/events/sections'
 import { creationGrant, creationPerson, creatorGrant, holdsPresidentSeat, type GrantMember } from '../../functions/utils/events/creation'
+
+// The database half is held here as WS08 built it, with REGION_EVENTS_ON
+// unset through a getter on the mocked module, so no regional seat is read;
+// test/integration/creation-grant.test.ts holds the grant with it set.
+vi.mock('../../functions/utils/clubs/pages', async (importOriginal) => {
+  const real = await importOriginal<typeof import('../../functions/utils/clubs/pages')>()
+  return {
+    ...real,
+    get REGION_EVENTS_ON() {
+      return false
+    },
+  }
+})
 
 const ME = 'member-me'
 const SOMEONE = 'member-someone'

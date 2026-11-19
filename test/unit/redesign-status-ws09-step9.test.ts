@@ -248,7 +248,8 @@ describe('REDESIGN_STATUS.md, WS09 step 9: the parts', () => {
       'with CLUB_KEEPERS_ON set, a person admitted by the region alone gets no roster, no officer\\\'s email and no hidden draft by the page address, and is still refused adding or removing an officer',
       'role safety: signed out, the GET by a page address answers 401, with CLUB_KEEPERS_ON set and unset',
     ]) expect(cases, name).toContain(`  it('${name}', async () => {`)
-    expect(cases.split('\n')[398]).toContain('body.tournaments')
+    // The getter of REGION_EVENTS_ON added in the block "WS09 switch-on: regionEvents and REGION_EVENTS_ON" moved this line down by five.
+    expect(cases.split('\n')[403]).toContain('body.tournaments')
   })
 
   it('says what the page draws, its last save read in Central time, and what it never draws', () => {
