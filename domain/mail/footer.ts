@@ -41,6 +41,16 @@ export const PREFERENCES_LABEL = 'Email preferences'
  */
 export const EVENT_MAIL_STILL_COMES = "You'll still get email about your membership, registrations, payments and support requests."
 
+/**
+ * The newsletter's follow line, the one line drawn under its footer: a link to LCA's Facebook page, the page the
+ * site's own footer links. K chose to keep the line on Thursday, November 12, 2026 (K's decision 56, answer 6). Only
+ * the newsletter's email draws it (domain/mail/newsletterLayout.ts); every other footer is as it was.
+ */
+export const NEWSLETTER_FOLLOW_LINE: Readonly<{ label: string; url: string }> = {
+  label: 'LCA on Facebook',
+  url: 'https://www.facebook.com/LouisianaChessAssociation',
+}
+
 /** The footer's words for a list, or undefined for a list that has none written yet, such as a club's (part two). */
 export function listFooterWords(listId: string): ListFooterWords | undefined {
   return listId === NEWSLETTER_LIST_ID || listId === TOURNAMENTS_LIST_ID ? LIST_FOOTER_WORDS[listId] : undefined

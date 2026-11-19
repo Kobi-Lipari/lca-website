@@ -128,7 +128,8 @@ describe('REDESIGN_STATUS.md, WS09 aside on the public event page: the block', (
   it('sits once, right after the clubs switch-on\'s block on main\'s tree, and before the four lists while it is the latest', () => {
     expect(block).not.toBe('')
     expect(ws09.split(`\n${BLOCK}\n`)).toHaveLength(2)
-    expect(headings[headings.indexOf(MAIN) + 1]).toBe(BLOCK)
+    // Written straight after the clubs switch-on's block; with main taken in it stands after the blocks main gained since, the regions' last.
+    expect([MAIN, '### WS09 aside: the regions by the five seats']).toContain(headings[headings.indexOf(BLOCK) - 1])
     if (latest) expect(headings[headings.indexOf(BLOCK) + 1]).toBe(LISTS[0])
     expect(read(STEP1)).toContain('|WS09 aside: \\S|')
   })

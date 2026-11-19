@@ -239,7 +239,7 @@ function signedIn(today: Date, facts: SignedInFacts): NavPersona {
 
 /** The twelve people, worked out for `today`. */
 export function navPersonas(today: Date = new Date()): NavPersona[] {
-  const capital: ApiManagedClub = { id: 'fx-club-capital', name: 'Fixture Capital Chess Club', region: 'South Central Louisiana' }
+  const capital: ApiManagedClub = { id: 'fx-club-capital', name: 'Fixture Capital Chess Club', region: 'Baton Rouge / East Central' }
   const north: ApiManagedClub = { id: 'fx-club-north', name: 'Fixture North Chess Club', region: 'North Louisiana' }
   return [
     {
@@ -359,7 +359,7 @@ export function navPersonas(today: Date = new Date()): NavPersona[] {
       directs: [{ id: 'fx-t-quads', name: 'Fixture Saturday Quads', date: dateFrom(today, 10), status: 'upcoming' }],
       seats: [
         seat(today, 'fx-seat-treasurer', 'fixture-treasurer', 'Fixture Treasurer', 'officer', 90, []),
-        seat(today, 'fx-seat-rep-south', 'fixture-south-central-representative', 'Fixture South Central Representative', 'regional_rep', 60, ['South Central Louisiana']),
+        seat(today, 'fx-seat-rep-south', 'fixture-south-central-representative', 'Fixture South Central Representative', 'regional_rep', 60, ['Baton Rouge / East Central']),
       ],
       managedClubs: [capital],
       isBoardMember: true,

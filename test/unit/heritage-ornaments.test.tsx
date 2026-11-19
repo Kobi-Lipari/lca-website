@@ -7,11 +7,12 @@
 //   reverse to close a section; in the look's ink on a light ground, which
 //   follows the look and turns light in dark mode, and in brand gold on a
 //   navy band. It is decoration, hidden from screen readers.
-// - The seal is the decided board's: a navy disc and two rings of brand
-//   gold, the gold only as the seal's line, with the rook drawn by LcaMark
-//   inside the seal's own SVG, so the path stays in LcaMark.tsx; the group
-//   around the mark gives it its colour and the mark has none of its own.
-//   It adds no words, and it is decoration, never focused.
+// - The seal is the decided board's with its outer ring alone: a navy disc
+//   inside one thin ring of brand gold, the gold only as the seal's line,
+//   with the rook drawn by LcaMark inside the seal's own SVG, so the path
+//   stays in LcaMark.tsx; the group around the mark gives it its colour and
+//   the mark has none of its own. It adds no words, and it is decoration,
+//   never focused.
 // - Neither moves, and neither names a raw colour: both colour through the
 //   tokens and the brand colours of src/index.css.
 import { readFileSync } from 'node:fs'
@@ -71,16 +72,18 @@ describe('Seal', () => {
     expect(classesOf(seal)).toEqual(expect.arrayContaining(['size-16']))
   })
 
-  it('draws a navy disc inside two rings of brand gold, the gold only as the seal\'s line', () => {
+  it('draws a navy disc inside one thin ring of brand gold, the gold only as the seal\'s line', () => {
     const seal = render(<Seal />).container.firstElementChild!
     const circles = [...seal.querySelectorAll('circle')]
-    expect(circles).toHaveLength(3)
+    expect(circles).toHaveLength(2)
     expect(classesOf(circles[0])).toEqual(['fill-brand-navy'])
     for (const ring of circles.slice(1)) {
       expect(classesOf(ring)).toEqual(['stroke-lca-gold'])
       expect(ring.getAttribute('fill')).toBe('none')
     }
-    expect(circles.map((c) => Number(c.getAttribute('r')))).toEqual([49, 45.5, 30])
+    // The board's outer ring, its rim, at its own line: 0.8 pixels at the seal's 64.
+    expect(circles.map((c) => Number(c.getAttribute('r')))).toEqual([49, 45.5])
+    expect(circles[1].getAttribute('stroke-width')).toBe('1.25')
   })
 
   it('draws the rook through LcaMark inside its own SVG: the favicon\'s one path, coloured by the group around it, with no colour of its own', () => {

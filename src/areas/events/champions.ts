@@ -1,8 +1,8 @@
 // src/areas/events/champions.ts
 //
 // The honor roll's shapes: reading pasted champion lines (Admin → State
-// champions), and turning one row per win into one entry per person, which
-// is how the public page lists them.
+// champions), turning one row per win into one entry per person, which is
+// how the public page lists them, and reading a chess title from a note.
 
 import type { ApiChampion } from './api'
 
@@ -37,6 +37,44 @@ export interface ChampionWin {
   tournamentName: string | null
 }
 
+/** The chess titles a champion's note can record, written out in full. */
+export const CHESS_TITLES = [
+  'Grandmaster',
+  'International Master',
+  'FIDE Master',
+  'Candidate Master',
+  'National Master',
+  'Woman Grandmaster',
+  'Woman International Master',
+  'Woman FIDE Master',
+  'Woman Candidate Master',
+] as const
+export type ChessTitle = (typeof CHESS_TITLES)[number]
+
+/** Each title's short form, which the public page writes before the name: "FM Nicholas Matta". */
+export const CHESS_TITLE_SHORT: Record<ChessTitle, string> = {
+  'Grandmaster': 'GM',
+  'International Master': 'IM',
+  'FIDE Master': 'FM',
+  'Candidate Master': 'CM',
+  'National Master': 'NM',
+  'Woman Grandmaster': 'WGM',
+  'Woman International Master': 'WIM',
+  'Woman FIDE Master': 'WFM',
+  'Woman Candidate Master': 'WCM',
+}
+
+/**
+ * The chess title a note records, when the whole note is one of the titles,
+ * in any letter case and spacing ("FIDE Master"). Any other note, such as a
+ * tiebreak, a section, a short form alone ("FM") or a title with more words
+ * ("FIDE Master, co-champion"), records none.
+ */
+export function chessTitleOf(note: string | null): ChessTitle | null {
+  const said = (note ?? '').trim().replace(/\s+/g, ' ').toLowerCase()
+  return CHESS_TITLES.find((t) => t.toLowerCase() === said) ?? null
+}
+
 /** One person on the honor roll, placed by the year of their latest win. */
 export interface ChampionEntry {
   /** A stable anchor for the entry: the list and the person's name as a slug. */
@@ -45,6 +83,8 @@ export interface ChampionEntry {
   firstYear: number
   lastYear: number
   photoUrl: string | null
+  /** The chess title of their newest win on this list whose note records one, or null. The win keeps its note as written. */
+  chessTitle: ChessTitle | null
   /** Every win, newest first. */
   wins: ChampionWin[]
 }
@@ -92,6 +132,7 @@ export function groupByPerson(rows: ApiChampion[], kind: ChampionKind): Champion
         firstYear: r.year,
         lastYear: r.year,
         photoUrl: r.photo_url,
+        chessTitle: null,
         wins: [win],
       })
       continue
@@ -106,6 +147,8 @@ export function groupByPerson(rows: ApiChampion[], kind: ChampionKind): Champion
   }
   const entries = [...byPerson.values()]
   for (const e of entries) e.wins.sort((a, b) => b.year - a.year || a.title.localeCompare(b.title))
+  // The person's title comes from their newest win whose note records one, the wins being newest first now.
+  for (const e of entries) e.chessTitle = e.wins.map((w) => chessTitleOf(w.notes)).find((t) => t !== null) ?? null
   return entries.sort((a, b) => b.lastYear - a.lastYear || b.firstYear - a.firstYear || a.name.localeCompare(b.name))
 }
 

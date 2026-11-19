@@ -106,9 +106,9 @@ describe('0070_club_event_approval.sql on a database that holds rows', () => {
     schemaAfter = schemaRows(db)
   })
 
-  it('runs straight after 0069, the last file, with foreign keys on and every reference whole', () => {
+  it('runs straight after 0069, with foreign keys on and every reference whole', () => {
     expect(BEFORE.at(-1)).toBe('0069_club_check_marks.sql')
-    expect(migrationFiles().at(-1)).toBe(FILE)
+    expect(migrationFiles().filter((f) => f < '0071').at(-1)).toBe(FILE)
     expect(foreignKeysOn(db)).toBe(1)
     expect(all(db, 'PRAGMA foreign_key_check')).toEqual([])
   })
@@ -234,8 +234,8 @@ describe('the member delete on either side of 0070', () => {
 describe('drizzle/meta', () => {
   it('records the change as the journal\'s sixteenth entry, with its snapshot, and the file\'s header names the staged file', () => {
     const journal = JSON.parse(readFileSync(join(ROOT, 'drizzle/meta/_journal.json'), 'utf8')) as { entries: Array<{ idx: number; tag: string }> }
-    expect(journal.entries).toHaveLength(16)
-    expect(journal.entries.at(-1)).toMatchObject({ idx: 15, tag: '0015_club_event_approval' })
+    // Read by its place, not as the last: the newsletter's table is staged after it, as idx 16.
+    expect(journal.entries[15]).toMatchObject({ idx: 15, tag: '0015_club_event_approval' })
     expect(existsSync(join(ROOT, 'drizzle/meta/0015_snapshot.json'))).toBe(true)
     const header = readFileSync(join(MIGRATIONS_DIR, FILE), 'utf8')
     expect(header.split('\n')[0]).toBe('-- 0070_club_event_approval.sql')
