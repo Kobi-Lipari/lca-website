@@ -172,7 +172,7 @@ describe("the event's form", () => {
     expect(within(form).getAllByRole('textbox').length + form.querySelectorAll('input[type="date"]').length).toBe(7)
     expect(document.querySelector('[inert]')).toBeNull()
     expect(within(form).getByLabelText('First day').getAttribute('type')).toBe('date')
-    expect(within(form).getByLabelText('Last day').getAttribute('type')).toBe('date')
+    expect(within(form).getByLabelText('Last day (if more than one)').getAttribute('type')).toBe('date')
   })
 
   it('closes on Escape and on Cancel and gives the focus back to the Add button', async () => {
@@ -206,11 +206,28 @@ describe("the event's form", () => {
 
     type('Event name', 'Sample Winter Open')
     type('First day', '2027-02-07')
-    type('Last day', '2027-02-06')
+    type('Last day (if more than one)', '2027-02-06')
     fireEvent.click(within(form).getByRole('button', { name: 'Add the event' }))
-    expect(focused()).toBe(within(form).getByLabelText('Last day'))
-    expect(said('Last day')).toBe('The last day is before the first day.')
+    expect(focused()).toBe(within(form).getByLabelText('Last day (if more than one)'))
+    expect(said('Last day (if more than one)')).toBe('The last day is before the first day.')
     expect(within(form).getByLabelText('Event name').getAttribute('aria-invalid')).toBeNull()
+  })
+
+  it('names the last day\'s field "Last day (if more than one)", does not require it, and reads an event without it as one day', async () => {
+    await thePage()
+    const form = await theForm()
+    const last = within(form).getByLabelText('Last day (if more than one)')
+    expect(form.querySelector(`label[for="${last.id}"]`)?.textContent).toBe('Last day (if more than one)')
+    expect(last.getAttribute('type')).toBe('date')
+    expect(last.hasAttribute('required')).toBe(false)
+    expect(last.getAttribute('aria-required')).toBeNull()
+    type('Event name', 'Sample Winter Open')
+    type('First day', '2027-01-09')
+    await act(async () => {
+      fireEvent.click(within(form).getByRole('button', { name: 'Add the event' }))
+    })
+    expect(screen.queryByRole('group', { name: 'Add an event' })).toBeNull()
+    expect(editorOf().getHTML()).toContain('<p>Sat, Jan 9, 2027 · Sample Winter Open</p>')
   })
 })
 
@@ -230,7 +247,7 @@ describe("the event's line", () => {
     const form = await theForm()
     type('Event name', 'Example Memorial')
     type('First day', '2027-02-06')
-    type('Last day', '2027-02-07')
+    type('Last day (if more than one)', '2027-02-07')
     type('Place', 'Anytown')
     type('Run by', 'Example Chess Club')
     type('Link address', 'https://club.sample.lca/memorial')
@@ -445,7 +462,7 @@ describe('the Add menu\'s "A line"', () => {
 describe('what is easy to miss in the form', () => {
   it('closes on Escape from every field and every button, giving the focus back to the Add button', async () => {
     await thePage()
-    const labels = ['Event name', 'First day', 'Last day', 'Place', 'Run by', 'Link address', 'Link words']
+    const labels = ['Event name', 'First day', 'Last day (if more than one)', 'Place', 'Run by', 'Link address', 'Link words']
     for (const label of labels) {
       key(within(await theForm()).getByLabelText(label), 'Escape')
       expect(screen.queryByRole('group', { name: 'Add an event' })).toBeNull()
@@ -542,7 +559,7 @@ describe('what is easy to miss in the form', () => {
     const form = await theForm()
     const order = [...form.querySelectorAll<HTMLElement>('input, button')].map((el) =>
       el.tagName === 'BUTTON' ? el.textContent : (form.querySelector(`label[for="${el.id}"]`)?.textContent ?? ''))
-    expect(order).toEqual(['Event name', 'First day', 'Last day', 'Place', 'Run by', 'Link address', 'Link words', 'Add the event', 'Cancel'])
+    expect(order).toEqual(['Event name', 'First day', 'Last day (if more than one)', 'Place', 'Run by', 'Link address', 'Link words', 'Add the event', 'Cancel'])
     expect([...form.querySelectorAll('[tabindex]')].filter((el) => Number(el.getAttribute('tabindex')) > 0)).toHaveLength(0)
   })
 

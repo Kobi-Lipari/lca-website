@@ -24,7 +24,7 @@ const LABEL = 'flex min-w-[min(100%,12rem)] flex-1 flex-col gap-1 text-sm font-s
 const FIELDS: { field: EventField; label: string; type: 'text' | 'date'; inputMode?: 'url' }[] = [
   { field: 'name', label: 'Event name', type: 'text' },
   { field: 'firstDay', label: 'First day', type: 'date' },
-  { field: 'lastDay', label: 'Last day', type: 'date' },
+  { field: 'lastDay', label: 'Last day (if more than one)', type: 'date' },
   { field: 'place', label: 'Place', type: 'text' },
   { field: 'runBy', label: 'Run by', type: 'text' },
   { field: 'link', label: 'Link address', type: 'text', inputMode: 'url' },
