@@ -652,6 +652,6 @@ export const SEARCH_SYNONYMS = {
 /** Other names for the club regions, each pointing at its region. Lower case. */
 export const REGION_ALIASES = {
   nola: 'New Orleans Metro',
-  northshore: 'North of Lake Pontchartrain',
-  acadiana: 'South Central Louisiana',
+  northshore: 'New Orleans Metro',
+  acadiana: 'Lafayette / South Central',
 } as const satisfies Record<string, Region>
