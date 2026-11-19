@@ -116,6 +116,7 @@ const ADMIN = {
 } as unknown as AuthContextValue
 
 beforeEach(() => {
+  window.localStorage.setItem('lca-newsletter-page-help', 'shown') // Help has been seen once, so it does not open by itself here.
   answers = {}
   flags.mailLists = true
   flags.mailPage = true

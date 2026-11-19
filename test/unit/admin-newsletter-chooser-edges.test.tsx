@@ -175,6 +175,7 @@ const ADMIN = {
 let animations: Array<{ on: HTMLElement; frames: Keyframe[]; options: KeyframeAnimationOptions; cancel: ReturnType<typeof vi.fn> }> = []
 
 beforeEach(() => {
+  window.localStorage.setItem('lca-newsletter-page-help', 'shown') // Help has been seen once, so it does not open by itself here.
   answers = {}
   calls = []
   puts = []
