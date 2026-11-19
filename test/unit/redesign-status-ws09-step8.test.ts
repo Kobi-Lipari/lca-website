@@ -191,7 +191,8 @@ describe('REDESIGN_STATUS.md, WS09 step 8: the parts', () => {
       'sent only when they differ from what was stored', 'no tick but the brief\'s two',
     ]) expect(fields, piece).toContain(piece)
     const code = codeOf(BASICS)
-    const order = ['<legend className={PART_NAME}>Name and address</legend>', 'Cost and who is welcome</legend>', 'Links</legend>', 'Logo and club color</legend>']
+    // Each part's name keeps its legend; since the WS09 aside, Help as small question marks, three hold their mark after the name.
+    const order = ['<legend className={PART_NAME}><span id="editor-part-address">Name and address</span>', '>Cost and who is welcome</span>', '>Links</span>', 'Logo and club color</legend>']
     const at = order.map((p) => code.indexOf(p))
     for (const [i, p] of order.entries()) expect(at[i], p).toBeGreaterThan(-1)
     expect([...at].sort((a, b) => a - b)).toEqual(at)

@@ -223,7 +223,8 @@ describe('REDESIGN_STATUS.md, WS09 step 11: the parts', () => {
       '"You\'re here as an LCA admin"', '`--warn-50`, `#fffbeb`', '`--warn-900`, `#7b3306`, 8.73 to 1', 'brand gold is never words', '`lca-my-region-help`',
       'Player One', 'Player Two', '320, 360, 390, 768 and 1280', 'no axe violation', 'two mends',
     ]) expect(look, piece).toContain(piece)
-    expect(read(REGION)).toContain('export const REGION_HELP_SHOWN_KEY = \'lca-my-region-help\'')
+    // Moved by the WS09 aside, Help as small question marks: My region keeps nothing in the browser.
+    expect(read(REGION)).not.toContain('export const REGION_HELP_SHOWN_KEY = \'lca-my-region-help\'')
   })
 
   it('names the map\'s sentences, the branch and what the merge does, with the figures while this step is the latest', () => {

@@ -23,7 +23,6 @@ import { MemoryRouter, useLocation, useNavigate, type NavigateFunction } from 'r
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { AuthContext } from '@/contexts/auth-context'
 import type { AuthContextValue } from '@/contexts/AuthContext'
-import { HELP_SHOWN_KEY } from '@/areas/clubs/editor'
 
 // Each case may wait up to 5 seconds for a page's or the editor's file to load, so each case has 15 seconds.
 vi.setConfig({ testTimeout: 15000 })
@@ -138,8 +137,6 @@ function serve(person: Person) {
 beforeEach(() => {
   Object.assign(flags, { clubKeepers: true, clubEmailHidden: true })
   window.localStorage.clear()
-  // Help has opened by itself before, so the page's own focus is what is read.
-  window.localStorage.setItem(HELP_SHOWN_KEY, 'shown')
   asked = []
   vi.stubGlobal('fetch', vi.fn(async (url: string, init?: RequestInit) => {
     const call = `${init?.method ?? 'GET'} ${url}`

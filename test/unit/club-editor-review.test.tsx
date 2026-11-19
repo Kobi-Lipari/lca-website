@@ -103,7 +103,12 @@ async function openEditor(): Promise<HTMLFormElement> {
 
 const field = (label: string) => screen.getByLabelText(label) as HTMLInputElement
 const patches = () => seen.filter((s) => s.call === `PATCH ${CLUB_URL}`).map((s) => s.body as Record<string, unknown>)
-const help = () => document.getElementById('club-editor-help') as HTMLElement
+/** Every bubble's words of Help's marks, in the page's order, as one piece to read. */
+const help = () => {
+  const all = document.createElement('div')
+  for (const bubble of document.querySelectorAll('[data-slot="help-mark-bubble"]')) all.append(bubble.cloneNode(true))
+  return all
+}
 const status = () => screen.getByRole('status')
 const alertBox = () => screen.getByRole('alert')
 

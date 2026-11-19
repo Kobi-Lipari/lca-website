@@ -12,9 +12,9 @@
 // answer says was stored; while a save runs the boxes are read only and the
 // status says so; an emptied About or meeting's words and a removed pin
 // clear today's field too; a second press does nothing; an observer's form
-// is shut but Help still opens and closes; each limit is the contract's and is said
-// before anything is sent; no explaining sentence is drawn outside Help,
-// which opens by itself once and remembers; the email's label and Help say
+// is shut but Help's marks still open and close; each limit is the contract's and is said
+// before anything is sent; no explaining sentence is drawn outside Help's
+// marks, none of which opens by itself or keeps anything; the email's label and Help say
 // "never shown" only while clubEmailHidden is on, and the contact name's
 // label and Help promise the name and the note on a page only once the new
 // club pages are on; nothing beyond the
@@ -40,7 +40,7 @@ import {
   updateClubRequestSchema,
 } from '@domain/contracts'
 import { RESERVED_SLUGS } from '@domain/clubs/slug'
-import { EDITOR_LIMITS, EMAIL_FORM, HELP_SHOWN_KEY, LINK_WORDS, SLUG_FORM, WEB_ADDRESS_FORM, isWebAddress } from '@/areas/clubs/editor'
+import { EDITOR_LIMITS, EMAIL_FORM, LINK_WORDS, SLUG_FORM, WEB_ADDRESS_FORM, isWebAddress } from '@/areas/clubs/editor'
 import { builder, setBy } from './helpers/tailwindPx'
 import { clubSaveServer } from './helpers/clubSaveServer'
 
@@ -176,8 +176,15 @@ const calls = () => seen.map((s) => s.call).filter((c) => !c.startsWith('GET '))
 const bodyOf = (call: string) => seen.find((s) => s.call === call)?.body as Record<string, unknown>
 /** The places the one save sent. */
 const placesSent = () => bodyOf(`PATCH ${CLUB_URL}`).places as Array<Record<string, unknown>>
-const help = () => document.getElementById('club-editor-help') as HTMLElement
-const helpButton = () => screen.getByRole('button', { name: 'Help' })
+/** Every bubble's words, in the page's order, as one piece to read: Help sits behind a small question mark beside each part. */
+const help = () => {
+  const all = document.createElement('div')
+  for (const bubble of document.querySelectorAll('[data-slot="help-mark-bubble"]')) all.append(bubble.cloneNode(true))
+  return all
+}
+/** One part's mark, by the part's name. */
+const mark = (name: string) => screen.getByRole('button', { name: `Help: ${name}` })
+const bubbleOf = (el: HTMLElement) => document.getElementById(el.getAttribute('aria-controls') ?? '') as HTMLElement
 const status = () => screen.getByRole('status')
 const alertBox = () => screen.getByRole('alert')
 /** Each box of the form and the words of its label, in the form's order. */
@@ -190,7 +197,7 @@ function wordsOutsideHelp(form: HTMLElement): string[] {
   for (let node = walker.nextNode(); node; node = walker.nextNode()) {
     const text = node.textContent?.trim() ?? ''
     // A box's own text is what was typed, and a select's options are its values, so neither is counted.
-    if (text && !node.parentElement?.closest('[data-slot="editor-help"], textarea, select')) words.push(text)
+    if (text && !node.parentElement?.closest('[data-slot="help-mark-bubble"], textarea, select')) words.push(text)
   }
   return words
 }
@@ -217,7 +224,7 @@ describe('the club editor: the five basics', () => {
     ])
     // The basics before anything else the form holds, and one save.
     expect(form.querySelector('ol')!.compareDocumentPosition(screen.getByRole('group', { name: 'Name and address' })) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
-    expect(within(form).getAllByRole('button', { name: /save/i }).map((b) => b.textContent)).toEqual(['Save and publish'])
+    expect(within(form).getAllByRole('button', { name: /^save/i }).map((b) => b.textContent)).toEqual(['Save and publish'])
     expect(form.querySelectorAll('button[type="submit"]')).toHaveLength(1)
     expect(screen.getByRole('region', { name: 'Club listing' })).toBeTruthy()
   })
@@ -248,10 +255,10 @@ describe('the club editor: the five basics', () => {
     }
     const form = await openEditor('observer')
     expect(within(form).getByLabelText('Page address')).toBeTruthy()
-    // Every box and Save sit in a shut fieldset; Help's button stays open to them.
+    // Every box and Save sit in a shut fieldset; Help's marks stay open to them.
     for (const box of form.querySelectorAll<HTMLElement>('input, textarea, select')) expect(box.matches(':disabled'), box.id).toBe(true)
     expect(screen.getByRole('button', { name: 'Save and publish' }).matches(':disabled')).toBe(true)
-    expect(helpButton().matches(':disabled')).toBe(false)
+    for (const each of screen.getAllByRole('button', { name: /^Help: / })) expect(each.matches(':disabled'), each.getAttribute('aria-label')!).toBe(false)
     expect(screen.getByText('View only: you can see everything here, but changes are made by LCA admins.')).toBeTruthy()
   })
 })
@@ -489,7 +496,7 @@ describe('the club editor: Save and publish', () => {
   it('shows one line with both texts where today\'s page shows different words, and none where they agree', async () => {
     serve({ ...CLUB, about_text: 'The listing\'s own words.', description: 'Words saved in the older form.' }, [{ ...PLACE_1, street: null }, PLACE_2])
     const form = await openEditor()
-    const lines = within(form).getAllByText('Today\'s page shows different words here').filter((el) => !el.closest('[data-slot="editor-help"]'))
+    const lines = within(form).getAllByText('Today\'s page shows different words here').filter((el) => !el.closest('[data-slot="help-mark-bubble"]'))
     expect(lines).toHaveLength(2)
     const about = document.getElementById('editor-aboutText-differs') as HTMLElement
     expect(about.textContent).toBe('Today\'s page shows different words hereSaving puts this listing\'s words on today\'s page.Today\'s pageWords saved in the older form.This listingThe listing\'s own words.')
@@ -565,64 +572,72 @@ describe('the club editor: the save\'s own rules, said before anything is sent',
 })
 
 describe('the club editor: Help', () => {
-  it('Help opens once by itself', async () => {
+  it('draws no Help button and no panel, opens no bubble by itself, and keeps nothing in the browser', async () => {
     await openEditor()
-    expect(help().hidden).toBe(false)
-    expect(helpButton().getAttribute('aria-expanded')).toBe('true')
-    expect(helpButton().getAttribute('aria-controls')).toBe('club-editor-help')
-    expect(document.activeElement).toBe(help())
-    expect(window.localStorage.getItem(HELP_SHOWN_KEY)).toBe('shown')
-    // Escape shuts it and the focus goes back to its button.
-    fireEvent.keyDown(help(), { key: 'Escape' })
-    expect(help().hidden).toBe(true)
-    expect(document.activeElement).toBe(helpButton())
-    cleanup()
-    // The next visit on this device starts with Help shut; the button opens it and Close help shuts it.
-    await openEditor()
-    expect(help().hidden).toBe(true)
-    fireEvent.click(helpButton())
-    expect(help().hidden).toBe(false)
-    expect(document.activeElement).toBe(help())
-    fireEvent.click(within(help()).getByRole('button', { name: 'Close help' }))
-    expect(help().hidden).toBe(true)
-    expect(document.activeElement).toBe(helpButton())
+    expect(screen.queryByRole('button', { name: 'Help' })).toBeNull()
+    expect(document.getElementById('club-editor-help')).toBeNull()
+    expect(screen.queryByRole('button', { name: 'Close help' })).toBeNull()
+    const marks = screen.getAllByRole('button', { name: /^Help: / })
+    expect(marks.length).toBeGreaterThan(10)
+    for (const each of marks) {
+      expect(each.getAttribute('aria-expanded'), each.getAttribute('aria-label')!).toBe('false')
+      expect(bubbleOf(each).hidden, each.getAttribute('aria-label')!).toBe(true)
+    }
+    expect(window.localStorage.length).toBe(0)
+    // A press opens a mark, Escape closes it, and the focus stays on the mark.
+    const about = mark('One sentence about the club')
+    about.focus()
+    fireEvent.click(about)
+    expect(about.getAttribute('aria-expanded')).toBe('true')
+    expect(bubbleOf(about).hidden).toBe(false)
+    fireEvent.keyDown(about, { key: 'Escape' })
+    expect(bubbleOf(about).hidden).toBe(true)
+    expect(document.activeElement).toBe(about)
+    expect(window.localStorage.length).toBe(0)
   })
 
-  it('works where the browser refuses storage: Help starts shut and opens from its button', async () => {
-    vi.spyOn(Storage.prototype, 'getItem').mockImplementation(() => { throw new Error('storage refused') })
-    vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => { throw new Error('storage refused') })
+  it('never reads or writes the browser\'s store for Help, and works where the browser refuses it', async () => {
+    const getItem = vi.spyOn(Storage.prototype, 'getItem').mockImplementation(() => { throw new Error('storage refused') })
+    const setItem = vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => { throw new Error('storage refused') })
     await openEditor()
-    expect(help().hidden).toBe(true)
-    fireEvent.click(helpButton())
-    expect(help().hidden).toBe(false)
+    fireEvent.click(mark('Email for messages'))
+    expect(bubbleOf(mark('Email for messages')).hidden).toBe(false)
+    expect(getItem).not.toHaveBeenCalled()
+    expect(setItem).not.toHaveBeenCalled()
   })
 
-  it('opens and shuts Help for an observer after its first showing, though the form is shut to them', async () => {
-    await openEditor('observer')
-    expect(help().hidden).toBe(false)
-    fireEvent.click(within(help()).getByRole('button', { name: 'Close help' }))
-    expect(help().hidden).toBe(true)
-    expect(document.activeElement).toBe(helpButton())
-    cleanup()
-    // The next visit starts with Help shut, and its button opens it.
-    await openEditor('observer')
-    expect(help().hidden).toBe(true)
-    expect(helpButton().matches(':disabled')).toBe(false)
-    fireEvent.click(helpButton())
-    expect(help().hidden).toBe(false)
-    expect(document.activeElement).toBe(help())
-    const close = within(help()).getByRole('button', { name: 'Close help' })
-    expect(close.matches(':disabled')).toBe(false)
-    fireEvent.click(close)
-    expect(help().hidden).toBe(true)
-    expect(document.activeElement).toBe(helpButton())
+  it('opens and closes the marks for an observer, though the form is shut to them', async () => {
+    const form = await openEditor('observer')
+    for (const box of form.querySelectorAll<HTMLElement>('input, textarea, select')) expect(box.matches(':disabled'), box.id).toBe(true)
+    const email = mark('Email for messages')
+    // Inside the shut fieldset a mark answers as a button without being one, so the fieldset does not disable it.
+    expect(email.closest('fieldset[disabled]')).not.toBeNull()
+    expect(email.tagName).toBe('SPAN')
+    expect(email.matches(':disabled')).toBe(false)
+    expect(email.tabIndex).toBe(0)
+    fireEvent.click(email)
+    expect(bubbleOf(email).hidden).toBe(false)
+    fireEvent.click(email)
+    expect(bubbleOf(email).hidden).toBe(true)
+    fireEvent.keyDown(email, { key: 'Enter' })
+    expect(bubbleOf(email).hidden).toBe(false)
+    fireEvent.keyDown(email, { key: ' ' })
+    fireEvent.keyUp(email, { key: ' ' })
+    expect(bubbleOf(email).hidden).toBe(true)
+    // Save and publish's mark stands outside the shut fieldset, a button like any other.
+    const saveMark = mark('Save and publish')
+    expect(saveMark.tagName).toBe('BUTTON')
+    expect(saveMark.matches(':disabled')).toBe(false)
+    fireEvent.click(saveMark)
+    expect(bubbleOf(saveMark).hidden).toBe(false)
+    expect(calls()).toEqual([])
   })
 
   it('no explaining sentence outside Help', async () => {
     const form = await openEditor('rep')
     // From WS09 step 8: About's count, the second place, and the rest of the listing, where what only an LCA admin may change is words.
     expect(wordsOutsideHelp(form)).toEqual([
-      'The basics', 'Help', 'One sentence about the club', '51 of 2,000 characters', 'How the club meets, in words', 'Where', 'Place name', 'Street address', 'Note about the place',
+      'The basics', 'One sentence about the club', '51 of 2,000 characters', 'How the club meets, in words', 'Where', 'Place name', 'Street address', 'Note about the place',
       'Pin: coordinates or a Google Maps link', 'Use this', 'Pin at 30.10000, -91.20000', 'Remove pin',
       'Place 2', 'Place 2 name', 'Place 2 street address', 'Note about place 2', 'Pin for place 2: coordinates or a Google Maps link', 'Use this for place 2',
       'No pin set for place 2', 'Remove place 2', CONTACT, 'Email for messages, never shown',
@@ -707,8 +722,15 @@ describe('the club editor: what it asks and how it is drawn', () => {
 
   it('makes every control at least 44px tall at every width, with a visible ring on focus and a label tied to each box', async () => {
     const form = await openEditor('admin')
-    const controls = [...form.querySelectorAll<HTMLElement>('input, textarea, select, button, a')]
+    // Help's marks are measured on their own below: each draws 24 pixels and is pressed across a wider area.
+    const controls = [...form.querySelectorAll<HTMLElement>('input, textarea, select, button:not([data-slot="help-mark"]), a')]
     expect(controls.length).toBeGreaterThan(12)
+    const marks = [...form.querySelectorAll<HTMLElement>('[data-slot="help-mark"]')]
+    expect(marks.length).toBeGreaterThan(10)
+    for (const each of marks) {
+      expect(each.className.split(/\s+/), each.getAttribute('aria-label')!).toEqual(expect.arrayContaining(['size-6', 'before:absolute', 'before:-left-2', 'before:-right-3', 'before:-top-2.5']))
+      expect(each.className, each.getAttribute('aria-label')!).toMatch(/focus-visible:ring-3 focus-visible:ring-focus/)
+    }
     const css = (await builder())([...new Set(controls.flatMap((el) => [...el.classList]))])
     const rows = [...form.querySelectorAll<HTMLElement>('[type="checkbox"]')].map((box) => box.closest('label')!)
     const rowCss = (await builder())([...new Set(rows.flatMap((el) => [...el.classList]))])
@@ -735,17 +757,18 @@ describe('the club editor: what it asks and how it is drawn', () => {
     for (const el of all) {
       const classes = typeof el.className === 'string' ? el.className.split(/\s+/) : []
       expect(classes.filter((c) => /grid-cols-|(^|:)order-|reverse/.test(c)), el.tagName).toEqual([])
-      const boxes = el.querySelectorAll('input, textarea, select, button').length
+      // A part's mark stands beside it on its line, so it is not counted as a second control in a row.
+      const boxes = el.querySelectorAll('input, textarea, select, button:not([data-slot="help-mark"])').length
       if (classes.includes('flex') && boxes >= 2) expect(classes, el.outerHTML.slice(0, 80)).toContain('flex-col')
     }
-    for (const file of ['ClubEditor', 'EditorBasics', 'EditorPlaces', 'EditorHelp']) {
+    for (const file of ['ClubEditor', 'EditorBasics', 'EditorPlaces', 'EditorHelp', 'HelpMark']) {
       const text = read(`src/areas/clubs/components/${file}.tsx`)
       expect(text, file).not.toMatch(/text-lca-gold|text-gold|#c8a94a|\[#|style=\{/)
     }
   })
 
   it('makes no call of its own and imports only types from domain/contracts', () => {
-    for (const file of ['ClubEditor', 'EditorBasics', 'EditorPlaces', 'EditorHelp']) {
+    for (const file of ['ClubEditor', 'EditorBasics', 'EditorPlaces', 'EditorHelp', 'HelpMark']) {
       const text = read(`src/areas/clubs/components/${file}.tsx`)
       expect(text, file).not.toMatch(/\bfetch\(/)
       for (const line of text.split('\n').filter((l) => /from '@domain\/contracts/.test(l))) expect(line, file).toMatch(/^import type /)

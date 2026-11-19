@@ -2,9 +2,9 @@
 //
 // What My region's page (WS09 step 11, src/pages/MyRegionPage.tsx) works
 // out from the server's answer without reading a clock: which clubs Confirm
-// all marks, the answer once one club is marked, the words of the counts and
-// of a run of Confirm all, and the browser's memory that the page's Help has
-// opened by itself once. Every date and month the page shows comes from the
+// all marks, the answer once one club is marked, and the words of the counts
+// and of a run of Confirm all. The page keeps nothing in the browser. Every
+// date and month the page shows comes from the
 // server as words (lastCheckWords, thisMonth.nextCheck.date), so nothing
 // here makes a date.
 import { ApiError } from '@/lib/http'
@@ -122,31 +122,4 @@ export function sendFailedWords(err: unknown): string {
 /** The button's status line when asking how many people the check goes to failed: nothing is claimed about sending. */
 export function askFailedWords(err: unknown): string {
   return `Could not ask how many people the check goes to: ${errorWords(err)}`
-}
-
-/** The id of the part My region's Help opens, which its button controls. */
-export const REGION_HELP_ID = 'my-region-help'
-
-/** The one key My region keeps in the browser: that its Help has opened by itself once. The editor keeps its own. */
-export const REGION_HELP_SHOWN_KEY = 'lca-my-region-help'
-
-/**
- * Whether My region's Help has opened by itself in this browser before. As
- * the editor's Help reads its own key, a browser whose storage cannot be
- * read at all reads as yes, so Help opens from its button alone there.
- */
-export function regionHelpShownBefore(): boolean {
-  try {
-    return window.localStorage.getItem(REGION_HELP_SHOWN_KEY) !== null
-  } catch {
-    return true
-  }
-}
-
-export function rememberRegionHelpShown(): void {
-  try {
-    window.localStorage.setItem(REGION_HELP_SHOWN_KEY, 'shown')
-  } catch {
-    // Nothing is kept: where storage can still be read, Help opens by itself on the next visit too.
-  }
 }

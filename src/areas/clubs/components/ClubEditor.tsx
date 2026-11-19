@@ -62,19 +62,29 @@
 // is a real press, held and made once the upload ends, so the button does not
 // call itself unavailable while it waits; it does so only while a save runs.
 //
+// Each part the editor's Help speaks of carries a small question mark beside
+// its label, legend or heading (EditorHelp.tsx, HelpMark.tsx), whose bubble
+// holds that part's words; nothing opens by itself and nothing is kept in
+// the browser.
+//
 // For an observer, who may read but not save, the fields and Save sit in a
-// shut fieldset; Help's button and Close help stay outside it, so Help
-// opens and closes for them as for everyone.
+// shut fieldset. The marks inside it are drawn as spans that answer as
+// buttons (HelpMarksShut), which a shut fieldset does not disable, so they
+// open and close for an observer as for everyone; the fields stay shut.
 //
 // From the width where the previews stand beside it, the form sits in a box
-// that scrolls on its own, with Save and publish under the box. Below that
-// width, on a phone, the form runs the page's full length with no box of its
+// that scrolls on its own, with Save and publish under the box; the form's
+// column is as tall as the preview strip beside it, and the box takes the
+// room left above Save and publish up to the window's height less 2rem,
+// never less than 70% of it; where the strip is taller than that, the room
+// left over sits under Save and publish. Below that width, on a phone, the
+// form runs the page's full length with no box of its
 // own to scroll, Save and publish at its end and the previews after it, and
 // each control keeps clear of the site's header when the focus moves to it.
 //
 // The words say "your" only to the club's own rep (`own`); anyone else who
 // keeps the club, a region's representative or an LCA admin, reads "the
-// club's", here, in the previews, the checklist and Help.
+// club's", here, in the previews, the checklist and the marks' words.
 import { useEffect, useEffectEvent, useRef, useState, type FocusEvent, type FormEvent, type KeyboardEvent } from 'react'
 import { Link } from 'react-router-dom'
 
@@ -91,7 +101,7 @@ import { resizeImageToFit } from '@/lib/resizeImage'
 import { cn } from '@/lib/utils'
 import { ViewOnlyFieldset } from '@/lib/viewOnly'
 import {
-  EDITOR_LIMITS, LINK_FIELDS, editorProblems, helpShownBefore, placeLine, rememberHelpShown,
+  EDITOR_LIMITS, LINK_FIELDS, editorProblems, placeLine,
   type EditorField as FieldName, type EditorValues,
 } from '@/areas/clubs/editor'
 import type { LatLng } from '@/areas/clubs/mapLocation'
@@ -99,7 +109,8 @@ import { ownColour, ownLogo, pageChecklist } from '@/areas/clubs/previews'
 import { clubPagesOn } from '@/areas/clubs/switches'
 import { CardPreview } from '@/areas/clubs/components/CardPreview'
 import { EditorBasics, EditorRest, type Differs } from '@/areas/clubs/components/EditorBasics'
-import { EditorHelp, EditorHelpButton } from '@/areas/clubs/components/EditorHelp'
+import { EditorHelpWords, HelpMarksShut } from '@/areas/clubs/helpMarks'
+import { EditorHelpMark } from '@/areas/clubs/components/EditorHelp'
 import { EditorPlaces } from '@/areas/clubs/components/EditorPlaces'
 import { PageChecklist } from '@/areas/clubs/components/PageChecklist'
 import { SearchPreview } from '@/areas/clubs/components/SearchPreview'
@@ -158,31 +169,6 @@ function differsOf(listing: string | null | undefined, today: string | null | un
 }
 
 /**
- * Moves the focus into Help without the browser's own scroll, which would
- * push the page's heading under the site's header. Help is the first thing
- * in the editor's box, so the box goes back to its top, which moves the box
- * alone and never the page: a box scrolled down would otherwise keep Help's
- * top, and its heading, above what the box shows once Help opens. Help is
- * then brought into the window only when its top is out of the window's view
- * (its scroll margin keeps it clear of the header then). Help above the
- * window is brought in by its top, since on a phone it is taller than the
- * window, and by its nearest edge the browser would show its foot alone.
- * Below lg, where Help sits in the page under the site's header, a top that
- * lands under the header, inside the room UNDER_HEADER keeps, is brought in
- * the same way; from lg up only a top above the window is.
- */
-function focusWithoutJump(el: HTMLElement | null) {
-  if (!el) return
-  el.focus({ preventScroll: true })
-  const box = el.closest<HTMLElement>('[data-slot="scroll-panel"]')
-  if (box) box.scrollTop = 0
-  const top = el.getBoundingClientRect().top
-  const room = typeof window.matchMedia === 'function' && !window.matchMedia(SIDE_BY_SIDE).matches ? UNDER_HEADER : 0
-  if (top < room) el.scrollIntoView?.({ block: 'start' })
-  else if (top > window.innerHeight - 48) el.scrollIntoView?.({ block: 'nearest' })
-}
-
-/**
  * The width from which the previews stand beside the form and the form's box
  * scrolls on its own: Tailwind's lg, as the layout's lg: classes use it.
  */
@@ -191,11 +177,20 @@ const SIDE_BY_SIDE = '(min-width: 64rem)'
 /**
  * The box's classes: below lg its height bound and its scrolling are lifted
  * and its header bar stays where it is drawn, so the form runs the page's
- * length; from lg up it is the box it always was.
+ * length. From lg up it scrolls on its own and takes the room the form's
+ * column has left above Save and publish, the column being as tall as the
+ * preview strip beside it: it grows from nothing, so its own long content
+ * never sets the row's height. It is never taller than the window less 2rem,
+ * so its top and its foot fit in the window together, and where the strip is
+ * taller than that the room left over sits under Save and publish; it is
+ * never less than 70% of the window's height, the bound it always had. At
+ * its top and its foot a wheel passes on to the page (overscroll-auto, which
+ * wins over the panel's own overscroll-contain from lg up), so the wheel
+ * alone reaches Save and publish.
  */
-const BOX = 'scroll-mt-[100vh] max-lg:max-h-none max-lg:overflow-visible max-lg:[&>[data-slot=scroll-panel-header]]:static'
+const BOX = 'scroll-mt-[100vh] max-lg:max-h-none max-lg:overflow-visible max-lg:[&>[data-slot=scroll-panel-header]]:static lg:max-h-[calc(100vh-2rem)] lg:min-h-[70vh] lg:grow lg:basis-0 lg:overscroll-auto'
 
-/** Room kept above a field brought into view on a phone: the site's header and a gap, as Help's scroll-mt-24 keeps. */
+/** Room kept above a field brought into view on a phone: the site's header and a gap. */
 const UNDER_HEADER = 96
 
 /**
@@ -297,32 +292,6 @@ export function ClubEditor({
       focusAddPlace.current = false
     }
   }, [second])
-
-  const [helpOpen, setHelpOpen] = useState(() => !helpShownBefore())
-  const helpButton = useRef<HTMLButtonElement>(null)
-  const helpPanel = useRef<HTMLElement>(null)
-  const focusNext = useRef<'panel' | 'button' | null>(helpOpen ? 'panel' : null)
-  useEffect(() => {
-    if (helpOpen) rememberHelpShown()
-  }, [helpOpen])
-  // The mark is cleared only once acted on: the first draw's run can come after the first press, and must not wipe it.
-  useEffect(() => {
-    if (focusNext.current === 'panel' && helpOpen) {
-      focusWithoutJump(helpPanel.current)
-      focusNext.current = null
-    } else if (focusNext.current === 'button' && !helpOpen) {
-      helpButton.current?.focus()
-      focusNext.current = null
-    }
-  }, [helpOpen])
-  function toggleHelp() {
-    focusNext.current = helpOpen ? 'button' : 'panel'
-    setHelpOpen(!helpOpen)
-  }
-  function closeHelp() {
-    focusNext.current = 'button'
-    setHelpOpen(false)
-  }
 
   /** What was stored, as the form would start from it: each field the rest of the listing adds is sent only when it differs. */
   const start = startValues(club, places)
@@ -564,8 +533,10 @@ export function ClubEditor({
   const colour = values.color.toLowerCase() !== start.color.toLowerCase() ? values.color : club.color
 
   return (
-    <div className={cn('mx-auto flex max-w-6xl flex-col gap-8 lg:flex-row lg:items-start', CLEAR_OF_HEADER)} onKeyDown={noteTab} onPointerDown={forgetTab} onFocus={focusMoved}>
-      <form onSubmit={save} noValidate className="w-full min-w-0 max-w-2xl space-y-4 lg:flex-1">
+    <EditorHelpWords value={{ own, emailHidden: FEATURES.clubEmailHidden, pagesOn: clubPagesOn(), showAdmin: showAdminFields }}>
+    {/* From lg up the row stretches the form's column to the preview strip's height, and the form is a column the box fills up to its bound (BOX). */}
+    <div className={cn('mx-auto flex max-w-6xl flex-col gap-8 lg:flex-row lg:items-stretch', CLEAR_OF_HEADER)} onKeyDown={noteTab} onPointerDown={forgetTab} onFocus={focusMoved}>
+      <form onSubmit={save} noValidate className="w-full min-w-0 max-w-2xl space-y-4 lg:flex lg:flex-1 lg:flex-col">
         {/*
           The box is the first stop of Tab in the editor, and is taller than
           what is left of the window under the page's heading, so a browser
@@ -575,7 +546,7 @@ export function ClubEditor({
           the page stays still; a box wholly out of view is still scrolled
           into view. Below lg the box does not scroll (BOX), so it is no stop
           for Tab and no named region (scrollsWhen), and Tab goes from the
-          links above the form straight to Help.
+          links above the form straight to the first mark, About's.
         */}
         <ScrollPanel
           className={BOX}
@@ -584,15 +555,12 @@ export function ClubEditor({
           header={(
             <div className="flex min-h-11 items-center justify-between gap-3 px-4 py-2">
               <h2 className="text-base font-semibold text-ink">The basics</h2>
-              <EditorHelpButton ref={helpButton} open={helpOpen} onToggle={toggleHelp} />
             </div>
           )}
         >
           <div className="space-y-6 p-4">
-            <EditorHelp
-              ref={helpPanel} open={helpOpen} own={own} emailHidden={FEATURES.clubEmailHidden} pagesOn={clubPagesOn()} showAdmin={showAdminFields} onClose={closeHelp}
-            />
             <ViewOnlyFieldset viewOnly={viewOnly}>
+              <HelpMarksShut value={viewOnly}>
               <div className="space-y-6">
                 <EditorBasics
                   values={values}
@@ -634,20 +602,25 @@ export function ClubEditor({
                   onLogo={changeLogo}
                 />
               </div>
+              </HelpMarksShut>
             </ViewOnlyFieldset>
           </div>
         </ScrollPanel>
 
-        <div className="space-y-2">
-          <ViewOnlyFieldset viewOnly={viewOnly}>
-            <Button
-              type="submit"
-              className="min-h-11 bg-lca-gold font-semibold text-brand-navy hover:bg-lca-gold/90"
-              aria-disabled={busy || undefined}
-            >
-              {busy ? 'Saving…' : 'Save and publish'}
-            </Button>
-          </ViewOnlyFieldset>
+        <div className="relative space-y-2">
+          {/* Save and publish's mark stands outside the shut fieldset, so it is a button for everyone. */}
+          <div className="flex items-center">
+            <ViewOnlyFieldset viewOnly={viewOnly}>
+              <Button
+                type="submit"
+                className="min-h-11 bg-lca-gold font-semibold text-brand-navy hover:bg-lca-gold/90"
+                aria-disabled={busy || undefined}
+              >
+                {busy ? 'Saving…' : 'Save and publish'}
+              </Button>
+            </ViewOnlyFieldset>
+            <EditorHelpMark part="save" />
+          </div>
           <div role="status" className="text-sm text-ink">
             {busy && <p>{SAVING_WORDS}</p>}
             {uploading && (
@@ -674,20 +647,25 @@ export function ClubEditor({
         </div>
       </form>
 
-      <aside aria-label="Preview" className="w-full min-w-0 max-w-2xl space-y-4 lg:sticky lg:top-4 lg:w-80 lg:shrink-0">
-        <h2 className="text-base font-semibold text-ink">
-          <button
-            type="button"
-            aria-expanded={previewOpen}
-            aria-controls="club-editor-previews"
-            onClick={() => setPreviewOpen((open) => !open)}
-            className="inline-flex min-h-11 w-full items-center justify-between gap-2 rounded-md border border-hairline px-3 text-ink outline-none focus-visible:ring-3 focus-visible:ring-focus lg:hidden"
-          >
-            Preview
-            <ChevronDown className={cn('size-4 transition-transform motion-reduce:transition-none', previewOpen && 'rotate-180')} aria-hidden="true" />
-          </button>
-          <span className="hidden lg:inline">Preview</span>
-        </h2>
+      {/* It keeps its own height in the stretched row (self-start), so it stays sticky beside a taller form. */}
+      <aside aria-label="Preview" className="relative w-full min-w-0 max-w-2xl space-y-4 lg:sticky lg:top-4 lg:w-80 lg:shrink-0 lg:self-start">
+        {/* Preview's mark stands beside the heading, outside it, so the heading and the phone's button keep the name Preview. */}
+        <div className="flex items-center">
+          <h2 className="text-base font-semibold text-ink max-lg:flex-1">
+            <button
+              type="button"
+              aria-expanded={previewOpen}
+              aria-controls="club-editor-previews"
+              onClick={() => setPreviewOpen((open) => !open)}
+              className="inline-flex min-h-11 w-full items-center justify-between gap-2 rounded-md border border-hairline px-3 text-ink outline-none focus-visible:ring-3 focus-visible:ring-focus lg:hidden"
+            >
+              Preview
+              <ChevronDown className={cn('size-4 transition-transform motion-reduce:transition-none', previewOpen && 'rotate-180')} aria-hidden="true" />
+            </button>
+            <span className="hidden lg:inline">Preview</span>
+          </h2>
+          <EditorHelpMark part="preview" />
+        </div>
         <div id="club-editor-previews" data-slot="editor-previews" className={cn('space-y-6', !previewOpen && 'hidden lg:block')}>
           <SearchPreview
             own={own} name={values.name} city={values.city} about={values.aboutText} statement={values.howWeMeetText}
@@ -704,5 +682,6 @@ export function ClubEditor({
         </div>
       </aside>
     </div>
+    </EditorHelpWords>
   )
 }
