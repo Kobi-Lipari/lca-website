@@ -42,14 +42,14 @@
 // written inside two comments only it reads; every other mail app draws
 // nothing for them. Every colour, size and space a part needs is written
 // inline on it, so the email reads right in light where a mail app drops
-// the head's one style block, which holds only the dark colours and the
-// narrow-screen rules. The letter's running words take their type and ink
-// from the cell around them, and only the tags that need a style of their
-// own get one, by an exact rewrite of the cleaner's tag forms that changes
-// no word: each heading, a part's with its rule above it, each link and
-// each line. Paragraphs and lists keep their bare tags and the mail app's
-// own spacing, so what the layout adds to a letter grows with its headings
-// and links alone.
+// the head's two style blocks: the color-scheme reset in its own, then
+// the dark colours and the narrow-screen rules. The letter's running
+// words take their type and ink from the cell around them, and only the
+// tags that need a style of their own get one, by an exact rewrite of the
+// cleaner's tag forms that changes no word: each heading, a part's with
+// its rule above it, each link and each line. Paragraphs and lists keep
+// their bare tags and the mail app's own spacing, so what the layout adds
+// to a letter grows with its headings and links alone.
 
 import { NEWSLETTER_FOLLOW_LINE } from './footer'
 import { letterParts, withAnchors, type LetterPart } from './letter'
@@ -129,10 +129,50 @@ const OUTLOOK_CLOSE = '<!--[if mso]></td></tr></table><![endif]-->'
 const PREHEADER = 'display:none;font-size:0;line-height:0;max-height:0;max-width:0;opacity:0;overflow:hidden;mso-hide:all;'
 
 /**
- * The one style block: only what inline styles cannot say. First the dark colours, each over an inline one, so each
- * is important; the footer builder's own ink is among them, since its navy and grey would not read on the dark
- * footer. Then the narrow-screen rules: the board's phone sizes, each link of the strip 44 pixels tall, and one
- * column under 340 pixels.
+ * The Gmail apps' dark mode recolours the email itself and does not read the dark colours below; since Google's fix
+ * of Mon, Aug 31, 2026 they leave an email whose color-scheme meta says "light only" in its light form. So the two
+ * metas say "light only", and a style block of its own, before the main one, sets the page back to light and dark,
+ * so a mail app that reads the meta and follows prefers-color-scheme, Apple Mail above all, still draws the email's
+ * own dark form as before. The reset has its block alone because Gmail drops a whole block it reads as an error, and
+ * the reset does nothing in Gmail: if a mail app drops the reset's block, only the reset is lost, and the phone sizes
+ * and the Gmail rule in the main block stay. What a person sees: in the Gmail apps with the fix, the light email, the
+ * band navy with its white and gold words, in dark mode too; in a Gmail app without it, or with a non Google
+ * account, the app's own recolouring as before, the band pale with dark words, every word still readable; in every
+ * other mail app, the email as before by every source held. Apple Mail, if it drops the reset's block, draws the
+ * light email in its dark mode, every word as in light.
+ */
+const COLOR_SCHEME = 'light only'
+const ROOT_RESET = ':root{color-scheme:light dark}'
+
+/**
+ * For the Gmail phone apps alone: the "In this issue" entries as plain words, in the link's own navy with no
+ * underline, since the Gmail app on an iPhone does nothing when a jump link is tapped. The rule sets no colour, so a
+ * Gmail app without Google's fix still recolours the link's inline navy in dark mode as it does today. Gmail puts a
+ * <u></u> where the doctype was, just before the body's element, so "u + .nl-page" matches in Gmail alone, and the
+ * 480 pixel rule keeps Gmail on a computer to the underlined links. The entries stay links with their addresses and
+ * their 44 pixel height, so where Gmail follows them, on Android, a tap still jumps. A mail app that drops this rule
+ * draws the underlined navy links of every other app; a Gmail app that drops it draws them too, and on an iPhone a
+ * tap on one does nothing.
+ */
+const GMAIL_STRIP = `u + .nl-page .nl-toc a{text-decoration:none !important}`
+
+/**
+ * For the Gmail app on Android alone, just after the rule above: the strip's entries underlined again, since that
+ * app does follow a jump link and K wants the links left as they are wherever they work. Gmail on Android puts the
+ * <u></u> inside a div, the form two old sources give for that app alone (so not certain today), and there
+ * "div > u + .nl-page" matches; being one element weightier, the rule wins where both match. It is safe either way:
+ * if Gmail on Android no longer matches it, the entries there stay navy words with no underline and a tap still
+ * jumps; if it ever matched Gmail on an iPhone, the entries there would be the underlined links of today; in every
+ * mail app that is not Gmail it matches nothing.
+ */
+const GMAIL_ANDROID_STRIP = `div > u + .nl-page .nl-toc a{text-decoration:underline !important}`
+
+/**
+ * The main style block, after the reset's own: only what inline styles cannot say, and nothing outside a query.
+ * First the dark colours, each over an inline one, so each is important; the footer builder's own ink is among them,
+ * since its navy and grey would not read on the dark footer. Then the narrow-screen rules: the board's phone sizes,
+ * each link of the strip 44 pixels tall, the strip's entries as words in the Gmail phone apps with their underline
+ * given back in Gmail on Android, and one column under 340 pixels.
  */
 const STYLE = [
   '@media (prefers-color-scheme: dark) {',
@@ -162,6 +202,8 @@ const STYLE = [
   '.nl-toc ul{font-size:15px !important;line-height:22px !important}',
   '.nl-toc li{margin:0 !important}',
   '.nl-toc a{display:inline-block !important;padding:11px 0 !important}',
+  GMAIL_STRIP,
+  GMAIL_ANDROID_STRIP,
   '.nl-letter{padding:8px 20px 0 !important}',
   '.nl-letter div{width:28px !important;margin:26px 0 10px !important}',
   '.nl-letter .nl-first{margin-top:16px !important}',
@@ -252,9 +294,10 @@ export function renderNewsletter(email: NewsletterEmail): string {
     '<head>',
     '<meta charset="utf-8">',
     '<meta name="viewport" content="width=device-width, initial-scale=1">',
-    '<meta name="color-scheme" content="light dark">',
-    '<meta name="supported-color-schemes" content="light dark">',
+    `<meta name="color-scheme" content="${COLOR_SCHEME}">`,
+    `<meta name="supported-color-schemes" content="${COLOR_SCHEME}">`,
     `<title>${escape(email.subject)}</title>`,
+    `<style>\n${ROOT_RESET}\n</style>`,
     `<style>\n${STYLE}\n</style>`,
     '</head>',
     `<body class="nl-page" style="margin:0;padding:0;background-color:${PAGE};">`,
