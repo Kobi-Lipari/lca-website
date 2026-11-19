@@ -37,7 +37,6 @@ const PLACE = { id: 1, name: 'Example Library', street: '1 Example Street', note
 const fetched: string[] = []
 beforeEach(() => {
   fetched.length = 0
-  window.localStorage.setItem('lca-club-editor-help', 'shown')
   vi.stubGlobal('fetch', vi.fn(async (url: string) => {
     fetched.push(String(url))
     return new Response('{}', { status: 404 })
@@ -149,7 +148,10 @@ describe('the column makes no request and loads nothing from a typed link', () =
     expect(own.getAttribute('src')).toBe('/api/clubs/example-chess-club/logo?v=3')
     expect(own.getAttribute('alt')).toBe('The club\'s logo')
     expect(column().querySelectorAll('img')).toHaveLength(1)
-    expect(within(column()).getByText('Logo', { exact: false }).closest('li')?.textContent).toMatch(/Done/)
+    // The checklist's line, not the words of Preview's mark, which speak of the logo too.
+    const line = within(column()).getAllByText('Logo', { exact: false }).filter((el) => !el.closest('[data-slot="help-mark-bubble"]'))
+    expect(line).toHaveLength(1)
+    expect(line[0].closest('li')?.textContent).toMatch(/Done/)
     expect(fetched).toEqual([])
   })
 })

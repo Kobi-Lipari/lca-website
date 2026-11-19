@@ -262,10 +262,10 @@ describe('the club editor in an observer\'s shut form', () => {
       expect(control.matches(':disabled'), control.outerHTML).toBe(true)
       expect(control.hasAttribute('aria-disabled'), control.outerHTML).toBe(false)
     }
-    // Help's buttons stay open to an observer; every other button of the form is shut.
-    const help = screen.getByRole('button', { name: 'Help' })
-    expect(help.matches(':disabled')).toBe(false)
-    const others = [...form.querySelectorAll('button')].filter((button) => button !== help && !/help/i.test(button.textContent ?? ''))
+    // Help's marks stay open to an observer; every other button of the form is shut.
+    const marks = screen.getAllByRole('button', { name: /^Help: / })
+    for (const mark of marks) expect(mark.matches(':disabled'), mark.getAttribute('aria-label') ?? '').toBe(false)
+    const others = [...form.querySelectorAll('button')].filter((button) => !marks.includes(button))
     expect(others.length).toBeGreaterThanOrEqual(4)
     for (const button of others) expect(button.matches(':disabled'), button.textContent ?? '').toBe(true)
   })

@@ -22,8 +22,6 @@ import { MemoryRouter, useLocation } from 'react-router-dom'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { AuthContext } from '@/contexts/auth-context'
 import type { AuthContextValue } from '@/contexts/AuthContext'
-import { HELP_SHOWN_KEY } from '@/areas/clubs/editor'
-import { REGION_HELP_SHOWN_KEY } from '@/areas/clubs/region'
 import { clubSaveServer } from './helpers/clubSaveServer'
 
 // Each case may wait up to 5 seconds for the page's file, or the editor's, to load, so each case has 20 seconds.
@@ -114,8 +112,6 @@ function regionAnswer(club: Record<string, unknown> = CLUB) {
 
 beforeEach(() => {
   window.localStorage.clear()
-  window.localStorage.setItem(HELP_SHOWN_KEY, 'shown')
-  window.localStorage.setItem(REGION_HELP_SHOWN_KEY, 'shown')
   asked = []
   news = NEWS
   const server = clubSaveServer(CLUB, [PLACE])

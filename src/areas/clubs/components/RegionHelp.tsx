@@ -1,11 +1,13 @@
 // src/areas/clubs/components/RegionHelp.tsx
 //
-// Help for My region (WS09 step 11): its button and the part it opens, which
-// holds every sentence that explains the page, so none sits beside a
-// control. As the editor's Help does (EditorHelp.tsx), it opens by itself
-// once, the first time a person opens the page (src/areas/clubs/region.ts
-// keeps that under its own key), the focus moves into it when it opens, and
-// Escape or Close help shuts it with the focus back on the button.
+// My region's Help (WS09 step 11): every sentence that explains the page,
+// given out by part to the small question mark beside that part
+// (HelpMark.tsx, K's decision 16), so none sits beside a control and none
+// takes room until a person asks for it. Three marks hold today's seven
+// entries, word for word: the This month bar's heading holds the monthly
+// check and the 90 days, Confirm all still accurate holds its own, and the
+// Clubs heading holds what the page is, Still accurate, Open and who sees
+// the stamps. No club's card carries a mark.
 //
 // It says only what is true with clubKeepers on today: what Still accurate
 // and Confirm all do, what the 90 days mean and where the stamps show, and
@@ -13,26 +15,7 @@
 // hour and says nothing of what the monthly check does or sends, since
 // nothing runs it until a later step. An LCA admin never reads "your
 // region".
-import type { KeyboardEvent, Ref } from 'react'
-import { CircleHelp } from 'lucide-react'
-
-import { REGION_HELP_ID } from '@/areas/clubs/region'
-
-/**
- * A button of Help: 44px tall, a visible ring on focus, its words 14px, as
- * the editor's Help button is. The editor's own file is loaded only with the
- * editor's chunk, so this page draws its own.
- */
-const OPENER =
-  'inline-flex min-h-11 items-center gap-1.5 rounded-md px-2 text-sm font-medium text-ink outline-none hover:underline focus-visible:ring-3 focus-visible:ring-focus'
-
-export function RegionHelpButton({ open, onToggle, ref }: { open: boolean; onToggle: () => void; ref?: Ref<HTMLButtonElement> }) {
-  return (
-    <button ref={ref} type="button" className={OPENER} aria-expanded={open} aria-controls={REGION_HELP_ID} onClick={onToggle}>
-      <CircleHelp className="size-4" aria-hidden="true" /> Help
-    </button>
-  )
-}
+import { HelpMark, type HelpEntry } from '@/areas/clubs/components/HelpMark'
 
 /** Each part of the page and what it does. */
 function sentences(isAdmin: boolean): Array<[string, string]> {
@@ -69,39 +52,23 @@ function sentences(isAdmin: boolean): Array<[string, string]> {
   ]
 }
 
-export function RegionHelp({ open, isAdmin, onClose, ref }: {
-  open: boolean
-  isAdmin: boolean
-  onClose: () => void
-  ref?: Ref<HTMLElement>
-}) {
-  function onKeyDown(e: KeyboardEvent<HTMLElement>) {
-    if (e.key !== 'Escape') return
-    e.preventDefault()
-    e.stopPropagation()
-    onClose()
-  }
-  return (
-    <section
-      ref={ref}
-      id={REGION_HELP_ID}
-      data-slot="region-help"
-      hidden={!open}
-      tabIndex={-1}
-      aria-labelledby={`${REGION_HELP_ID}-title`}
-      onKeyDown={onKeyDown}
-      className="scroll-mt-24 space-y-3 rounded-lg border border-hairline bg-card p-4 text-sm text-ink outline-none focus-visible:ring-3 focus-visible:ring-focus"
-    >
-      <h2 id={`${REGION_HELP_ID}-title`} className="text-base font-semibold">Help</h2>
-      <dl className="space-y-3">
-        {sentences(isAdmin).map(([term, text]) => (
-          <div key={term}>
-            <dt className="font-medium">{term}</dt>
-            <dd className="break-words text-muted-foreground">{text}</dd>
-          </div>
-        ))}
-      </dl>
-      <button type="button" className={OPENER} onClick={onClose}>Close help</button>
-    </section>
-  )
+/** The parts of My region that carry a mark: the bar's heading, Confirm all and the Clubs heading. */
+export type RegionPart = 'month' | 'confirmAll' | 'clubs'
+
+/** Each mark's name after "Help: ", as its heading or button says it, and the terms of the entries it holds, in the order it shows them. */
+const MARKS: Record<RegionPart, { name: string; terms: readonly string[] }> = {
+  month: { name: 'This month', terms: ['The monthly check', 'The 90 days'] },
+  confirmAll: { name: 'Confirm all still accurate', terms: ['Confirm all still accurate'] },
+  clubs: { name: 'Clubs', terms: ['What this page is', 'Still accurate', 'Open', 'Who sees the stamps'] },
+}
+
+/** The entries one part's mark holds. */
+function entriesFor(part: RegionPart, isAdmin: boolean): HelpEntry[] {
+  const all = new Map(sentences(isAdmin))
+  return MARKS[part].terms.map((term) => [term, all.get(term) ?? ''] as const)
+}
+
+/** The mark beside one part of My region, with that part's words. */
+export function RegionHelpMark({ part, isAdmin, align }: { part: RegionPart; isAdmin: boolean; align?: 'start' | 'end' }) {
+  return <HelpMark name={MARKS[part].name} entries={entriesFor(part, isAdmin)} align={align} />
 }

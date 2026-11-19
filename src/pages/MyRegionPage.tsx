@@ -25,9 +25,11 @@
 // The route lets in a holder of an active regional seat, whatever their
 // role, and an LCA admin (requireSeat in RoleProtectedRoute.tsx); the server
 // decides, and its refusal is said in words with a way back. Every sentence
-// that explains the page sits behind Help, which opens by itself on a
-// person's first visit. Nothing here shows an email address: the answer
-// carries none.
+// that explains the page sits behind a small question mark beside the part
+// it explains (RegionHelp.tsx, HelpMark.tsx): the This month bar's heading,
+// Confirm all still accurate and the Clubs heading; no club's card carries
+// one, nothing opens by itself and nothing is kept in the browser. Nothing
+// here shows an email address: the answer carries none.
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { ArrowLeft } from 'lucide-react'
@@ -37,11 +39,11 @@ import { useAuth } from '@/contexts/auth-context'
 import { ApiError, confirmClubStillAccurate, getWorkspaceRegion } from '@/lib/api'
 import { usePageTitle } from '@/hooks/usePageTitle'
 import { RegionClubCard } from '@/areas/clubs/components/RegionClubCard'
-import { RegionHelp, RegionHelpButton } from '@/areas/clubs/components/RegionHelp'
+import { RegionHelpMark } from '@/areas/clubs/components/RegionHelp'
 import { ThisMonthBar } from '@/areas/clubs/components/ThisMonthBar'
 import { MonthlyCheckButton } from '@/areas/clubs/components/MonthlyCheckButton'
 import {
-  clubsToConfirm, clubsWord, confirmAllWords, errorWords, namesInWords, regionHelpShownBefore, rememberRegionHelpShown, withConfirmed,
+  clubsToConfirm, clubsWord, confirmAllWords, errorWords, namesInWords, withConfirmed,
 } from '@/areas/clubs/region'
 import type { RegionClub, WorkspaceRegionResponse } from '@domain/contracts'
 
@@ -53,9 +55,6 @@ import type { RegionClub, WorkspaceRegionResponse } from '@domain/contracts'
  * padding ends that.
  */
 const CLEAR_OF_HEADER = 'max-lg:[&_:is(a,button,input,select,textarea,[tabindex])]:scroll-mt-24'
-
-/** Room kept above Help when the focus moves into it below lg: the site's header and a gap. */
-const UNDER_HEADER = 96
 
 /** A link on the navy band: 44px tall, a white ring on focus. */
 const BAND_LINK = 'inline-flex min-h-11 items-center rounded-md text-white underline underline-offset-2 outline-none hover:no-underline focus-visible:ring-3 focus-visible:ring-white'
@@ -75,16 +74,6 @@ function settleError(err: unknown): Load {
   if (err instanceof ApiError && err.status === 401) return { kind: 'refused', text: 'Your sign-in has ended. Sign in again, then come back to this page.' }
   if (err instanceof ApiError && err.status === 403) return { kind: 'refused', text: errorWords(err) }
   return { kind: 'failed', text: `My region could not be loaded: ${errorWords(err)}` }
-}
-
-/** Moves the focus into Help without the browser's own jump, bringing it into view below the header when it is not. */
-function focusInView(el: HTMLElement | null) {
-  if (!el) return
-  el.focus({ preventScroll: true })
-  const top = el.getBoundingClientRect().top
-  const room = typeof window.matchMedia === 'function' && !window.matchMedia('(min-width: 64rem)').matches ? UNDER_HEADER : 0
-  if (top < room) el.scrollIntoView?.({ block: 'start' })
-  else if (top > window.innerHeight - 48) el.scrollIntoView?.({ block: 'nearest' })
 }
 
 export function MyRegionPage() {
@@ -123,34 +112,6 @@ export function MyRegionPage() {
   useEffect(() => {
     if (attempt > 0 && load.kind !== 'loading') heading.current?.focus()
   }, [attempt, load.kind])
-
-  // Help opens by itself once, on the first visit, and the focus moves into it; closing it puts the focus back on its button.
-  const [helpOpen, setHelpOpen] = useState(() => !regionHelpShownBefore())
-  const helpButton = useRef<HTMLButtonElement>(null)
-  const helpPanel = useRef<HTMLElement>(null)
-  const focusNext = useRef<'panel' | 'button' | null>(helpOpen ? 'panel' : null)
-  const ready = answer !== null
-  useEffect(() => {
-    if (helpOpen && ready) rememberRegionHelpShown()
-  }, [helpOpen, ready])
-  useEffect(() => {
-    if (!ready) return
-    if (focusNext.current === 'panel' && helpOpen) {
-      focusInView(helpPanel.current)
-      focusNext.current = null
-    } else if (focusNext.current === 'button' && !helpOpen) {
-      helpButton.current?.focus()
-      focusNext.current = null
-    }
-  }, [helpOpen, ready])
-  function toggleHelp() {
-    focusNext.current = helpOpen ? 'button' : 'panel'
-    setHelpOpen(!helpOpen)
-  }
-  function closeHelp() {
-    focusNext.current = 'button'
-    setHelpOpen(false)
-  }
 
   // Once a run of Confirm all is done and its button has gone, the focus that was on it goes to the bar's heading.
   const barHeading = useRef<HTMLHeadingElement>(null)
@@ -265,15 +226,6 @@ export function MyRegionPage() {
       </section>
 
       <section className="mx-auto max-w-6xl space-y-6 px-4 py-8 sm:px-6">
-        {answer && (
-          <div className="space-y-3">
-            <div className="flex justify-end">
-              <RegionHelpButton ref={helpButton} open={helpOpen} onToggle={toggleHelp} />
-            </div>
-            <RegionHelp ref={helpPanel} open={helpOpen} isAdmin={isAdmin} onClose={closeHelp} />
-          </div>
-        )}
-
         {answer && isAdmin && (
           <div className="rounded-lg border border-hairline bg-card p-4 text-sm text-ink">
             <p className="font-semibold">You're here as an LCA admin</p>
@@ -292,6 +244,8 @@ export function MyRegionPage() {
             running={running}
             onConfirmAll={() => { void confirmAll() }}
             headingRef={barHeading}
+            help={<RegionHelpMark part="month" isAdmin={isAdmin} />}
+            confirmHelp={<RegionHelpMark part="confirmAll" isAdmin={isAdmin} align="end" />}
           />
         )}
 
@@ -311,8 +265,12 @@ export function MyRegionPage() {
 
         {answer && (
           <section aria-labelledby="region-clubs-title" className="space-y-3">
-            <div className="flex min-w-0 flex-wrap items-baseline gap-x-3 gap-y-1">
-              <h2 id="region-clubs-title" className="text-lg font-semibold text-ink">Clubs</h2>
+            {/* The Clubs mark stands after the heading, outside it, and its bubble lies across the row under it. */}
+            <div className="relative flex min-w-0 flex-wrap items-baseline gap-x-3 gap-y-1">
+              <div className="flex items-baseline">
+                <h2 id="region-clubs-title" className="text-lg font-semibold text-ink">Clubs</h2>
+                <RegionHelpMark part="clubs" isAdmin={isAdmin} />
+              </div>
               {answer.clubs.length > 0 && <p className="text-sm text-muted-foreground">{clubsWord(answer.clubs.length)}</p>}
             </div>
             {answer.clubs.length === 0 ? (

@@ -22,8 +22,7 @@ import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { AuthContext } from '@/contexts/auth-context'
 import type { AuthContextValue } from '@/contexts/AuthContext'
-import { HELP_SHOWN_KEY } from '@/areas/clubs/editor'
-import { REGION_HELP_SHOWN_KEY, SEND_UNSURE, SITE_UNREACHED } from '@/areas/clubs/region'
+import { SEND_UNSURE, SITE_UNREACHED } from '@/areas/clubs/region'
 import type { RegionClub, WorkspaceRegionResponse } from '@domain/contracts'
 
 // Each case may wait up to 5 seconds for the editor's file to load, so each case has 20 seconds.
@@ -72,8 +71,6 @@ let answers: Record<string, Answer> = {}
 
 beforeEach(() => {
   window.localStorage.clear()
-  window.localStorage.setItem(HELP_SHOWN_KEY, 'shown')
-  window.localStorage.setItem(REGION_HELP_SHOWN_KEY, 'shown')
   asked = []
   answers = {
     [`GET ${CLUB_URL}`]: () => json({ club: CLUB, officers: [], roster: [], rosterKeptBack: true, tournaments: [], places: [] }),
@@ -190,13 +187,14 @@ describe('a club\'s page in My region: the Listing tab across a change of tab', 
     expect(stops).toContain(screen.getByRole('button', { name: 'Post news' }))
   })
 
-  it('opens the editor\'s Help by itself once, and takes no focus from the tabs when the person leaves Listing and comes back', async () => {
-    window.localStorage.removeItem(HELP_SHOWN_KEY)
+  it('opens none of the editor\'s Help by itself, keeps nothing in the browser, and takes no focus from the tabs when the person leaves Listing and comes back', async () => {
+    window.localStorage.clear()
     openClub()
     await clubReady()
     await screen.findByRole('button', { name: 'Save and publish' }, { timeout: 5000 })
     await act(async () => {})
-    expect(window.localStorage.getItem(HELP_SHOWN_KEY)).not.toBeNull()
+    for (const mark of screen.getAllByRole('button', { name: /^Help: / })) expect(mark.getAttribute('aria-expanded')).toBe('false')
+    expect(window.localStorage.length).toBe(0)
     const news = tab('News')
     news.focus()
     await act(async () => { fireEvent.click(news) })

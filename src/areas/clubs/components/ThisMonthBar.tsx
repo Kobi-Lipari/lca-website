@@ -19,7 +19,12 @@
 // and Donate use): it names how many clubs it marks, and Cancel or Escape
 // leaves everything as it was. The dialog's own buttons are 44px tall, so
 // its content is drawn here rather than with the small corner close.
-import type { Ref } from 'react'
+//
+// The page gives the bar two small question marks (RegionHelp.tsx): one
+// after the heading, for the monthly check and the 90 days, and one after
+// Confirm all still accurate, drawn only while that button is. Each bubble
+// lies across the bar, under the mark's line.
+import type { ReactNode, Ref } from 'react'
 import { useState } from 'react'
 import * as DialogPrimitive from '@radix-ui/react-dialog'
 
@@ -31,7 +36,7 @@ import type { WorkspaceRegionResponse } from '@domain/contracts'
 
 const CONTROL = 'min-h-11 px-4 whitespace-normal'
 
-export function ThisMonthBar({ thisMonth, hasClubs, toConfirm, running, onConfirmAll, headingRef }: {
+export function ThisMonthBar({ thisMonth, hasClubs, toConfirm, running, onConfirmAll, headingRef, help, confirmHelp }: {
   thisMonth: WorkspaceRegionResponse['thisMonth']
   /** The page has any club; with none the bar names the next check alone. */
   hasClubs: boolean
@@ -41,6 +46,10 @@ export function ThisMonthBar({ thisMonth, hasClubs, toConfirm, running, onConfir
   running: boolean
   onConfirmAll: () => void
   headingRef?: Ref<HTMLHeadingElement>
+  /** The mark after the heading. */
+  help?: ReactNode
+  /** The mark after Confirm all still accurate, drawn only with it. */
+  confirmHelp?: ReactNode
 }) {
   const [asking, setAsking] = useState(false)
   const total = thisMonth.checked + thisMonth.notChecked
@@ -50,9 +59,12 @@ export function ThisMonthBar({ thisMonth, hasClubs, toConfirm, running, onConfir
     ...(regionEventsOn() && (thisMonth.inReview ?? 0) > 0 ? [thisMonth.inReview === 1 ? '1 event in review' : `${thisMonth.inReview} events in review`] : []),
   ]
   return (
-    <section aria-labelledby="this-month-title" className="flex min-w-0 flex-wrap items-center justify-between gap-3 rounded-xl border bg-card p-4 shadow-sm">
+    <section aria-labelledby="this-month-title" className="relative flex min-w-0 flex-wrap items-center justify-between gap-3 rounded-xl border bg-card p-4 shadow-sm">
       <div className="flex min-w-0 flex-col gap-y-1 text-sm text-ink lg:flex-row lg:flex-wrap lg:items-baseline lg:gap-x-1.5">
-        <h2 id="this-month-title" ref={headingRef} tabIndex={-1} className="text-sm font-semibold outline-none">This month</h2>
+        <div className="flex items-baseline">
+          <h2 id="this-month-title" ref={headingRef} tabIndex={-1} className="text-sm font-semibold outline-none">This month</h2>
+          {help}
+        </div>
         {parts.map((part) => (
           <p key={part} className="min-w-0 break-words"><span aria-hidden="true" className="hidden lg:inline">· </span>{part}</p>
         ))}
@@ -60,16 +72,19 @@ export function ThisMonthBar({ thisMonth, hasClubs, toConfirm, running, onConfir
       <Dialog open={asking && toConfirm > 0} onOpenChange={setAsking}>
         {/* The dialog's trigger, so Cancel and Escape put the focus back on it. It stays while a run is on its way, so the focus on it is not lost mid-run. */}
         {(toConfirm > 0 || running) && (
-          <DialogTrigger asChild>
-            <Button
-              type="button"
-              className={CONTROL}
-              aria-disabled={running || undefined}
-              onClick={(e) => { if (running) e.preventDefault() }}
-            >
-              Confirm all still accurate
-            </Button>
-          </DialogTrigger>
+          <div className="flex items-center">
+            <DialogTrigger asChild>
+              <Button
+                type="button"
+                className={CONTROL}
+                aria-disabled={running || undefined}
+                onClick={(e) => { if (running) e.preventDefault() }}
+              >
+                Confirm all still accurate
+              </Button>
+            </DialogTrigger>
+            {confirmHelp}
+          </div>
         )}
         <DialogPortal>
           <DialogOverlay />

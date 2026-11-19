@@ -21,6 +21,7 @@ import { useEffect, useRef } from 'react'
 import { Button } from '@/components/ui/button'
 import { ClubLocationPicker } from '@/areas/clubs/components/ClubLocationPicker'
 import { EditorField, type Differs } from '@/areas/clubs/components/EditorBasics'
+import { EditorHelpMark } from '@/areas/clubs/components/EditorHelp'
 import type { EditorField as FieldName, EditorValues } from '@/areas/clubs/editor'
 import type { LatLng } from '@/areas/clubs/mapLocation'
 
@@ -74,10 +75,14 @@ export function EditorPlaces({
 
   // "Where" is a line of its own, the fieldset named by it, rather than a
   // legend: a legend stands outside the list item's flow, so the item's
-  // number would sit on "Place name" in place of "Where".
+  // number would sit on "Place name" in place of "Where". Its mark stands
+  // after it on that line, outside the words that name the fieldset.
   return (
     <>
-      <p id="editor-where" className="mb-3 text-sm font-medium leading-snug">Where</p>
+      <div className="relative mb-3 flex items-baseline">
+        <p id="editor-where" className="text-sm font-medium leading-snug">Where</p>
+        <EditorHelpMark part="where" />
+      </div>
       <fieldset aria-labelledby="editor-where" className="m-0 min-w-0 space-y-4 border-0 p-0">
         <EditorField
           field="placeName" label="Place name" autoComplete="organization"

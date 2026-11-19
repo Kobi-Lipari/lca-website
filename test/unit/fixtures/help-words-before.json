@@ -1,0 +1,899 @@
+{
+  "note": "Help's two lists as they stood at 915a9ba, before the marks, for every variant of the words.",
+  "editor": {
+    "own=true emailHidden=true pagesOn=true showAdmin=true": [
+      [
+        "One sentence about the club",
+        "It is shown as About on your club's page and at the start of search results. You may write more, the club in its own words, up to 2,000 characters: the count under the box says how many you have used. A search result shows the start of About and then How the club meets, in words, about 155 characters in all. Keep that box short so both fit."
+      ],
+      [
+        "How the club meets, in words",
+        "The days, the time and the place, as the club says them, such as \"First and third Tuesdays at 7:00 PM\". The page shows them as words and never turns them into dates."
+      ],
+      [
+        "Where",
+        "The place the club meets, its street if you know it, and a note such as the room. Set the pin by clicking the map or dragging the pin, or paste coordinates or a Google Maps link; nothing is looked up for you. If the club meets in two places, Add another place; a place you empty, or Remove place 2, comes off the page at the next save."
+      ],
+      [
+        "Contact name shown on the page",
+        "The name visitors see beside Contact on your club's page."
+      ],
+      [
+        "Email for messages",
+        "It is never shown on your club's page or to visitors."
+      ],
+      [
+        "Name and address",
+        "The city makes the line under your club's name, such as \"Chess club in Baton Rouge, Louisiana\", on your page and in search results, and helps people who search for a chess club near it. Your page's address is made from the club's name the first time the page is saved, and stays the same if the club is renamed, so links and search results keep working."
+      ],
+      [
+        "Club name, region and page address",
+        "Only LCA admins change these. The page address is the part after /clubs/ in the club page's address; when it changes, the old address keeps working."
+      ],
+      [
+        "Cost and who is welcome",
+        "Cost is what a club night costs, such as \"Free\" or \"$5 toward the room\". Who is welcome says who the club is for and what a first-timer should bring or ask for. Tick The club plays on weekends or Scholastic friendly only when it is so; the club directory's filters read them."
+      ],
+      [
+        "Links",
+        "Each link is a whole web address that starts with http:// or https://, such as your club's Facebook page. Leave a box empty to show no link there."
+      ],
+      [
+        "Logo and club color",
+        "A logo you choose is made to fit and saved at once, on its own, before Save and publish. Press Save and publish while it uploads and your changes save as soon as the upload is done. The club's color is drawn as a band, a tint and small bars on the new club pages, never as words; a club with no color of its own shows navy."
+      ],
+      [
+        "Today's page shows different words here",
+        "Today's club page shows its own, shorter words where this listing holds the words written for the new club pages, or words changed in the older form since. Any save, even of one other field, puts this listing's words on today's page in place of today's, so read both before you save."
+      ],
+      [
+        "Save and publish",
+        "Your changes go live on your club's page at once. When someone other than the region's representative saves, the representative is emailed what changed. Search results may take a few days to show a change."
+      ],
+      [
+        "Preview",
+        "Beside the form, or under Preview on a phone, you see how your page shows up in a search and when someone shares it, its card in LCA's club directory, and what the page has. They change as you type. Google shows about the first 60 characters of a title, so your club's name and city come first. A shared link shows your logo, or your club's initials on navy when it has none."
+      ]
+    ],
+    "own=true emailHidden=true pagesOn=true showAdmin=false": [
+      [
+        "One sentence about the club",
+        "It is shown as About on your club's page and at the start of search results. You may write more, the club in its own words, up to 2,000 characters: the count under the box says how many you have used. A search result shows the start of About and then How the club meets, in words, about 155 characters in all. Keep that box short so both fit."
+      ],
+      [
+        "How the club meets, in words",
+        "The days, the time and the place, as the club says them, such as \"First and third Tuesdays at 7:00 PM\". The page shows them as words and never turns them into dates."
+      ],
+      [
+        "Where",
+        "The place the club meets, its street if you know it, and a note such as the room. Set the pin by clicking the map or dragging the pin, or paste coordinates or a Google Maps link; nothing is looked up for you. If the club meets in two places, Add another place; a place you empty, or Remove place 2, comes off the page at the next save."
+      ],
+      [
+        "Contact name shown on the page",
+        "The name visitors see beside Contact on your club's page."
+      ],
+      [
+        "Email for messages",
+        "It is never shown on your club's page or to visitors."
+      ],
+      [
+        "Name and address",
+        "The city makes the line under your club's name, such as \"Chess club in Baton Rouge, Louisiana\", on your page and in search results, and helps people who search for a chess club near it. Your page's address is made from the club's name the first time the page is saved, and stays the same if the club is renamed, so links and search results keep working. The name, the region and the address are kept by LCA admins: ask LCA if one ever needs to change."
+      ],
+      [
+        "Cost and who is welcome",
+        "Cost is what a club night costs, such as \"Free\" or \"$5 toward the room\". Who is welcome says who the club is for and what a first-timer should bring or ask for. Tick The club plays on weekends or Scholastic friendly only when it is so; the club directory's filters read them."
+      ],
+      [
+        "Links",
+        "Each link is a whole web address that starts with http:// or https://, such as your club's Facebook page. Leave a box empty to show no link there."
+      ],
+      [
+        "Logo and club color",
+        "A logo you choose is made to fit and saved at once, on its own, before Save and publish. Press Save and publish while it uploads and your changes save as soon as the upload is done. The club's color is drawn as a band, a tint and small bars on the new club pages, never as words; a club with no color of its own shows navy."
+      ],
+      [
+        "Today's page shows different words here",
+        "Today's club page shows its own, shorter words where this listing holds the words written for the new club pages, or words changed in the older form since. Any save, even of one other field, puts this listing's words on today's page in place of today's, so read both before you save."
+      ],
+      [
+        "Save and publish",
+        "Your changes go live on your club's page at once. When someone other than the region's representative saves, the representative is emailed what changed. Search results may take a few days to show a change."
+      ],
+      [
+        "Preview",
+        "Beside the form, or under Preview on a phone, you see how your page shows up in a search and when someone shares it, its card in LCA's club directory, and what the page has. They change as you type. Google shows about the first 60 characters of a title, so your club's name and city come first. A shared link shows your logo, or your club's initials on navy when it has none."
+      ]
+    ],
+    "own=true emailHidden=true pagesOn=false showAdmin=true": [
+      [
+        "One sentence about the club",
+        "It is shown as About on your club's page and at the start of search results. You may write more, the club in its own words, up to 2,000 characters: the count under the box says how many you have used. A search result shows the start of About and then How the club meets, in words, about 155 characters in all. Keep that box short so both fit."
+      ],
+      [
+        "How the club meets, in words",
+        "The days, the time and the place, as the club says them, such as \"First and third Tuesdays at 7:00 PM\". The page shows them as words and never turns them into dates."
+      ],
+      [
+        "Where",
+        "The place the club meets, its street if you know it, and a note such as the room. Set the pin by clicking the map or dragging the pin, or paste coordinates or a Google Maps link; nothing is looked up for you. If the club meets in two places, Add another place; a place you empty, or Remove place 2, comes off the page at the next save. Today's club page shows the place's name, its street and its pin; the note shows once the new club pages open."
+      ],
+      [
+        "Contact name",
+        "The name visitors will see beside Contact on your club's page once the new club pages open. Today's club page does not show it."
+      ],
+      [
+        "Email for messages",
+        "It is never shown on your club's page or to visitors."
+      ],
+      [
+        "Name and address",
+        "Today's club page shows the city under your club's name, such as \"Baton Rouge, LA\", and a shared link to the page starts with a line such as \"Chess club in Baton Rouge, Louisiana\", which search results may show too. The city also helps people who search for a chess club near it. That line goes under the name once the new club pages open. Today's club page keeps the address shown under \"Your page's address\", which stays the same if the club is renamed, so links and search results keep working."
+      ],
+      [
+        "Club name, region and page address",
+        "Only LCA admins change these. The page address is used once the new club pages open; today's club page keeps its own address, which does not change."
+      ],
+      [
+        "Cost and who is welcome",
+        "Cost is what a club night costs, such as \"Free\" or \"$5 toward the room\". Who is welcome says who the club is for and what a first-timer should bring or ask for. Tick The club plays on weekends or Scholastic friendly only when it is so. Today's club page and directory show none of these; they show once the new club pages open, and the new directory's filters read the ticks."
+      ],
+      [
+        "Links",
+        "Each link is a whole web address that starts with http:// or https://, such as your club's Facebook page. Today's club page shows none of these links; they show once the new club pages open, and a box left empty shows no link there."
+      ],
+      [
+        "Logo and club color",
+        "A logo you choose is made to fit and saved at once, on its own, before Save and publish. Press Save and publish while it uploads and your changes save as soon as the upload is done. The club's color is drawn as a band, a tint and small bars on the new club pages, never as words; a club with no color of its own shows navy."
+      ],
+      [
+        "Today's page shows different words here",
+        "Today's club page shows its own, shorter words where this listing holds the words written for the new club pages, or words changed in the older form since. Any save, even of one other field, puts this listing's words on today's page in place of today's, so read both before you save."
+      ],
+      [
+        "Save and publish",
+        "The sentence about the club, how it meets, and the place's name, street and pin go live on today's club page at once; the contact name and the place's note show once the new club pages open. So do the cost, who is welcome, the two ticks and the links. When someone other than the region's representative saves, the representative is emailed what changed. Search results may take a few days to show a change."
+      ],
+      [
+        "Preview",
+        "Beside the form, or under Preview on a phone, you see how your page shows up in a search and when someone shares it, its card in LCA's club directory, and what the page has. They change as you type. They show the new club pages as they will be once they open, not today's page. Google shows about the first 60 characters of a title, so your club's name and city come first. A shared link shows your logo, or your club's initials on navy when it has none."
+      ]
+    ],
+    "own=true emailHidden=true pagesOn=false showAdmin=false": [
+      [
+        "One sentence about the club",
+        "It is shown as About on your club's page and at the start of search results. You may write more, the club in its own words, up to 2,000 characters: the count under the box says how many you have used. A search result shows the start of About and then How the club meets, in words, about 155 characters in all. Keep that box short so both fit."
+      ],
+      [
+        "How the club meets, in words",
+        "The days, the time and the place, as the club says them, such as \"First and third Tuesdays at 7:00 PM\". The page shows them as words and never turns them into dates."
+      ],
+      [
+        "Where",
+        "The place the club meets, its street if you know it, and a note such as the room. Set the pin by clicking the map or dragging the pin, or paste coordinates or a Google Maps link; nothing is looked up for you. If the club meets in two places, Add another place; a place you empty, or Remove place 2, comes off the page at the next save. Today's club page shows the place's name, its street and its pin; the note shows once the new club pages open."
+      ],
+      [
+        "Contact name",
+        "The name visitors will see beside Contact on your club's page once the new club pages open. Today's club page does not show it."
+      ],
+      [
+        "Email for messages",
+        "It is never shown on your club's page or to visitors."
+      ],
+      [
+        "Name and address",
+        "Today's club page shows the city under your club's name, such as \"Baton Rouge, LA\", and a shared link to the page starts with a line such as \"Chess club in Baton Rouge, Louisiana\", which search results may show too. The city also helps people who search for a chess club near it. That line goes under the name once the new club pages open. Today's club page keeps the address shown under \"Your page's address\", which stays the same if the club is renamed, so links and search results keep working. The name, the region and the address are kept by LCA admins: ask LCA if one ever needs to change."
+      ],
+      [
+        "Cost and who is welcome",
+        "Cost is what a club night costs, such as \"Free\" or \"$5 toward the room\". Who is welcome says who the club is for and what a first-timer should bring or ask for. Tick The club plays on weekends or Scholastic friendly only when it is so. Today's club page and directory show none of these; they show once the new club pages open, and the new directory's filters read the ticks."
+      ],
+      [
+        "Links",
+        "Each link is a whole web address that starts with http:// or https://, such as your club's Facebook page. Today's club page shows none of these links; they show once the new club pages open, and a box left empty shows no link there."
+      ],
+      [
+        "Logo and club color",
+        "A logo you choose is made to fit and saved at once, on its own, before Save and publish. Press Save and publish while it uploads and your changes save as soon as the upload is done. The club's color is drawn as a band, a tint and small bars on the new club pages, never as words; a club with no color of its own shows navy."
+      ],
+      [
+        "Today's page shows different words here",
+        "Today's club page shows its own, shorter words where this listing holds the words written for the new club pages, or words changed in the older form since. Any save, even of one other field, puts this listing's words on today's page in place of today's, so read both before you save."
+      ],
+      [
+        "Save and publish",
+        "The sentence about the club, how it meets, and the place's name, street and pin go live on today's club page at once; the contact name and the place's note show once the new club pages open. So do the cost, who is welcome, the two ticks and the links. When someone other than the region's representative saves, the representative is emailed what changed. Search results may take a few days to show a change."
+      ],
+      [
+        "Preview",
+        "Beside the form, or under Preview on a phone, you see how your page shows up in a search and when someone shares it, its card in LCA's club directory, and what the page has. They change as you type. They show the new club pages as they will be once they open, not today's page. Google shows about the first 60 characters of a title, so your club's name and city come first. A shared link shows your logo, or your club's initials on navy when it has none."
+      ]
+    ],
+    "own=true emailHidden=false pagesOn=true showAdmin=true": [
+      [
+        "One sentence about the club",
+        "It is shown as About on your club's page and at the start of search results. You may write more, the club in its own words, up to 2,000 characters: the count under the box says how many you have used. A search result shows the start of About and then How the club meets, in words, about 155 characters in all. Keep that box short so both fit."
+      ],
+      [
+        "How the club meets, in words",
+        "The days, the time and the place, as the club says them, such as \"First and third Tuesdays at 7:00 PM\". The page shows them as words and never turns them into dates."
+      ],
+      [
+        "Where",
+        "The place the club meets, its street if you know it, and a note such as the room. Set the pin by clicking the map or dragging the pin, or paste coordinates or a Google Maps link; nothing is looked up for you. If the club meets in two places, Add another place; a place you empty, or Remove place 2, comes off the page at the next save."
+      ],
+      [
+        "Contact name shown on the page",
+        "The name visitors see beside Contact on your club's page."
+      ],
+      [
+        "Email for messages",
+        "Today's club page shows this address to visitors."
+      ],
+      [
+        "Name and address",
+        "The city makes the line under your club's name, such as \"Chess club in Baton Rouge, Louisiana\", on your page and in search results, and helps people who search for a chess club near it. Your page's address is made from the club's name the first time the page is saved, and stays the same if the club is renamed, so links and search results keep working."
+      ],
+      [
+        "Club name, region and page address",
+        "Only LCA admins change these. The page address is the part after /clubs/ in the club page's address; when it changes, the old address keeps working."
+      ],
+      [
+        "Cost and who is welcome",
+        "Cost is what a club night costs, such as \"Free\" or \"$5 toward the room\". Who is welcome says who the club is for and what a first-timer should bring or ask for. Tick The club plays on weekends or Scholastic friendly only when it is so; the club directory's filters read them."
+      ],
+      [
+        "Links",
+        "Each link is a whole web address that starts with http:// or https://, such as your club's Facebook page. Leave a box empty to show no link there."
+      ],
+      [
+        "Logo and club color",
+        "A logo you choose is made to fit and saved at once, on its own, before Save and publish. Press Save and publish while it uploads and your changes save as soon as the upload is done. The club's color is drawn as a band, a tint and small bars on the new club pages, never as words; a club with no color of its own shows navy."
+      ],
+      [
+        "Today's page shows different words here",
+        "Today's club page shows its own, shorter words where this listing holds the words written for the new club pages, or words changed in the older form since. Any save, even of one other field, puts this listing's words on today's page in place of today's, so read both before you save."
+      ],
+      [
+        "Save and publish",
+        "Your changes go live on your club's page at once. When someone other than the region's representative saves, the representative is emailed what changed. Search results may take a few days to show a change."
+      ],
+      [
+        "Preview",
+        "Beside the form, or under Preview on a phone, you see how your page shows up in a search and when someone shares it, its card in LCA's club directory, and what the page has. They change as you type. Google shows about the first 60 characters of a title, so your club's name and city come first. A shared link shows your logo, or your club's initials on navy when it has none."
+      ]
+    ],
+    "own=true emailHidden=false pagesOn=true showAdmin=false": [
+      [
+        "One sentence about the club",
+        "It is shown as About on your club's page and at the start of search results. You may write more, the club in its own words, up to 2,000 characters: the count under the box says how many you have used. A search result shows the start of About and then How the club meets, in words, about 155 characters in all. Keep that box short so both fit."
+      ],
+      [
+        "How the club meets, in words",
+        "The days, the time and the place, as the club says them, such as \"First and third Tuesdays at 7:00 PM\". The page shows them as words and never turns them into dates."
+      ],
+      [
+        "Where",
+        "The place the club meets, its street if you know it, and a note such as the room. Set the pin by clicking the map or dragging the pin, or paste coordinates or a Google Maps link; nothing is looked up for you. If the club meets in two places, Add another place; a place you empty, or Remove place 2, comes off the page at the next save."
+      ],
+      [
+        "Contact name shown on the page",
+        "The name visitors see beside Contact on your club's page."
+      ],
+      [
+        "Email for messages",
+        "Today's club page shows this address to visitors."
+      ],
+      [
+        "Name and address",
+        "The city makes the line under your club's name, such as \"Chess club in Baton Rouge, Louisiana\", on your page and in search results, and helps people who search for a chess club near it. Your page's address is made from the club's name the first time the page is saved, and stays the same if the club is renamed, so links and search results keep working. The name, the region and the address are kept by LCA admins: ask LCA if one ever needs to change."
+      ],
+      [
+        "Cost and who is welcome",
+        "Cost is what a club night costs, such as \"Free\" or \"$5 toward the room\". Who is welcome says who the club is for and what a first-timer should bring or ask for. Tick The club plays on weekends or Scholastic friendly only when it is so; the club directory's filters read them."
+      ],
+      [
+        "Links",
+        "Each link is a whole web address that starts with http:// or https://, such as your club's Facebook page. Leave a box empty to show no link there."
+      ],
+      [
+        "Logo and club color",
+        "A logo you choose is made to fit and saved at once, on its own, before Save and publish. Press Save and publish while it uploads and your changes save as soon as the upload is done. The club's color is drawn as a band, a tint and small bars on the new club pages, never as words; a club with no color of its own shows navy."
+      ],
+      [
+        "Today's page shows different words here",
+        "Today's club page shows its own, shorter words where this listing holds the words written for the new club pages, or words changed in the older form since. Any save, even of one other field, puts this listing's words on today's page in place of today's, so read both before you save."
+      ],
+      [
+        "Save and publish",
+        "Your changes go live on your club's page at once. When someone other than the region's representative saves, the representative is emailed what changed. Search results may take a few days to show a change."
+      ],
+      [
+        "Preview",
+        "Beside the form, or under Preview on a phone, you see how your page shows up in a search and when someone shares it, its card in LCA's club directory, and what the page has. They change as you type. Google shows about the first 60 characters of a title, so your club's name and city come first. A shared link shows your logo, or your club's initials on navy when it has none."
+      ]
+    ],
+    "own=true emailHidden=false pagesOn=false showAdmin=true": [
+      [
+        "One sentence about the club",
+        "It is shown as About on your club's page and at the start of search results. You may write more, the club in its own words, up to 2,000 characters: the count under the box says how many you have used. A search result shows the start of About and then How the club meets, in words, about 155 characters in all. Keep that box short so both fit."
+      ],
+      [
+        "How the club meets, in words",
+        "The days, the time and the place, as the club says them, such as \"First and third Tuesdays at 7:00 PM\". The page shows them as words and never turns them into dates."
+      ],
+      [
+        "Where",
+        "The place the club meets, its street if you know it, and a note such as the room. Set the pin by clicking the map or dragging the pin, or paste coordinates or a Google Maps link; nothing is looked up for you. If the club meets in two places, Add another place; a place you empty, or Remove place 2, comes off the page at the next save. Today's club page shows the place's name, its street and its pin; the note shows once the new club pages open."
+      ],
+      [
+        "Contact name",
+        "The name visitors will see beside Contact on your club's page once the new club pages open. Today's club page does not show it."
+      ],
+      [
+        "Email for messages",
+        "Today's club page shows this address to visitors."
+      ],
+      [
+        "Name and address",
+        "Today's club page shows the city under your club's name, such as \"Baton Rouge, LA\", and a shared link to the page starts with a line such as \"Chess club in Baton Rouge, Louisiana\", which search results may show too. The city also helps people who search for a chess club near it. That line goes under the name once the new club pages open. Today's club page keeps the address shown under \"Your page's address\", which stays the same if the club is renamed, so links and search results keep working."
+      ],
+      [
+        "Club name, region and page address",
+        "Only LCA admins change these. The page address is used once the new club pages open; today's club page keeps its own address, which does not change."
+      ],
+      [
+        "Cost and who is welcome",
+        "Cost is what a club night costs, such as \"Free\" or \"$5 toward the room\". Who is welcome says who the club is for and what a first-timer should bring or ask for. Tick The club plays on weekends or Scholastic friendly only when it is so. Today's club page and directory show none of these; they show once the new club pages open, and the new directory's filters read the ticks."
+      ],
+      [
+        "Links",
+        "Each link is a whole web address that starts with http:// or https://, such as your club's Facebook page. Today's club page shows none of these links; they show once the new club pages open, and a box left empty shows no link there."
+      ],
+      [
+        "Logo and club color",
+        "A logo you choose is made to fit and saved at once, on its own, before Save and publish. Press Save and publish while it uploads and your changes save as soon as the upload is done. The club's color is drawn as a band, a tint and small bars on the new club pages, never as words; a club with no color of its own shows navy."
+      ],
+      [
+        "Today's page shows different words here",
+        "Today's club page shows its own, shorter words where this listing holds the words written for the new club pages, or words changed in the older form since. Any save, even of one other field, puts this listing's words on today's page in place of today's, so read both before you save."
+      ],
+      [
+        "Save and publish",
+        "The sentence about the club, how it meets, and the place's name, street and pin go live on today's club page at once; the contact name and the place's note show once the new club pages open. So do the cost, who is welcome, the two ticks and the links. When someone other than the region's representative saves, the representative is emailed what changed. Search results may take a few days to show a change."
+      ],
+      [
+        "Preview",
+        "Beside the form, or under Preview on a phone, you see how your page shows up in a search and when someone shares it, its card in LCA's club directory, and what the page has. They change as you type. They show the new club pages as they will be once they open, not today's page. Google shows about the first 60 characters of a title, so your club's name and city come first. A shared link shows your logo, or your club's initials on navy when it has none."
+      ]
+    ],
+    "own=true emailHidden=false pagesOn=false showAdmin=false": [
+      [
+        "One sentence about the club",
+        "It is shown as About on your club's page and at the start of search results. You may write more, the club in its own words, up to 2,000 characters: the count under the box says how many you have used. A search result shows the start of About and then How the club meets, in words, about 155 characters in all. Keep that box short so both fit."
+      ],
+      [
+        "How the club meets, in words",
+        "The days, the time and the place, as the club says them, such as \"First and third Tuesdays at 7:00 PM\". The page shows them as words and never turns them into dates."
+      ],
+      [
+        "Where",
+        "The place the club meets, its street if you know it, and a note such as the room. Set the pin by clicking the map or dragging the pin, or paste coordinates or a Google Maps link; nothing is looked up for you. If the club meets in two places, Add another place; a place you empty, or Remove place 2, comes off the page at the next save. Today's club page shows the place's name, its street and its pin; the note shows once the new club pages open."
+      ],
+      [
+        "Contact name",
+        "The name visitors will see beside Contact on your club's page once the new club pages open. Today's club page does not show it."
+      ],
+      [
+        "Email for messages",
+        "Today's club page shows this address to visitors."
+      ],
+      [
+        "Name and address",
+        "Today's club page shows the city under your club's name, such as \"Baton Rouge, LA\", and a shared link to the page starts with a line such as \"Chess club in Baton Rouge, Louisiana\", which search results may show too. The city also helps people who search for a chess club near it. That line goes under the name once the new club pages open. Today's club page keeps the address shown under \"Your page's address\", which stays the same if the club is renamed, so links and search results keep working. The name, the region and the address are kept by LCA admins: ask LCA if one ever needs to change."
+      ],
+      [
+        "Cost and who is welcome",
+        "Cost is what a club night costs, such as \"Free\" or \"$5 toward the room\". Who is welcome says who the club is for and what a first-timer should bring or ask for. Tick The club plays on weekends or Scholastic friendly only when it is so. Today's club page and directory show none of these; they show once the new club pages open, and the new directory's filters read the ticks."
+      ],
+      [
+        "Links",
+        "Each link is a whole web address that starts with http:// or https://, such as your club's Facebook page. Today's club page shows none of these links; they show once the new club pages open, and a box left empty shows no link there."
+      ],
+      [
+        "Logo and club color",
+        "A logo you choose is made to fit and saved at once, on its own, before Save and publish. Press Save and publish while it uploads and your changes save as soon as the upload is done. The club's color is drawn as a band, a tint and small bars on the new club pages, never as words; a club with no color of its own shows navy."
+      ],
+      [
+        "Today's page shows different words here",
+        "Today's club page shows its own, shorter words where this listing holds the words written for the new club pages, or words changed in the older form since. Any save, even of one other field, puts this listing's words on today's page in place of today's, so read both before you save."
+      ],
+      [
+        "Save and publish",
+        "The sentence about the club, how it meets, and the place's name, street and pin go live on today's club page at once; the contact name and the place's note show once the new club pages open. So do the cost, who is welcome, the two ticks and the links. When someone other than the region's representative saves, the representative is emailed what changed. Search results may take a few days to show a change."
+      ],
+      [
+        "Preview",
+        "Beside the form, or under Preview on a phone, you see how your page shows up in a search and when someone shares it, its card in LCA's club directory, and what the page has. They change as you type. They show the new club pages as they will be once they open, not today's page. Google shows about the first 60 characters of a title, so your club's name and city come first. A shared link shows your logo, or your club's initials on navy when it has none."
+      ]
+    ],
+    "own=false emailHidden=true pagesOn=true showAdmin=true": [
+      [
+        "One sentence about the club",
+        "It is shown as About on the club's page and at the start of search results. You may write more, the club in its own words, up to 2,000 characters: the count under the box says how many you have used. A search result shows the start of About and then How the club meets, in words, about 155 characters in all. Keep that box short so both fit."
+      ],
+      [
+        "How the club meets, in words",
+        "The days, the time and the place, as the club says them, such as \"First and third Tuesdays at 7:00 PM\". The page shows them as words and never turns them into dates."
+      ],
+      [
+        "Where",
+        "The place the club meets, its street if you know it, and a note such as the room. Set the pin by clicking the map or dragging the pin, or paste coordinates or a Google Maps link; nothing is looked up for you. If the club meets in two places, Add another place; a place you empty, or Remove place 2, comes off the page at the next save."
+      ],
+      [
+        "Contact name shown on the page",
+        "The name visitors see beside Contact on the club's page."
+      ],
+      [
+        "Email for messages",
+        "It is never shown on the club's page or to visitors."
+      ],
+      [
+        "Name and address",
+        "The city makes the line under the club's name, such as \"Chess club in Baton Rouge, Louisiana\", on the club's page and in search results, and helps people who search for a chess club near it. The address of the club's page is made from the club's name the first time the page is saved, and stays the same if the club is renamed, so links and search results keep working."
+      ],
+      [
+        "Club name, region and page address",
+        "Only LCA admins change these. The page address is the part after /clubs/ in the club page's address; when it changes, the old address keeps working."
+      ],
+      [
+        "Cost and who is welcome",
+        "Cost is what a club night costs, such as \"Free\" or \"$5 toward the room\". Who is welcome says who the club is for and what a first-timer should bring or ask for. Tick The club plays on weekends or Scholastic friendly only when it is so; the club directory's filters read them."
+      ],
+      [
+        "Links",
+        "Each link is a whole web address that starts with http:// or https://, such as the club's Facebook page. Leave a box empty to show no link there."
+      ],
+      [
+        "Logo and club color",
+        "A logo you choose is made to fit and saved at once, on its own, before Save and publish. Press Save and publish while it uploads and your changes save as soon as the upload is done. The club's color is drawn as a band, a tint and small bars on the new club pages, never as words; a club with no color of its own shows navy."
+      ],
+      [
+        "Today's page shows different words here",
+        "Today's club page shows its own, shorter words where this listing holds the words written for the new club pages, or words changed in the older form since. Any save, even of one other field, puts this listing's words on today's page in place of today's, so read both before you save."
+      ],
+      [
+        "Save and publish",
+        "Your changes go live on the club's page at once. When someone other than the region's representative saves, the representative is emailed what changed. Search results may take a few days to show a change."
+      ],
+      [
+        "Preview",
+        "Beside the form, or under Preview on a phone, you see how the club's page shows up in a search and when someone shares it, its card in LCA's club directory, and what the page has. They change as you type. Google shows about the first 60 characters of a title, so the club's name and city come first. A shared link shows the club's logo, or its initials on navy when it has none."
+      ]
+    ],
+    "own=false emailHidden=true pagesOn=true showAdmin=false": [
+      [
+        "One sentence about the club",
+        "It is shown as About on the club's page and at the start of search results. You may write more, the club in its own words, up to 2,000 characters: the count under the box says how many you have used. A search result shows the start of About and then How the club meets, in words, about 155 characters in all. Keep that box short so both fit."
+      ],
+      [
+        "How the club meets, in words",
+        "The days, the time and the place, as the club says them, such as \"First and third Tuesdays at 7:00 PM\". The page shows them as words and never turns them into dates."
+      ],
+      [
+        "Where",
+        "The place the club meets, its street if you know it, and a note such as the room. Set the pin by clicking the map or dragging the pin, or paste coordinates or a Google Maps link; nothing is looked up for you. If the club meets in two places, Add another place; a place you empty, or Remove place 2, comes off the page at the next save."
+      ],
+      [
+        "Contact name shown on the page",
+        "The name visitors see beside Contact on the club's page."
+      ],
+      [
+        "Email for messages",
+        "It is never shown on the club's page or to visitors."
+      ],
+      [
+        "Name and address",
+        "The city makes the line under the club's name, such as \"Chess club in Baton Rouge, Louisiana\", on the club's page and in search results, and helps people who search for a chess club near it. The address of the club's page is made from the club's name the first time the page is saved, and stays the same if the club is renamed, so links and search results keep working. The name, the region and the address are kept by LCA admins: ask LCA if one ever needs to change."
+      ],
+      [
+        "Cost and who is welcome",
+        "Cost is what a club night costs, such as \"Free\" or \"$5 toward the room\". Who is welcome says who the club is for and what a first-timer should bring or ask for. Tick The club plays on weekends or Scholastic friendly only when it is so; the club directory's filters read them."
+      ],
+      [
+        "Links",
+        "Each link is a whole web address that starts with http:// or https://, such as the club's Facebook page. Leave a box empty to show no link there."
+      ],
+      [
+        "Logo and club color",
+        "A logo you choose is made to fit and saved at once, on its own, before Save and publish. Press Save and publish while it uploads and your changes save as soon as the upload is done. The club's color is drawn as a band, a tint and small bars on the new club pages, never as words; a club with no color of its own shows navy."
+      ],
+      [
+        "Today's page shows different words here",
+        "Today's club page shows its own, shorter words where this listing holds the words written for the new club pages, or words changed in the older form since. Any save, even of one other field, puts this listing's words on today's page in place of today's, so read both before you save."
+      ],
+      [
+        "Save and publish",
+        "Your changes go live on the club's page at once. When someone other than the region's representative saves, the representative is emailed what changed. Search results may take a few days to show a change."
+      ],
+      [
+        "Preview",
+        "Beside the form, or under Preview on a phone, you see how the club's page shows up in a search and when someone shares it, its card in LCA's club directory, and what the page has. They change as you type. Google shows about the first 60 characters of a title, so the club's name and city come first. A shared link shows the club's logo, or its initials on navy when it has none."
+      ]
+    ],
+    "own=false emailHidden=true pagesOn=false showAdmin=true": [
+      [
+        "One sentence about the club",
+        "It is shown as About on the club's page and at the start of search results. You may write more, the club in its own words, up to 2,000 characters: the count under the box says how many you have used. A search result shows the start of About and then How the club meets, in words, about 155 characters in all. Keep that box short so both fit."
+      ],
+      [
+        "How the club meets, in words",
+        "The days, the time and the place, as the club says them, such as \"First and third Tuesdays at 7:00 PM\". The page shows them as words and never turns them into dates."
+      ],
+      [
+        "Where",
+        "The place the club meets, its street if you know it, and a note such as the room. Set the pin by clicking the map or dragging the pin, or paste coordinates or a Google Maps link; nothing is looked up for you. If the club meets in two places, Add another place; a place you empty, or Remove place 2, comes off the page at the next save. Today's club page shows the place's name, its street and its pin; the note shows once the new club pages open."
+      ],
+      [
+        "Contact name",
+        "The name visitors will see beside Contact on the club's page once the new club pages open. Today's club page does not show it."
+      ],
+      [
+        "Email for messages",
+        "It is never shown on the club's page or to visitors."
+      ],
+      [
+        "Name and address",
+        "Today's club page shows the city under the club's name, such as \"Baton Rouge, LA\", and a shared link to the page starts with a line such as \"Chess club in Baton Rouge, Louisiana\", which search results may show too. The city also helps people who search for a chess club near it. That line goes under the name once the new club pages open. Today's club page keeps the address shown under \"Address of the club's page\", which stays the same if the club is renamed, so links and search results keep working."
+      ],
+      [
+        "Club name, region and page address",
+        "Only LCA admins change these. The page address is used once the new club pages open; today's club page keeps its own address, which does not change."
+      ],
+      [
+        "Cost and who is welcome",
+        "Cost is what a club night costs, such as \"Free\" or \"$5 toward the room\". Who is welcome says who the club is for and what a first-timer should bring or ask for. Tick The club plays on weekends or Scholastic friendly only when it is so. Today's club page and directory show none of these; they show once the new club pages open, and the new directory's filters read the ticks."
+      ],
+      [
+        "Links",
+        "Each link is a whole web address that starts with http:// or https://, such as the club's Facebook page. Today's club page shows none of these links; they show once the new club pages open, and a box left empty shows no link there."
+      ],
+      [
+        "Logo and club color",
+        "A logo you choose is made to fit and saved at once, on its own, before Save and publish. Press Save and publish while it uploads and your changes save as soon as the upload is done. The club's color is drawn as a band, a tint and small bars on the new club pages, never as words; a club with no color of its own shows navy."
+      ],
+      [
+        "Today's page shows different words here",
+        "Today's club page shows its own, shorter words where this listing holds the words written for the new club pages, or words changed in the older form since. Any save, even of one other field, puts this listing's words on today's page in place of today's, so read both before you save."
+      ],
+      [
+        "Save and publish",
+        "The sentence about the club, how it meets, and the place's name, street and pin go live on today's club page at once; the contact name and the place's note show once the new club pages open. So do the cost, who is welcome, the two ticks and the links. When someone other than the region's representative saves, the representative is emailed what changed. Search results may take a few days to show a change."
+      ],
+      [
+        "Preview",
+        "Beside the form, or under Preview on a phone, you see how the club's page shows up in a search and when someone shares it, its card in LCA's club directory, and what the page has. They change as you type. They show the new club pages as they will be once they open, not today's page. Google shows about the first 60 characters of a title, so the club's name and city come first. A shared link shows the club's logo, or its initials on navy when it has none."
+      ]
+    ],
+    "own=false emailHidden=true pagesOn=false showAdmin=false": [
+      [
+        "One sentence about the club",
+        "It is shown as About on the club's page and at the start of search results. You may write more, the club in its own words, up to 2,000 characters: the count under the box says how many you have used. A search result shows the start of About and then How the club meets, in words, about 155 characters in all. Keep that box short so both fit."
+      ],
+      [
+        "How the club meets, in words",
+        "The days, the time and the place, as the club says them, such as \"First and third Tuesdays at 7:00 PM\". The page shows them as words and never turns them into dates."
+      ],
+      [
+        "Where",
+        "The place the club meets, its street if you know it, and a note such as the room. Set the pin by clicking the map or dragging the pin, or paste coordinates or a Google Maps link; nothing is looked up for you. If the club meets in two places, Add another place; a place you empty, or Remove place 2, comes off the page at the next save. Today's club page shows the place's name, its street and its pin; the note shows once the new club pages open."
+      ],
+      [
+        "Contact name",
+        "The name visitors will see beside Contact on the club's page once the new club pages open. Today's club page does not show it."
+      ],
+      [
+        "Email for messages",
+        "It is never shown on the club's page or to visitors."
+      ],
+      [
+        "Name and address",
+        "Today's club page shows the city under the club's name, such as \"Baton Rouge, LA\", and a shared link to the page starts with a line such as \"Chess club in Baton Rouge, Louisiana\", which search results may show too. The city also helps people who search for a chess club near it. That line goes under the name once the new club pages open. Today's club page keeps the address shown under \"Address of the club's page\", which stays the same if the club is renamed, so links and search results keep working. The name, the region and the address are kept by LCA admins: ask LCA if one ever needs to change."
+      ],
+      [
+        "Cost and who is welcome",
+        "Cost is what a club night costs, such as \"Free\" or \"$5 toward the room\". Who is welcome says who the club is for and what a first-timer should bring or ask for. Tick The club plays on weekends or Scholastic friendly only when it is so. Today's club page and directory show none of these; they show once the new club pages open, and the new directory's filters read the ticks."
+      ],
+      [
+        "Links",
+        "Each link is a whole web address that starts with http:// or https://, such as the club's Facebook page. Today's club page shows none of these links; they show once the new club pages open, and a box left empty shows no link there."
+      ],
+      [
+        "Logo and club color",
+        "A logo you choose is made to fit and saved at once, on its own, before Save and publish. Press Save and publish while it uploads and your changes save as soon as the upload is done. The club's color is drawn as a band, a tint and small bars on the new club pages, never as words; a club with no color of its own shows navy."
+      ],
+      [
+        "Today's page shows different words here",
+        "Today's club page shows its own, shorter words where this listing holds the words written for the new club pages, or words changed in the older form since. Any save, even of one other field, puts this listing's words on today's page in place of today's, so read both before you save."
+      ],
+      [
+        "Save and publish",
+        "The sentence about the club, how it meets, and the place's name, street and pin go live on today's club page at once; the contact name and the place's note show once the new club pages open. So do the cost, who is welcome, the two ticks and the links. When someone other than the region's representative saves, the representative is emailed what changed. Search results may take a few days to show a change."
+      ],
+      [
+        "Preview",
+        "Beside the form, or under Preview on a phone, you see how the club's page shows up in a search and when someone shares it, its card in LCA's club directory, and what the page has. They change as you type. They show the new club pages as they will be once they open, not today's page. Google shows about the first 60 characters of a title, so the club's name and city come first. A shared link shows the club's logo, or its initials on navy when it has none."
+      ]
+    ],
+    "own=false emailHidden=false pagesOn=true showAdmin=true": [
+      [
+        "One sentence about the club",
+        "It is shown as About on the club's page and at the start of search results. You may write more, the club in its own words, up to 2,000 characters: the count under the box says how many you have used. A search result shows the start of About and then How the club meets, in words, about 155 characters in all. Keep that box short so both fit."
+      ],
+      [
+        "How the club meets, in words",
+        "The days, the time and the place, as the club says them, such as \"First and third Tuesdays at 7:00 PM\". The page shows them as words and never turns them into dates."
+      ],
+      [
+        "Where",
+        "The place the club meets, its street if you know it, and a note such as the room. Set the pin by clicking the map or dragging the pin, or paste coordinates or a Google Maps link; nothing is looked up for you. If the club meets in two places, Add another place; a place you empty, or Remove place 2, comes off the page at the next save."
+      ],
+      [
+        "Contact name shown on the page",
+        "The name visitors see beside Contact on the club's page."
+      ],
+      [
+        "Email for messages",
+        "Today's club page shows this address to visitors."
+      ],
+      [
+        "Name and address",
+        "The city makes the line under the club's name, such as \"Chess club in Baton Rouge, Louisiana\", on the club's page and in search results, and helps people who search for a chess club near it. The address of the club's page is made from the club's name the first time the page is saved, and stays the same if the club is renamed, so links and search results keep working."
+      ],
+      [
+        "Club name, region and page address",
+        "Only LCA admins change these. The page address is the part after /clubs/ in the club page's address; when it changes, the old address keeps working."
+      ],
+      [
+        "Cost and who is welcome",
+        "Cost is what a club night costs, such as \"Free\" or \"$5 toward the room\". Who is welcome says who the club is for and what a first-timer should bring or ask for. Tick The club plays on weekends or Scholastic friendly only when it is so; the club directory's filters read them."
+      ],
+      [
+        "Links",
+        "Each link is a whole web address that starts with http:// or https://, such as the club's Facebook page. Leave a box empty to show no link there."
+      ],
+      [
+        "Logo and club color",
+        "A logo you choose is made to fit and saved at once, on its own, before Save and publish. Press Save and publish while it uploads and your changes save as soon as the upload is done. The club's color is drawn as a band, a tint and small bars on the new club pages, never as words; a club with no color of its own shows navy."
+      ],
+      [
+        "Today's page shows different words here",
+        "Today's club page shows its own, shorter words where this listing holds the words written for the new club pages, or words changed in the older form since. Any save, even of one other field, puts this listing's words on today's page in place of today's, so read both before you save."
+      ],
+      [
+        "Save and publish",
+        "Your changes go live on the club's page at once. When someone other than the region's representative saves, the representative is emailed what changed. Search results may take a few days to show a change."
+      ],
+      [
+        "Preview",
+        "Beside the form, or under Preview on a phone, you see how the club's page shows up in a search and when someone shares it, its card in LCA's club directory, and what the page has. They change as you type. Google shows about the first 60 characters of a title, so the club's name and city come first. A shared link shows the club's logo, or its initials on navy when it has none."
+      ]
+    ],
+    "own=false emailHidden=false pagesOn=true showAdmin=false": [
+      [
+        "One sentence about the club",
+        "It is shown as About on the club's page and at the start of search results. You may write more, the club in its own words, up to 2,000 characters: the count under the box says how many you have used. A search result shows the start of About and then How the club meets, in words, about 155 characters in all. Keep that box short so both fit."
+      ],
+      [
+        "How the club meets, in words",
+        "The days, the time and the place, as the club says them, such as \"First and third Tuesdays at 7:00 PM\". The page shows them as words and never turns them into dates."
+      ],
+      [
+        "Where",
+        "The place the club meets, its street if you know it, and a note such as the room. Set the pin by clicking the map or dragging the pin, or paste coordinates or a Google Maps link; nothing is looked up for you. If the club meets in two places, Add another place; a place you empty, or Remove place 2, comes off the page at the next save."
+      ],
+      [
+        "Contact name shown on the page",
+        "The name visitors see beside Contact on the club's page."
+      ],
+      [
+        "Email for messages",
+        "Today's club page shows this address to visitors."
+      ],
+      [
+        "Name and address",
+        "The city makes the line under the club's name, such as \"Chess club in Baton Rouge, Louisiana\", on the club's page and in search results, and helps people who search for a chess club near it. The address of the club's page is made from the club's name the first time the page is saved, and stays the same if the club is renamed, so links and search results keep working. The name, the region and the address are kept by LCA admins: ask LCA if one ever needs to change."
+      ],
+      [
+        "Cost and who is welcome",
+        "Cost is what a club night costs, such as \"Free\" or \"$5 toward the room\". Who is welcome says who the club is for and what a first-timer should bring or ask for. Tick The club plays on weekends or Scholastic friendly only when it is so; the club directory's filters read them."
+      ],
+      [
+        "Links",
+        "Each link is a whole web address that starts with http:// or https://, such as the club's Facebook page. Leave a box empty to show no link there."
+      ],
+      [
+        "Logo and club color",
+        "A logo you choose is made to fit and saved at once, on its own, before Save and publish. Press Save and publish while it uploads and your changes save as soon as the upload is done. The club's color is drawn as a band, a tint and small bars on the new club pages, never as words; a club with no color of its own shows navy."
+      ],
+      [
+        "Today's page shows different words here",
+        "Today's club page shows its own, shorter words where this listing holds the words written for the new club pages, or words changed in the older form since. Any save, even of one other field, puts this listing's words on today's page in place of today's, so read both before you save."
+      ],
+      [
+        "Save and publish",
+        "Your changes go live on the club's page at once. When someone other than the region's representative saves, the representative is emailed what changed. Search results may take a few days to show a change."
+      ],
+      [
+        "Preview",
+        "Beside the form, or under Preview on a phone, you see how the club's page shows up in a search and when someone shares it, its card in LCA's club directory, and what the page has. They change as you type. Google shows about the first 60 characters of a title, so the club's name and city come first. A shared link shows the club's logo, or its initials on navy when it has none."
+      ]
+    ],
+    "own=false emailHidden=false pagesOn=false showAdmin=true": [
+      [
+        "One sentence about the club",
+        "It is shown as About on the club's page and at the start of search results. You may write more, the club in its own words, up to 2,000 characters: the count under the box says how many you have used. A search result shows the start of About and then How the club meets, in words, about 155 characters in all. Keep that box short so both fit."
+      ],
+      [
+        "How the club meets, in words",
+        "The days, the time and the place, as the club says them, such as \"First and third Tuesdays at 7:00 PM\". The page shows them as words and never turns them into dates."
+      ],
+      [
+        "Where",
+        "The place the club meets, its street if you know it, and a note such as the room. Set the pin by clicking the map or dragging the pin, or paste coordinates or a Google Maps link; nothing is looked up for you. If the club meets in two places, Add another place; a place you empty, or Remove place 2, comes off the page at the next save. Today's club page shows the place's name, its street and its pin; the note shows once the new club pages open."
+      ],
+      [
+        "Contact name",
+        "The name visitors will see beside Contact on the club's page once the new club pages open. Today's club page does not show it."
+      ],
+      [
+        "Email for messages",
+        "Today's club page shows this address to visitors."
+      ],
+      [
+        "Name and address",
+        "Today's club page shows the city under the club's name, such as \"Baton Rouge, LA\", and a shared link to the page starts with a line such as \"Chess club in Baton Rouge, Louisiana\", which search results may show too. The city also helps people who search for a chess club near it. That line goes under the name once the new club pages open. Today's club page keeps the address shown under \"Address of the club's page\", which stays the same if the club is renamed, so links and search results keep working."
+      ],
+      [
+        "Club name, region and page address",
+        "Only LCA admins change these. The page address is used once the new club pages open; today's club page keeps its own address, which does not change."
+      ],
+      [
+        "Cost and who is welcome",
+        "Cost is what a club night costs, such as \"Free\" or \"$5 toward the room\". Who is welcome says who the club is for and what a first-timer should bring or ask for. Tick The club plays on weekends or Scholastic friendly only when it is so. Today's club page and directory show none of these; they show once the new club pages open, and the new directory's filters read the ticks."
+      ],
+      [
+        "Links",
+        "Each link is a whole web address that starts with http:// or https://, such as the club's Facebook page. Today's club page shows none of these links; they show once the new club pages open, and a box left empty shows no link there."
+      ],
+      [
+        "Logo and club color",
+        "A logo you choose is made to fit and saved at once, on its own, before Save and publish. Press Save and publish while it uploads and your changes save as soon as the upload is done. The club's color is drawn as a band, a tint and small bars on the new club pages, never as words; a club with no color of its own shows navy."
+      ],
+      [
+        "Today's page shows different words here",
+        "Today's club page shows its own, shorter words where this listing holds the words written for the new club pages, or words changed in the older form since. Any save, even of one other field, puts this listing's words on today's page in place of today's, so read both before you save."
+      ],
+      [
+        "Save and publish",
+        "The sentence about the club, how it meets, and the place's name, street and pin go live on today's club page at once; the contact name and the place's note show once the new club pages open. So do the cost, who is welcome, the two ticks and the links. When someone other than the region's representative saves, the representative is emailed what changed. Search results may take a few days to show a change."
+      ],
+      [
+        "Preview",
+        "Beside the form, or under Preview on a phone, you see how the club's page shows up in a search and when someone shares it, its card in LCA's club directory, and what the page has. They change as you type. They show the new club pages as they will be once they open, not today's page. Google shows about the first 60 characters of a title, so the club's name and city come first. A shared link shows the club's logo, or its initials on navy when it has none."
+      ]
+    ],
+    "own=false emailHidden=false pagesOn=false showAdmin=false": [
+      [
+        "One sentence about the club",
+        "It is shown as About on the club's page and at the start of search results. You may write more, the club in its own words, up to 2,000 characters: the count under the box says how many you have used. A search result shows the start of About and then How the club meets, in words, about 155 characters in all. Keep that box short so both fit."
+      ],
+      [
+        "How the club meets, in words",
+        "The days, the time and the place, as the club says them, such as \"First and third Tuesdays at 7:00 PM\". The page shows them as words and never turns them into dates."
+      ],
+      [
+        "Where",
+        "The place the club meets, its street if you know it, and a note such as the room. Set the pin by clicking the map or dragging the pin, or paste coordinates or a Google Maps link; nothing is looked up for you. If the club meets in two places, Add another place; a place you empty, or Remove place 2, comes off the page at the next save. Today's club page shows the place's name, its street and its pin; the note shows once the new club pages open."
+      ],
+      [
+        "Contact name",
+        "The name visitors will see beside Contact on the club's page once the new club pages open. Today's club page does not show it."
+      ],
+      [
+        "Email for messages",
+        "Today's club page shows this address to visitors."
+      ],
+      [
+        "Name and address",
+        "Today's club page shows the city under the club's name, such as \"Baton Rouge, LA\", and a shared link to the page starts with a line such as \"Chess club in Baton Rouge, Louisiana\", which search results may show too. The city also helps people who search for a chess club near it. That line goes under the name once the new club pages open. Today's club page keeps the address shown under \"Address of the club's page\", which stays the same if the club is renamed, so links and search results keep working. The name, the region and the address are kept by LCA admins: ask LCA if one ever needs to change."
+      ],
+      [
+        "Cost and who is welcome",
+        "Cost is what a club night costs, such as \"Free\" or \"$5 toward the room\". Who is welcome says who the club is for and what a first-timer should bring or ask for. Tick The club plays on weekends or Scholastic friendly only when it is so. Today's club page and directory show none of these; they show once the new club pages open, and the new directory's filters read the ticks."
+      ],
+      [
+        "Links",
+        "Each link is a whole web address that starts with http:// or https://, such as the club's Facebook page. Today's club page shows none of these links; they show once the new club pages open, and a box left empty shows no link there."
+      ],
+      [
+        "Logo and club color",
+        "A logo you choose is made to fit and saved at once, on its own, before Save and publish. Press Save and publish while it uploads and your changes save as soon as the upload is done. The club's color is drawn as a band, a tint and small bars on the new club pages, never as words; a club with no color of its own shows navy."
+      ],
+      [
+        "Today's page shows different words here",
+        "Today's club page shows its own, shorter words where this listing holds the words written for the new club pages, or words changed in the older form since. Any save, even of one other field, puts this listing's words on today's page in place of today's, so read both before you save."
+      ],
+      [
+        "Save and publish",
+        "The sentence about the club, how it meets, and the place's name, street and pin go live on today's club page at once; the contact name and the place's note show once the new club pages open. So do the cost, who is welcome, the two ticks and the links. When someone other than the region's representative saves, the representative is emailed what changed. Search results may take a few days to show a change."
+      ],
+      [
+        "Preview",
+        "Beside the form, or under Preview on a phone, you see how the club's page shows up in a search and when someone shares it, its card in LCA's club directory, and what the page has. They change as you type. They show the new club pages as they will be once they open, not today's page. Google shows about the first 60 characters of a title, so the club's name and city come first. A shared link shows the club's logo, or its initials on navy when it has none."
+      ]
+    ]
+  },
+  "region": {
+    "isAdmin=true": [
+      [
+        "What this page is",
+        "A card for each of every region's clubs, with when each was last checked. A check tells LCA that a club's listing is still right."
+      ],
+      [
+        "Still accurate",
+        "Press it on a club's card when its listing is still right. The card's stamp then names this month. Saving the club's listing counts as a check too."
+      ],
+      [
+        "The 90 days",
+        "A club needs a check when nobody has marked it still accurate or saved its listing in the last 90 days. When the page opens, those clubs come first, with \"Not checked since\" and the month, or \"Not checked yet\", on an amber tint. The others follow in A to Z order."
+      ],
+      [
+        "Confirm all still accurate",
+        "It marks every club that needs a check as still accurate, one club after another, once you answer its question. If a club cannot be marked, it is named and left as it was."
+      ],
+      [
+        "The monthly check",
+        "The bar names the day the next monthly check is due."
+      ],
+      [
+        "Open",
+        "Open takes you to the club's listing, where you can change it."
+      ],
+      [
+        "Who sees the stamps",
+        "Only this page shows them. No public page shows when a club was checked."
+      ]
+    ],
+    "isAdmin=false": [
+      [
+        "What this page is",
+        "A card for each of the clubs your seat keeps, with when each was last checked. A check tells LCA that a club's listing is still right."
+      ],
+      [
+        "Still accurate",
+        "Press it on a club's card when its listing is still right. The card's stamp then names this month. Saving the club's listing counts as a check too."
+      ],
+      [
+        "The 90 days",
+        "A club needs a check when nobody has marked it still accurate or saved its listing in the last 90 days. When the page opens, those clubs come first, with \"Not checked since\" and the month, or \"Not checked yet\", on an amber tint. The others follow in A to Z order."
+      ],
+      [
+        "Confirm all still accurate",
+        "It marks every club that needs a check as still accurate, one club after another, once you answer its question. If a club cannot be marked, it is named and left as it was."
+      ],
+      [
+        "The monthly check",
+        "The bar names the day the next monthly check is due."
+      ],
+      [
+        "Open",
+        "Open takes you to the club's listing, where you can change it."
+      ],
+      [
+        "Who sees the stamps",
+        "Only this page shows them. No public page shows when a club was checked."
+      ]
+    ]
+  }
+}

@@ -28,7 +28,6 @@ import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { AuthContext } from '@/contexts/auth-context'
 import type { AuthContextValue } from '@/contexts/AuthContext'
-import { REGION_HELP_SHOWN_KEY } from '@/areas/clubs/region'
 import type { WorkspaceRegionResponse } from '@domain/contracts'
 
 // Each case may wait up to 5 seconds for a page's file to load, so each case has 15 seconds.
@@ -87,7 +86,6 @@ let answers: Record<string, () => Response | Promise<Response>> = {}
 
 beforeEach(() => {
   window.localStorage.clear()
-  window.localStorage.setItem(REGION_HELP_SHOWN_KEY, 'shown')
   signIn.session = null
   asked = []
   answers = {
