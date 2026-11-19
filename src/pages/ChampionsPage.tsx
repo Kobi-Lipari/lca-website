@@ -15,7 +15,7 @@ import { PageHero } from '@/components/PageHero'
 import { ThickThinRule } from '@/components/ThickThinRule'
 import { useHeritageHook, useHeritageOrnaments } from '@/contexts/heritage-layout'
 import { getChampions, type ApiChampion, type ApiChampionshipEvent } from '@/lib/api'
-import { groupByPerson, personSlug, winnersOfYear, yearsWon, type ChampionEntry, type ChampionKind } from '@/areas/events/champions'
+import { CHESS_TITLE_SHORT, chessTitleOf, groupByPerson, personSlug, winnersOfYear, yearsWon, type ChampionEntry, type ChampionKind, type ChessTitle } from '@/areas/events/champions'
 import { usePageTitle } from '@/hooks/usePageTitle'
 import { cn } from '@/lib/utils'
 
@@ -125,10 +125,10 @@ export function ChampionsPage() {
                           </div>
                         )}
                         <div className="min-w-0">
-                          <p className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-                            <span className="text-3xl font-bold tracking-tight text-ink">{row.champion}</span>
-                            {row.notes && <span className="text-base font-medium text-muted-foreground">{row.notes}</span>}
+                          <p className="text-3xl font-bold tracking-tight text-ink">
+                            {entry?.chessTitle && <ChessTitleShort title={entry.chessTitle} />}{row.champion}
                           </p>
+                          {row.notes && !chessTitleOf(row.notes) && <p className="mt-1 text-sm text-muted-foreground">{row.notes}</p>}
                           {entry && (entry.wins.length > 1 || r.holders.length > 1) && (
                             <p className="mt-2 text-sm text-ink">
                               {entry.wins.length > 1 && <>{entry.wins.length} state titles, the first in {entry.firstYear}.</>}
@@ -270,16 +270,18 @@ function HonorRoll({ kind, heading, intro, champions, entries, query, frameHook 
                     <Trophy className="size-8 text-muted-foreground" />
                   </div>
                 )}
+                {/* The name and its summary, then the wins in one row across, under them at every width. */}
                 <div className="min-w-0 flex-1">
-                  <h3 className="text-lg font-bold text-ink">{e.name}</h3>
+                  <h3 className="text-lg font-bold text-ink">{e.chessTitle && <ChessTitleShort title={e.chessTitle} />}{e.name}</h3>
                   <p className="text-sm text-muted-foreground">
                     {e.wins.length > 1
                       ? <>Latest title in {e.lastYear}, first in {e.firstYear}, {e.wins.length} titles in all</>
                       : <>Won in {e.firstYear}</>}
                   </p>
-                  <ul className={cn('mt-2 text-sm text-ink', e.wins.length > 1 && 'space-y-0.5')}>
+                  {/* Each win stays one flex item, so its section, mark and note wrap together and its link never sits in running text. */}
+                  <ul className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-sm text-ink">
                     {e.wins.map((w) => (
-                      <li key={w.id} className="flex flex-wrap items-baseline gap-x-2">
+                      <li key={w.id} className="flex max-w-full flex-wrap items-baseline gap-x-2">
                         <span className="font-semibold tabular-nums">{w.year}</span>
                         {manyTitles && (
                           w.tournamentId && w.tournamentName
@@ -290,7 +292,8 @@ function HonorRoll({ kind, heading, intro, champions, entries, query, frameHook 
                           <Link to={`/tournaments/${w.tournamentId}`} className="text-muted-foreground hover:underline">{w.tournamentName}</Link>
                         )}
                         {w.shared && <span className="rounded-full bg-lca-gold/20 px-2 text-xs font-medium text-ink">Co-champion</span>}
-                        {w.notes && <span className="text-xs text-muted-foreground">{w.notes}</span>}
+                        {/* A title is written before the name instead. */}
+                        {w.notes && !chessTitleOf(w.notes) && <span className="text-xs text-muted-foreground">{w.notes}</span>}
                       </li>
                     ))}
                   </ul>
@@ -301,5 +304,20 @@ function HonorRoll({ kind, heading, intro, champions, entries, query, frameHook 
         </ol>
       )}
     </section>
+  )
+}
+
+/**
+ * A chess title in its short form, written before a champion's name:
+ * sighted readers see "FM Nicholas Matta", and a screen reader, which skips
+ * the short form, says "FIDE Master Nicholas Matta". The space after it
+ * keeps the title and the name apart in both.
+ */
+function ChessTitleShort({ title }: { title: ChessTitle }) {
+  return (
+    <>
+      <abbr title={title} aria-hidden="true" className="no-underline">{CHESS_TITLE_SHORT[title]}</abbr>
+      <span className="sr-only">{title}</span>{' '}
+    </>
   )
 }

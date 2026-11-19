@@ -34,6 +34,11 @@ vi.mock('../../functions/utils/clubs/pages', async (importOriginal) => {
     get CLUB_KEEPERS_ON() {
       return flags.keepersOn
     },
+    // These cases were written with REGION_EVENTS_ON unset, so it is held unset here;
+    // test/integration/region-events-answers.test.ts holds the answers with it set.
+    get REGION_EVENTS_ON() {
+      return false
+    },
   }
 })
 
