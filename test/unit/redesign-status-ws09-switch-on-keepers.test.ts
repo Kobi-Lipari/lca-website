@@ -136,8 +136,11 @@ describe('REDESIGN_STATUS.md, WS09 switch-on: what ships', () => {
     expect(pages.CLUB_KEEPERS_ON).toBe(true)
   })
 
-  it('keeps regionEvents, newClubs, REGION_EVENTS_ON and CLUB_PAGES_ON off, and the order check finds nothing', () => {
-    expect([FEATURES.regionEvents, FEATURES.newClubs, pages.REGION_EVENTS_ON, pages.CLUB_PAGES_ON]).toEqual([false, false, false, false])
+  it('keeps newClubs and CLUB_PAGES_ON off, declares regionEvents and REGION_EVENTS_ON, and the order check finds nothing', () => {
+    expect([FEATURES.newClubs, pages.CLUB_PAGES_ON]).toEqual([false, false])
+    // regionEvents and REGION_EVENTS_ON went on together in the block "WS09 switch-on: regionEvents and REGION_EVENTS_ON", so this block holds only that each is declared.
+    expect(read(FEATURES_FILE)).toMatch(/^ {2}regionEvents: (?:false|true),$/m)
+    expect(read(PAGES_FILE)).toMatch(/^export const REGION_EVENTS_ON = (?:false|true)$/m)
     const constants = { CLUB_EMAIL_HIDDEN: publicAnswer.CLUB_EMAIL_HIDDEN, CLUB_PAGES_ON: pages.CLUB_PAGES_ON, CLUB_KEEPERS_ON: pages.CLUB_KEEPERS_ON, REGION_EVENTS_ON: pages.REGION_EVENTS_ON }
     expect(switchOrderProblems(FEATURES, constants)).toEqual([])
   })
@@ -287,7 +290,8 @@ describe('REDESIGN_STATUS.md, WS09 switch-on: the pins', () => {
 
   it('takes clubKeepers out of the WS09 list held off in test/unit/features.test.ts, as its header says', () => {
     const features = read('test/unit/features.test.ts')
-    expect(features).toContain('const WS09 = [\'newClubs\', \'regionEvents\'] as const')
+    // regionEvents left the list in the block "WS09 switch-on: regionEvents and REGION_EVENTS_ON", so this holds only that clubKeepers is not in it.
+    expect(features).toMatch(/^const WS09 = \['newClubs'(?:, 'regionEvents')?\] as const$/m)
     expect(features).toContain('// clubKeepers has been turned on that way, with CLUB_KEEPERS_ON.')
     expect(bullet(block, '- **Pins moved.**')).toContain('the file\'s cases go from 26 to 25')
   })

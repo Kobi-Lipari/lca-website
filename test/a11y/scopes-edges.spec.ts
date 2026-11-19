@@ -536,7 +536,7 @@ test.describe('the events\' pages on a phone', () => {
     expect(external).toEqual([])
   })
 
-  test('a11y-off: today\'s page is wider than a 390 pixel phone, and its sections box is no region', async ({ page, external }, testInfo) => {
+  test('a11y-off: today\'s page too fits a 390 pixel phone, and its sections box is the same named region', async ({ page, external }, testInfo) => {
     only(testInfo, OFF, 'today\'s page, on a11y-off')
     await page.setViewportSize({ width: 390, height: 900 })
     const seen: string[] = []
@@ -544,9 +544,10 @@ test.describe('the events\' pages on a phone', () => {
       await openDrawn(page, p.route, p.drawn(page))
       const m = await fit(page)
       seen.push(`${p.route}: page ${m.page.join(' in ')}`)
-      // Recorded under Follow-ups: with newLook off the page still scrolls sideways on a phone.
-      expect(m.page[0], p.route).toBeGreaterThan(m.page[1])
-      expect({ role: m.role, label: m.label, tabIndex: m.tabIndex }, p.route).toEqual({ role: null, label: null, tabIndex: -1 })
+      // Mended in WS09's aside on the public event page, where the grid and the box became the same in both looks.
+      expect(m.page[0], p.route).toBeLessThanOrEqual(m.page[1])
+      expect(m.box[0], `${p.route}: the table is wider than its box`).toBeGreaterThan(m.box[1])
+      expect({ role: m.role, label: m.label, tabIndex: m.tabIndex }, p.route).toEqual({ role: 'region', label: 'Sections', tabIndex: 0 })
     }
     console.log(`The events' pages at 390 pixels (${OFF}): ${seen.join('; ')}`)
     expect(external).toEqual([])
@@ -584,15 +585,15 @@ test.describe('the sections table\'s box under the keyboard', () => {
     expect(external).toEqual([])
   })
 
-  test('a11y-off: Tab after the heading passes the box by, as today', async ({ page, external }, testInfo) => {
+  test('a11y-off: in today\'s look too Tab after the heading reaches the box', async ({ page, external }, testInfo) => {
     only(testInfo, OFF, 'today\'s page, on a11y-off')
     await page.setViewportSize({ width: 390, height: 900 })
     await openDrawn(page, OPEN.route, OPEN.drawn(page))
     await page.getByRole('heading', { level: 2, name: 'Sections' }).click()
     await page.keyboard.press('Tab')
     const box = sectionsBox(page)
-    expect(await box.evaluate((el) => el === document.activeElement)).toBe(false)
-    expect(await box.evaluate((el) => el.contains(document.activeElement))).toBe(false)
+    expect(await box.evaluate((el) => el === document.activeElement)).toBe(true)
+    expect(await box.evaluate((el) => el.contains(document.activeElement))).toBe(true)
     expect(await page.evaluate(() => document.activeElement?.tagName)).not.toBe('BODY')
     expect(external).toEqual([])
   })

@@ -161,7 +161,8 @@ const ENTRIES = {
   membershipHelp: { label: 'Membership help', kind: 'page', href: '/contact?subject=membership' },
   websiteHelp: { label: 'Website help', kind: 'page', href: '/support' },
 
-  // The bar's utilities and the account. Donate opens today's donation
+  // The utilities and the account. Donate, which the About menu and the
+  // Menu sheet hold rather than the bar (decision 68), opens today's donation
   // dialog until the Give page exists behind newMembership, then /give.
   search: { label: 'Search', kind: 'action', href: '/search', liveWith: 'siteSearch' },
   donate: { label: 'Donate', kind: 'action', does: 'donate-dialog', moves: { when: 'newMembership', href: '/give' } },
@@ -333,7 +334,12 @@ export interface NavAccount {
   readonly joinSlot?: JoinSlot
 }
 
-/** Donate, then Log in or My LCA, then the join slot: the bar's utilities in their order. */
+/**
+ * Donate, then Log in or My LCA, then the join slot: the Menu sheet's
+ * buttons, in their order. The header's bar draws Log in or My LCA, and the
+ * join slot from 1024 pixels up, but never Donate, which is the About menu's
+ * last row there instead (decision 68).
+ */
 export function headerUtilities(account: NavAccount): NavId[] {
   const slot: JoinSlot = account.signedIn ? (account.joinSlot ?? null) : 'joinLca'
   return ['donate', account.signedIn ? 'myLca' : 'logIn', ...(slot ? [slot] : [])]
@@ -348,11 +354,12 @@ export const ABOUT_ROWS = ['aboutLca', 'boardRegions', 'bylawsRules', 'minutes',
 export const ABOUT_FOOTER_ROW = 'facebook' satisfies NavId
 
 /**
- * The About menu: its seven rows, with Donate as the last row above the
- * footer row when the bar is too tight to hold it, and LCA on Facebook below.
+ * The About menu: its seven rows, then Donate, always its last row above the
+ * footer row, since the header's bar never holds Donate (decision 68), and
+ * LCA on Facebook below.
  */
-export function aboutMenu(squeezed = false): { rows: NavId[]; footer: NavId } {
-  return { rows: [...ABOUT_ROWS, ...(squeezed ? (['donate'] as const) : [])], footer: ABOUT_FOOTER_ROW }
+export function aboutMenu(): { rows: NavId[]; footer: NavId } {
+  return { rows: [...ABOUT_ROWS, 'donate'], footer: ABOUT_FOOTER_ROW }
 }
 
 // The My LCA menu
@@ -486,7 +493,7 @@ export interface SheetSection {
 /** The sheet, top to bottom. */
 export interface NavSheet {
   readonly sections: readonly SheetSection[]
-  /** Donate, Log in or My LCA, and the join slot, in the bar's order. */
+  /** Donate, Log in or My LCA, and the join slot, in headerUtilities' order. */
   readonly utilities: readonly NavId[]
   /** Today's role rows until the volunteer rail is on, then the Admin row the person holds. */
   readonly roles: readonly NavId[]
@@ -537,10 +544,10 @@ export function sheetRowLabel(row: SheetRow): string {
 
 /**
  * The Menu sheet: the six sections with the current one open; Donate, Log in
- * or My LCA, and the join slot, in the bar's order; the role rows; Log out
- * for someone signed in, as the My LCA menu ends with it; LCA on Facebook,
- * Contact and Website help; the theme switch; and Hide event bar while event
- * mode is on.
+ * or My LCA, and the join slot, in headerUtilities' order; the role rows;
+ * Log out for someone signed in, as the My LCA menu ends with it; LCA on
+ * Facebook, Contact and Website help; the theme switch; and Hide event bar
+ * while event mode is on.
  */
 export function navSheet(input: SheetInput, features: Features = FEATURES): NavSheet {
   const current = sectionFor(input.pathname)
@@ -645,6 +652,6 @@ export const SEARCH_SYNONYMS = {
 /** Other names for the club regions, each pointing at its region. Lower case. */
 export const REGION_ALIASES = {
   nola: 'New Orleans Metro',
-  northshore: 'North of Lake Pontchartrain',
-  acadiana: 'South Central Louisiana',
+  northshore: 'New Orleans Metro',
+  acadiana: 'Lafayette / South Central',
 } as const satisfies Record<string, Region>

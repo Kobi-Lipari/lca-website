@@ -11,16 +11,16 @@
 //   screen readers and the two-line name beside it;
 // - the nav named Main with Tournaments and Clubs alone, the one the page is
 //   in marked with aria-current and its line;
-// - Donate first among the utilities, opening the donation dialog, or a
-//   link to /give with newMembership on; Log in signed out and the My LCA
-//   menu signed in; no Join LCA or Renew at this width, which the sheet
-//   gives;
+// - Log in signed out and the My LCA menu signed in, then Menu; no Donate
+//   in the bar, newMembership off or on, since the tablet's Donate is the
+//   first of the drawer's buttons (decision 68), and no Join LCA or Renew
+//   at this width, which the drawer gives as well;
 // - the bordered Menu button, which opens the Menu sheet as a drawer from
 //   the right, the focus back on it after Esc, the drawer closed when the
 //   page changes or the window widens into the desktop form, the focus then
 //   on the brand link, the header's first control (WS02 step 7);
 // - when the row is tight, the two-line name hides and the link keeps its
-//   name, and Donate never leaves the bar (the widths stubbed, as jsdom lays
+//   name, and nothing else leaves the bar (the widths stubbed, as jsdom lays
 //   nothing out);
 // - --header-h, 64 pixels, on the page's root while it is drawn.
 import { act, cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react'
@@ -114,9 +114,9 @@ const header = () => screen.getByRole('banner')
 const bar = () => within(header())
 const where = () => screen.getByTestId('where').textContent
 const menuButton = () => bar().getByRole('button', { name: 'Menu' })
-/** The utilities' names in their order, as the row shows them. */
+/** The utilities' names in their order, as the row shows them, read from the whole group the account sits in. */
 function utilities(): string[] {
-  const group = header().querySelector('[data-slot="site-header-donate"]')!.parentElement!
+  const group = header().querySelector('[data-slot="site-header-account"]')!.parentElement!
   return [...group.querySelectorAll('a, button')].filter((el) => !el.closest('[hidden]')).map((el) => el.textContent ?? '')
 }
 
@@ -175,36 +175,37 @@ describe('the tablet form', () => {
   })
 
   it.each([
-    ['signed out', visitor(), ['Donate', 'Log in', 'Menu']],
-    ['an active member', visitor('active'), ['Donate', 'My LCA', 'Menu']],
-    ['a member whose membership has expired', visitor('expired'), ['Donate', 'My LCA', 'Menu']],
-    ['a member with no membership', visitor('none'), ['Donate', 'My LCA', 'Menu']],
-  ] as const)('%s: Donate first, then Log in or the My LCA menu, then Menu, with no Join LCA or Renew at this width', (_, auth, expected) => {
+    ['signed out', visitor(), ['Log in', 'Menu']],
+    ['an active member', visitor('active'), ['My LCA', 'Menu']],
+    ['a member whose membership has expired', visitor('expired'), ['My LCA', 'Menu']],
+    ['a member with no membership', visitor('none'), ['My LCA', 'Menu']],
+  ] as const)('%s: Log in or the My LCA menu, then Menu, with no Donate, Join LCA or Renew at this width', (_, auth, expected) => {
     draw('/', auth)
     expect(utilities()).toEqual([...expected])
+    expect(bar().queryByRole('button', { name: 'Donate' })).toBeNull()
     expect(bar().queryByRole('link', { name: 'Join LCA' })).toBeNull()
     expect(bar().queryByRole('link', { name: 'Renew' })).toBeNull()
-    if (expected[1] === 'My LCA') expect(bar().getByRole('button', { name: 'My LCA' }).getAttribute('aria-expanded')).toBe('false')
+    if (expected[0] === 'My LCA') expect(bar().getByRole('button', { name: 'My LCA' }).getAttribute('aria-expanded')).toBe('false')
     else expect(bar().getByRole('link', { name: 'Log in' }).getAttribute('href')).toBe('/login')
   })
 
-  it('opens the donation dialog from Donate, and closes it on Esc with the focus back on Donate', async () => {
-    draw('/clubs')
-    const donate = bar().getByRole('button', { name: 'Donate' })
-    donate.focus()
-    fireEvent.click(donate)
-    const dialog = await screen.findByRole('dialog', { name: DIALOG })
-    fireEvent.keyDown(dialog, { key: 'Escape' })
-    await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull())
-    await waitFor(() => expect(document.activeElement).toBe(donate))
-    expect(where()).toBe('/clubs from nothing')
-  })
-
-  it('with newMembership on, Donate is a link to /give', () => {
-    flags.newMembership = true
-    draw()
-    expect(bar().queryByRole('button', { name: 'Donate' })).toBeNull()
-    expect(bar().getByRole('link', { name: 'Donate' }).getAttribute('href')).toBe('/give')
+  it('draws no Donate in the bar, newMembership off or on, the drawer\'s being the tablet\'s one Donate (decision 68)', async () => {
+    for (const newMembership of [false, true]) {
+      flags.newMembership = newMembership
+      draw()
+      const at = `newMembership ${newMembership}`
+      expect(header().querySelector('[data-slot="site-header-donate"]'), at).toBeNull()
+      expect(bar().queryByRole('button', { name: 'Donate' }), at).toBeNull()
+      expect(bar().queryByRole('link', { name: 'Donate' }), at).toBeNull()
+      expect(bar().queryByRole('button', { name: 'About' }), `${at}: no About menu at this width`).toBeNull()
+      // The drawer's first button is Donate: the dialog's button until newMembership is on, then a link to /give.
+      fireEvent.click(menuButton())
+      const drawer = await screen.findByRole('dialog', { name: 'Menu' })
+      const first = drawer.querySelector('[data-slot="menu-sheet-buttons"]')?.firstElementChild
+      expect([first?.tagName, first?.textContent], at).toEqual([newMembership ? 'A' : 'BUTTON', 'Donate'])
+      expect(first?.getAttribute('href') ?? null, at).toBe(newMembership ? '/give' : null)
+      cleanup()
+    }
   })
 
   it('hands /login the page it was drawn on from Log in', () => {
@@ -329,11 +330,10 @@ const WIDTHS: Record<string, number> = {
   'lca-mark': 30,
   'site-header-name': 124,
   'site-header-sections': 200,
-  'site-header-donate': 64,
   'site-header-account': 170,
 }
-/** The row's natural width with every part shown, and with the name hidden; Donate is counted in both. */
-const NATURAL = [30 + 124 + 200 + 64 + 170, 30 + 200 + 64 + 170]
+/** The row's natural width with every part shown, and with the name hidden. */
+const NATURAL = [30 + 124 + 200 + 170, 30 + 200 + 170]
 
 /** Gives the row its room and each part its width; returns a way to change the room. */
 function stubWidths(room: number) {
@@ -351,7 +351,6 @@ function stubWidths(room: number) {
 }
 
 const nameHidden = () => header().querySelector('[data-slot="site-header-name"]')!.hasAttribute('hidden')
-const donateHidden = () => header().querySelector('[data-slot="site-header-donate"]')!.hasAttribute('hidden')
 
 describe('the tablet row when it is tight', () => {
   it('keeps everything with room for every part', () => {
@@ -360,23 +359,21 @@ describe('the tablet row when it is tight', () => {
     draw()
     act(() => watchers.forEach((w) => w.resized()))
     expect(nameHidden()).toBe(false)
-    expect(donateHidden()).toBe(false)
+    expect(utilities()).toEqual(['Log in', 'Menu'])
   })
 
-  it('hides the two-line name first, the link keeping its name, and Donate never leaves the bar, even with no room at all', () => {
+  it('hides the two-line name, the link keeping its name, and nothing else leaves the bar, even with no room at all', () => {
     const watchers = stubResizeObserver()
     const room = stubWidths(NATURAL[0] - 1)
     draw()
     act(() => watchers.forEach((w) => w.resized()))
     expect(nameHidden()).toBe(true)
-    expect(donateHidden()).toBe(false)
     expect(bar().getByRole('link', { name: HOME }).getAttribute('href')).toBe('/')
-    expect(utilities()).toEqual(['Donate', 'Log in', 'Menu'])
+    expect(utilities()).toEqual(['Log in', 'Menu'])
     room(10)
     act(() => watchers.forEach((w) => w.resized()))
     expect(nameHidden()).toBe(true)
-    expect(donateHidden()).toBe(false)
-    expect(utilities()).toEqual(['Donate', 'Log in', 'Menu'])
+    expect(utilities()).toEqual(['Log in', 'Menu'])
     expect(within(screen.getByRole('navigation', { name: 'Main' })).getAllByRole('link').map((a) => a.textContent)).toEqual(['Tournaments', 'Clubs'])
     // Room again, and the name comes back.
     room(NATURAL[0])

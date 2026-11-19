@@ -263,8 +263,9 @@ describe('REDESIGN_STATUS.md, WS09 step 19: the parts against the files', () => 
     expect(bullet(block, '- **What a revert leaves.**')).toContain('leaves no row behind')
     const ships = bullet(block, '- **What ships with every switch off.**')
     for (const piece of ['byte for byte', 'no query more', 'the counting database', 'No switch is added']) expect(ships, piece).toContain(piece)
-    expect(read('functions/utils/clubs/pages.ts')).toContain('export const REGION_EVENTS_ON = false')
-    expect(read('src/lib/features.ts')).toContain('  regionEvents: false,')
+    // regionEvents and REGION_EVENTS_ON went on together in the block "WS09 switch-on: regionEvents and REGION_EVENTS_ON", so this step holds only that each is declared.
+    expect(read('functions/utils/clubs/pages.ts')).toMatch(/^export const REGION_EVENTS_ON = (?:false|true)$/m)
+    expect(read('src/lib/features.ts')).toMatch(/^ {2}regionEvents: (?:false|true),$/m)
     const owed = bullet(block, '- **Owed before regionEvents goes on.**')
     for (const piece of ['one change that sets `regionEvents` and `REGION_EVENTS_ON` together', 'after `clubKeepers`']) expect(owed, piece).toContain(piece)
     expect(bullet(block, '- **Step 15.**')).toContain('Still to come')

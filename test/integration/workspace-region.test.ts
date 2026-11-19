@@ -453,7 +453,7 @@ describe('POST /api/admin/clubs/[id]/confirm: Still accurate', () => {
     const opened = (await env.DB.prepare('SELECT told_updated_at FROM clubs WHERE id = \'bunkie-chess-club\'').first<{ told_updated_at: string }>())!.told_updated_at
     expect(opened).not.toBeNull()
     const holder = await seedMember({ fullName: 'Player One' })
-    await seat(holder, ['Central Louisiana'])
+    await seat(holder, ['Lafayette / South Central'])
     const admin = await seedAdmin()
     expect((await confirm(holder, 'bunkie-chess-club')).status).toBe(200)
     expect((await env.DB.prepare('SELECT told_updated_at FROM clubs WHERE id = \'bunkie-chess-club\'').first<{ told_updated_at: string }>())!.told_updated_at).toBe(opened)

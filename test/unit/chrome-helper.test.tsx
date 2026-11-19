@@ -410,22 +410,25 @@ describe('what the helper finds in the new header', () => {
     expect(all(headerImages(page))).toHaveLength(0)
   })
 
-  it('finds each name of its third list in the new header, with the role a spec reads it by, signed out and with a membership that has expired, Log out once the My LCA menu is open', () => {
+  it('finds each name of its third list in the new header, with the role a spec reads it by, signed out and with a membership that has expired, Donate once the About menu is open and Log out once the My LCA menu is open', () => {
     expect(Object.values(NEW_NAMES).sort()).toEqual(Object.keys(ROLES).sort())
 
     drawNewHeader(SIGNED_OUT)
-    for (const name of [NEW_NAMES.home, NEW_NAMES.about, NEW_NAMES.donate]) expect(seen(name), `signed out: ${name}`).toHaveLength(1)
-    // The desktop form has no Menu button: its row holds every section.
-    for (const name of [NEW_NAMES.myLca, NEW_NAMES.renew, NEW_NAMES.logOut, NEW_NAMES.menu]) expect(seen(name), `signed out: ${name}`).toHaveLength(0)
+    for (const name of [NEW_NAMES.home, NEW_NAMES.about]) expect(seen(name), `signed out: ${name}`).toHaveLength(1)
+    // The desktop form has no Menu button: its row holds every section. Donate is never in the row (decision 68).
+    for (const name of [NEW_NAMES.donate, NEW_NAMES.myLca, NEW_NAMES.renew, NEW_NAMES.logOut, NEW_NAMES.menu]) expect(seen(name), `signed out: ${name}`).toHaveLength(0)
     // The names any header gives: Log in and Join LCA signed out, and Clubs among the sections.
     for (const name of [CHROME_NAMES.logIn, CHROME_NAMES.joinLca, CHROME_NAMES.clubs]) expect(anyHeader(name), `signed out: ${name}`).toHaveLength(1)
     // Today's names are not the new header's.
     for (const name of [TODAYS_NAMES.profile, TODAYS_NAMES.more]) expect(banner().queryAllByRole(name === TODAYS_NAMES.more ? 'button' : 'link', { name }), name).toHaveLength(0)
+    fireEvent.click(seen(NEW_NAMES.about)[0])
+    expect(seen(NEW_NAMES.donate), 'the About menu\'s last row').toHaveLength(1)
     cleanup()
 
     drawNewHeader(EXPIRED)
-    for (const name of [NEW_NAMES.home, NEW_NAMES.about, NEW_NAMES.donate, NEW_NAMES.myLca, NEW_NAMES.renew]) expect(seen(name), `expired: ${name}`).toHaveLength(1)
+    for (const name of [NEW_NAMES.home, NEW_NAMES.about, NEW_NAMES.myLca, NEW_NAMES.renew]) expect(seen(name), `expired: ${name}`).toHaveLength(1)
     for (const name of [CHROME_NAMES.logIn, CHROME_NAMES.joinLca]) expect(anyHeader(name), `expired: ${name}`).toHaveLength(0)
+    expect(seen(NEW_NAMES.donate), 'with the About menu shut').toHaveLength(0)
     expect(seen(NEW_NAMES.logOut), 'with the My LCA menu shut').toHaveLength(0)
     fireEvent.click(seen(NEW_NAMES.myLca)[0])
     expect(seen(NEW_NAMES.logOut), 'the My LCA menu\'s last row').toHaveLength(1)
@@ -435,8 +438,9 @@ describe('what the helper finds in the new header', () => {
     const container = drawBar('tablet', SIGNED_OUT)
     expect(all(siteHeader(page))).toEqual([container.querySelector(SITE.header)])
     expect(seen(NEW_NAMES.menu)).toHaveLength(1)
-    for (const name of [NEW_NAMES.home, NEW_NAMES.donate]) expect(seen(name), name).toHaveLength(1)
-    for (const name of [NEW_NAMES.about, NEW_NAMES.myLca, NEW_NAMES.renew, NEW_NAMES.logOut]) expect(seen(name), name).toHaveLength(0)
+    expect(seen(NEW_NAMES.home), NEW_NAMES.home).toHaveLength(1)
+    // No Donate in the tablet row either: the drawer's is the tablet's (decision 68).
+    for (const name of [NEW_NAMES.about, NEW_NAMES.donate, NEW_NAMES.myLca, NEW_NAMES.renew, NEW_NAMES.logOut]) expect(seen(name), name).toHaveLength(0)
     expect(anyHeader(CHROME_NAMES.logIn)).toHaveLength(1)
     expect(anyHeader(CHROME_NAMES.clubs)).toHaveLength(1)
     expect(anyHeader(CHROME_NAMES.joinLca)).toHaveLength(0)

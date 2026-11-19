@@ -215,7 +215,8 @@ test.describe('the tablet header, the app bar and the Menu sheet at their edges'
       expect(await focused(page)).toBe('body')
       const reached: string[] = []
       if (tablet) {
-        const order = [`a ${SKIP}`, `a ${NEW_NAMES.home}`, 'a Tournaments', `a ${CHROME_NAMES.clubs}`, `button ${NEW_NAMES.donate}`, `a ${CHROME_NAMES.logIn}`, `button ${NEW_NAMES.menu}`]
+        // No Donate in the tablet row: it is the first of the drawer's buttons (decision 68).
+        const order = [`a ${SKIP}`, `a ${NEW_NAMES.home}`, 'a Tournaments', `a ${CHROME_NAMES.clubs}`, `a ${CHROME_NAMES.logIn}`, `button ${NEW_NAMES.menu}`]
         for (let i = 0; i < order.length; i++) {
           await page.keyboard.press('Tab')
           reached.push(await focused(page))
@@ -680,7 +681,8 @@ test.describe('the phone\'s dock and the tab bar at their edges (WS02 step 7)', 
       expect(drawn.body, 'the page\'s sides inside the safe area').toEqual([`${side}px`, `${side}px`])
       expect(drawn.box, 'the header between the two notches').toEqual([side, width - side])
       expect(drawn.row[0], 'the row whole, nothing of it cut').toBeLessThanOrEqual(drawn.row[1])
-      expect(drawn.controls.length).toBeGreaterThanOrEqual(6)
+      // The brand link, Tournaments, Clubs, Log in and Menu, with no Donate in the row (decision 68).
+      expect(drawn.controls.length).toBeGreaterThanOrEqual(5)
       for (const c of drawn.controls) {
         expect(c.left, `${c.name}: clear of the left notch`).toBeGreaterThanOrEqual(side - 0.5)
         expect(c.right, `${c.name}: clear of the right notch`).toBeLessThanOrEqual(width - side + 0.5)
@@ -1005,7 +1007,7 @@ test.describe('the phone\'s dock and the tab bar at their edges (WS02 step 7)', 
       return seen
     }
     const record: Record<string, unknown> = {}
-    for (const [width, controls] of [[1280, 6], [900, 6], [390, 1]] as const) {
+    for (const [width, controls] of [[1280, 6], [900, 5], [390, 1]] as const) {
       await page.setViewportSize({ width, height: 800 })
       await openHome(page)
       const seen = await throughTheBar()
