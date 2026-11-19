@@ -97,9 +97,9 @@ describe('the navy email for letters the real cleaner has cleaned', () => {
       expect([...LAYOUT_TAGS, ...LETTER_TAGS], tag).toContain(tag)
       for (const name of Object.keys(attributes)) expect(name, tag).not.toMatch(/^on/)
     }
-    // The one image is the rook; the one style block is the layout's; the only addresses are the cleaner's own links, the strip's jump links and the follow line.
+    // The one image is the rook; the two style blocks are the layout's, the color-scheme reset's and the main one; the only addresses are the cleaner's own links, the strip's jump links and the follow line.
     expect(seen.filter((el) => el.tag === 'img').map((el) => el.attributes.src)).toEqual([`${SITE}/email-rook.png`])
-    expect(seen.filter((el) => el.tag === 'style')).toHaveLength(1)
+    expect(seen.filter((el) => el.tag === 'style')).toHaveLength(2)
     for (const { attributes } of seen.filter((el) => el.tag === 'a' && 'href' in el.attributes)) {
       expect(attributes.href).toMatch(/^(?:https?:\/\/|mailto:|#[a-z][a-z0-9-]*$)/)
       expect(attributes.style).toBe('color:#1a2744;text-decoration:underline;')
