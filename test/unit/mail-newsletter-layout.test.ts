@@ -179,6 +179,8 @@ function letterCell(html: string): string {
 
 /** The Gmail-only rule over the strip's links: Gmail puts a <u></u> where the doctype was, just before the body's element. */
 const GMAIL_STRIP = 'u + .nl-page .nl-toc a'
+/** The rule after it, for Gmail on Android alone, where the <u></u> stands inside a div. */
+const ANDROID_STRIP = 'div > u + .nl-page .nl-toc a'
 
 /** Words alone: every tag gone, and a "<" that starts no tag, as in "4 < 5", left as words. */
 const withoutTags = (html: string) => html.replace(/<\/?[A-Za-z][^>]*>/g, '')
@@ -267,14 +269,16 @@ describe('how the email is built', () => {
       }
     }
     const sizes = ['padding', 'padding-right', 'margin', 'margin-top', 'margin-bottom', 'width', 'height', 'font-size', 'line-height', 'letter-spacing', 'display', 'border']
-    // The narrow-screen rules set sizes alone, but for the one Gmail rule that draws the strip's entries as words.
+    // The narrow-screen rules set sizes alone, but for the Gmail rule that draws the strip's entries as words and the
+    // Android rule after it that gives them back their underline.
     for (const query of ['(max-width: 480px)', '(max-width: 339px)']) {
       for (const rule of rulesOf(email, query)) {
-        if (rule.selector === GMAIL_STRIP) continue
+        if (rule.selector === GMAIL_STRIP || rule.selector === ANDROID_STRIP) continue
         for (const property of Object.keys(rule.set)) expect(sizes, `${rule.selector} ${property}`).toContain(property)
       }
     }
     expect(rulesOf(email, '(max-width: 480px)').filter((rule) => rule.selector === GMAIL_STRIP)).toHaveLength(1)
+    expect(rulesOf(email, '(max-width: 480px)').filter((rule) => rule.selector === ANDROID_STRIP)).toHaveLength(1)
   })
 
   it('reads in light with both style blocks taken out: every colour of words on its ground at 4.5 to 1 or better', async () => {
@@ -404,11 +408,81 @@ describe('the "In this issue" strip', () => {
 })
 
 describe('in the Gmail apps', () => {
-  /** The email as Gmail serves it: the doctype gone, a <u></u> in its place, the body turned into a div keeping its class. */
+  /**
+   * The email as Gmail serves it: the doctype gone, a <u></u> in its place, the body turned into a div keeping its
+   * class. Here the <u></u> is not a div's child. This and the Android form below are stand-ins built from what the
+   * sources describe, not a test in Gmail: nobody here can run Gmail's apps.
+   */
   const asGmail = (email: string) => {
+    const body = parse(email).body
+    return parse(`<u></u><div class="${body.className}" style="${body.getAttribute('style')}">${body.innerHTML}</div>`)
+  }
+  /** The same, as the sources describe Gmail on Android serving it: wrapped in one div more, so the <u></u> is a div's child. */
+  const asGmailAndroid = (email: string) => {
     const body = parse(email).body
     return parse(`<div><u></u><div class="${body.className}" style="${body.getAttribute('style')}">${body.innerHTML}</div></div>`)
   }
+  /** A selector's weight as CSS counts it, for the plain selectors here: ids, then classes, then elements. */
+  const weight = (selector: string) => {
+    const ids = selector.match(/#[\w-]+/g)?.length ?? 0
+    const classes = selector.match(/\.[\w-]+/g)?.length ?? 0
+    const elements = selector.split(/[\s>+~]+/).filter((part) => /^[a-z]/i.test(part)).length
+    return ids * 10000 + classes * 100 + elements
+  }
+  /**
+   * Each strip link's text-decoration at a width: the rules of the queries that hold at that width, every one
+   * important, so the heaviest matching rule wins and, at equal weight, the later; with none, the link's inline style.
+   */
+  const decorations = (doc: Document, email: string, width: number) => {
+    const queries = [['(max-width: 480px)', 480], ['(max-width: 339px)', 339]] as const
+    const rules = queries.filter(([, most]) => width <= most).flatMap(([query]) => rulesOf(email, query)).filter((rule) => rule.set['text-decoration'])
+    return [...doc.querySelectorAll('td.nl-toc a')].map((link) => {
+      let best: { at: number; value: string } | undefined
+      for (const rule of rules) {
+        if (!link.matches(rule.selector)) continue
+        const at = weight(rule.selector)
+        if (!best || at >= best.at) best = { at, value: rule.set['text-decoration'] }
+      }
+      return best?.value ?? declared(link.getAttribute('style'), 'text-decoration')
+    })
+  }
+
+  it('gives Gmail on Android its underline back with one rule right after the Gmail rule, inside the 480 pixel rule, one element weightier', async () => {
+    const email = renderNewsletter(await issue())
+    const phone = rulesOf(email, '(max-width: 480px)')
+    const at = phone.findIndex((rule) => rule.selector === GMAIL_STRIP)
+    expect(at).toBeGreaterThan(-1)
+    expect(phone[at + 1]?.selector).toBe(ANDROID_STRIP)
+    expect(phone[at + 1]?.set).toEqual({ 'text-decoration': 'underline' })
+    expect(email).toContain('\nu + .nl-page .nl-toc a{text-decoration:none !important}\ndiv > u + .nl-page .nl-toc a{text-decoration:underline !important}\n')
+    expect(email.split('div > u + .nl-page')).toHaveLength(2)
+    for (const query of ['(prefers-color-scheme: dark)', '(max-width: 339px)']) expect(rulesOf(email, query).map((rule) => rule.selector)).not.toContain(ANDROID_STRIP)
+    expect(weight(ANDROID_STRIP)).toBe(weight(GMAIL_STRIP) + 1)
+  })
+
+  it('underlines the strip\'s entries at 390 wide in the stand-in for Gmail on Android, not in the plain Gmail stand-in, and as today at 800 wide and with no <u></u>', async () => {
+    const email = renderNewsletter(await issue())
+    const count = letterParts(ISSUE).length
+    const underlined = Array(count).fill('underline')
+    // The stand-ins are what the sources describe, not a test in Gmail.
+    expect(decorations(asGmailAndroid(email), email, 390)).toEqual(underlined)
+    expect(decorations(asGmail(email), email, 390)).toEqual(Array(count).fill('none'))
+    expect(decorations(asGmailAndroid(email), email, 800)).toEqual(underlined)
+    expect(decorations(asGmail(email), email, 800)).toEqual(underlined)
+    expect(decorations(parse(email), email, 390)).toEqual(underlined)
+    // The Android rule's own reach: the strip's links in the Android stand-in alone.
+    expect(asGmailAndroid(email).querySelectorAll(ANDROID_STRIP)).toHaveLength(count)
+    expect(asGmail(email).querySelectorAll(ANDROID_STRIP)).toHaveLength(0)
+  })
+
+  it('matches nothing with either rule when no <u></u> stands before the body, as in every mail app that is not Gmail', async () => {
+    const email = renderNewsletter(await issue())
+    for (const selector of [GMAIL_STRIP, ANDROID_STRIP]) expect(parse(email).querySelectorAll(selector), selector).toHaveLength(0)
+    // Nor with the body wrapped in a div, as some apps serve it, while no <u></u> stands before it.
+    const body = parse(email).body
+    const wrapped = parse(`<div><div class="${body.className}">${body.innerHTML}</div></div>`)
+    for (const selector of [GMAIL_STRIP, ANDROID_STRIP]) expect(wrapped.querySelectorAll(selector), selector).toHaveLength(0)
+  })
 
   it('draws the strip\'s entries with no underline in Gmail on a narrow screen alone, in the link\'s own navy, from a rule written against the body\'s own class, inside the 480 pixel rule', async () => {
     const email = renderNewsletter(await issue())
@@ -418,7 +492,8 @@ describe('in the Gmail apps', () => {
     expect(email).toContain('\nu + .nl-page .nl-toc a{text-decoration:none !important}\n')
     // In no other query, and nowhere outside one.
     for (const query of ['(prefers-color-scheme: dark)', '(max-width: 339px)']) expect(rulesOf(email, query).map((rule) => rule.selector)).not.toContain(GMAIL_STRIP)
-    expect(email.split('u + .nl-page')).toHaveLength(2)
+    // Twice: this rule, and the Android rule after it that holds it.
+    expect(email.split('u + .nl-page')).toHaveLength(3)
     // The rule sets no colour, so the entries keep the link's own navy, which reads on the strip's cream.
     for (const link of asGmail(email).querySelectorAll(GMAIL_STRIP)) expect(declared(link.getAttribute('style'), 'color')).toBe('#1a2744')
     expect(declared(parse(email).querySelector('td.nl-toc')?.getAttribute('style') ?? '', 'background-color')).toBe('#f8f4e8')
@@ -673,13 +748,13 @@ describe('the size', () => {
     expect(bytes(email)).toBeLessThan(EMAIL_MAX_BYTES)
   })
 
-  it('adds known bytes: 4,045 round an empty letter, 49 for each link, 127 for each h3, 61 for each line, and for each part its rule, heading, anchor and line in the strip', async () => {
+  it('adds known bytes: 4,112 round an empty letter, 49 for each link, 127 for each h3, 61 for each line, and for each part its rule, heading, anchor and line in the strip', async () => {
     const base = { ...(await issue()), preheader: undefined, footerHtml: '' }
     const size = (bodyHtml: string, preheader?: string) => bytes(renderNewsletter({ ...base, bodyHtml, preheader }))
     const empty = size('')
-    // 3,941 before the two Gmail rules: the color-scheme reset in a block of its own, 48 bytes with its line, and the
-    // strip's rule, 56.
-    expect(empty).toBe(3941 + 48 + 56)
+    // 3,941 before the Gmail rules: the color-scheme reset in a block of its own, 48 bytes with its line, the strip's
+    // rule, 56, and the Android rule after it, 67.
+    expect(empty).toBe(3941 + 48 + 56 + 67)
     const added = (letter: string) => size(letter) - bytes(letter) - empty
     expect(added('<p><a href="https://www.example.org/sample">Sample</a></p>')).toBe(49)
     expect(added('<p>Sample</p><h3>Sample</h3>')).toBe(127)

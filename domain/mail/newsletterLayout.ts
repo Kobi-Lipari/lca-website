@@ -157,11 +157,22 @@ const ROOT_RESET = ':root{color-scheme:light dark}'
 const GMAIL_STRIP = `u + .nl-page .nl-toc a{text-decoration:none !important}`
 
 /**
+ * For the Gmail app on Android alone, just after the rule above: the strip's entries underlined again, since that
+ * app does follow a jump link and K wants the links left as they are wherever they work. Gmail on Android puts the
+ * <u></u> inside a div, the form two old sources give for that app alone (so not certain today), and there
+ * "div > u + .nl-page" matches; being one element weightier, the rule wins where both match. It is safe either way:
+ * if Gmail on Android no longer matches it, the entries there stay navy words with no underline and a tap still
+ * jumps; if it ever matched Gmail on an iPhone, the entries there would be the underlined links of today; in every
+ * mail app that is not Gmail it matches nothing.
+ */
+const GMAIL_ANDROID_STRIP = `div > u + .nl-page .nl-toc a{text-decoration:underline !important}`
+
+/**
  * The main style block, after the reset's own: only what inline styles cannot say, and nothing outside a query.
  * First the dark colours, each over an inline one, so each is important; the footer builder's own ink is among them,
  * since its navy and grey would not read on the dark footer. Then the narrow-screen rules: the board's phone sizes,
- * each link of the strip 44 pixels tall, the strip's entries as words in the Gmail phone apps, and one column under
- * 340 pixels.
+ * each link of the strip 44 pixels tall, the strip's entries as words in the Gmail phone apps with their underline
+ * given back in Gmail on Android, and one column under 340 pixels.
  */
 const STYLE = [
   '@media (prefers-color-scheme: dark) {',
@@ -192,6 +203,7 @@ const STYLE = [
   '.nl-toc li{margin:0 !important}',
   '.nl-toc a{display:inline-block !important;padding:11px 0 !important}',
   GMAIL_STRIP,
+  GMAIL_ANDROID_STRIP,
   '.nl-letter{padding:8px 20px 0 !important}',
   '.nl-letter div{width:28px !important;margin:26px 0 10px !important}',
   '.nl-letter .nl-first{margin-top:16px !important}',
