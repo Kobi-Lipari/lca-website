@@ -184,7 +184,7 @@ describe('the grid with a region pressed and with nothing to list', () => {
       </MemoryRouter>,
     )
     await screen.findByText('Example Knights Club')
-    fireEvent.click(screen.getByRole('button', { name: 'Central LA' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Lafayette / South Central' }))
     expect(screen.getByText('No clubs in this region yet')).toBeTruthy()
     expect(gridOf().className.split(' ')).toEqual(['grid', 'grid-cols-1', 'gap-5', 'lg:grid-cols-[minmax(0,400px)_minmax(0,1fr)]', 'lg:gap-6'])
     expect(gridOf().children).toHaveLength(2)

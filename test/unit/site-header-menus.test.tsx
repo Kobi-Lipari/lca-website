@@ -16,9 +16,12 @@
 //   go to the ends, Esc closes it and gives the focus back to the button,
 //   and the focus leaving it for the rest of the page closes it; Enter and
 //   Space are a button's own click, which the browser test presses;
-// - the About menu's seven rows and LCA on Facebook ↗, from src/lib/nav.ts,
-//   with newAbout and newNews off and on, and "You are here" on the one
-//   current row, the longest address the path is at or under;
+// - the About menu's seven rows, Donate, its last row (decision 68), and LCA
+//   on Facebook ↗, from src/lib/nav.ts, with newAbout and newNews off and
+//   on, and "You are here" on the one current row, the longest address the
+//   path is at or under; and its Donate row, drawn on its own, keeping the
+//   focus on About as the menu closes, never the page's body, while the
+//   donation dialog is on its way;
 // - the My LCA menu's rows for each person, as src/lib/nav.ts gives them
 //   with the children not known, with myLcaRail off and on, and Log out,
 //   which signs the person out and goes to the home page;
@@ -45,6 +48,7 @@ vi.mock('@/lib/features', async (importOriginal) => {
 vi.mock('@/lib/supabase', () => ({ supabase: {} }))
 
 const { SiteHeader } = await import('@/components/layout/SiteHeader')
+const { AboutMenu } = await import('@/components/layout/AboutMenu')
 
 /** A visitor as the header reads one: signed out, or signed in holding what the person holds. */
 function visitor(holds: MyLcaPerson | null, signOut: () => Promise<void> = async () => {}): AuthContextValue {
@@ -184,7 +188,7 @@ describe('the About menu by keyboard', () => {
     fireEvent.keyDown(about, { key: 'ArrowDown' })
     expect(about.getAttribute('aria-expanded')).toBe('true')
     const rows = rowsOf(panelOf(about)!)
-    expect(names(rows)).toEqual(['About LCA', 'Board & regions', 'Bylaws & rules', 'Minutes', 'Annual meeting', 'State champions', 'Contact', 'LCA on Facebook ↗'])
+    expect(names(rows)).toEqual(['About LCA', 'Board & regions', 'Bylaws & rules', 'Minutes', 'Annual meeting', 'State champions', 'Contact', 'Donate', 'LCA on Facebook ↗'])
     expect(document.activeElement).toBe(rows[0])
     fireEvent.keyDown(rows[0], { key: 'ArrowDown' })
     expect(document.activeElement).toBe(rows[1])
@@ -234,7 +238,7 @@ describe('the About menu by keyboard', () => {
     // A focus that goes nowhere named (a press on the page) leaves it to the press outside.
     fireEvent.focusOut(rows.at(-1)!, { relatedTarget: null })
     expect(about.getAttribute('aria-expanded')).toBe('true')
-    fireEvent.focusOut(rows.at(-1)!, { relatedTarget: within(header()).getByRole('button', { name: 'Donate' }) })
+    fireEvent.focusOut(rows.at(-1)!, { relatedTarget: within(header()).getByRole('link', { name: 'Log in' }) })
     expect(about.getAttribute('aria-expanded')).toBe('false')
   })
 
@@ -332,6 +336,27 @@ describe('the About menu\'s rows', () => {
     expect(label.getAttribute('aria-hidden')).toBe('true')
     expect(label.className.split(/\s+/)).toEqual(expect.arrayContaining(['text-[13px]', 'font-semibold']))
     expect(row.className.split(/\s+/)).toContain('font-semibold')
+  })
+})
+
+describe('the About menu\'s Donate row', () => {
+  it('drawn on its own, hands the bar the About button and keeps the focus on it as the menu closes, so the page\'s body never holds the focus while the donation dialog is on its way', () => {
+    const asked: (HTMLElement | null)[] = []
+    render(
+      <MemoryRouter initialEntries={['/']}>
+        <AboutMenu current={false} buttonClassName="" onDonate={(from) => asked.push(from)} />
+      </MemoryRouter>,
+    )
+    const about = screen.getByRole('button', { name: 'About' })
+    fireEvent.click(about)
+    const donate = within(panelOf(about)!).getByRole('button', { name: 'Donate' })
+    // A press as a person makes it: the focus on the row, then the click.
+    donate.focus()
+    fireEvent.click(donate)
+    expect(panelOf(about)).toBeNull()
+    expect(donate.isConnected).toBe(false)
+    expect(asked).toEqual([about])
+    expect(document.activeElement).toBe(about)
   })
 })
 
