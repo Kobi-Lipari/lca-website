@@ -2,9 +2,9 @@
 //
 // The plain code of the one club editor (src/areas/clubs/components/ClubEditor.tsx):
 // each field's greatest length, the email's and a link's written form as the
-// save reads them, the checks the form makes before it sends anything, the
-// place's line as today's page shows it, and the one thing the editor keeps
-// in the browser, that its Help has opened by itself once.
+// save reads them, the checks the form makes before it sends anything, and
+// the place's line as today's page shows it. The editor keeps nothing in the
+// browser.
 //
 // The site may import only types from domain/contracts, whose schemas bring
 // zod with them, so the save's numbers and the link's rule are written again
@@ -194,30 +194,4 @@ export function editorProblems(
 export function placeLine(place: { name: string; street: string | null }): string {
   const street = place.street?.trim() ?? ''
   return street ? `${place.name.trim()}, ${street}` : place.name.trim()
-}
-
-/** The one key the editor keeps in the browser: that its Help has opened by itself once. */
-export const HELP_SHOWN_KEY = 'lca-club-editor-help'
-
-/**
- * Whether Help has opened by itself in this browser before. A browser whose
- * storage cannot be read at all reads as yes, so Help never opens by itself
- * there and opens from its button alone, rather than on every visit. A
- * browser that can read its storage but keeps nothing written to it reads as
- * no each time, so there Help opens by itself on every visit.
- */
-export function helpShownBefore(): boolean {
-  try {
-    return window.localStorage.getItem(HELP_SHOWN_KEY) !== null
-  } catch {
-    return true
-  }
-}
-
-export function rememberHelpShown(): void {
-  try {
-    window.localStorage.setItem(HELP_SHOWN_KEY, 'shown')
-  } catch {
-    // Nothing is kept: where storage can still be read, Help opens by itself on the next visit too.
-  }
 }

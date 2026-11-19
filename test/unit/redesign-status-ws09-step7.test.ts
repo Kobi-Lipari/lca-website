@@ -244,11 +244,12 @@ describe('REDESIGN_STATUS.md, WS09 step 7: the parts', () => {
       'where it can be read but keeps nothing it opens by itself on each visit', 'Help opens and shuts for an observer too',
       'Escape or `Close help` shuts it', 'the focus goes back to its button', 'only labels, the heading, the buttons\' words and the pin\'s place',
     ]) expect(help, piece).toContain(piece)
+    // Moved by the WS09 aside, Help as small question marks: the panel, its key and its opening by itself are gone.
     const rules = read(RULES)
-    expect(rules).toContain('export const HELP_SHOWN_KEY = \'lca-club-editor-help\'')
-    expect(rules).toContain('return window.localStorage.getItem(HELP_SHOWN_KEY) !== null\n  } catch {\n    return true')
-    expect(codeOf(HELP)).toContain('if (e.key !== \'Escape\') return')
-    expect(codeOf(EDITOR)).toContain('const [helpOpen, setHelpOpen] = useState(() => !helpShownBefore())')
+    expect(rules).not.toContain('export const HELP_SHOWN_KEY = \'lca-club-editor-help\'')
+    expect(rules).not.toContain('return window.localStorage.getItem(HELP_SHOWN_KEY) !== null\n  } catch {\n    return true')
+    expect(codeOf(HELP)).not.toContain('if (e.key !== \'Escape\') return')
+    expect(codeOf(EDITOR)).not.toContain('const [helpOpen, setHelpOpen] = useState(() => !helpShownBefore())')
   })
 
   it('says the email\'s promise follows clubEmailHidden, and the order the switches go on in holds it', () => {
@@ -260,7 +261,8 @@ describe('REDESIGN_STATUS.md, WS09 step 7: the parts', () => {
     const code = codeOf(BASICS)
     expect(code).toContain('const emailHidden = FEATURES.clubEmailHidden')
     expect(code).toContain('const pagesOn = clubPagesOn()')
-    expect(codeOf(EDITOR)).toContain('pagesOn={clubPagesOn()}')
+    // The editor gives the switch to its Help's marks in one object since the WS09 aside, Help as small question marks.
+    expect(codeOf(EDITOR)).toContain('pagesOn: clubPagesOn()')
     expect(codeOf(EDITOR)).toContain('if (pointTouched && point === null) body.mapLocation = null')
     expect(code).toContain('label={emailHidden ? \'Email for messages, never shown\' : `Email for messages, shown on ${own ? \'your\' : \'the\'} club\'s page today`}')
     expect(read('src/areas/clubs/switches.ts')).toContain('if (features.clubKeepers && !features.clubEmailHidden) {')
@@ -270,7 +272,8 @@ describe('REDESIGN_STATUS.md, WS09 step 7: the parts', () => {
     const phone = bullet(block, '- **On a phone.**')
     for (const piece of ['one column in the same order at every width', 'at least 44 pixels tall', '`min-h-11`', '`ScrollPanel`', 'no gold word', 'light and dark']) expect(phone, piece).toContain(piece)
     expect(codeOf(EDITOR)).toContain('<ScrollPanel')
-    for (const file of [EDITOR, BASICS, HELP]) expect(read(file), file).toContain('min-h-11')
+    // Help's file has drawn no button of its own since the WS09 aside, Help as small question marks.
+    for (const file of [EDITOR, BASICS]) expect(read(file), file).toContain('min-h-11')
   })
 
   it('names the map\'s sentences, the branch, what the merge does, and the figures while this step is the latest', () => {

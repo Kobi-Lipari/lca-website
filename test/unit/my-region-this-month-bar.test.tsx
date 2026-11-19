@@ -18,7 +18,8 @@ const THIS_MONTH = { nextCheck: { day: '2026-12-07', date: 'Mon, Dec 7, 2026', t
 function draw(hasClubs = true) {
   render(<ThisMonthBar thisMonth={THIS_MONTH} hasClubs={hasClubs} toConfirm={2} running={false} onConfirmAll={() => {}} />)
   const heading = screen.getByRole('heading', { level: 2, name: 'This month' })
-  return { heading, row: heading.parentElement as HTMLElement, section: heading.closest('section') as HTMLElement }
+  // The row of the bar's parts, whose first holds the heading and, with Help's marks, the heading's mark after it.
+  return { heading, row: heading.closest('section')!.firstElementChild as HTMLElement, section: heading.closest('section') as HTMLElement }
 }
 
 const classes = (el: Element) => (el.getAttribute('class') ?? '').split(/\s+/).filter(Boolean)

@@ -382,8 +382,8 @@ describe('REDESIGN_STATUS.md, WS09 checkpoint T: the review of the whole and its
     expect(basics).toContain('{noColour && <p id="editor-color-none" className="text-sm text-ink">No club color chosen yet</p>}')
     const editor = read('src/areas/clubs/components/ClubEditor.tsx')
     expect(editor).toContain('el.focus({ preventScroll: true })')
-    // A press of Help in a box scrolled down takes the box, and only the box, back to its top, where Help is.
-    expect(editor).toContain('const box = el.closest<HTMLElement>(\'[data-slot="scroll-panel"]\')\n  if (box) box.scrollTop = 0')
+    // A press of Help in a box scrolled down took the box, and only the box, back to its top, where Help was; Help's panel went in the WS09 aside, Help as small question marks.
+    expect(editor).not.toContain('const box = el.closest<HTMLElement>(\'[data-slot="scroll-panel"]\')\n  if (box) box.scrollTop = 0')
     expect(lines[2], 'P3').toContain('as the focus moves into Help the box goes back to its top, which moves the box alone and never the page')
     // The box's scroll margin, in its classes since the last small round (Q1).
     expect(editor).toContain('className={BOX}')
@@ -429,7 +429,8 @@ describe('REDESIGN_STATUS.md, WS09 checkpoint T: the review of the whole and its
 
     const editor = read('src/areas/clubs/components/ClubEditor.tsx')
     expect(editor).toContain('const SIDE_BY_SIDE = \'(min-width: 64rem)\'')
-    expect(editor).toContain('const BOX = \'scroll-mt-[100vh] max-lg:max-h-none max-lg:overflow-visible max-lg:[&>[data-slot=scroll-panel-header]]:static\'')
+    // From lg up the box fills the form's column beside the strip, within the window, since the WS09 aside, Help as small question marks; below lg it is as it was.
+    expect(editor).toContain('const BOX = \'scroll-mt-[100vh] max-lg:max-h-none max-lg:overflow-visible max-lg:[&>[data-slot=scroll-panel-header]]:static lg:max-h-[calc(100vh-2rem)] lg:min-h-[70vh] lg:grow lg:basis-0 lg:overscroll-auto\'')
     expect(editor).toContain('scrollsWhen={SIDE_BY_SIDE}')
     expect(editor).toContain('focusRefused(document.getElementById(`editor-${found[0][0]}`))')
     const panel = read('src/components/ScrollPanel.tsx')
@@ -474,8 +475,8 @@ describe('REDESIGN_STATUS.md, WS09 checkpoint T: the review of the whole and its
     expect(bullet(block, '- **Build.**')).toContain('After the closing mend, with its change for M4 taken back:')
 
     const editor = read('src/areas/clubs/components/ClubEditor.tsx')
-    // M1: Help above the window, or under the header below lg, by its top; below the window by its nearest edge.
-    expect(editor).toContain('const room = typeof window.matchMedia === \'function\' && !window.matchMedia(SIDE_BY_SIDE).matches ? UNDER_HEADER : 0\n  if (top < room) el.scrollIntoView?.({ block: \'start\' })\n  else if (top > window.innerHeight - 48) el.scrollIntoView?.({ block: \'nearest\' })')
+    // M1: Help above the window, or under the header below lg, by its top; below the window by its nearest edge. Help's panel went in the WS09 aside, Help as small question marks.
+    expect(editor).not.toContain('const room = typeof window.matchMedia === \'function\' && !window.matchMedia(SIDE_BY_SIDE).matches ? UNDER_HEADER : 0\n  if (top < room) el.scrollIntoView?.({ block: \'start\' })\n  else if (top > window.innerHeight - 48) el.scrollIntoView?.({ block: \'nearest\' })')
     // M2: the controls' room below lg alone, and the box of words brought down by its top when Tab brought the focus from another control.
     expect(editor).toContain('const CLEAR_OF_HEADER = \'max-lg:[&_:is(a,button,input,select,textarea,[tabindex])]:scroll-mt-24\'')
     expect(editor).toContain('onKeyDown={noteTab} onPointerDown={forgetTab} onFocus={focusMoved}')
@@ -486,7 +487,7 @@ describe('REDESIGN_STATUS.md, WS09 checkpoint T: the review of the whole and its
     expect(read('src/areas/clubs/components/EditorHelp.tsx')).toContain('Today\'s club page keeps the address shown under "${addressCardName(own)}", which stays')
     // M4, taken back: nothing moves the box or the page once a save is done.
     expect(editor).not.toMatch(/saves > 0|ref=\{form\}|scrollTop = 0[^\n]*\n[^\n]*\}, \[saves\]/)
-    expect(editor.match(/scrollTop = 0/g)).toHaveLength(1)
+    expect(editor).not.toMatch(/scrollTop = 0/)
   })
 
   it('keeps the dashes, the working words, any tool\'s name, the old initials and unfilled marks out of what it wrote and the files it adds', () => {

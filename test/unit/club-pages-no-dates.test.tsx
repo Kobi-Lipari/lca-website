@@ -22,7 +22,6 @@ import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { AuthContext } from '@/contexts/auth-context'
 import type { AuthContextValue } from '@/contexts/AuthContext'
-import { REGION_HELP_SHOWN_KEY } from '@/areas/clubs/region'
 import type { RegionClub, WorkspaceRegionResponse } from '@domain/contracts'
 
 vi.mock('@/lib/supabase', () => ({
@@ -61,7 +60,6 @@ const ANSWER: WorkspaceRegionResponse = {
 let answer: WorkspaceRegionResponse = ANSWER
 beforeEach(() => {
   answer = ANSWER
-  window.localStorage.setItem(REGION_HELP_SHOWN_KEY, 'shown')
   vi.stubGlobal('fetch', vi.fn(async (url: string) => (url === '/api/workspace/region'
     ? new Response(JSON.stringify(answer), { status: 200 })
     : new Response(JSON.stringify({ error: 'Not found' }), { status: 404 }))))

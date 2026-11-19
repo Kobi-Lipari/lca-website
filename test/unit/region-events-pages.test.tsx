@@ -17,8 +17,7 @@ import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { AuthContext } from '@/contexts/auth-context'
 import type { AuthContextValue } from '@/contexts/AuthContext'
-import { HELP_SHOWN_KEY } from '@/areas/clubs/editor'
-import { REGION_HELP_SHOWN_KEY, SITE_UNREACHED } from '@/areas/clubs/region'
+import { SITE_UNREACHED } from '@/areas/clubs/region'
 import { WAIT_HELP_SHOWN_KEY } from '@/areas/clubs/approval'
 import { WAITING_FOR_APPROVAL } from '@domain/events/approval'
 import { APPROVAL_NOTE_EMPTY, APPROVAL_NOTE_TOO_LONG } from '@domain/contracts/events'
@@ -92,7 +91,7 @@ beforeEach(() => {
   flags.clubKeepers = true
   flags.regionEvents = true
   window.localStorage.clear()
-  for (const key of [HELP_SHOWN_KEY, REGION_HELP_SHOWN_KEY, WAIT_HELP_SHOWN_KEY]) window.localStorage.setItem(key, 'shown')
+  window.localStorage.setItem(WAIT_HELP_SHOWN_KEY, 'shown')
   asked = []
   answers = {
     [`GET ${CLUB_URL}/news`]: () => json({ news: [] }),

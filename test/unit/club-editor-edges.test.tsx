@@ -17,7 +17,7 @@
 // the button or by Enter, does nothing; a replay of a save sends the same
 // body; "Saved" goes when the person types again and a failure goes at the
 // next press; a pasted pin that holds no coordinates is refused in words tied to
-// its box; storage that throws, whole or in part, never breaks Help; every
+// its box; storage that throws, whole or in part, never breaks Help's marks; every
 // sentence the form and its Help draw is plain (US Chess, "7:00 PM", no long or
 // short dash); the editor's code is reached only as a chunk. Every name,
 // address and club here is made up.
@@ -31,7 +31,6 @@ import type { AuthContextValue } from '@/contexts/AuthContext'
 import {
   adminClubRowSchema, clubPlaceSchema, clubPlacesRequestSchema, clubPlacesResponseSchema, updateClubRequestSchema, updateClubResponseSchema,
 } from '@domain/contracts'
-import { HELP_SHOWN_KEY } from '@/areas/clubs/editor'
 import { clubSaveServer } from './helpers/clubSaveServer'
 
 // Each case may wait up to 5 seconds for the editor's file to load before it
@@ -151,7 +150,14 @@ const sentBodies = (call: string) => seen.filter((s) => s.call === call).map((s)
 const saves = () => sentBodies(`PATCH ${CLUB_URL}`)
 /** The places each save sent. */
 const placesOf = (body: Record<string, unknown>) => body.places as Array<Record<string, unknown>>
-const help = () => document.getElementById('club-editor-help') as HTMLElement
+/** Every bubble of Help's marks, and their words in the page's order as one piece to read. */
+const bubbles = () => [...document.querySelectorAll<HTMLElement>('[data-slot="help-mark-bubble"]')]
+const help = () => {
+  const all = document.createElement('div')
+  for (const bubble of bubbles()) all.append(bubble.cloneNode(true))
+  return all
+}
+const mark = (name: string) => screen.getByRole('button', { name: `Help: ${name}` })
 const status = () => screen.getByRole('status')
 const alertBox = () => screen.getByRole('alert')
 
@@ -489,41 +495,48 @@ describe('the club editor: failures, races and replays', () => {
 })
 
 describe('the club editor: Help where the browser refuses storage', () => {
-  it('opens by itself, without breaking the page, where the browser stores nothing but takes the question', async () => {
+  it('opens no bubble by itself where the browser stores nothing but takes the question, and a mark still opens and closes', async () => {
     vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => { throw new Error('storage refused') })
     await openEditor()
-    expect(help().hidden).toBe(false)
-    fireEvent.keyDown(help(), { key: 'Escape' })
-    expect(help().hidden).toBe(true)
-    expect(screen.getByRole('button', { name: 'Help' }).getAttribute('aria-expanded')).toBe('false')
+    for (const bubble of bubbles()) expect(bubble.hidden).toBe(true)
+    const where = mark('Where')
+    fireEvent.click(where)
+    expect(where.getAttribute('aria-expanded')).toBe('true')
+    fireEvent.keyDown(where, { key: 'Escape' })
+    expect(where.getAttribute('aria-expanded')).toBe('false')
   })
 
-  it('draws the page and Help from its button where reaching localStorage at all throws', async () => {
+  it('draws the page and its marks where reaching localStorage at all throws', async () => {
     const real = Object.getOwnPropertyDescriptor(window, 'localStorage')!
     Object.defineProperty(window, 'localStorage', { configurable: true, get: () => { throw new DOMException('denied', 'SecurityError') } })
     try {
       await openEditor()
-      expect(help().hidden).toBe(true)
-      fireEvent.click(screen.getByRole('button', { name: 'Help' }))
-      expect(help().hidden).toBe(false)
-      expect(document.activeElement).toBe(help())
-      fireEvent.keyDown(help(), { key: 'Escape' })
-      expect(help().hidden).toBe(true)
-      expect(document.activeElement).toBe(screen.getByRole('button', { name: 'Help' }))
+      for (const bubble of bubbles()) expect(bubble.hidden).toBe(true)
+      const links = mark('Links')
+      links.focus()
+      fireEvent.click(links)
+      expect(document.getElementById(links.getAttribute('aria-controls')!)!.hidden).toBe(false)
+      fireEvent.keyDown(links, { key: 'Escape' })
+      expect(document.getElementById(links.getAttribute('aria-controls')!)!.hidden).toBe(true)
+      expect(document.activeElement).toBe(links)
     } finally {
       Object.defineProperty(window, 'localStorage', real)
     }
   })
 
-  it('does not open by itself again once it has, even when it was shut at once, and Escape elsewhere does not shut it', async () => {
+  it('lets an Escape with no bubble open pass on untouched, and with one open closes it and goes no further', async () => {
     await openEditor()
-    expect(window.localStorage.getItem(HELP_SHOWN_KEY)).not.toBeNull()
-    fireEvent.keyDown(field('Place name'), { key: 'Escape' })
-    expect(help().hidden).toBe(false)
-    fireEvent.click(within(help()).getByRole('button', { name: 'Close help' }))
-    cleanup()
-    await openEditor()
-    expect(help().hidden).toBe(true)
+    const place = field('Place name')
+    const heard = vi.fn()
+    place.addEventListener('keydown', heard)
+    fireEvent.keyDown(place, { key: 'Escape' })
+    expect(heard).toHaveBeenCalledTimes(1)
+    const where = mark('Where')
+    fireEvent.click(where)
+    fireEvent.keyDown(place, { key: 'Escape' })
+    expect(heard).toHaveBeenCalledTimes(1)
+    expect(where.getAttribute('aria-expanded')).toBe('false')
+    expect(window.localStorage.length).toBe(0)
   })
 })
 
@@ -577,7 +590,7 @@ describe('the club editor: plain words', () => {
   it('keeps the editor\'s sources and tests free of the long and short dash, the editor\'s own words free of the old name for US Chess, and any reference to how they were made', () => {
     const files = [
       'src/areas/clubs/components/ClubEditor.tsx', 'src/areas/clubs/components/EditorBasics.tsx', 'src/areas/clubs/components/EditorPlaces.tsx',
-      'src/areas/clubs/components/EditorHelp.tsx', 'src/areas/clubs/editor.ts', 'test/unit/club-editor.test.tsx', 'test/unit/club-editor-off.test.tsx',
+      'src/areas/clubs/components/EditorHelp.tsx', 'src/areas/clubs/components/HelpMark.tsx', 'src/areas/clubs/helpMarks.ts', 'src/areas/clubs/editor.ts', 'test/unit/club-editor.test.tsx', 'test/unit/club-editor-off.test.tsx',
       'test/unit/redesign-status-ws09-step7.test.ts', 'test/unit/helpers/clubSaveServer.ts',
     ]
     for (const file of files) {
@@ -600,7 +613,7 @@ describe('the club editor: in light and in dark', () => {
       const classes = typeof el.className === 'string' ? el.className.split(/\s+/).filter(Boolean) : []
       expect(classes.filter((c) => RAW.test(c)), el.tagName).toEqual([])
     }
-    for (const file of ['ClubEditor', 'EditorBasics', 'EditorPlaces', 'EditorHelp']) {
+    for (const file of ['ClubEditor', 'EditorBasics', 'EditorPlaces', 'EditorHelp', 'HelpMark']) {
       const text = read(`src/areas/clubs/components/${file}.tsx`)
       for (const token of text.match(/['"` ]([a-z:-]+-\w+(?:-\d+)?(?:\/\d+)?)(?=['"` ])/g) ?? []) expect(RAW.test(token.trim().replace(/^['"` ]/, '')), `${file} ${token}`).toBe(false)
     }
@@ -610,7 +623,7 @@ describe('the club editor: in light and in dark', () => {
     const css = read('src/index.css')
     const defined = new Set([...css.matchAll(/--color-([a-z0-9-]+):/g)].map((m) => m[1]))
     const used = new Set<string>()
-    for (const file of ['ClubEditor', 'EditorBasics', 'EditorPlaces', 'EditorHelp']) {
+    for (const file of ['ClubEditor', 'EditorBasics', 'EditorPlaces', 'EditorHelp', 'HelpMark']) {
       for (const m of read(`src/areas/clubs/components/${file}.tsx`).matchAll(/(?:bg|text|border|ring|marker)-(ink|hairline|focus|destructive|muted-foreground|card|input|ring|background|brand-navy|lca-gold|muted-on-light)\b/g)) used.add(m[1])
     }
     expect([...used].sort()).toEqual([...used].sort().filter((t) => defined.has(t)))
