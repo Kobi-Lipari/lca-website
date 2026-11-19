@@ -6,8 +6,9 @@
 // issue, held in test/unit/fixtures/newsletter-navy.html, which holds the
 // function's output alone, with no head comment of its own; the head and
 // the tables an email needs; the one table more that holds the email's
-// width in Outlook on Windows; one style block holding only the dark
-// colours and the narrow-screen rules; every pair of words and ground at
+// width in Outlook on Windows; two style blocks, the first the
+// color-scheme reset alone, the second holding only the dark colours and
+// the narrow-screen rules; every pair of words and ground at
 // 4.5 to 1 or better with that block taken out and with its dark colours,
 // computed here; gold as words on the navy alone in light and on a dark
 // ground alone in dark; the band's one h1 and the outline under it; the
@@ -114,9 +115,15 @@ const contrast = (a: string, b: string) => {
   return (hi + 0.05) / (lo + 0.05)
 }
 
-/** The style block's rules of one media query, each a selector and its declarations, "!important" set aside. */
+/** What each style block holds, in the order the head gives them. */
+const styleBlocks = (html: string) => [...html.matchAll(/<style>\n([\s\S]*?)\n<\/style>/g)].map((m) => m[1])
+
+/** The main style block: the last in the head, after the color-scheme reset's own. */
+const mainBlock = (html: string) => styleBlocks(html).at(-1) ?? ''
+
+/** The main style block's rules of one media query, each a selector and its declarations, "!important" set aside. */
 function rulesOf(html: string, query: string): { selector: string; set: Record<string, string> }[] {
-  const block = /<style>\n([\s\S]*?)\n<\/style>/.exec(html)?.[1] ?? ''
+  const block = mainBlock(html)
   const start = block.indexOf(`@media ${query} {\n`)
   if (start === -1) return []
   const body = block.slice(start + `@media ${query} {\n`.length, block.indexOf('\n}', start))
@@ -170,6 +177,11 @@ function letterCell(html: string): string {
   return /<td class="nl-letter" style="[^"]*">([\s\S]*?)<\/td><\/tr>\n<tr><td class="nl-foot"/.exec(html)?.[1] ?? 'not found'
 }
 
+/** The Gmail-only rule over the strip's links: Gmail puts a <u></u> where the doctype was, just before the body's element. */
+const GMAIL_STRIP = 'u + .nl-page .nl-toc a'
+/** The rule after it, for Gmail on Android alone, where the <u></u> stands inside a div. */
+const ANDROID_STRIP = 'div > u + .nl-page .nl-toc a'
+
 /** Words alone: every tag gone, and a "<" that starts no tag, as in "4 < 5", left as words. */
 const withoutTags = (html: string) => html.replace(/<\/?[A-Za-z][^>]*>/g, '')
 
@@ -192,12 +204,13 @@ describe('the navy email for the board\'s made-up issue', () => {
 })
 
 describe('how the email is built', () => {
-  it('carries lang="en", the character set, the viewport, the subject as its title and the two color-scheme metas', async () => {
+  it('carries lang="en", the character set, the viewport, the subject as its title and the two color-scheme metas, "light only" for the Gmail apps', async () => {
     const email = renderNewsletter(await issue())
     expect(email.startsWith('<!DOCTYPE html>\n<html lang="en">\n<head>\n<meta charset="utf-8">\n')).toBe(true)
     expect(email).toContain('<meta name="viewport" content="width=device-width, initial-scale=1">')
-    expect(email).toContain('<meta name="color-scheme" content="light dark">')
-    expect(email).toContain('<meta name="supported-color-schemes" content="light dark">')
+    expect(email).toContain('<meta name="color-scheme" content="light only">')
+    expect(email).toContain('<meta name="supported-color-schemes" content="light only">')
+    expect(email).not.toContain('content="light dark"')
     expect(parse(email).title).toBe('LCA Newsletter · December 2026')
   })
 
@@ -238,10 +251,12 @@ describe('how the email is built', () => {
     expect(email).toContain(`<img src="${SITE}/email-rook.png" `)
   })
 
-  it('has one style block, holding only the dark colours and the narrow-screen rules', async () => {
+  it('has two style blocks: the first holding the color-scheme reset alone, the second only the dark colours and the narrow-screen rules', async () => {
     const email = renderNewsletter(await issue())
-    expect(email.match(/<style>/g)).toHaveLength(1)
-    const block = /<style>\n([\s\S]*?)\n<\/style>/.exec(email)?.[1] ?? ''
+    expect(email.match(/<style>/g)).toHaveLength(2)
+    expect(email.match(/<\/style>/g)).toHaveLength(2)
+    const [reset, block] = styleBlocks(email)
+    expect(reset).toBe(':root{color-scheme:light dark}')
     const outside = block.replace(/@media \([^)]*\) \{\n[\s\S]*?\n\}/g, '').trim()
     expect(outside).toBe('')
     const queries = [...block.matchAll(/@media (\([^)]*\)) \{/g)].map((m) => m[1])
@@ -254,13 +269,20 @@ describe('how the email is built', () => {
       }
     }
     const sizes = ['padding', 'padding-right', 'margin', 'margin-top', 'margin-bottom', 'width', 'height', 'font-size', 'line-height', 'letter-spacing', 'display', 'border']
+    // The narrow-screen rules set sizes alone, but for the Gmail rule that draws the strip's entries as words and the
+    // Android rule after it that gives them back their underline.
     for (const query of ['(max-width: 480px)', '(max-width: 339px)']) {
-      for (const rule of rulesOf(email, query)) for (const property of Object.keys(rule.set)) expect(sizes, `${rule.selector} ${property}`).toContain(property)
+      for (const rule of rulesOf(email, query)) {
+        if (rule.selector === GMAIL_STRIP || rule.selector === ANDROID_STRIP) continue
+        for (const property of Object.keys(rule.set)) expect(sizes, `${rule.selector} ${property}`).toContain(property)
+      }
     }
+    expect(rulesOf(email, '(max-width: 480px)').filter((rule) => rule.selector === GMAIL_STRIP)).toHaveLength(1)
+    expect(rulesOf(email, '(max-width: 480px)').filter((rule) => rule.selector === ANDROID_STRIP)).toHaveLength(1)
   })
 
-  it('reads in light with the style block taken out: every colour of words on its ground at 4.5 to 1 or better', async () => {
-    const email = renderNewsletter(await issue()).replace(/<style>[\s\S]*?<\/style>\n/, '')
+  it('reads in light with both style blocks taken out: every colour of words on its ground at 4.5 to 1 or better', async () => {
+    const email = renderNewsletter(await issue()).replace(/<style>[\s\S]*?<\/style>\n/g, '')
     expect(email).not.toContain('<style>')
     const found = pairs(email)
     expect([...found.keys()].sort()).toEqual([
@@ -272,7 +294,7 @@ describe('how the email is built', () => {
     }
   })
 
-  it('reads in dark with the style block\'s colours: every colour of words on its ground at 4.5 to 1 or better, the footer builder\'s own ink among them', async () => {
+  it('reads in dark with the main style block\'s colours: every colour of words on its ground at 4.5 to 1 or better, the footer builder\'s own ink among them', async () => {
     const email = renderNewsletter(await issue())
     const found = pairs(email, rulesOf(email, '(prefers-color-scheme: dark)'))
     expect([...found.keys()].sort()).toEqual([
@@ -291,7 +313,7 @@ describe('how the email is built', () => {
 
   it('sets gold as words on the navy alone in light, with the strip\'s label in the dark bronze #866a1e on the cream, and in dark on a dark ground alone', async () => {
     const email = renderNewsletter(await issue())
-    const light = pairs(email.replace(/<style>[\s\S]*?<\/style>\n/, ''))
+    const light = pairs(email.replace(/<style>[\s\S]*?<\/style>\n/g, ''))
     const dark = pairs(email, rulesOf(email, '(prefers-color-scheme: dark)'))
     for (const [key, words] of light) {
       if (/^#(?:c8a94a|efd98a) /.test(key)) expect(key, words.join(' | ')).toMatch(/ on #1a2744$/)
@@ -299,7 +321,7 @@ describe('how the email is built', () => {
     expect(light.get('#efd98a on #1a2744')).toEqual(['LCA Newsletter'])
     expect(light.get('#866a1e on #f8f4e8')).toEqual(['In this issue'])
     // Inline, the brand gold draws the band's rule alone and is never words; the band's own gold is the name's words.
-    const inline = email.replace(/<style>[\s\S]*?<\/style>/, '')
+    const inline = email.replace(/<style>[\s\S]*?<\/style>/g, '')
     expect(inline.match(/[a-z-]+:[^;"]*#c8a94a/g)).toEqual(['border-bottom:3px solid #c8a94a'])
     expect(inline.match(/[a-z-]+:[^;"]*#efd98a/g)).toEqual(['color:#efd98a'])
     // In the dark, the label takes the site's dark gold ink on the strip's dark ground, as the site's own dark setting does.
@@ -362,7 +384,7 @@ describe('the "In this issue" strip', () => {
   it('is left out for a letter with one part, or none', async () => {
     for (const bodyHtml of ['<h2>Sample heading one</h2><p>Sample words.</p>', '<p>Sample words, with no heading.</p>', '<h2></h2><h2>Sample heading one</h2><p>Sample words.</p>', '']) {
       const email = renderNewsletter(await issue({ bodyHtml }))
-      // The style block is the same for every email; the strip itself is not drawn.
+      // The style blocks are the same for every email; the strip itself is not drawn.
       expect(email, bodyHtml).not.toContain('class="nl-toc"')
       expect(email, bodyHtml).not.toContain('In this issue')
       expect(email.replace(/<!--[\s\S]*?-->/g, '').match(/<table/g), bodyHtml).toHaveLength(3)
@@ -382,6 +404,189 @@ describe('the "In this issue" strip', () => {
     expect(rule('.nl-toc a')).toEqual({ display: 'inline-block', padding: '11px 0' })
     expect(rule('.nl-col')).toEqual({ width: 'auto' })
     expect(rulesOf(email, '(max-width: 339px)')).toEqual([{ selector: '.nl-col', set: { display: 'block', padding: '0' } }])
+  })
+})
+
+describe('in the Gmail apps', () => {
+  /**
+   * The email as Gmail serves it: the doctype gone, a <u></u> in its place, the body turned into a div keeping its
+   * class. Here the <u></u> is not a div's child. This and the Android form below are stand-ins built from what the
+   * sources describe, not a test in Gmail: nobody here can run Gmail's apps.
+   */
+  const asGmail = (email: string) => {
+    const body = parse(email).body
+    return parse(`<u></u><div class="${body.className}" style="${body.getAttribute('style')}">${body.innerHTML}</div>`)
+  }
+  /** The same, as the sources describe Gmail on Android serving it: wrapped in one div more, so the <u></u> is a div's child. */
+  const asGmailAndroid = (email: string) => {
+    const body = parse(email).body
+    return parse(`<div><u></u><div class="${body.className}" style="${body.getAttribute('style')}">${body.innerHTML}</div></div>`)
+  }
+  /** A selector's weight as CSS counts it, for the plain selectors here: ids, then classes, then elements. */
+  const weight = (selector: string) => {
+    const ids = selector.match(/#[\w-]+/g)?.length ?? 0
+    const classes = selector.match(/\.[\w-]+/g)?.length ?? 0
+    const elements = selector.split(/[\s>+~]+/).filter((part) => /^[a-z]/i.test(part)).length
+    return ids * 10000 + classes * 100 + elements
+  }
+  /**
+   * Each strip link's text-decoration at a width: the rules of the queries that hold at that width, every one
+   * important, so the heaviest matching rule wins and, at equal weight, the later; with none, the link's inline style.
+   */
+  const decorations = (doc: Document, email: string, width: number) => {
+    const queries = [['(max-width: 480px)', 480], ['(max-width: 339px)', 339]] as const
+    const rules = queries.filter(([, most]) => width <= most).flatMap(([query]) => rulesOf(email, query)).filter((rule) => rule.set['text-decoration'])
+    return [...doc.querySelectorAll('td.nl-toc a')].map((link) => {
+      let best: { at: number; value: string } | undefined
+      for (const rule of rules) {
+        if (!link.matches(rule.selector)) continue
+        const at = weight(rule.selector)
+        if (!best || at >= best.at) best = { at, value: rule.set['text-decoration'] }
+      }
+      return best?.value ?? declared(link.getAttribute('style'), 'text-decoration')
+    })
+  }
+
+  it('gives Gmail on Android its underline back with one rule right after the Gmail rule, inside the 480 pixel rule, one element weightier', async () => {
+    const email = renderNewsletter(await issue())
+    const phone = rulesOf(email, '(max-width: 480px)')
+    const at = phone.findIndex((rule) => rule.selector === GMAIL_STRIP)
+    expect(at).toBeGreaterThan(-1)
+    expect(phone[at + 1]?.selector).toBe(ANDROID_STRIP)
+    expect(phone[at + 1]?.set).toEqual({ 'text-decoration': 'underline' })
+    expect(email).toContain('\nu + .nl-page .nl-toc a{text-decoration:none !important}\ndiv > u + .nl-page .nl-toc a{text-decoration:underline !important}\n')
+    expect(email.split('div > u + .nl-page')).toHaveLength(2)
+    for (const query of ['(prefers-color-scheme: dark)', '(max-width: 339px)']) expect(rulesOf(email, query).map((rule) => rule.selector)).not.toContain(ANDROID_STRIP)
+    expect(weight(ANDROID_STRIP)).toBe(weight(GMAIL_STRIP) + 1)
+  })
+
+  it('underlines the strip\'s entries at 390 wide in the stand-in for Gmail on Android, not in the plain Gmail stand-in, and as today at 800 wide and with no <u></u>', async () => {
+    const email = renderNewsletter(await issue())
+    const count = letterParts(ISSUE).length
+    const underlined = Array(count).fill('underline')
+    // The stand-ins are what the sources describe, not a test in Gmail.
+    expect(decorations(asGmailAndroid(email), email, 390)).toEqual(underlined)
+    expect(decorations(asGmail(email), email, 390)).toEqual(Array(count).fill('none'))
+    expect(decorations(asGmailAndroid(email), email, 800)).toEqual(underlined)
+    expect(decorations(asGmail(email), email, 800)).toEqual(underlined)
+    expect(decorations(parse(email), email, 390)).toEqual(underlined)
+    // The Android rule's own reach: the strip's links in the Android stand-in alone.
+    expect(asGmailAndroid(email).querySelectorAll(ANDROID_STRIP)).toHaveLength(count)
+    expect(asGmail(email).querySelectorAll(ANDROID_STRIP)).toHaveLength(0)
+  })
+
+  it('matches nothing with either rule when no <u></u> stands before the body, as in every mail app that is not Gmail', async () => {
+    const email = renderNewsletter(await issue())
+    for (const selector of [GMAIL_STRIP, ANDROID_STRIP]) expect(parse(email).querySelectorAll(selector), selector).toHaveLength(0)
+    // Nor with the body wrapped in a div, as some apps serve it, while no <u></u> stands before it.
+    const body = parse(email).body
+    const wrapped = parse(`<div><div class="${body.className}">${body.innerHTML}</div></div>`)
+    for (const selector of [GMAIL_STRIP, ANDROID_STRIP]) expect(wrapped.querySelectorAll(selector), selector).toHaveLength(0)
+  })
+
+  it('draws the strip\'s entries with no underline in Gmail on a narrow screen alone, in the link\'s own navy, from a rule written against the body\'s own class, inside the 480 pixel rule', async () => {
+    const email = renderNewsletter(await issue())
+    expect(email).toContain(`<body class="nl-page" `)
+    const phone = rulesOf(email, '(max-width: 480px)')
+    expect(phone.find((rule) => rule.selector === GMAIL_STRIP)?.set).toEqual({ 'text-decoration': 'none' })
+    expect(email).toContain('\nu + .nl-page .nl-toc a{text-decoration:none !important}\n')
+    // In no other query, and nowhere outside one.
+    for (const query of ['(prefers-color-scheme: dark)', '(max-width: 339px)']) expect(rulesOf(email, query).map((rule) => rule.selector)).not.toContain(GMAIL_STRIP)
+    // Twice: this rule, and the Android rule after it that holds it.
+    expect(email.split('u + .nl-page')).toHaveLength(3)
+    // The rule sets no colour, so the entries keep the link's own navy, which reads on the strip's cream.
+    for (const link of asGmail(email).querySelectorAll(GMAIL_STRIP)) expect(declared(link.getAttribute('style'), 'color')).toBe('#1a2744')
+    expect(declared(parse(email).querySelector('td.nl-toc')?.getAttribute('style') ?? '', 'background-color')).toBe('#f8f4e8')
+    expect(contrast('#1a2744', '#f8f4e8')).toBeGreaterThanOrEqual(4.5)
+    // Nothing leans on pointer-events, which Gmail is not known to keep.
+    expect(email).not.toContain('pointer-events')
+  })
+
+  it('reaches the strip\'s links alone, and only in the email as Gmail serves it: with no <u></u> before the body, nothing', async () => {
+    const email = renderNewsletter(await issue())
+    const parts = letterParts(ISSUE)
+    expect(parse(email).querySelectorAll(GMAIL_STRIP)).toHaveLength(0)
+    const gmail = [...asGmail(email).querySelectorAll(GMAIL_STRIP)]
+    expect(gmail.map((a) => [a.textContent, a.getAttribute('href')])).toEqual(parts.map((part) => [part.title, `#${part.name}`]))
+    // A <u> the letter itself holds does not reach the strip: only the strip's own links are matched.
+    expect(asGmail(renderNewsletter(await issue({ bodyHtml: `<p><u>Sample</u></p>${ISSUE}` }))).querySelectorAll(GMAIL_STRIP)).toHaveLength(parts.length)
+  })
+
+  it('keeps one list, each entry a link with its href and its own style, and each part its named anchor', async () => {
+    const email = renderNewsletter(await issue())
+    const doc = parse(email)
+    const parts = letterParts(ISSUE)
+    expect(doc.querySelectorAll('td.nl-toc')).toHaveLength(1)
+    expect(doc.querySelectorAll('td.nl-toc ul')).toHaveLength(2)
+    const links = [...doc.querySelectorAll('td.nl-toc a')]
+    expect(links.map((a) => a.getAttribute('href'))).toEqual(parts.map((part) => `#${part.name}`))
+    for (const link of links) expect(link.getAttribute('style')).toBe('color:#1a2744;text-decoration:underline;')
+    for (const part of parts) {
+      expect(email.split(`<a name="${part.name}"></a>`), part.name).toHaveLength(2)
+      expect(email.split(`>${part.title}</a></li>`), part.title).toHaveLength(2)
+    }
+    // Nothing is hidden from a screen reader.
+    expect(email).not.toMatch(/aria-hidden|role="none"|visibility:hidden/)
+  })
+
+  it('asks the Gmail apps for the light form with the color-scheme metas, and resets the root to light and dark in a block of its own, so a mail app that follows the dark rules still draws them', async () => {
+    const email = renderNewsletter(await issue())
+    const head = email.slice(0, email.indexOf('</head>'))
+    expect(head).toContain('<meta name="color-scheme" content="light only">\n<meta name="supported-color-schemes" content="light only">\n')
+    expect(styleBlocks(email)[0]).toBe(':root{color-scheme:light dark}')
+    expect(head).toContain('\n<style>\n:root{color-scheme:light dark}\n</style>\n<style>\n@media (prefers-color-scheme: dark) {\n')
+  })
+
+  it('puts the reset\'s block before the main block, and only the main block carries the narrow-screen rules and the Gmail rule, so a mail app that drops the reset\'s block keeps them', async () => {
+    const email = renderNewsletter(await issue())
+    const head = email.slice(0, email.indexOf('</head>'))
+    const [reset, main] = styleBlocks(head)
+    expect(styleBlocks(head)).toHaveLength(2)
+    expect(head.indexOf(`<style>\n${reset}\n</style>`)).toBeLessThan(head.indexOf(`<style>\n${main}\n</style>`))
+    expect(reset).not.toContain('@media')
+    expect(reset).not.toContain('max-width')
+    expect(reset).not.toContain(GMAIL_STRIP)
+    for (const query of ['(prefers-color-scheme: dark)', '(max-width: 480px)', '(max-width: 339px)']) expect(main.split(`@media ${query} {\n`), query).toHaveLength(2)
+    expect(main.split(`\n${GMAIL_STRIP}{`)).toHaveLength(2)
+    expect(main).not.toContain(':root')
+    expect(email.split('max-width: 480px')).toHaveLength(2)
+    expect(email.split('max-width: 339px')).toHaveLength(2)
+  })
+
+  it('leaves the dark form\'s rules as they were, line for line, and keeps both blocks well formed: braces paired, each rule of the main block inside its query', async () => {
+    const email = renderNewsletter(await issue())
+    expect(styleBlocks(email)[0]).toMatch(/^[^{}\n]+\{[^{}\n]+\}$/)
+    const block = mainBlock(email)
+    const dark = block.slice(block.indexOf('@media (prefers-color-scheme: dark) {\n'), block.indexOf('\n}\n') + 2)
+    expect(dark.split('\n')).toEqual([
+      '@media (prefers-color-scheme: dark) {',
+      '.nl-page{background-color:#151719 !important}',
+      '.nl-card{background-color:#151719 !important;border-color:#2b2e33 !important}',
+      '.nl-toc{background-color:#202328 !important;border-bottom-color:#2b2e33 !important}',
+      '.nl-toc p{color:#c8a94a !important}',
+      '.nl-toc a,.nl-letter a,.nl-foot a{color:#c9d7f5 !important}',
+      '.nl-letter{background-color:#151719 !important;color:#e4e5e8 !important}',
+      '.nl-letter h2,.nl-letter h3,.nl-letter strong{color:#ffffff !important}',
+      '.nl-letter div{background-color:#c8a94a !important}',
+      '.nl-letter hr{border-top-color:#2b2e33 !important}',
+      '.nl-foot{background-color:#202328 !important;border-top:3px solid #c8a94a !important;color:#c4c7ce !important}',
+      '.nl-foot p{color:#c4c7ce !important}',
+      '}',
+    ])
+    // Each line is a query's opening, a query's end, or one whole rule; the depth never passes one and ends at none.
+    let depth = 0
+    for (const line of block.split('\n')) {
+      if (/^@media \([^)]*\) \{$/.test(line)) depth += 1
+      else if (line === '}') depth -= 1
+      else {
+        expect(line, line).toMatch(/^[^{}]+\{[^{}]+\}$/)
+        expect(depth, line).toBe(1)
+      }
+      expect(depth, line).toBeGreaterThanOrEqual(0)
+      expect(depth, line).toBeLessThanOrEqual(1)
+    }
+    expect(depth).toBe(0)
+    expect(block.match(/\{/g)?.length).toBe(block.match(/\}/g)?.length)
   })
 })
 
@@ -543,11 +748,13 @@ describe('the size', () => {
     expect(bytes(email)).toBeLessThan(EMAIL_MAX_BYTES)
   })
 
-  it('adds known bytes: 3,941 round an empty letter, 49 for each link, 127 for each h3, 61 for each line, and for each part its rule, heading, anchor and line in the strip', async () => {
+  it('adds known bytes: 4,112 round an empty letter, 49 for each link, 127 for each h3, 61 for each line, and for each part its rule, heading, anchor and line in the strip', async () => {
     const base = { ...(await issue()), preheader: undefined, footerHtml: '' }
     const size = (bodyHtml: string, preheader?: string) => bytes(renderNewsletter({ ...base, bodyHtml, preheader }))
     const empty = size('')
-    expect(empty).toBe(3941)
+    // 3,941 before the Gmail rules: the color-scheme reset in a block of its own, 48 bytes with its line, the strip's
+    // rule, 56, and the Android rule after it, 67.
+    expect(empty).toBe(3941 + 48 + 56 + 67)
     const added = (letter: string) => size(letter) - bytes(letter) - empty
     expect(added('<p><a href="https://www.example.org/sample">Sample</a></p>')).toBe(49)
     expect(added('<p>Sample</p><h3>Sample</h3>')).toBe(127)
@@ -736,7 +943,7 @@ describe('the size at the cap, for each kind of letter', () => {
 })
 
 describe('the plain-language rules in the fixture\'s words', () => {
-  const fixture = () => withoutTags(read(FIXTURE).replace(/<style>[\s\S]*?<\/style>/, '')).replace(/&nbsp;/g, ' ').replace(/\u00a0/g, ' ')
+  const fixture = () => withoutTags(read(FIXTURE).replace(/<style>[\s\S]*?<\/style>/g, '')).replace(/&nbsp;/g, ' ').replace(/\u00a0/g, ' ')
 
   it('writes a half as ½ and never as .5, and every time as "7:00 PM", never on a 24-hour clock', () => {
     const words = fixture()

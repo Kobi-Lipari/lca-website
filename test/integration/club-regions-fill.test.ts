@@ -38,12 +38,10 @@ import { onRequestPost as logoPost } from '../../functions/api/admin/clubs/[id]/
 import { REGIONS } from '../../domain/clubs/regions'
 
 const COUNTS: Record<string, number> = {
-  'New Orleans Metro': 8,
-  'North of Lake Pontchartrain': 3,
-  'South Central Louisiana': 5,
-  'Bayou Region': 2,
-  'Southwest Louisiana': 2,
-  'Central Louisiana': 2,
+  'New Orleans Metro': 12,
+  'Baton Rouge / East Central': 3,
+  'Lafayette / South Central': 5,
+  'Lake Charles / Southwestern': 2,
   'North Louisiana': 3,
 }
 
@@ -89,7 +87,7 @@ function holdsNoMemberData(body: string, label: string) {
 }
 
 describe('the regions fill on a database built from the migrations', () => {
-  it('the public club list carries every club\'s region, 8, 3, 5, 2, 2, 2 and 3', async () => {
+  it('the public club list carries every club\'s region, 12, 3, 5, 2 and 3', async () => {
     const res = await invoke(clubsGet, {})
     expect(res.status).toBe(200)
     const { clubs } = await res.json<{ clubs: Array<{ id: string; region: string | null }> }>()
@@ -148,8 +146,8 @@ describe('a regional seat holder on the real clubs', () => {
 
   it('a seat with two regions admits both, and every real club is reached by the seat of its own region', async () => {
     const holder = await seedMember()
-    await seat(holder, ['Bayou Region', 'Southwest Louisiana'])
-    for (const id of ['houma-chess-club', 'morgan-city-chess-club', 'casa-de-ajedrez', 'beauregard-parish-youth-chess']) {
+    await seat(holder, ['Lafayette / South Central', 'Lake Charles / Southwestern'])
+    for (const id of ['lafayette-chess-club', 'morgan-city-chess-club', 'casa-de-ajedrez', 'beauregard-parish-youth-chess']) {
       expect((await invoke(adminClubGet, { as: holder, aal: 'aal1', params: { id } })).status, id).toBe(200)
     }
     expect((await invoke(adminClubGet, { as: holder, aal: 'aal1', params: { id: 'shreveport' } })).status).toBe(403)
@@ -252,7 +250,7 @@ describe('no club endpoint gives a regional seat holder a member\'s data', () =>
     const clubId = 'houma-chess-club'
     const { one, two, admin } = await populate(clubId)
     const holder = await seedMember({ email: 'region.holder.two@example.org' })
-    await seat(holder, ['Bayou Region'])
+    await seat(holder, ['New Orleans Metro'])
     const call = { as: holder, aal: 'aal1' as const }
     const answers: Array<[string, { status: number; response: Response }]> = []
 

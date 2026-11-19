@@ -743,7 +743,7 @@ describe('search\'s data', () => {
   })
 
   it('names a region for every alias', () => {
-    expect(REGION_ALIASES).toEqual({ nola: 'New Orleans Metro', northshore: 'North of Lake Pontchartrain', acadiana: 'South Central Louisiana' })
+    expect(REGION_ALIASES).toEqual({ nola: 'New Orleans Metro', northshore: 'New Orleans Metro', acadiana: 'Lafayette / South Central' })
     for (const [alias, region] of Object.entries(REGION_ALIASES)) {
       expect(alias, alias).toMatch(/^[a-z]+$/)
       expect(REGIONS as readonly string[], alias).toContain(region)

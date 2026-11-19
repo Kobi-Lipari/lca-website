@@ -106,9 +106,9 @@ describe('0070_club_event_approval.sql on a database that holds rows', () => {
     schemaAfter = schemaRows(db)
   })
 
-  it('runs straight after 0069, the last file, with foreign keys on and every reference whole', () => {
+  it('runs straight after 0069, with foreign keys on and every reference whole', () => {
     expect(BEFORE.at(-1)).toBe('0069_club_check_marks.sql')
-    expect(migrationFiles().at(-1)).toBe(FILE)
+    expect(migrationFiles().filter((f) => f < '0071').at(-1)).toBe(FILE)
     expect(foreignKeysOn(db)).toBe(1)
     expect(all(db, 'PRAGMA foreign_key_check')).toEqual([])
   })

@@ -18,9 +18,11 @@ import { readdirSync, readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import type { DatabaseSync } from 'node:sqlite'
 import { describe, expect, it } from 'vitest'
-import { REGIONS } from '../../domain/clubs/regions'
 import { splitSql } from '../shared/splitSql'
 import { applyMigrations, MIGRATIONS_DIR, migrationFiles, openMigratedDb, userTables } from './helpers/sqlite'
+
+// The seven regions as 0065 wrote them; migration 0072 moved the clubs into the five seats' regions.
+const REGIONS = ['North Louisiana', 'Central Louisiana', 'North of Lake Pontchartrain', 'New Orleans Metro', 'Southwest Louisiana', 'South Central Louisiana', 'Bayou Region'] as const
 
 const FILE = '0065_club_regions.sql'
 const BEFORE = migrationFiles().filter((f) => f < '0061')

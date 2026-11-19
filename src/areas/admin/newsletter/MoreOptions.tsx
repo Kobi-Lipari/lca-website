@@ -182,7 +182,19 @@ export function MoreOptions({ place, open, onOpenChange, preheader, onPreheaderC
 
   if (place === 'end') {
     return (
-      <div ref={box} data-slot="more-options" data-place="end" onKeyDown={onKey}>
+      // As its field takes the focus, the page brings into view its rows as well as the field: above it, the room the bar
+      // keeps for the site's header (FootBar's class, 3.25rem and the header), so the rows' top, 43 pixels above the
+      // field at the usual size, stands clear of either header; below it, the desk's 9rem for the phone's bar and 9rem
+      // more for the rows under the field (142 pixels at the usual size, 190 at 24 pixels of text). In rem, as the rows
+      // grow with the person's own text size; marked important, since the desk's own rule for every control outranks a
+      // plain class.
+      <div
+        ref={box}
+        data-slot="more-options"
+        data-place="end"
+        onKeyDown={onKey}
+        className="[&_input]:scroll-mt-[calc(3.25rem+var(--header-h,4rem)-var(--header-h,0px))]! [&_input]:scroll-mb-[18rem]!"
+      >
         <button
           ref={carry.hold('more-button')}
           type="button"
@@ -234,15 +246,13 @@ export function MoreOptions({ place, open, onOpenChange, preheader, onPreheaderC
         aria-expanded={open}
         aria-controls={open ? panelId : undefined}
         onClick={toggle}
-        className={cn(BUTTON, '@max-[845px]:flex-col @max-[845px]:justify-center @max-[845px]:gap-[3px] @max-[845px]:px-[9px] @max-[845px]:text-[13.5px]')}
+        className={cn(BUTTON, '@max-[59.375rem]:flex-col @max-[950px]:flex-col @max-[59.375rem]:justify-center @max-[950px]:justify-center @max-[59.375rem]:gap-[3px] @max-[950px]:gap-[3px] @max-[59.375rem]:px-[9px] @max-[950px]:px-[9px] @max-[59.375rem]:text-[13.5px] @max-[950px]:text-[13.5px]')}
       >
         <Settings2 className="size-[18px] flex-none" aria-hidden="true" />
-        {/* Its words on two lines where the bar is narrow, and the board's small form, its mark over "Options", narrower still. */}
-        <span className="text-left @max-[845px]:hidden">
-          More <span className="@max-[886px]:block">options</span>
-        </span>
-        <span className="hidden @max-[845px]:inline">Options</span>
-        <ChevronUp className={cn('size-4 flex-none @max-[845px]:hidden', open && 'rotate-180')} aria-hidden="true" />
+        {/* Its words short, "Options", where the bar is narrow, and the board's small form, its mark over "Options", narrower still. */}
+        <span className="whitespace-nowrap text-left @max-[61.875rem]:hidden @max-[990px]:hidden">More options</span>
+        <span className="hidden whitespace-nowrap @max-[61.875rem]:inline @max-[990px]:inline">Options</span>
+        <ChevronUp className={cn('size-4 flex-none @max-[59.375rem]:hidden @max-[950px]:hidden', open && 'rotate-180')} aria-hidden="true" />
       </button>
       {rows}
     </div>
