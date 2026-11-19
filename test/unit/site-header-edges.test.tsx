@@ -6,8 +6,8 @@
 // and around them:
 //
 // - the row's classes in every state it is drawn in (signed out, active,
-//   expired, no membership; each section's page; everything in the bar,
-//   Donate in the About menu, the name hidden; newMembership off and on):
+//   expired, no membership; each section's page; everything in the bar and
+//   the name hidden; newMembership off and on):
 //   no gold words, no white fill or veil, no lca-navy class, no navy band
 //   class, navy words only on the gold Button's own gold fill, no hex and
 //   no data-ground; and in the two menus' panels, no hex but the About
@@ -19,9 +19,11 @@
 //   following the member as it arrives and the session as it ends;
 // - Log in on /login with no page handed to it hands none on, never /login
 //   itself, so signing in cannot come back to the sign-in page;
-// - the one donation dialog, opened from the bar and from the About menu's
-//   row, giving the focus back to what opened it when it closes;
-// - the squeeze following the account's width as someone signs in and out;
+// - the one donation dialog, opened from the About menu's Donate row, the
+//   one Donate the desktop form draws (decision 68), giving the focus back
+//   to About when it closes;
+// - the squeeze following the account's width as someone signs in and out,
+//   the two-line name its one step;
 // - the My LCA menu for every role and every mix of seat, region and events
 //   directed, with myLcaRail and newMembership off and on: the rows, their
 //   order and their addresses are src/lib/nav.ts's for what the sign-in
@@ -110,9 +112,9 @@ const bar = () => within(header())
 const where = () => screen.getByTestId('where').textContent
 /** The panel a menu's button names while it is open. */
 const panelOf = (button: HTMLElement) => document.getElementById(button.getAttribute('aria-controls') ?? '')
-/** The utilities' names in their order, Donate while it is in the bar, then Log in or My LCA, then the slot. */
+/** The utilities' names in their order, read from the whole group the account sits in: Log in or My LCA, then the slot. */
 function utilities(): string[] {
-  const group = header().querySelector('[data-slot="site-header-donate"]')!.parentElement!
+  const group = header().querySelector('[data-slot="site-header-account"]')!.parentElement!
   return [...group.querySelectorAll('a, button')].filter((el) => !el.closest('[hidden]')).map((el) => el.textContent ?? '')
 }
 
@@ -133,7 +135,7 @@ function stubResizeObserver(): { resized: () => void } {
 }
 
 /** The widths of the row's parts, as a laid out page gives them; a hidden part measures nothing. */
-const WIDTHS = { 'lca-mark': 30, 'site-header-name': 124, 'site-header-sections': 530, 'site-header-donate': 64 } as Record<string, number>
+const WIDTHS = { 'lca-mark': 30, 'site-header-name': 124, 'site-header-sections': 530 } as Record<string, number>
 /** The account's width signed out (Log in and Join LCA) and signed in with Renew (My LCA and Renew). */
 const ACCOUNT = { signedOut: 150, withRenew: 190 }
 
@@ -151,14 +153,12 @@ function stubWidths(room: number, account = ACCOUNT.signedOut) {
   return now
 }
 
-/** Each level's natural width with those widths, signed out: jsdom gives no gaps or padding. */
-const natural = (account: number) => [30 + 124 + 530 + 64 + account, 30 + 124 + 530 + account, 30 + 530 + account]
+/** Each level's natural width with those widths, the name shown and then hidden: jsdom gives no gaps or padding. */
+const natural = (account: number) => [30 + 124 + 530 + account, 30 + 530 + account]
 
-/** The level the row shows. */
-function levelShown(): 0 | 1 | 2 {
-  const donateHidden = header().querySelector('[data-slot="site-header-donate"]')!.hasAttribute('hidden')
-  const nameHidden = header().querySelector('[data-slot="site-header-name"]')!.hasAttribute('hidden')
-  return nameHidden ? 2 : donateHidden ? 1 : 0
+/** The level the row shows: 0 with the two-line name shown, 1 with it hidden. */
+function levelShown(): 0 | 1 {
+  return header().querySelector('[data-slot="site-header-name"]')!.hasAttribute('hidden') ? 1 : 0
 }
 
 /**
@@ -310,8 +310,7 @@ describe('the row\'s classes in every state it is drawn in (AC4)', () => {
   ] as const
   const ROOMS = [
     ['everything in the bar', 10_000, 0],
-    ['Donate in the About menu', natural(ACCOUNT.signedOut)[0] - 1, 1],
-    ['the name hidden as well', 10, 2],
+    ['the name hidden', 10, 1],
   ] as const
 
   it.each([false, true])('with newMembership %s: no gold words, white fill or veil, lca-navy, navy band, stray navy words, hex or data-ground on the row, for every person, page and level of the squeeze', (newMembership) => {
@@ -439,14 +438,11 @@ describe('addresses at the edges of a section and of a row (AC6)', () => {
     expect(marksAt('/about/bylaws/2024')).toEqual({ section: 'About', aboutCurrent: true, row: 'Bylaws & rules', here: 1 })
   })
 
-  it('never marks Donate, the About menu\'s last row once the bar is tight, as the page a visitor is on, even on /give with newMembership on', () => {
+  it('never marks Donate, the About menu\'s last row, as the page a visitor is on, even on /give with newMembership on', () => {
     for (const newMembership of [false, true]) {
       flags.newMembership = newMembership
       for (const path of ['/give', '/donate/success', '/about']) {
-        const observer = stubResizeObserver()
-        stubWidths(natural(ACCOUNT.signedOut)[0] - 1)
         draw(path)
-        observer.resized()
         const about = bar().getByRole('button', { name: 'About' })
         fireEvent.click(about)
         const panel = panelOf(about)!
@@ -458,18 +454,13 @@ describe('addresses at the edges of a section and of a row (AC6)', () => {
         if (newMembership) expect(donate.getAttribute('href'), at).toBe('/give')
         expect(panel.querySelectorAll('[aria-current="page"]').length, at).toBe(path === '/about' ? 1 : 0)
         cleanup()
-        vi.restoreAllMocks()
-        vi.unstubAllGlobals()
       }
     }
   })
 
-  it('with newMembership on and the bar tight, the About menu\'s Donate row is a link to /give that opens no dialog', () => {
+  it('with newMembership on, the About menu\'s Donate row is a link to /give that opens no dialog', () => {
     flags.newMembership = true
-    const observer = stubResizeObserver()
-    stubWidths(natural(ACCOUNT.signedOut)[0] - 1)
     draw('/')
-    observer.resized()
     const about = bar().getByRole('button', { name: 'About' })
     fireEvent.click(about)
     fireEvent.click(within(panelOf(about)!).getByRole('link', { name: 'Donate' }))
@@ -483,13 +474,13 @@ describe('addresses at the edges of a section and of a row (AC6)', () => {
 
 describe('the Join slot, by the member\'s status alone (AC7)', () => {
   it.each([
-    ['active, with an end date already past (the nightly run not yet come)', { status: 'active', end: dayFrom(-1) }, ['Donate', 'My LCA']],
-    ['active, ending today', { status: 'active', end: dayFrom(0) }, ['Donate', 'My LCA']],
-    ['active, with no end date', { status: 'active', end: null }, ['Donate', 'My LCA']],
-    ['expired, with an end date still to come', { status: 'expired', end: dayFrom(30) }, ['Donate', 'My LCA', 'Renew']],
-    ['expired, with no end date', { status: 'expired', end: null }, ['Donate', 'My LCA', 'Renew']],
-    ['none, with an old end date', { status: 'none', end: dayFrom(-400) }, ['Donate', 'My LCA', 'Join LCA']],
-    ['a status the API no longer sends (pending, retired by migration 0057)', { status: 'pending', end: null }, ['Donate', 'My LCA']],
+    ['active, with an end date already past (the nightly run not yet come)', { status: 'active', end: dayFrom(-1) }, ['My LCA']],
+    ['active, ending today', { status: 'active', end: dayFrom(0) }, ['My LCA']],
+    ['active, with no end date', { status: 'active', end: null }, ['My LCA']],
+    ['expired, with an end date still to come', { status: 'expired', end: dayFrom(30) }, ['My LCA', 'Renew']],
+    ['expired, with no end date', { status: 'expired', end: null }, ['My LCA', 'Renew']],
+    ['none, with an old end date', { status: 'none', end: dayFrom(-400) }, ['My LCA', 'Join LCA']],
+    ['a status the API no longer sends (pending, retired by migration 0057)', { status: 'pending', end: null }, ['My LCA']],
   ] as const)('%s: %j', (_, member, expected) => {
     draw('/', visitor(member))
     expect(utilities()).toEqual([...expected])
@@ -497,20 +488,20 @@ describe('the Join slot, by the member\'s status alone (AC7)', () => {
 
   it('fills the slot once the member arrives, and gives Log in and Join LCA back once the session ends', () => {
     const { rerender } = draw('/', visitor(null, { memberLoading: true }))
-    expect(utilities()).toEqual(['Donate', 'My LCA'])
+    expect(utilities()).toEqual(['My LCA'])
     rerender(<Page path="/" auth={visitor({ status: 'expired', end: dayFrom(-3) })} />)
-    expect(utilities()).toEqual(['Donate', 'My LCA', 'Renew'])
+    expect(utilities()).toEqual(['My LCA', 'Renew'])
     // A renewal the page has just taken: the member read again comes back active.
     rerender(<Page path="/" auth={visitor({ status: 'active', end: dayFrom(365) })} />)
-    expect(utilities()).toEqual(['Donate', 'My LCA'])
+    expect(utilities()).toEqual(['My LCA'])
     rerender(<Page path="/" auth={visitor()} />)
-    expect(utilities()).toEqual(['Donate', 'Log in', 'Join LCA'])
+    expect(utilities()).toEqual(['Log in', 'Join LCA'])
     expect(bar().getByRole('link', { name: 'Join LCA' }).getAttribute('href')).toBe('/membership')
   })
 
   it('shows Log in and Join LCA while the session itself loads, whatever member is left from before', () => {
     draw('/', visitor({ status: 'expired', end: dayFrom(-3) }, { loading: true }))
-    expect(utilities()).toEqual(['Donate', 'Log in', 'Join LCA'])
+    expect(utilities()).toEqual(['Log in', 'Join LCA'])
     expect(bar().queryByRole('button', { name: 'My LCA' })).toBeNull()
   })
 })
@@ -547,38 +538,42 @@ describe('Log in and the page it hands /login (AC7)', () => {
 // ── The donation dialog (AC9) ──────────────────────────────────────────────
 
 describe('the one donation dialog (AC9)', () => {
-  it('gives the focus back to Donate in the bar when it closes, though a press did not focus it, as some browsers leave a pressed button', async () => {
+  it('opened from the About menu\'s Donate row, gives the focus back to About when it closes, though no press focused either, as some browsers leave a pressed button', async () => {
     draw('/')
-    const donate = bar().getByRole('button', { name: 'Donate' })
-    expect(document.activeElement).toBe(document.body)
-    fireEvent.click(donate)
-    const dialog = await screen.findByRole('dialog', { name: DIALOG })
-    fireEvent.keyDown(dialog, { key: 'Escape' })
-    await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull())
-    expect(document.activeElement).toBe(donate)
-  })
-
-  it('opened from the About menu\'s Donate row, gives the focus back to About, the row being gone with the menu', async () => {
-    const observer = stubResizeObserver()
-    stubWidths(natural(ACCOUNT.signedOut)[0] - 1)
-    draw('/')
-    observer.resized()
     const about = bar().getByRole('button', { name: 'About' })
+    expect(document.activeElement).toBe(document.body)
     fireEvent.click(about)
     fireEvent.click(within(panelOf(about)!).getByRole('button', { name: 'Donate' }))
     const dialog = await screen.findByRole('dialog', { name: DIALOG })
-    expect(panelOf(about)).toBeNull()
     fireEvent.keyDown(dialog, { key: 'Escape' })
     await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull())
     expect(document.activeElement).toBe(about)
   })
 
-  it('is one dialog whichever Donate opens it: from the bar, then, once the bar is tight, from the About menu', async () => {
+  it('opened from the About menu\'s Donate row pressed with the focus on it, gives the focus back to About, the row being gone with the menu', async () => {
+    draw('/')
+    const about = bar().getByRole('button', { name: 'About' })
+    fireEvent.click(about)
+    const donate = within(panelOf(about)!).getByRole('button', { name: 'Donate' })
+    donate.focus()
+    fireEvent.click(donate)
+    const dialog = await screen.findByRole('dialog', { name: DIALOG })
+    expect(panelOf(about)).toBeNull()
+    expect(donate.isConnected).toBe(false)
+    fireEvent.keyDown(dialog, { key: 'Escape' })
+    await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull())
+    expect(document.activeElement).toBe(about)
+  })
+
+  it('is one dialog however often the About menu\'s Donate row opens it, with the name shown or hidden', async () => {
     const observer = stubResizeObserver()
     const widths = stubWidths(10_000)
     draw('/')
     observer.resized()
-    fireEvent.click(bar().getByRole('button', { name: 'Donate' }))
+    expect(levelShown()).toBe(0)
+    const about = bar().getByRole('button', { name: 'About' })
+    fireEvent.click(about)
+    fireEvent.click(within(panelOf(about)!).getByRole('button', { name: 'Donate' }))
     await screen.findByRole('dialog', { name: DIALOG })
     expect(document.querySelectorAll('[role="dialog"]')).toHaveLength(1)
     fireEvent.keyDown(screen.getByRole('dialog'), { key: 'Escape' })
@@ -586,7 +581,6 @@ describe('the one donation dialog (AC9)', () => {
     widths.room = natural(ACCOUNT.signedOut)[0] - 1
     observer.resized()
     expect(levelShown()).toBe(1)
-    const about = bar().getByRole('button', { name: 'About' })
     fireEvent.click(about)
     fireEvent.click(within(panelOf(about)!).getByRole('button', { name: 'Donate' }))
     await screen.findByRole('dialog', { name: DIALOG })
@@ -605,14 +599,14 @@ describe('the one donation dialog (AC9)', () => {
 // ── The squeeze and the account (AC10) ─────────────────────────────────────
 
 describe('the squeeze as someone signs in and out (AC10)', () => {
-  it('reads the account\'s width as it changes: a room that holds Log in and Join LCA with Donate gives way when My LCA and Renew take their place, and comes back when they go', () => {
+  it('reads the account\'s width as it changes: a room that holds Log in and Join LCA with the two-line name hides the name when My LCA and Renew take their place, and shows it again when they go', () => {
     const observer = stubResizeObserver()
     const [signedOut] = natural(ACCOUNT.signedOut)
     const widths = stubWidths(signedOut, ACCOUNT.signedOut)
     const { rerender } = draw('/', visitor())
     observer.resized()
     expect(levelShown()).toBe(0)
-    // Signed in, with Renew: the account is wider, and Donate no longer fits.
+    // Signed in, with Renew: the account is wider, and the name no longer fits.
     rerender(<Page path="/" auth={visitor({ status: 'expired', end: dayFrom(-5) })} />)
     widths.account = ACCOUNT.withRenew
     observer.resized()
@@ -623,7 +617,7 @@ describe('the squeeze as someone signs in and out (AC10)', () => {
     widths.account = ACCOUNT.signedOut
     observer.resized()
     expect(levelShown()).toBe(0)
-    expect(utilities()).toEqual(['Donate', 'Log in', 'Join LCA'])
+    expect(utilities()).toEqual(['Log in', 'Join LCA'])
   })
 
   it.each([
@@ -636,7 +630,7 @@ describe('the squeeze as someone signs in and out (AC10)', () => {
     stubWidths(1)
     draw('/', auth)
     observer.resized()
-    expect(levelShown()).toBe(2)
+    expect(levelShown()).toBe(1)
     const nav = screen.getByRole('navigation', { name: 'Main' })
     expect([...nav.querySelectorAll(':scope > a, :scope > div > button')].map((el) => el.textContent)).toEqual(['Tournaments', 'Clubs', 'Scholastic', 'News', 'Membership', 'About'])
     expect(utilities()).toEqual([...account])

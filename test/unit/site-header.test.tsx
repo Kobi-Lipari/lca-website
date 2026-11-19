@@ -13,15 +13,17 @@
 //   with aria-current="page", its line and, for forced colours, which draw
 //   no line, its underline, and those the only classes that change from
 //   page to page;
-// - the utilities in their order: Donate, Log in or My LCA, then Join LCA
-//   or Renew by the member's status, the gold Button; Log in hands /login
-//   the page it was drawn on, query and hash included;
-// - Donate opening the one donation dialog, its code fetched the first
-//   time and the dialog kept, closed, after that, or going to /give with
+// - the utilities in their order: Log in or My LCA, then Join LCA or Renew
+//   by the member's status, the gold Button, and never Donate; Log in hands
+//   /login the page it was drawn on, query and hash included;
+// - Donate, the About menu's last row above LCA on Facebook ↗ (decision
+//   68), opening the one donation dialog, its code fetched the first time
+//   and the dialog kept, closed, after that, or going to /give with
 //   newMembership on;
 // - the squeeze, from the row's natural width with the widths stubbed, as
-//   jsdom lays nothing out: Donate into the About menu first, then the name
-//   hidden, and the level the room's alone at each edge;
+//   jsdom lays nothing out: the name hidden, the one part that gives way,
+//   the level the room's alone at its edge, and Donate in the About menu
+//   and never in the bar at any room, in either form;
 // - --header-h on the page's root while the header is drawn;
 // - Navbar's choice: with the chrome on, the new header in its desktop form
 //   from 1024 pixels, in its tablet form from 768 to 1023, and the phone's
@@ -118,10 +120,16 @@ const header = () => screen.getByRole('banner')
 const bar = () => within(header())
 const sections = () => within(screen.getByRole('navigation', { name: 'Main' }))
 const where = () => screen.getByTestId('where').textContent
-/** The utilities' names in their order: Donate, Log in or My LCA, the join slot. */
+/** The utilities' names in their order, read from the whole group the account sits in: Log in or My LCA, then the join slot. */
 function utilities(): string[] {
-  const group = header().querySelector('[data-slot="site-header-donate"]')!.parentElement!
+  const group = header().querySelector('[data-slot="site-header-account"]')!.parentElement!
   return [...group.querySelectorAll('a, button')].filter((el) => !el.closest('[hidden]')).map((el) => el.textContent ?? '')
+}
+/** The About menu's Donate row, the menu opened by a click when it is shut: the one Donate the desktop form draws. */
+function aboutDonate(role: 'button' | 'link' = 'button'): HTMLElement {
+  const about = bar().getByRole('button', { name: 'About' })
+  if (about.getAttribute('aria-expanded') !== 'true') fireEvent.click(about)
+  return within(document.getElementById(about.getAttribute('aria-controls')!)!).getByRole(role, { name: 'Donate' })
 }
 
 beforeEach(() => {
@@ -242,9 +250,11 @@ describe('the sections', () => {
 })
 
 describe('the utilities', () => {
-  it('signed out: Donate, Log in and Join LCA, in that order, Join LCA the gold Button to /membership', () => {
+  it('signed out: Log in and Join LCA, in that order, Join LCA the gold Button to /membership, and no Donate in the bar', () => {
     draw()
-    expect(utilities()).toEqual(['Donate', 'Log in', 'Join LCA'])
+    expect(utilities()).toEqual(['Log in', 'Join LCA'])
+    expect(bar().queryByRole('button', { name: 'Donate' })).toBeNull()
+    expect(bar().queryByRole('link', { name: 'Donate' })).toBeNull()
     const join = bar().getByRole('link', { name: 'Join LCA' })
     expect(join.getAttribute('href')).toBe('/membership')
     expect(join.getAttribute('data-variant')).toBe('gold')
@@ -253,21 +263,21 @@ describe('the utilities', () => {
 
   it('while the session loads: Log in and Join LCA, as today\'s header shows them', () => {
     draw('/', visitor({ status: 'active' }, { loading: true }))
-    expect(utilities()).toEqual(['Donate', 'Log in', 'Join LCA'])
+    expect(utilities()).toEqual(['Log in', 'Join LCA'])
   })
 
   it.each([
-    ['an active member', { status: 'active', endsIn: 300 }, ['Donate', 'My LCA']],
-    ['an active member 20 days from the end', { status: 'active', endsIn: 20 }, ['Donate', 'My LCA']],
-    ['a member whose membership has expired', { status: 'expired', endsIn: -20 }, ['Donate', 'My LCA', 'Renew']],
-    ['a member with no membership', { status: 'none' }, ['Donate', 'My LCA', 'Join LCA']],
-    ['a member still loading', { status: 'expired', memberLoading: true }, ['Donate', 'My LCA']],
-    ['a member who could not be read', {}, ['Donate', 'My LCA']],
+    ['an active member', { status: 'active', endsIn: 300 }, ['My LCA']],
+    ['an active member 20 days from the end', { status: 'active', endsIn: 20 }, ['My LCA']],
+    ['a member whose membership has expired', { status: 'expired', endsIn: -20 }, ['My LCA', 'Renew']],
+    ['a member with no membership', { status: 'none' }, ['My LCA', 'Join LCA']],
+    ['a member still loading', { status: 'expired', memberLoading: true }, ['My LCA']],
+    ['a member who could not be read', {}, ['My LCA']],
   ] as const)('%s: %j', (_, signed, expected) => {
     draw('/', visitor(signed))
     expect(utilities()).toEqual([...expected])
     expect(bar().queryByRole('link', { name: 'Log in' })).toBeNull()
-    const slot = expected[2]
+    const slot = expected[1]
     if (slot) {
       const link = bar().getByRole('link', { name: slot })
       expect(link.getAttribute('href')).toBe('/membership')
@@ -297,17 +307,26 @@ describe('the utilities', () => {
   })
 })
 
-describe('Donate', () => {
-  it('opens the donation dialog, drawn once, until newMembership is on, and opens it again after Esc closes it', async () => {
+describe('Donate, the About menu\'s last row', () => {
+  it('opens the donation dialog from the About menu, drawn once, until newMembership is on, and opens it again after Esc closes it', async () => {
     draw()
-    const donate = bar().getByRole('button', { name: 'Donate' })
     expect(screen.queryByRole('dialog')).toBeNull()
-    fireEvent.click(donate)
+    fireEvent.click(aboutDonate())
     expect(await screen.findByRole('dialog', { name: DIALOG })).toBeTruthy()
     expect(screen.getAllByRole('dialog')).toHaveLength(1)
     fireEvent.keyDown(screen.getByRole('dialog'), { key: 'Escape' })
     await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull())
-    fireEvent.click(donate)
+    fireEvent.click(aboutDonate())
+    expect(await screen.findByRole('dialog', { name: DIALOG })).toBeTruthy()
+    expect(screen.getAllByRole('dialog')).toHaveLength(1)
+  })
+
+  it('opens the one donation dialog from the About menu\'s Donate row, and the menu closing leaves it open', async () => {
+    draw()
+    const about = bar().getByRole('button', { name: 'About' })
+    fireEvent.click(about)
+    fireEvent.click(within(document.getElementById(about.getAttribute('aria-controls')!)!).getByRole('button', { name: 'Donate' }))
+    expect(about.getAttribute('aria-expanded')).toBe('false')
     expect(await screen.findByRole('dialog', { name: DIALOG })).toBeTruthy()
     expect(screen.getAllByRole('dialog')).toHaveLength(1)
   })
@@ -319,12 +338,14 @@ describe('Donate', () => {
     expect(source).toContain('lazy(')
   })
 
-  it('with newMembership on, is a link to /give and no dialog is drawn', () => {
+  it('with newMembership on, is a link to /give in the About menu, never in the bar, and no dialog is drawn', () => {
     flags.newMembership = true
     draw()
+    expect(bar().queryByRole('link', { name: 'Donate' })).toBeNull()
+    const give = aboutDonate('link')
+    expect(give.getAttribute('href')).toBe('/give')
     expect(bar().queryByRole('button', { name: 'Donate' })).toBeNull()
-    expect(bar().getByRole('link', { name: 'Donate' }).getAttribute('href')).toBe('/give')
-    fireEvent.click(bar().getByRole('link', { name: 'Donate' }))
+    fireEvent.click(give)
     expect(screen.queryByRole('dialog')).toBeNull()
     expect(where()).toBe('/give from nothing')
   })
@@ -360,11 +381,10 @@ const WIDTHS: Record<string, number> = {
   'lca-mark': 30,
   'site-header-name': 124,
   'site-header-sections': 530,
-  'site-header-donate': 64,
   'site-header-account': 150,
 }
-/** Each level's natural width with those parts and no padding or gap, which jsdom gives none of. */
-const NATURAL = [30 + 124 + 530 + 64 + 150, 30 + 124 + 530 + 150, 30 + 530 + 150]
+/** Each level's natural width with those parts and no padding or gap, which jsdom gives none of: the name shown, then hidden. */
+const NATURAL = [30 + 124 + 530 + 150, 30 + 530 + 150]
 
 /** Gives the row its room and each part its width; returns a way to change the room. */
 function stubWidths(room: number) {
@@ -381,15 +401,9 @@ function stubWidths(room: number) {
   }
 }
 
-/** The level the row shows: whether Donate is in the bar, and whether the name is shown. */
-function levelShown(): 0 | 1 | 2 {
-  const donateHidden = header().querySelector('[data-slot="site-header-donate"]')!.hasAttribute('hidden')
-  const nameHidden = header().querySelector('[data-slot="site-header-name"]')!.hasAttribute('hidden')
-  if (nameHidden) {
-    expect(donateHidden).toBe(true)
-    return 2
-  }
-  return donateHidden ? 1 : 0
+/** The level the row shows: 0 with the two-line name shown, 1 with it hidden. */
+function levelShown(): 0 | 1 {
+  return header().querySelector('[data-slot="site-header-name"]')!.hasAttribute('hidden') ? 1 : 0
 }
 
 /** The About menu's rows, opened and closed again by a click. */
@@ -403,55 +417,41 @@ function aboutRows(): string[] {
 }
 
 describe('the squeeze, from the row\'s natural width', () => {
-  it('keeps everything in the bar with room for every part', () => {
+  it('keeps everything in the bar with room for every part, and Donate is the About menu\'s last row all the same', () => {
     const watchers = stubResizeObserver()
     stubWidths(1000)
     draw()
     act(() => watchers.forEach((w) => w.resized()))
     expect(levelShown()).toBe(0)
-    expect(utilities()).toEqual(['Donate', 'Log in', 'Join LCA'])
-    expect(aboutRows().at(-2)).toBe('Contact')
+    expect(utilities()).toEqual(['Log in', 'Join LCA'])
+    expect(aboutRows().slice(-3)).toEqual(['Contact', 'Donate', 'LCA on Facebook ↗'])
   })
 
-  it('moves Donate into the About menu first, as its last row above LCA on Facebook, then hides the name, and the link keeps its name', () => {
+  it('hides the two-line name when the row is tight, the link keeping its name, the one part that gives way: Donate stays the About menu\'s last row and nothing else leaves the bar', () => {
     const watchers = stubResizeObserver()
     const room = stubWidths(NATURAL[0] - 1)
     draw()
     act(() => watchers.forEach((w) => w.resized()))
     expect(levelShown()).toBe(1)
-    expect(bar().queryByRole('button', { name: 'Donate' })).toBeNull()
-    expect(aboutRows().slice(-3)).toEqual(['Contact', 'Donate', 'LCA on Facebook ↗'])
-    room(NATURAL[1] - 1)
-    act(() => watchers.forEach((w) => w.resized()))
-    expect(levelShown()).toBe(2)
     expect(bar().getByRole('link', { name: HOME }).getAttribute('href')).toBe('/')
+    // Donate has not left the bar to be hidden: it was never in it.
+    expect(header().querySelector('[data-slot="site-header-donate"]')).toBeNull()
+    expect(bar().queryByRole('button', { name: 'Donate' })).toBeNull()
+    expect(utilities()).toEqual(['Log in', 'Join LCA'])
     expect(aboutRows().slice(-3)).toEqual(['Contact', 'Donate', 'LCA on Facebook ↗'])
     // No section, Log in or Join LCA ever leaves the bar, at the last level even with no room at all.
     room(10)
     act(() => watchers.forEach((w) => w.resized()))
-    expect(levelShown()).toBe(2)
+    expect(levelShown()).toBe(1)
     expect(sections().getAllByRole('link').map((a) => a.textContent)).toEqual(SECTIONS.slice(0, 5))
     expect(sections().getByRole('button', { name: 'About' })).toBeTruthy()
     expect(utilities()).toEqual(['Log in', 'Join LCA'])
-  })
-
-  it('opens the one donation dialog from the About menu\'s Donate row, and the menu closing leaves it open', async () => {
-    const watchers = stubResizeObserver()
-    stubWidths(NATURAL[0] - 1)
-    draw()
-    act(() => watchers.forEach((w) => w.resized()))
-    const about = bar().getByRole('button', { name: 'About' })
-    fireEvent.click(about)
-    fireEvent.click(within(document.getElementById(about.getAttribute('aria-controls')!)!).getByRole('button', { name: 'Donate' }))
-    expect(about.getAttribute('aria-expanded')).toBe('false')
-    expect(await screen.findByRole('dialog', { name: DIALOG })).toBeTruthy()
-    expect(screen.getAllByRole('dialog')).toHaveLength(1)
+    expect(aboutRows().slice(-3)).toEqual(['Contact', 'Donate', 'LCA on Facebook ↗'])
   })
 
   it.each([
-    ['the first edge', NATURAL[0], 0, 1],
-    ['the second edge', NATURAL[1], 1, 2],
-  ] as const)('at %s, the room a pixel either way and back gives the level of the room alone, never one that depends on the level before', (_, edge, fits, tight) => {
+    ['the name\'s edge', NATURAL[0], 0, 1],
+  ] as const)('at %s, the row\'s one, the room a pixel either way and back gives the level of the room alone, never one that depends on the level before, and changes the name alone', (_, edge, fits, tight) => {
     const watchers = stubResizeObserver()
     const room = stubWidths(edge)
     draw()
@@ -461,7 +461,9 @@ describe('the squeeze, from the row\'s natural width', () => {
       return levelShown()
     }
     expect(at(edge)).toBe(fits)
+    expect(utilities()).toEqual(['Log in', 'Join LCA'])
     expect(at(edge - 1)).toBe(tight)
+    expect(utilities()).toEqual(['Log in', 'Join LCA'])
     expect(at(edge)).toBe(fits)
     expect(at(edge + 1)).toBe(fits)
     expect(at(edge - 1)).toBe(tight)
@@ -476,9 +478,44 @@ describe('the squeeze, from the row\'s natural width', () => {
     // The row starts with everything in it; the first callback, which comes as the observer starts watching, decides.
     expect(levelShown()).toBe(0)
     const slots = watchers.flatMap((w) => w.watched.map((el) => el.getAttribute('data-slot')))
-    expect(slots).toEqual(expect.arrayContaining(['site-header-row', 'site-header-name', 'site-header-sections', 'site-header-donate', 'site-header-account']))
+    expect(slots).toEqual(expect.arrayContaining(['site-header-row', 'site-header-name', 'site-header-sections', 'site-header-account']))
+    expect(slots).not.toContain('site-header-donate')
     act(() => watchers.forEach((w) => w.resized()))
-    expect(levelShown()).toBe(2)
+    expect(levelShown()).toBe(1)
+  })
+
+  it('draws no Donate in the bar at any room, in either form, signed out or in, with newMembership off or on, and in the desktop form the About menu ends with Donate above LCA on Facebook ↗ at every room (decision 68)', () => {
+    const people = [['signed out', visitor()], ['an expired member', visitor({ status: 'expired', endsIn: -20 })]] as const
+    for (const newMembership of [false, true]) {
+      flags.newMembership = newMembership
+      for (const form of ['desktop', 'tablet'] as const) {
+        for (const [person, auth] of people) {
+          const watchers = stubResizeObserver()
+          const room = stubWidths(10_000)
+          render(
+            <AuthContext.Provider value={auth}>
+              <MemoryRouter initialEntries={['/']}>
+                <SiteHeader form={form} />
+              </MemoryRouter>
+            </AuthContext.Provider>,
+          )
+          for (const width of [10_000, NATURAL[0], NATURAL[0] - 1, NATURAL[1], 10]) {
+            room(width)
+            act(() => watchers.forEach((w) => w.resized()))
+            const at = `${form} form, ${person}, newMembership ${newMembership}, a room of ${width}`
+            expect(header().getAttribute('data-form'), at).toBe(form)
+            expect(header().querySelector('[data-slot="site-header-donate"]'), at).toBeNull()
+            expect(bar().queryAllByRole('button', { name: 'Donate' }), at).toEqual([])
+            expect(bar().queryAllByRole('link', { name: 'Donate' }), at).toEqual([])
+            if (form === 'desktop') expect(aboutRows().slice(-3), at).toEqual(['Contact', 'Donate', 'LCA on Facebook ↗'])
+            else expect(bar().queryByRole('button', { name: 'About' }), `${at}: no About menu at this width`).toBeNull()
+          }
+          cleanup()
+          vi.restoreAllMocks()
+          vi.unstubAllGlobals()
+        }
+      }
+    }
   })
 })
 
