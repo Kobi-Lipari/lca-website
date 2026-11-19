@@ -130,6 +130,7 @@ const ADMIN = {
 } as unknown as AuthContextValue
 
 beforeEach(() => {
+  window.localStorage.setItem('lca-newsletter-page-help', 'shown') // Help has been seen once, so it does not open by itself here.
   answers = {}
   calls = []
   puts = []
@@ -640,6 +641,9 @@ describe('More options', () => {
     }
   })
 
+  // This case waits out the save's quiet time twice, once for the save and once to show that nothing more is
+  // sent: about 4.6 seconds of waiting by design, so about five seconds in all. The default limit of five
+  // seconds left it no room, so it has a limit of its own.
   it('saves the inbox preview line with the letter, as the Subject is saved, and the preview\'s email carries it', async () => {
     windowAt(1440)
     await thePage()
@@ -657,7 +661,7 @@ describe('More options', () => {
     fireEvent.change(previewLine(), { target: { value: '  Sample news of the winter season  ' } })
     await settle(2300)
     expect(puts).toHaveLength(1)
-  })
+  }, 20_000)
 
   it('shows the preview line the letter was saved with on a reload, and the server\'s words on the saved line when it refuses one', async () => {
     windowAt(1440)

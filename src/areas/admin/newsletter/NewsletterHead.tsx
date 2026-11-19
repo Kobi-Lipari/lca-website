@@ -15,13 +15,14 @@
 // letter that failed among them, and neither takes the focus from where the
 // person is.
 //
-// Help is drawn as the board draws it, and is not yet available: its
-// walkthrough comes with WS16 part two, page step 5. So it is a button a
-// keyboard does not stop on, marked as unavailable, and it says so to a
-// screen reader.
+// Help opens the page's walkthrough (HelpWalkthrough.tsx), a dialog, and is
+// drawn only once the letter is on the page: not while the letter is read,
+// nor when it could not be, nor to a person who has yet to set up a second
+// factor, where it would point at nothing, nor with the letter made bigger.
 //
 // On a tablet and a phone, under 1024 pixels (boards P19 and P20), Help is
-// its mark alone, 44 pixels square, "Admin sections" gives way to the crumb's
+// its mark alone, 44 pixels square, white with an edge as the tablet's and
+// the phone's boards draw it, its name kept for a screen reader; "Admin sections" gives way to the crumb's
 // own Admin, and every link a finger can press is 44 pixels tall. On a
 // tablet, from 768 to 1023 pixels, "See the email" stands at the head's
 // right, where the tablet's board draws it; on a phone, under 768, it is in
@@ -114,6 +115,14 @@ function wordsOf(line: SaveLine): { quiet: string; urgent: string; after: string
 
 /** A soft button of the head, 44px tall. */
 const SOFT = 'inline-flex min-h-11 items-center gap-2 rounded-lg bg-ink/8 px-3.5 text-sm font-semibold text-ink outline-none focus-visible:ring-3 focus-visible:ring-focus'
+
+/**
+ * Help: the soft button from 1024 pixels up; under 1024 the board's small Help button, 44 square, white with a 1px
+ * edge, the mark alone. The soft tint is a layer of its own, drawn from 1024 up only (HELP_TINT), so no rule of the
+ * tint's for browsers that cannot mix colours ever sits beside the white on one element and beats it.
+ */
+const HELP_BUTTON = 'relative isolate inline-flex min-h-11 items-center gap-2 rounded-lg px-3.5 text-sm font-semibold text-ink outline-none focus-visible:ring-3 focus-visible:ring-focus max-lg:w-11 max-lg:justify-center max-lg:border max-lg:border-border max-lg:bg-background max-lg:px-0'
+const HELP_TINT = 'pointer-events-none absolute inset-0 -z-10 rounded-lg bg-ink/8 max-lg:hidden'
 
 /** A small words button beside the saved line, 44px tall. */
 const LINE_BUTTON = 'inline-flex min-h-11 items-center rounded-md px-2 text-[15px] font-semibold text-ink underline underline-offset-3 outline-none hover:no-underline focus-visible:ring-3 focus-visible:ring-focus'
@@ -222,6 +231,12 @@ export interface NewsletterHeadProps {
    * the focus back as the sheet closes, and the focus a "See the email" taken off the page carried.
    */
   seeRef?: Ref<HTMLButtonElement>
+  /** Opens Help's walkthrough; Help is drawn only with it, once the letter is on the page. */
+  onHelp?: () => void
+  /** Whether Help's walkthrough is open. */
+  helpOpen?: boolean
+  /** The ref of Help, which takes the focus back as the walkthrough closes, however it was opened. */
+  helpRef?: Ref<HTMLButtonElement>
 }
 
 /** The month with the letter's state in a word: "Draft" for an open letter, "Not saved yet" for a letter with no row yet. */
@@ -264,7 +279,7 @@ export function SavedLineNotice({ line }: { line: SaveLine }) {
 const CRUMB_LINK =
   'rounded-sm font-medium text-ink underline decoration-ink/40 underline-offset-3 outline-none hover:decoration-ink focus-visible:ring-3 focus-visible:ring-focus max-lg:-my-2.5 max-lg:inline-flex max-lg:min-h-11 max-lg:min-w-11 max-lg:items-center'
 
-export function NewsletterHead({ month, state, saved, bigger = false, onSeeEmail, sheetOpen = false, phone = false, seeRef }: NewsletterHeadProps) {
+export function NewsletterHead({ month, state, saved, bigger = false, onSeeEmail, sheetOpen = false, phone = false, seeRef, onHelp, helpOpen = false, helpRef }: NewsletterHeadProps) {
   return (
     <div className={cn('border-b border-border bg-background', bigger && 'flex-none px-5 py-2')}>
       {/*
@@ -305,11 +320,20 @@ export function NewsletterHead({ month, state, saved, bigger = false, onSeeEmail
           )
         ) : (
           <div className="flex flex-wrap items-center gap-2.5 sm:mt-2.5">
-            <button type="button" disabled className={cn(SOFT, 'disabled:opacity-60 max-lg:w-11 max-lg:justify-center max-lg:px-0')}>
-              <CircleHelp className="size-4" aria-hidden="true" />
-              <span className="max-lg:sr-only">Help</span>
-              <span className="sr-only">, not yet available</span>
-            </button>
+            {onHelp && (
+              <button
+                ref={helpRef}
+                type="button"
+                aria-haspopup="dialog"
+                aria-expanded={helpOpen}
+                onClick={onHelp}
+                className={HELP_BUTTON}
+              >
+                <span aria-hidden="true" className={HELP_TINT} />
+                <CircleHelp className="size-4" aria-hidden="true" />
+                <span className="max-lg:sr-only">Help</span>
+              </button>
+            )}
             <Link to="/admin" className={cn(SOFT, 'max-lg:hidden')}>
               <Menu className="size-4" aria-hidden="true" />
               Admin sections
