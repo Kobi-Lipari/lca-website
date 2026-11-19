@@ -77,7 +77,7 @@ const CLUB_URL = `/api/admin/clubs/${ID}`
 const CLUB = {
   id: ID, name: 'Example Chess Club', city: 'Example City', location: 'Example Library, 1 Example Street',
   description: 'A friendly made-up club for casual and rated games.', meeting_schedule: 'Tuesdays at 7:00 PM', contact_email: 'club@example.org',
-  created_at: '2026-01-01 12:00:00', color: '#1f4e79', image_url: null, region: 'Bayou Region', latitude: 30.1, longitude: -91.2,
+  created_at: '2026-01-01 12:00:00', color: '#1f4e79', image_url: null, region: 'Lafayette / South Central', latitude: 30.1, longitude: -91.2,
   slug: 'example-chess', about_text: 'A friendly made-up club for casual and rated games.', how_we_meet_text: 'Tuesdays at 7:00 PM',
   cost_text: null, welcome_text: null, weekend_play: 0, scholastic_friendly: 0, contact_name_public: 'Player One', facebook_url: null,
   website_url: null, other_url: null, told_updated_at: null, told_by: null, last_confirmed_at: null, confirmed_by: null,
@@ -288,11 +288,11 @@ describe('the club editor: Save and publish', () => {
   it('sends an LCA admin\'s name, region and new page address, and none of them for anyone else', async () => {
     await openEditor('admin')
     type('Club name', 'Example City Chess Club')
-    fireEvent.change(screen.getByLabelText('Region'), { target: { value: 'Central Louisiana' } })
+    fireEvent.change(screen.getByLabelText('Region'), { target: { value: 'Baton Rouge / East Central' } })
     type('Page address', 'example-city-chess')
     press()
     await within(status()).findByText(/^Saved/)
-    expect(bodyOf(`PATCH ${CLUB_URL}`)).toMatchObject({ name: 'Example City Chess Club', region: 'Central Louisiana', slug: 'example-city-chess' })
+    expect(bodyOf(`PATCH ${CLUB_URL}`)).toMatchObject({ name: 'Example City Chess Club', region: 'Baton Rouge / East Central', slug: 'example-city-chess' })
     cleanup()
     seen = []
     await openEditor('representative')
@@ -626,7 +626,7 @@ describe('the club editor: Help', () => {
       'Pin: coordinates or a Google Maps link', 'Use this', 'Pin at 30.10000, -91.20000', 'Remove pin',
       'Place 2', 'Place 2 name', 'Place 2 street address', 'Note about place 2', 'Pin for place 2: coordinates or a Google Maps link', 'Use this for place 2',
       'No pin set for place 2', 'Remove place 2', CONTACT, 'Email for messages, never shown',
-      'Name and address', 'Club name', 'Example Chess Club', 'Kept by LCA admins', 'City', 'Region', 'Bayou Region', 'Kept by LCA admins',
+      'Name and address', 'Club name', 'Example Chess Club', 'Kept by LCA admins', 'City', 'Region', 'Lafayette / South Central', 'Kept by LCA admins',
       'Your page\'s address', window.location.host, `/clubs/${ID}`, 'Kept by LCA admins',
       'Cost and who is welcome', 'Cost', 'Who is welcome', 'The club plays on weekends', 'Scholastic friendly',
       'Links', 'Facebook page', 'Website', 'Add another link', 'Logo and club color', 'Logo', 'No logo yet', 'Club color', 'Save and publish',
@@ -977,7 +977,7 @@ describe('the club editor: the rest of the listing, in the one call (WS09 step 8
       expect(within(named).queryByLabelText('Page address'), person).toBeNull()
       expect(within(named).getAllByText('Kept by LCA admins'), person).toHaveLength(3)
       expect(within(named).getByText('Example Chess Club')).toBeTruthy()
-      expect(within(named).getByText('Bayou Region')).toBeTruthy()
+      expect(within(named).getByText('Lafayette / South Central')).toBeTruthy()
       // The page's address is a link to the page that works today.
       expect(within(named).getByRole('link').getAttribute('href')).toBe(`/clubs/${ID}`)
       press()
@@ -1223,7 +1223,7 @@ describe('the club editor: the rest of the listing, in the one call (WS09 step 8
     expect(fireEvent.keyDown(region, { key: 'ArrowDown' })).toBe(false)
     expect(fireEvent.keyDown(region, { key: 'Tab' })).toBe(true)
     fireEvent.change(region, { target: { value: 'North Louisiana' } })
-    expect(region.value).toBe('Bayou Region')
+    expect(region.value).toBe('Lafayette / South Central')
     expect(document.activeElement).toBe(region)
     // The pin's box keeps the focus and is read only; Enter in it, Use this and Remove pin each do nothing.
     const pinLine = () => screen.getByText(/^Pin at /).textContent
@@ -1250,7 +1250,7 @@ describe('the club editor: the rest of the listing, in the one call (WS09 step 8
     await saved()
     // The one save sent the region and the pin as they were when it was pressed.
     expect(patches()).toHaveLength(1)
-    expect(patches()[0].region).toBe('Bayou Region')
+    expect(patches()[0].region).toBe('Lafayette / South Central')
     expect(placesSent()).toHaveLength(2)
     expect(placesSent()[0].point).toEqual({ lat: 30.1, lng: -91.2 })
     // Once the save ends the button takes a press again, and the focus never left it.

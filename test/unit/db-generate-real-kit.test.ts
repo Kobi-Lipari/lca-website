@@ -120,13 +120,13 @@ describe('drizzle-kit generate on the committed baseline', () => {
 })
 
 describe('db:generate with the real drizzle-kit', () => {
-  it('writes an added column as 0071, runs on the migrated database, and leaves only meta in drizzle/', () => {
+  it('writes an added column as 0073, runs on the migrated database, and leaves only meta in drizzle/', () => {
     const root = sandbox(addClubColumn)
     const result = generateMigration({ name: 'club nickname', root })
-    expect(result).toMatchObject({ ok: true, file: '0071_club_nickname.sql' })
-    const file = join(root, 'migrations/0071_club_nickname.sql')
+    expect(result).toMatchObject({ ok: true, file: '0073_club_nickname.sql' })
+    const file = join(root, 'migrations/0073_club_nickname.sql')
     const text = readFileSync(file, 'utf8')
-    expect(text).toMatch(/^-- 0071_club_nickname\.sql\n/)
+    expect(text).toMatch(/^-- 0073_club_nickname\.sql\n/)
     expect(text).toMatch(/ALTER TABLE `clubs` ADD `nickname` text;/)
     expect(splitSql(text)).toHaveLength(1)
     expect(readdirSync(join(root, 'drizzle'))).toEqual(['meta'])
@@ -147,8 +147,8 @@ describe('db:generate with the real drizzle-kit', () => {
   it('writes a new table with a cascading foreign key', () => {
     const root = sandbox(addNotesTable)
     const result = generateMigration({ name: 'tournament notes', root })
-    expect(result).toMatchObject({ ok: true, file: '0071_tournament_notes.sql' })
-    const text = readFileSync(join(root, 'migrations/0071_tournament_notes.sql'), 'utf8')
+    expect(result).toMatchObject({ ok: true, file: '0073_tournament_notes.sql' })
+    const text = readFileSync(join(root, 'migrations/0073_tournament_notes.sql'), 'utf8')
     expect(text).toMatch(/CREATE TABLE `tournament_notes`/)
     expect(text).toMatch(/REFERENCES `tournaments`\(`id`\) ON UPDATE no action ON DELETE cascade/)
   }, TIMEOUT)
@@ -199,8 +199,8 @@ describe('db:generate with the real drizzle-kit', () => {
   it('--custom keeps a rebuild out of the file: it is only comments, and the snapshot is kept', () => {
     const root = sandbox(clubIdSetNull)
     const result = generateMigration({ name: 'club set null', custom: true, root })
-    expect(result).toMatchObject({ ok: true, file: '0071_club_set_null.sql' })
-    const text = readFileSync(join(root, 'migrations/0071_club_set_null.sql'), 'utf8')
+    expect(result).toMatchObject({ ok: true, file: '0073_club_set_null.sql' })
+    const text = readFileSync(join(root, 'migrations/0073_club_set_null.sql'), 'utf8')
     expect(text).toContain('-- DROP TABLE `tournaments`;')
     expect(splitSql(text)).toEqual([])
     expect(readdirSync(join(root, 'drizzle'))).toEqual(['meta'])
@@ -209,8 +209,8 @@ describe('db:generate with the real drizzle-kit', () => {
   it('--custom with no schema change writes an empty file for a data migration', () => {
     const root = sandbox()
     const result = generateMigration({ name: 'backfill sections', custom: true, root })
-    expect(result).toMatchObject({ ok: true, file: '0071_backfill_sections.sql' })
-    const text = readFileSync(join(root, 'migrations/0071_backfill_sections.sql'), 'utf8')
+    expect(result).toMatchObject({ ok: true, file: '0073_backfill_sections.sql' })
+    const text = readFileSync(join(root, 'migrations/0073_backfill_sections.sql'), 'utf8')
     expect(text).not.toContain('Custom SQL migration file')
     expect(splitSql(text)).toEqual([])
     expect(readdirSync(join(root, 'drizzle'))).toEqual(['meta'])

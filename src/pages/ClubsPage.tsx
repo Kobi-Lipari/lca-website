@@ -26,7 +26,7 @@ function abbreviateRegion(region: string): string {
 
 const HERO_STATS = [
   { n: '25+', l: 'clubs statewide' },
-  { n: '7', l: 'regions' },
+  { n: '5', l: 'regions' },
   { n: '300+', l: 'members' },
   { n: '110+', l: 'years of history' },
 ]

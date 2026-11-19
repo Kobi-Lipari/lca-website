@@ -16,7 +16,7 @@ import { readdirSync, readFileSync } from 'node:fs'
 import { join, resolve } from 'node:path'
 import { describe, expect, it } from 'vitest'
 import { nextMigrationNumber } from '../../scripts/db/generate'
-import { REGIONS } from '../../domain/clubs/regions'
+const REGIONS = ['North Louisiana', 'Central Louisiana', 'North of Lake Pontchartrain', 'New Orleans Metro', 'Southwest Louisiana', 'South Central Louisiana', 'Bayou Region'] as const // as 0065 wrote them; 0072 moved the clubs into the five seats' regions
 
 const ROOT = resolve(__dirname, '../..')
 const read = (path: string) => readFileSync(join(ROOT, path), 'utf8')
