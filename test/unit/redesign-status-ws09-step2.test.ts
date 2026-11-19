@@ -342,7 +342,7 @@ describe('REDESIGN_STATUS.md, WS09 step 2: plain language', () => {
       const text = read(file)
       for (const rule of [DASHES, TOOLS, BARE]) expect(text, file).not.toMatch(rule)
       // The switch file's earliest comments name a filter by its old words, so only the lines this step wrote there are read for the initials.
-      const own = file === 'src/lib/features.ts' ? between(text, '  // Redesign, clubs.', 'regionEvents: false,') : text
+      const own = file === 'src/lib/features.ts' ? between(text, '  // Redesign, clubs.', 'regionEvents: ') : text
       expect(own, file).not.toBe('')
       expect(own, file).not.toMatch(OLD_INITIALS)
     }

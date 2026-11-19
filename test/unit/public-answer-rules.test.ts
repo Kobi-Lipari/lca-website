@@ -14,12 +14,26 @@
 //   "anything"), on the list row and the detail alike; the club page's
 //   contact_email is an address or null when present; and an officer is
 //   exactly an id, a role and a name.
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import type { MemberRow } from '../../functions/types'
 import { MEMBER_ROLES, canManageTournament } from '../../functions/utils/admin/permissions'
 import { isObserver } from '../../functions/utils/auth'
 import { eventsManagedBy, publicTournamentAnswer } from '../../functions/utils/events/publicAnswer'
 import { clubDetailResponseSchema, tournamentDetailSchema, tournamentListItemSchema } from '../../domain/contracts'
+
+// The two rules are held here as the Phase 0 trim built them, with
+// REGION_EVENTS_ON unset through a getter on the mocked module, so neither
+// reads a regional seat; test/integration/creation-grant.test.ts and
+// test/integration/club-events.test.ts hold the region's part with it set.
+vi.mock('../../functions/utils/clubs/pages', async (importOriginal) => {
+  const real = await importOriginal<typeof import('../../functions/utils/clubs/pages')>()
+  return {
+    ...real,
+    get REGION_EVENTS_ON() {
+      return false
+    },
+  }
+})
 
 // ── A stand-in for the database ──────────────────────────────────────
 

@@ -56,8 +56,8 @@
 // - The ornaments and the cards as drawn on a11y-on, light and dark: each
 //   thick-thin rule is a 6px box, 3px solid on top and 1px solid below, in
 //   the look's ink, which keeps 3:1 on the look's ground in dark mode too;
-//   the one seal is 64px, a navy disc with two gold rings and the white rook
-//   in its middle, on the navy band, and is not drawn on a phone; every
+//   the one seal is 64px, a navy disc with one thin gold ring and the white
+//   rook in its middle, on the navy band, and is not drawn on a phone; every
 //   hooked card and table frame, and the About page's logo frame, has 2px
 //   corners; the heading's face is the value of --font-display itself.
 // - The header and the footer draw on each of the six pages exactly as on
@@ -1045,7 +1045,7 @@ test.describe('the ornaments and the cards as drawn', () => {
           box: [64, 64],
           band: NAVY,
           disc: NAVY,
-          rings: [`${GOLD} on none`, `${GOLD} on none`],
+          rings: [`${GOLD} on none`],
           mark: WHITE,
         })
         expect(seal.offCentre!, `${where}: the rook in the seal's middle`).toBeLessThanOrEqual(1.5)

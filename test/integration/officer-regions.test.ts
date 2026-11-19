@@ -154,12 +154,12 @@ describe('regional representatives', () => {
     await hold(seat, rep)
 
     const set = await invoke(seatRegionsPut, {
-      method: 'PUT', as: admin, body: { seatId: seat, regions: ['Bayou Region', 'South Central Louisiana'] },
+      method: 'PUT', as: admin, body: { seatId: seat, regions: ['Lafayette / South Central', 'Baton Rouge / East Central'] },
     })
     expect(set.status).toBe(200)
 
-    const bayou = await clubIn('Bayou Region')
-    const southCentral = await clubIn('South Central Louisiana')
+    const bayou = await clubIn('Lafayette / South Central')
+    const southCentral = await clubIn('Baton Rouge / East Central')
     const elsewhere = await clubIn('North Louisiana')
     const noRegion = await clubIn(null)
 
@@ -180,10 +180,10 @@ describe('regional representatives', () => {
 
     const mine = await invoke(mySeatsGet, { as: rep })
     const body = await mine.json<{ seats: { id: string; regions: string[] }[]; managedClubs: { id: string }[] }>()
-    expect(body.seats[0].regions).toEqual(['Bayou Region', 'South Central Louisiana'])
-    // Every club in the two regions, the clubs migration 0065 places there
+    expect(body.seats[0].regions).toEqual(['Baton Rouge / East Central', 'Lafayette / South Central'])
+    // Every club in the two regions, the clubs migration 0072 places there
     // among them, and none elsewhere or without a region.
-    const inRegions = (await env.DB.prepare("SELECT id FROM clubs WHERE region IN ('Bayou Region', 'South Central Louisiana')").all<{ id: string }>()).results.map((r) => r.id)
+    const inRegions = (await env.DB.prepare("SELECT id FROM clubs WHERE region IN ('Lafayette / South Central', 'Baton Rouge / East Central')").all<{ id: string }>()).results.map((r) => r.id)
     expect(inRegions).toEqual(expect.arrayContaining([bayou, southCentral]))
     expect(body.managedClubs.map((c) => c.id).sort()).toEqual(inRegions.sort())
 
@@ -230,7 +230,7 @@ describe('regional representatives', () => {
   it('only covers regions for regional seats, and only admins set them', async () => {
     const admin = await seedAdmin()
     const officerSeat = await regionalSeat('Test Treasurer', 'officer')
-    const res = await invoke(seatRegionsPut, { method: 'PUT', as: admin, body: { seatId: officerSeat, regions: ['Bayou Region'] } })
+    const res = await invoke(seatRegionsPut, { method: 'PUT', as: admin, body: { seatId: officerSeat, regions: ['Lafayette / South Central'] } })
     expect(res.status).toBe(400)
 
     const seat = await regionalSeat()

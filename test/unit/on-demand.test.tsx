@@ -15,10 +15,13 @@
 // - the phone's app bar: Menu pressed, the sheet's file failing, the notice
 //   under the bar, the sheet closed, the bar drawn, the focus still on Menu,
 //   and no "Something went wrong";
-// - the desktop header's Donate and the tablet header's Menu and Donate the
-//   same way, each with its own notice.
+// - the desktop header's Donate, the About menu's last row, and the tablet
+//   header's Menu the same way, the tablet's row having no Donate of its
+//   own (decision 68), each with its own notice; and both notices at once,
+//   the menu's above the donation form's, when the window narrows from the
+//   desktop form into the tablet form between the two asks.
 import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react'
-import { lazy, type ReactElement } from 'react'
+import { lazy, useState, type ReactElement } from 'react'
 import { MemoryRouter } from 'react-router-dom'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { AuthContext } from '@/contexts/auth-context'
@@ -75,6 +78,19 @@ function drawApp(bar: ReactElement) {
         </MemoryRouter>
       </AuthContext.Provider>
     </ErrorBoundary>,
+  )
+}
+
+/** The new header in a form a test changes, as Navbar changes it when the window crosses 1024 pixels: the desktop form first. */
+function Formed() {
+  const [form, setForm] = useState<'desktop' | 'tablet'>('desktop')
+  return (
+    <>
+      <SiteHeader form={form} />
+      <button type="button" onClick={() => setForm('tablet')}>
+        Narrow the window
+      </button>
+    </>
   )
 }
 
@@ -180,28 +196,46 @@ describe('the phone\'s app bar, when the sheet\'s file cannot be had', () => {
 })
 
 describe('the new header, when what it fetches cannot be had', () => {
-  it('in the desktop form, shows the donation form\'s notice for Donate, no dialog, the focus on Donate, and the page stands', async () => {
+  it('in the desktop form, shows the donation form\'s notice for the About menu\'s Donate, no dialog, the focus on About, and the page stands', async () => {
     drawApp(<SiteHeader />)
-    const donate = press(within(screen.getByRole('banner')).getByRole('button', { name: 'Donate' }))
+    const about = within(screen.getByRole('banner')).getByRole('button', { name: 'About' })
+    fireEvent.click(about)
+    press(within(document.getElementById(about.getAttribute('aria-controls')!)!).getByRole('button', { name: 'Donate' }))
     const notice = await screen.findByRole('alert')
     expect(notice.textContent).toBe(`${DONATE_NOTICE}Dismiss`)
     expect(screen.queryByRole('dialog')).toBeNull()
-    expect(document.activeElement).toBe(donate)
+    expect(document.activeElement).toBe(about)
     pageStands()
   })
 
-  it('in the tablet form, shows the menu\'s notice for Menu and the donation form\'s for Donate, each its own, and the page stands', async () => {
+  it('in the tablet form, shows the menu\'s notice for Menu, its own, with no Donate in the row to ask for the form, and the page stands', async () => {
     drawApp(<SiteHeader form="tablet" />)
     const bar = within(screen.getByRole('banner'))
+    expect(bar.queryByRole('button', { name: 'Donate' })).toBeNull()
     const menu = press(bar.getByRole('button', { name: 'Menu' }))
     expect((await screen.findByRole('alert')).textContent).toBe(`${MENU_NOTICE}Dismiss`)
     await waitFor(() => expect(menu.getAttribute('aria-expanded')).toBe('false'))
     expect(document.activeElement).toBe(menu)
-    const donate = press(bar.getByRole('button', { name: 'Donate' }))
+    expect(screen.getAllByRole('alert').map((alert) => alert.querySelector('p')!.textContent)).toEqual([MENU_NOTICE])
+    expect(screen.queryByRole('dialog')).toBeNull()
+    pageStands()
+  })
+
+  it('keeps each notice its own, the menu\'s above the donation form\'s, when the form fails from the desktop form\'s About menu and the sheet from Menu once the window has narrowed into the tablet form', async () => {
+    drawApp(<Formed />)
+    const bar = () => within(screen.getByRole('banner'))
+    const about = bar().getByRole('button', { name: 'About' })
+    fireEvent.click(about)
+    press(within(document.getElementById(about.getAttribute('aria-controls')!)!).getByRole('button', { name: 'Donate' }))
+    expect((await screen.findByRole('alert')).textContent).toBe(`${DONATE_NOTICE}Dismiss`)
+    fireEvent.click(screen.getByRole('button', { name: 'Narrow the window' }))
+    expect(screen.getByRole('banner').getAttribute('data-form')).toBe('tablet')
+    const menu = press(bar().getByRole('button', { name: 'Menu' }))
     await waitFor(() => expect(screen.getAllByRole('alert')).toHaveLength(2))
     expect(screen.getAllByRole('alert').map((alert) => alert.querySelector('p')!.textContent)).toEqual([MENU_NOTICE, DONATE_NOTICE])
+    await waitFor(() => expect(menu.getAttribute('aria-expanded')).toBe('false'))
+    expect(document.activeElement).toBe(menu)
     expect(screen.queryByRole('dialog')).toBeNull()
-    expect(document.activeElement).toBe(donate)
     pageStands()
   })
 })

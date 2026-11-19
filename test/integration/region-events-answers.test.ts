@@ -154,9 +154,11 @@ describe('GET /api/admin/clubs/[id] with REGION_EVENTS_ON set: what each person 
     expect(byId.get(review)).toMatchObject({ is_visible: 0, needs_lca_approval: 1, approval_requested_at: '2026-11-14 18:00:00', approved_at: null })
     expect(byId.get(approved)).toMatchObject({ is_visible: 1, approved_at: '2026-11-16 15:00:00' })
     // The roster rule stands: the representative is still given no roster and no officer's email.
+    await env.DB.prepare('INSERT INTO club_officers (id, club_id, member_id, role) VALUES (?, ?, ?, \'President\')').bind(`officer-${++seq}`, p.clubId, p.ownRep).run()
     const body = await (await club(p.representative, p.clubId)).json()
     expect(body.roster).toEqual([])
     expect(body.rosterKeptBack).toBe(true)
+    expect((body.officers as Array<Record<string, unknown>>).map((o) => [o.member_id, 'email' in o])).toEqual([[p.ownRep, false]])
   })
 
   it('role safety: refuses another region\'s representative and a plain member exactly as before, and gives no one rights the create would refuse', async () => {

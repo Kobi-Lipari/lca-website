@@ -35,6 +35,12 @@
 //
 // While REGION_EVENTS_ON is unset everyone gets 403 in words before anything
 // is read: no sign in is checked, the body is not read and no query is made.
+// While it is set the checks run in this order: the sign in; then, for
+// anyone but an LCA admin, the event and draftedInRegion, the one judgement
+// of who may submit it, so a person who may make none of the three moves is
+// refused 403 before the body is read, whatever the body, with nothing
+// written, sent or counted; then the body; then the second factor for
+// approve and ask_changes; then, for an LCA admin, the event; then its state.
 import type { Env, MemberRow } from '../../../../types'
 import { isResponse, requireAdmin, requireAuthedMember } from '../../../../utils/auth'
 import { errorResponse, handleOptions, jsonResponse, parseBody } from '../../../../utils/response'
@@ -208,6 +214,24 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
   const authed = await requireAuthedMember(context.request, context.env)
   if (isResponse(authed)) return authed
 
+  const db = context.env.DB
+  const member: MemberRow = authed.member
+  const tournamentId = context.params.id as string
+
+  // Submit: the drafter while a seat of theirs keeps the club, or an LCA
+  // admin. Anyone else gets the same 403 whether the event exists or not.
+  // Approve and Ask for changes are an LCA admin's alone, so anyone but an
+  // LCA admin who may not submit this event may make none of the three
+  // moves: they are judged here, before the body is read, and get submit's
+  // 403 whatever the body. An LCA admin's event is read after the body.
+  let event: WaitRow | null | undefined
+  if (member.role !== 'lca_admin') {
+    event = await readEvent(db, tournamentId)
+    if (!event || !(await draftedInRegion(db, member, { clubId: event.club_id, createdBy: event.created_by }))) {
+      return errorResponse('Forbidden', 403)
+    }
+  }
+
   const body = await parseBody(context.request, tournamentApprovalRequestSchema)
   if (isResponse(body)) return body
 
@@ -218,18 +242,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     if (isResponse(admin)) return admin
   }
 
-  const db = context.env.DB
-  const member: MemberRow = authed.member
-  const tournamentId = context.params.id as string
-  const event = await readEvent(db, tournamentId)
-
-  // Submit: the drafter while a seat of theirs keeps the club, or an LCA
-  // admin. Anyone else gets the same 403 whether the event exists or not.
-  if (body.action === 'submit' && member.role !== 'lca_admin') {
-    if (!event || !(await draftedInRegion(db, member, { clubId: event.club_id, createdBy: event.created_by }))) {
-      return errorResponse('Forbidden', 403)
-    }
-  }
+  event ??= await readEvent(db, tournamentId)
   if (!event) return errorResponse('Tournament not found', 404)
 
   const early = settled(body.action, approvalState(event), event)

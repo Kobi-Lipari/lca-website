@@ -309,7 +309,8 @@ describe('REDESIGN_STATUS.md, WS09 step 6: the parts', () => {
     ]) expect(pins, piece).toContain(piece)
     expect(read('test/unit/redesign-status-ws09-step3.test.ts').split('\n')[356]).toContain('if (latestStep === 3) expect(casesIn(\'test/integration/club-permissions.test.ts\')).toBe(23)')
     expect(read('test/unit/redesign-status-ws09-step4.test.ts').split('\n')[374]).toContain('if (latestStep === 4 || file !== \'test/integration/club-permissions.test.ts\')')
-    expect(read('test/integration/club-permissions.test.ts').split('\n')[398]).toContain('body.tournaments')
+    // The getter of REGION_EVENTS_ON added in the block "WS09 switch-on: regionEvents and REGION_EVENTS_ON" moved this line down by five.
+    expect(read('test/integration/club-permissions.test.ts').split('\n')[403]).toContain('body.tournaments')
     const handler = read(HANDLER)
     expect(handler.split('SELECT ${ADMIN_CLUB_COLUMNS} FROM clubs')).toHaveLength(3)
     expect(handler).toContain('admittedByRegionAlone(authResult.member, clubId)')

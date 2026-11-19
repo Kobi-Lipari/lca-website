@@ -123,8 +123,8 @@ describe('what the guard refuses', () => {
 })
 
 describe('numbering and naming', () => {
-  it('numbers the next file after the highest prefix in migrations/ (0071 today)', () => {
-    expect(nextMigrationNumber(readdirSync(join(ROOT, 'migrations')))).toBe('0071')
+  it('numbers the next file after the highest prefix in migrations/ (0073 today)', () => {
+    expect(nextMigrationNumber(readdirSync(join(ROOT, 'migrations')))).toBe('0073')
   })
 
   it('ignores files without a four-digit prefix and copes with a duplicate prefix', () => {

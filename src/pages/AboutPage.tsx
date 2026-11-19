@@ -34,7 +34,7 @@ export function AboutPage() {
           <h2 className="mb-3 text-xl font-bold text-ink">What we do</h2>
           <ul className="ml-4 list-disc space-y-2">
             <li>Sanction and organize USCF-rated chess tournaments across Louisiana</li>
-            <li>Support affiliated chess clubs in 7 regions statewide</li>
+            <li>Support affiliated chess clubs in 5 regions statewide</li>
             <li>Promote scholastic chess in K–12 schools</li>
             <li>Maintain official ratings and membership records</li>
             <li>Represent Louisiana in national USCF governance</li>

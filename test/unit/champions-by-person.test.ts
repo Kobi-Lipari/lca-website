@@ -2,11 +2,13 @@
 //
 // The honor roll lists each person once, ordered by their latest win so the
 // reigning champion is first, with every title under their name and a tie
-// marked on the win.
+// marked on the win. A note that is a chess title and nothing else, such as
+// "FIDE Master", is the person's chess title on that list, taken from their
+// newest win that records one; the win keeps its note as it was written.
 import { describe, expect, it } from 'vitest'
 
 import type { ApiChampion } from '../../src/areas/events/api'
-import { groupByPerson, personSlug, winnersOfYear, yearsWon } from '../../src/areas/events/champions'
+import { CHESS_TITLES, CHESS_TITLE_SHORT, chessTitleOf, groupByPerson, personSlug, winnersOfYear, yearsWon } from '../../src/areas/events/champions'
 
 const row = (year: number, champion: string, title = 'Louisiana State Champion', extra: Partial<ApiChampion> = {}): ApiChampion => ({
   id: `${year}-${title}-${champion}`, year, title, champion, notes: null, tournament_id: null, tournament_name: null,
@@ -80,5 +82,66 @@ describe('the year lookup', () => {
       { title: 'K-8 U800', name: 'Shayan Khan', anchor: 'scholastic-shayan-khan', notes: null },
     ])
     expect(winnersOfYear(rows, 'state', 1999)).toEqual([])
+  })
+})
+
+describe('a chess title in a note', () => {
+  it('reads each of the nine titles from a note that is the title and nothing else, in any letter case and with any spacing', () => {
+    expect(CHESS_TITLES).toHaveLength(9)
+    for (const title of CHESS_TITLES) {
+      expect(chessTitleOf(title), title).toBe(title)
+      expect(chessTitleOf(title.toUpperCase()), title).toBe(title)
+      expect(chessTitleOf(`  ${title.toLowerCase().replace(/ /g, '   ')}\t`), title).toBe(title)
+    }
+  })
+
+  it('gives each title the short form written before the name', () => {
+    expect(CHESS_TITLES.map((t) => [t, CHESS_TITLE_SHORT[t]])).toEqual([
+      ['Grandmaster', 'GM'],
+      ['International Master', 'IM'],
+      ['FIDE Master', 'FM'],
+      ['Candidate Master', 'CM'],
+      ['National Master', 'NM'],
+      ['Woman Grandmaster', 'WGM'],
+      ['Woman International Master', 'WIM'],
+      ['Woman FIDE Master', 'WFM'],
+      ['Woman Candidate Master', 'WCM'],
+    ])
+  })
+
+  it('reads no title from any other note: a short form alone, a title with more words, a tiebreak, a section, an empty note or none', () => {
+    for (const note of ['FM', 'FIDE Master, co-champion', 'tiebreaks over Player Six', 'Player Seven won section', 'Won with 2½ of 3.', 'Master', '', '   ', null]) {
+      expect(chessTitleOf(note), String(note)).toBeNull()
+    }
+  })
+})
+
+describe('the person\'s chess title', () => {
+  it('is the title a note records, while the win keeps the note as written, and none when no note is a title', () => {
+    const [matta, dex, miles] = groupByPerson(rows, 'state')
+    expect(matta.chessTitle).toBe('FIDE Master')
+    expect(matta.wins[0].notes).toBe('FIDE Master')
+    expect(dex.chessTitle).toBeNull()
+    expect(miles.chessTitle).toBeNull()
+  })
+
+  it('comes from the newest win that records one, past a newer note that is not a title', () => {
+    const [entry] = groupByPerson([
+      row(2010, 'Player Four', 'Louisiana State Champion', { notes: 'International Master' }),
+      row(2020, 'Player Four'),
+      row(2015, 'Player Four', 'Louisiana State Champion', { notes: 'grandmaster' }),
+      row(2018, 'Player Four', 'Louisiana State Champion', { notes: 'tiebreaks over Player Five' }),
+    ], 'state')
+    expect(entry.wins.map((w) => w.year)).toEqual([2020, 2018, 2015, 2010])
+    expect(entry.chessTitle).toBe('Grandmaster')
+  })
+
+  it('belongs to its own list: a title on the state list is not written on the same person\'s scholastic entry', () => {
+    const both = [
+      row(2024, 'Player Four', 'Louisiana State Champion', { notes: 'National Master' }),
+      row(2012, 'Player Four', 'K-12', { kind: 'scholastic' }),
+    ]
+    expect(groupByPerson(both, 'state')[0].chessTitle).toBe('National Master')
+    expect(groupByPerson(both, 'scholastic')[0].chessTitle).toBeNull()
   })
 })
