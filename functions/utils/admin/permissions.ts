@@ -62,6 +62,7 @@ export async function canManageTournament(
   tournamentId: string,
 ): Promise<boolean> {
   if (member.role === 'lca_admin') return true
+  if (member.role === 'lca_observer') return true
 
   const clubId = await getTournamentClubId(db, tournamentId)
   if (
