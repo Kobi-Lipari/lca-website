@@ -1,0 +1,307 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Membership · G · Member-G-2 · Family first, phone and states (round 2)</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/6107adb451dbab26ee5d89f4189b81f8">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1a2744}
+.g2-root{width:1440px;box-sizing:border-box;background:#ecebe6;color:#1a2744}
+.g2-root *{box-sizing:border-box}
+.g2-strip{height:56px;display:flex;align-items:center;justify-content:space-between;gap:24px;padding:0 40px;border-bottom:1px solid #d9d8d1}
+.g2-strip-l{font-size:15px;font-weight:700;white-space:nowrap}
+.g2-strip-r{font-size:14px;font-weight:600;color:#866a1e;text-align:right}
+.g2-doc{padding:12px 28px 0;display:grid;grid-template-columns:minmax(0,1fr) 560px;gap:20px;align-items:start}
+.g2-meta{font-size:13.5px;line-height:1.5;color:#3d4556;margin:0}
+.g2-meta b{color:#1a2744;font-weight:600}
+.g2-lbox{background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:10px 16px;margin-top:10px}
+.g2-notes{list-style:none;margin:8px 0 0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px 20px}
+.g2-notes li{display:flex;gap:9px;align-items:flex-start;font-size:12.5px;line-height:1.45}
+.g2-notes .k-num-badge{width:22px;height:22px;font-size:11.5px}
+.g2-grey{background:#efefea;border:1px solid #dddcd4;border-radius:12px;padding:12px 16px;display:grid;grid-template-columns:1fr 1fr;gap:6px 16px}
+.g2-grey p{margin:0;font-size:12.5px;line-height:1.45;color:#2b3446}
+.g2-grey p b{display:block;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#555c6b}
+.g2-grey ol{margin:0;padding-left:16px;font-size:12.5px;line-height:1.45;color:#2b3446}
+.g2-stage{display:flex;gap:22px;padding:18px 28px 28px;align-items:flex-start}
+.g2-fr{width:410px;flex:none;display:flex;flex-direction:column;gap:12px}
+.g2-cap{min-height:64px;background:#ffffff;border:1px solid #d9d8d1;border-radius:12px;padding:10px 14px;display:flex;flex-direction:column;gap:4px}
+.g2-oh{display:flex;align-items:center;gap:10px}
+.g2-oc{flex:none;display:inline-flex;align-items:center;justify-content:center;min-width:24px;height:24px;padding:0 8px;border-radius:6px;background:#1a2744;color:#ffffff;font-size:12px;font-weight:700}
+.g2-oh h3{font-size:16px;line-height:1.25;font-weight:700;margin:0}
+.g2-idea{font-size:12.5px;line-height:1.4;color:#2b3446;margin:0}
+
+/* phone chrome (decided phone boards) */
+.g2-phone{width:390px;height:844px;box-sizing:content-box !important;border:10px solid #10182b;border-radius:52px;background:#10182b;position:relative;box-shadow:0 24px 50px rgba(16,24,43,.2);flex:none}
+.g2-scr{position:absolute;inset:0;border-radius:42px;overflow:hidden;display:flex;flex-direction:column;background:#ffffff}
+.g2-status{flex:none;height:47px;background:#1a2744;color:#ffffff;display:flex;align-items:center;justify-content:space-between;padding:4px 30px 0 40px;font-size:15px;font-weight:600;position:relative}
+.g2-island{position:absolute;left:50%;top:11px;width:120px;height:34px;margin-left:-60px;border-radius:20px;background:#000000}
+.g2-statr{display:flex;align-items:center;gap:6px}
+.g2-sig{display:inline-flex;align-items:flex-end;gap:1.5px;height:11px}
+.g2-sig i{display:block;width:3px;background:currentColor;border-radius:1px}
+.g2-sig i:nth-child(1){height:4px}.g2-sig i:nth-child(2){height:6px}.g2-sig i:nth-child(3){height:8.5px}.g2-sig i:nth-child(4){height:11px}
+.g2-batt{display:inline-flex;width:24px;height:12px;border:1.5px solid currentColor;border-radius:4px;padding:1.5px}
+.g2-batt i{display:block;width:70%;background:currentColor;border-radius:1.5px}
+.g2-app{flex:none;height:56px;background:#1a2744;display:flex;align-items:center;gap:8px;padding:0 10px 0 14px;color:#ffffff;border-bottom:1px solid rgba(255,255,255,.12)}
+.g2-brand{display:flex;align-items:center;gap:8px;color:#ffffff;text-decoration:none;min-height:44px;min-width:0}
+.g2-mark{width:28px;height:28px;fill:#ffffff;flex:none}
+.g2-bname{display:flex;flex-direction:column;line-height:1.12}
+.g2-bname b{font-size:14px;font-weight:700;white-space:nowrap}
+.g2-bname span{font-size:11px;font-weight:500;color:rgba(255,255,255,.78)}
+.g2-sbtn{display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;border:1.5px solid rgba(255,255,255,.6);border-radius:9px;color:#ffffff;margin-left:auto;flex:none}
+.g2-main{flex:1;min-height:0;overflow:hidden;position:relative;background:#ffffff}
+.g2-tabs{flex:none;background:#ffffff;border-top:1px solid #d9d8d1;position:relative;z-index:5}
+.g2-tabs-in{display:grid;grid-template-columns:repeat(4,1fr);height:55px}
+.g2-tab{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;min-height:44px;padding:0;border:0;background:transparent;color:#1a2744;font:inherit;font-size:12px;font-weight:500;line-height:1.2;text-decoration:none}
+.g2-tab svg{width:20px;height:20px}
+.g2-safe{height:34px;position:relative}
+.g2-homeind{position:absolute;left:50%;bottom:8px;width:134px;height:5px;margin-left:-67px;border-radius:3px;background:#10182b}
+.g2-mk{position:absolute;z-index:40;width:24px;height:24px;font-size:12px;box-shadow:0 0 0 3px #ffffff}
+
+/* phone content */
+.g2-hero{background:#1a2744;color:#ffffff;padding:14px 16px 14px;display:flex;flex-direction:column;gap:7px}
+.g2-lab{font-size:11.5px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#e6cf86}
+.g2-h1{font-size:28px;line-height:1.12;font-weight:700;letter-spacing:-.015em;margin:0;color:#ffffff}
+.g2-lead{font-size:15px;line-height:1.45;color:#d5d9e3;margin:0}
+.g2-paths{display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+.g2-look{color:#ffffff;text-decoration:underline;text-underline-offset:4px;font-size:14px;font-weight:600;display:inline-flex;align-items:center;min-height:44px;padding:0 6px}
+.g2-sec{padding:14px 16px 0;display:flex;flex-direction:column;gap:10px}
+.g2-h2{font-size:22px;line-height:1.2;font-weight:700;margin:0}
+.g2-fam{border:2px solid #1a2744;border-radius:12px;background:#ffffff;padding:12px 14px;display:flex;flex-direction:column;gap:10px}
+.g2-famhd{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.g2-famhd h3{font-size:20px;line-height:1.2;font-weight:700;margin:0}
+.g2-price{font-size:28px;font-weight:700;line-height:1;font-variant-numeric:tabular-nums;white-space:nowrap}
+.g2-who{background:#efefea;border-radius:10px;padding:10px 12px;display:flex;flex-direction:column;gap:8px}
+.g2-whohd{display:flex;align-items:center;gap:8px}
+.g2-whohd .k-sample{margin-left:auto}
+.g2-help{margin:0;font-size:13px;line-height:1.4;color:#3d4556}
+.g2-blk{background:#ffffff;border:1px solid #dddcd4;border-radius:10px;padding:10px 12px;display:flex;flex-direction:column;gap:8px}
+.g2-bhd{display:flex;align-items:center;gap:8px;font-size:14.5px;font-weight:600}
+.g2-bhd .k-tag,.g2-bhd .k-check{margin-left:auto}
+.g2-av{width:28px;height:28px;flex:none;border-radius:50%;background:#f1efe7;color:#1a2744;display:flex;align-items:center;justify-content:center}
+.g2-av svg{width:16px;height:16px}
+.g2-f{display:flex;flex-direction:column;gap:3px}
+.g2-f label{font-size:13px;font-weight:600;color:#1a2744}
+.g2-f label i{font-style:normal;font-weight:500;color:#555c6b}
+.g2-inp{width:100%;height:42px;padding:0 10px;border:1px solid #858b99;border-radius:8px;background:#ffffff;color:#1a2744;font:inherit;font-size:16px}
+.g2-inp::placeholder{color:#6b7180}
+.g2-ck{font-size:14px;gap:8px}
+.g2-ck input{width:20px;height:20px}
+.g2-addbtn{display:flex;align-items:center;justify-content:center;gap:6px;min-height:44px;border:1.5px dashed #858b99;border-radius:8px;background:#ffffff;color:#1a2744;font:inherit;font-size:14.5px;font-weight:600;width:100%}
+.g2-count{display:flex;align-items:center;gap:8px;font-size:13px;line-height:1.4;color:#2b3446}
+.g2-pips{display:inline-flex;gap:3px;flex:none}
+.g2-pips i{display:block;width:18px;height:7px;border-radius:99px;background:#1a2744}
+.g2-pips i.o{background:#ffffff;border:1.5px solid #858b99}
+.g2-hint{display:flex;gap:7px;align-items:flex-start;font-size:13px;line-height:1.4;color:#3d4556;margin:0}
+.g2-hint svg{flex:none;margin-top:1px;color:#555c6b}
+.g2-total{background:#f7f3e6;border:1px solid #e6dfc7;border-radius:10px;padding:10px 12px;display:flex;flex-direction:column;gap:4px}
+.g2-total-top{display:flex;align-items:center;justify-content:space-between}
+.g2-total-top b{font-size:16px}
+.g2-math{margin:0;font-size:13.5px;line-height:1.45;color:#2b3446}
+.g2-sticky{position:absolute;left:0;right:0;bottom:0;z-index:4;background:#ffffff;border-top:1px solid #d9d8d1;box-shadow:0 -6px 16px rgba(16,24,43,.10);padding:10px 14px;display:flex;align-items:center;gap:12px}
+.g2-sticky .g2-st-l{display:flex;flex-direction:column;line-height:1.2;flex:none}
+.g2-sticky .g2-st-l span{font-size:12px;color:#555c6b}
+.g2-sticky .g2-st-l b{font-size:20px}
+.g2-sticky .k-btn{flex:1}
+.g2-slim{border:1px solid #dddcd4;border-radius:12px;background:#ffffff;padding:12px 14px;display:flex;flex-direction:column;gap:10px}
+.g2-trow{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.g2-trow > div:last-child{white-space:nowrap;flex:none}
+.g2-trow h3{font-size:18px;line-height:1.25;font-weight:600;margin:0}
+.g2-acts{display:flex;align-items:center;gap:14px}
+.g2-acts .k-btn{flex:1}
+
+/* scrolled continuation */
+.g2-cont{width:410px;border:10px solid #10182b;border-top-width:0;border-radius:0 0 52px 52px;background:#ffffff;overflow:hidden;position:relative;box-shadow:0 24px 50px rgba(16,24,43,.2)}
+.g2-cont-top{height:22px;background:repeating-linear-gradient(90deg,#d9d8d1 0 8px,transparent 8px 14px);background-size:100% 2px;background-repeat:no-repeat;background-position:0 0}
+.g2-cont-in{padding:0 16px 22px;display:flex;flex-direction:column;gap:10px}
+
+/* insets */
+.g2-insets{flex:1;display:flex;flex-direction:column;gap:14px;min-width:0}
+.g2-in{display:flex;flex-direction:column;gap:6px}
+.g2-inh{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:700}
+.g2-box{background:#ffffff;border:1px solid #d9d8d1;border-radius:12px;padding:8px 12px 10px;display:flex;flex-direction:column;gap:5px;box-shadow:0 8px 20px rgba(16,24,43,.06)}
+.g2-mr{display:flex;align-items:center;gap:8px;padding:3px 0;border-top:1px solid #ecebe5;font-size:13.5px}
+.g2-mr:first-child{border-top:0}
+.g2-mr .g2-av{width:24px;height:24px}
+.g2-mrn{display:flex;flex-direction:column;line-height:1.3;min-width:0}
+.g2-mrn b{font-weight:600}
+.g2-mrn span{font-size:12px;color:#555c6b}
+.g2-mck{margin-left:auto;font-size:13px;font-weight:600;gap:6px;white-space:nowrap}
+.g2-mck input{width:18px;height:18px}
+.g2-mck.g2-dis{color:#6b7180}
+.g2-four{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:0 0 2px 32px;padding:6px 8px;border-radius:8px;background:#fdf6e6;border:1px solid #ecdcae;font-size:13px}
+.g2-four .k-check{font-size:13px;font-weight:600;gap:6px}
+.g2-four .k-check input{width:18px;height:18px}
+.g2-mt{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 12px;align-items:center;background:#f7f3e6;border:1px solid #e6dfc7;border-radius:8px;padding:8px 10px}
+.g2-mt b{font-size:14px}
+.g2-mt .g2-price{font-size:22px}
+.g2-mt p{grid-column:1 / 3;margin:0;font-size:12.5px;line-height:1.4;color:#2b3446}
+.g2-inrow{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.g2-ph{height:32px;flex:1;min-width:120px;border:1px solid #858b99;border-radius:7px;padding:0 9px;display:flex;align-items:center;font-size:13px;color:#6b7180;background:#ffffff}
+.g2-thin{background:#ffffff;border:1px dashed #b9b7ad;border-radius:12px;padding:10px 14px;font-size:12.5px;line-height:1.5;color:#2b3446}
+.g2-thin b{color:#1a2744}
+</style>
+</helmet>
+<div class="g2-root" style="width:1440px;height:1550px">
+
+<div class="g2-strip"><span class="g2-strip-l">Page 13 · Membership · G-2 · Family first on a phone, and the states</span><span class="g2-strip-r">Axis: the Family path is the brief's Who's covered? screen, drawn inline. Everything else is Member-B.</span></div>
+
+<section class="g2-doc" aria-label="About this board">
+<div>
+<p class="g2-meta"><b>Built from:</b> Member-B · Round 2 · <b>Axis:</b> the Family path drawn inline (the WS12 Who's covered? screen). Phone chrome from the decided phone boards (WS02). <b>Replaces:</b> nothing yet. <b>K's feedback applied (Tue, Oct 13):</b> service first, giving quiet. <b>Shown:</b> a 390px phone, signed out, Danielle filling in Family; four household states for the build.</p>
+<div class="g2-lbox">
+<p class="k-label">Notes on this board</p>
+<ol class="g2-notes">
+<li><span class="k-num-badge">1</span><span><b>Hero stacks:</b> label, H1 at 28px, lead, then the three paths in one wrapping row.</span></li>
+<li><span class="k-num-badge">2</span><span><b>Family is full width;</b> the You fields stack and the only age question is a yes or no.</span></li>
+<li><span class="k-num-badge">3</span><span><b>Sticky pay bar</b> above the tab bar while the panel is on screen; it gives way to the full total at the panel's end.</span></li>
+<li><span class="k-num-badge">4</span><span><b>Never silently left out:</b> a 4th child is offered as Scholastic $5 in the same payment.</span></li>
+<li><span class="k-num-badge">5</span><span><b>Honest math per household:</b> when singles cost less, it says so and offers the switch.</span></li>
+<li><span class="k-num-badge">6</span><span><b>Thin states:</b> signed in prefills from My LCA; expired leads with Renew.</span></li>
+</ol>
+</div>
+</div>
+<aside class="g2-grey" aria-label="Board note">
+<p><b>What</b>Member-G on a phone (the Family panel as a parent fills it) and four households: four children, one child, none yet, a senior parent.</p>
+<p><b>Built from</b>Member-G (part 1), the WS12 Who's covered? screen and the WS02 phone chrome.</p>
+<p><b>K's feedback applied</b>Joining for the whole family is the main path; no giving on these screens beyond Donate in the menu.</p>
+<div><p><b>Open for K</b></p><ol><li>Sticky pay bar on phones: helpful, or too pushy?</li><li>Four children: tick the Scholastic add-on by default (drawn), or leave it for the parent to tick?</li></ol></div>
+</aside>
+</section>
+
+<div class="g2-stage">
+
+<div class="g2-fr">
+<div class="g2-cap"><div class="g2-oh"><span class="g2-oc">1</span><h3>Phone · the Family panel, first screen</h3></div><p class="g2-idea">Short hero, then Family at full width with the You fields stacked. The pay bar sits above the tab bar while the panel is on screen.</p></div>
+<div class="g2-phone" aria-label="Phone, Family panel">
+<div class="g2-scr">
+<div class="g2-status" aria-hidden="true"><span>10:12 AM</span><span class="g2-island"></span><span class="g2-statr"><span class="g2-sig"><i></i><i></i><i></i><i></i></span><span class="g2-batt"><i></i></span></span></div>
+<div class="g2-app"><a class="g2-brand" href="#" aria-label="Louisiana Chess Association, home"><svg class="g2-mark" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span class="g2-bname"><b>Louisiana Chess</b><span>Association</span></span></a><a class="g2-sbtn" href="#" aria-label="Search"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg></a></div>
+<main class="g2-main">
+<div class="g2-hero">
+<span class="g2-lab">Membership</span>
+<h1 class="g2-h1">Join 300+ Louisiana chess players</h1>
+<p class="g2-lead">From $5 a year. Every membership gets the same benefits; the price depends only on who it covers.</p>
+<div class="g2-paths"><a class="k-btn k-btn-gold k-btn-sm" href="#">See memberships</a><a class="k-btn k-btn-on-dark k-btn-sm" href="#">Renew</a><a class="g2-look" href="#">Am I a member?</a></div>
+</div>
+<div class="g2-sec">
+<h2 class="g2-h2">Pick by who it covers</h2>
+<div class="g2-fam">
+<div class="g2-famhd"><div style="display:flex;flex-direction:column;gap:4px"><span class="k-tag k-tag-gold" style="align-self:flex-start">Best value with 3 children</span><h3>Family</h3></div><div><span class="g2-price">$25</span><span class="k-meta"> / year</span></div></div>
+<div class="g2-who">
+<div class="g2-whohd"><span class="k-label">Who's covered?</span><span class="k-sample">Sample data</span></div>
+<p class="g2-help">You, plus up to 3 children in K–12. No grade, no birthdate, no child email.</p>
+<div class="g2-blk">
+<div class="g2-bhd"><span class="g2-av"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4.5 21c1-4 4-6 7.5-6s6.5 2 7.5 6"></path></svg></span>You<span class="k-tag k-tag-open"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Covered</span></div>
+<div class="g2-f"><label for="g2-pn">Your name</label><input id="g2-pn" class="g2-inp" value="Danielle Robichaux"></div>
+<div class="g2-f"><label for="g2-pe">Email for your receipt and login</label><input id="g2-pe" class="g2-inp" value="danielle@example.com"></div>
+<label class="k-check g2-ck"><input type="checkbox"> I'm 65 or older</label>
+</div>
+</div>
+</div>
+</div>
+<div class="g2-sticky"><div class="g2-st-l"><span>You pay today</span><b>$25</b></div><a class="k-btn k-btn-gold" href="#">Continue to payment · $25</a></div>
+</main>
+<nav class="g2-tabs" aria-label="Main"><div class="g2-tabs-in"><a class="g2-tab" href="#"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4.5" width="18" height="16" rx="2"></rect><path d="M3 9.5h18M8 2.5v4M16 2.5v4"></path></svg><span>Tournaments</span></a><a class="g2-tab" href="#"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"></path><circle cx="12" cy="9.5" r="2.5"></circle></svg><span>Clubs</span></a><a class="g2-tab" href="#"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4.5 21c1-4 4-6 7.5-6s6.5 2 7.5 6"></path></svg><span>Log in</span></a><button class="g2-tab" type="button" aria-expanded="false"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg><span>Menu</span></button></div><div class="g2-safe"><span class="g2-homeind"></span></div></nav>
+</div>
+<span class="k-num-badge g2-mk" style="left:-14px;top:120px">1</span>
+<span class="k-num-badge g2-mk" style="left:-14px;top:560px">2</span>
+<span class="k-num-badge g2-mk" style="left:-14px;top:700px">3</span>
+</div>
+<div class="g2-thin"><b>Other thin states.</b> <span class="k-num-badge" style="width:20px;height:20px;font-size:10.5px;vertical-align:-4px">6</span> Signed in with saved children: the rows prefill from the family in My LCA, your name and email are fixed text, and the gold button reads "Renew · $25 · through Thu, Feb 10, 2028". Expired: the header shows Renew (gold) in place of Join LCA, and the button reads "Renew · $25".</div>
+</div>
+
+<div class="g2-fr">
+<div class="g2-cap"><div class="g2-oh"><span class="g2-oc">2</span><h3>Same phone, scrolled on</h3></div><p class="g2-idea">The child rows, the counter and hint, the full total and both buttons (the sticky bar has given way), then the three slim cards.</p></div>
+<div class="g2-cont" aria-label="Same screen, scrolled further">
+<div class="g2-cont-top"></div>
+<div class="g2-cont-in">
+<div class="g2-who" style="margin:0 -2px">
+<div class="g2-blk">
+<div class="g2-bhd"><span class="g2-av"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="3.2"></circle><path d="M6.5 20c.8-3 3-4.6 5.5-4.6s4.7 1.6 5.5 4.6"></path></svg></span>Child<label class="k-check g2-ck"><input type="checkbox" checked> Covered by this plan</label></div>
+<div class="g2-f"><label for="g2-c1">Child's name</label><input id="g2-c1" class="g2-inp" value="Maya Robichaux"></div>
+<div class="g2-f"><label for="g2-c1id">US Chess ID, <i>if they have one</i></label><input id="g2-c1id" class="g2-inp" value="30419873"></div>
+<span class="k-tag k-tag-open" style="align-self:flex-start"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>US Chess ID found · rating 1102</span>
+</div>
+<div class="g2-blk">
+<div class="g2-bhd"><span class="g2-av"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="3.2"></circle><path d="M6.5 20c.8-3 3-4.6 5.5-4.6s4.7 1.6 5.5 4.6"></path></svg></span>Child<label class="k-check g2-ck"><input type="checkbox" checked> Covered by this plan</label></div>
+<div class="g2-f"><label for="g2-c2">Child's name</label><input id="g2-c2" class="g2-inp" value="Leo Robichaux"></div>
+<div class="g2-f"><label for="g2-c2id">US Chess ID, <i>if they have one</i></label><input id="g2-c2id" class="g2-inp" placeholder="None yet, that's fine"></div>
+</div>
+<button class="g2-addbtn" type="button"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>Add a family member</button>
+<div class="g2-count"><span class="g2-pips" aria-hidden="true"><i></i><i></i><i class="o"></i></span><span><b>2 of 3 child spots used</b> · 1 open spot you can fill any time from My LCA.</span></div>
+<p class="g2-hint"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 11v5M12 7.5v.5"></path></svg><span>Children don't need an email. Everything comes to you. Each child can get their own login at 13 or older from My LCA.</span></p>
+</div>
+<div class="g2-total">
+<div class="g2-total-top"><b>You pay today</b><span class="g2-price">$25</span></div>
+<p class="g2-math">With 2 children, Adult + 2 Scholastic is also $25. Family is one renewal instead of three, and a third child is free to add.</p>
+</div>
+<a class="k-btn k-btn-gold k-btn-block" href="#">Continue to payment · $25</a>
+<button class="k-btn k-btn-line k-btn-sm k-btn-block" type="button">Buy Adult + 2 Scholastic instead</button>
+<a class="k-link k-small" href="#" style="align-self:center">Renew Family</a>
+<div class="g2-slim"><div class="g2-trow"><div><h3>Adult</h3><div class="k-meta">For players 18 and up · covers 1 player</div></div><div><span class="g2-price">$15</span><span class="k-meta"> / year</span></div></div><div class="g2-acts"><a class="k-btn k-btn-navy k-btn-sm" href="#">Join · $15</a><a class="k-link k-small" href="#">Renew</a></div></div>
+<p class="k-meta" style="color:#555c6b;margin:0;text-align:center">Scholastic ($5) and Senior ($10) follow in the same shape.</p>
+</div>
+</div>
+</div>
+
+<div class="g2-insets">
+<div class="g2-in">
+<div class="g2-inh"><span class="g2-oc">i</span>Four children<span class="k-num-badge" style="width:22px;height:22px;font-size:11px">4</span><span class="k-sample" style="margin-left:auto">Sample data</span></div>
+<div class="g2-box">
+<div class="g2-mr"><span class="g2-av"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="3.2"></circle><path d="M6.5 20c.8-3 3-4.6 5.5-4.6s4.7 1.6 5.5 4.6"></path></svg></span><div class="g2-mrn"><b>Maya Robichaux</b></div><label class="k-check g2-mck "><input type="checkbox" checked> Covered</label></div>
+<div class="g2-mr"><span class="g2-av"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="3.2"></circle><path d="M6.5 20c.8-3 3-4.6 5.5-4.6s4.7 1.6 5.5 4.6"></path></svg></span><div class="g2-mrn"><b>Leo Robichaux</b></div><label class="k-check g2-mck "><input type="checkbox" checked> Covered</label></div>
+<div class="g2-mr"><span class="g2-av"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="3.2"></circle><path d="M6.5 20c.8-3 3-4.6 5.5-4.6s4.7 1.6 5.5 4.6"></path></svg></span><div class="g2-mrn"><b>Nora Robichaux</b></div><label class="k-check g2-mck "><input type="checkbox" checked> Covered</label></div>
+<div class="g2-mr"><span class="g2-av"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="3.2"></circle><path d="M6.5 20c.8-3 3-4.6 5.5-4.6s4.7 1.6 5.5 4.6"></path></svg></span><div class="g2-mrn"><b>Sam Robichaux</b><span>Family covers you and 3 children</span></div><label class="k-check g2-mck g2-dis"><input type="checkbox" disabled> Covered</label></div>
+<div class="g2-four"><span class="k-tag k-tag-soon">Not covered</span><label class="k-check"><input type="checkbox" checked> Add Scholastic for $5</label></div>
+<div class="g2-count"><span class="g2-pips" aria-hidden="true"><i></i><i></i><i></i></span><b>3 of 3 child spots used</b></div>
+<div class="g2-mt"><b>You pay today</b><span class="g2-price">$30</span><p>Family $25 + Scholastic $5 for Sam, one payment.</p></div>
+</div>
+</div>
+<div class="g2-in">
+<div class="g2-inh"><span class="g2-oc">ii</span>One child<span class="k-num-badge" style="width:22px;height:22px;font-size:11px">5</span><span class="k-sample" style="margin-left:auto">Sample data</span></div>
+<div class="g2-box">
+<div class="g2-mr"><span class="g2-av"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="3.2"></circle><path d="M6.5 20c.8-3 3-4.6 5.5-4.6s4.7 1.6 5.5 4.6"></path></svg></span><div class="g2-mrn"><b>Maya Robichaux</b></div><label class="k-check g2-mck "><input type="checkbox" checked> Covered</label></div>
+<div class="g2-mt"><b>You pay today</b><span class="g2-price">$25</span><p>With one child, Adult + Scholastic is $20, $5 less than Family.</p></div>
+<div class="g2-inrow"><a class="k-btn k-btn-gold k-btn-sm" href="#">Continue to payment · $25</a><button class="k-btn k-btn-line k-btn-sm" type="button">Switch to Adult + Scholastic · $20</button></div>
+<span class="k-meta" style="color:#555c6b">The switch keeps both names; Maya gets her own Scholastic membership.</span>
+</div>
+</div>
+<div class="g2-in">
+<div class="g2-inh"><span class="g2-oc">iii</span>No children yet<span class="k-sample" style="margin-left:auto">Sample data</span></div>
+<div class="g2-box">
+<div class="g2-mr"><span class="g2-av"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4.5 21c1-4 4-6 7.5-6s6.5 2 7.5 6"></path></svg></span><div class="g2-mrn"><b>Danielle Robichaux</b><span>You</span></div><span class="k-tag k-tag-open" style="margin-left:auto"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Covered</span></div>
+<div class="g2-mr"><span class="g2-av"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="3.2"></circle><path d="M6.5 20c.8-3 3-4.6 5.5-4.6s4.7 1.6 5.5 4.6"></path></svg></span><span class="g2-ph">Child's name</span><label class="k-check g2-mck"><input type="checkbox"> Covered</label></div>
+<div class="g2-mr"><span class="g2-av"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="3.2"></circle><path d="M6.5 20c.8-3 3-4.6 5.5-4.6s4.7 1.6 5.5 4.6"></path></svg></span><span class="g2-ph">Child's name</span><label class="k-check g2-mck"><input type="checkbox"> Covered</label></div>
+<div class="g2-mt"><b>You pay today</b><span class="g2-price">$25</span><p>Family is for a parent with children. Just you? <a class="k-link" href="#">Adult is $15 →</a></p></div>
+</div>
+</div>
+<div class="g2-in">
+<div class="g2-inh"><span class="g2-oc">iv</span>Senior parent<span class="k-num-badge" style="width:22px;height:22px;font-size:11px">5</span><span class="k-sample" style="margin-left:auto">Sample data</span></div>
+<div class="g2-box">
+<div class="g2-mr"><span class="g2-av"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4.5 21c1-4 4-6 7.5-6s6.5 2 7.5 6"></path></svg></span><div class="g2-mrn"><b>Danielle Robichaux</b><span>You</span></div><label class="k-check g2-mck" style="margin-left:auto"><input type="checkbox" checked> I'm 65 or older</label></div>
+<div class="g2-mr"><span class="g2-av"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="3.2"></circle><path d="M6.5 20c.8-3 3-4.6 5.5-4.6s4.7 1.6 5.5 4.6"></path></svg></span><div class="g2-mrn"><b>Maya Robichaux</b></div><label class="k-check g2-mck "><input type="checkbox" checked> Covered</label></div>
+<div class="g2-mr"><span class="g2-av"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="3.2"></circle><path d="M6.5 20c.8-3 3-4.6 5.5-4.6s4.7 1.6 5.5 4.6"></path></svg></span><div class="g2-mrn"><b>Leo Robichaux</b></div><label class="k-check g2-mck "><input type="checkbox" checked> Covered</label></div>
+<div class="g2-mt"><b>You pay today</b><span class="g2-price">$25</span><p>Senior + Scholastic is never more than Family: $15 with one child, $20 with two, $25 with three.</p></div>
+<div class="g2-inrow"><a class="k-btn k-btn-gold k-btn-sm" href="#">Continue to payment · $25</a><button class="k-btn k-btn-line k-btn-sm" type="button">Buy Senior + 2 Scholastic · $20</button></div>
+</div>
+</div>
+
+</div>
+
+</div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1550}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

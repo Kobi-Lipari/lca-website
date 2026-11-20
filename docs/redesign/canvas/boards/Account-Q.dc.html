@@ -1,0 +1,306 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>My LCA · Q · LCA admin: the summary (round 2)</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/6107adb451dbab26ee5d89f4189b81f8">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1a2744}
+.aq-root{box-sizing:border-box;padding:20px 0 24px;background:#ecebe6;color:#1a2744}
+.aq-root *{box-sizing:border-box}
+/* board doc strip */
+.aq-doc{margin:0 40px;background:#fbfaf6;border:1px solid #d9d8d1;border-radius:14px;padding:18px 22px 16px}
+.aq-doc-top{display:flex;justify-content:space-between;align-items:flex-start;gap:24px}
+.aq-title{font-size:30px;line-height:1.15;font-weight:700;letter-spacing:-.015em;margin:6px 0 0}
+.aq-ml{font-size:13.5px;line-height:1.45;color:#3d4556;margin:2px 0 0;max-width:720px}
+.aq-ml b{color:#1a2744;font-weight:600}
+.aq-round{display:inline-flex;align-items:center;height:26px;padding:0 10px;border-radius:6px;background:#1a2744;color:#ffffff;font-size:12.5px;font-weight:700;letter-spacing:.04em}
+.aq-framebox{margin-top:10px;max-width:700px;background:#fbf7e9;border:1px solid #866a1e;border-radius:8px;padding:8px 12px;font-size:12.5px;line-height:1.45;color:#2b3446}
+.aq-framebox b{color:#1a2744;font-weight:600}
+.aq-grey{flex:none;width:620px;background:#efefea;border:1px solid #dfded6;border-radius:10px;padding:12px 14px;display:grid;grid-template-columns:1fr 1fr;gap:10px 16px}
+.aq-grey p{font-size:12px;line-height:1.4;color:#2b3446;margin:0}
+.aq-grey p + p{margin-top:8px}
+.aq-grey b{display:block;font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#555c6b;margin-bottom:2px}
+.aq-grey ol{margin:0;padding-left:16px;font-size:12px;line-height:1.4;color:#2b3446}
+.aq-grey li{margin-bottom:3px}
+.aq-lbox{background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:12px 16px 12px;margin-top:12px}
+.aq-notes{list-style:none;margin:10px 0 0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px 24px}
+.aq-notes li{display:flex;gap:8px;align-items:flex-start;font-size:12.5px;line-height:1.4;color:#2b3446}
+.aq-notes .k-num-badge{width:22px;height:22px;font-size:11.5px}
+.aq-notes b{font-weight:600;color:#1a2744}
+.aq-data{margin:10px 0 0;padding-top:8px;border-top:1px solid #ecebe5;font-size:11.5px;line-height:1.45;color:#555c6b}
+.aq-data code{font-family:"Geist Mono",ui-monospace,monospace;font-size:11.5px;color:#2b3446}
+.aq-flab{display:flex;align-items:center;gap:12px;margin:18px 40px 8px}
+.aq-flab h2{white-space:nowrap;margin:0;font-size:19px;line-height:1.2;font-weight:600;letter-spacing:-.01em}
+.aq-code{display:inline-flex;align-items:center;justify-content:center;min-width:28px;height:28px;padding:0 9px;border-radius:7px;background:#c8a94a;color:#1a2744;font-weight:700;font-size:13px}
+.aq-urlchip{white-space:nowrap;font-family:"Geist Mono",ui-monospace,monospace;font-size:12px;color:#3d4556;background:#ffffff;border:1px solid #d9d8d1;border-radius:7px;padding:4px 10px;margin-left:auto}
+.aq-frame{width:1440px;background:#ffffff;border-top:1px solid #cfcec6;border-bottom:1px solid #cfcec6;box-shadow:0 20px 50px rgba(16,24,43,.10)}
+.aq-frame .k-browser-url{max-width:760px}
+.aq-page{background:#f5f5f2;position:relative}
+.aq-nb{width:24px;height:24px;font-size:12px}
+.aq-anno{display:flex;gap:8px;align-items:flex-start;border:1px dashed #b9b7ad;border-radius:10px;background:#fbfbf8;padding:8px 12px;font-size:12.5px;line-height:1.45;color:#3d4556}
+.aq-anno b{color:#1a2744;font-weight:600}
+/* decided header + footer */
+.aq-hd-in{gap:0;position:relative}
+.aq-hd .k-brand{margin-right:16px}
+.aq-rook{width:30px;height:30px;fill:#ffffff;flex:none}
+.aq-rook-sm{width:24px;height:24px}
+.aq-nav{gap:0}
+.aq-nav a{padding:0 10px;white-space:nowrap}
+.aq-navbtn{display:inline-flex;align-items:center;gap:4px;min-height:44px;padding:0 10px;border:0;background:transparent;color:#ffffff;font:inherit;font-size:15px;font-weight:500;cursor:pointer}
+.aq-sbtn{display:inline-flex;align-items:center;gap:8px;width:220px;height:40px;padding:0 8px 0 12px;margin-right:16px;border-radius:8px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.45);color:#ffffff;text-decoration:none;font-size:14.5px;font-weight:500;flex:none}
+.aq-kbd{margin-left:auto;font-family:"Geist Mono",ui-monospace,monospace;font-size:12px;color:#e8ecf4;border:1px solid rgba(255,255,255,.4);border-radius:5px;padding:2px 6px;line-height:1.2}
+.aq-util{gap:12px}
+.aq-util .k-ulink{padding:0 4px}
+.aq-my{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 8px;border:0;border-radius:8px;background:transparent;color:#ffffff;font:inherit;font-size:14px;font-weight:500;cursor:pointer}
+.aq-count{display:inline-flex;align-items:center;justify-content:center;min-width:20px;height:20px;padding:0 6px;border-radius:999px;background:#fbfaf6;color:#1a2744;font-size:12px;font-weight:700}
+.aq-foot-in{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px;padding-top:18px;padding-bottom:20px}
+.aq-foot .k-meta{color:rgba(255,255,255,.78)}
+.aq-foot nav a{font-size:14px}
+/* My LCA page */
+.aq-w{width:1200px;margin:0 auto}
+.aq-band{background:#fbfaf6;border-bottom:1px solid #e6e3d8}
+.aq-head{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;padding:26px 0 24px}
+.aq-roles{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;align-items:center}
+.aq-rchip{display:inline-flex;align-items:center;gap:8px;border-radius:999px;padding:6px 14px 6px 6px;font-size:14px;border:1px solid #d9d6cb;background:#ffffff;color:#1a2744;text-decoration:none;min-height:44px}
+.aq-role{display:inline-flex;align-items:center;border-radius:999px;padding:4px 10px;font-size:12px;font-weight:600;white-space:nowrap;line-height:1.2}
+.aq-r-you{background:#1a2744;color:#ffffff}
+.aq-r-member{background:#ecebe5;color:#1a2744}
+.aq-r-admin{background:#eef1f8;color:#1a2744;box-shadow:inset 0 0 0 1px #c9d1e3}
+.aq-layout{display:grid;grid-template-columns:232px 936px;gap:32px;align-items:start;padding:28px 0 36px}
+.aq-nav2{display:flex;flex-direction:column;gap:2px;margin-top:8px}
+.aq-nav2 a{display:flex;justify-content:space-between;align-items:center;padding:0 10px;border-radius:8px;color:#1a2744;text-decoration:none;font-size:14.5px;min-height:44px;border-left:3px solid transparent}
+.aq-nav2 a.aq-on{background:#f3eedc;font-weight:600;border-left-color:#c8a94a;border-radius:0 8px 8px 0}
+.aq-cnt{display:inline-flex;align-items:center;justify-content:center;min-width:24px;height:22px;padding:0 7px;border-radius:999px;background:#eceef3;color:#1a2744;font-size:12.5px;font-weight:700}
+.aq-sh{display:flex;justify-content:space-between;align-items:flex-start;gap:16px}
+.aq-today{list-style:none;margin:12px 0 0;padding:0}
+.aq-today li{display:grid;grid-template-columns:96px minmax(0,1fr) auto;gap:16px;align-items:center;min-height:64px;padding:10px 0;border-top:1px solid #eeede7}
+.aq-today b{font-weight:600;font-size:15px}
+.aq-tline{font-size:13.5px;color:#555c6b;margin-top:2px}
+.aq-strip{display:flex;align-items:center;gap:14px;min-height:56px;padding:8px 16px 8px 20px;background:#ffffff;border:1px solid #dddcd4;border-radius:12px;font-size:14px}
+.aq-strip .aq-sep{color:#9aa1b0}
+.aq-sec{background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:24px}
+.aq-blk{margin-top:22px;padding-top:18px;border-top:1px solid #ecebe5}
+.aq-bt{display:flex;align-items:center;gap:10px;font-size:18px;font-weight:700;margin:0}
+.aq-q{display:grid;grid-template-columns:200px 40px minmax(0,1fr) auto;gap:12px;align-items:center;min-height:40px;padding:4px 0;border-bottom:1px solid #f0efea;font-size:14px}
+.aq-q:last-of-type{border-bottom:0}
+.aq-q .aq-n{font-size:15px;font-weight:700;text-align:right;font-variant-numeric:tabular-nums}
+.aq-q-off{color:#6b7180}
+.aq-q-off .aq-n{color:#6b7180}
+.aq-as{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:16px;align-items:center;min-height:56px;padding:8px 0;border-bottom:1px solid #f0efea}
+.aq-two{display:grid;grid-template-columns:1fr 1fr;gap:28px}
+.aq-red{color:#b42318;font-weight:600;display:inline-flex;align-items:center;gap:6px}
+.aq-green{color:#145b3a;font-weight:600;display:inline-flex;align-items:center;gap:6px}
+.aq-amber{display:inline-flex;align-items:center;padding:2px 8px;border-radius:6px;background:#f5ecd2;color:#664c0c;font-size:12px;font-weight:600;white-space:nowrap}
+.aq-dot{display:inline-block;width:9px;height:9px;border-radius:50%;flex:none}
+.aq-line{font-size:15px;line-height:1.5}
+.aq-sub{font-size:13px;line-height:1.45;color:#555c6b}
+/* states */
+.aq-states{margin:0 40px;background:#f6f6f2;border:1px solid #dddcd4;border-radius:14px;padding:20px;display:grid;grid-template-columns:repeat(3,400px);justify-content:space-between}
+.aq-panel{background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:18px}
+.aq-ph{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;padding-bottom:12px;border-bottom:1px solid #ecebe5;margin-bottom:12px}
+.aq-pfoot{margin-top:10px;font-size:12.5px;line-height:1.45;color:#3d4556}
+.aq-pfoot b{color:#1a2744;font-weight:600}
+.aq-pcap{font-size:13px;font-weight:600;margin:0 0 8px}
+.aq-mq{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px;align-items:center;padding:5px 0;border-bottom:1px solid #f0efea;font-size:13px}
+/* way in */
+.aq-wayin{margin:0 40px;display:grid;grid-template-columns:420px 420px 400px;justify-content:space-between}
+.aq-thumb{border:1px solid #cfcec6;border-radius:10px;overflow:hidden;background:#f5f5f2}
+.aq-tbar{height:26px;background:#1a2744;display:flex;align-items:center;gap:8px;padding:0 10px;color:#ffffff;font-size:10.5px;font-weight:600}
+.aq-tbar svg{width:14px;height:14px;fill:#ffffff}
+.aq-tcrumb{display:flex;justify-content:space-between;align-items:center;padding:6px 10px;font-size:11px;color:#3d4556;background:#ffffff;border-bottom:1px solid #e3e2dc}
+.aq-tcrumb a{color:#1a2744;font-weight:600}
+.aq-tside{width:112px;flex:none;background:#ffffff;border-right:1px solid #e3e2dc;padding:6px 6px;font-size:10.5px;line-height:1.2}
+.aq-tside div{padding:4px 6px;border-radius:5px}
+.aq-tside .aq-ton{background:#1a2744;color:#ffffff;font-weight:600}
+.aq-trow{display:grid;grid-template-columns:minmax(0,1fr) 62px 44px;gap:6px;align-items:center;padding:4px 8px;border-bottom:1px solid #ecebe5;font-size:10.5px;background:#ffffff}
+.aq-ttag{display:inline-block;padding:1px 5px;border-radius:4px;font-size:9.5px;font-weight:600;background:#eceef2;color:#2b3446}
+.aq-cons{background:#1a2744;color:#ffffff;padding:10px 12px}
+.aq-backstop{background:#fbf7e9;border-bottom:1px solid #866a1e;padding:6px 10px;font-size:11.5px;color:#1a2744}
+.aq-menu{background:#ffffff;border:1px solid #d9d8d1;border-radius:12px;box-shadow:0 10px 26px rgba(16,24,43,.14);padding:8px;width:100%}
+.aq-mrow{display:flex;justify-content:space-between;align-items:center;gap:10px;min-height:42px;padding:4px 12px;border-radius:8px;font-size:15px;font-weight:500}
+.aq-mrow small{display:block;font-size:12.5px;color:#555c6b;font-weight:400}
+.aq-mtodo{background:#fbf7e9;margin-bottom:4px}
+.aq-msep{height:1px;background:#e3e2dc;margin:5px 4px}
+.aq-mlabel{font-size:11.5px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:#555c6b;padding:6px 12px 4px}
+.aq-ring{box-shadow:inset 0 0 0 2px #c8a94a;background:#fffdf6}
+</style>
+</helmet>
+<div class="aq-root" style="width:1440px;height:2950px">
+
+<section class="aq-doc" aria-label="About this board">
+<div class="aq-doc-top">
+<div>
+<div class="k-row-sm" style="gap:10px"><p class="k-kicker">14 · My LCA · round 2 · option Q</p><span class="aq-round">ROUND 2</span><span class="k-meta">Part 1 of 2</span></div>
+<p style="margin:8px 0 0"><span class="k-sample">Sample data · the admin's name, the queue items, counts and times are invented; sources, routes and roles are real</span></p>
+<h1 class="aq-title">My LCA · Q · LCA admin: the summary (round 2)</h1>
+<p class="aq-ml" style="margin-top:6px">Grows from Account-C and Work-C. What an LCA admin sees on their own My LCA: a summary of Needs attention, the way into Admin, and what never shows here.</p>
+<p class="aq-ml"><b>Built from:</b> Account-C (worded chips, Today across your roles, the On this page rail, the section anatomy) · Work-C (queue by source, Assigned to me, Automations, the self-expiring banner, Log in as with a reason) · Work-I's queue, the room Open Admin lands on · the decided header and footer (Nav-Header-Final, Tourn-List-Final).</p>
+<p class="aq-ml"><b>Replaces:</b> with Account-R, Account-C's admin parts: the Shortcuts into Workspace block, the Daily digest toggle and the "Admin in the header" line.</p>
+<p class="aq-ml"><b>Shown:</b> /dashboard#admin at 1440px, Mon, Oct 5, 2026, 8:40 AM, signed in with the second factor as Rachel Boudreaux, LCA admin and adult member. Pairs with Account-R (the one-row option). Part 2 (Account-Q-2): the section's states, the way in, the backstop, the rail and menu rows.</p>
+<div class="aq-framebox"><b>Frame: Int-A, swappable.</b> Drawn inside Int-A (My LCA as the hub, rooms open from each section). The frame is swappable: under Int-B this section is the page the left rail opens; under Int-C it is a card on Your work. The room itself does not change; only the breadcrumb, the way back and the menu row do. Pick the frame on Account-Int-A, B or C.</div>
+</div>
+<aside class="aq-grey" aria-label="Board note">
+<div><p><b>What</b>Option Q for the LCA admin section of My LCA: the queue's shape by source in words, the items assigned to this admin by name, one automations line, the live banner and three shortcuts, so the day starts here and Admin opens with intent. The one difference from Account-R: R shrinks this section to one row and shows nothing of the queue here.</p><p><b>Built from</b>Account-C's page and section anatomy, Work-C's admin home parts, Work-I's queue data (the same 12 items), the decided chrome.</p></div>
+<div><p><b>K's feedback applied</b>A good default (Rachel sees only the sections she holds, You and LCA admin); every section drawn in full (open, empty, busy, second factor); roles hosted in My LCA and Admin only for lca_admin; options for each (Q here, R one row); the screens joined to the whole (Open Admin, the backstop crumb).</p><p><b>Open for K</b></p><ol><li>The summary (Q) or one row (R)?</li><li>Today: the queue as one line plus your own items, or the top three queue items inline?</li><li>An open seat's clubs come to admins as queue items, with no Representative section here. Confirm.</li></ol></div>
+</aside>
+</div>
+<div class="aq-lbox">
+<p class="k-label">Notes on this board</p>
+<ol class="aq-notes">
+<li><span class="k-num-badge">1</span><span><b>A summary, not the queue; the one difference from Account-R,</b> which shrinks all of this to one row. Counts by source in words, the admin's own items, one automations line, the banner line and three shortcuts (open question 8, the default).</span></li>
+<li><span class="k-num-badge">2</span><span><b>Today</b> shows the queue as one line plus the items assigned to this admin by name; K can ask for the top three queue items inline instead.</span></li>
+<li><span class="k-num-badge">3</span><span><b>An open regional seat's clubs</b> fall to the admins as queue items; there is no Representative section on an admin's page (P2.16).</span></li>
+<li><span class="k-num-badge">4</span><span><b>Admin reads need the second factor,</b> so the section carries a "Confirm it's you" state and the page never breaks (drawn on part 2).</span></li>
+<li><span class="k-num-badge">5</span><span><b>No other person's data</b> beyond counts and the admin's own items; the members table, payments, email and the audit log live only in Admin.</span></li>
+<li><span class="k-num-badge">6</span><span><b>Any room an admin enters as the backstop</b> carries the strip "You're here as an LCA admin" and a crumb back through Admin (drawn on part 2).</span></li>
+</ol>
+<p class="aq-data"><b>Data:</b> counts and assigned items come from the providers behind /admin › Needs attention (WS08, six sources); assign and reassign stay in Admin (<code>POST /api/admin/queue/assign</code>); admin reads need aal2 (<code>requireAdmin</code>, auth.ts lines 141 to 161; <code>mfaRequired</code> in RoleProtectedRoute.tsx line 86). The header count is personal only (WS02).</p>
+</div>
+</section>
+
+<div class="aq-flab"><span class="aq-code">A</span><h2>My LCA at 1440 · Mon, Oct 5 · an admin's page: You collapsed, LCA admin open</h2><span class="aq-urlchip">/dashboard#admin</span></div>
+<div class="aq-frame">
+<div class="k-browser-bar"><i></i><i></i><i></i><div class="k-browser-url">louisianachess.org/dashboard#admin</div></div>
+<div class="aq-page">
+<header class="k-header aq-hd">
+<div class="k-wrap-wide k-header-in aq-hd-in">
+<a class="k-brand" href="#" aria-label="Louisiana Chess Association, home"><svg class="aq-rook" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span class="k-brand-name" aria-hidden="true"><b>Louisiana Chess</b><span>Association</span></span></a>
+<nav class="k-navlinks aq-nav" aria-label="Main"><a href="#">Tournaments</a><a href="#">Clubs</a><a href="#">Scholastic</a><a href="#">News</a><a href="#">Membership</a><button class="aq-navbtn" type="button" aria-expanded="false" aria-haspopup="true">About<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></button></nav>
+<a class="aq-sbtn" href="#"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg><span>Search</span><kbd class="aq-kbd" aria-hidden="true">&#8984;K</kbd></a>
+<div class="k-utility aq-util"><a class="k-ulink" href="#">Donate</a><button class="aq-my" type="button" aria-haspopup="menu" aria-expanded="false" aria-label="My LCA, 1 thing to do"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4.5 21c1-4 4-6 7.5-6s6.5 2 7.5 6"></path></svg><span>My LCA</span><span class="aq-count" aria-hidden="true">1</span><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></button></div>
+</div>
+</header>
+
+<main>
+<section class="aq-band">
+<div class="aq-w aq-head">
+<div>
+<div class="k-row-sm"><span class="k-kicker">My LCA</span><span class="k-sample">Sample data · admin name, queue, counts, times</span></div>
+<h1 class="k-h1" style="margin:6px 0 0">Rachel Boudreaux</h1>
+<div class="aq-roles" aria-label="Your roles">
+<a class="aq-rchip" href="#you"><span class="aq-role aq-r-member">Member</span>Adult</a>
+<a class="aq-rchip" href="#admin"><span class="aq-role aq-r-admin">Admin</span>LCA admin</a>
+</div>
+<p class="k-small k-muted" style="margin:10px 0 0">Sections appear for the roles LCA has given you. There are no modes to switch. <a class="k-link" href="#">Role looks wrong?</a></p>
+</div>
+<a class="k-btn k-btn-line" href="#"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="3.5" width="7" height="7"></rect><rect x="13.5" y="3.5" width="7" height="7"></rect><rect x="3.5" y="13.5" width="7" height="7"></rect><path d="M13.5 13.5h3v3h-3zM18 18h2.5v2.5H18z"></path></svg>Show my card</a>
+</div>
+</section>
+
+<div class="aq-w aq-layout">
+<div>
+<aside class="k-card k-card-pad" style="position:sticky;top:16px">
+<div class="k-label">On this page</div>
+<nav class="aq-nav2" aria-label="Sections">
+<a href="#today">Today <span class="aq-cnt">5</span></a>
+<a href="#you">You</a>
+<a class="aq-on" href="#admin" aria-current="true">LCA admin <span class="aq-cnt">12</span></a>
+</nav>
+</aside>
+<div class="aq-anno" style="margin-top:600px;flex-direction:column;gap:6px;background:#fbf7e9;border-color:#866a1e"><span style="display:flex;gap:8px;align-items:center"><span class="k-num-badge aq-nb">1</span><b>Option Q: the summary</b></span><span>The LCA admin section draws the queue's shape by source and Rachel's own two items on this page.</span><span>On Account-R the same section is one row: "Admin · 12 need attention · Open Admin", and none of the queue shows here.</span></div>
+</div>
+
+<div class="k-stack" style="gap:20px">
+
+<section class="aq-sec" id="today" style="padding-bottom:16px">
+<div class="aq-sh">
+<div><h2 class="k-h2" style="margin:0;display:flex;align-items:center;gap:10px">Today across your roles<span class="k-num-badge aq-nb">2</span></h2><p class="k-small k-muted" style="margin-top:2px">5 things · 1 is yours</p></div>
+<span class="k-small k-muted" style="padding-top:8px">Mon, Oct 5 · most urgent first</span>
+</div>
+<ul class="aq-today">
+<li><span><span class="aq-role aq-r-you">You</span></span><div><b>Pay for The Baton Rouge Classic.</b><div class="aq-tline">U1800 section · $60 by Sat, Oct 17, $70 after · Payment pending</div></div><a class="k-btn k-btn-gold k-btn-sm" href="#">Pay $60</a></li>
+<li><span><span class="aq-role aq-r-admin">Admin</span></span><div><b>Support ticket assigned to you: "Can't add my son to our family account".</b><div class="aq-tline">Danielle Robichaux · waiting 2 days</div></div><a class="k-btn k-btn-line k-btn-sm" href="#">Reply</a></li>
+<li><span><span class="aq-role aq-r-admin">Admin</span></span><div><b>Approval assigned to you: Monroe Chess Club Quick Quads, a club event.</b><div class="aq-tline">Submitted by the North Louisiana representative · waiting 1 day</div></div><a class="k-btn k-btn-line k-btn-sm" href="#">Review</a></li>
+<li><span><span class="aq-role aq-r-admin">Admin</span></span><div><b>Daily emails: 2 of 43 failed at 6:00 AM.</b><div class="aq-tline">Membership receipt to n***@[domain], mailbox full · group email, 3 addresses bounced</div></div><a class="k-btn k-btn-line k-btn-sm" href="#">Check</a></li>
+<li><span><span class="aq-role aq-r-admin">Admin</span></span><div><b>12 items need attention in Admin.</b><div class="aq-tline">Oldest 9 days · 2 assigned to you</div></div><a class="k-btn k-btn-line k-btn-sm" href="#">Open Admin</a></li>
+</ul>
+<div class="aq-anno" style="margin-top:8px"><span class="k-num-badge aq-nb">2</span><span>The whole queue never shows here: only its one line, the admin's own items and a failed automation (the Today rules). Nothing from the queue counts in the header pill, which stays at 1 for Rachel's own unpaid entry.</span></div>
+</section>
+
+<div class="aq-strip" id="you">
+<span class="aq-role aq-r-member">Member</span>
+<b style="font-size:15px">You</b>
+<span style="display:flex;flex-direction:column;gap:1px;line-height:1.35"><span>Adult · valid through Sun, Mar 14, 2027 · auto-renew on</span><span class="k-muted" style="font-size:13.5px">The Baton Rouge Classic · U1800 · Registered Fri, Oct 2 · Pay $60 by Sat, Oct 17</span></span>
+<span class="k-tag k-tag-soon">Payment pending</span>
+<a class="k-link k-small" href="#" style="margin-left:auto">Open</a>
+</div>
+
+<section class="aq-sec" id="admin">
+<div class="aq-sh">
+<div>
+<div class="k-row-sm"><span class="aq-role aq-r-admin">Admin</span><span class="k-num-badge aq-nb">1</span></div>
+<h2 class="k-h2" style="margin:8px 0 0">LCA admin</h2>
+<p class="k-small k-muted" style="margin-top:2px">A summary. Everything else is in Admin, which only LCA admins open, with the second factor on.</p>
+</div>
+<a class="k-btn k-btn-navy" href="#">Open Admin</a>
+</div>
+
+<div class="aq-blk" style="margin-top:18px">
+<h3 class="aq-bt">Needs attention · 12 · oldest 9 days</h3>
+<div style="margin-top:8px">
+<div class="aq-q"><b>Support tickets</b><span class="aq-n">4</span><span class="k-muted">oldest 3 days</span><a class="k-link k-small" href="#">Open</a></div>
+<div class="aq-q"><b>Board inbox</b><span class="aq-n">2</span><span class="k-muted">oldest 6 days · 1 to the full board</span><a class="k-link k-small" href="#">Open</a></div>
+<div class="aq-q"><b>Approvals</b><span class="aq-n">3</span><span class="k-muted">oldest 2 days · club events from representatives</span><a class="k-link k-small" href="#">Open</a></div>
+<div class="aq-q"><b>Failed emails</b><span class="aq-n">2</span><span class="k-muted">oldest 6 hours</span><a class="k-link k-small" href="#">Open</a></div>
+<div class="aq-q"><b>Club listing reports</b><span class="aq-n">1</span><span class="k-muted" style="display:flex;align-items:center;gap:8px"><span>oldest 9 days · Casa de Ajedrez, from a visitor, Sat, Sep 26 · yours while the Southwest Louisiana seat is open</span><span class="k-num-badge aq-nb">3</span></span><span style="display:inline-flex;align-items:center;gap:12px"><span class="aq-amber">More than a week</span><a class="k-link k-small" href="#">Open</a></span></div>
+<div class="aq-q aq-q-off"><span style="font-weight:600">Partner listing reports</span><span class="aq-n">0</span><span>none open</span><span></span></div>
+</div>
+<p class="aq-sub" style="margin-top:8px">Six sources, one queue. A visitor report with no answer in 14 days joins it too. Each Open lands on the queue filtered to that source.</p>
+</div>
+
+<div class="aq-blk">
+<h3 class="aq-bt" style="font-size:16px">Assigned to you · 2</h3>
+<div class="aq-as"><div><b style="font-size:15px">Support ticket: "Can't add my son to our family account".</b><div class="aq-tline">Danielle Robichaux · waiting 2 days</div></div><a class="k-btn k-btn-line k-btn-sm" href="#">Reply</a></div>
+<div class="aq-as" style="border-bottom:0"><div><b style="font-size:15px">Approval: Monroe Chess Club Quick Quads, a club event.</b><div class="aq-tline">Submitted by the North Louisiana representative · waiting 1 day</div></div><a class="k-btn k-btn-line k-btn-sm" href="#">Review</a></div>
+<p class="aq-sub">You assign and reassign items in Admin › Needs attention.</p>
+</div>
+
+<div class="aq-blk aq-two">
+<div>
+<h3 class="aq-bt" style="font-size:16px">Automations</h3>
+<div class="k-between" style="margin-top:8px;align-items:center;flex-wrap:nowrap"><span class="aq-line"><span class="aq-red"><span class="aq-dot" style="background:#b42318"></span>Failed</span> · Daily emails<span class="aq-tline" style="display:block">Ran 6:00 AM · 41 sent, 2 failed</span></span><a class="k-btn k-btn-line k-btn-sm" href="#">Check</a></div>
+<p class="aq-sub" style="margin-top:6px">Gulf South event sync 5:00 AM, Facebook feed 7:00 AM and Stripe payments 8:14 AM ran as scheduled · monthly club check emails next run Mon, Nov 2 · <a class="k-link" href="#">Automations &amp; health</a></p>
+</div>
+<div>
+<h3 class="aq-bt" style="font-size:16px">Site banner</h3>
+<div class="k-between" style="margin-top:8px;align-items:center;flex-wrap:nowrap"><span class="aq-line"><span class="aq-green"><span class="aq-dot" style="background:#1f7a4d"></span>Live now</span> · shown to everyone<span class="aq-tline" style="display:block">"Lafayette Open this weekend · Sat–Sun, Oct 10–11"</span></span><a class="k-btn k-btn-line k-btn-sm" href="#">Change</a></div>
+<p class="aq-sub" style="margin-top:6px">Ends by itself Sun, Oct 11 · 6:00 PM</p>
+</div>
+</div>
+
+<div class="aq-blk">
+<div class="k-row" style="gap:10px">
+<span class="k-label" style="margin-right:6px">Shortcuts</span>
+<a class="k-btn k-btn-line k-btn-sm" href="#"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>New tournament</a>
+<a class="k-btn k-btn-line k-btn-sm" href="#"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 16v-5a6 6 0 0 1 12 0v5l1.5 2h-15L6 16zM10 20.5a2 2 0 0 0 4 0"></path></svg>Post a site banner</a>
+<a class="k-btn k-btn-line k-btn-sm" href="#"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4.5 21c1-4 4-6 7.5-6s6.5 2 7.5 6"></path></svg>Log in as a member</a>
+<span class="aq-sub">Asks for a reason, saved to the audit log</span>
+</div>
+</div>
+
+<div class="aq-anno" style="margin-top:18px"><span class="k-num-badge aq-nb">5</span><span><b>What never shows here:</b> the members table and export, the email composer, payments and refunds, the audit log, board seats, site settings. No other person's data beyond these counts and the admin's own items.</span></div>
+</section>
+</div>
+</div>
+</main>
+
+<footer class="k-footer aq-foot"><div class="k-wrap-wide aq-foot-in"><div class="k-row-sm" style="gap:10px"><svg class="aq-rook aq-rook-sm" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><b style="font-size:15px">Louisiana Chess Association</b></div><span class="k-meta">US Chess state affiliate · Louisiana's chess community since 1915</span><nav class="k-row" aria-label="Footer" style="gap:18px"><a href="#">Contact</a><a href="#">Website help</a><a href="#">Bylaws &amp; rules</a><a href="#">Donate</a></nav></div></footer>
+</div>
+</div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":2950}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,783 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Scanner · R · The printed notation kit: Scan-ready sheet, one print route (round 2)</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/6107adb451dbab26ee5d89f4189b81f8">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0}
+.sc{font-family:'Geist',system-ui,sans-serif;color:#1a2744}
+.sc p,.sc h2,.sc h3,.sc figure{margin:0}
+.sc-head{display:flex;justify-content:space-between;align-items:flex-end;gap:40px}
+.sc-lead{font-size:15px;line-height:1.5;color:#3b4252;margin-top:6px;display:flex;gap:12px;align-items:center}
+.sc-note{font-size:12.5px;line-height:1.5;color:#555c6b;margin-top:2px}
+.sc-flow{display:flex;align-items:center;gap:8px}
+.sc-step{font-size:13px;font-weight:500;background:#ffffff;border:1px solid #d6d3c9;border-radius:999px;padding:6px 12px;white-space:nowrap}
+.sc-step-on{background:#1a2744;color:#ffffff;border-color:#1a2744}
+.sc-flow svg{color:#555c6b;flex-shrink:0}
+.sc-row{display:flex;justify-content:space-between}
+.sc-col{width:560px;display:flex;flex-direction:column;gap:10px}
+.sc-cap b{display:block;font-size:15px;font-weight:600}
+.sc-cap span{display:block;font-size:12.5px;line-height:1.4;color:#555c6b;margin-top:2px}
+.sheet{position:relative;width:560px;height:725px;background:#ffffff;box-sizing:border-box;box-shadow:0 1px 2px rgba(26,39,68,.12),0 12px 28px rgba(26,39,68,.10)}
+.mk{position:absolute;z-index:3}
+.rm{position:absolute;width:18px;height:18px;background:#111111;box-shadow:inset 0 0 0 4px #111111,inset 0 0 0 7px #ffffff}
+.lca-mk{display:flex;color:#1a2744}
+.lca-mk svg{fill:currentColor}
+
+/* sheet 1 · scoresheet */
+.ss-in{position:absolute;left:30px;right:30px;top:30px;bottom:24px;display:flex;flex-direction:column;justify-content:space-between}
+.ss-top{display:flex;justify-content:space-between;align-items:flex-start}
+.ss-brand{display:flex;gap:10px;align-items:center;padding-left:14px}
+.ss-brand svg{width:34px;height:34px}
+.ss-brand b{display:block;font-size:13px;font-weight:700}
+.ss-brand span{display:block;font-size:10px;color:#555c6b;margin-top:2px}
+.ss-qr{display:flex;gap:8px;align-items:flex-end;padding-right:14px}
+.ss-qr-t{font-family:'Geist Mono',ui-monospace,monospace;font-size:9px;line-height:1.4;color:#555c6b;text-align:right}
+.ss-f{display:grid;gap:6px 12px}
+.ss-f1{grid-template-columns:2.3fr 1fr .55fr .55fr}
+.ss-f2{grid-template-columns:1.45fr 1.45fr 1fr 1fr}
+.fld{border-bottom:1px solid #1a2744;padding-bottom:2px}
+.fld small{display:block;font-size:8px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#555c6b}
+.fld span{display:block;font-size:12px;font-weight:500;line-height:16px;white-space:nowrap}
+.fld em{font-style:normal;font-family:'Geist Mono',ui-monospace,monospace;font-size:10.5px;color:#555c6b;margin-left:6px}
+.ss-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.ss-col{display:grid;grid-template-columns:22px 1fr 1fr;border:1.5px solid #1a2744}
+.ss-col .h{box-sizing:border-box;font-size:8px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;height:15px;line-height:13px;text-align:center;background:#efeee9;border-bottom:1.5px solid #1a2744}
+.ss-col .h:nth-child(1){border-right:1px solid #aab1bd}
+.ss-col .h:nth-child(2){border-right:1px solid #aab1bd}
+.ss-col i{box-sizing:border-box;font-style:normal;font-family:'Geist Mono',ui-monospace,monospace;font-size:9px;height:16px;line-height:15px;text-align:center;background:#f6f5f1;border-right:1px solid #aab1bd;border-bottom:1px solid #d3d7de}
+.ss-col b{box-sizing:border-box;font-weight:400;height:16px;line-height:15px;border-bottom:1px solid #d3d7de;background-image:repeating-linear-gradient(90deg,transparent 0 17px,#c3c9d3 17px 18px);background-size:100% 4px;background-repeat:no-repeat;background-position:0 100%;font-family:'Geist Mono',ui-monospace,monospace;font-size:11px;letter-spacing:11.4px;padding-left:6px;color:#2747a0;white-space:nowrap;overflow:hidden}
+.ss-col b:nth-child(3n+2){border-right:1px solid #aab1bd}
+.ss-foot{display:flex;flex-direction:column;gap:8px}
+.ss-res{display:flex;align-items:center;gap:16px}
+.lab{font-size:8px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#555c6b}
+.omr{display:inline-flex;align-items:center;gap:5px;font-family:'Geist Mono',ui-monospace,monospace;font-size:11px;font-weight:500}
+.omr i{display:inline-block;width:12px;height:12px;border:1.5px solid #1a2744;box-sizing:border-box}
+.ss-back{margin-left:auto;font-size:9.5px;color:#555c6b}
+.ss-sig{display:flex;gap:28px}
+.ss-sig div{flex:1}
+.ss-sig hr{border:0;border-top:1px solid #1a2744;margin:14px 0 2px}
+.ss-ins{display:flex;justify-content:space-between;font-size:9px;color:#555c6b}
+
+/* sheet 2 · cheat sheet */
+.cs-in{position:absolute;left:30px;right:30px;top:28px;bottom:22px;display:flex;flex-direction:column;justify-content:space-between}
+.cs-k{font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#866a1e}
+.cs-t{font-size:25px;font-weight:700;line-height:1.15;margin-top:3px}
+.cs-sub{font-size:12px;line-height:1.4;color:#3b4252;margin-top:3px}
+.cs-step{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;margin-bottom:4px}
+.cs-step .n{display:inline-grid;place-items:center;width:18px;height:18px;border-radius:50%;background:#1a2744;color:#ffffff;font-size:11px;font-weight:700;flex-shrink:0}
+.cs-12{display:grid;grid-template-columns:177px 1fr;gap:20px}
+.cs-board{display:grid;grid-template-columns:14px 163px;grid-template-rows:163px 14px}
+.cs-ranks{display:flex;flex-direction:column;justify-content:space-around;font-family:'Geist Mono',ui-monospace,monospace;font-size:9px;color:#555c6b;text-align:center}
+.cs-files{grid-column:2;display:flex;justify-content:space-around;align-items:flex-end;font-family:'Geist Mono',ui-monospace,monospace;font-size:9px;color:#555c6b}
+.cs-sq{position:relative;border:1.5px solid #1a2744;background:repeating-conic-gradient(#c9cfdb 0 25%,#ffffff 0 50%) 0 0/40px 40px}
+.cs-e4{position:absolute;left:80px;top:80px;width:20px;height:20px;box-sizing:border-box;border:2.5px solid #1a2744;background:#ffffff;display:grid;place-items:center;font-family:'Geist Mono',ui-monospace,monospace;font-size:8.5px;font-weight:600}
+.cs-p{font-size:12px;line-height:1.45;color:#2b3346}
+.cs-p b{color:#1a2744}
+.cs-pcs{display:grid;grid-template-columns:repeat(3,1fr);gap:6px 8px;margin-top:2px}
+.cs-pc{display:flex;align-items:center;gap:6px;font-size:12px}
+.cs-pc b{width:22px;height:22px;border:1.5px solid #1a2744;border-radius:50%;display:grid;place-items:center;font-size:12px;font-weight:700;box-sizing:border-box;flex-shrink:0}
+.cs-pc b.pawn{border-style:dashed;color:#555c6b;font-weight:500;font-size:9px}
+.cs-ex{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.cs-ex div{border:1px solid #d6d9e0;border-radius:6px;padding:5px 8px;font-size:11.5px;color:#3b4252}
+.cs-ex b{font-family:'Geist Mono',ui-monospace,monospace;font-size:14px;font-weight:600;color:#1a2744;margin-right:6px}
+.cs-marks{display:grid;grid-template-columns:1fr 1fr;gap:3px 18px}
+.cs-mark{display:grid;grid-template-columns:50px 1fr;align-items:baseline;font-size:11.5px;color:#3b4252;border-bottom:1px dotted #c3c9d3;padding:1px 0 2px}
+.cs-mark b{font-family:'Geist Mono',ui-monospace,monospace;font-size:13px;font-weight:600;color:#1a2744}
+.cs-mark em{font-style:normal;font-family:'Geist Mono',ui-monospace,monospace;font-size:11px;color:#1a2744;margin-left:4px}
+.cs-morphy{border:1.5px solid #1a2744;border-radius:8px;padding:8px 12px}
+.cs-mv{font-family:'Geist Mono',ui-monospace,monospace;font-size:16px;font-weight:600;margin:3px 0}
+.cs-try{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.cs-try div{font-size:11.5px;color:#3b4252}
+.cs-box{display:block;margin-top:4px;height:24px;border:1.5px solid #1a2744;box-sizing:border-box;background-image:repeating-linear-gradient(90deg,transparent 0 17px,#c3c9d3 17px 18px);background-size:100% 5px;background-repeat:no-repeat;background-position:0 100%}
+.cs-foot{display:flex;justify-content:space-between;align-items:center;gap:14px;border-top:2px solid #1a2744;padding-top:8px}
+.cs-foot p{font-size:12px;line-height:1.4}
+.cs-ans{display:block;font-family:'Geist Mono',ui-monospace,monospace;font-size:9.5px;color:#555c6b;transform:rotate(180deg);margin-top:4px}
+
+/* sheet 3 · how-to-scan cards */
+.hs-card{position:absolute;left:22px;right:22px;border:1px solid #c9cdd6;border-radius:12px;padding:18px 20px;box-sizing:border-box;display:flex;flex-direction:column;gap:10px}
+.hs-a{top:22px;height:330px}
+.hs-b{bottom:22px;height:330px}
+.hs-cut{position:absolute;left:0;right:0;top:362px;border-top:1.5px dashed #8a91a0}
+.hs-cut span{position:absolute;left:50%;top:-9px;transform:translateX(-50%);background:#ffffff;padding:0 10px;font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:#555c6b;white-space:nowrap}
+.hs-k{display:flex;justify-content:space-between;align-items:center;font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#555c6b}
+.hs-k .lft{display:flex;align-items:center;gap:6px;color:#1a2744}
+.hs-k svg{width:18px;height:18px}
+.hs-t{font-size:24px;font-weight:700;line-height:1.15}
+.hs-body{display:grid;grid-template-columns:124px 1fr;gap:20px;align-items:start}
+.hs-qr{display:flex;flex-direction:column;gap:6px;align-items:center}
+.hs-qr span{font-family:'Geist Mono',ui-monospace,monospace;font-size:9.5px;text-align:center}
+.hs-steps{display:flex;flex-direction:column;gap:10px}
+.hs-st{display:grid;grid-template-columns:26px 1fr;font-size:12px;line-height:1.4;color:#3b4252}
+.hs-st i{font-style:normal;font-family:'Geist Mono',ui-monospace,monospace;font-size:15px;font-weight:600;color:#1a2744;line-height:1.2}
+.hs-st b{display:block;font-size:14px;font-weight:700;color:#1a2744}
+.hs-fine{font-size:10.5px;color:#555c6b;border-top:1px solid #e3e5ea;padding-top:8px;margin-top:auto}
+.hs-dia{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.hs-dia figure{display:flex;flex-direction:column;gap:5px}
+.hs-dia svg{width:100%;height:auto;display:block}
+.hs-dia figcaption{font-size:11px;line-height:1.35;color:#3b4252}
+.tag-ok,.tag-no{display:inline-block;font-size:10px;font-weight:600;border-radius:4px;padding:1px 6px;margin-right:5px}
+.tag-ok{background:#e3f3ea;color:#17603e}
+.tag-no{background:#fbe5e5;color:#8a1c1c}
+.hs-tips{display:grid;grid-template-columns:1fr 1fr;gap:6px 18px;font-size:11px;line-height:1.4;color:#3b4252;margin-top:auto}
+.hs-tips div{padding-left:12px;position:relative}
+.hs-tips div::before{content:"";position:absolute;left:0;top:6px;width:5px;height:5px;background:#1a2744}
+
+/* Scan-R additions */
+.sr-root{box-sizing:border-box;background:#e7e5df;padding:20px 56px 24px;display:flex;flex-direction:column;gap:16px}
+.sr-root *{box-sizing:border-box}
+.sr-doc{background:#fbfaf6;border:1px solid #d9d8d1;border-radius:14px;padding:16px 20px;display:grid;grid-template-columns:590px minmax(0,1fr) 430px;gap:24px;align-items:start}
+.sr-title{font-size:23px;line-height:1.15;font-weight:700;letter-spacing:-.015em;margin:6px 0 0}
+.sr-ml{font-size:12.5px;line-height:1.42;color:#3d4556;margin:5px 0 0}
+.sr-ml b{color:#1a2744;font-weight:600}
+.sr-round{display:inline-flex;align-items:center;height:24px;padding:0 9px;border-radius:6px;background:#1a2744;color:#ffffff;font-size:12px;font-weight:700;letter-spacing:.04em}
+.sr-kick{display:flex;align-items:center;gap:10px}
+.sr-kick .k-kicker{margin:0;font-size:12px}
+.sr-lbox{background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:11px 14px 12px}
+.sr-lbox .k-label{margin:0}
+.sr-notes{list-style:none;margin:8px 0 0;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px 18px}
+.sr-notes li{display:flex;gap:8px;align-items:flex-start;font-size:12.5px;line-height:1.4;color:#2b3446}
+.sr-notes .k-num-badge{width:22px;height:22px;font-size:11.5px}
+.sr-notes b{font-weight:600;color:#1a2744}
+.sr-from{display:inline-block;font-size:11.5px;font-weight:600;color:#555c6b;background:#f0efea;border-radius:5px;padding:0 6px;margin-left:2px}
+.sr-grey{background:#efefea;border:1px solid #dfded6;border-radius:10px;padding:11px 14px}
+.sr-grey p{font-size:12px;line-height:1.4;color:#2b3446;margin:0}
+.sr-grey p + p{margin-top:6px}
+.sr-grey b{display:block;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#555c6b;margin-bottom:1px}
+.sr-grey ol{margin:2px 0 0;padding-left:16px;font-size:12px;line-height:1.4;color:#2b3446}
+.sr-grey li{margin-bottom:2px}
+.sr-h2{font-size:26px;line-height:1.15;font-weight:700;letter-spacing:-.01em;margin:2px 0 0}
+.sr-flab{display:flex;align-items:center;gap:12px}
+.sr-flab h2{margin:0;font-size:19px;line-height:1.2;font-weight:600;letter-spacing:-.01em;white-space:nowrap}
+.sr-code{display:inline-flex;align-items:center;justify-content:center;min-width:28px;height:28px;padding:0 9px;border-radius:7px;background:#c8a94a;color:#1a2744;font-weight:700;font-size:13px}
+.sr-time{display:inline-flex;align-items:center;gap:6px;white-space:nowrap;font-size:12.5px;font-weight:600;color:#1a2744;background:#ffffff;border:1px solid #cfcec6;border-radius:999px;padding:4px 10px}
+.sr-flab .k-meta{margin-left:auto}
+.sr-under{display:flex;justify-content:space-between;margin-top:-4px}
+.sr-uc{width:560px}
+.sr-ins{display:flex;gap:20px}
+.sr-in{width:270px;height:120px;background:#f6f5f1;border:1px solid #d6d3c9;border-radius:10px;padding:8px;display:flex;gap:10px;align-items:flex-start}
+.sr-in svg{flex:none;width:80px;height:104px;display:block}
+.sr-in b{display:block;font-size:13px;font-weight:600;margin-top:2px}
+.sr-in p{font-size:11.5px;line-height:1.38;color:#3d4556;margin-top:3px}
+.sr-anno{display:flex;gap:8px;align-items:flex-start;border:1px dashed #9a988e;border-radius:10px;background:#fbfbf8;padding:8px 11px;font-size:12.5px;line-height:1.45;color:#3d4556}
+.sr-anno b{color:#1a2744;font-weight:600}
+.sr-open{display:block;border:1px dashed #8a7a4a;background:#fffaf0;color:#5e4300;border-radius:10px;padding:8px 11px;font-size:12.5px;line-height:1.45}
+.sr-open b{font-weight:700}
+.sr-dash{border:1.5px dashed #555c6b;padding:0 3px;border-radius:3px}
+/* region E */
+.sr-two{display:grid;grid-template-columns:900px 900px;justify-content:space-between}
+.sr-br{position:relative;width:900px}
+.sr-br .k-browser-url{max-width:600px}
+.sr-hdwrap{height:43px;overflow:hidden}
+.sr-ftwrap{height:46px;overflow:hidden}
+.sr-scale{width:1440px;transform:scale(.625);transform-origin:0 0}
+.sr-hd-in{gap:0;min-height:68px}
+.sr-hd .k-brand{margin-right:16px}
+.sr-rook{width:30px;height:30px;fill:#ffffff;flex:none}
+.sr-rook-sm{width:24px;height:24px}
+.sr-nav{gap:0}
+.sr-nav a{padding:0 10px;white-space:nowrap}
+.sr-navbtn{display:inline-flex;align-items:center;gap:4px;min-height:44px;padding:0 10px;border:0;background:transparent;color:#ffffff;font:inherit;font-size:15px;font-weight:500}
+.sr-sbtn{display:inline-flex;align-items:center;gap:8px;width:200px;height:40px;padding:0 8px 0 12px;margin-right:14px;border-radius:8px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.45);color:#ffffff;text-decoration:none;font-size:14.5px;font-weight:500;flex:none}
+.sr-kbd{margin-left:auto;font-family:"Geist Mono",ui-monospace,monospace;font-size:12px;color:#e8ecf4;border:1px solid rgba(255,255,255,.4);border-radius:5px;padding:2px 6px;line-height:1.2}
+.sr-util{gap:10px}
+.sr-util .k-ulink{padding:0 4px}
+.sr-my{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 8px;border:0;border-radius:8px;background:transparent;color:#ffffff;font:inherit;font-size:14px;font-weight:500}
+.sr-foot-in{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px;padding-top:18px;padding-bottom:20px}
+.sr-foot .k-meta{color:rgba(255,255,255,.78)}
+.sr-foot nav a{font-size:14px}
+.sr-playcol{display:flex;align-items:center;gap:14px;font-size:14px}
+.sr-playcol b{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#e6cf86}
+.sr-playcol a.on{text-decoration:underline;text-decoration-color:#c8a94a;text-decoration-thickness:2px;text-underline-offset:4px}
+.sr-pg{background:#f5f5f2;padding:12px 20px 14px;height:322px;position:relative}
+.sr-crumb{font-size:12.5px;color:#555c6b}
+.sr-crumb a{color:#1a2744;text-decoration:none;font-weight:600}
+.sr-pghead{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;margin-top:6px}
+.sr-pghead h3{margin:0;font-size:22px;line-height:1.2;font-weight:700}
+.sr-pghead p{margin:3px 0 0;font-size:13px;line-height:1.4;color:#3d4556}
+.sr-rule{font-size:12.5px;color:#1a2744;background:#ffffff;border:1px solid #dddcd4;border-radius:8px;padding:6px 10px;white-space:nowrap}
+.sr-kitlist{margin-top:10px;background:#ffffff;border:1px solid #dddcd4;border-radius:12px}
+.sr-kr{display:grid;grid-template-columns:34px minmax(0,1fr) auto;gap:14px;align-items:center;padding:9px 14px;border-top:1px solid #ecebe5}
+.sr-kr:first-child{border-top:0}
+.sr-kr svg.th{width:34px;height:44px;display:block}
+.sr-kr b{display:block;font-size:14.5px;font-weight:600}
+.sr-kr span{display:block;font-size:12.5px;color:#555c6b;margin-top:1px}
+.sr-kr .k-btn{min-height:34px;font-size:13.5px;padding:0 12px}
+.sr-dir{display:flex;align-items:center;gap:10px;margin-top:10px;font-size:13px;color:#1a2744}
+.sr-tdbar{display:flex;align-items:center;gap:10px;margin-top:6px;font-size:12.5px;color:#3d4556}
+.sr-pform{display:grid;grid-template-columns:210px 1fr 300px;gap:18px;margin-top:10px;align-items:start}
+.sr-fl{font-size:12px;font-weight:600;color:#3d4556;margin:0 0 4px}
+.sr-sel{display:flex;align-items:center;justify-content:space-between;border:1px solid #858b99;border-radius:8px;min-height:38px;padding:0 10px;font-size:14px;color:#1a2744;background:#ffffff}
+.sr-sel.on{border:2px solid #1a2744;font-weight:600}
+.sr-lst{margin-top:4px;background:#ffffff;border:1px solid #c9c8c0;border-radius:8px;box-shadow:0 8px 20px rgba(16,24,43,.12);padding:4px 0}
+.sr-lst div{padding:6px 10px;font-size:13px;color:#6b7180}
+.sr-lst div.sel{color:#1a2744;font-weight:600;display:flex;align-items:center;justify-content:space-between;background:#eef1f7}
+.sr-lst small{display:block;padding:3px 10px 2px;font-size:11px;color:#555c6b;border-top:1px solid #ecebe5;margin-top:3px}
+.sr-fgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.sr-prev{margin-top:10px;font-size:12.5px;line-height:1.45;color:#1a2744;background:#ffffff;border:1px solid #dddcd4;border-radius:8px;padding:7px 10px}
+.sr-prev b{font-weight:600}
+.sr-pform .k-check{font-size:13.5px;margin-top:10px;gap:8px}
+.sr-pform .k-check input{width:17px;height:17px}
+.sr-pbtn{margin-top:10px}
+.sr-pbtn .k-btn{min-height:38px;font-size:14px;padding:0 14px}
+.sr-dlb{display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:0 12px;border:1px solid #1a2744;border-radius:8px;background:#ffffff;font-size:14px;font-weight:600;color:#1a2744}
+.sr-menu{margin-top:4px;background:#ffffff;border:1px solid #c9c8c0;border-radius:10px;box-shadow:0 12px 28px rgba(16,24,43,.16);padding:5px 0}
+.sr-menu .mh{margin:0;padding:4px 12px 3px;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#555c6b}
+.sr-mi{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:center;padding:5px 12px;font-size:13px;color:#1a2744}
+.sr-mi b{font-weight:600}
+.sr-mi em{font-style:normal;font-family:"Geist Mono",ui-monospace,monospace;font-size:11px;color:#555c6b}
+.sr-mi.hot{background:#eef1f7;box-shadow:inset 3px 0 0 #1a2744}
+.sr-mi .new{display:inline-block;margin-left:6px;font-size:10.5px;font-weight:700;color:#5e4300;background:#f4ecd4;border-radius:4px;padding:0 5px}
+.sr-msep{border-top:1px solid #ecebe5;margin:4px 0}
+.sr-cap{font-size:13px;line-height:1.5;color:#1a2744;background:#ffffff;border-left:4px solid #1a2744;border-radius:0 10px 10px 0;padding:9px 14px;margin:0}
+.sr-cap code{font-family:"Geist Mono",ui-monospace,monospace;font-size:12px;background:#f0efea;border-radius:4px;padding:0 4px}
+.sr-badge{position:absolute;z-index:6;box-shadow:0 0 0 3px #ffffff}
+/* region F */
+.sr-states{display:grid;grid-template-columns:repeat(9,200px);justify-content:space-between}
+.sr-st{background:#ffffff;border:1px solid #dddcd4;border-radius:10px;padding:10px 11px;display:flex;flex-direction:column;gap:6px;min-height:150px}
+.sr-st h3{margin:0;font-size:13.5px;font-weight:700;line-height:1.25}
+.sr-st p{font-size:12px;line-height:1.42;color:#3d4556}
+.sr-st .k-tag{align-self:flex-start;font-size:11.5px;padding:3px 7px}
+.sr-spec{font-size:12.5px;color:#555c6b}
+/* black-ink tags on the cards */
+.tag-ok,.tag-no{display:inline-block;font-size:10px;font-weight:700;border-radius:4px;padding:0 5px;margin-right:5px;line-height:15px}
+.tag-ok{background:#ffffff;color:#111111;border:1.5px solid #111111}
+.tag-no{background:#111111;color:#ffffff;border:1.5px solid #111111}
+.ss-logo{width:36px;height:36px;display:block;object-fit:contain}
+.ss-x{position:relative}
+.ss-x::after{content:"";position:absolute;left:1px;top:1px;width:10px;height:10px;background:linear-gradient(45deg,transparent 43%,#2747a0 43%,#2747a0 57%,transparent 57%),linear-gradient(-45deg,transparent 43%,#2747a0 43%,#2747a0 57%,transparent 57%)}
+.ss-hand{font-family:'Geist Mono',ui-monospace,monospace;font-style:italic;font-size:13px;color:#2747a0;position:absolute;left:8px;top:-1px}
+.ss-sig div{position:relative}
+.sr-doc{display:block}
+.sr-doc-top{display:grid;grid-template-columns:minmax(0,1fr) 760px;gap:28px;align-items:start}
+.sr-grey{display:grid;grid-template-columns:1fr 1fr;gap:10px 18px}
+.sr-notes{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px 22px}
+.sr-lbox{margin-top:12px}
+.sr-a{align-items:flex-end}
+.sr-a-row{display:flex;align-items:baseline;gap:18px}
+.sr-a-row .sr-h2{white-space:nowrap}
+.sr-a-row .sc-lead{font-size:14px}
+.sr-pg{height:280px;padding:10px 20px 12px}
+.sr-crow{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.sr-pb{min-height:34px;font-size:13.5px;padding:0 12px}
+.sr-dlb{min-height:34px;font-size:13.5px}
+.sr-menu{position:absolute;right:20px;top:48px;width:300px;z-index:4;margin:0}
+.sr-mi{padding:4px 12px}
+.sr-pform{grid-template-columns:200px 330px;gap:18px;margin-top:8px}
+.sr-lst div{padding:4px 10px}
+.sr-tdbar{margin-top:4px}
+.sr-kr{grid-template-columns:28px minmax(0,1fr) auto;padding:6px 14px}
+.sr-kr svg.th{width:28px;height:36px}
+.sr-kr .k-btn{min-height:32px}
+.sr-kitlist{margin-top:8px}
+.sr-dir{margin-top:8px}
+.sr-st{min-height:0}
+.sr-root{padding:16px 56px 16px;gap:12px}
+.sr-doc{padding:14px 18px}
+.sr-kick .k-sample{margin-left:6px;font-size:11.5px;padding:3px 9px}
+.sr-doc-top{grid-template-columns:minmax(0,1fr) 900px;gap:24px}
+.sr-grey{grid-template-columns:1fr 1.1fr}
+.sr-a .k-kicker{margin:0}
+.k-browser-bar{height:32px}
+.sr-pg{height:266px}
+.sr-flab .k-meta{margin-left:16px;white-space:normal}
+.sr-flab .k-mono{font-family:"Geist Mono",ui-monospace,monospace;font-size:12px;color:#1a2744}
+.hs-qr span{font-size:8.5px}
+.sr-kick .k-kicker{white-space:nowrap}
+.sr-doc{padding:12px 18px 12px}
+.sr-doc-top{grid-template-columns:minmax(0,1fr) 860px}
+.sr-ml{font-size:12.5px;line-height:1.4;margin-top:4px}
+.sr-grey p,.sr-grey ol{font-size:12px;line-height:1.38}
+.sr-grey p + p{margin-top:5px}
+.sr-lbox{margin-top:10px;padding:9px 14px 10px}
+.sr-root{gap:11px}
+.sr-a-row{gap:16px}
+.sr-pg{height:250px}
+.sr-dirbox{width:330px;font-size:12.5px;line-height:1.45;color:#1a2744;background:#ffffff;border:1px solid #dddcd4;border-radius:8px;padding:6px 10px;margin:0}
+.sr-dirbox .k-tag{font-size:11px;padding:2px 6px;margin-right:4px}
+.sr-dirbox .k-link{font-size:12.5px;text-underline-offset:3px}
+.sr-rulel{margin:6px 0 0;font-size:12px;color:#555c6b}
+.sr-crow .k-tag{font-size:11.5px;padding:3px 7px}
+.sr-menu{top:46px}
+.sr-pform{margin-top:6px}
+.sr-pghead{align-items:flex-start;margin-top:4px}
+.sr-pghead > div{width:470px}
+.sr-dirbox{width:350px}
+.sr-crl,.sr-crr{display:flex;align-items:center;gap:10px;flex:none}
+.sr-crr{gap:8px}
+.sr-crow{min-height:34px}
+.sr-menu{top:48px}
+.sr-kr{padding:4px 14px}
+.sr-lst div{padding:3px 10px}
+.sr-sel{min-height:36px}
+.sr-kr{padding:3px 14px;grid-template-columns:26px minmax(0,1fr) auto}
+.sr-kr svg.th{width:26px;height:34px}
+.sr-kr .k-btn{min-height:30px}
+.sr-kr b{font-size:14px}
+.sr-kr span{font-size:12px}
+.sr-kitlist{margin-top:6px}
+.sr-pghead h3{font-size:21px}
+.sr-pghead p{font-size:12.5px;margin-top:2px}
+.sr-crow{gap:8px}
+.sr-crl{gap:8px}
+.sr-crl .sr-crumb{font-size:12px}
+.sr-root{padding-bottom:10px}
+.ss-ins{padding:0 14px}
+.ss-logo{filter:grayscale(1)}
+.sr-ib{display:inline-grid;width:22px;height:22px;font-size:11.5px;vertical-align:3px;margin-left:6px}
+</style>
+</helmet>
+<div class="sc sr-root" style="width:1960px;height:1950px">
+
+<section class="sr-doc" aria-label="About this board">
+  <div class="sr-doc-top">
+  <div>
+    <div class="sr-kick"><p class="k-kicker">16 · Scoresheet scanner · part 8 of 8, the printed notation kit · option R</p><span class="sr-round">ROUND 2</span></div>
+    <h1 class="sr-title">Scanner · R · The printed notation kit: Scan-ready sheet, one print route</h1>
+    <p class="sr-ml" style="margin-top:8px"><b>Built from:</b> Scan-C (all three sheets, kept whole) · today's print page · the print kit's Download menu (Live-Final-Print) · decided header and footer.</p>
+    <p class="sr-ml"><b>Replaces:</b> Scan-C's Morphy Open sample header (now Landry vs Shah, Round 4, Board 6), "never stored" as settled, the missing print route.</p>
+    <p class="sr-ml"><b>Round 2 · K's feedback applied (Tue, Oct 13):</b> one scanner in parts, options per part; option R for part 8. <b>Unlike Scan-S:</b> marks and a signed QR on every sheet (new backend), one print route.</p>
+    <p class="sr-ml"><b>Shown:</b> Sat, Sep 5, 2026, 9:40 PM, the TD prints 30 Round 4 sheets; Sun, Sep 6, 3:50 PM, Marcus's Board 6 sheet lies flat under his phone, all four marks in view.</p>
+    <p class="sr-ml" style="margin-top:7px"><span class="k-sample">Sample data · the event, players, ratings and time control · moves are Morphy's Opera Game (1858)</span></p>
+  </div>
+  <aside class="sr-grey" aria-label="Board note">
+    <div>
+    <p><b>What</b>Option R for part 8: Scan-C's three Letter sheets, every sheet scan-ready with four corner marks and, from the pairings, a signed QR; everything prints from /scanner/kit or the TD's print kit.</p>
+    <p><b>Built from</b>Scan-C sheets 1 to 3; today's print page; the decided print kit (Live-Final-Print).</p>
+    <p><b>K's feedback applied</b>One scanner in parts, with options per part; the same game, steps, count and privacy rules as every part.</p>
+    </div>
+    <div>
+    <p><b>Open for K</b></p>
+    <ol>
+      <li>The cards' photo line: read once and gone, or kept 30 days unless saved. Drawn: today's, boxed.</li>
+      <li>A junior's full name on a printed sheet, or Priya S. and her US Chess ID. Drawn: full.</li>
+      <li>"Scoresheet says" in the queue, or left out (replan line 624). Drawn: in the queue.</li>
+      <li>Who may scan: an LCA account, 20 a day, as today. Phasing: the kit sits in Phase 5.</li>
+    </ol>
+    </div>
+  </aside>
+  </div>
+  <div class="sr-lbox">
+    <p class="k-label">Notes on this board</p>
+    <ol class="sr-notes">
+      <li><span class="k-num-badge">1</span><span><b>Corner marks.</b> The reader finds all four, straightens and crops before it reads a move; a sheet without marks still scans. <span class="sr-from">Scan-C note 1 · new: straighten on the marks</span></span></li>
+      <li><span class="k-num-badge">2</span><span><b>One box per move.</b> Comb ticks keep letters apart; 50 moves a side, 51 to 100 on the back. <span class="sr-from">Scan-C note 2</span></span></li>
+      <li><span class="k-num-badge">3</span><span><b>Printed from the pairings,</b> the typed header and a signed QR file the scan under Round 4, Board 6; blank sheets have no QR. <span class="sr-from">Scan-C note 3 · new: scoresheets table</span></span></li>
+      <li><span class="k-num-badge">4</span><span><b>Result boxes are read</b> and reach the director as "Scoresheet says 1-0 · Confirm" in the Reported results queue; nothing posts without the TD. <span class="sr-from">Scan-C note 4 · open for K</span></span></li>
+      <li><span class="k-num-badge">5</span><span><b>The loop.</b> The kids' sheet, kept word for word, ends at the scanner; Morphy's finish is the reading drill. <span class="sr-from">Scan-C sheet 2</span></span></li>
+      <li><span class="k-num-badge">6</span><span><b>One print route:</b> /scanner/kit for the blank kit and the cards, the TD's print kit for sheets filled in per round and section. <span class="sr-from">new this round</span></span></li>
+    </ol>
+  </div>
+</section>
+
+<div class="sc-head sr-a">
+  <div class="sr-a-l">
+    <div class="sr-a-row"><h2 class="sr-h2">Notation kit (print)</h2><p class="sc-lead" style="margin:0">Three Letter sheets that close the loop: learn the code, write the game, scan it, check it, keep it, link it.</p></div>
+  </div>
+  <div class="sc-flow" aria-label="The loop">
+    <span class="sc-step">Cheat sheet</span><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+    <span class="sc-step">Scan-ready scoresheet</span><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+    <span class="sc-step">Scanner: Photo · Read · Check · Save &amp; share</span><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+    <span class="sc-step sc-step-on">My games · lichess · PGN · crosstable</span>
+  </div>
+</div>
+
+<div class="sc-row">
+
+  <!-- SHEET 1 · SCORESHEET -->
+  <div class="sc-col">
+    <div class="sc-cap"><b>1 · Scan-ready scoresheet</b><span>Printed from the pairings with names, round and board filled in; a blank version for club nights.</span></div>
+    <div class="sheet">
+      <span class="rm" style="left:12px;top:12px"></span>
+      <span class="rm" style="right:12px;top:12px"></span>
+      <span class="rm" style="left:12px;bottom:12px"></span>
+      <span class="rm" style="right:12px;bottom:12px"></span>
+      <span class="mk" style="left:-13px;top:2px"><span class="k-num-badge">1</span></span>
+      <span class="mk" style="left:-13px;top:330px"><span class="k-num-badge">2</span></span>
+      <span class="mk" style="right:-13px;top:48px"><span class="k-num-badge">3</span></span>
+      <span class="mk" style="left:-13px;top:606px"><span class="k-num-badge">4</span></span>
+      <div class="ss-in">
+        <div class="ss-top">
+          <div class="ss-brand"><img class="ss-logo" alt="Official LCA logo" src="/_blob/670986b2f9e137948361309bea54fef8"><div><b>Louisiana Chess Association</b><span>Official scoresheet · scan-ready · moves 1 to 50</span></div></div>
+          <div class="ss-qr">
+            <div class="ss-qr-t">Sheet LSC26-R4-B6<br>Page 1 of 2<br>Scan at<br>louisianachess.org/scanner</div>
+            <svg width="56" height="56" viewBox="0 0 25 25" role="img" aria-label="QR code placeholder holding the signed sheet token for LSC26-R4-B6">
+<rect x="0" y="0" width="25" height="25" fill="#ffffff"></rect>
+<rect x="0.5" y="0.5" width="6" height="6" fill="none" stroke="#111111" stroke-width="1"></rect><rect x="2" y="2" width="3" height="3" fill="#111111"></rect>
+<rect x="18.5" y="0.5" width="6" height="6" fill="none" stroke="#111111" stroke-width="1"></rect><rect x="20" y="2" width="3" height="3" fill="#111111"></rect>
+<rect x="0.5" y="18.5" width="6" height="6" fill="none" stroke="#111111" stroke-width="1"></rect><rect x="2" y="20" width="3" height="3" fill="#111111"></rect>
+<rect x="8.5" y="8.5" width="16" height="16" fill="none" stroke="#8a91a0" stroke-width="0.5" stroke-dasharray="1 1"></rect>
+<text x="16.5" y="17.7" font-size="3.6" text-anchor="middle" fill="#555c6b" font-family="Geist Mono, monospace">QR</text>
+</svg>
+          </div>
+        </div>
+        <div class="ss-f ss-f1">
+          <div class="fld"><small>Event</small><span>Louisiana State Championship 2026</span></div>
+          <div class="fld"><small>Section</small><span>Open</span></div>
+          <div class="fld"><small>Round</small><span>4</span></div>
+          <div class="fld"><small>Board</small><span>6</span></div>
+        </div>
+        <div class="ss-f ss-f2" style="grid-template-columns:142px 130px 110px 1fr">
+          <div class="fld"><small>White</small><span>Marcus Landry<em>2014</em></span></div>
+          <div class="fld"><small>Black</small><span>Priya Shah<em>1803</em></span></div>
+          <div class="fld"><small>Date</small><span>Sun, Sep 6, 2026</span></div>
+          <div class="fld"><small>Time control</small><span>G/90+30</span></div>
+        </div>
+        <div class="ss-grid">
+          <div class="ss-col">
+<span class="h">#</span><span class="h">White</span><span class="h">Black</span>
+<i>1</i><b>e4</b><b>e5</b>
+<i>2</i><b>Nf3</b><b>d6</b>
+<i>3</i><b>d4</b><b>Bg4</b>
+<i>4</i><b>dxe5</b><b>Bxf3</b>
+<i>5</i><b>Qxf3</b><b>dxe5</b>
+<i>6</i><b>Bc4</b><b>Nf6</b>
+<i>7</i><b>Qb3</b><b>Qe7</b>
+<i>8</i><b>Nc3</b><b>c6</b>
+<i>9</i><b>Bg5</b><b>b5</b>
+<i>10</i><b>Nxb5</b><b>cxb5</b>
+<i>11</i><b>Bxb5+</b><b>Nbd7</b>
+<i>12</i><b>O-O-O</b><b>Rd8</b>
+<i>13</i><b>Rxd7</b><b>Rxd7</b>
+<i>14</i><b>Rd1</b><b>Qe6</b>
+<i>15</i><b>Bxd7+</b><b>Nxd7</b>
+<i>16</i><b>Qb8+</b><b>Nxb8</b>
+<i>17</i><b>Rd8#</b><b></b>
+<i>18</i><b></b><b></b>
+<i>19</i><b></b><b></b>
+<i>20</i><b></b><b></b>
+<i>21</i><b></b><b></b>
+<i>22</i><b></b><b></b>
+<i>23</i><b></b><b></b>
+<i>24</i><b></b><b></b>
+<i>25</i><b></b><b></b>
+          </div>
+          <div class="ss-col">
+<span class="h">#</span><span class="h">White</span><span class="h">Black</span>
+<i>26</i><b></b><b></b>
+<i>27</i><b></b><b></b>
+<i>28</i><b></b><b></b>
+<i>29</i><b></b><b></b>
+<i>30</i><b></b><b></b>
+<i>31</i><b></b><b></b>
+<i>32</i><b></b><b></b>
+<i>33</i><b></b><b></b>
+<i>34</i><b></b><b></b>
+<i>35</i><b></b><b></b>
+<i>36</i><b></b><b></b>
+<i>37</i><b></b><b></b>
+<i>38</i><b></b><b></b>
+<i>39</i><b></b><b></b>
+<i>40</i><b></b><b></b>
+<i>41</i><b></b><b></b>
+<i>42</i><b></b><b></b>
+<i>43</i><b></b><b></b>
+<i>44</i><b></b><b></b>
+<i>45</i><b></b><b></b>
+<i>46</i><b></b><b></b>
+<i>47</i><b></b><b></b>
+<i>48</i><b></b><b></b>
+<i>49</i><b></b><b></b>
+<i>50</i><b></b><b></b>
+          </div>
+        </div>
+        <div class="ss-foot">
+          <div class="ss-res"><span class="lab">Result · fill one box</span><span class="omr"><i class="ss-x"></i>1-0</span><span class="omr"><i></i>½-½</span><span class="omr"><i></i>0-1</span><span class="ss-back">Moves 51 to 100 continue on the back</span></div>
+          <div class="ss-sig"><div><span class="ss-hand">ML</span><hr><span class="lab">White signature</span></div><div><span class="ss-hand">PS</span><hr><span class="lab">Black signature</span></div></div>
+          <div class="ss-ins"><span>Pen or dark pencil · one move per box · keep the four corner marks clear</span><span>LCA scoresheet v1</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SHEET 2 · NOTATION CHEAT SHEET -->
+  <div class="sc-col">
+    <div class="sc-cap"><b>2 · Notation cheat sheet for kids</b><span>Five steps, a famous finish to read, three moves to write. It ends at the scanner.</span></div>
+    <div class="sheet">
+      <span class="mk" style="right:-13px;top:668px"><span class="k-num-badge">5</span></span>
+      <div class="cs-in">
+        <div>
+          <div class="cs-k" style="color:#1a2744">LCA Scholastic · Notation cheat sheet</div>
+          <div class="cs-t">How to write chess moves</div>
+          <p class="cs-sub">Every move gets a short name. Learn the code in five steps.</p>
+        </div>
+        <div>
+          <div class="cs-step"><span class="n">1</span>Every square has a name</div>
+          <div class="cs-12">
+            <div class="cs-board" role="img" aria-label="Chessboard with files a to h, ranks 1 to 8, and the square e4 marked">
+              <div class="cs-ranks"><span>8</span><span>7</span><span>6</span><span>5</span><span>4</span><span>3</span><span>2</span><span>1</span></div>
+              <div class="cs-sq"><span class="cs-e4">e4</span></div>
+              <div class="cs-files"><span>a</span><span>b</span><span>c</span><span>d</span><span>e</span><span>f</span><span>g</span><span>h</span></div>
+            </div>
+            <div>
+              <p class="cs-p"><b>Letter first</b>, for the column (a to h). <b>Then the number</b>, for the row (1 to 8). The marked square is <b>e4</b>. White starts on rows 1 and 2.</p>
+              <div class="cs-step" style="margin-top:12px"><span class="n">2</span>Pieces use capital letters</div>
+              <div class="cs-pcs">
+                <div class="cs-pc"><b>K</b>King</div>
+                <div class="cs-pc"><b>Q</b>Queen</div>
+                <div class="cs-pc"><b>R</b>Rook</div>
+                <div class="cs-pc"><b>B</b>Bishop</div>
+                <div class="cs-pc"><b>N</b>Knight</div>
+                <div class="cs-pc"><b class="pawn">none</b>Pawn</div>
+              </div>
+              <p class="cs-p" style="margin-top:6px">The Knight is N, because K is taken by the King. A pawn move is just the square: e4.</p>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="cs-step"><span class="n">3</span>Piece + square = the move</div>
+          <div class="cs-ex">
+            <div><b>Nf3</b>Knight to f3</div>
+            <div><b>e4</b>pawn to e4</div>
+            <div><b>Qh5</b>Queen to h5</div>
+          </div>
+        </div>
+        <div>
+          <div class="cs-step"><span class="n">4</span>Special marks</div>
+          <div class="cs-marks">
+            <div class="cs-mark"><b>x</b><span>takes <em>Bxc6 · exd5</em></span></div>
+            <div class="cs-mark"><b>O-O</b><span>castles on the King's side</span></div>
+            <div class="cs-mark"><b>+</b><span>check <em>Qh5+</em></span></div>
+            <div class="cs-mark"><b>O-O-O</b><span>castles on the Queen's side</span></div>
+            <div class="cs-mark"><b>#</b><span>checkmate <em>Rd8#</em></span></div>
+            <div class="cs-mark"><b>=Q</b><span>pawn becomes a Queen <em>e8=Q</em></span></div>
+          </div>
+        </div>
+        <div class="cs-morphy">
+          <div class="cs-step" style="margin-bottom:2px"><span class="n">5</span>Read a famous finish</div>
+          <p class="cs-p">Paul Morphy of New Orleans, at the Paris opera in 1858:</p>
+          <div class="cs-mv">16. Qb8+ Nxb8 &#160; 17. Rd8#</div>
+          <p class="cs-p">Queen to b8, check! The knight has to take it. Rook to d8: checkmate.</p>
+        </div>
+        <div>
+          <div class="cs-step"><span class="n">?</span>Your turn: write these moves</div>
+          <div class="cs-try">
+            <div>Knight to c3<span class="cs-box"></span></div>
+            <div>Pawn on d takes on e5<span class="cs-box"></span></div>
+            <div>Bishop takes f7, check<span class="cs-box"></span></div>
+          </div>
+        </div>
+        <div class="cs-foot">
+          <p><b>Played a game?</b> Write it on an LCA scoresheet, then scan it at <b>louisianachess.org/scanner</b>, check it, and keep it in My games.<span class="cs-ans">Answers: Nc3 · dxe5 · Bxf7+</span></p>
+          <svg width="44" height="44" viewBox="0 0 25 25" role="img" aria-label="QR code placeholder for the scanner">
+<rect x="0" y="0" width="25" height="25" fill="#ffffff"></rect>
+<rect x="0.5" y="0.5" width="6" height="6" fill="none" stroke="#111111" stroke-width="1"></rect><rect x="2" y="2" width="3" height="3" fill="#111111"></rect>
+<rect x="18.5" y="0.5" width="6" height="6" fill="none" stroke="#111111" stroke-width="1"></rect><rect x="20" y="2" width="3" height="3" fill="#111111"></rect>
+<rect x="0.5" y="18.5" width="6" height="6" fill="none" stroke="#111111" stroke-width="1"></rect><rect x="2" y="20" width="3" height="3" fill="#111111"></rect>
+<rect x="8.5" y="8.5" width="16" height="16" fill="none" stroke="#8a91a0" stroke-width="0.5" stroke-dasharray="1 1"></rect>
+<text x="16.5" y="17.7" font-size="3.6" text-anchor="middle" fill="#555c6b" font-family="Geist Mono, monospace">QR</text>
+</svg>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SHEET 3 · HOW TO SCAN CARDS -->
+  <div class="sc-col">
+    <div class="sc-cap"><b>3 · How-to-scan cards</b><span>Two per sheet: a card for the TD table and a photo-tips card to hand out with scoresheets.</span></div>
+    <div class="sheet">
+      <span class="mk" style="left:-13px;top:350px"><span class="k-num-badge">6</span></span>
+      <div class="hs-card hs-a">
+        <div class="hs-k"><span class="lft"><span class="lca-mk"><svg class="k-mark" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg></span>After your game</span><span>For the TD table</span></div>
+        <div class="hs-t">Scan your scoresheet</div>
+        <div class="hs-body">
+          <div class="hs-qr">
+            <svg width="104" height="104" viewBox="0 0 25 25" role="img" aria-label="QR code placeholder linking to louisianachess.org/scanner">
+<rect x="0" y="0" width="25" height="25" fill="#ffffff"></rect>
+<rect x="0.5" y="0.5" width="6" height="6" fill="none" stroke="#111111" stroke-width="1"></rect><rect x="2" y="2" width="3" height="3" fill="#111111"></rect>
+<rect x="18.5" y="0.5" width="6" height="6" fill="none" stroke="#111111" stroke-width="1"></rect><rect x="20" y="2" width="3" height="3" fill="#111111"></rect>
+<rect x="0.5" y="18.5" width="6" height="6" fill="none" stroke="#111111" stroke-width="1"></rect><rect x="2" y="20" width="3" height="3" fill="#111111"></rect>
+<rect x="8.5" y="8.5" width="16" height="16" fill="none" stroke="#8a91a0" stroke-width="0.4" stroke-dasharray="1 1"></rect>
+<text x="16.5" y="17.6" font-size="3" text-anchor="middle" fill="#555c6b" font-family="Geist Mono, monospace">QR</text>
+</svg>
+            <span>louisianachess.org/scanner</span>
+          </div>
+          <div class="hs-steps">
+            <div class="hs-st"><i>1.</i><div><b>Snap</b>Photograph the sheet flat, with all four corner marks in view.</div></div>
+            <div class="hs-st"><i>2.</i><div><b>Check</b>Tap any move marked Check this and pick the one that was played.</div></div>
+            <div class="hs-st"><i>3.</i><div><b>Keep</b>Save it to My games, open it in lichess, or link it from the crosstable.</div></div>
+          </div>
+        </div>
+        <p class="hs-fine">Log in to scan · members only · up to 20 scans a day · <span class="sr-dash">Photos are read once and never stored</span></p>
+      </div>
+      <div class="hs-cut"><span>Cut here · 2 cards per sheet</span></div>
+      <div class="hs-card hs-b">
+        <div class="hs-k"><span class="lft">Photo tips</span><span>Hand out with scoresheets</span></div>
+        <div class="hs-t" style="font-size:20px">Get a clean read</div>
+        <div class="hs-dia">
+          <figure>
+            <svg viewBox="0 0 150 92" role="img" aria-label="Good: the whole sheet and all four corner marks inside the frame">
+              <rect x="0" y="0" width="150" height="92" rx="6" fill="#f1f0eb"></rect>
+              <rect x="44" y="12" width="62" height="70" fill="#ffffff" stroke="#9aa1ad" stroke-width="1"></rect>
+              <rect x="47" y="15" width="6" height="6" fill="#111111"></rect><rect x="97" y="15" width="6" height="6" fill="#111111"></rect><rect x="47" y="73" width="6" height="6" fill="#111111"></rect><rect x="97" y="73" width="6" height="6" fill="#111111"></rect>
+              <rect x="57" y="17" width="22" height="3" fill="#1a2744"></rect>
+              <path d="M56 28h38M56 35h38M56 42h38M56 49h38M56 56h38M56 63h38" stroke="#c3c9d3" stroke-width="1"></path>
+              <rect x="34" y="4" width="82" height="84" rx="9" fill="none" stroke="#1a2744" stroke-width="2"></rect>
+            </svg>
+            <figcaption><span class="tag-ok">Good</span>Flat, all four corner marks in view</figcaption>
+          </figure>
+          <figure>
+            <svg viewBox="0 0 150 92" role="img" aria-label="Retake: the top-right corner mark falls outside the frame">
+              <rect x="0" y="0" width="150" height="92" rx="6" fill="#f1f0eb"></rect>
+              <rect x="70" y="2" width="62" height="70" fill="#ffffff" stroke="#9aa1ad" stroke-width="1"></rect>
+              <rect x="73" y="5" width="6" height="6" fill="#111111"></rect><rect x="123" y="5" width="6" height="6" fill="#111111"></rect><rect x="73" y="63" width="6" height="6" fill="#111111"></rect><rect x="123" y="63" width="6" height="6" fill="#111111"></rect>
+              <path d="M82 18h38M82 25h38M82 32h38M82 39h38M82 46h38M82 53h38" stroke="#c3c9d3" stroke-width="1"></path>
+              <rect x="117" y="0" width="33" height="92" fill="#f1f0eb" fill-opacity="0.85"></rect>
+              <rect x="34" y="4" width="82" height="84" rx="9" fill="none" stroke="#1a2744" stroke-width="2"></rect>
+              <circle cx="126" cy="8" r="9" fill="none" stroke="#111111" stroke-width="1.5" stroke-dasharray="2 2"></circle>
+            </svg>
+            <figcaption><span class="tag-no">Retake</span>A corner mark is cut off</figcaption>
+          </figure>
+          <figure>
+            <svg viewBox="0 0 150 92" role="img" aria-label="Retake: a dark shadow falls across the moves">
+              <rect x="0" y="0" width="150" height="92" rx="6" fill="#f1f0eb"></rect>
+              <rect x="44" y="12" width="62" height="70" fill="#ffffff" stroke="#9aa1ad" stroke-width="1"></rect>
+              <rect x="47" y="15" width="6" height="6" fill="#111111"></rect><rect x="97" y="15" width="6" height="6" fill="#111111"></rect><rect x="47" y="73" width="6" height="6" fill="#111111"></rect><rect x="97" y="73" width="6" height="6" fill="#111111"></rect>
+              <rect x="57" y="17" width="22" height="3" fill="#1a2744"></rect>
+              <path d="M56 28h38M56 35h38M56 42h38M56 49h38M56 56h38M56 63h38" stroke="#c3c9d3" stroke-width="1"></path>
+              <path d="M44 52L106 28V54L44 78Z" fill="#1a2744" fill-opacity="0.32"></path>
+              <rect x="34" y="4" width="82" height="84" rx="9" fill="none" stroke="#1a2744" stroke-width="2"></rect>
+            </svg>
+            <figcaption><span class="tag-no">Retake</span>A shadow falls across the moves</figcaption>
+          </figure>
+        </div>
+        <div class="hs-tips">
+          <div>Bright, even light; keep your phone's shadow off the sheet.</div>
+          <div>Hold the phone straight above the sheet, not at an angle.</div>
+          <div>Game on the back too? The scanner asks for the next page, up to 3.</div>
+          <div>Directors: print sheets already filled in from the pairings.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="sr-under">
+  <div class="sr-uc sr-ins">
+    <div class="sr-in">
+      <svg viewBox="0 0 80 104" role="img" aria-label="Back side: corner marks, a page 2 QR, moves 51 to 100, no header"><rect x="1" y="1" width="78" height="102" fill="#ffffff" stroke="#9aa1ad" stroke-width="1"></rect><rect x="4" y="4" width="6" height="6" fill="#111111"></rect><rect x="70" y="4" width="6" height="6" fill="#111111"></rect><rect x="4" y="94" width="6" height="6" fill="#111111"></rect><rect x="70" y="94" width="6" height="6" fill="#111111"></rect><rect x="58" y="5" width="10" height="10" fill="none" stroke="#111111" stroke-width="1"></rect><rect x="60" y="7" width="3" height="3" fill="#111111"></rect><rect x="12" y="14" width="26" height="74" fill="none" stroke="#1a2744" stroke-width="0.8"></rect><rect x="42" y="14" width="26" height="74" fill="none" stroke="#1a2744" stroke-width="0.8"></rect><path d="M12 18h26M42 18h26M12 22h26M42 22h26M12 26h26M42 26h26M12 30h26M42 30h26M12 34h26M42 34h26M12 38h26M42 38h26M12 42h26M42 42h26M12 46h26M42 46h26M12 50h26M42 50h26M12 54h26M42 54h26M12 58h26M42 58h26M12 62h26M42 62h26M12 66h26M42 66h26M12 70h26M42 70h26M12 74h26M42 74h26M12 78h26M42 78h26M12 82h26M42 82h26M12 86h26M42 86h26" stroke="#c3c9d3" stroke-width="0.5"></path></svg>
+      <div><b>Back side</b><p>The same four marks and a QR, "Page 2 of 2". Moves 51 to 100, no header fields.</p></div>
+    </div>
+    <div class="sr-in">
+      <svg viewBox="0 0 80 104" role="img" aria-label="Blank sheet for club nights: corner marks, write-in header lines, no QR"><rect x="1" y="1" width="78" height="102" fill="#ffffff" stroke="#9aa1ad" stroke-width="1"></rect><rect x="4" y="4" width="6" height="6" fill="#111111"></rect><rect x="70" y="4" width="6" height="6" fill="#111111"></rect><rect x="4" y="94" width="6" height="6" fill="#111111"></rect><rect x="70" y="94" width="6" height="6" fill="#111111"></rect><rect x="13" y="6" width="26" height="3" fill="#1a2744"></rect><path d="M13 17h18M34 17h10M47 17h8M58 17h8M13 23h20M36 23h20M59 23h8" stroke="#1a2744" stroke-width="0.8"></path><text x="64" y="11" font-size="3.6" text-anchor="middle" fill="#555c6b" font-family="Geist, sans-serif">no QR</text><rect x="12" y="28" width="26" height="60" fill="none" stroke="#1a2744" stroke-width="0.8"></rect><rect x="42" y="28" width="26" height="60" fill="none" stroke="#1a2744" stroke-width="0.8"></rect><path d="M12 32h26M42 32h26M12 36h26M42 36h26M12 40h26M42 40h26M12 44h26M42 44h26M12 48h26M42 48h26M12 52h26M42 52h26M12 56h26M42 56h26M12 60h26M42 60h26M12 64h26M42 64h26M12 68h26M42 68h26M12 72h26M42 72h26M12 76h26M42 76h26M12 80h26M42 80h26M12 84h26M42 84h26" stroke="#c3c9d3" stroke-width="0.5"></path></svg>
+      <div><b>Blank (club nights)</b><p>Empty header fields with write-in lines, no QR; "Scan at louisianachess.org/scanner" in its place.</p></div>
+    </div>
+  </div>
+  <div class="sr-uc">
+    <p class="sr-anno"><span>G/90+30 means 90 minutes each plus 30 seconds a move. <b>The blue handwriting</b> only shows how the boxes are used: Marcus's 17 moves, the 1-0 box and both initials. Every sheet prints in black ink; the logo prints in greyscale and nothing relies on colour.</span></p>
+  </div>
+  <div class="sr-uc">
+    <p class="sr-open"><b>Open for K · Card A's photo line (dashed box).</b> Today's "Photos are read once and never stored", or "Photos are kept 30 days unless you save the game". The cards and the How it works rail print whichever K picks.</p>
+  </div>
+</div>
+
+<section aria-labelledby="sr-e" style="display:flex;flex-direction:column;gap:8px">
+  <div class="sr-flab"><span class="sr-code">E</span><h2 id="sr-e">Where it prints from</h2><span class="sr-time"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true" style="fill:none;stroke:currentColor;stroke-width:1.9"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg>Sat, Sep 5, 2026 · 9:40 PM · the TD at the hotel</span><span class="k-meta">From the pairings, each sheet's QR holds a signed token, <span class="k-mono">/scanner?sheet=&lt;token&gt;</span>, so the scan opens with the event, round, board and names filled and files under that pairing.</span></div>
+  <div class="sr-two">
+    <div class="k-browser sr-br">
+      <div class="k-browser-bar"><i></i><i></i><i></i><div class="k-browser-url">louisianachess.org/scanner/kit</div></div>
+      <div class="sr-hdwrap"><div class="sr-scale"><header class="k-header sr-hd"><div class="k-wrap-wide k-header-in sr-hd-in"><a class="k-brand" href="#" aria-label="Louisiana Chess Association, home"><svg class="sr-rook" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span class="k-brand-name" aria-hidden="true"><b>Louisiana Chess</b><span>Association</span></span></a><nav class="k-navlinks sr-nav" aria-label="Main"><a class="k-nav-on" href="#" aria-current="page">Tournaments</a><a href="#">Clubs</a><a href="#">Scholastic</a><a href="#">News</a><a href="#">Membership</a><button class="sr-navbtn" type="button" aria-expanded="false" aria-haspopup="true">About<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></button></nav><a class="sr-sbtn" href="#"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg><span>Search</span><kbd class="sr-kbd" aria-hidden="true">&#8984;K</kbd></a><div class="k-utility sr-util"><a class="k-ulink" href="#">Donate</a><button class="sr-my" type="button" aria-haspopup="menu" aria-expanded="false"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4.5 21c1-4 4-6 7.5-6s6.5 2 7.5 6"></path></svg><span>My LCA</span><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></button></div></div></header></div></div>
+      <div class="sr-pg">
+        
+        <nav class="sr-crumb" aria-label="Breadcrumb"><a href="#">Tournaments</a> › <a href="#">Scoresheet scanner</a> › Notation kit</nav>
+        <div class="sr-pghead">
+          <div><h3>Print the notation kit <span class="k-num-badge sr-ib">6</span></h3><p>Three US Letter sheets in black ink, at 100% scale. The scanner reads any sheet; these read best. Log in to scan · members only · up to 20 scans a day.</p></div>
+          <p class="sr-dirbox"><span class="k-tag k-tag-closed">Directors</span> Scoresheets filled in from the pairings print from your event's print kit. <a class="k-link" href="#">Open the print kit</a></p>
+        </div>
+        <div class="sr-kitlist">
+          <div class="sr-kr"><svg class="th" viewBox="0 0 34 44" aria-hidden="true"><rect x="0.5" y="0.5" width="33" height="43" fill="#ffffff" stroke="#858b99"></rect><rect x="2" y="2" width="3" height="3" fill="#111111"></rect><rect x="29" y="2" width="3" height="3" fill="#111111"></rect><rect x="2" y="39" width="3" height="3" fill="#111111"></rect><rect x="29" y="39" width="3" height="3" fill="#111111"></rect><path d="M7 12h9M18 12h9M7 15h9M18 15h9M7 18h9M18 18h9M7 21h9M18 21h9M7 24h9M18 24h9M7 27h9M18 27h9M7 30h9M18 30h9M7 33h9M18 33h9" stroke="#8a91a0" stroke-width="0.8"></path><rect x="7" y="5" width="12" height="2" fill="#1a2744"></rect></svg><div><b>LCA scoresheet · blank · 2 pages</b><span>Four corner marks, moves 1 to 100, write-in header, no QR</span></div><a class="k-btn k-btn-line" href="#"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"></path></svg>Download PDF</a></div>
+          <div class="sr-kr"><svg class="th" viewBox="0 0 34 44" aria-hidden="true"><rect x="0.5" y="0.5" width="33" height="43" fill="#ffffff" stroke="#858b99"></rect><rect x="5" y="5" width="16" height="2.5" fill="#1a2744"></rect><rect x="5" y="11" width="11" height="11" fill="none" stroke="#1a2744" stroke-width="0.8"></rect><path d="M19 12h10M19 15h10M19 18h8M5 26h24M5 29h24M5 32h20" stroke="#8a91a0" stroke-width="0.8"></path><rect x="5" y="35" width="24" height="5" fill="none" stroke="#1a2744" stroke-width="0.8"></rect></svg><div><b>Notation cheat sheet · 1 page</b><span>Squares, pieces, special marks, Morphy's finish, a three-move drill</span></div><a class="k-btn k-btn-line" href="#"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"></path></svg>Download PDF</a></div>
+          <div class="sr-kr"><svg class="th" viewBox="0 0 34 44" aria-hidden="true"><rect x="0.5" y="0.5" width="33" height="43" fill="#ffffff" stroke="#858b99"></rect><rect x="3" y="3" width="28" height="17" rx="2" fill="none" stroke="#1a2744" stroke-width="0.8"></rect><rect x="3" y="24" width="28" height="17" rx="2" fill="none" stroke="#1a2744" stroke-width="0.8"></rect><path d="M1 22h32" stroke="#555c6b" stroke-width="0.8" stroke-dasharray="1.5 1.5"></path><rect x="6" y="6" width="7" height="7" fill="#1a2744"></rect><path d="M16 8h12M16 11h10M6 29h22M6 33h18" stroke="#8a91a0" stroke-width="0.8"></path></svg><div><b>How-to-scan cards · 2 per sheet</b><span>One for the TD table with the QR, one with photo tips</span></div><a class="k-btn k-btn-line" href="#"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"></path></svg>Download PDF</a></div>
+        </div>
+      </div>
+      <div class="sr-ftwrap"><div class="sr-scale"><footer class="k-footer sr-foot">
+<div class="k-wrap-wide sr-foot-in">
+<div class="k-row-sm" style="gap:10px"><svg class="sr-rook sr-rook-sm" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><b style="font-size:15px">Louisiana Chess Association</b></div>
+<div class="sr-playcol"><b>Play</b><a href="#">Tournaments</a><a href="#">Scholastic</a><a href="#">State champions</a><a class="on" href="#">Scoresheet scanner</a></div>
+<span class="k-meta">US Chess state affiliate · since 1915</span>
+<nav class="k-row" aria-label="Footer" style="gap:18px"><a href="#">Contact</a><a href="#">Website help</a><a href="#">Bylaws &amp; rules</a><a href="#">Donate</a></nav>
+</div>
+</footer></div></div>
+    </div>
+
+    <div class="k-browser sr-br">
+      <div class="k-browser-bar"><i></i><i></i><i></i><div class="k-browser-url">louisianachess.org/tournaments/louisiana-state-championship-2026/print</div></div>
+      <div class="sr-hdwrap"><div class="sr-scale"><header class="k-header sr-hd"><div class="k-wrap-wide k-header-in sr-hd-in"><a class="k-brand" href="#" aria-label="Louisiana Chess Association, home"><svg class="sr-rook" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span class="k-brand-name" aria-hidden="true"><b>Louisiana Chess</b><span>Association</span></span></a><nav class="k-navlinks sr-nav" aria-label="Main"><a class="k-nav-on" href="#" aria-current="page">Tournaments</a><a href="#">Clubs</a><a href="#">Scholastic</a><a href="#">News</a><a href="#">Membership</a><button class="sr-navbtn" type="button" aria-expanded="false" aria-haspopup="true">About<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></button></nav><a class="sr-sbtn" href="#"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg><span>Search</span><kbd class="sr-kbd" aria-hidden="true">&#8984;K</kbd></a><div class="k-utility sr-util"><a class="k-ulink" href="#">Donate</a><button class="sr-my" type="button" aria-haspopup="menu" aria-expanded="false"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4.5 21c1-4 4-6 7.5-6s6.5 2 7.5 6"></path></svg><span>My LCA</span><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></button></div></div></header></div></div>
+      <div class="sr-pg">
+        <span class="k-num-badge sr-badge" style="left:4px;top:84px">3</span>
+        <div class="sr-crow"><div class="sr-crl"><nav class="sr-crumb" aria-label="Breadcrumb"><a href="#">Tournaments</a> › <a href="#">Louisiana State Championship 2026</a> › Print &amp; QR kit</nav><span class="k-tag k-tag-closed">Tournament directors only</span></div><div class="sr-crr"><button class="k-btn k-btn-navy sr-pb" type="button"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 9V3.5h10V9M7 14h10v6.5H7z"></path><rect x="3.5" y="9" width="17" height="8" rx="1.5"></rect></svg>Print Round 4 set</button><span class="sr-dlb"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"></path></svg>Download<svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 15l-6-6-6 6"></path></svg></span></div></div>
+        <div class="sr-menu" role="menu" aria-label="Download">
+          <p class="mh">Round 4 · every section</p>
+          <div class="sr-mi" role="menuitem"><b>Round 4 set</b><em>PDF</em></div>
+          <div class="sr-mi hot" role="menuitem"><span><b>Scoresheets · Round 4 · Open</b><span class="new">New</span></span><em>PDF</em></div>
+          <div class="sr-mi" role="menuitem"><b>One sheet</b><em>PDF</em></div>
+          <div class="sr-mi" role="menuitem"><b>Hall poster with QR</b><em>PDF</em></div>
+          <div class="sr-mi" role="menuitem"><b>Wall chart, 11×17</b><em>PDF</em></div>
+                            </div>
+        <div class="sr-pform">
+          <div>
+            <p class="sr-fl">What to print</p>
+            <div class="sr-sel on"><span>Scoresheets</span><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></div>
+            <div class="sr-lst" role="listbox" aria-label="What to print">
+              <div class="sel" role="option" aria-selected="true">Scoresheets <svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></div>
+              <div role="option" aria-selected="false">Pairings by board</div>
+              <div role="option" aria-selected="false">Pairings alphabetical</div>
+              <div role="option" aria-selected="false">Standings</div>
+              <div role="option" aria-selected="false">Crosstable</div>
+            </div>
+          </div>
+          <div>
+            <div class="sr-fgrid">
+              <div><p class="sr-fl">Section</p><div class="sr-sel"><span>Open</span><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></div></div>
+              <div><p class="sr-fl">Round</p><div class="sr-sel"><span>Round 4</span><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></div></div>
+            </div>
+            <label class="k-check"><input type="checkbox"><span>Blank sheets instead of names (10)</span></label>
+            <p class="sr-prev"><b>30 sheets</b> · names, ratings and the sheet QR filled · 2 pages each · Sat, Sep 5, 9:40 PM</p>
+            <div class="sr-pbtn"><button class="k-btn k-btn-line" type="button"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 9V3.5h10V9M7 14h10v6.5H7z"></path><rect x="3.5" y="9" width="17" height="8" rx="1.5"></rect></svg>Print 30 scoresheets</button></div>
+          </div>
+        </div>
+      </div>
+      <div class="sr-ftwrap"><div class="sr-scale"><footer class="k-footer sr-foot">
+<div class="k-wrap-wide sr-foot-in">
+<div class="k-row-sm" style="gap:10px"><svg class="sr-rook sr-rook-sm" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><b style="font-size:15px">Louisiana Chess Association</b></div>
+<div class="sr-playcol"><b>Play</b><a href="#">Tournaments</a><a href="#">Scholastic</a><a href="#">State champions</a><a href="#">Scoresheet scanner</a></div>
+<span class="k-meta">US Chess state affiliate · since 1915</span>
+<nav class="k-row" aria-label="Footer" style="gap:18px"><a href="#">Contact</a><a href="#">Website help</a><a href="#">Bylaws &amp; rules</a><a href="#">Donate</a></nav>
+</div>
+</footer></div></div>
+    </div>
+  </div>
+</section>
+
+<section aria-labelledby="sr-f" style="display:flex;flex-direction:column;gap:8px">
+  <div class="sr-flab"><span class="sr-code">F</span><h2 id="sr-f">Every state</h2><span class="k-meta">Each state says what it is in words. Prints on US Letter in black ink; nothing relies on colour; no grade or birthdate anywhere.</span></div>
+  <div class="sr-states">
+    <div class="sr-st"><span class="k-tag">Loading</span><h3>Loading</h3><p>Building 30 sheets from the Round 4 pairings…</p></div>
+    <div class="sr-st"><span class="k-tag k-tag-soon">Waiting</span><h3>Pairings not published</h3><p>Print after Round 4 is published. Blank sheets still print.</p></div>
+    <div class="sr-st"><span class="k-tag k-tag-open">Names and QR on</span><h3>Printed from pairings</h3><p>Names, ratings, round, board and the sheet QR filled.</p></div>
+    <div class="sr-st"><span class="k-tag k-tag-closed">No QR</span><h3>Blank</h3><p>No QR, no names; a write-in header for club nights.</p></div>
+    <div class="sr-st"><span class="k-tag k-tag-full">Couldn't build</span><h3>Failure</h3><p>Couldn't build the sheets. Try again. The blank kit's PDFs always download.</p></div>
+    <div class="sr-st"><span class="k-tag k-tag-closed">Offline</span><h3>Offline</h3><p>Downloaded PDFs open offline; the scan waits for a connection.</p></div>
+    <div class="sr-st"><span class="k-tag k-tag-ext">Marks found</span><h3>Reading a kit sheet</h3><p>The reader straightens on the four marks, then reads the header, the moves and the result box.</p></div>
+    <div class="sr-st"><span class="k-tag k-tag-ext">17 of 20 left today</span><h3>Daily limit</h3><p>Scanning a printed sheet counts like any scan: 1 of your 20 a day; the card says so.</p></div>
+    <div class="sr-st"><span class="k-tag k-tag-closed">Only me</span><h3>Junior's sheet</h3><p>Priya's sheet carries her full name (open for K: it lies on a public table). Her scanned game saves as Only me.</p></div>
+  </div>
+</section>
+
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1960,"height":1950}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

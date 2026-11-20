@@ -1,0 +1,514 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Workspace · K · Setup checklist, every step on one page (round 2)</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/6107adb451dbab26ee5d89f4189b81f8">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1a2744}
+.wk-root{width:1440px;box-sizing:border-box;padding:32px 0 48px;background:#ecebe6;color:#1a2744}
+.wk-root *{box-sizing:border-box}
+.wk-pad{margin:0 32px}
+.wk-doc{background:#fbfaf6;border:1px solid #d9d8d1;border-radius:14px;padding:22px 26px 24px}
+.wk-title{font-size:27px;line-height:1.15;font-weight:700;letter-spacing:-.015em;margin:6px 0 4px}
+.wk-ml{font-size:14px;line-height:1.5;color:#3d4556;margin:2px 0 0;max-width:1180px}
+.wk-ml b{color:#1a2744;font-weight:600}
+.wk-kq{margin:10px 0 0;padding:9px 14px;border-left:4px solid #c8a94a;background:#ffffff;border-radius:0 8px 8px 0;font-size:14px;line-height:1.5;color:#1a2744;max-width:1180px}
+.wk-legend{display:flex;flex-direction:column;gap:12px;margin-top:14px}
+.wk-lbox{background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:16px 20px}
+.wk-notes{list-style:none;margin:10px 0 0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px 22px}
+.wk-notes li{display:flex;gap:10px;align-items:flex-start;font-size:13.5px;line-height:1.45}
+.wk-notes b{font-weight:600}
+.wk-fl2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px;align-items:start;margin-top:12px}
+.wk-frameline{margin:0;padding:10px 14px;border:1px dashed #b9b7ad;border-radius:10px;background:#fbfbf8;font-size:13px;line-height:1.5;color:#3d4556}
+.wk-frameline b{color:#1a2744}
+.wk-crumbs3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.wk-c3{border:1px solid #e3e2dc;border-radius:8px;background:#ffffff;padding:8px 10px;font-size:13px;line-height:1.4}
+.wk-c3 span{display:block;font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:#555c6b;margin-bottom:2px}
+.wk-c3 small{display:block;font-family:"Geist Mono",ui-monospace,monospace;font-size:11.5px;color:#3d4556;margin-top:2px;word-break:break-all}
+.wk-grey{background:#efefea;border:1px solid #dddcd4;border-radius:12px;padding:14px 18px;display:grid;grid-template-columns:1fr 1fr 1fr 1.25fr;gap:20px}
+.wk-grey p{margin:0;font-size:13.5px;line-height:1.45;color:#3d4556}
+.wk-grey b{display:block;color:#1a2744;font-size:12px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;margin-bottom:2px}
+.wk-grey ul{margin:2px 0 0;padding-left:18px;font-size:13.5px;line-height:1.45;color:#3d4556}
+.wk-grey li{margin-bottom:4px}
+.wk-sec{margin-top:26px}
+.wk-flab{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:0 32px 12px}
+.wk-flab h2{margin:0;font-size:20px;line-height:1.2;font-weight:600;letter-spacing:-.01em}
+.wk-code{display:inline-flex;align-items:center;justify-content:center;min-width:28px;height:28px;padding:0 9px;border-radius:7px;background:#c8a94a;color:#1a2744;font-weight:700;font-size:13px}
+.wk-browser{border-radius:0;border-left:0;border-right:0;box-shadow:0 14px 34px rgba(16,24,43,.10)}
+.wk-view{background:#f5f5f2;position:relative}
+/* decided header */
+.wk-hd-in{gap:0;position:relative;padding:0 24px;max-width:none}
+.wk-hd .k-brand{margin-right:16px}
+.wk-rook{width:30px;height:30px;fill:#ffffff;flex:none}
+.wk-rook-sm{width:24px;height:24px}
+.wk-nav{gap:0}
+.wk-nav a{padding:0 10px;white-space:nowrap}
+.wk-navbtn{display:inline-flex;align-items:center;gap:4px;min-height:44px;padding:0 10px;border:0;background:transparent;color:#ffffff;font:inherit;font-size:15px;font-weight:500}
+.wk-sbtn{display:inline-flex;align-items:center;gap:8px;width:220px;height:44px;padding:0 8px 0 12px;margin-right:16px;border-radius:8px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.45);color:#ffffff;text-decoration:none;font-size:14.5px;font-weight:500;flex:none}
+.wk-kbd{margin-left:auto;font-family:"Geist Mono",ui-monospace,monospace;font-size:12px;color:#e8ecf4;border:1px solid rgba(255,255,255,.4);border-radius:5px;padding:2px 6px;line-height:1.2}
+.wk-my{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 8px;border:0;border-radius:8px;background:transparent;color:#ffffff;font:inherit;font-size:14px;font-weight:500}
+.wk-count{display:inline-flex;align-items:center;justify-content:center;min-width:20px;height:20px;padding:0 6px;border-radius:999px;background:#fbfaf6;color:#1a2744;font-size:12px;font-weight:700}
+.wk-foot-in{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px;padding:18px 24px 20px}
+.wk-foot .k-meta{color:rgba(255,255,255,.78)}
+/* room chrome */
+.wk-crumb{display:flex;align-items:center;justify-content:space-between;gap:12px;height:44px;padding:0 36px;background:#fbfaf6;border-bottom:1px solid #e3e2dc}
+.wk-crumb nav{display:flex;align-items:center;gap:8px;font-size:14px;color:#555c6b}
+.wk-crumb nav a{color:#1a2744;font-weight:600;text-decoration:underline;text-decoration-color:#c8a94a;text-decoration-thickness:2px;text-underline-offset:4px}
+.wk-crumb nav b{color:#1a2744;font-weight:600}
+.wk-back{display:inline-flex;align-items:center;gap:6px;min-height:34px;padding:0 12px;border:1px solid #1a2744;border-radius:8px;background:#ffffff;color:#1a2744;font-size:14px;font-weight:600;text-decoration:none}
+.wk-band{background:#ffffff;border-bottom:1px solid #dddcd4;padding:18px 36px 18px}
+.wk-band-in{display:flex;justify-content:space-between;align-items:flex-end;gap:24px}
+.wk-band h1{margin:6px 0 4px;font-size:34px;line-height:1.1;font-weight:700;letter-spacing:-.015em}
+.wk-bact{display:flex;flex-direction:column;align-items:flex-end;gap:6px}
+.wk-why{font-size:13px;color:#555c6b;display:flex;align-items:center;gap:6px}
+.wk-gold-off{opacity:1;background:#ece3c4;border-color:#d9cb9a;color:#4a4f5c;cursor:not-allowed}
+.wk-import{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;margin-top:14px;border:1px dashed #858b99;border-radius:12px;padding:11px 16px;background:#f5f5f2;font-size:14.5px;line-height:1.45;color:#1a2744}
+.wk-body{display:grid;grid-template-columns:900px 440px;gap:28px;padding:22px 36px 30px;align-items:start}
+.wk-colh{display:flex;align-items:center;gap:8px;margin:0 0 8px;font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#555c6b}
+.wk-colh .k-meta{text-transform:none;letter-spacing:0;font-weight:400}
+.wk-form{position:relative;border:1px solid #cfcec6;border-radius:14px;background:#efeee8;padding:14px;display:flex;flex-direction:column;gap:12px;box-shadow:inset 0 2px 0 rgba(26,39,68,.22),inset 0 -2px 0 rgba(26,39,68,.22)}
+.wk-edge{display:flex;align-items:center;gap:8px;font-size:12.5px;color:#555c6b;padding:0 4px}
+.wk-edge::before,.wk-edge::after{content:"";flex:1;height:0;border-top:1px dashed #9a988e}
+.wk-step{background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:16px 18px;display:flex;flex-direction:column;gap:12px;position:relative}
+.wk-step-h{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
+.wk-step-h h3{margin:0;font-size:19px;line-height:1.25;font-weight:600}
+.wk-n{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:8px;background:#efefea;color:#1a2744;font-size:14px;font-weight:700;flex:none}
+.wk-push{margin-left:auto}
+.wk-pair{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px;align-items:stretch}
+.wk-sum{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px 18px}
+.wk-sum div{display:flex;flex-direction:column;gap:1px;font-size:13px;color:#555c6b;line-height:1.4}
+.wk-sum b{color:#1a2744;font-size:15px}
+.wk-preset{min-width:80px}
+.wk-row{display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+.wk-tbl{width:100%;border-collapse:collapse;font-size:14px}
+.wk-tbl th{text-align:left;font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:#555c6b;padding:7px 10px;background:#fbfbf8;border-bottom:1px solid #e3e2dc}
+.wk-tbl td{padding:6px 10px;border-bottom:1px solid #eeede8;vertical-align:middle}
+.wk-tbl tr:last-child td{border-bottom:0}
+.wk-tbox{border:1px solid #dddcd4;border-radius:10px;overflow:hidden}
+.wk-in{display:flex;align-items:center;min-height:36px;padding:0 10px;border:1px solid #858b99;border-radius:7px;background:#ffffff;font-size:14px;color:#1a2744}
+.wk-in-r{justify-content:flex-end;font-variant-numeric:tabular-nums}
+.wk-in-ph{color:#6b7180}
+.wk-hint{font-size:13px;line-height:1.45;color:#555c6b;margin:0}
+.wk-ladder{display:flex;border-radius:10px;overflow:hidden;border:1px solid #1a2744}
+.wk-ladder div{display:flex;flex-direction:column;gap:1px;padding:8px 12px;font-size:13px;line-height:1.3}
+.wk-l1{flex:3;background:#1a2744;color:#ffffff}
+.wk-l2{flex:2;background:#dfe3ea;color:#1a2744}
+.wk-l3{flex:2;background:#c8a94a;color:#1a2744}
+.wk-fees{display:grid;grid-template-columns:90px repeat(3,minmax(0,1fr));gap:7px 10px;align-items:center}
+.wk-lock{display:flex;flex-direction:column;gap:8px;padding:12px 14px;border:1px solid #d7d6cf;border-radius:10px;background:#f7f7f4}
+.wk-seg-off{opacity:1}
+.wk-seg-off button{color:#6b7180;cursor:not-allowed}
+.wk-seg-off .k-seg-on{background:#3d4a66;color:#ffffff}
+.wk-locktag{display:inline-flex;align-items:center;gap:5px;padding:3px 8px;border-radius:6px;background:#eceef2;color:#2b3446;font-size:12px;font-weight:600}
+.wk-rounds{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.wk-rl{list-style:none;margin:0;padding:0;border:1px solid #dddcd4;border-radius:10px;overflow:hidden}
+.wk-rl li{display:flex;justify-content:space-between;gap:10px;padding:7px 12px;border-bottom:1px solid #eeede8;font-size:14px}
+.wk-rl li:last-child{border-bottom:0}
+.wk-rl .wk-day{background:#fbfbf8;font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:#555c6b;padding:6px 12px}
+.wk-note{border-radius:10px;background:#fbf6e6;border:1px solid #e3d29b;padding:10px 14px;display:flex;flex-direction:column;gap:6px;font-size:13.5px;line-height:1.45}
+.wk-off{display:flex;align-items:center;gap:10px;padding:8px 12px;border:1px solid #e3e2dc;border-radius:10px;background:#fbfbf8;font-size:13.5px;line-height:1.4;color:#3d4556}
+.wk-sw{display:inline-flex;align-items:center;flex:none;width:40px;height:24px;border-radius:999px;background:#c4c3bb;padding:2px}
+.wk-sw i{display:block;width:20px;height:20px;border-radius:50%;background:#ffffff}
+.wk-sw-on{background:#1a2744;justify-content:flex-end}
+.wk-swl{font-size:12.5px;font-weight:600;color:#3d4556;flex:none}
+.wk-dd{display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:38px;padding:0 10px;border:1px solid #858b99;border-radius:7px;background:#ffffff;font-size:14px;font-weight:500;color:#1a2744}
+.wk-fld{display:flex;flex-direction:column;gap:4px}
+.wk-fl{font-size:12px;font-weight:600;color:#3d4556}
+.wk-share{border:1px solid #c4c3bb;border-radius:10px;overflow:hidden;background:#ffffff}
+.wk-share-img{background:#1a2744;color:#ffffff;padding:12px 14px;display:flex;flex-direction:column;gap:6px;min-height:130px;justify-content:space-between}
+.wk-share-k{display:flex;align-items:center;gap:8px;font-size:11px;letter-spacing:.12em;font-weight:700;color:#e6cf86}
+.wk-share-t{font-size:22px;font-weight:700;line-height:1.1}
+.wk-share-s{font-size:13.5px;color:rgba(255,255,255,.88)}
+.wk-pill{display:inline-flex;align-self:flex-start;background:#c8a94a;color:#1a2744;border-radius:99px;padding:4px 12px;font-size:12.5px;font-weight:700}
+.wk-share-meta{padding:8px 12px;background:#eef0f3;display:flex;flex-direction:column;gap:1px;font-size:12.5px;color:#555c6b}
+.wk-share-meta b{color:#1a2744;font-size:14px}
+.wk-status{display:flex;align-items:center;gap:8px;padding:9px 12px;border-radius:10px;background:#f5ecd2;color:#664c0c;font-size:13.5px;font-weight:600}
+/* right column */
+.wk-side{display:flex;flex-direction:column;gap:16px}
+.wk-pin{display:inline-flex;align-items:center;gap:6px;padding:3px 9px;border-radius:999px;background:#e8ebf2;color:#1a2744;font-size:12px;font-weight:600;text-transform:none;letter-spacing:0}
+.wk-steps{list-style:none;margin:0;padding:0}
+.wk-steps li{display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid #ecebe4;font-size:14.5px}
+.wk-steps li:last-child{border-bottom:0}
+.wk-steps a{flex:1;color:#1a2744;text-decoration:none;font-weight:500}
+.wk-ok{color:#2f6b45}
+.wk-todo{color:#866a1e}
+.wk-prog{height:8px;border-radius:99px;background:#e6e5de;overflow:hidden}
+.wk-prog span{display:block;height:100%;background:#1a2744;border-radius:99px}
+.wk-steps .wk-cur{background:#f3eedc;margin:0 -10px;padding:6px 10px;border-radius:6px;box-shadow:inset 3px 0 0 #866a1e}
+.wk-og{border:1px solid #c4c3bb;border-radius:10px;overflow:hidden;background:#ffffff}
+.wk-og-img{aspect-ratio:1.91/1;background:#1a2744;color:#ffffff;padding:14px 18px;display:flex;flex-direction:column;justify-content:space-between}
+.wk-og-t{font-size:24px;font-weight:700;line-height:1.1}
+.wk-og-s{font-size:13.5px;color:rgba(255,255,255,.88)}
+.wk-bad{display:flex;align-items:center;gap:12px}
+.wk-bad-img{flex:none;width:126px;height:66px;border:1px dashed #858b99;border-radius:8px;background:#efefea;display:flex;align-items:center;justify-content:center;font-size:11px;color:#555c6b;text-align:center;padding:6px}
+.wk-badge-abs{position:absolute;top:-12px;right:-12px}
+.wk-feerow{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:16px;align-items:start}
+.wk-fees .wk-in{min-height:32px}
+.wk-schrow{display:grid;grid-template-columns:420px minmax(0,1fr);gap:16px;align-items:start}
+.wk-schrow .wk-rounds{gap:8px}
+.wk-tri{display:grid;grid-template-columns:1fr 1fr 1.25fr;gap:12px;align-items:stretch}
+.wk-lr{display:grid;grid-template-columns:96px minmax(0,1fr);gap:8px;align-items:center}
+.wk-lr .wk-in,.wk-lr .wk-dd{min-height:34px;font-size:13.5px}
+.wk-seg-sm button{min-height:34px;padding:0 11px;font-size:13px}
+.wk-pub{display:grid;grid-template-columns:290px minmax(0,1fr) minmax(0,1fr);gap:16px;align-items:start}
+.wk-ck{font-size:13.5px;gap:8px}
+.wk-ck input{width:18px;height:18px}
+.wk-tbl td{padding:5px 10px}
+.wk-tbl .wk-in{min-height:32px}
+.wk-step{padding:14px 16px;gap:10px}
+.wk-notes li{font-size:13px}
+.wk-sum{grid-template-columns:1.15fr 1.1fr 1.1fr 1fr .8fr .8fr;gap:10px 14px}
+.wk-fl2{grid-template-columns:minmax(0,1fr) minmax(0,1.5fr)}
+.wk-grey p,.wk-grey ul{font-size:13px;line-height:1.42}
+.wk-doc{padding:20px 24px 20px}
+.wk-import{font-size:13.5px;padding:9px 14px;margin-top:12px}
+.wk-band{padding:14px 36px 14px}
+.wk-band h1{font-size:32px;margin:4px 0 2px}
+.wk-lr{grid-template-columns:92px minmax(0,1fr);gap:6px}
+.wk-lr .wk-in,.wk-lr .wk-dd{min-height:30px}
+.wk-tbl .wk-in{min-height:28px}
+.wk-tbl td{padding:4px 10px}
+.wk-segcol{display:flex;width:100%}
+.wk-segcol button{flex:1;padding:0 8px}
+.wk-pub .wk-seg-sm button{padding:0 9px}
+.wk-root{padding:28px 0 20px}
+.wk-form{gap:10px;padding:12px}
+.wk-band h1{margin:0}
+.wk-sum b{font-size:14.5px}
+.wk-fees{gap:6px 10px}
+.wk-fees .wk-in{min-height:30px}
+.wk-import{font-size:13px;flex-wrap:nowrap;gap:10px}
+.wk-fl2{grid-template-columns:minmax(0,1.15fr) minmax(0,1.5fr)}
+.wk-kq,.wk-ml{max-width:none}
+.wk-sec{margin-top:20px}
+.wk-pub{grid-template-columns:272px minmax(0,1fr) minmax(0,1.3fr)}
+.wk-segcol button{white-space:nowrap;font-size:12.5px}
+.wk-pub{grid-template-columns:300px minmax(0,1fr) minmax(0,1fr)}
+.wk-segv{display:flex;flex-direction:column;width:100%}
+.wk-segv button{text-align:left;padding:0 12px}
+.wk-segcol button{padding:0 6px}
+.wk-share-t{font-size:21px}
+/* part 2 */
+.wk-ins{display:grid;grid-template-columns:560px 400px 400px;gap:16px;margin:0 24px;align-items:start}
+.wk-icard{background:#ffffff;border:1px solid #cfcec6;border-radius:12px;overflow:hidden;box-shadow:0 10px 26px rgba(16,24,43,.08)}
+.wk-ihead{display:flex;align-items:center;flex-wrap:wrap;gap:8px;padding:10px 14px;background:#fbfbf8;border-bottom:1px solid #ecebe5;font-size:13px;line-height:1.35;color:#555c6b}
+.wk-ihead b{color:#1a2744;font-size:14px}
+.wk-icode{display:inline-flex;align-items:center;justify-content:center;min-width:30px;height:24px;padding:0 7px;border-radius:6px;background:#1a2744;color:#ffffff;font-size:12px;font-weight:700}
+.wk-ibody{padding:12px 14px 14px;display:flex;flex-direction:column;gap:10px;background:#f5f5f2}
+.wk-mcrumb{display:flex;flex-wrap:wrap;align-items:center;gap:6px;font-size:12.5px;color:#555c6b}
+.wk-mcrumb a{color:#1a2744;font-weight:600;text-decoration:underline;text-decoration-color:#c8a94a;text-decoration-thickness:2px;text-underline-offset:3px}
+.wk-mband{background:#ffffff;border:1px solid #dddcd4;border-radius:10px;padding:10px 12px;display:flex;flex-direction:column;gap:6px}
+.wk-mband h4{margin:0;font-size:17px;line-height:1.25;font-weight:700}
+.wk-mstep{background:#ffffff;border:1px solid #dddcd4;border-radius:10px;padding:12px;display:flex;flex-direction:column;gap:8px}
+.wk-mstep h5{margin:0;font-size:15.5px;font-weight:600}
+.wk-live{display:flex;gap:8px;align-items:flex-start;padding:10px 12px;border-radius:10px;background:#eef1f7;font-size:13px;line-height:1.45;color:#1a2744}
+.wk-stop{display:flex;flex-direction:column;gap:8px;padding:10px 12px;border-radius:10px;background:#fbe9e7;border:1px solid #e9b8b1;color:#5e1a14;font-size:13.5px;line-height:1.45}
+.wk-stop b{color:#5e1a14}
+.wk-msteps{list-style:none;margin:0;padding:0;border:1px solid #e3e2dc;border-radius:10px;background:#ffffff}
+.wk-msteps li{display:flex;justify-content:space-between;gap:8px;padding:5px 10px;border-bottom:1px solid #eeede8;font-size:13px}
+.wk-msteps li:last-child{border-bottom:0}
+.wk-schem{display:grid;grid-template-columns:1.4fr 1fr;gap:6px}
+.wk-blk{border:1px dashed #9a988e;border-radius:6px;padding:6px 8px;font-size:12px;line-height:1.3;color:#3d4556;background:#ffffff}
+.wk-blk b{display:block;color:#1a2744;font-size:12.5px}
+.wk-blk-wide{grid-column:1 / -1}
+.wk-mrow{display:grid;grid-template-columns:70px minmax(0,1fr) 60px 70px;gap:8px;align-items:center;padding:6px 10px;border-bottom:1px solid #eeede8;font-size:13px}
+.wk-mrow:last-child{border-bottom:0}
+.wk-mrow-x{background:#fff6f4;box-shadow:inset 3px 0 0 #b3202f}
+.wk-way{display:grid;grid-template-columns:1.15fr 1fr 1fr 1.05fr;gap:16px;margin:0 24px;align-items:start}
+.wk-wbody{padding:12px 14px 14px;display:flex;flex-direction:column;gap:10px;font-size:13.5px;line-height:1.45;color:#3d4556}
+.wk-wbody b{color:#1a2744}
+.wk-erow{display:grid;grid-template-columns:56px minmax(0,1fr);gap:12px;align-items:start;border:1px solid #e3e2dc;border-radius:10px;padding:10px 12px;background:#ffffff}
+.wk-date{display:flex;flex-direction:column;align-items:center;justify-content:center;width:56px;min-height:60px;border-radius:9px;background:#1a2744;color:#ffffff;line-height:1.05}
+.wk-date span{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#e6cf86}
+.wk-date b{font-size:22px;font-weight:700;margin:2px 0}
+.wk-today{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;border:1px solid #e3e2dc;border-radius:10px;padding:10px 12px;background:#ffffff}
+.wk-role{display:inline-flex;align-items:center;padding:2px 8px;border-radius:6px;background:#e8ebf2;color:#1a2744;font-size:12px;font-weight:600}
+.wk-door{display:flex;flex-direction:column;gap:2px;padding:8px 10px;border:1px solid #e3e2dc;border-radius:8px;background:#fbfbf8}
+.wk-door small{font-family:"Geist Mono",ui-monospace,monospace;font-size:11.5px;color:#3d4556}
+.wk-done{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;background:#e2f0e5;color:#1d5a31;font-size:13.5px;font-weight:600}
+.wk-done a{color:#1a2744;text-decoration:underline;text-decoration-color:#c8a94a;text-decoration-thickness:2px;text-underline-offset:4px}
+.wk-wbody .wk-date b{color:#ffffff}
+</style>
+</helmet>
+<div class="wk-root" style="width:1440px;height:3350px">
+
+<section class="wk-doc wk-pad" aria-label="About this board">
+  <div class="k-between"><p class="k-kicker" style="margin:0">15 · Workspace and admin · round 2 · option K · part 1 of 2 · part 2 holds K1 to K3 and the way in and back</p><span class="k-sample">Sample data · dates, venue, fees, prizes, caps, room notes</span></div>
+  <h1 class="wk-title">Workspace · K · Setup checklist, every step on one page (round 2)</h1>
+  <p class="wk-ml"><b>Built from:</b> Work-D, Event-Final-Setup and WS08 as amended (replan 4.6), Account-K (the way in) · <b>Round 2</b> · <b>Frame:</b> Int-A, swappable · <b>Replaces:</b> Work-D, with Work-L (one is picked)</p>
+  <p class="wk-ml"><b>K's feedback applied:</b> the screens joined to the whole, with options. <b>Shown:</b> /workspace/tournaments/2027-paul-morphy-open/setup, Thu, Oct 8, 2026, 7:40 PM, Chris Arceneaux, the named director.</p>
+  <p class="wk-kq"><b>K, page 15, Tue, Oct 13:</b> "for 15, it seems all the pages here are all their separate ideas and are good on their own right, i think its proper to think about how we plan to integrate each of them into the whole and also get mockup options for each to pin down a good vision."</p>
+  <div class="wk-legend">
+    <div class="wk-lbox">
+      <p class="k-label" style="margin:0">Notes on this board</p>
+      <ol class="wk-notes">
+        <li><span class="k-num-badge">1</span><span><b>Every step on one page.</b> The form scrolls in its own container; the steps rail and the page preview stay pinned beside it (D16).</span></li>
+        <li><span class="k-num-badge">2</span><span><b>Start from last year.</b> Copies the event and moves every date a year forward onto the same weekday.</span></li>
+        <li><span class="k-num-badge">3</span><span><b>One price per section per tier, no member price</b> (D11). LCA membership is required by default; only a club's own event may switch it off, by the representative or an admin (D12).</span></li>
+        <li><span class="k-num-badge">4</span><span><b>Where in the room</b> per section reaches each player's pinned Your game card.</span></li>
+        <li><span class="k-num-badge">5</span><span><b>Directors are named</b> by admins or the region's representative; a director finishes every step but the membership switch.</span></li>
+        <li><span class="k-num-badge">6</span><span><b>Club events submit for LCA review</b> (Work-K-2, K1); LCA events publish now or on a date.</span></li>
+      </ol>
+      <div class="wk-fl2"><p class="wk-frameline"><b>Frame.</b> Drawn inside Int-A (My LCA as the hub, rooms open from each section). The frame is swappable: under Int-B this room is a page the left rail opens; under Int-C it opens from a card on Your work. The room itself does not change; only the breadcrumb, the way back and the menu row do. Pick the frame on Account-Int-A, B or C.</p>
+      <div class="wk-crumbs3">
+        <div class="wk-c3"><span>Int-A · baseline</span>My LCA › Events you direct › 2027 Paul Morphy Open › Setup<small>/workspace/tournaments/:id/setup</small></div>
+        <div class="wk-c3"><span>Int-B</span>My LCA rail › 2027 Paul Morphy Open › Setup<small>/my/events/:id/setup</small></div>
+        <div class="wk-c3"><span>Int-C</span>My LCA › Your work › 2027 Paul Morphy Open › Setup<small>/work/tournaments/:id/setup</small></div>
+      </div></div>
+    </div>
+    <aside class="wk-grey" aria-label="Board note">
+      <p><b>What</b>The setup room with all ten steps on one form that scrolls in its own container, the steps rail and preview pinned beside it. Work-L shows one step at a time instead.</p>
+      <p><b>Built from</b>Work-D (clone, presets, fee timeline, schedule check, byes, waitlist, rail, previews, scheduled publish); Event-Final-Setup (limits, Where in the room, membership switch, venue, display state, share card).</p>
+      <p><b>K's feedback applied</b>In from Setup on Events you direct or the Today item; the crumb starts at My LCA; Back to My LCA in the bar. Gone: the member discount, the Workspace crumb, the club rep's button, any Text option.</p>
+      <div><p><b>Open for K</b></p>
+        <ul>
+          <li>K (every step on one page) or L (one step at a time).</li>
+          <li>Registration settings inside Publish (drawn), or their own step as on Work-D.</li>
+          <li>Publish greyed until Prizes and Directors are done (drawn), or allowed with prizes "to be announced".</li>
+        </ul>
+      </div>
+    </aside>
+  </div>
+</section>
+
+<section class="wk-sec" aria-labelledby="wk-fa">
+  <div class="wk-flab"><span class="wk-code">A</span><h2 id="wk-fa">The setup room at 1440 · every step on one page</h2><span class="k-meta">Thu, Oct 8, 2026 · 7:40 PM · 8 of 10 steps done · Prizes and Directors To do</span></div>
+  <div class="k-browser wk-browser">
+    <div class="k-browser-bar"><i></i><i></i><i></i><div class="k-browser-url">louisianachess.org/workspace/tournaments/2027-paul-morphy-open/setup</div></div>
+    <div class="wk-view">
+<header class="k-header wk-hd"><div class="k-header-in wk-hd-in"><a class="k-brand" href="#" aria-label="Louisiana Chess Association, home"><svg class="wk-rook" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span class="k-brand-name" aria-hidden="true"><b>Louisiana Chess</b><span>Association</span></span></a><nav class="k-navlinks wk-nav" aria-label="Main"><a href="#">Tournaments</a><a href="#">Clubs</a><a href="#">Scholastic</a><a href="#">News</a><a href="#">Membership</a><button class="wk-navbtn" type="button" aria-expanded="false" aria-haspopup="true">About<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></button></nav><a class="wk-sbtn" href="#"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg><span>Search</span><kbd class="wk-kbd" aria-hidden="true">&#8984;K</kbd></a><div class="k-utility" style="gap:12px"><a class="k-ulink" href="#">Donate</a><button class="wk-my" type="button" aria-haspopup="menu" aria-expanded="false" aria-label="My LCA, 1 thing to do"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4.5 21c1-4 4-6 7.5-6s6.5 2 7.5 6"></path></svg><span>My LCA</span><span class="wk-count" aria-hidden="true">1</span><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></button></div></div></header>
+      <div class="wk-crumb">
+        <nav aria-label="Breadcrumb"><a href="#">My LCA</a><span aria-hidden="true">›</span><a href="#">Events you direct</a><span aria-hidden="true">›</span><a href="#">2027 Paul Morphy Open</a><span aria-hidden="true">›</span><b aria-current="page">Setup</b></nav>
+        <a class="wk-back" href="#"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6"></path></svg>Back to My LCA</a>
+      </div>
+      <div class="wk-band">
+        <div class="wk-band-in">
+          <div>
+            <div class="k-row" style="gap:12px"><h1>2027 Paul Morphy Open</h1><span class="k-tag">Draft</span><span class="k-tag k-tag-lca">LCA event</span></div>
+            <span class="k-small k-muted">Saved 7:38 PM · Chris Arceneaux, tournament director · leave any time and pick up where you stopped</span>
+          </div>
+          <div class="wk-bact">
+            <div class="k-row-sm" style="gap:8px"><a class="k-btn k-btn-line" href="#">Preview public page</a><button class="k-btn k-btn-soft" type="button">Save draft</button><button class="k-btn k-btn-gold wk-gold-off" type="button" disabled>Publish</button></div>
+            <span class="wk-why"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2"></rect><path d="M8 11V8a4 4 0 0 1 8 0v3"></path></svg>Publish unlocks when 7 Prizes and 9 Directors are done</span>
+          </div>
+        </div>
+        <div class="wk-import">
+          <span class="k-num-badge">2</span>
+          <span><b>Started from the 2026 Paul Morphy Open.</b> Sections, fees, schedule, byes and prizes were copied and every date moved forward a year onto the same weekday. Check anything marked To do.</span>
+          <span style="white-space:nowrap"><a class="k-link" href="#">Undo</a> · <a class="k-link" href="#">Start from another event</a></span>
+        </div>
+      </div>
+
+      <div class="wk-body">
+        <div>
+          <p class="wk-colh">The form <span class="k-meta">· scrolls in its own container, drawn at full length here; a 2px shade at its top and bottom edges shows it scrolls</span></p>
+          <div class="wk-form" aria-label="Setup form, scrolls on its own">
+            <span class="k-num-badge wk-badge-abs">1</span>
+
+            <section class="wk-step" aria-labelledby="wk-h1">
+              <div class="wk-step-h"><span class="wk-n">1</span><h3 id="wk-h1">Basics</h3><span class="k-tag k-tag-open">Done</span><button class="k-btn k-btn-ghost k-btn-sm wk-push" type="button">Edit</button></div>
+              <div class="wk-sum">
+                <div><span class="k-label">Dates</span><b>Sat–Sun, Jun 12–13, 2027</b></div>
+                <div><span class="k-label">Where</span><b>[Venue name], New Orleans</b></div>
+                <div><span class="k-label">Type · format</span><b>LCA event, 5-round Swiss</b>US Chess regular rated</div>
+                <div><span class="k-label">Time control</span><b>G/90+30</b>90 min each + 30 sec per move</div>
+                <div><span class="k-label">Tagline · optional</span><b>[Tagline]</b></div>
+                <div><span class="k-label">Championship title</span><b>None</b></div>
+              </div>
+            </section>
+
+            <section class="wk-step" aria-labelledby="wk-h2">
+              <div class="wk-step-h"><span class="wk-n">2</span><h3 id="wk-h2">Sections</h3><span class="k-tag k-tag-open">Done · 4 sections</span><a class="k-link wk-push" href="#" style="font-size:14px">Add a section</a></div>
+              <div class="wk-row"><span class="k-small k-muted wk-preset">Quick add</span><span class="k-chip k-chip-on"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Open</span><span class="k-chip k-chip-on">U1800</span><span class="k-chip k-chip-on">U1400</span><span class="k-chip k-chip-on">U1000</span><span style="width:14px"></span><span class="k-chip">K–12</span><span class="k-chip">K–8</span><span class="k-chip">K–5</span><span class="k-chip">K–3</span></div>
+              <div class="wk-row"><span class="k-small k-muted wk-preset">Entry limit</span><div class="k-seg" role="group" aria-label="Entry limit"><button type="button">Overall</button><button class="k-seg-on" type="button">Limits by section</button></div><span class="k-small k-muted" style="margin-left:8px">Overall number <b class="k-ink">60</b> · the caps add up to 60; each section gets its own waitlist</span></div>
+              <div class="wk-tbox">
+                <table class="wk-tbl">
+                  <thead><tr><th style="width:84px">Section</th><th style="width:220px">Who can enter</th><th style="width:76px">Cap</th><th>Where in the room <span class="k-num-badge" style="width:22px;height:22px;font-size:11px;vertical-align:middle;margin-left:4px">4</span></th><th style="width:60px;text-align:right">Order</th></tr></thead>
+                  <tbody>
+                    <tr><td><b>Open</b></td><td>Everyone</td><td><span class="wk-in wk-in-r">15</span></td><td><span class="wk-in">Main hall, boards 1–8</span></td><td style="text-align:right">1</td></tr>
+                    <tr><td><b>U1800</b></td><td>Rated under 1800, or unrated</td><td><span class="wk-in wk-in-r">20</span></td><td><span class="wk-in">Main hall, boards 9–18</span></td><td style="text-align:right">2</td></tr>
+                    <tr><td><b>U1400</b></td><td>Rated under 1400, or unrated</td><td><span class="wk-in wk-in-r">15</span></td><td><span class="wk-in">Room B, boards 1–8</span></td><td style="text-align:right">3</td></tr>
+                    <tr><td><b>U1000</b></td><td>Rated under 1000, or unrated</td><td><span class="wk-in wk-in-r">10</span></td><td><span class="wk-in">Room B, boards 9–13</span></td><td style="text-align:right">4</td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <p class="wk-hint">Where in the room is shown on each player's pinned Your game card, such as Room B, boards 1–8. Scholastic presets ask one yes/no question, never a grade or birthdate.</p>
+            </section>
+
+            <section class="wk-step" aria-labelledby="wk-h3">
+              <span class="k-num-badge wk-badge-abs">3</span>
+              <div class="wk-step-h"><span class="wk-n">3</span><h3 id="wk-h3">Fees</h3><span class="k-tag k-tag-open">Done · 3 tiers</span></div>
+              <div class="wk-ladder" role="img" aria-label="Fee timeline: Early until Mon, May 31; Regular Tue, Jun 1 to Thu, Jun 10; Late from Fri, Jun 11 and at the door">
+                <div class="wk-l1"><b>Early</b><span>until Mon, May 31</span></div>
+                <div class="wk-l2"><b>Regular</b><span>Tue, Jun 1 to Thu, Jun 10</span></div>
+                <div class="wk-l3"><b>Late</b><span>from Fri, Jun 11 and at the door</span></div>
+              </div>
+              <div class="wk-feerow"><div class="k-stack-sm"><div class="wk-fees">
+                <span></span><span class="k-label">Early</span><span class="k-label">Regular</span><span class="k-label">Late</span>
+                <b>Open</b><span class="wk-in wk-in-r">$50</span><span class="wk-in wk-in-r">$60</span><span class="wk-in wk-in-r">$70</span>
+                <b>U1800</b><span class="wk-in wk-in-r">$40</span><span class="wk-in wk-in-r">$50</span><span class="wk-in wk-in-r">$60</span>
+                <b>U1400</b><span class="wk-in wk-in-r">$30</span><span class="wk-in wk-in-r">$40</span><span class="wk-in wk-in-r">$50</span>
+                <b>U1000</b><span class="wk-in wk-in-r">$20</span><span class="wk-in wk-in-r">$30</span><span class="wk-in wk-in-r">$40</span>
+              </div>
+              <p class="wk-hint"><b class="k-ink">One price per section per tier. There is no member price.</b> Paid players keep the price they paid.</p></div><div class="wk-lock">
+                <div class="wk-row" style="gap:10px"><b style="font-size:15px">LCA membership</b><div class="k-seg wk-seg-off" role="group" aria-label="LCA membership, locked"><button class="k-seg-on" type="button" disabled>Required to enter</button><button type="button" disabled>Not required</button></div><span class="wk-locktag"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2"></rect><path d="M8 11V8a4 4 0 0 1 8 0v3"></path></svg>Locked for directors</span></div>
+                <span class="wk-hint">Set by LCA admins for LCA events. A club's own event may switch it off, by the region's representative or an admin. A player without one joins in the checkout.</span>
+              </div>
+            </div>
+            </section>
+
+            <section class="wk-step" aria-labelledby="wk-h4">
+              <div class="wk-step-h"><span class="wk-n">4</span><h3 id="wk-h4">Schedule</h3><span class="k-tag k-tag-soon">Done · 1 note</span><span class="k-small k-muted wk-push">Check-in <b class="k-ink">Sat, Jun 12 · 8:30 AM to 9:30 AM</b></span></div>
+              <div class="wk-schrow"><div class="wk-rounds">
+                <ul class="wk-rl"><li class="wk-day">Saturday, Jun 12</li><li><b>Round 1</b><span>Sat 10:00 AM</span></li><li><b>Round 2</b><span>Sat 2:30 PM</span></li><li><b>Round 3</b><span>Sat 7:00 PM</span></li></ul>
+                <ul class="wk-rl"><li class="wk-day">Sunday, Jun 13</li><li><b>Round 4</b><span>Sun 9:30 AM</span></li><li><b>Round 5</b><span>Sun 2:00 PM</span></li></ul>
+              </div>
+              <div class="k-stack-sm" style="gap:10px"><div class="wk-note">
+                <b>Tight turnarounds · a note, not a block</b>
+                <span>At G/90+30 a 60-move game can run about 4 hours, so Rounds 2, 3 and 5 may start just 30 minutes after the longest game ends.</span>
+                <div class="k-row-sm" style="gap:8px"><button class="k-btn k-btn-line k-btn-sm" type="button">Keep as is</button><button class="k-btn k-btn-soft k-btn-sm" type="button">Add 30 min to each gap</button></div>
+              </div>
+              <div class="wk-off"><span class="wk-sw"><i></i></span><span class="wk-swl">Off</span><span><b class="k-ink">Schedules</b> · a second schedule with its own rounds and merge round</span></div>
+            </div></div>
+            </section>
+
+            <div class="wk-pair">
+              <section class="wk-step" aria-labelledby="wk-h5">
+                <div class="wk-step-h"><span class="wk-n">5</span><h3 id="wk-h5">Byes &amp; rules</h3><span class="k-tag k-tag-open">Done</span></div>
+                <div class="wk-lr"><span class="wk-fl">Half-point byes</span><span class="wk-dd">Up to 2<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"></path></svg></span></div>
+                <div class="wk-lr"><span class="wk-fl">Round 5 byes</span><span class="wk-dd">Zero-point only<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"></path></svg></span></div>
+                <div class="wk-lr"><span class="wk-fl">Requests close</span><span class="wk-dd">When Round 2 is paired<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"></path></svg></span></div>
+                <div class="wk-lr"><span class="wk-fl">Lapsed US Chess</span><div class="k-seg wk-seg-sm" role="group" aria-label="Lapsed US Chess membership"><button type="button">Warn</button><button class="k-seg-on" type="button">Warn + email</button><button type="button">Block</button></div></div>
+              </section>
+              <section class="wk-step" aria-labelledby="wk-h6">
+                <div class="wk-step-h"><span class="wk-n">6</span><h3 id="wk-h6">Venue &amp; travel</h3><span class="k-tag k-tag-open">Done</span></div>
+                <div class="wk-lr"><span class="wk-fl">Venue</span><span class="wk-in">[Venue name]</span></div>
+                <div class="wk-lr"><span class="wk-fl">Address</span><span class="wk-in">[Street address], New Orleans, LA [ZIP]</span></div>
+                <div class="wk-lr"><span class="wk-fl">Parking · food</span><div class="wk-pair" style="gap:6px"><span class="wk-in">[Where to park]</span><span class="wk-in">[Places to eat]</span></div></div>
+                <div class="wk-lr"><span class="wk-fl">Getting in</span><span class="wk-in">[Entrance, floor, step-free route]</span></div>
+                <div class="wk-off"><span class="wk-sw"><i></i></span><span class="wk-swl">Off</span><span><b class="k-ink">Travel details</b></span><a class="k-link" href="#" style="margin-left:auto;font-size:13.5px">Add a hotel</a></div>
+              </section>
+            </div>
+
+            <div class="wk-tri">
+              <section class="wk-step" aria-labelledby="wk-h7">
+                <div class="wk-step-h"><span class="wk-n">7</span><h3 id="wk-h7">Prizes</h3><span class="k-tag k-tag-closed">To do</span></div>
+                <p class="k-small" style="margin:0">Copied from 2026: $1,500 based on 60 entries. Confirm per section, or switch to trophies only.</p>
+                <div><button class="k-btn k-btn-navy k-btn-sm" type="button">Confirm prizes</button></div>
+              </section>
+              <section class="wk-step" aria-labelledby="wk-h8">
+                <div class="wk-step-h"><span class="wk-n">8</span><h3 id="wk-h8">Side events</h3><span class="k-tag k-tag-closed">Off</span></div>
+                <div class="wk-off"><span class="wk-sw"><i></i></span><span class="wk-swl">Off</span><span>Paid in the same checkout</span></div>
+                <a class="k-link" href="#" style="font-size:14px">Add a side event or meeting</a>
+              </section>
+              <section class="wk-step" aria-labelledby="wk-h9">
+                <span class="k-num-badge wk-badge-abs">5</span>
+                <div class="wk-step-h"><span class="wk-n">9</span><h3 id="wk-h9">Directors</h3><span class="k-tag k-tag-closed">To do</span></div>
+                <span class="k-small"><b class="k-ink">Chief TD</b> · Chris Arceneaux · US Chess TD ID needed</span>
+                <div class="k-row-sm" style="flex-wrap:nowrap"><span class="wk-in wk-in-ph" style="flex:1">[US Chess TD ID]</span><button class="k-btn k-btn-line k-btn-sm" type="button">Save</button></div>
+                <p class="wk-hint">Directors are named by LCA admins or the region's representative; a director can't add or remove directors.</p>
+              </section>
+            </div>
+
+            <section class="wk-step" aria-labelledby="wk-h10">
+              <span class="k-num-badge wk-badge-abs">6</span>
+              <div class="wk-step-h"><span class="wk-n">10</span><h3 id="wk-h10">Publish</h3><span class="k-tag">Last step</span></div>
+              <div class="wk-pub"><div class="k-stack-sm">
+                  <span class="k-label">Share card</span>
+                  <div class="wk-share">
+                    <div class="wk-share-img">
+                      <div class="wk-share-k"><svg class="wk-rook wk-rook-sm" viewBox="0 0 100 100" aria-hidden="true" style="fill:#e6cf86;width:18px;height:18px"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg>LCA EVENT · NEW ORLEANS</div>
+                      <div><div class="wk-share-t">2027 Paul Morphy Open</div><div class="wk-share-s">Sat–Sun, Jun 12–13, 2027 · New Orleans</div></div>
+                      <span class="wk-pill">Register · from $20</span>
+                    </div>
+                    <div class="wk-share-meta">louisianachess.org<b>2027 Paul Morphy Open · LCA</b></div>
+                  </div>
+                  <div style="font-size:12px;white-space:nowrap;color:#3d4556">louisianachess.org/t/2027-paul-morphy-open · <a class="k-link" href="#">Copy</a></div>
+                </div>
+                <div class="k-stack-sm" style="gap:10px">
+                  <div class="wk-fld"><span class="wk-fl">Registration</span><span class="k-small" style="font-size:13.5px">Opens with the page, <b>Mon, Oct 12, 2026 · 9:00 AM</b>. When full: a waitlist, 24 hours to claim an offer.</span>
+                    <label class="k-check wk-ck"><input type="checkbox" checked><span>Show "X of 60 registered"</span></label>
+                    <label class="k-check wk-ck"><input type="checkbox" checked><span>Family checkout</span></label></div>
+                  <div class="wk-fld"><span class="wk-fl">When you publish</span>
+                    <label class="k-check wk-ck"><input type="checkbox" checked><span>Post it to LCA News</span></label>
+                    <label class="k-check wk-ck"><input type="checkbox" checked><span>Email members who follow New Orleans Metro events</span></label>
+                    <label class="k-check wk-ck"><input type="checkbox"><span>Show a site banner for 7 days</span></label></div>
+                </div>
+                <div class="k-stack-sm" style="gap:10px">
+                  <div class="wk-fld"><span class="wk-fl">The page shows</span><div class="k-seg wk-seg-sm wk-segcol" role="group" aria-label="Page state"><button class="k-seg-on" type="button">Automatic</button><button type="button">Before</button><button type="button">During</button><button type="button">After</button></div><span class="wk-hint">Automatic follows the clock.</span></div>
+                  <div class="wk-fld"><span class="wk-fl">When</span><div class="k-seg wk-seg-sm wk-segv" role="group" aria-label="Publish timing"><button type="button">Publish now</button><button class="k-seg-on" type="button">Publish Mon, Oct 12, 9:00 AM</button></div></div>
+                  <div class="wk-status"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg>Draft · publishes when Prizes and Directors are done</div>
+                </div>
+              </div>
+            </section>
+          </div>
+        </div>
+
+        <aside class="wk-side" aria-label="Pinned beside the form">
+          <p class="wk-colh" style="margin:0">Pinned beside the form <span class="wk-pin"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 17v5M8 3h8l-1 6 3 4H6l3-4z"></path></svg>stays in view while the form scrolls</span></p>
+          <section class="k-card k-card-pad k-stack-sm" aria-labelledby="wk-check" style="padding:16px 18px">
+            <div class="k-between"><h3 id="wk-check" class="k-h4" style="margin:0">Setup steps</h3><span class="k-small k-strong">8 of 10 done</span></div>
+            <div class="wk-prog" role="img" aria-label="8 of 10 steps done"><span style="width:80%"></span></div>
+            <ol class="wk-steps">
+              <li><svg class="k-i wk-ok" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg><a href="#">1 · Basics</a><span class="k-small wk-ok">Done</span></li>
+              <li><svg class="k-i wk-ok" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg><a href="#">2 · Sections</a><span class="k-small wk-ok">Done</span></li>
+              <li><svg class="k-i wk-ok" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg><a href="#">3 · Fees</a><span class="k-small wk-ok">Done</span></li>
+              <li><svg class="k-i wk-todo" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 11v6M12 7.5v.01"></path></svg><a href="#">4 · Schedule</a><span class="k-small wk-todo">Done · 1 note</span></li>
+              <li><svg class="k-i wk-ok" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg><a href="#">5 · Byes &amp; rules</a><span class="k-small wk-ok">Done</span></li>
+              <li><svg class="k-i wk-ok" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg><a href="#">6 · Venue &amp; travel</a><span class="k-small wk-ok">Done</span></li>
+              <li class="wk-cur" aria-current="step"><svg class="k-i wk-todo" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"></circle></svg><a href="#">7 · Prizes</a><span class="k-small wk-todo">To do · in view</span></li>
+              <li><svg class="k-i wk-ok" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg><a href="#">8 · Side events</a><span class="k-small k-muted">Off</span></li>
+              <li><svg class="k-i wk-todo" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"></circle></svg><a href="#">9 · Directors</a><span class="k-small wk-todo">To do</span></li>
+              <li><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg><a href="#">10 · Publish</a><span class="k-small k-muted">Last step</span></li>
+            </ol>
+            <span class="k-meta">Tap a step to jump the form to it; the row of the step in view is marked.</span>
+          </section>
+
+          <section class="k-stack-sm" aria-labelledby="wk-live">
+            <div class="k-between"><span id="wk-live" class="k-label">Live preview</span><div class="k-seg" role="group" aria-label="Preview"><button class="k-seg-on" type="button" style="min-height:34px">Event card</button><button type="button" style="min-height:34px">Phone</button></div></div>
+            <div class="k-card k-card-pad k-stack-sm" style="padding:16px 18px">
+              <div class="k-row"><div class="k-date k-date-navy"><b>12</b><span>Jun</span></div><div><b class="k-h4" style="margin:0;display:block">2027 Paul Morphy Open</b><div class="k-small k-muted">Sat–Sun, Jun 12–13, 2027 · New Orleans</div></div></div>
+              <div class="k-row-sm"><span class="k-tag k-tag-lca">LCA event</span><span class="k-tag k-tag-soon">Opens Mon, Oct 12</span></div>
+              <span class="k-small">Open · U1800 · U1400 · U1000 · 5 rounds · G/90+30</span>
+              <span class="k-small">From $20, early until Mon, May 31</span>
+              <div class="k-between k-small"><span class="k-strong">0 of 60 registered</span><span class="k-muted">Waitlist when full</span></div>
+              <div class="wk-prog"><span style="width:1%"></span></div>
+              <span class="k-small">LCA membership required to enter</span>
+            </div>
+          </section>
+
+          <section class="k-stack-sm" aria-labelledby="wk-og">
+            <span id="wk-og" class="k-label">Link preview · Facebook, Messages, Discord</span>
+            <div class="wk-og">
+              <div class="wk-og-img">
+                <div class="wk-share-k"><svg class="wk-rook" viewBox="0 0 100 100" aria-hidden="true" style="fill:#e6cf86;width:20px;height:20px"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg>LOUISIANA CHESS ASSOCIATION</div>
+                <div><div class="wk-og-t">2027 Paul Morphy Open</div><div class="wk-og-s">Sat–Sun, Jun 12–13, 2027 · New Orleans</div><div class="wk-og-s">Open · U1800 · U1400 · U1000</div></div>
+                <span class="wk-pill">Registration opens Mon, Oct 12</span>
+              </div>
+              <div class="wk-share-meta">LOUISIANACHESS.ORG<b>2027 Paul Morphy Open · Louisiana Chess Association</b><span>5 rounds, G/90+30 · 4 sections · early entry until Mon, May 31</span></div>
+            </div>
+            <div class="wk-bad"><div class="wk-bad-img">Loading tournament details…</div><span class="k-small k-muted">How pages built only in the browser share today. Ours are rendered on the server; once registration opens the image shows "X of 60 registered".</span></div>
+          </section>
+        </aside>
+      </div>
+<footer class="k-footer wk-foot"><div class="wk-foot-in"><div class="k-row-sm" style="gap:10px"><svg class="wk-rook wk-rook-sm" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><b style="font-size:15px">Louisiana Chess Association</b></div><span class="k-meta">US Chess state affiliate · Louisiana's chess community since 1915</span><nav class="k-row" aria-label="Footer" style="gap:18px"><a href="#">Contact</a><a href="#">Website help</a><a href="#">Bylaws &amp; rules</a><a href="#">Donate</a></nav></div></footer>
+    </div>
+  </div>
+</section>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":3350}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

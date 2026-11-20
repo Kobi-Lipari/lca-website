@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>My LCA · F · The card is the page's header band (round 2)</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/6107adb451dbab26ee5d89f4189b81f8">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1a2744}
+.af-root{box-sizing:border-box;padding:16px 0 14px;background:#ecebe6;color:#1a2744;position:relative}
+.af-root *{box-sizing:border-box}
+.af-mk{position:absolute;z-index:40;box-shadow:0 0 0 3px #ffffff}
+/* board doc */
+.af-doc{margin:0 40px;background:#fbfaf6;border:1px solid #d9d8d1;border-radius:14px;padding:18px 22px 18px}
+.af-doc-top{display:flex;justify-content:space-between;align-items:flex-start;gap:24px}
+.af-title{font-size:30px;line-height:1.15;font-weight:700;letter-spacing:-.015em;margin:6px 0 0}
+.af-ml{font-size:13px;line-height:1.42;color:#3d4556;margin:4px 0 0}
+.af-ml b{color:#1a2744;font-weight:600}
+.af-round{display:inline-flex;align-items:center;height:26px;padding:0 10px;border-radius:6px;background:#1a2744;color:#ffffff;font-size:12.5px;font-weight:700;letter-spacing:.04em}
+.af-fr{display:inline-flex;align-items:center;height:26px;padding:0 10px;border-radius:6px;background:#ffffff;border:1px solid #c9c8c0;color:#1a2744;font-size:12.5px;font-weight:600}
+.af-rcol{flex:none;width:600px;display:flex;flex-direction:column;gap:10px;align-items:flex-start}
+.af-grey{width:600px;background:#efefea;border:1px solid #dfded6;border-radius:10px;padding:12px 14px;display:grid;grid-template-columns:1fr 1.2fr;gap:10px 16px}
+.af-grey p{font-size:12px;line-height:1.4;color:#2b3446;margin:0}
+.af-grey > div > p + p{margin-top:8px}
+.af-grey b{display:block;font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#555c6b;margin-bottom:2px}
+.af-grey ol{margin:0;padding-left:16px;font-size:12px;line-height:1.4;color:#2b3446}
+.af-grey li{margin-bottom:4px}
+.af-lbox{background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:12px 16px 14px;margin-top:14px}
+.af-notes{list-style:none;margin:8px 0 0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px 22px}
+.af-notes li{display:flex;gap:8px;align-items:flex-start;font-size:12.5px;line-height:1.42;color:#2b3446}
+.af-notes .k-num-badge{width:22px;height:22px;font-size:11.5px}
+.af-notes b{font-weight:600;color:#1a2744}
+/* frame label */
+.af-flab{display:flex;align-items:center;gap:12px;margin:16px 40px 8px}
+.af-flab h2{white-space:nowrap;margin:0;font-size:19px;line-height:1.2;font-weight:600;letter-spacing:-.01em}
+.af-code{display:inline-flex;align-items:center;justify-content:center;min-width:28px;height:28px;padding:0 9px;border-radius:7px;background:#c8a94a;color:#1a2744;font-weight:700;font-size:13px}
+.af-urlchip{white-space:nowrap;font-family:"Geist Mono",ui-monospace,monospace;font-size:12px;color:#3d4556;background:#ffffff;border:1px solid #d9d8d1;border-radius:7px;padding:4px 10px;margin-left:auto}
+.af-swap{display:flex;gap:10px;align-items:flex-start;margin:0 40px 10px;font-size:13px;line-height:1.45;color:#555c6b;position:relative}
+.af-swap .k-num-badge{width:22px;height:22px;font-size:11.5px}
+.af-frame{width:1440px;background:#f5f5f2;border-top:1px solid #cfcec6;border-bottom:1px solid #cfcec6;box-shadow:0 20px 50px rgba(16,24,43,.10);position:relative}
+.af-tier{position:absolute;right:-64px;top:14px;font-size:11px;line-height:1.2;color:#6b7180;border:1px dashed #b9b7ad;border-radius:5px;padding:2px 5px;background:#fbfaf6}
+/* header (decided, Nav-Header-Final) */
+.af-hd{position:relative;z-index:20}
+.af-hd-in{display:flex;align-items:center;gap:0;height:68px;min-height:68px;padding:0 40px;position:relative}
+.af-hd .k-brand{margin-right:16px}
+.af-rook{width:30px;height:30px;fill:#ffffff;flex:none}
+.af-rook-sm{width:24px;height:24px;fill:#ffffff;flex:none}
+.af-nav{gap:0}
+.af-nav a{padding:0 10px !important;white-space:nowrap}
+.af-navbtn{display:inline-flex;align-items:center;gap:4px;min-height:44px;padding:0 10px;border:0;background:transparent;color:#ffffff;font:inherit;font-size:15px;font-weight:500;cursor:pointer}
+.af-sbtn{display:inline-flex;align-items:center;gap:8px;width:220px;height:44px;padding:0 8px 0 12px;margin-right:16px;border-radius:8px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.45);color:#ffffff;text-decoration:none;font-size:14.5px;font-weight:500;flex:none}
+.af-kbd{margin-left:auto;font-family:"Geist Mono",ui-monospace,monospace;font-size:12px;color:#e8ecf4;border:1px solid rgba(255,255,255,.4);border-radius:5px;padding:2px 6px;line-height:1.2}
+.af-util{gap:12px}
+.af-util .k-ulink{padding:0 4px}
+.af-my{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 8px;border:0;border-radius:8px;background:transparent;color:#ffffff;font:inherit;font-size:14px;font-weight:600;cursor:pointer;box-shadow:inset 0 -2px 0 #c8a94a;border-radius:0}
+.af-my-open{background:rgba(255,255,255,.12);border-radius:8px;box-shadow:none}
+.af-count{display:inline-flex;align-items:center;justify-content:center;min-width:20px;height:20px;padding:0 6px;border-radius:999px;background:#fbfaf6;color:#1a2744;font-size:12px;font-weight:700}
+/* footer */
+.af-foot-in{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px;padding:22px 40px 24px}
+.af-foot .k-meta{color:rgba(255,255,255,.78)}
+.af-foot nav a{font-size:14px}
+/* the card band */
+.af-band{background:#1a2744;color:#ffffff;border-bottom:2px solid #c8a94a;position:relative}
+.af-band-in{width:1120px;margin:0 auto;height:232px;display:grid;grid-template-columns:330px 380px 350px;gap:30px;align-items:center;position:relative}
+.af-bk{font-size:10px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:#c8a94a;margin:0}
+.af-bname{font-size:36px;line-height:1.1;font-weight:700;letter-spacing:-.015em;margin:8px 0 6px;color:#ffffff}
+.af-bline{font-size:16px;line-height:1.45;color:#e8ecf4;margin:0}
+.af-blinks{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+.af-wbtn{display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:0 12px;border-radius:8px;border:1px solid rgba(255,255,255,.75);color:#ffffff;font-size:14px;font-weight:600;text-decoration:none;white-space:nowrap}
+.af-plate{width:380px;height:150px;background:#223256;border:1px solid rgba(255,255,255,.18);border-radius:14px;padding:16px 16px 16px 20px;display:flex;justify-content:space-between;align-items:center;gap:12px;position:relative}
+.af-pl{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#c8a94a}
+.af-pn{font-size:20px;line-height:1.2;font-weight:700;color:#ffffff;margin-top:6px}
+.af-pm{font-size:13px;line-height:1.45;color:#e8ecf4}
+.af-qr{background:#ffffff;border-radius:8px;padding:6px;line-height:0;flex:none}
+.af-under{font-size:13px;line-height:1.45;color:#e8ecf4;margin:8px 0 0}
+.af-wallet{display:inline-flex;align-items:center;gap:6px;color:#a9b4ca;font-size:12.5px}
+.af-wallet i{font-style:normal;border:1px solid rgba(255,255,255,.3);border-radius:999px;padding:1px 7px;font-size:11.5px;color:#c9d0de}
+.af-usc{background:#223256;border:1px solid rgba(255,255,255,.18);border-radius:12px;padding:14px 16px;display:flex;flex-direction:column;gap:7px}
+.af-uk{font-size:11.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#e6cf86;margin:0}
+.af-ut{font-size:14px;line-height:1.4;color:#ffffff;margin:0}
+.af-um{font-size:12.5px;line-height:1.4;color:#c9d0de;margin:0}
+.af-ul{color:#ffffff;font-size:13.5px;font-weight:600;text-decoration:underline;text-decoration-color:#c8a94a;text-decoration-thickness:2px;text-underline-offset:4px;display:inline-flex;align-items:center;gap:5px}
+.af-amber{display:inline-flex;align-items:center;padding:3px 8px;border-radius:6px;background:#fdebd6;color:#7a3d00;font-size:12px;font-weight:600;white-space:nowrap}
+.af-find{position:absolute;right:0;bottom:-23px;display:inline-flex;align-items:center;gap:8px;height:46px;padding:0 18px;border-radius:8px;background:#ffffff;color:#1a2744;border:1px solid #1a2744;font-size:15px;font-weight:600;text-decoration:none;box-shadow:0 8px 20px rgba(16,24,43,.18);z-index:3}
+/* body */
+.af-body{width:1120px;margin:0 auto;padding:34px 0 36px;display:grid;grid-template-columns:220px 876px;gap:24px;align-items:start;position:relative}
+.af-rail{background:#ffffff;border:1px solid #e3e1d8;border-radius:12px;padding:12px 10px;position:relative}
+.af-rt{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#555c6b;margin:2px 8px 8px}
+.af-rr{display:flex;justify-content:space-between;align-items:center;min-height:40px;padding:0 10px 0 13px;border-radius:6px;color:#1a2744;font-size:14.5px;text-decoration:none;border-left:3px solid transparent}
+.af-rr-on{border-left-color:#1a2744;font-weight:700;background:#f3f2ec;border-radius:0 6px 6px 0}
+.af-rc{display:inline-flex;align-items:center;justify-content:center;min-width:22px;height:20px;padding:0 6px;border-radius:999px;background:#eceef2;color:#3d4555;font-size:12px;font-weight:700}
+.af-rnote{font-size:12px;line-height:1.4;color:#555c6b;margin:8px 10px 2px}
+.af-sec + .af-sec{margin-top:30px}
+.af-sh{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin:0 0 10px}
+.af-h2{font-size:24px;line-height:1.2;font-weight:700;letter-spacing:-.01em;margin:0}
+.af-h2 small{font-size:15px;font-weight:500;color:#555c6b;margin-left:8px;letter-spacing:0}
+.af-shr{font-size:13px;color:#555c6b}
+.af-todos{display:flex;flex-direction:column;gap:8px}
+.af-todo{position:relative;display:grid;grid-template-columns:minmax(0,1fr) 270px;gap:6px 20px;align-items:center;background:#ffffff;border:1px solid #e3e1d8;border-radius:12px;padding:10px 16px}
+.af-tt{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.af-tt b{font-size:16px;font-weight:600}
+.af-tl1{font-size:14px;line-height:1.45;color:#555c6b;margin:4px 0 0}
+.af-tact{display:flex;align-items:center;gap:6px;justify-content:flex-end;flex-wrap:wrap}
+.af-tag-g{background:#f6efd9;color:#1a2744}
+.af-tag-a{background:#fdebd6;color:#1a2744}
+/* entries timeline */
+.af-tl{list-style:none;margin:0;padding:0;position:relative}
+.af-tl:before{content:"";position:absolute;left:27px;top:14px;bottom:24px;width:2px;background:#dedcd2}
+.af-item{display:flex;gap:16px;align-items:flex-start;padding:4px 0;position:relative}
+.af-when{width:56px;flex:none;display:flex;justify-content:center;position:relative;z-index:1}
+.af-when .k-date{width:56px;min-height:56px}
+.af-when .k-date b{font-size:20px;line-height:1}
+.af-when .k-date span{margin-top:2px;font-size:10.5px}
+.af-wd{font-style:normal;font-size:10.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#555c6b;margin-bottom:2px}
+.k-date-navy .af-wd{color:#e6cf86}
+.af-ib{flex:1;min-width:0;background:#ffffff;border:1px solid #e3e1d8;border-radius:12px;padding:10px 16px}
+.af-big{border:2px solid #1a2744;padding:16px 18px;box-shadow:0 6px 18px rgba(26,39,68,.08)}
+.af-dead .af-ib{background:transparent;border:1px dashed #c9c6ba;padding:9px 16px}
+.af-nm{font-size:16.5px;font-weight:600;margin:3px 0 0}
+.af-nm small{font-size:13.5px;font-weight:400;color:#555c6b;margin-left:6px}
+.af-acts{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:6px}
+.af-out{color:#1a2744;font-size:14px;font-weight:600;text-decoration:underline;text-decoration-color:#9aa1b0;text-underline-offset:3px;white-space:nowrap}
+.af-rem{font-size:13px;color:#3d4556}
+.af-count2{height:6px;border-radius:3px;background:#eceae2;overflow:hidden;margin:8px 0 2px;max-width:420px}
+.af-count2 i{display:block;height:100%;background:#1a2744}
+.af-track{list-style:none;margin:12px 0 4px;padding:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr))}
+.af-track li{position:relative;padding:30px 12px 0 0;font-size:12.5px;line-height:1.35;color:#555c6b}
+.af-track li b{display:block;color:#1a2744;font-size:13px;font-weight:600}
+.af-track li:before{content:"";position:absolute;top:11px;left:0;right:0;height:3px;background:#e3e1d8}
+.af-track li.af-done:before{background:#1a2744}
+.af-track li:last-child:before{right:auto;width:25px}
+.af-dot{position:absolute;top:0;left:0;width:25px;height:25px;border-radius:50%;background:#ffffff;border:2px solid #c9c6ba;display:flex;align-items:center;justify-content:center;z-index:1}
+.af-done .af-dot{background:#1a2744;border-color:#1a2744;color:#ffffff}
+.af-now .af-dot{background:#f6efd9;border-color:#866a1e;color:#866a1e}
+.af-note{display:flex;gap:8px;align-items:flex-start;background:#f6efd9;border-radius:8px;padding:10px 12px;font-size:13.5px;line-height:1.45;margin-top:10px;color:#1a2744}
+.af-foot1{font-size:14px;color:#3d4556;padding-top:4px}
+.af-clubline{display:flex;align-items:center;gap:8px;margin-top:10px;font-size:13.5px;color:#3d4556}
+.af-clubline .k-i{color:#555c6b}
+/* receipts */
+.af-two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.af-box{background:#ffffff;border:1px solid #e3e1d8;border-radius:12px;overflow:hidden}
+.af-boxh{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:1px solid #ecebe5;background:#fbfbf8}
+.af-boxh b{font-size:15px}
+.af-rw{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:1px 12px;padding:8px 16px;border-bottom:1px solid #f0efe9;align-items:center}
+.af-rw:last-child{border-bottom:0}
+.af-rw b{font-size:14px;font-weight:600}
+.af-rw span{font-size:12.5px;color:#555c6b}
+.af-rw .af-amt{font-size:14px;font-weight:600;text-align:right;font-variant-numeric:tabular-nums;color:#1a2744}
+.af-rw .af-lk{font-size:12.5px;text-align:right}
+.af-boxf{padding:10px 16px;border-top:1px solid #ecebe5;font-size:13px}
+/* settings */
+.af-sets{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.af-set{display:flex;gap:10px;align-items:flex-start;background:#ffffff;border:1px solid #e3e1d8;border-radius:12px;padding:12px 14px}
+.af-set .k-small{font-size:13.5px;line-height:1.42}
+.af-set .k-check{font-size:13.5px;gap:8px}
+.af-set .k-check input{width:18px;height:18px}
+.af-set b{font-size:15px}
+.af-seth{display:flex;align-items:center;gap:8px;margin-bottom:2px}
+.af-seth .k-i{color:#1a2744}
+.af-ico{width:32px;height:32px;border-radius:10px;background:#f1efe8;display:flex;align-items:center;justify-content:center;flex:none;color:#1a2744}
+.af-mailc{grid-column:1 / -1;display:flex;align-items:center;gap:16px;background:#ffffff;border:1px solid #e3e1d8;border-radius:12px;padding:14px 16px;flex-wrap:wrap;position:relative}
+.af-mgrid{display:grid;grid-template-columns:repeat(2,auto);gap:6px 28px;margin-left:auto}
+.af-mailc .k-check{font-size:13.5px;gap:7px;white-space:nowrap}
+.af-mailc .k-check input{width:18px;height:18px;margin:1px 0 0}
+</style>
+</helmet>
+<div class="af-root" style="width:1440px;height:3350px">
+<section class="af-doc" aria-label="About this board">
+<div class="af-doc-top">
+<div>
+<div class="k-row-sm" style="gap:10px"><p class="k-kicker">14 · My LCA · default page · option F · part 1 of 2</p><span class="af-round">ROUND 2</span><span class="af-fr">Frame: Int-A, swappable</span></div>
+<h1 class="af-title">My LCA · F · The card is the page's header band</h1>
+<p class="af-ml" style="margin-top:8px"><b>Built from:</b> Account-A (Avery, the timeline and tracker, the card, US Chess, receipts, Settings) · Account-C (the On this page rail) · Account-D (the same page and copy) · the decided header and footer.</p>
+<p class="af-ml"><b>Replaces:</b> Account-A, B and C as the default page. Gone on F: the Membership section, "Show my card" and the rail's Membership row.</p>
+<p class="af-ml"><b>K's feedback applied (Tue, Oct 13):</b> a good default (the You section only, no chips); every section drawn in full; roles hosted in My LCA (Int-A); options for each: D, E, F differ only in where the card lives.</p>
+</div>
+<div class="af-rcol"><aside class="af-grey" aria-label="Board note">
+<div><p><b>What</b>Option F for the default My LCA page: a navy band carries the card and QR, the membership line and the US Chess status, so the page opens on the card.</p><p><b>Built from</b>Account-A, C's rail, D's copy; Account-F-2 holds the other states.</p></div>
+<div><p><b>K's feedback applied</b>A good default; every section drawn in full; roles hosted in My LCA (frame Int-A); options for each.</p><p style="margin-top:8px"><b>Open for K</b></p><ol><li>Is the top of the page best spent on the card? At home, Today starts 300px lower than on D.</li><li>Keep the rail's Card row, or leave it to the menu's Membership card row?</li></ol></div>
+</aside><span class="k-sample">Sample data · Avery's entries, IDs, ratings, results and receipts</span></div>
+</div>
+<div class="af-lbox">
+<p class="k-label">Notes on this board</p>
+<ol class="af-notes">
+<li><span class="k-num-badge">1</span><span><b>The page opens on the card:</b> a navy band with the card and QR, the membership line in words and the US Chess status. At the desk Avery holds up the phone. The band scrolls away.</span></li>
+<li><span class="k-num-badge">2</span><span><b>The body is Today, Entries, Receipts, Settings.</b> The rail adds a Card row that scrolls back up, lit once the band is out of view. Nothing hints at roles.</span></li>
+<li><span class="k-num-badge">3</span><span><b>Today keeps Account-D's four items,</b> one button each, WS13's order. Cards 2 and 3 shorten to one line: the band already states both dates.</span></li>
+<li><span class="k-num-badge">4</span><span><b>No "Show my card" button:</b> the card is the head. The menu's Membership card row scrolls up; on phones a tap on the plate opens it full screen (F-2).</span></li>
+<li><span class="k-num-badge">5</span><span><b>No Text controls (D8), no member price (D11), no computed club dates (K, page 9);</b> Wallet waits for D4. Partner events say Registers on the organizer's site ↗.</span></li>
+<li><span class="k-num-badge">6</span><span><b>Drawn inside Int-A, swappable:</b> Int-B makes this the You page of a left rail; Int-C puts Your work beside it. Only the breadcrumb, the way back and the menu row change.</span></li>
+</ol>
+</div>
+</section><div class="af-flab"><span class="af-code">A</span><h2>The page · Avery Thibodeaux, a plain member · Mon, Oct 5, 2026 · 7:40 AM</h2><span class="k-meta">Busy state</span><span class="af-urlchip">louisianachess.org/dashboard</span></div><p class="af-swap"><span class="k-num-badge">6</span><span>Drawn inside Int-A (My LCA as the hub). Swappable: under Int-B this is the You page the left rail opens; under Int-C, My LCA with Your work beside it. Pick the frame on Account-Int-A, B or C.</span></p><div class="af-frame"><header class="k-header af-hd"><div class="af-hd-in"><a class="k-brand" href="#" aria-label="Louisiana Chess Association, home"><svg class="af-rook" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span class="k-brand-name" aria-hidden="true"><b>Louisiana Chess</b><span>Association</span></span></a><nav class="k-navlinks af-nav" aria-label="Main"><a href="#">Tournaments</a><a href="#">Clubs</a><a href="#">Scholastic</a><a href="#">News</a><a href="#">Membership</a><button class="af-navbtn" type="button" aria-expanded="false" aria-haspopup="true">About<svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"></path></svg></button></nav><a class="af-sbtn" href="#" aria-keyshortcuts="Meta+K Control+K"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg><span>Search</span><kbd class="af-kbd" aria-hidden="true">&#8984;K</kbd></a><div class="k-utility af-util"><a class="k-ulink" href="#">Donate</a><button class="af-my" type="button" aria-haspopup="menu" aria-expanded="false" aria-current="page" aria-label="My LCA, 3 things to do"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4.5 21c1-4 4-6 7.5-6s6.5 2 7.5 6"></path></svg><span>My LCA</span><span class="af-count" aria-hidden="true">3</span><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"></path></svg></button></div></div></header><section class="af-band" aria-label="Your membership card"><div class="af-band-in"><div><div class="k-row-sm" style="gap:8px"><p class="af-bk">My LCA</p></div><h1 class="af-bname">Avery Thibodeaux</h1><p class="af-bline">Adult member<br>valid through <span style="white-space:nowrap">Mon, Oct 26, 2026</span></p><div class="af-blinks"><a class="af-wbtn" href="#">Renew · $15</a><a class="af-wbtn" href="#">Turn on auto-renew</a></div><p style="margin:12px 0 0"><span class="k-sample">Sample data · Avery's entries, IDs, ratings and results</span></p></div><div style="position:relative"><div class="af-plate" role="img" aria-label="Membership card for Avery Thibodeaux, Adult, valid through Mon, Oct 26, 2026"><div><div class="af-pl">Member</div><div class="af-pn">Avery Thibodeaux</div><div class="af-pm" style="margin-top:6px">Adult · <span class="k-mono">LCA-25-1183</span></div><div class="af-pm">Valid through Mon, Oct 26, 2026</div></div><div class="af-qr"><svg viewBox="0 0 25 25" width="98" height="98" shape-rendering="crispEdges" role="img" aria-label="Check-in QR code"><g transform="matrix(0 1 1 0 0 0)"><path fill="#1a2744" stroke="none" d="M0 0h7v1h-7zM8 0h1v1h-1zM11 0h1v1h-1zM14 0h1v1h-1zM18 0h7v1h-7zM0 1h1v1h-1zM6 1h1v1h-1zM9 1h3v1h-3zM14 1h1v1h-1zM18 1h1v1h-1zM24 1h1v1h-1zM0 2h1v1h-1zM2 2h3v1h-3zM6 2h1v1h-1zM10 2h2v1h-2zM13 2h4v1h-4zM18 2h1v1h-1zM20 2h3v1h-3zM24 2h1v1h-1zM0 3h1v1h-1zM2 3h3v1h-3zM6 3h1v1h-1zM8 3h2v1h-2zM15 3h2v1h-2zM18 3h1v1h-1zM20 3h3v1h-3zM24 3h1v1h-1zM0 4h1v1h-1zM2 4h3v1h-3zM6 4h1v1h-1zM12 4h4v1h-4zM18 4h1v1h-1zM20 4h3v1h-3zM24 4h1v1h-1zM0 5h1v1h-1zM6 5h1v1h-1zM8 5h1v1h-1zM10 5h1v1h-1zM13 5h2v1h-2zM16 5h1v1h-1zM18 5h1v1h-1zM24 5h1v1h-1zM0 6h7v1h-7zM8 6h1v1h-1zM10 6h1v1h-1zM12 6h1v1h-1zM14 6h1v1h-1zM16 6h1v1h-1zM18 6h7v1h-7zM9 7h2v1h-2zM13 7h3v1h-3zM1 8h4v1h-4zM6 8h2v1h-2zM9 8h2v1h-2zM12 8h1v1h-1zM14 8h4v1h-4zM20 8h1v1h-1zM22 8h2v1h-2zM1 9h1v1h-1zM3 9h2v1h-2zM7 9h4v1h-4zM12 9h1v1h-1zM14 9h2v1h-2zM20 9h2v1h-2zM24 9h1v1h-1zM0 10h1v1h-1zM3 10h1v1h-1zM6 10h1v1h-1zM8 10h3v1h-3zM12 10h1v1h-1zM14 10h1v1h-1zM17 10h2v1h-2zM20 10h2v1h-2zM0 11h1v1h-1zM2 11h4v1h-4zM7 11h3v1h-3zM11 11h2v1h-2zM18 11h3v1h-3zM24 11h1v1h-1zM3 12h1v1h-1zM5 12h2v1h-2zM14 12h1v1h-1zM18 12h1v1h-1zM23 12h1v1h-1zM1 13h1v1h-1zM7 13h1v1h-1zM10 13h1v1h-1zM12 13h1v1h-1zM14 13h1v1h-1zM17 13h1v1h-1zM22 13h3v1h-3zM1 14h2v1h-2zM5 14h2v1h-2zM8 14h1v1h-1zM10 14h2v1h-2zM15 14h1v1h-1zM17 14h2v1h-2zM24 14h1v1h-1zM0 15h5v1h-5zM8 15h1v1h-1zM11 15h3v1h-3zM15 15h1v1h-1zM18 15h1v1h-1zM20 15h4v1h-4zM0 16h3v1h-3zM4 16h1v1h-1zM6 16h1v1h-1zM11 16h1v1h-1zM13 16h2v1h-2zM16 16h5v1h-5zM22 16h3v1h-3zM12 17h1v1h-1zM15 17h2v1h-2zM20 17h1v1h-1zM23 17h2v1h-2zM0 18h7v1h-7zM10 18h1v1h-1zM15 18h2v1h-2zM18 18h1v1h-1zM20 18h1v1h-1zM22 18h1v1h-1zM0 19h1v1h-1zM6 19h1v1h-1zM10 19h1v1h-1zM16 19h1v1h-1zM20 19h2v1h-2zM24 19h1v1h-1zM0 20h1v1h-1zM2 20h3v1h-3zM6 20h1v1h-1zM8 20h2v1h-2zM13 20h1v1h-1zM15 20h6v1h-6zM22 20h2v1h-2zM0 21h1v1h-1zM2 21h3v1h-3zM6 21h1v1h-1zM8 21h2v1h-2zM17 21h2v1h-2zM20 21h1v1h-1zM0 22h1v1h-1zM2 22h3v1h-3zM6 22h1v1h-1zM9 22h2v1h-2zM13 22h1v1h-1zM18 22h1v1h-1zM22 22h1v1h-1zM0 23h1v1h-1zM6 23h1v1h-1zM8 23h1v1h-1zM13 23h1v1h-1zM15 23h1v1h-1zM18 23h1v1h-1zM20 23h2v1h-2zM0 24h7v1h-7zM8 24h2v1h-2zM12 24h1v1h-1zM14 24h3v1h-3zM18 24h2v1h-2zM21 24h1v1h-1zM23 24h1v1h-1z"></path></g></svg>
+</div></div><p class="af-under">Show this at the desk. The QR checks you in.</p><p class="af-under" style="margin-top:2px"><span class="af-wallet">Add to Wallet <i>after D4</i></span></p><span class="k-num-badge af-mk" style="top:-12px;left:-12px">1</span></div><div class="af-usc"><p class="af-uk">US Chess</p><p class="af-ut">ID <span class="k-mono">30188264</span> · Regular 1912 · Quick 1874</p><div class="k-row-sm" style="gap:8px"><span class="af-ut">Membership ends Thu, Dec 31</span><span class="af-amber">Ends before your Sat, Jan 16 event</span></div><p class="af-um">Checked every night · last check 2:10 AM today</p><a class="af-ul" href="#">Your US Chess profile ↗</a></div><a class="af-find" href="#"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg>Find a tournament</a><span class="k-num-badge af-mk" style="right:200px;bottom:-14px">4</span></div></section><div class="af-body"><div style="position:sticky;top:16px"><nav class="af-rail" aria-label="On this page"><p class="af-rt">On this page</p><a class="af-rr" href="#">Card</a><a class="af-rr af-rr-on" href="#" aria-current="location">Today<span class="af-rc">4</span></a><a class="af-rr" href="#">Entries<span class="af-rc">2</span></a><a class="af-rr" href="#">Receipts</a><a class="af-rr" href="#">Settings</a><span class="k-num-badge af-mk" style="top:-12px;right:-12px">2</span></nav></div><main><section class="af-sec" id="today"><div class="af-sh"><h2 class="af-h2">Today<small>Mon, Oct 5</small></h2><span class="af-shr">Only things with a deadline or a decision. Each has one button.</span></div><div class="af-todos"><div class="af-todo"><div><div class="af-tt"><span class="k-tag af-tag-g">Payment pending</span><b>Pay for The Baton Rouge Classic</b></div><p class="af-tl1">Your Open section entry is saved but not paid. Pay $60 by Sat, Oct 17 to keep the early price ($70 after).</p></div><div class="af-tact"><a class="k-btn k-btn-gold k-btn-sm" href="#">Pay $60</a><a class="k-btn k-btn-ghost k-btn-sm" href="#">Withdraw</a></div><span class="af-tier">Tier 2</span></div><div class="af-todo"><div><div class="af-tt"><span class="k-tag af-tag-a">Ends before your event</span><b>US Chess membership ends Thu, Dec 31</b></div><p class="af-tl1">Before the Ken Ferguson Memorial Open, Sat–Mon, Jan 16–18, 2027. We re-check your ID every night.</p></div><div class="af-tact"><a class="k-btn k-btn-line k-btn-sm" href="#">Renew at US Chess ↗</a><a class="k-btn k-btn-ghost k-btn-sm" href="#">Check again now</a></div><span class="af-tier">Tier 2</span><span class="k-num-badge af-mk" style="top:-12px;left:-12px">3</span></div><div class="af-todo"><div><div class="af-tt"><span class="k-tag k-tag-soon">Expires in 21 days</span><b>LCA membership ends Mon, Oct 26</b></div><p class="af-tl1">Adult, $15 a year. Required to enter LCA events.</p></div><div class="af-tact"><a class="k-btn k-btn-gold k-btn-sm" href="#">Renew · $15</a><a class="k-btn k-btn-ghost k-btn-sm" href="#">Turn on auto-renew</a></div><span class="af-tier">Tier 2</span></div><div class="af-todo"><div><div class="af-tt"><span class="k-tag k-tag-closed">Your reminder</span><b>Lafayette Open 2026 is this weekend, Sat–Sun, Oct 10–11</b></div><p class="af-tl1">You saved it on Tue, Sep 22 and asked to be reminded today. You are not entered. A partner event.</p></div><div class="af-tact"><a class="k-btn k-btn-line k-btn-sm" href="#">Registers on the organizer's site ↗</a><a class="k-btn k-btn-ghost k-btn-sm" href="#">Stop this reminder</a></div><span class="af-tier">Tier 4</span></div></div></section><section class="af-sec" id="entries"><div class="af-sh"><h2 class="af-h2">Entries</h2><div class="k-row-sm"><button class="k-chip k-chip-on" type="button" aria-pressed="true">All</button><button class="k-chip" type="button">Entered <span class="k-chip-count">2</span></button><button class="k-chip" type="button">Saved <span class="k-chip-count">3</span></button><button class="k-chip" type="button">Deadlines <span class="k-chip-count">2</span></button></div></div><ol class="af-tl"><li class="af-item"><div class="af-when"><div class="k-date"><i class="af-wd">Sat</i><b>10</b><span>Oct</span></div></div><div class="af-ib"><div class="k-between"><span class="k-label">Sat–Sun, Oct 10–11 · Lafayette</span><div class="k-row-sm"><span class="k-tag k-tag-ext">Partner event</span><span class="k-tag k-tag-closed">Saved</span></div></div><p class="af-nm">Lafayette Open 2026<small>Classical · All ages · Lafayette Chess Club · you're not entered</small></p><div class="af-acts"><a class="af-out" href="#" target="_blank" rel="noopener">Registers on the organizer's site ↗</a><a class="k-link k-small" href="#">I entered there</a><a class="k-link k-small" href="#">Remove</a><span class="af-rem" style="margin-left:auto">Reminder set for Mon, Oct 5 · <a class="k-link" href="#">Change</a> · <a class="k-link" href="#">Stop</a></span></div></div></li><li class="af-item af-dead"><div class="af-when"><div class="k-date"><i class="af-wd">Sat</i><b>17</b><span>Oct</span></div></div><div class="af-ib"><div class="k-row-sm"><span class="k-tag k-tag-soon">Deadline</span><b class="k-small">Early-entry price ends for The Baton Rouge Classic</b></div><div class="k-small k-muted" style="margin-top:3px">Sat, Oct 17 · Open section $60 now, $70 after</div></div></li><li class="af-item"><div class="af-when"><div class="k-date"><i class="af-wd">Sat</i><b>17</b><span>Oct</span></div></div><div class="af-ib"><div class="k-between"><span class="k-label">Sat–Sun, Oct 17–18 · Canton, MS</span><div class="k-row-sm"><span class="k-tag k-tag-ext">Partner event</span><span class="k-tag k-tag-closed">Saved</span></div></div><p class="af-nm">Mississippi State Championship<small>Classical · Mississippi Chess Association</small></p><div class="af-acts"><a class="af-out" href="#" target="_blank" rel="noopener">Registers on the organizer's site ↗</a><a class="k-link k-small" href="#">I entered there</a></div></div></li><li class="af-item"><div class="af-when"><div class="k-date k-date-navy"><i class="af-wd">Sat</i><b>24</b><span>Oct</span></div></div><div class="af-ib af-big"><div class="k-between"><span class="k-label">Sat–Sun, Oct 24–25 · Baton Rouge</span><div class="k-row-sm"><span class="k-tag k-tag-open">Entered</span><span class="k-tag af-tag-g">Payment pending</span></div></div><div class="k-h3" style="margin-top:4px">The Baton Rouge Classic</div><div class="k-small k-muted">Open section · 5 rounds · G/90+30 (90 min each + 30 sec per move) · organized by Downriver Chess Club</div><div class="af-count2" aria-hidden="true"><i style="width:63%"></i></div><div class="k-small"><b>38 of 60</b> registered · <a class="k-link" href="#">Who's coming</a></div><ol class="af-track" aria-label="Entry status"><li class="af-done"><span class="af-dot"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span><b>Registered</b>Fri, Oct 2</li><li class="af-now"><span class="af-dot"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg></span><b>Paid</b>Pending · $60 by Sat, Oct 17</li><li class=""><span class="af-dot"></span><b>Pairings posted</b>At the event · we email you</li><li class=""><span class="af-dot"></span><b>Results</b>Sun, Oct 25</li></ol><div class="k-row-sm" style="margin-top:8px"><span class="k-small">Byes: ½-point bye requested for round 5</span><span class="k-tag k-tag-open">Approved</span></div><div class="k-row-sm" style="margin-top:12px"><a class="k-btn k-btn-gold k-btn-sm" href="#">Pay $60</a><a class="k-btn k-btn-line k-btn-sm" href="#">Change section</a><a class="k-btn k-btn-ghost k-btn-sm" href="#">Byes</a><a class="k-btn k-btn-ghost k-btn-sm" href="#">Withdraw</a></div></div></li><li class="af-item af-dead"><div class="af-when"><div class="k-date"><i class="af-wd">Mon</i><b>26</b><span>Oct</span></div></div><div class="af-ib"><div class="k-row-sm"><span class="k-tag k-tag-soon">Deadline</span><b class="k-small">Your LCA membership ends</b></div><div class="k-small k-muted" style="margin-top:3px">Mon, Oct 26 · <a class="k-link" href="#">Renew for $15</a> or turn on auto-renew</div></div></li><li class="af-item"><div class="af-when"><div class="k-date"><i class="af-wd">Sat</i><b>31</b><span>Oct</span></div></div><div class="af-ib"><div class="k-between"><span class="k-label">Sat, Oct 31 · Sulphur</span><div class="k-row-sm"><span class="k-tag k-tag-ext">Partner event</span><span class="k-tag k-tag-closed">Saved</span></div></div><p class="af-nm">The Casa Chess Tournament<small>US Chess and FIDE rated · All ages · Casa de Ajedrez</small></p><div class="af-acts"><a class="af-out" href="#" target="_blank" rel="noopener">Registers on the organizer's site ↗</a><a class="k-link k-small" href="#">Remove</a></div></div></li><li class="af-item"><div class="af-when"><div class="k-date"><i class="af-wd">Sat</i><b>16</b><span>Jan</span></div></div><div class="af-ib"><div class="k-between"><span class="k-label">Sat–Mon, Jan 16–18, 2027 · New Orleans</span><div class="k-row-sm"><span class="k-tag k-tag-open">Entered · Paid</span><span class="k-tag af-tag-a">US Chess expires first</span></div></div><p class="af-nm">Ken Ferguson Memorial Open<small>Open section · Classical · organized by Downriver Chess Club</small></p><ol class="af-track" aria-label="Entry status"><li class="af-done"><span class="af-dot"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span><b>Registered</b>Mon, Sep 28</li><li class="af-done"><span class="af-dot"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span><b>Paid</b>Mon, Sep 28</li><li class=""><span class="af-dot"></span><b>Pairings posted</b>At the event</li><li class=""><span class="af-dot"></span><b>Results</b>Mon, Jan 18</li></ol><div class="af-note"><span>Your US Chess membership ends Thu, Dec 31, before this event. <a class="k-link" href="#">Renew at US Chess</a>. We check your ID every night, and this warning clears by itself once US Chess shows the new date.</span></div></div></li><li class="af-item"><div class="af-when"><span class="k-dot" style="margin-top:8px;color:#9aa1b0"></span></div><div style="flex:1"><div class="af-foot1">That's everything on your list. <a class="k-link" href="#">Browse tournaments near you</a>.</div><div class="af-clubline"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V9l8-5 8 5v11"></path><path d="M9 20v-6h6v6"></path></svg><span>Clubs you follow · <b>Downriver Chess Club</b> · in the club's words: Mondays and Thursdays, 7:00 PM, Decatur St, New Orleans · <a class="k-link" href="#">Club page</a></span></div></div></li></ol></section><section class="af-sec" id="receipts"><div class="af-sh"><h2 class="af-h2">Receipts and history</h2></div><div class="af-two"><div class="af-box"><div class="af-boxh"><b>Past payments · 23 receipts</b><a class="k-link k-small" href="#">All 23</a></div><div class="af-rw"><b>Louisiana State Championship, Open</b><span class="af-amt">$70</span><span>Sat–Mon, Sep 5–7, 2026</span><a class="k-link af-lk" href="#">Send me this receipt again</a></div><div class="af-rw"><b>Paul Morphy Open, Open</b><span class="af-amt">$60</span><span>Sat–Sun, Jun 13–14, 2026</span><a class="k-link af-lk" href="#">Send me this receipt again</a></div><div class="af-rw"><b>Louisiana Open, Open</b><span class="af-amt">$60</span><span>Sat–Sun, May 23–24, 2026</span><a class="k-link af-lk" href="#">Send me this receipt again</a></div><div class="af-rw"><b>LCA membership, Adult</b><span class="af-amt">$15</span><span>Sun, Oct 26, 2025</span><a class="k-link af-lk" href="#">Send me this receipt again</a></div></div><div class="af-box"><div class="af-boxh"><b>Events played · 23</b><a class="k-link k-small" href="#">All 23 events</a></div><div class="af-rw"><b>Louisiana State Championship · Sulphur</b><span class="af-amt">3½ / 6 · 9th</span><span>Sat–Mon, Sep 5–7, 2026</span><span class="af-lk" style="color:#1a2744">Rating +12</span></div><div class="af-rw"><b>Paul Morphy Open</b><span class="af-amt">3 / 5 · 11th</span><span>Sat–Sun, Jun 13–14, 2026</span><span class="af-lk" style="color:#1a2744">Rating +4</span></div><div class="af-rw"><b>Louisiana Open</b><span class="af-amt">2½ / 5 · 16th</span><span>Sat–Sun, May 23–24, 2026</span><span class="af-lk" style="color:#1a2744">Rating −9</span></div><div class="af-rw"><b>LCA Tournament of Champions Qualifier</b><span class="af-amt">3 / 4 · 3rd</span><span>Sat, Feb 7, 2026</span><span class="af-lk" style="color:#1a2744">Rating +21</span></div></div></div></section><section class="af-sec" id="settings"><div class="af-sh"><h2 class="af-h2">Settings</h2></div><div class="af-sets"><div class="af-set"><div><b class="af-seth"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4.5 21c1-4 4-6 7.5-6s6.5 2 7.5 6"></path></svg>Profile</b><div class="k-small k-muted">Name, email and phone. Entry lists show "Avery Thibodeaux (1912)".</div><a class="k-link k-small" href="#">Edit</a></div></div><div class="af-set"><div><b class="af-seth"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l7.5 3v5.5c0 4.6-3.2 8.2-7.5 9.5-4.3-1.3-7.5-4.9-7.5-9.5V6L12 3z"></path></svg>US Chess ID</b><div class="k-small k-muted"><span class="k-mono">30188264</span> · verified Fri, Oct 2</div><a class="k-link k-small" href="#">Change</a></div></div><div class="af-set"><div><b class="af-seth"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 11v6M12 7.5v.01"></path></svg>Privacy</b><label class="k-check k-small" style="margin-top:4px"><input type="checkbox" checked> Show me on Who's coming lists</label><label class="k-check k-small" style="margin-top:4px"><input type="checkbox" checked> Show my results on my player page</label></div></div><div class="af-set"><div><b class="af-seth"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3H6.5A1.5 1.5 0 0 0 5 4.5v15A1.5 1.5 0 0 0 6.5 21h11a1.5 1.5 0 0 0 1.5-1.5V8l-5-5zM14 3v5h5M8.5 13h7M8.5 17h5"></path></svg>Payments</b><div class="k-small k-muted">Card ending 4242 saved with Stripe</div><a class="k-link k-small" href="#">Manage</a></div></div><div class="af-set"><div><b class="af-seth"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.5"></circle><path d="M2.5 20c.8-3.6 3.4-5.5 6.5-5.5s5.7 1.9 6.5 5.5M16 4.6a3.5 3.5 0 0 1 0 6.8M18 14.8c2 .7 3.2 2.4 3.6 5.2"></path></svg>Family</b><div class="k-small k-muted">Add a family member to register them. Children don't need an email or a login.</div><a class="k-link k-small" href="#">Add a family member</a></div></div><div class="af-set"><div><b class="af-seth"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><rect x="4.5" y="10.5" width="15" height="10" rx="2"></rect><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"></path></svg>Sign-in and security</b><div class="k-small k-muted">Email link or Google account · <span style="white-space:nowrap">Two-factor: off</span></div><a class="k-link k-small" href="#">Manage</a></div></div><div class="af-mailc"><div class="k-row-sm" style="gap:10px"><span class="af-ico"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="M3.5 6.5L12 13l8.5-6.5"></path></svg></span><div><b style="font-size:15px;display:block">How we email you</b><span class="k-small k-muted" style="font-size:12.5px">Email only for now. Texts come later.</span></div></div><div class="af-mgrid"><label class="k-check"><input type="checkbox" checked> Pairings posted</label><label class="k-check"><input type="checkbox"> Round starts in 10 min</label><label class="k-check"><input type="checkbox" checked> Results and rating changes</label><label class="k-check"><input type="checkbox" checked> A saved event opens or fills up</label></div><span class="k-num-badge af-mk" style="top:-12px;right:-12px">5</span></div></div></section></main></div><footer class="k-footer af-foot"><div class="af-foot-in"><div class="k-row-sm" style="gap:10px"><svg class="af-rook-sm" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><b style="font-size:15px">Louisiana Chess Association</b></div><span class="k-meta">US Chess state affiliate · Louisiana's chess community since 1915</span><nav class="k-row" aria-label="Footer" style="gap:18px"><a href="#">Contact</a><a href="#">Website help</a><a href="#">Bylaws &amp; rules</a><a href="#">Donate</a></nav></div></footer></div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":3350}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

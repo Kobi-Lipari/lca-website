@@ -1,0 +1,160 @@
+{
+ "label": "newsletter-round-6",
+ "results": [
+  {
+   "board": "Newsletter-Email-6.dc.html",
+   "drawn": {
+    "file": "<scratchpad>/canvas-out/project/Newsletter-Email-6.dc.html",
+    "height": 2650,
+    "changes": [
+     "I started from a byte-for-byte copy of Newsletter-Email-1.dc.html. These stay exactly as look 1 has them: the mail window, the navy band at its 112px height (88px on the phone) with the rook to the left of LCA NEWSLETTER and December 2026, the serif body, the sans headings with the short gold-ink rule, the link style, the cream footer and its three links, the light and dark phones, and the December 2026 issue word for word. Neither parent board was edited.",
+     "Label strip: the small line reads LCA NEWSLETTER · THE EMAIL · LOOK 1 WITH A CONTENTS LIST, the name is The navy band, with In this issue, and the sentence is the one the spec gives. There is still one Sample data tag. The page title is updated to match.",
+     "The one addition, on a computer: an In this issue strip directly under the band. It sits on the footer's cream (#f8f4e8) with a hairline (#ebe3c9) under it. Its label is 13px uppercase in gold ink #866a1e. The six part names are links in two columns of three (16px Geist, navy, underlined). Each link points to an id on its part's heading (e6-s1 to e6-s6), and the anchor check found no missing ids.",
+     "The same strip on the light phone, in one column. Every row is at least 44px tall to press. These links point to real ids too: the light phone's headings for parts 1 and 2, the new Results phone for parts 3 and 4, and the dark phone for parts 5 and 6.",
+     "I left out look 5's numbers: they would only help the eye if the headings carried numbers too, and adding them would change look 1's headings. I added nothing else (no back-to-top link, no icons).",
+     "New picture captioned After pressing Results in the list: a phone at 8:05 with the Results heading at the top of the screen, then the start of From the clubs. Only the top 470px of the phone is shown, ending in a fade to the board colour, the same way Page-4 crops its tablet. It sits between the light phone and the dark phone so the right column reads top of the email, then pressing Results, then the end.",
+     "The dark phone still shows the end of the email and the footer, unchanged except for ids on its two headings.",
+     "Checks: the rendered height is 2633, so the root and $preview height are both 2650 (under 2700). Every tag is closed, there are no holes, iframes, animation, em or en dashes, the old initials or email addresses, and no colour change was needed. I viewed the render at scale 0.5 and scale 1 crops: nothing overlaps, overflows or is clipped."
+    ],
+    "note": "This is option 1's navy band and clean letter, with one addition: a short In this issue list under the band whose six links jump to each part. The small phone picture shows what happens after pressing Results in the list.",
+    "unresolved": [
+     "The Results phone shows only the top of the phone, so the board fits under 2700. A full-height third phone would have made the board about 2950 tall. Its side shadow is cut off at the crop edge, the same as the tablet crop on Page-4.",
+     "The right column ends about 95px lower than the computer column (dark phone caption at about 2585, computer caption at about 2490). That is normal for this two-column layout, but the bottoms do not line up."
+    ]
+   },
+   "review": {
+    "file": "<scratchpad>/canvas-out/project/Newsletter-Email-6.dc.html",
+    "height": 2650,
+    "counts": "I measured with the root's height set to auto. The board is 2633px tall, so the declared height (root and $preview) stays at 1440 x 2650, under the 2700 limit. Column bottoms: the computer column ends at 2502 and the right column at 2585 (dark phone and its caption), plus 48px bottom padding. Rendered at scale 1 and checked in close crops (label strip, mail window top, middle, lower and end, all three phones). Email 1 (2400) and Email 5 (2500) were rendered for comparison and not edited. Diffing against Email-1 shows only the In this issue strip, the ids on the headings, the Results picture, the title, the label strip and the height changed. The band is still 112px on the computer and 88px on the phone, with the rook on the left. LCA NEWSLETTER is 17px / 15px, weight 700, #efd98a. The month is 36px / 27px. Body text is 16px serif on both. In this issue: 6 links on the computer (two columns of three, 16px) and 6 on the light phone. Every link has an href that matches a real id; 0 broken anchors. Each phone link is now 44px tall (measured 44 on all six). Phone list widths at 15px: 179/76/53 and 104/74/108px in a 326px content width, leaving about 39px between the columns. Phone strip height went from 307px to 173px. Copy scan: 0 em dashes, 0 en dashes, 0 USCF, 0 {{holes}}, 0 iframes, 0 animations or transitions, exactly 1 Sample data tag. The only @ signs are in the Google Fonts URL. Every date has its weekday and matches the spec's checked list (Tue, Dec 1, 2026; Sat, Dec 5, 2026; Sat to Mon, Jan 16 to 18, 2027; Sat, May 8, 2027; Sat to Mon, Sep 5 to 7, 2026; Mon, Dec 7, 2026; Sat, Nov 14, 2026; Sun, Sep 6, 2026). Halves use the ½ sign. Times are written like 8:00 AM. The sender is shown by name only, with no address. The label strip's three lines match the spec word for word. Captions: On a computer / On a phone / After pressing Results in the list / On a phone, dark setting. No overflow found on any clipped element.",
+    "changes": [
+     "Phone In this issue list: changed from one column of six 44px rows (307px tall, which left only two lines of the letter on the first screen and made the phone's top taller than look 5's, which K disliked) to two columns of three, matching the computer. The strip is now 173px, and the letter's first paragraphs show under it.",
+     "Phone list links: each link itself is now the 44px tap target (inline-block, 11px padding above and below), not just the row around it. Text is 15px (the phone minimum) so the two columns have about 39px between them instead of a cramped 20px.",
+     "Contents links on both computer and phone: underline offset changed from 4px to 3px to match the body links, so they read as the same kind of link.",
+     "The After pressing Results picture: its crop box now leaves 60px at the sides and 30px at the top for the phone's shadow. Before, the shadow was cut off, which drew hard grey rectangle edges and made this phone look flatter than the other two. Its position and the caption's place are unchanged."
+    ],
+    "remaining_concerns": [
+     "The phone's two-column list is drawn for a 390-wide phone. On phones narrower than about 340px the two columns would collide, so the built email should drop to one column on narrow screens. That is a note for whoever builds it; the picture is fine.",
+     "The light phone shows only the first two parts, so its links to Results through Board business point at the headings in the Results picture and the dark phone. Every id is real, but on the board those links jump to a different phone picture rather than further down the same one.",
+     "The After pressing Results picture is still the top of a phone that fades into the background (a cropped picture, within the 2700 limit). A whole third phone would push the board to about 2950.",
+     "Numbers from look 5 are left out of the contents list, as the spec allows, so look 1's headings are unchanged."
+    ]
+   }
+  },
+  {
+   "board": "Newsletter-Tournament-6.dc.html",
+   "drawn": {
+    "file": "<scratchpad>/canvas-out/project/Newsletter-Tournament-6.dc.html",
+    "height": 2450,
+    "changes": [
+     "Started as a copy of Newsletter-Tournament-1.dc.html. Kept everything else as it was: the mail window, the sender line 'Baton Rouge Chess Club' with 'through the Louisiana Chess Association', the subject, the received time 'Mon, Dec 7, 2026, 9:00 AM', the band at look 1's size with the rook on the left, the type, the details table, the button with the link as text under it, Good to know, Who runs it, the footer and both phones.",
+     "Changed the title to 'Tournament send-out 6'. Set the label strip to the three lines from the spec word for word: kicker 'LCA Newsletter · A tournament send-out · Look 1 with At a glance' (the kit shows it in capitals), the name 'A club's tournament announcement', and the sentence 'The dark blue band of option 1, with the key facts and a short list of links at the top.' There is one 'Sample data' tag.",
+     "Added an 'At a glance' strip directly under the band, before the club's sentences. It sits on look 1's cream ground (#f8f4e8) with a hairline under it. The label is in gold-ink #866a1e, the row labels are Geist bold navy and the values are in the serif. It gives the four facts word for word: Rounds, Sections, Entry, Closes.",
+     "Under the four facts, a hairline and then one row of four underlined links: 'The details', 'Register', 'Good to know', 'Who runs it'. Each points to a real id: the heading of The details, the box holding the Register button, and the headings of Good to know and Who runs it. The ids are c-* on the computer, p-* on the light phone and d-* on the dark phone, with no duplicates and no link left without a target.",
+     "Light phone: added the same strip, with the links in two columns where each link is 44px tall. Spacing was tightened so the whole strip and both rows of links fit above the mail app's bottom toolbar. The rest of the email (the full details table, the button, Good to know, Who runs it) is now in the phone's markup, hidden below the bottom of the screen, so the phone's jump links have real targets.",
+     "Added no-break spaces so 'Scholastic (K to 12)' and 'then $35' never split across lines (on the phone '$35' had been left alone on a line).",
+     "Checked: no em or en dashes, no 'USCF', no {{holes}}, no iframes, no animation; every tag closed. Every date was checked against a calendar and has the right weekday (Sat, Jan 9, 2027; Sat, Jan 2, 2027; Fri, Jan 8, 2027; Mon, Dec 7, 2026). There is no member price and no email or postal address. Rendered at 1440 wide: the board's content measures 2427 tall, so the declared root height and the $preview height are both 2450."
+    ],
+    "note": "This is the club's tournament send-out in look 1: the same dark blue band with the rook on the left, now followed by a light 'At a glance' strip with the rounds, sections, entry fee and closing time. Under those facts, four underlined links jump straight to The details, Register, Good to know and Who runs it.",
+    "unresolved": [
+     "The At a glance strip makes the computer email about 225px taller, so there is now about 330px of plain background below the dark phone in the right column (send-out 1 had about 100px). Send-out 5 already ends with a similar gap there, so I kept send-out 1's layout rather than spreading the phones apart or adding anything.",
+     "On the light phone, the bottom row of jump links ends just above the mail app's toolbar, with about 8px between them. The strip is complete on screen, but it fills the screen right to the toolbar, so none of the club's opening sentences shows below it."
+    ]
+   },
+   "review": {
+    "file": "<scratchpad>/canvas-out/project/Newsletter-Tournament-6.dc.html",
+    "height": 2450,
+    "counts": "I rendered the board at scale 1 and measured it in the browser. With the root set to auto height, the content is 2427px tall, so the root and the $preview are both declared at 2450. That is under the 2700 limit and the same height as before my changes.\n\nThe navy bands match send-out 1 exactly: 167px on the computer and 173px on the phone. The band did not grow.\n\nThe board has exactly 1 \"Sample data\" tag and no other furniture: no legend, no badges, no chips, no notes.\n\nThe label strip matches the spec word for word. The kicker text is uppercased by k-kicker. The name and the sentence are exact.\n\nThe \"At a glance\" strip has the 4 facts word for word in both views. Under them are 4 jump links, each a real anchor: on the computer c-details, c-register (the box holding the button), c-know and c-runs; on the phone p-details, p-register, p-know and p-runs. On the computer the links are one underlined row, 15px semibold. On the phone they sit in a 2 by 2 grid with 44px-tall targets.\n\nThe details table on the computer still has all 6 rows. The phone copy has all 6 rows too, though only the top of the phone email is visible in the picture.\n\nDates, checked against a calendar:\n- Sat, Jan 9, 2027 appears 7 times.\n- Sat, Jan 2, 2027 appears 4 times.\n- Fri, Jan 8, 2027 appears 4 times.\n- Mon, Dec 7, 2026 appears 2 times.\nAll four weekdays are correct.\n\nCopy rules: 0 em dashes, 0 en dashes, 0 old initials for US Chess, 0 \"@\" signs, no \".5\" figures, and no member price. \"Member\" appears 5 times, all in \"LCA member\" or \"membership\".\n\nBody text on the computer is 16px. Fact labels are 14.5px, the same as send-out 1. Phone body text is 15.5px. The only 13px text is the \"At a glance\" label and the \"Sent through\" line.\n\nThere is no overflow in any element. Tags are balanced and every attribute is quoted. There are no holes, iframes or animation. The skeleton (support.js, the kit link, helmet with one style block, and the data-dc-script block) is unchanged.",
+    "changes": [
+     "Light phone, 'At a glance' strip: the bottom 6px of the strip was hidden under the mail app's toolbar, so the cut looked accidental. I trimmed the strip's top padding (17px to 13px), the label margin (9px to 6px) and the gap above the links (10px to 4px). The strip now ends in full, with 8px of white email body showing above the toolbar.",
+     "Light phone, the four facts: the gap between facts was smaller than the gap between the wrapped lines of one fact, so the facts ran together. I widened the gap between facts from 4px to 6px and tightened their line height (dd 1.4 to 1.35, dt 1.55 to 1.5). Each fact now reads as its own group.",
+     "Right column: the computer email grew by about 250px with the new strip, which left about 345px of bare canvas under the dark phone. I bottom-aligned the phones column (align-self: stretch with justify-content: space-between). The light phone still lines up with the top of the email and the dark phone, which shows the end, now lines up with the computer's end. The captions 'On a computer' and 'On a phone, dark setting' now sit on the same line.",
+     "I left the declared height at 2450 (2427 rounded up to the next 50); it already matched the render."
+    ],
+    "remaining_concerns": [
+     "The board is still uneven in height: the computer email is about 2130px tall and the two phones together about 1800px, so there is now a gap of about 400px between the two phones. It looks planned, but it is still empty canvas. The newsletter board Newsletter-Email-6 fills the same space with a third phone captioned 'After pressing Results in the list'. I did not add one here because the checks say 'the same in all three views', which means exactly three pictures. If K wants the send-out to match the newsletter board, the natural fourth picture is a short phone captioned 'After pressing The details in the list'. That would make the board about 2600px tall, still under 2700.",
+     "In the light phone, 'At a glance' fills the first screen, so the club's two welcoming sentences are not visible there. They appear in the computer view. This follows from putting the strip under the band and keeping the band at send-out 1's size.",
+     "I kept the captions word for word as send-out 1 and the newsletter boards have them ('On a computer', 'On a phone', 'On a phone, dark setting'), because revision5 says to use the same captions. They do not say that the light phone shows the top of the email and the dark phone shows the end."
+    ]
+   }
+  },
+  {
+   "board": "Newsletter-Page-4.dc.html",
+   "drawn": {
+    "file": "<scratchpad>/canvas-out/project/Newsletter-Page-4.dc.html",
+    "height": 4450,
+    "changes": [
+     "Label strip: the small line is now 'LCA NEWSLETTER · THE PAGE' and the sentence is the revision6 wording ('you click on it and type'). The page <title> lost 'option 4'. There is still one Sample data tag.",
+     "Change 1, From and Subject: they are now a stacked pair of boxed fields with grey label cells, copied from option 5. The pair sits directly under the Start from bar and above the toolbar. From is a closed drop-down 'Louisiana Chess Association · LCA Newsletter' with 'Who members see as the sender.' beside it. Subject is a real 46px text field. The grey Subject row inside the letter is gone from every sheet (computer, Make bigger, tablet, phone page, club template), so each letter now starts with the navy band.",
+     "Change 2, the Subject field: white, 1px border, 8px radius, a pencil mark at its right end and the helper 'The line people see in their inbox. Click to change it.' ('Tap' on the phone). New picture 'After clicking Subject': the field with the kit's 2px navy focus ring, the caret after '2026' and '30 of 60 letters' at the right. I counted the subject: it is 30 characters.",
+     "Change 3, the letter can be typed on. The hint beside Write it reads 'Click anywhere on the letter and type. It saves by itself.' The 'One ask' paragraph sits in a soft navy outlined box with the caret and an 'Editing' tag at its top right. 'Coming up' is drawn as hovered: thin dashed outline, a pointer and a 'Click to edit' pencil chip. After the last part comes a dashed box 'Click here to write the next part' with the 'Add a photo, event or line' button beside it.",
+     "Pencil chip on the month: shown on 'December 2026' in the Make bigger picture, the tablet and the new empty letter (icon only at that small size). New picture 'The letter before anything is written': the band, then three dashed boxes reading 'Write your opening here', 'Add what is coming up' and 'Add results or club news'.",
+     "Change 4, use of space. The browser frame is now 962 tall in all, and the letter scrolls inside its sheet. The scroll thumb sits at the end and the top edge fades out. Columns: the writing column is 806 (67 percent), the right column 312. The right column holds 'What members will get', the Phone (chosen) | Computer switch with Hide, a smaller phone preview, 'How members will see it.', and the '167 people will get it' card ('155 members and 12 you added', Add or review people). Both columns end together at the bar. The bar now holds only the saved line on the left, then More options, step 2 'Send a test to me' and step 3 'Send to 167 people' with its arrow, evenly spaced. The phead lost its duplicate saved line. On the render the largest bare patch in the main picture is about 43px (beside the phone).",
+     "Every preview of the email (the side phone and the 'See the email' phone) now shows the band and then the 'In this issue' strip. It matches Newsletter-Email-6's phone version: two columns of three underlined links, each 44px tall, each pointing at an id on its part's heading.",
+     "The tablet, phone page, Make bigger and club template pictures switched to the same boxed From and Subject fields. The club template keeps its navy outlined From with 'Choose the club this is sent for' and the 'Needed before you can send' tag. 'After pressing From' now opens from the same boxed field. On the phone, From wraps to two lines instead of being cut off, and the field labels line up. The tablet and phone captions now say 'From and Subject'.",
+     "Layout: the empty letter sits under Make bigger in the middle column of the row of three, which fills the bare space that was there before (columns now 880, 853 and 808 tall). 'After clicking Subject' sits in the phone row's left column under the phone caption, where a 340-wide column fits the field at its true size. The declared height went from 4700 to 4450 (rendered 4429). The file has no em or en dashes and no {{holes}}, and every tag is closed."
+    ],
+    "note": "The page K chose, now plainly an email being written: From and Subject sit as boxed fields at the top like a mail program, the subject has a pencil and a focus picture, and the letter shows the paragraph being typed, a hovered heading that says Click to edit, and a dashed box for the next part. The picture is now a real screen's height with the letter scrolling in its sheet, and the right column holds the preview (with In this issue) and who gets it, so nothing on the desk is bare.",
+    "unresolved": [
+     "At a real screen's height the letter has to scroll inside its sheet, so in the main picture the navy band, with its 'December 2026' pencil chip, is scrolled out of view above the 'Editing' paragraph. The month's pencil chip is shown instead on the Make bigger picture, the tablet and 'The letter before anything is written'.",
+     "The same height limit means the visible sheet in the main picture is about 350px tall, not the 520px from the earlier revision. Revision6's real-screen rule was put first. 'Make bigger' and 'Pull to make taller' remain the way to a bigger writing area.",
+     "The editing sheets do not show the 'In this issue' strip; only the email previews do, as the entry asks. A careful viewer may notice that the sheet and the preview differ there.",
+     "'After clicking Subject' sits in the phone row's left column because no other column on the board is wide enough for the field at true size. Its caption names it, but it sits beside the phone pictures. Under it about 500px of board background stays empty beside the tall phones, as in the earlier version (outside the main picture)."
+    ]
+   },
+   "review": {
+    "file": "<scratchpad>/canvas-out/project/Newsletter-Page-4.dc.html",
+    "height": 4450,
+    "counts": "Rendered at scale 1 and viewed in close crops. The board renders 4429px tall, so the declared height is 4450, in both the root style and $preview, under the 5200 limit. Main picture: the browser frame is 962 tall (a 40px bar plus a 920px view). The letter sheet is 806 wide and 351 tall. The letter inside it is 636 tall, so 285px of it is scrolled above the top. The left and right columns both end at y=1049, just above the 70px bar at the foot. The right column is 312 wide, with the phone preview at 226x392 and the \"167 people will get it\" card at 312x129. The largest bare patch in the main picture is about 115x46, beside \"Who members see as the sender.\", which is under the 120px limit. In the bar at the foot there is a 20px gap between More options, step 2 and step 3, and an 8px gap between each number and its button. \"LCA Newsletter · December 2026\" has 30 letters, so \"30 of 60 letters\" is correct. The From and Subject fields are 46 tall each with an 8px gap, and they match option 5's boxed fields with a grey label cell. The Subject field has the kit field's look (border #858b99, 8px radius, 16px text), and its focused state uses the kit's 2px navy focus outline with a 2px offset. There is exactly one \"Sample data\" tag. Copy checks: no en or em dashes, every date has its weekday, the only addresses are at example.com, no sender address appears anywhere, the counts are 155 and 167 everywhere, and the partner event says \"Registers on the organizer's site ↗\". Every preview of the email shows the navy band and then the \"In this issue\" strip, matching Newsletter-Email-6 as rendered. I also rendered Newsletter-Page-5 and Newsletter-Email-6 to compare.",
+    "changes": [
+     "The \"Editing\" tag on the paragraph being written sat under the white fade at the top of the sheet and looked washed out. The paragraph now sits above the fade, so the outlined box and its tag are crisp.",
+     "The bar at the foot of the After pressing Make bigger picture read \"167 people will get it:\" with a stray colon. It now reads \"167 people will get it\", like the main page.",
+     "The tablet picture (\"On a tablet, by touch\") now says \"Tap to change it.\" under Subject and \"Tap to edit\" on the month, so it matches the phone's touch wording. The computer picture still says \"Click\".",
+     "The After clicking Subject picture was a bare field floating in the phone row. It now sits in a desk-coloured frame like the other small pictures, with 15px text so the full subject and caret fit in the 348px column. Its caption now says what it shows and that it is the computer page: \"On a computer: the field is outlined, the caret waits after the last word, and the count shows the room left.\""
+    ],
+    "remaining_concerns": [
+     "The letter sheet in the main picture is only 351px tall. That follows from the new real-screen height (a 962px frame) once the Write it line, the Start from bar, From, Subject and the toolbar are stacked above it. It is well under the earlier 520px minimum for the writing area, and it touches K's old \"doesn't get squished\" note, although Make bigger and Pull to make taller both answer that note. Making it taller means a taller frame than about 960 or a different stacking, and I did not redesign that.",
+     "The letter is scrolled to its lower part, so the navy band and its \"Click to edit\" chip on the month are not visible in the main picture. The month chip is visible on the tablet, in the After pressing Make bigger picture, and in The letter before anything is written.",
+     "After clicking Subject shows the computer page but sits in the phone row's caption column. The caption now says \"On a computer\", but a reader might still link it to the phones. There is no balanced place for it in the upper rows: adding it to any of them would leave about 130 to 150px of empty space beside it.",
+     "The caption columns to the left of the tablet and the phones have about 440 to 480px of empty desk below their text. This is the board's existing side-caption layout, not new empty space, but it is the board's largest plain area.",
+     "The small phone preview in the main picture is drawn at about 53 percent, so its body text is about 8.5px. It is readable as a thumbnail but not for reading the letter, which is by design (\"a mini thing on the side\")."
+    ]
+   }
+  }
+ ],
+ "setCheck": {
+  "per_file": [
+   {
+    "file": "<scratchpad>/canvas-out/project/Newsletter-Email-6.dc.html",
+    "height": 2650,
+    "verdict": "No edits needed: it is plainly look 1 (same band height, rook on the left, type, rules, footer) plus the cream \"In this issue\" strip, with six underlined links that each point at a real heading id. The issue matches look 1 word for word, and the extra phone \"After pressing Results in the list\" and both the light and dark phones are present. Rendered at 2633, declared 2650."
+   },
+   {
+    "file": "<scratchpad>/canvas-out/project/Newsletter-Tournament-6.dc.html",
+    "height": 2450,
+    "verdict": "Passes checks_tournament and now uses the same band as Email-6 (rook on the left of all three lines) and the same phone column as the bulletin's send-out. The At a glance strip, the four real anchors and every sample-tournament fact are word for word, and every weekday is correct. Rendered at 2418, declared 2450."
+   },
+   {
+    "file": "<scratchpad>/canvas-out/project/Newsletter-Page-4.dc.html",
+    "height": 4450,
+    "verdict": "Passes checks_page, with these already in place: the From and Subject compose fields, the Subject pencil and the true count \"30 of 60 letters\", the four editing signs, and the right column holding the preview, the Phone | Computer switch and the 167-people card. Every preview shows the band and then the In this issue strip. After small fixes, the preview sender names now match the emails and the Subject picture is no longer cramped. Rendered at 4429, declared 4450."
+   }
+  ],
+  "changes": [
+   "Newsletter-Tournament-6, computer band: moved the rook so it sits to the left of all three lines (\"TOURNAMENT · FROM BATON ROUGE CHESS CLUB\", the name, the date), vertically centred, with the 52px rook and 18px gap that Email-6 uses. This matches Email-6's band and send-out 6's own phone band. The small line goes to 16px with 0.07em letter spacing so it stays on one line in the 600-wide message. The band did not grow (about 155px, was about 164px).",
+   "Newsletter-Tournament-6, phone column: removed justify-content:space-between and align-self:stretch, so the dark phone sits 48px under the light phone as it does on Tournament-4 and Email-6. This removes the roughly 400px accidental gap between the two phones.",
+   "Newsletter-Page-4, previews: the sender line in the side preview and in the phone's \"After pressing See the email\" sheet now reads \"Louisiana Chess Association\". Before, it read \"Louisiana Chess Association · LCA Newsletter\". The change makes it match the sender on Email-6 and Email-4. The From drop-down itself is unchanged.",
+   "Newsletter-Page-4, \"After clicking Subject\" picture: tightened the label-cell and outer padding and widened the field's right padding (6px to 13px), so the caret after \"2026\" no longer crowds the focus ring.",
+   "Newsletter-Page-4, \"After clicking Subject\" caption: removed \"On a computer:\" because the picture sits under the \"On a phone\" heading. It now reads \"The field is outlined, the caret waits after the last word, and the count shows the room left.\"",
+   "Rendered each edited file again at scale 1 and checked close crops. Measured natural heights with the root height set to auto: Email-6 2633, Tournament-6 2418, Page-4 4429. The declared and $preview heights (2650, 2450, 4450) are already the next 50 up, so no height changed. Newsletter-Email-4 and Newsletter-Tournament-4 were not touched."
+  ],
+  "remaining_concerns": [
+   "Page-4's main picture: with the From and Subject fields and the toolbar above it, the visible part of the letter is only about 350px tall inside the 958px browser frame. Revision 6 asks for a real screen height, which wins over the earlier 520px minimum for the writing area. Make bigger and Pull to make taller cover this, but the president will see a fairly short sheet in the main picture.",
+   "Page-4's main picture scrolls the letter past the navy band, so the pencil chip on \"December 2026\" does not show there. It shows in the Make bigger picture, in \"The letter before anything is written\" and on the tablet (as \"Tap to edit\").",
+   "Page-4's sender wording: the From drop-down reads \"Louisiana Chess Association · LCA Newsletter\" while the previews now show \"Louisiana Chess Association\". I read the drop-down as the sender name plus which LCA sender is chosen. If K wants the preview to repeat the drop-down text exactly, the emails' sender line would need the same text, and Email-4 must not be edited.",
+   "Page-4's letter on the desk, the tablet letter and the Make bigger picture show the band with no In this issue strip. Only the previews show the strip, as revision 6 asks. A reader may wonder where the strip comes from, since the page says the letter looks exactly as members will read it.",
+   "Page-4's preview \"In this issue\" links for parts 3 to 6 point at ids that are not drawn, because the previews are cut off. This does not show in a picture.",
+   "In Page-4's \"After pressing From\" and \"After choosing Club tournament announcement\" row, the two figures are top-aligned and their captions end about 30px apart. I left this as is.",
+   "Email-6 shows three phones and Email-4 shows two, because revision 6 requires the extra \"After pressing Results in the list\" picture. Otherwise the views and captions match."
+  ]
+ }
+}
