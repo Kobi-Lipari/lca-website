@@ -86,6 +86,16 @@ describe('registration confirmations', () => {
     expect(mails[0].html).toContain('Open')
   })
 
+  it('goes through Amazon SES with the sender the site ships with, nothing mocked', async () => {
+    const member = await seedMember({ email: 'shipped@example.org', uscfId: '12345671' })
+    const tournamentId = await seedTournament({ name: 'Shipped Swiss', sections: [{ name: 'Open', entryFee: 0 }] })
+    const res = await invoke(registrationPost, { method: 'POST', as: member, body: { tournamentId, section: 'Open' } })
+    expect(res.status).toBe(201)
+
+    expect(confirmations()).toHaveLength(1)
+    expect(emailOutbox.map((e) => e.via)).toEqual(['ses'])
+  })
+
   it('a paid entry is confirmed when payment arrives, once, even if Stripe retries', async () => {
     const member = await seedMember({ email: 'paid@example.org', uscfId: '12345679' })
     const tournamentId = await seedTournament({ sections: [{ name: 'Open', entryFee: 40 }] })

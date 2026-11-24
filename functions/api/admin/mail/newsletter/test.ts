@@ -13,8 +13,8 @@
 // as a test send, kind 'test', so the gate refuses an address that no
 // longer receives mail or that no list may send to, but reads no choice:
 // someone who turned the newsletter off can still send themselves a test.
-// It goes through the service MAIL_SENDER names, and through Resend from
-// noreply@louisianachess.org, the one address Resend is set up for
+// It goes through the service MAIL_SENDER names, and, while that is Resend,
+// from noreply@louisianachess.org, the one address Resend is set up for
 // (functions/utils/mail/resend.ts). It answers 200 { sent: true }, 502
 // { error } when it was not sent, and 503 without the link key, before
 // anything is written. A 502 for an answer from the mail service carries

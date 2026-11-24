@@ -60,7 +60,7 @@
 import { useCallback, useEffect, useRef, useState, type KeyboardEvent } from 'react'
 import { Link, Navigate } from 'react-router-dom'
 import { defaultSubject } from '@domain/mail/letter'
-import { TEST_NO_WORDS, WAITS_FOR_SES } from '@domain/mail/newsletterWords'
+import { TEST_NO_WORDS } from '@domain/mail/newsletterWords'
 import { useAuth } from '@/contexts/auth-context'
 import { useMediaManagerAnswer } from '@/areas/admin/mediaManagerAnswer'
 import { CountCard } from '@/areas/admin/newsletter/CountCard'
@@ -168,6 +168,9 @@ const TEST_CHANGED = 'No test was sent: someone else has changed, replaced or se
 
 /** The test's words for a test that could not be asked for, or got no answer the page can read. */
 const TEST_FAILED = 'The test could not be sent. Try again in a moment.'
+
+/** What Send, drawn and not yet available, says on a press: Help's own sentence for card 6, true whichever service sends. */
+const SEND_NOT_HERE_YET = 'Sending to members from this page is not available yet.'
 
 /**
  * Why no test was sent when the words on the page could not be saved first, by saveFirst's answer, in the chooser's
@@ -662,9 +665,9 @@ function NewsletterLetter({ issue, reach, view, onView, previewHidden, onPreview
     setBarSaid(testSaid(outcome))
   }
 
-  /** Send, drawn and not yet available, says why on a press, in the newsletter tab's own words for its Send. */
+  /** Send, drawn and not yet available, says why on a press, in Help's own words for it. */
   function sendNotYet() {
-    setBarSaid({ tone: 'note', words: WAITS_FOR_SES })
+    setBarSaid({ tone: 'note', words: SEND_NOT_HERE_YET })
   }
 
   const moreOptions = (place: 'bar' | 'end') => (

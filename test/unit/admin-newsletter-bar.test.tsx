@@ -272,7 +272,7 @@ describe('the bar at the foot, from 768 pixels up', () => {
     expect(screen.queryByRole('menu')).toBeNull()
     expect(moreRows()).toBeNull()
     expect(calls.slice(before)).toEqual([])
-    expect(within(theBar()).getByRole('status').textContent).toBe('The newsletter goes out through Amazon SES, which this site does not send through yet. You can write it and send yourself a test.')
+    expect(within(theBar()).getByRole('status').textContent).toBe('Sending to members from this page is not available yet.')
   })
 
   it('reads the count once as the page opens, as Group email\'s newsletter tab does, in words for one person and for none', async () => {

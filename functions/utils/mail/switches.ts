@@ -43,11 +43,12 @@ export const MAIL_LISTS_ON = true
 export const MAIL_PAGE_ON = true
 
 /**
- * Which service sends every email: 'resend' today. It changes only in a pull request of its own (the cutover, whose
- * fallback is the same line back), never by a setting, so one deploy and one service send each message. 'ses' only
- * with WORKERS_PLAN 'paid': the cutover waits for Workers Paid, which test/unit/mail-switches.test.ts holds.
+ * Which service sends every email: 'ses' (Amazon SES) since the cutover, or 'resend' after a move back. It changes
+ * only in a pull request of its own (the way back is the same line back to 'resend'), never by a setting, so one
+ * deploy and one service send each message. 'ses' only with WORKERS_PLAN 'paid', which
+ * test/unit/mail-switches.test.ts holds.
  */
-export const MAIL_SENDER: MailSender = 'resend'
+export const MAIL_SENDER: MailSender = 'ses'
 
 /**
  * The plan the account is on, which sizes the mail engine's budgets in ./plan: 'free' until K confirms that the account

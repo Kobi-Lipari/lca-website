@@ -225,6 +225,19 @@ describe('(b) to the account\'s own address and to no other', () => {
     expect(JSON.stringify(emailOutbox)).not.toContain(other)
   })
 
+  it('sends through Amazon SES from the newsletter\'s own address once the site sends through it', async () => {
+    flags.sender = 'ses'
+    flags.plan = 'paid'
+    const written = address('admin')
+    const admin = await person('Player One', 'lca_admin', written)
+    const letter = await saved(admin)
+    const res = await testOf(admin, letter)
+    expect(res.status).toBe(200)
+    expect(await res.json()).toEqual({ sent: true, to: written })
+    expect(emailOutbox.map((e) => [e.to, e.via])).toEqual([[written, 'ses']])
+    expect(emailOutbox[0].from).toBe('Louisiana Chess Association <newsletter@news.louisianachess.org>')
+  })
+
   it('holds the media manager to their own address the same way, whatever they type', async () => {
     const seated = await holder()
     const admin = await seedAdmin()

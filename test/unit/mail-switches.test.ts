@@ -25,8 +25,8 @@
 // the workers. Since WS16 step 7 that line may name either service, so the
 // cutover's change, the same line with 'ses', leaves this file green; and
 // 'ses' only with WORKERS_PLAN 'paid', since the cutover waits for Workers
-// Paid (Q42, settled by K): on the shipped tree, whose plan is 'free', the
-// sender can only be 'resend'.
+// Paid (Q42, settled by K): on the free plan the sender can only be
+// 'resend'.
 //
 // The two settings of WS16 step 2 follow no switch either: WORKERS_PLAN,
 // the hosting plan the mail engine's budgets are sized for, and

@@ -136,7 +136,7 @@ const EXTENDED: ReadonlyArray<readonly [string, string, string]> = [
 const entry = (list: string, name: string) => entries(list === 'decisions' ? decisions : followUps).find((l) => head(l) === name) ?? ''
 
 describe("REDESIGN_STATUS.md, checkpoint M's review: the section's new bullets", () => {
-  it('ends checkpoint M\'s section with the review\'s bullets, in order, after the pull request\'s text, each once, but for the switch-on change\'s one line after them', () => {
+  it('ends checkpoint M\'s section with the review\'s bullets, in order, after the pull request\'s text, each once, but for the switch-on change\'s and the cutover change\'s one line each after them', () => {
     const names = ["- **The pull request's text.**", "- **The review's fixes.**", "- **Files of the review's fixes.**", "- **Pins moved in the review's fixes.**", "- **Build after the review's fixes.**", "- **Worker after the review's fixes.**", '- Checks at the end of the checkpoint:']
     const at = names.map((n) => checkpoint.indexOf(`\n${n}`))
     for (const [i, n] of names.entries()) {
@@ -145,7 +145,7 @@ describe("REDESIGN_STATUS.md, checkpoint M's review: the section's new bullets",
     }
     expect([...at].sort((a, b) => a - b)).toEqual(at)
     // The switch-on change writes its one line after the Checks line, as checkpoint M's section asks.
-    expect(checkpoint.trimEnd().split('\n').filter((l) => !l.startsWith('- **Switched on (WS16 step 8).**')).at(-1)!.startsWith('- Checks at the end of the checkpoint:')).toBe(true)
+    expect(checkpoint.trimEnd().split('\n').filter((l) => !l.startsWith('- **Switched on (WS16 step 8).**') && !l.startsWith('- **Amazon SES sends (WS16 step 8).**')).at(-1)!.startsWith('- Checks at the end of the checkpoint:')).toBe(true)
   })
 
   it('gives each item of the round by its number, in order, a sub-bullet of its own, and K\'s items under K1', () => {
