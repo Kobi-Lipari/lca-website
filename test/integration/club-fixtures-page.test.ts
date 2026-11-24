@@ -173,7 +173,8 @@ describe('GET /api/clubs/[id]/page for the fixture clubs, with CLUB_PAGES_ON set
     expect(capital.statement.told).toBe('Last checked October 2026')
     expect(capital.places.map((p) => p.name)).toEqual(['Fixture Community Center', 'Fixture Branch Library'])
     expect(capital.places[0]).toMatchObject({ street: '100 Example St, Baton Rouge, LA', note: 'Use the side door by the parking lot.' })
-    expect(capital.contact).toEqual({ name: 'Player One' })
+    // Each fixture club has an address of its own, so its page's form goes to the club (relayKind in functions/utils/clubs/relay.ts).
+    expect(capital.contact).toEqual({ name: 'Player One', goes_to: 'club' })
 
     const north = await expectContract(await invoke(pageGet, { params: { id: NORTH.slug } }), clubPageResponseSchema)
     expect(north.club).toMatchObject({ id: NORTH.id, slug: NORTH.slug, name: NORTH.name, region: 'North Louisiana' })
@@ -181,7 +182,7 @@ describe('GET /api/clubs/[id]/page for the fixture clubs, with CLUB_PAGES_ON set
     // Its meeting words end with a made-up address with no place to break, which the browser tests' reflow check meets at 320 pixels.
     expect(north.statement.text).toBe('Fridays at 6:30 PM. Lessons for new players on Saturdays at 10:00 AM. Changes are posted at https://example.org/fixturenorthchessclubmeetingchangesandclosures.')
     expect(north.places.map((p) => p.name)).toEqual(['Fixture Library'])
-    expect(north.contact).toEqual({ name: 'Player Two' })
+    expect(north.contact).toEqual({ name: 'Player Two', goes_to: 'club' })
   })
 
   it('lists the places in the order the seed wrote them, a place added later after them, and two at most', async () => {

@@ -9,9 +9,8 @@
 // what GET /api/clubs/:address/page answers and builds none of the server's
 // words: the told line is drawn as given. A component
 // file exports only components, so these live here.
-import { PAGE_SECTION_IDS } from '@domain/clubs/pageWords'
+import { CONTACT_HEADING, PAGE_SECTION_IDS } from '@domain/clubs/pageWords'
 import type { ClubPageResponse } from '@domain/contracts'
-import { CONTACT_HEADING } from '@domain/clubs/pageWords'
 
 /** A control of the page: 44 pixels tall at least, with the look's focus ring. */
 export const CONTROL = 'inline-flex min-h-11 items-center gap-2 rounded-md px-4 text-sm font-semibold outline-none focus-visible:ring-3 focus-visible:ring-focus'

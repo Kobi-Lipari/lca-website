@@ -264,7 +264,10 @@ describe('REDESIGN_STATUS.md, WS09 aside: Help as small question marks', () => {
   })
 
   it('gives the Status line\'s tail one more clause, and keeps it ending as before', () => {
-    expect(statusLine).toContain('; Help as small question marks on My region and in the one club editor, with the editor\'s box as tall as the preview strip where the window has room, is built by K\'s decision 16 on `redesign/help-marks` and waits for K\'s word on its own pull request; steps 1 to 14 and 16 to ')
+    // Since checkpoint X took checkpoint W in, checkpoint X's clauses stand between this clause and the tail: both pieces are held, in order.
+    const help = statusLine.indexOf('; Help as small question marks on My region and in the one club editor, with the editor\'s box as tall as the preview strip where the window has room, is built by K\'s decision 16 on `redesign/help-marks` and waits for K\'s word on its own pull request; ')
+    expect(help).toBeGreaterThanOrEqual(0)
+    expect(statusLine.indexOf('; steps 1 to 14 and 16 to ', help)).toBeGreaterThan(help)
     expect(statusLine).toMatch(/\bbuilt\.$/)
   })
 

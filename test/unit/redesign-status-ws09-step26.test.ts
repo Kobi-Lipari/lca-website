@@ -345,7 +345,8 @@ describe('REDESIGN_STATUS.md, WS09 step 26: the parts against the files', () => 
     const pins = bullet(block, '- **Pins moved.**')
     for (const file of MOVED) expect(pins, file).toContain(`\`${file}\``)
     expect(pins).toContain('no earlier test file changes its count of cases')
-    expect(read('test/unit/routes.test.ts')).toMatch(/expect\(real\.filter\(\(r\) => r\.startsWith\('api\/'\)\)\.length\)\.toBe\(10[6-9]\)/)
+    // The figure read from the routes' own test, so a later route moves nothing here: 106 at this step, a later figure since checkpoint X took checkpoint W in.
+    expect(Number(/expect\(real\.filter\(\(r\) => r\.startsWith\('api\/'\)\)\.length\)\.toBe\((\d+)\)/.exec(read('test/unit/routes.test.ts'))?.[1])).toBeGreaterThanOrEqual(106)
     expect(read('test/unit/contracts-pending.ts')).toContain('export const PENDING_COUNT = 104')
     expect(contracts['clubs/[id]/contact']).toBeDefined()
     expect(Object.keys(contracts['clubs/[id]/contact'])).toEqual(['POST'])

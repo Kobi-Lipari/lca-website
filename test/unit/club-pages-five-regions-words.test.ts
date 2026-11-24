@@ -42,7 +42,7 @@ describe('the club page contract with the five regions', () => {
     about: { text: 'A made up club.', cost: null, welcome: null, facebook: null, website: null, other: null, weekend_play: false, scholastic_friendly: false },
     statement: { text: 'Tuesdays at 7:00 PM', told: '' },
     places: [],
-    contact: { name: null },
+    contact: { name: null, goes_to: 'club' },
     events: [],
     news: [],
     nearest: [],

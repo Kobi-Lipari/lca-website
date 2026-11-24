@@ -185,7 +185,8 @@ describe('REDESIGN_STATUS.md, checkpoint W\'s review: the fixes against the file
     expect(read('src/areas/clubs/components/ClubAbout.tsx')).toContain('<span className="min-w-0 [overflow-wrap:anywhere]">{children}</span>')
     for (const file of ['src/areas/clubs/components/ClubEvents.tsx', 'src/areas/clubs/components/NearbyClubs.tsx']) expect(read(file), file).toContain('[overflow-wrap:anywhere]')
     expect(read('domain/clubs/pageWords.ts')).toContain('export const PAGE_SECTION_IDS')
-    expect(read('src/areas/clubs/clubPage.ts')).toContain('export const SECTION_IDS: Record<DrawnSection, string> = { ...PAGE_SECTION_IDS, news: \'news\' }')
+    // Since checkpoint X took checkpoint W in, checkpoint X's contact follows news on the same line.
+    expect(read('src/areas/clubs/clubPage.ts')).toContain('export const SECTION_IDS: Record<DrawnSection, string> = { ...PAGE_SECTION_IDS, news: \'news\'')
     expect(read('src/areas/clubs/components/PagePreview.tsx')).toContain('links: [about.facebook, about.website, about.other].map(webLink)')
     const findings = bullet(block, '- **Findings and fixes.**')
     for (const piece of ['`isFacebookAddress` in `domain/clubs/facebook.ts`', '`PAGE_SECTION_IDS` in `domain/clubs/pageWords.ts`', '`whitespace-pre-line`', '`<br>`', '`webLink`', '`min-w-0`', '`[overflow-wrap:anywhere]`']) {
@@ -199,7 +200,11 @@ describe('REDESIGN_STATUS.md, checkpoint W\'s review: the fixes against the file
     expect(seed).toContain('the fixture clubs\' places (club_places) are deleted and written again')
     expect(seed).toContain('needs migrations 0001 to 0066 applied first')
     expect(seed).toContain('https://example.org/fixturenorthchessclubmeetingchangesandclosures.')
-    expect(read('test/unit/routes.test.ts')).toContain('it(\'finds the 109 handler files under api plus the page routes\'')
+    // The title gives the figure the count line holds, read from the file, so a later route moves nothing here: 109 at this step.
+    const routes = read('test/unit/routes.test.ts')
+    const handlers = /expect\(real\.filter\(\(r\) => r\.startsWith\('api\/'\)\)\.length\)\.toBe\((\d+)\)/.exec(routes)?.[1]
+    expect(Number(handlers)).toBeGreaterThanOrEqual(109)
+    expect(routes).toContain(`it('finds the ${handlers} handler files under api plus the page routes'`)
     const ws02 = read('test/unit/redesign-status-ws02-step2.test.ts')
     expect(ws02).toContain('it(\'holds none of the five early switches off by name in the switch test or the builds spec, as the record says\'')
     expect(ws02).toContain('not\\.toContain')
@@ -223,7 +228,10 @@ describe('REDESIGN_STATUS.md, checkpoint W\'s review: the Status and PR lines', 
       'and on K\'s decision 12 the club page names no keeper to anyone', 'and on K\'s decision 11 a small `robots.txt` that names the sitemap is served only',
     ]) expect(statusLine, piece).toContain(piece)
     const tail = statusLine.slice(statusLine.lastIndexOf('; ') + 2)
-    expect(tail).toContain('the new club page in the browser, `main` taken in again after the saved templates, checkpoint W\'s review and its fixes, K\'s answers')
+    // Since checkpoint X took checkpoint W in, checkpoint X's items stand between the two pieces: both are held, in order.
+    const review = tail.indexOf('the new club page in the browser, `main` taken in again after the saved templates, checkpoint W\'s review and its fixes, ')
+    expect(review).toBeGreaterThanOrEqual(0)
+    expect(tail.indexOf('K\'s answers', review)).toBeGreaterThan(review)
     expect(tail).toMatch(/\bbuilt\.$/)
   })
 
@@ -251,7 +259,9 @@ describe('REDESIGN_STATUS.md, checkpoint W\'s review: the map, the deviations, t
     const tagged = deviations.split('\n').filter((l) => TAGGED_W.test(l))
     expect(tagged.map((l) => /^- \*\*([^*]+)\*\*/.exec(l)![1])).toEqual(['A public "Last checked" month (WS09 checkpoint W).', 'No author line (WS09 checkpoint W).'])
     const entries = deviations.split('\n').filter((l) => l.startsWith('- **'))
-    expect(entries.slice(-2)).toEqual(tagged)
+    // Since checkpoint X took checkpoint W in, checkpoint X's entries follow the two: they stand together, and last while the review is the latest.
+    expect(entries.slice(entries.indexOf(tagged[0]), entries.indexOf(tagged[0]) + 2)).toEqual(tagged)
+    if (latest) expect(entries.slice(-2)).toEqual(tagged)
     expect(tagged[0]).toContain('K\'s decision 12 of Tuesday, November 17, 2026')
     expect(tagged[1]).toContain('draws no author line')
   })

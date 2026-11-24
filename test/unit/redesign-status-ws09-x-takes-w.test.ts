@@ -112,7 +112,10 @@ describe('REDESIGN_STATUS.md, checkpoint X: checkpoint W\'s newer commits taken 
     expect(block).not.toBe('')
     expect(ws09.split(`\n${BLOCK}\n`)).toHaveLength(2)
     expect(headings[headings.indexOf(PREVIOUS) + 1]).toBe(BLOCK)
-    expect(headings.slice(headings.indexOf(STEP_24) + 1, headings.indexOf(PREVIOUS))).toEqual(W_BLOCKS)
+    // Since checkpoint X took checkpoint W in with main as it stands, checkpoint W's five newer blocks follow the three, before step 25's.
+    const before25 = headings.slice(headings.indexOf(STEP_24) + 1, headings.indexOf(PREVIOUS))
+    expect(before25.slice(0, W_BLOCKS.length)).toEqual(W_BLOCKS)
+    if (latest) expect(before25).toEqual(W_BLOCKS)
     if (latest) expect(headings[headings.indexOf(BLOCK) + 1]).toBe(LISTS[0])
   })
 
@@ -203,8 +206,9 @@ describe('REDESIGN_STATUS.md, checkpoint X, W taken in: the parts against the fi
     // The Status and PR lines still read checkpoint V as waiting; the block names that and leaves both lines as they stand.
     expect(asked).toContain('The Status line and the PR line still read checkpoint V as waiting for K\'s word for its merge')
     expect(asked).toContain('pull request 134, `498ec7f`, on Tue, Nov 17, 2026')
-    expect(statusLine).toContain('and waits for K\'s word for its merge')
-    expect(lines.find((l) => l.startsWith('**PR:**'))).toContain('waits for K\'s word for its merge')
+    // Checkpoint W's lines, taken in with main as it stands, name the pull request between the two pieces.
+    expect(statusLine).toContain('and waits in draft pull request 134 for K\'s word for its merge')
+    expect(lines.find((l) => l.startsWith('**PR:**'))).toContain('waits in draft pull request 134 for K\'s word for its merge')
     const pins = bullet(block, '- **Pins moved.**')
     for (const piece of [
       `\`${STEP_25_TEST}\``, '"sits once, right after step 24\'s block, and before the four lists while it is the latest"', '`PREVIOUS`',

@@ -65,6 +65,8 @@ const part = (heading: string) => {
 }
 // Checkpoint W's three later blocks stand between step 24's and this one since
 // checkpoint X took them in, the last of them straight before this block.
+// Since checkpoint X took checkpoint W in with main as it stands, checkpoint W's five newer blocks stand between
+// that one and this, so the order is held, and the neighbour only while this block is the latest.
 const PREVIOUS = '### Checkpoint W: WS09 the written page reads as a page'
 const STEP = '### WS09 step 25: the limit and the spam check'
 const LISTS = ['### WS09 decisions', '### WS09 deviations from the brief', '### WS09 verify items resolved', '### WS09 follow-ups']
@@ -134,7 +136,9 @@ describe('REDESIGN_STATUS.md, WS09 step 25: the block', () => {
   it('sits once, right after step 24\'s block, and before the four lists while it is the latest', () => {
     expect(block).not.toBe('')
     expect(ws09.split(`\n${STEP}\n`)).toHaveLength(2)
-    expect(headings[headings.indexOf(PREVIOUS) + 1]).toBe(STEP)
+    expect(headings.indexOf(PREVIOUS)).toBeGreaterThanOrEqual(0)
+    expect(headings.indexOf(PREVIOUS)).toBeLessThan(headings.indexOf(STEP))
+    if (latest) expect(headings[headings.indexOf(PREVIOUS) + 1]).toBe(STEP)
     if (latest) expect(headings[headings.indexOf(STEP) + 1]).toBe(LISTS[0])
   })
 
@@ -282,9 +286,10 @@ describe('REDESIGN_STATUS.md, WS09 step 25: the parts against the files', () => 
     for (const piece of ['`npm run db:generate -- rate limits --number 0071`', '`drizzle/0016_rate_limits.sql`', 'idx 16, tag `0016_rate_limits`', 'No file was renamed by hand', '"No schema changes, nothing to migrate"', 'no production or preview database was read or written']) {
       expect(migration, piece).toContain(piece)
     }
-    expect(read(MIGRATION)).toContain('-- staged as drizzle/0016_rate_limits.sql.')
+    // Since checkpoint X took checkpoint W in, the generator stages it as 0017, after main's newsletter table, and the header names that.
+    expect(read(MIGRATION)).toContain('-- staged as drizzle/0017_rate_limits.sql.')
     const journal = JSON.parse(read('drizzle/meta/_journal.json')) as { entries: Array<{ idx: number; tag: string }> }
-    expect(journal.entries.some((e) => e.idx === 16 && e.tag === '0016_rate_limits')).toBe(true)
+    expect(journal.entries.some((e) => e.idx === 17 && e.tag === '0017_rate_limits')).toBe(true)
     if (!latest) return
     expect(migration).toContain(`${migrationFiles().length} files in \`migrations/\``)
     expect(migration).toContain('43 tables of 409 columns and 20 links between tables')
@@ -326,7 +331,8 @@ describe('REDESIGN_STATUS.md, WS09 step 25: the parts against the files', () => 
     expect(read(SETUP)).toContain('  \'SIGNING_SECRET\',\n  \'SIGNING_SECRET_PREVIOUS\',\n] as const')
     expect(read('.env.example')).toContain('\nVITE_TURNSTILE_SITE_KEY=\n')
     expect(read('.env.example')).toContain('\n# TURNSTILE_SECRET_KEY=\n')
-    expect(read('test/unit/routes.test.ts')).toMatch(/expect\(real\.filter\(\(r\) => r\.startsWith\('api\/'\)\)\.length\)\.toBe\(10[5-9]\)/)
+    // The figure read from the routes' own test, so a later route moves nothing here: 105 at this step, a later figure since checkpoint X took checkpoint W in.
+    expect(Number(/expect\(real\.filter\(\(r\) => r\.startsWith\('api\/'\)\)\.length\)\.toBe\((\d+)\)/.exec(read('test/unit/routes.test.ts'))?.[1])).toBeGreaterThanOrEqual(105)
     expect(read('test/unit/contracts-pending.ts')).toContain('export const PENDING_COUNT = 104')
     if (!latest) return
     expect(Object.values(contracts).reduce((n, route) => n + Object.keys(route).length, 0)).toBe(41)

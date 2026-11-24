@@ -279,7 +279,8 @@ describe('REDESIGN_STATUS.md, WS09 step 27: the parts against the files', () => 
     expect(bullet(block, '- **The branch.**')).toContain('this branch does not hold `main`\'s later changes')
     const merge = bullet(block, '- **What the merge does.**')
     for (const piece of ['107 handler files', '44 of the 148 methods', '`PENDING_COUNT` still 104', '`deploy-worker.yml`']) expect(merge, piece).toContain(piece)
-    expect(read('test/unit/routes.test.ts')).toMatch(/expect\(real\.filter\(\(r\) => r\.startsWith\('api\/'\)\)\.length\)\.toBe\(10[7-9]\)/)
+    // The figure read from the routes' own test, so a later route moves nothing here: 107 at this step, a later figure since checkpoint X took checkpoint W in.
+    expect(Number(/expect\(real\.filter\(\(r\) => r\.startsWith\('api\/'\)\)\.length\)\.toBe\((\d+)\)/.exec(read('test/unit/routes.test.ts'))?.[1])).toBeGreaterThanOrEqual(107)
     expect(read('test/unit/contracts-pending.ts')).toContain('export const PENDING_COUNT = 104')
     expect(Object.keys(contracts['clubs/reply/[token]'])).toEqual(['GET', 'POST'])
     expect(PENDING_CONTRACTS.some((p) => String(p).includes('clubs/reply'))).toBe(false)

@@ -319,8 +319,9 @@ describe('REDESIGN_STATUS.md, WS09 step 1: the lists', () => {
   it('tags every entry of the four lists in the form the record keeps', () => {
     for (const list of [decisions, verify, followUps]) {
       expect(entries(list).length).toBeGreaterThan(0)
-      // The follow-ups tagged for checkpoint W are held in their form by test/unit/redesign-status-ws09-w-review.test.ts.
-      for (const entry of entries(list).filter((e) => !/^- \*\*[^*]+ \(WS09 checkpoint W\)\.\*\* \S/.test(e))) expect(entry).toMatch(/^- \*\*[^*]+ \(WS09 checkpoint V\)\.\*\* \S|^- \*\*[^*]+ \(WS09 (?:step (?:[1-9]|[1-3]\d)|checkpoint S)\)\.\*\* \S|^- \*\*[^*]+ \(WS09 checkpoint U\)\.\*\* \S/)
+      // The follow-ups tagged for checkpoint W are held in their form by test/unit/redesign-status-ws09-w-review.test.ts,
+      // and the one tagged for checkpoint X by test/unit/redesign-status-ws09-x-takes-w-2.test.ts.
+      for (const entry of entries(list).filter((e) => !/^- \*\*[^*]+ \(WS09 checkpoint [WX]\)\.\*\* \S/.test(e))) expect(entry).toMatch(/^- \*\*[^*]+ \(WS09 checkpoint V\)\.\*\* \S|^- \*\*[^*]+ \(WS09 (?:step (?:[1-9]|[1-3]\d)|checkpoint S)\)\.\*\* \S|^- \*\*[^*]+ \(WS09 checkpoint U\)\.\*\* \S/)
     }
     expect(deviations).toContain('None in WS09 step 1.')
   })
