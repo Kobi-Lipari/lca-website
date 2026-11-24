@@ -188,7 +188,7 @@ describe('REDESIGN_STATUS.md, WS09 aside: the question marks\' words', () => {
     }
     expect(checksLine).not.toMatch(/PENDING|GATE_LINE/)
     const branch = bullet(block, '- **Branch.**')
-    for (const piece of ['`redesign/ws09-help-words`', '`18634b8`', '`c8209eb`', 'draft pull request 149', '183 record cases fail']) expect(branch, piece).toContain(piece)
+    for (const piece of ['`redesign/ws09-help-words`', '`18634b8`', '`c8209eb`', 'draft pull request 149', '183 record cases fail', '`992b145`, was taken in with a merge commit']) expect(branch, piece).toContain(piece)
   })
 
   it('keeps the record\'s plain language in what it wrote', () => {
