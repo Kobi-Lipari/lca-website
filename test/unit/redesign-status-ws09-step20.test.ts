@@ -122,7 +122,8 @@ describe('REDESIGN_STATUS.md, WS09 step 20: the block', () => {
   it('sits once, right after checkpoint V\'s review, and before the four lists while it is the latest', () => {
     expect(block).not.toBe('')
     expect(ws09.split(`\n${STEP}\n`)).toHaveLength(2)
-    expect(headings[headings.indexOf(PREVIOUS) + 1]).toBe(STEP)
+    // Written straight after checkpoint V's review; with main taken in it stands after main's blocks of Thursday's changes, the aside on how they reached main last.
+    expect([PREVIOUS, '### WS09 aside: how Thursday\'s changes reached main']).toContain(headings[headings.indexOf(STEP) - 1])
     if (latest) expect(headings[headings.indexOf(STEP) + 1]).toBe(LISTS[0])
   })
 
@@ -279,7 +280,7 @@ describe('REDESIGN_STATUS.md, WS09 step 20: the parts against the files', () => 
     const pins = bullet(block, '- **Pins moved.**')
     for (const file of MOVED) expect(pins, file).toContain(`\`${file}\``)
     expect(pins).toContain('105 handler files, 145 methods under `functions/api`, 41 contracted and `PENDING_COUNT` 104')
-    expect(read('test/unit/routes.test.ts')).toContain('expect(real.filter((r) => r.startsWith(\'api/\')).length).toBe(105)')
+    expect(read('test/unit/routes.test.ts')).toContain('expect(real.filter((r) => r.startsWith(\'api/\')).length).toBe(108)')
     expect(read('test/unit/api-split-modules.test.ts')).toContain('\'/api/admin/tournaments/*/approval\', \'/api/clubs/*/page\', \'/api/clubs/confirm/*\',')
     // Checkpoint W (K's decision 12) took the author line off the page, so routing.ts's readers no longer hold authorLine.ts.
     expect(read('test/unit/club-routing-server-only.test.ts')).toContain('expect(all).not.toContain(\'functions/utils/clubs/authorLine.ts\')')

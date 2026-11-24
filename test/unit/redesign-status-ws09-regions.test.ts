@@ -210,7 +210,8 @@ describe('REDESIGN_STATUS.md, WS09 aside: the regions by the five seats', () => 
       'test/unit/redesign-status-ws09-step1.test.ts', 'test/integration/club-regions-fill.test.ts', 'test/integration/domain-shared-rules.test.ts', 'test/integration/officer-regions.test.ts',
       'test/integration/workspace-region.test.ts',
     ]
-    for (const file of moved) expect(pins, file).toMatch(new RegExp(`\`${file.replace(/[.]/g, '\\.')}\` \\(${casesIn(file)}\\), (WS\\d\\d|the officer roles work)`))
+    // Checkpoint W, taken in with main, added one case to nav.test.ts after this block was written; the block's figure is main's side.
+    for (const file of moved) expect(pins, file).toMatch(new RegExp(`\`${file.replace(/[.]/g, '\\.')}\` \\(${casesIn(file) - (file === 'test/unit/nav.test.ts' ? 1 : 0)}\\), (WS\\d\\d|the officer roles work)`))
     expect(pins).toContain('`test/unit/fixtures/navPersonas.ts`, WS02\'s people list')
     expect(pins).toContain(`\`test/unit/nav-personas-edges.test.ts\` (${casesIn('test/unit/nav-personas-edges.test.ts')})`)
     expect(read('test/unit/drizzle-baseline.test.ts')).toContain("expect(sql.at(-1)).toBe('0072_regions_by_seat.sql')")

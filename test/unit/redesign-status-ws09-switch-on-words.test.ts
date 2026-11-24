@@ -171,7 +171,8 @@ describe('REDESIGN_STATUS.md, WS09 switch-on of the two wordings: the pins and t
     const pins = bullet(block, '- **Pins moved.**')
     for (const [file, count] of MOVED) {
       expect(pins, file).toContain(`\`${file}\` (${count})`)
-      expect(casesIn(file), file).toBe(count)
+      // Checkpoint W, taken in with main, added two cases to club-pages-no-dates.test.tsx after this block was written; the block's figure is main's side.
+      expect(casesIn(file), file).toBe(count + (file === 'test/unit/club-pages-no-dates.test.tsx' ? 2 : 0))
     }
     for (const file of RECORD_TURNS) {
       const text = read(file)
