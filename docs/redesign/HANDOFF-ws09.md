@@ -2,7 +2,17 @@
 
 Written on Saturday, November 14, 2026, for whoever takes this stream over. The whole project's handoff is `HANDOFF.md`; the rules where the two streams meet are `STREAMS.md`. This file holds only what is the clubs stream's own.
 
-## Where it stands (Tuesday, November 24, 2026, about 6:05 AM UTC)
+## Where it stands (Tuesday, November 24, 2026, about 9:45 AM UTC)
+
+- **The record mend is draft pull request 149** (`redesign/ws09-record-mend` at `18634b8`, one commit on main's `c8209eb`): the full check is green, GitHub's checks are green, and the mail stream's nine record tests pass on it. It waits only for K's yes. The branch is never rewritten: the mail stream's saved templates change (`redesign/ws16-templates`) is built as one commit on top of it. Order put to K: 149, then theirs.
+- **Checkpoint W has taken main in.** `redesign/ws09-clubs-w` is at `fd157fd`: the merge commit `f6192fe` (main with the record mend, `18634b8`) and one commit of mends on it. Its full check is green: lint 13 errors and 11 warnings over 1,347 files; unit 12,240 in 540 files; integration 3,418 passing with the one todo in 185 files; the browser run 660 passed and 337 skipped; the main script 519,265 bytes. No product file of checkpoint W named a region that is gone, and nothing reached for the Help panels.
+- **Three things for K at checkpoint W's pull request, written in its record block:** step 20's `GET /api/clubs/:id/page` answers a club's keepers once W merges, because `CLUB_KEEPERS_ON` is on in main (built so, but it ships with the page switch off: K's yes or a step that holds it to `CLUB_PAGES_ON` alone); the cover line says the town twice for a club in a seat's own town ("Chess club in Lake Charles, Louisiana · Lake Charles / Southwestern"); and with the new club pages on, the club editor shows a large empty space under Save and publish, since the page preview heads the strip beside it.
+- **Being built:** the question marks' new words, on `redesign/ws09-help-words` cut from `18634b8`, by K's note of Thursday, November 19, 2026 (relayed by the mail stream's lead; K has the list of old and new words and has not answered yet). Built ahead of the answer; its pull request waits for K's word.
+- **Next on checkpoint W:** the browser half of step 24 as a third build of the browser tests (the shape agreed with the mail stream on Tuesday, November 17, 2026), then the checkpoint's section, its review, its pictures and its pull request. Three test files written in the take-in and set aside come in there, mended.
+- **Asked of K on Tuesday, not yet answered,** four choices: LCA Observers and tournaments (production holds eleven observer accounts, by the mail stream's count); the bubbles' words; the order of the work; the yes on 149.
+- **Migrations:** the mail stream's templates change needs none, so 0073 is unused; this stream takes 0074 and up.
+
+## Where it stood on Tuesday, November 24, 2026, about 6:05 AM UTC
 
 The work was stopped from Thursday, November 19, 2026, about 8:15 AM UTC until Tuesday, November 24, 2026, 5:23 AM UTC.
 
