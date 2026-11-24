@@ -9,7 +9,9 @@
 // weekends or is scholastic friendly when the club ticked either. A box
 // with nothing in it is never drawn, and nothing says "not listed". A link
 // is drawn only when it is a web address, and opens in a new tab, which its
-// words say. Drawn in the editor's preview column (compact), the headings
+// words say. The Facebook field's link is called Facebook only when it goes
+// to Facebook's own site (domain/clubs/facebook.ts); a link to any other
+// site is named by its site, as the club's other links are. Drawn in the editor's preview column (compact), the headings
 // are words and the links are not links.
 import type { ReactNode } from 'react'
 import { Check, ExternalLink } from 'lucide-react'
@@ -17,6 +19,7 @@ import { Check, ExternalLink } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { CLEAR_OF_BARS, WORD_LINK, hasWords, oneSentence, paragraphs, siteOf, webLink } from '@/areas/clubs/clubPage'
 import { ABOUT_LABELS, ABOUT_TICKS, aboutHeading } from '@domain/clubs/pageWords'
+import { isFacebookAddress } from '@domain/clubs/facebook'
 import type { ClubPageResponse } from '@domain/contracts'
 
 type About = ClubPageResponse['about']
@@ -30,7 +33,8 @@ interface ClubLink {
 function linksOf(about: About): ClubLink[] {
   const links: ClubLink[] = []
   const facebook = webLink(about.facebook)
-  if (facebook) links.push({ href: facebook, words: 'Facebook' })
+  // "Facebook" only on a link that goes there; another site in the field is named by its site.
+  if (facebook) links.push({ href: facebook, words: isFacebookAddress(facebook) ? 'Facebook' : siteOf(facebook) })
   const website = webLink(about.website)
   if (website) links.push({ href: website, words: `Website: ${siteOf(website)}` })
   const other = webLink(about.other)
@@ -38,10 +42,10 @@ function linksOf(about: About): ClubLink[] {
   return links
 }
 
-/** A box beside the club's words: its label and what the club wrote. */
+/** A box beside the club's words: its label and what the club wrote. It may shrink below its longest word, which then breaks. */
 function Fact({ label, compact, children }: { label: string; compact: boolean; children: ReactNode }) {
   return (
-    <div className="space-y-1 rounded-xl border border-hairline bg-surface p-4">
+    <div className="min-w-0 space-y-1 rounded-xl border border-hairline bg-surface p-4">
       {compact
         ? <p className="text-xs font-bold uppercase tracking-wider text-ink-muted">{label}</p>
         : <h3 className="text-xs font-bold uppercase tracking-wider text-ink-muted">{label}</h3>}
@@ -107,7 +111,7 @@ export function ClubAbout({
   const words = single ? (
     <p className={cn('break-words text-ink', compact ? 'text-base' : 'text-xl leading-normal @3xl:text-[21px]')}>{text}</p>
   ) : text ? (
-    <div className="space-y-4 break-words text-base leading-relaxed text-ink">
+    <div className="min-w-0 space-y-4 break-words text-base leading-relaxed text-ink">
       {paragraphs(text).map((part, i) => <p key={i} className="whitespace-pre-line">{part}</p>)}
     </div>
   ) : null
@@ -124,7 +128,7 @@ export function ClubAbout({
         ) : (
           <div className={cn('mt-3 grid gap-6', !compact && facts.length > 0 && '@3xl:grid-cols-[minmax(0,1fr)_24rem]')}>
             {words}
-            {facts.length > 0 && <div className="space-y-3">{facts}</div>}
+            {facts.length > 0 && <div className="min-w-0 space-y-3">{facts}</div>}
           </div>
         )}
       </div>
@@ -132,12 +136,17 @@ export function ClubAbout({
   )
 }
 
-/** A section's heading, with the club's bar before it, as the boards draw one; words in the preview. */
+/**
+ * A section's heading, with the club's bar before it, as the boards draw one;
+ * words in the preview. The words sit in a span that can shrink and break
+ * anywhere, so a club's name with a long run in it never widens the page.
+ */
 export function SectionHeading({ compact, children }: { compact: boolean; children: ReactNode }) {
   const bar = <span aria-hidden="true" className={cn('shrink-0 rounded-full bg-ink', compact ? 'h-4 w-1' : 'h-6 w-1.5')} />
+  const words = <span className="min-w-0 [overflow-wrap:anywhere]">{children}</span>
   return compact ? (
-    <p className="flex items-center gap-2 break-words text-base font-bold text-ink">{bar}{children}</p>
+    <p className="flex items-center gap-2 break-words text-base font-bold text-ink">{bar}{words}</p>
   ) : (
-    <h2 className="flex items-center gap-2.5 break-words text-2xl font-bold tracking-tight text-ink">{bar}{children}</h2>
+    <h2 className="flex items-center gap-2.5 break-words text-2xl font-bold tracking-tight text-ink">{bar}{words}</h2>
   )
 }

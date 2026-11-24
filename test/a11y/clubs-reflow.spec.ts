@@ -11,10 +11,15 @@
 // part that scrolls on its own (the section nav's row) or clips what
 // overflows it (the cover, the map) is measured by that part instead. The
 // cover's line names the club's region, the longest words on the page's
-// first screen, and must wrap.
+// first screen, and must wrap. The second fixture club's meeting words end
+// with a made-up web address longer than the column at 320 pixels, with no
+// place to break, so the measure meets a long unbroken run in the club's own
+// words under its name and in When and where; it must break inside the
+// column. With scripts off, the page the server wrote is measured the same
+// way at both sizes.
 //
 // Reads only.
-import type { TestInfo } from '@playwright/test'
+import type { Page, TestInfo } from '@playwright/test'
 import { expect, openDrawn, test } from './support'
 import { A11Y_CLUBS_VARIANT } from './global-setup'
 import { cityLine } from '../../domain/clubs/pageWords'
@@ -30,6 +35,33 @@ function onlyClubs(testInfo: TestInfo) {
   test.skip(testInfo.project.name !== A11Y_CLUBS_VARIANT.name, 'the new club pages are drawn on the clubs build alone')
 }
 
+/** The page's scroll width, the window's width, and every box past the window's right edge that no part holds. */
+function measure(page: Page) {
+  return page.evaluate(() => {
+    const room = document.documentElement.clientWidth
+    /** A part that scrolls on its own or clips what overflows it. */
+    const holds = (el: Element) => ['auto', 'scroll', 'hidden', 'clip'].includes(getComputedStyle(el).overflowX)
+    const wide: string[] = []
+    for (const el of Array.from(document.body.querySelectorAll('*'))) {
+      const box = el.getBoundingClientRect()
+      if (box.width === 0 || box.height === 0) continue
+      let holder: Element | null = null
+      for (let up = el.parentElement; up && up !== document.body; up = up.parentElement) {
+        if (holds(up)) {
+          holder = up
+          break
+        }
+      }
+      if (holder) continue
+      if (box.right > room + 0.5) {
+        const name = `${el.tagName.toLowerCase()}${el.id ? `#${el.id}` : ''}${el.getAttribute('data-slot') ? `[data-slot=${el.getAttribute('data-slot')}]` : ''}`
+        wide.push(`${name} from ${Math.round(box.left)} to ${Math.round(box.right)}`)
+      }
+    }
+    return { scroll: document.documentElement.scrollWidth, room, wide }
+  })
+}
+
 for (const club of FIXTURE_CLUBS) {
   for (const size of SIZES) {
     test(`${club.slug} at ${size.width} by ${size.height} does not scroll sideways, and nothing on it is wider than the window`, async ({ page, external }, testInfo) => {
@@ -39,29 +71,7 @@ for (const club of FIXTURE_CLUBS) {
       await openDrawn(page, `/clubs/${club.slug}`, [page.getByRole('heading', { level: 1, name: club.name, exact: true }), line])
       await page.evaluate(() => document.fonts.ready)
 
-      const m = await page.evaluate(() => {
-        const room = document.documentElement.clientWidth
-        /** A part that scrolls on its own or clips what overflows it. */
-        const holds = (el: Element) => ['auto', 'scroll', 'hidden', 'clip'].includes(getComputedStyle(el).overflowX)
-        const wide: string[] = []
-        for (const el of Array.from(document.body.querySelectorAll('*'))) {
-          const box = el.getBoundingClientRect()
-          if (box.width === 0 || box.height === 0) continue
-          let holder: Element | null = null
-          for (let up = el.parentElement; up && up !== document.body; up = up.parentElement) {
-            if (holds(up)) {
-              holder = up
-              break
-            }
-          }
-          if (holder) continue
-          if (box.right > room + 0.5) {
-            const name = `${el.tagName.toLowerCase()}${el.id ? `#${el.id}` : ''}${el.getAttribute('data-slot') ? `[data-slot=${el.getAttribute('data-slot')}]` : ''}`
-            wide.push(`${name} from ${Math.round(box.left)} to ${Math.round(box.right)}`)
-          }
-        }
-        return { scroll: document.documentElement.scrollWidth, room, wide }
-      })
+      const m = await measure(page)
       expect(m.scroll, `scroll width ${m.scroll} in a window ${m.room} wide`).toBeLessThanOrEqual(m.room)
       expect(m.wide).toEqual([])
 
@@ -74,3 +84,25 @@ for (const club of FIXTURE_CLUBS) {
     })
   }
 }
+
+test.describe('with scripts off', () => {
+  test.use({ javaScriptEnabled: false })
+
+  for (const club of FIXTURE_CLUBS) {
+    for (const size of SIZES) {
+      test(`${club.slug}: the page the server wrote, at ${size.width} by ${size.height}, does not scroll sideways, and nothing on it is wider than the window`, async ({ page, external }, testInfo) => {
+        onlyClubs(testInfo)
+        await page.setViewportSize(size)
+        const answer = await page.goto(`/clubs/${club.slug}`)
+        expect(answer?.status()).toBe(200)
+        await expect(page.getByRole('heading', { level: 1, name: club.name, exact: true })).toBeVisible()
+        await page.evaluate(() => document.fonts.ready)
+
+        const m = await measure(page)
+        expect(m.scroll, `scroll width ${m.scroll} in a window ${m.room} wide`).toBeLessThanOrEqual(m.room)
+        expect(m.wide).toEqual([])
+        expect(external).toEqual([])
+      })
+    }
+  }
+})

@@ -5,19 +5,26 @@
 -- (npm run db:seed:preview, which runs scripts/db/preview-guard.ts first and
 -- stops unless the target is lca-db-preview). Never load it into lca-db.
 --
--- Everything here is made up. Every person is "<first name> Fixture", every
+-- Everything here is made up. Every person is "<first name> Fixture", the two
+-- fixture clubs' contact names are "Player One" and "Player Two", every
 -- email address is at example.org, no one has a US Chess ID, and every
 -- link points at example.org. Nothing names a real person.
 --
--- It is written against the schema after migration 0054 and needs migrations
--- 0001 to 0054 applied first. Every row it owns has an id starting "fx-", so
--- it never touches the rows the migrations add, and it can be loaded again:
+-- It is written against the schema after migration 0066, the newest it
+-- needs (0066_club_pages.sql adds the club page's columns and club_places),
+-- and needs migrations 0001 to 0066 applied first. Every row it owns has an
+-- id, or a club_id, starting "fx-", so it never touches the rows the
+-- migrations add, and it can be loaded again:
 --   - clubs, members, seats, posts, documents and champions are upserted
 --     (INSERT ... ON CONFLICT(id) DO UPDATE), so a second load changes them
---     back to what is written here and deletes nothing;
+--     back to what is written here and deletes none of them;
+--   - the fixture clubs' places (club_places) are deleted and written again
+--     with their fixed ids, 90001 to 90003, on every load, which removes any
+--     other place on a fixture club, such as one a tester added;
 --   - the fixture tournaments are deleted and inserted again, with their
---     entries and games, so the 0053 triggers build their section and
---     schedule rows from the JSON columns afresh each time.
+--     entries (registrations, deleted first) and games, so the 0053 triggers
+--     build their section and schedule rows from the JSON columns afresh
+--     each time.
 -- There is no BEGIN or COMMIT: wrangler d1 execute runs a file as one batch.
 --
 -- Dates are relative to the day it is loaded (date('now', '+24 days')), so
@@ -74,7 +81,7 @@ INSERT INTO clubs (
    '2026-10-06 18:00:00', '2026-10-06 18:00:00'),
   ('fx-club-north', 'Fixture North Chess Club', 'Monroe', 'fixture-north-chess-club',
    'A made-up club for tests, with blitz on Fridays and lessons for new players on Saturdays.',
-   'Fridays at 6:30 PM. Lessons for new players on Saturdays at 10:00 AM.',
+   'Fridays at 6:30 PM. Lessons for new players on Saturdays at 10:00 AM. Changes are posted at https://example.org/fixturenorthchessclubmeetingchangesandclosures.',
    'Free.', 'Everyone, from a first game to a rated player.', 0, 1,
    'Player Two', NULL, 'https://example.org/fixture-north-chess-club', NULL,
    '2026-10-06 18:00:00', '2026-10-06 18:00:00')

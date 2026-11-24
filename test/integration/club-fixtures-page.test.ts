@@ -178,6 +178,8 @@ describe('GET /api/clubs/[id]/page for the fixture clubs, with CLUB_PAGES_ON set
     const north = await expectContract(await invoke(pageGet, { params: { id: NORTH.slug } }), clubPageResponseSchema)
     expect(north.club).toMatchObject({ id: NORTH.id, slug: NORTH.slug, name: NORTH.name, region: 'North Louisiana' })
     expect(north.about).toMatchObject({ weekend_play: false, scholastic_friendly: true, facebook: null, website: 'https://example.org/fixture-north-chess-club' })
+    // Its meeting words end with a made-up address with no place to break, which the browser tests' reflow check meets at 320 pixels.
+    expect(north.statement.text).toBe('Fridays at 6:30 PM. Lessons for new players on Saturdays at 10:00 AM. Changes are posted at https://example.org/fixturenorthchessclubmeetingchangesandclosures.')
     expect(north.places.map((p) => p.name)).toEqual(['Fixture Library'])
     expect(north.contact).toEqual({ name: 'Player Two' })
   })

@@ -9,6 +9,7 @@
 // what GET /api/clubs/:address/page answers and builds none of the server's
 // words: the told line is drawn as given. A component
 // file exports only components, so these live here.
+import { PAGE_SECTION_IDS } from '@domain/clubs/pageWords'
 import type { ClubPageResponse } from '@domain/contracts'
 
 /** A control of the page: 44 pixels tall at least, with the look's focus ring. */
@@ -37,8 +38,11 @@ export type DrawnSection = (typeof DRAWN_SECTIONS)[number]
 /** Each drawn section's name in the section nav. */
 export const SECTION_LABELS: Record<DrawnSection, string> = { about: 'About', when_and_where: 'When and where', events: 'Events', news: 'News' }
 
-/** Each drawn section's id on the page, so /clubs/example-chess-club#when-and-where can be shared. */
-export const SECTION_IDS: Record<DrawnSection, string> = { about: 'about', when_and_where: 'when-and-where', events: 'events', news: 'news' }
+/**
+ * Each drawn section's id on the page, so /clubs/example-chess-club#when-and-where can be shared.
+ * The first three are the ones the page the server writes carries too (domain/clubs/pageWords.ts).
+ */
+export const SECTION_IDS: Record<DrawnSection, string> = { ...PAGE_SECTION_IDS, news: 'news' }
 
 /** How many of the answer's events and news rows there are; none where it is not said, as in the editor's preview. */
 export interface SectionRows {

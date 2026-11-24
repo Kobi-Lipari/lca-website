@@ -352,8 +352,18 @@ describe('REDESIGN_STATUS.md, WS02 step 2: its claims against the files', () => 
       for (const name of ['newAbout', 'newNews', 'newMembership', 'newClubs', 'myLcaRail']) {
         // WS09 step 2 holds newClubs off in the switch test's WS09 group, with the two clubs switches that came after it.
         if (file === 'test/unit/features.test.ts' && name === 'newClubs') continue
-        // WS09 step 24's clubs build turns newClubs on, and the builds spec's list of that build's switches names it; it holds nothing off.
-        if (file === 'test/a11y/builds.spec.ts' && name === 'newClubs') continue
+        // WS09 step 24's clubs build turns newClubs on, and the builds spec names it only in a comment, in the list of that
+        // build's switches and in that list's check's title; no line of it holds newClubs off (checkpoint W's review).
+        if (file === 'test/a11y/builds.spec.ts' && name === 'newClubs') {
+          for (const line of text.split('\n').filter((l) => l.includes(name))) {
+            const comment = /^\s*(\/\/|\/\*\*|\*)/.test(line)
+            const list = line === 'const CLUBS_SWITCHES_ON = [...SWITCHES_ON, \'newClubs\']'
+            const title = /^\s*test\('the clubs build is the a11y-on build\\'s switches and newClubs, with a folder, ports and a database of its own', /.test(line)
+            expect(comment || list || title, `${file}: ${line.trim()}`).toBe(true)
+          }
+          expect(text, `${file} holds ${name} off`).not.toMatch(/not\.toContain\([^)]*newClubs/)
+          continue
+        }
         expect(text.includes(name), `${file} names ${name}`).toBe(false)
       }
     }

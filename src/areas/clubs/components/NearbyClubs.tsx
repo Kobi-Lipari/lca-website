@@ -26,7 +26,8 @@ export function NearbyClubs({ city, nearest }: { city: string; nearest: ClubPage
         <ul className="mt-2">
           {nearest.slice(0, 3).map((club) => (
             <li key={club.slug} className="border-b border-hairline py-2 last:border-b-0">
-              <Link to={`/clubs/${encodeURIComponent(club.slug)}`} className={cn(WORD_LINK, 'break-words text-base')}>{club.name}</Link>
+              {/* A club's name may be one long run; it breaks anywhere inside the link, so the page never widens. */}
+              <Link to={`/clubs/${encodeURIComponent(club.slug)}`} className={cn(WORD_LINK, '[overflow-wrap:anywhere] text-base')}>{club.name}</Link>
               <p className="break-words text-sm text-ink">{nearbyLine(club)}</p>
             </li>
           ))}

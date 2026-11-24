@@ -16,7 +16,9 @@
 // - each part the fixture fills is there under its heading: About, how the
 //   club meets as the words written (never a date worked out from them), the
 //   place or places, the cost, who is welcome with its tick, the Facebook
-//   link where the fixture has one, and "Last checked" with its month
+//   field's link where the fixture has one (named by its site, example.org,
+//   since only a link to Facebook's own site is called Facebook), and "Last
+//   checked" with its month
 // - no address of the club is anywhere: the page's words (main) hold no
 //   "@" and no link of the page is a mailto, nothing the browser drew holds
 //   the club's contact address, and neither the HTML the server wrote nor
@@ -62,7 +64,8 @@ interface FixtureClub {
   cost: string
   welcome: string
   tick: string
-  facebook: string | null
+  /** The Facebook field's link and the words it is drawn with: a made-up address on example.org, so named by its site. */
+  facebook: { href: string; words: string } | null
 }
 
 const FIXTURE_CLUBS: readonly FixtureClub[] = [
@@ -82,7 +85,7 @@ const FIXTURE_CLUBS: readonly FixtureClub[] = [
     cost: 'Free for a first visit, then $5 a night.',
     welcome: 'Players of every age and level.',
     tick: 'The club plays on weekends',
-    facebook: 'https://example.org/fixture-capital-chess-club-on-facebook',
+    facebook: { href: 'https://example.org/fixture-capital-chess-club-on-facebook', words: 'example.org' },
   },
   {
     id: 'fx-club-north',
@@ -92,7 +95,7 @@ const FIXTURE_CLUBS: readonly FixtureClub[] = [
     region: 'North Louisiana',
     contact: 'north-club@example.org',
     about: 'A made-up club for tests, with blitz on Fridays and lessons for new players on Saturdays.',
-    meets: 'Fridays at 6:30 PM. Lessons for new players on Saturdays at 10:00 AM.',
+    meets: 'Fridays at 6:30 PM. Lessons for new players on Saturdays at 10:00 AM. Changes are posted at https://example.org/fixturenorthchessclubmeetingchangesandclosures.',
     places: [{ name: 'Fixture Library', street: '200 Example Ave, Monroe, LA', note: 'In the study room on the second floor.' }],
     cost: 'Free.',
     welcome: 'Everyone, from a first game to a rated player.',
@@ -159,12 +162,12 @@ for (const club of FIXTURE_CLUBS) {
       await expect(about.getByRole('heading', { level: 3, name: 'Who is welcome', exact: true })).toBeVisible()
       await expect(about.getByText(club.welcome, { exact: true })).toBeVisible()
       await expect(about.getByText(club.tick, { exact: true })).toBeVisible()
-      const facebook = page.locator('main').getByRole('link', { name: 'Facebook (opens in a new tab)', exact: true })
+      // Neither fixture's link goes to Facebook's own site, so no link is called Facebook.
+      await expect(page.locator('main').getByRole('link', { name: 'Facebook (opens in a new tab)', exact: true })).toHaveCount(0)
       if (club.facebook) {
+        const facebook = about.getByRole('link', { name: `${club.facebook.words} (opens in a new tab)`, exact: true })
         await expect(facebook).toHaveCount(1)
-        await expect(facebook).toHaveAttribute('href', club.facebook)
-      } else {
-        await expect(facebook).toHaveCount(0)
+        await expect(facebook).toHaveAttribute('href', club.facebook.href)
       }
 
       // How the club meets, as the club wrote it; the told line; the places.

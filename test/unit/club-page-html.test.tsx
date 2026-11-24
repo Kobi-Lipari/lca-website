@@ -85,8 +85,8 @@ describe('the server\'s page in strings', () => {
   it('writes the bare club\'s own sections and nothing else: no News, no Contact, no told line', () => {
     const body = plainOf(clubPageBody(bare()))
     expect(body).toBe('<main><h1>Example Chess Club</h1><p>Chess club in Example City, Louisiana</p><p>Tuesdays at 7:00 PM</p>'
-      + '<section><h2>About Example Chess Club</h2><p>A made up club.</p></section>'
-      + '<section><h2>When and where Example Chess Club meets</h2><ul><li><p>Example Library</p></li></ul></section></main>')
+      + '<section id="about"><h2>About Example Chess Club</h2><p>A made up club.</p></section>'
+      + '<section id="when-and-where"><h2>When and where Example Chess Club meets</h2><ul><li><p>Example Library</p></li></ul></section></main>')
   })
 
   it('writes no heading with nothing under it: a link the page would not draw writes no About', () => {

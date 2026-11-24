@@ -220,8 +220,8 @@ describe('GET /clubs/[id] with CLUB_PAGES_ON set: the head and the body', () => 
     const html = await served({ part: club.slug ?? '' })
     expect(plainOf(rootOf(html))).toBe([
       '<main><h1>Example Chess Club Bare</h1><p>Chess club in Example City, Louisiana</p><p>Tuesdays at 7:00 PM</p>',
-      '<section><h2>About Example Chess Club Bare</h2><p>A friendly made up club.</p></section>',
-      '<section><h2>When and where Example Chess Club Bare meets</h2><ul><li><p>Example Library</p></li></ul></section></main>',
+      '<section id="about"><h2>About Example Chess Club Bare</h2><p>A friendly made up club.</p></section>',
+      '<section id="when-and-where"><h2>When and where Example Chess Club Bare meets</h2><ul><li><p>Example Library</p></li></ul></section></main>',
     ].join(''))
     for (const word of ['Events', 'News', 'Contact', 'Cost', 'Who is welcome', 'Find us online', 'not listed', 'Contact P.']) expect(rootOf(html), word).not.toContain(word)
     const ld = jsonLdOf(html)

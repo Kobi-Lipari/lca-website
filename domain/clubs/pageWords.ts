@@ -35,6 +35,14 @@ export function whenAndWhereHeading(name: string): string {
   return `When and where ${name} meets`
 }
 
+/**
+ * The ids of the three sections both the page the site draws and the page
+ * the server writes have, so a shared address such as
+ * /clubs/example-chess-club#when-and-where names the same section on both,
+ * before any script and after.
+ */
+export const PAGE_SECTION_IDS: Readonly<Record<'about' | 'when_and_where' | 'events', string>> = { about: 'about', when_and_where: 'when-and-where', events: 'events' }
+
 /** The heading over the club's events. */
 export const EVENTS_HEADING = 'Events'
 
