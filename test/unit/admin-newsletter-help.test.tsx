@@ -189,9 +189,12 @@ function cards(width: 'desk' | 'tablet' | 'phone', sendReady: boolean) {
 }
 
 describe('the six cards', () => {
+  // K's words for the first card (Thu, Nov 19), the same at every width: no "we", and no word on where the control is,
+  // since the card points at it. The third says how to use a letter's words again, and that a saved template is shared.
   const STEP1 = [
-    'In the bar at the foot: a blank letter, a template or a past newsletter. It saves time: pick one, then change the words.',
-    'If you have already written something, we ask before replacing it, and keep your words under Your last newsletters.',
+    'Start from a blank letter, a template or a past newsletter, then change the words.',
+    'If the letter already has words, the page asks before replacing them and keeps them under Your last newsletters.',
+    "To use a letter's words again, save it as a template. Everyone who writes the newsletter can start from it.",
   ]
   const MIDDLE = [
     { title: 'From', words: ['Who members see as the sender.'] },
@@ -778,7 +781,7 @@ describe('where the focus goes', () => {
     expect(screen.getByRole('dialog', { name: 'Help, step 1 of 6' })).toBeTruthy()
     expect(screen.queryByRole('button', { name: 'Back' })).toBeNull()
     expect(focused()).toBe(button('Next'))
-    expect(said()).toMatch(/^Step 1 of 6\. Pick a template to start from\. In the bar at the foot:/)
+    expect(said()).toMatch(/^Step 1 of 6\. Pick a template to start from\. Start from a blank letter, a template or a past newsletter,/)
   })
 
   it('keeps the page out of reach while open, the site\'s root inert and hidden from a screen reader, let go before the focus comes back to Help', async () => {
@@ -862,7 +865,7 @@ describe('the Help button', () => {
     const card = await screen.findByRole('dialog', { name: 'Help, step 1 of 6' })
     expect(card.querySelector('p')?.textContent).toBe('1 of 6')
     expect(card.querySelector('h2')?.textContent).toBe('Pick a template to start from')
-    expect(card.textContent).toContain('In the bar at the foot: a blank letter, a template or a past newsletter.')
+    expect(card.textContent).toContain('Start from a blank letter, a template or a past newsletter, then change the words.')
     // The page behind the card is hidden from a screen reader while it is open, Help with it.
     expect(screen.getByRole('button', { name: 'Help', hidden: true }).getAttribute('aria-expanded')).toBe('true')
   })

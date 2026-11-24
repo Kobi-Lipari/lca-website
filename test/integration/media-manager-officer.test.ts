@@ -214,10 +214,10 @@ describe('(c) GET /api/me/media-manager', () => {
 
 describe('(d) every Admin handler, swept as an officer who holds the seat', () => {
   const modules = import.meta.glob('../../functions/api/admin/**/*.ts', { eager: true }) as Record<string, Record<string, unknown>>
-  // Part one's three files, then the page's three, which answer with MAIL_PAGE_ON set as it ships.
+  // Part one's three files, then the page's three and its saved templates, which answer with MAIL_PAGE_ON set as it ships.
   const NEWSLETTER_FILES = [
     'mail/newsletter.ts', 'mail/newsletter/stop.ts', 'mail/newsletter/test.ts',
-    'mail/newsletter/issue.ts', 'mail/newsletter/issue/start.ts', 'mail/newsletter/issues.ts',
+    'mail/newsletter/issue.ts', 'mail/newsletter/issue/start.ts', 'mail/newsletter/issues.ts', 'mail/newsletter/templates.ts',
   ]
   const METHODS: Record<string, string> = { Get: 'GET', Post: 'POST', Put: 'PUT', Patch: 'PATCH', Delete: 'DELETE' }
   const ID = 'sample-id'
@@ -267,8 +267,10 @@ describe('(d) every Admin handler, swept as an officer who holds the seat', () =
     expect(differ).toEqual([])
     const answering = Object.entries(newsletter).filter(([, a]) => a.withSeat.status !== 403).map(([name]) => name)
     expect(answering.sort()).toEqual([
-      'GET mail/newsletter.ts', 'GET mail/newsletter/issue.ts', 'GET mail/newsletter/issues.ts', 'POST mail/newsletter.ts',
-      'POST mail/newsletter/issue/start.ts', 'POST mail/newsletter/stop.ts', 'POST mail/newsletter/test.ts', 'PUT mail/newsletter/issue.ts',
+      'DELETE mail/newsletter/templates.ts',
+      'GET mail/newsletter.ts', 'GET mail/newsletter/issue.ts', 'GET mail/newsletter/issues.ts', 'GET mail/newsletter/templates.ts', 'POST mail/newsletter.ts',
+      'POST mail/newsletter/issue/start.ts', 'POST mail/newsletter/stop.ts', 'POST mail/newsletter/templates.ts', 'POST mail/newsletter/test.ts', 'PUT mail/newsletter/issue.ts',
+      'PUT mail/newsletter/templates.ts',
     ])
     for (const [name, a] of Object.entries(newsletter)) expect(a.without.status, `${name} without the seat`).toBe(403)
   })
