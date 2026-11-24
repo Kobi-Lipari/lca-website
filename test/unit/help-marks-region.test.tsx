@@ -3,11 +3,11 @@
 // My region's Help as small question marks (K's decision 16): three marks,
 // after the This month bar's heading, straight after Confirm all still
 // accurate while that button is drawn, and after the Clubs heading, and none
-// on a club's card. Together they hold every sentence of the Help list as it
-// stood before the marks (test/unit/fixtures/help-words-before.json, made
-// from the base's RegionHelp.tsx), word for word, for a representative and
-// for an LCA admin. Nothing opens by itself and nothing is kept in the
-// browser. The page is drawn alone with fetch stubbed; every name, club and
+// on a club's card. Together they hold every sentence of the Help list K's
+// note of Thursday, November 19, 2026 asked for
+// (test/unit/fixtures/help-words.json, written from that list and not from
+// the code), word for word, for a representative and for an LCA admin.
+// Nothing opens by itself and nothing is kept in the browser. The page is drawn alone with fetch stubbed; every name, club and
 // address here is made up.
 import { readFileSync } from 'node:fs'
 import { join, resolve } from 'node:path'
@@ -27,7 +27,7 @@ vi.mock('@/lib/supabase', () => ({
 const { MyRegionPage } = await import('@/pages/MyRegionPage')
 
 const ROOT = resolve(__dirname, '../..')
-const BEFORE = JSON.parse(readFileSync(join(ROOT, 'test/unit/fixtures/help-words-before.json'), 'utf8')) as { region: Record<string, Array<[string, string]>> }
+const WORDS = JSON.parse(readFileSync(join(ROOT, 'test/unit/fixtures/help-words.json'), 'utf8')) as { region: Record<string, Array<[string, string]>> }
 
 function card(id: string, name: string, needsCheck: boolean, lastCheckWords: string): RegionClub {
   return {
@@ -83,9 +83,9 @@ const entriesOf = (mark: HTMLElement) => [...bubbleOf(mark).querySelectorAll('dl
 
 describe('My region\'s Help, behind three marks', () => {
   for (const [role, key] of [['member', 'isAdmin=false'], ['lca_admin', 'isAdmin=true']] as const) {
-    it(`holds every sentence of the list as it stood, word for word, for ${role === 'member' ? 'a representative' : 'an LCA admin'}, and no other`, async () => {
+    it(`holds every sentence of K's new list, word for word, for ${role === 'member' ? 'a representative' : 'an LCA admin'}, and no other`, async () => {
       await page(role)
-      const list = BEFORE.region[key]
+      const list = WORDS.region[key]
       expect(list).toHaveLength(7)
       const [month, confirm, clubs] = marks()
       expect(marks().map((m) => m.getAttribute('aria-label'))).toEqual(['Help: This month', 'Help: Confirm all still accurate', 'Help: Clubs'])
@@ -101,7 +101,7 @@ describe('My region\'s Help, behind three marks', () => {
       const terms = [month, clubs].flatMap((m) => entriesOf(m).map(([term]) => term)).concat('Confirm all still accurate')
       expect([...terms].sort()).toEqual(list.map(([term]) => term).sort())
       if (role === 'lca_admin') expect(document.body.textContent).not.toMatch(/your (?:region|seat)/i)
-      else expect(bubbleOf(clubs).textContent).toContain('the clubs your seat keeps')
+      else expect(bubbleOf(clubs).textContent).toContain('A card for each club in your region')
     })
   }
 

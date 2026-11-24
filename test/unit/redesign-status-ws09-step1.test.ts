@@ -319,7 +319,8 @@ describe('REDESIGN_STATUS.md, WS09 step 1: the lists', () => {
   it('tags every entry of the four lists in the form the record keeps', () => {
     for (const list of [decisions, verify, followUps]) {
       expect(entries(list).length).toBeGreaterThan(0)
-      for (const entry of entries(list)) expect(entry).toMatch(/^- \*\*[^*]+ \(WS09 checkpoint V\)\.\*\* \S|^- \*\*[^*]+ \(WS09 (?:step (?:[1-9]|[1-3]\d)|checkpoint S)\)\.\*\* \S|^- \*\*[^*]+ \(WS09 checkpoint U\)\.\*\* \S/)
+      // The two follow-ups of the aside on the question marks' words are held in their own form by that aside's record test.
+      for (const entry of entries(list).filter((e) => !e.includes('(WS09 aside: the question marks\' words).** '))) expect(entry).toMatch(/^- \*\*[^*]+ \(WS09 checkpoint V\)\.\*\* \S|^- \*\*[^*]+ \(WS09 (?:step (?:[1-9]|[1-3]\d)|checkpoint S)\)\.\*\* \S|^- \*\*[^*]+ \(WS09 checkpoint U\)\.\*\* \S/)
     }
     expect(deviations).toContain('None in WS09 step 1.')
   })
