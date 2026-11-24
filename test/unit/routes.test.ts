@@ -59,7 +59,7 @@ describe('collectRoutes', () => {
 describe('collectRoutes on the real functions folder', () => {
   const real = collectRoutes(join(__dirname, '../../functions')).map((s) => s.join('/'))
 
-  it('finds the 107 handler files under api plus the page routes', () => {
+  it('finds the 108 handler files under api plus the page routes', () => {
     // 88 at the end of checkpoint F; functions/api/search.ts, a new route rather than a moved one, is the 89th since WS02 step 9;
     // functions/api/me/tournament-creation.ts and functions/api/me/payout-request.ts, two new routes, are the 90th and 91st since WS08 step 7;
     // functions/api/mail/unsubscribe/[token].ts and functions/api/mail/preferences/[token].ts, two new routes, are the 92nd and 93rd since WS16 step 3;
@@ -71,7 +71,8 @@ describe('collectRoutes on the real functions folder', () => {
     // functions/api/clubs/confirm/[token].ts, the monthly check's link, and functions/api/admin/clubs/monthly-check.ts, the LCA admin's button, two new routes, are the 102nd and 103rd since WS09 step 14.
     // functions/api/admin/tournaments/[id]/approval.ts, the LCA admins' wait for a representative's club event, a new route, is the 104th since WS09 step 18.
     // functions/api/admin/mail/newsletter/issue.ts, issue/start.ts and issues.ts, three new routes of WS16 part two, page step 3, are the 105th to 107th since main was brought in.
-    expect(real.filter((r) => r.startsWith('api/')).length).toBe(107)
+    // functions/api/admin/mail/newsletter/templates.ts, the newsletter's saved templates, a new route of WS16 part two, is the 108th.
+    expect(real.filter((r) => r.startsWith('api/')).length).toBe(108)
     expect(real).toEqual(expect.arrayContaining(['tournaments/[id]', 'clubs/[id]', 'news/[slug]']))
   })
 

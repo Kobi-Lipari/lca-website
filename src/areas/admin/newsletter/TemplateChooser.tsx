@@ -9,8 +9,21 @@
 // The chooser, a dialog named by its head, "Pick a template to start from",
 // with a Close button:
 // - "Blank letter", first, with the board's line under its name;
-// - "Pinned templates": in this version LCA's three starters, in the order of
-//   STARTER_IDS (domain/mail/letter.ts), each with the board's line;
+// - "Pinned templates": LCA's three starters, in the order of STARTER_IDS
+//   (domain/mail/letter.ts), each with the board's line, then the templates
+//   writers saved, newest first, shared by everyone who may open the page and
+//   read each time the chooser opens, each with "Saved <day> by <first name>";
+//   a read that fails says so, with Try again; under them "Save this letter as
+//   a template", which opens a name field in place (each past newsletter has
+//   its own "Save as a template" too, its field under its row; one at a time);
+//   after a save the focus goes to the new template's "Use this", and Cancel
+//   gives it back to the button that opened the field; each saved template
+//   has Rename, which opens the same field under its row holding its name, and
+//   sends the new name by the version read (a change by someone else meanwhile
+//   is said with who and when, and the list is read again), and Remove, which
+//   asks "Remove this template?" first (Keep it holds the focus), then takes it
+//   out of the list by the version read, the focus going to the next saved
+//   template, or to the group's head when it was the last;
 // - "Your last newsletters": the letters sent or set aside and the
 //   newsletters sent from the plain tab, at most 20, newest first, read from
 //   GET /api/admin/mail/newsletter/issues each time the chooser opens and
@@ -57,10 +70,11 @@
 // the person chooses "Replace it". The board draws no such question, so its
 // words are the page half's plan's.
 
-import { useEffect, useLayoutEffect, useRef, useState, type KeyboardEvent, type ReactNode, type RefObject } from 'react'
+import { useEffect, useId, useLayoutEffect, useRef, useState, type FormEvent, type KeyboardEvent, type ReactNode, type RefObject } from 'react'
 import * as DialogPrimitive from '@radix-ui/react-dialog'
-import { STARTERS, STARTER_IDS, defaultSubject, type StarterId } from '@domain/mail/letter'
-import { getLastNewsletters, type ApiLastNewsletter } from '@/lib/api'
+import { STARTERS, STARTER_IDS, TEMPLATE_NAME_MAX, defaultSubject, templateNameAsStored, type StarterId } from '@domain/mail/letter'
+import { getLastNewsletters, getNewsletterTemplates, removeNewsletterTemplate, renameNewsletterTemplate, saveNewsletterTemplate, type ApiLastNewsletter, type ApiNewsletterTemplate } from '@/lib/api'
+import { ApiError } from '@/lib/http'
 import { formatDate, formatTime } from '@/lib/format'
 import { cn } from '@/lib/utils'
 import type { StartFrom, SubjectBack } from './useIssue'
@@ -98,6 +112,18 @@ export interface TemplateChooserProps {
   asking: Choice | null
   /** The question's answer: true to replace the letter, false to keep writing. */
   onAnswer: (replace: boolean) => void
+  /** The letter's body on the page now, which "Save this letter as a template" sends as it is; the server cleans it. */
+  letterBody: string
+  /** Whether the letter on the page holds any words: one with none cannot be saved as a template. */
+  letterHasWords: boolean
+}
+
+/** What a rename or remove says when the template was removed by someone else after the list was read. */
+const TEMPLATE_GONE = 'Someone removed this template after you opened the list, so nothing was changed.'
+
+/** The server answers 404 for a template no longer in the list (the page itself is open, or the chooser would not be). */
+function removedMeanwhile(error: unknown): boolean {
+  return error instanceof ApiError && error.status === 404
 }
 
 /** The element the site is drawn in (index.html, src/main.tsx), as the email's sheet names it: the page behind the chooser. */
@@ -249,6 +275,18 @@ function pastLabels(choices: ReadonlyArray<Choice | null>): string[] {
   })
 }
 
+/** A saved template's line: the day it was saved, a weekday on it, in the site's own time, and who saved it where the answer names them. */
+function savedLine(template: ApiNewsletterTemplate): string {
+  const day = formatDate(template.savedAt, { stored: 'utc', year: true })
+  return template.by ? `Saved ${day} by ${template.by}` : `Saved ${day}`
+}
+
+/** A saved template as a choice, named with its line, as a past newsletter's is, since its name may match a starter's. */
+function savedChoice(template: ApiNewsletterTemplate): Choice {
+  const line = savedLine(template)
+  return { from: { templateId: template.id }, name: `${template.name}, ${line.charAt(0).toLowerCase()}${line.slice(1)}`, startedFrom: template.name }
+}
+
 /** A starter as a choice; the saved line calls the blank letter "a blank letter". */
 function starterChoice(id: StarterId): Choice {
   const name = STARTERS[id].name
@@ -260,7 +298,7 @@ function isShiftTab(event: { key: string; shiftKey: boolean; altKey: boolean; ct
   return event.key === 'Tab' && event.shiftKey && !event.altKey && !event.ctrlKey && !event.metaKey
 }
 
-export function TemplateChooser({ open, onClose, phone, opener, onUse, busy, said, notice, asking, onAnswer }: TemplateChooserProps) {
+export function TemplateChooser({ open, onClose, phone, opener, onUse, busy, said, notice, asking, onAnswer, letterBody, letterHasWords }: TemplateChooserProps) {
   const box = useRef<HTMLDivElement>(null)
   const scrim = useRef<HTMLDivElement>(null)
   // While it is open the site's root is inert, as the email's sheet makes it, so nothing behind it can take the focus or
@@ -351,6 +389,8 @@ export function TemplateChooser({ open, onClose, phone, opener, onUse, busy, sai
             notice={notice}
             asking={asking}
             onAnswer={onAnswer}
+            letterBody={letterBody}
+            letterHasWords={letterHasWords}
           />
         </DialogPrimitive.Content>
       </DialogPrimitive.Portal>
@@ -397,21 +437,49 @@ function place(box: HTMLElement, scrim: HTMLElement | null, step: HTMLElement | 
 /** What "Your last newsletters" holds: being read, the rows, or a read that failed. */
 type Rows = { state: 'reading' } | { state: 'failed' } | { state: 'ready'; issues: ApiLastNewsletter[] }
 
+/** The saved templates under the starters: being read, the templates, or a read that failed. */
+type Saved = { state: 'reading' } | { state: 'failed' } | { state: 'ready'; templates: ApiNewsletterTemplate[] }
+
 interface ChooserInsideProps extends Omit<TemplateChooserProps, 'open'> {
   box: RefObject<HTMLDivElement | null>
   scrim: RefObject<HTMLDivElement | null>
 }
 
 /** The chooser's head and choices, drawn afresh each time it opens, so its last newsletters are read each time. */
-function ChooserInside({ box, scrim, phone, opener, onClose, onUse, busy, said, notice, asking, onAnswer }: ChooserInsideProps) {
+function ChooserInside({ box, scrim, phone, opener, onClose, onUse, busy, said, notice, asking, onAnswer, letterBody, letterHasWords }: ChooserInsideProps) {
   const [rows, setRows] = useState<Rows>({ state: 'reading' })
   const [attempt, setAttempt] = useState(0)
+  const [saved, setSaved] = useState<Saved>({ state: 'reading' })
+  const [savedAttempt, setSavedAttempt] = useState(0)
+  /**
+   * A save as a template: its name field shown, for the letter on the page, for one past newsletter by its place among
+   * them, or for a new name of one saved template by its id, the name typed, the refusal said, and a save on its way.
+   * One name field is shown at a time.
+   */
+  const [naming, setNaming] = useState<null | 'letter' | number | { rename: string }>(null)
+  const [name, setName] = useState('')
+  const [nameWords, setNameWords] = useState('')
+  const [savingTemplate, setSavingTemplate] = useState(false)
+  /** The saved template "Remove this template?" asks about, and what a remove that did not happen says under the group. */
+  const [removing, setRemoving] = useState<ApiNewsletterTemplate | null>(null)
+  const [savedWords, setSavedWords] = useState('')
+  const [removingNow, setRemovingNow] = useState(false)
+  /** The Remove pressed, which the question gives the focus back to unless the template went. */
+  const removeBack = useRef<HTMLButtonElement | null>(null)
+  /** The template just saved or renamed, or the one after a template removed, whose "Use this" takes the focus once the list is read again. */
+  const justSaved = useRef<string | null>(null)
+  const saveOpener = useRef<HTMLButtonElement>(null)
+  /** Where Cancel gives the focus back: "Save this letter as a template", or a row's "Save as a template" or "Rename" by its name. */
+  const backToOpener = useRef<null | 'letter' | string>(null)
+  const nameField = useRef<HTMLInputElement>(null)
+  const ids = useId()
   /**
    * The "Use this" whose press was last taken, which the question gives the focus back to; one pressed while the chooser
    * is busy or the question is open takes nothing, so it is not this.
    */
   const pressed = useRef<HTMLButtonElement | null>(null)
   const pastHead = useRef<HTMLHeadingElement>(null)
+  const pinnedHead = useRef<HTMLHeadingElement>(null)
   /** The chooser's first part, whose parent is the chooser itself: its ref is set before this part's layout effect runs. */
   const first = useRef<HTMLDivElement>(null)
   /** The chooser's head, whose words grow as it says what it is doing or why a start did not happen. */
@@ -458,6 +526,174 @@ function ChooserInside({ box, scrim, phone, opener, onClose, onUse, busy, said, 
     }
   }, [attempt])
 
+  // The saved templates are shared by everyone who may open the page, so they are read each time the chooser opens too.
+  useEffect(() => {
+    let gone = false
+    getNewsletterTemplates().then(
+      ({ templates }) => {
+        if (!gone) setSaved({ state: 'ready', templates })
+      },
+      () => {
+        if (!gone) setSaved({ state: 'failed' })
+      },
+    )
+    return () => {
+      gone = true
+    }
+  }, [savedAttempt])
+
+  // Once the list is read again after a save, the new template's "Use this" takes the focus.
+  useEffect(() => {
+    const id = justSaved.current
+    if (id === null || saved.state !== 'ready') return
+    justSaved.current = null
+    // No such template (the last one removed has no next): the focus goes to the group's head.
+    const template = saved.templates.find((t) => t.id === id)
+    const label = template ? `Use this: ${savedChoice(template).name}` : null
+    const button = label === null ? undefined : Array.from(list.current?.querySelectorAll('button') ?? []).find((b) => b.getAttribute('aria-label') === label)
+    ;(button ?? pinnedHead.current)?.focus()
+  }, [saved])
+
+  // The name field takes the focus as it is shown; Cancel gives it back to the button that opened it.
+  useEffect(() => {
+    if (naming !== null) nameField.current?.focus()
+    else if (backToOpener.current !== null) {
+      const back = backToOpener.current
+      backToOpener.current = null
+      if (back === 'letter') saveOpener.current?.focus()
+      else Array.from(list.current?.querySelectorAll('button') ?? []).find((b) => b.getAttribute('aria-label') === back)?.focus()
+    }
+  }, [naming])
+
+  function stopNaming() {
+    setNaming(null)
+    setName('')
+    setNameWords('')
+  }
+
+  async function saveTemplate(event: FormEvent) {
+    event.preventDefault()
+    if (savingTemplate) return
+    const trimmedName = name.trim()
+    if (trimmedName === '') {
+      setNameWords('Write a name for the template.')
+      nameField.current?.focus()
+      return
+    }
+    // Counted in characters, as the server counts them: the field has no maxLength, which counts an emoji as two, and
+    // the name is cleaned first by the function the server's own rule uses.
+    if (Array.from(templateNameAsStored(trimmedName)).length > TEMPLATE_NAME_MAX) {
+      setNameWords(`Keep the template's name to ${TEMPLATE_NAME_MAX} characters.`)
+      nameField.current?.focus()
+      return
+    }
+    if (naming !== null && typeof naming === 'object') {
+      await renameTemplate(naming.rename, trimmedName)
+      return
+    }
+    // A past newsletter is sent by its letter's id, or a send from the plain tab by its send's, as its "Use this" is.
+    const row = typeof naming === 'number' && rows.state === 'ready' ? rows.issues[naming] : undefined
+    const from = row ? (row.issueId !== null ? { issueId: row.issueId } : row.campaignId !== null ? { campaignId: row.campaignId } : null) : null
+    if (naming !== 'letter' && from === null) return
+    setSavingTemplate(true)
+    try {
+      const template = await saveNewsletterTemplate(from !== null ? { name: trimmedName, from } : { name: trimmedName, bodyHtml: letterBody })
+      justSaved.current = template.id
+      stopNaming()
+      // The field goes as the list is read again, so the focus waits on the group's head until the new template is drawn.
+      pinnedHead.current?.focus()
+      setSavedAttempt((at) => at + 1)
+    } catch (error) {
+      setNameWords(error instanceof ApiError && error.message !== '' ? error.message : 'The template could not be saved. Try again.')
+      nameField.current?.focus()
+      // Someone else may have saved the name meanwhile, or this save may have reached the server before its answer was
+      // lost, so the list is read again and shows what is really saved. The name field stands outside it and stays.
+      setSavedAttempt((at) => at + 1)
+    } finally {
+      setSavingTemplate(false)
+    }
+  }
+
+  /**
+   * A new name for a saved template, by the version read. A change by someone else meanwhile is said with who and when,
+   * and the list is read again, so the next try is made on the template as it now stands.
+   */
+  async function renameTemplate(id: string, newName: string) {
+    const template = saved.state === 'ready' ? saved.templates.find((t) => t.id === id) : undefined
+    if (!template) return
+    setSavingTemplate(true)
+    try {
+      const answer = await renameNewsletterTemplate({ id, version: template.version, name: newName })
+      if ('changed' in answer) {
+        const { error, changedBy, changedAt } = answer.changed
+        const when = `${formatDate(changedAt, { stored: 'utc', year: true })} at ${formatTime(changedAt, { stored: 'utc' })}`
+        setNameWords(`${error} ${changedBy ? `${changedBy} changed it` : 'It was changed'} ${when}.`)
+        nameField.current?.focus()
+        setSavedAttempt((at) => at + 1)
+        return
+      }
+      justSaved.current = answer.saved.id
+      stopNaming()
+      pinnedHead.current?.focus()
+      setSavedAttempt((at) => at + 1)
+    } catch (error) {
+      if (removedMeanwhile(error)) {
+        // Its row and this field go as the list is read again, so the words are said under the group and the focus waits on its head.
+        backToOpener.current = null
+        stopNaming()
+        setSavedWords(TEMPLATE_GONE)
+        justSaved.current = ''
+        pinnedHead.current?.focus()
+        setSavedAttempt((at) => at + 1)
+        return
+      }
+      setNameWords(error instanceof ApiError && error.message !== '' ? error.message : 'The template could not be renamed. Try again.')
+      nameField.current?.focus()
+    } finally {
+      setSavingTemplate(false)
+    }
+  }
+
+  /** The answer to "Remove this template?": Keep it closes it; Remove it takes it out of the list by the version read. */
+  async function answerRemove(remove: boolean) {
+    const template = removing
+    if (removingNow) return
+    if (!remove || !template) {
+      setRemoving(null)
+      return
+    }
+    setRemovingNow(true)
+    try {
+      const answer = await removeNewsletterTemplate({ id: template.id, version: template.version })
+      if ('changed' in answer) {
+        const { error, changedBy, changedAt } = answer.changed
+        const when = `${formatDate(changedAt, { stored: 'utc', year: true })} at ${formatTime(changedAt, { stored: 'utc' })}`
+        setSavedWords(`${error} ${changedBy ? `${changedBy} changed it` : 'It was changed'} ${when}.`)
+      } else {
+        // Its row goes, so the focus goes to the next saved template, or to the group's head when it was the last.
+        const list = saved.state === 'ready' ? saved.templates : []
+        justSaved.current = list[list.findIndex((t) => t.id === template.id) + 1]?.id ?? ''
+        removeBack.current = null
+        pinnedHead.current?.focus()
+        // Said once in the group's alert line, since the focus alone does not tell a screen reader it went.
+        setSavedWords(`${template.name} is removed.`)
+      }
+    } catch (error) {
+      if (removedMeanwhile(error)) {
+        // Its row goes as the list is read again, so the focus goes to the group's head.
+        justSaved.current = ''
+        removeBack.current = null
+        pinnedHead.current?.focus()
+      }
+      setSavedWords(
+        removedMeanwhile(error) ? TEMPLATE_GONE : error instanceof ApiError && error.message !== '' ? error.message : 'The template could not be removed. Try again.',
+      )
+    }
+    setRemovingNow(false)
+    setRemoving(null)
+    setSavedAttempt((at) => at + 1)
+  }
+
   function use(choice: Choice, button: HTMLButtonElement) {
     if (busy !== null || asking !== null) return
     pressed.current = button
@@ -483,6 +719,51 @@ function ChooserInside({ box, scrim, phone, opener, onClose, onUse, busy, said, 
   const reading = rows.state === 'reading' ? 'Reading your last newsletters...' : rows.state === 'ready' && rows.issues.length === 0 ? 'None yet.' : ''
   const past = rows.state === 'ready' ? rows.issues.map(pastChoice) : []
   const pastNames = pastLabels(past)
+  /** A past row's "Save as a template", named by the row as its "Use this" is. */
+  const saveLabel = (at: number) => `Save as a template: ${(pastNames[at] ?? '').replace(/^Use this: /, '')}`
+  /** The saved template whose new name the field holds, if it is open for one. */
+  const renaming = naming !== null && typeof naming === 'object' && saved.state === 'ready' ? saved.templates.find((t) => t.id === naming.rename) : undefined
+  const renameLabel = (template: ApiNewsletterTemplate) => `Rename: ${template.name}`
+  // The one name field, under "Save this letter as a template", under the past row it was opened from, or under the saved template it renames.
+  const nameForm = (
+    <form noValidate onSubmit={(event) => void saveTemplate(event)} className="mt-2 grid gap-1.5">
+      <label htmlFor={`${ids}-name`} className="text-[15px] font-semibold text-ink">
+        Template name
+      </label>
+      <input
+        ref={nameField}
+        id={`${ids}-name`}
+        type="text"
+        value={name}
+        autoComplete="off"
+        aria-invalid={nameWords !== '' || undefined}
+        aria-describedby={nameWords !== '' ? `${ids}-name-words` : undefined}
+        onChange={(event) => {
+          setName(event.target.value)
+        }}
+        className="min-h-11 w-full rounded-lg border border-ink bg-background px-3 text-[15px] text-ink outline-none focus-visible:ring-3 focus-visible:ring-focus aria-invalid:border-2"
+      />
+      <p id={`${ids}-name-words`} role="alert" className="text-[15px] font-semibold text-ink">
+        {nameWords}
+      </p>
+      <div className="flex flex-wrap items-center gap-2">
+        <button type="submit" aria-disabled={savingTemplate || undefined} className={USE_BUTTON}>
+          {renaming ? 'Save name' : 'Save template'}
+        </button>
+        <button
+          type="button"
+          onClick={() => {
+            // The field and its buttons go, so the focus goes back to the button that opened them, drawn again.
+            backToOpener.current = naming === 'letter' ? 'letter' : typeof naming === 'number' ? saveLabel(naming) : renaming ? renameLabel(renaming) : null
+            stopNaming()
+          }}
+          className="inline-flex min-h-11 items-center rounded-md px-2 text-[15px] font-semibold text-ink underline underline-offset-3 outline-none hover:no-underline focus-visible:ring-3 focus-visible:ring-focus"
+        >
+          Cancel
+        </button>
+      </div>
+    </form>
+  )
 
   return (
     <>
@@ -521,11 +802,110 @@ function ChooserInside({ box, scrim, phone, opener, onClose, onUse, busy, said, 
         <ul className={cn(CHOICES, 'mt-1')} aria-label="Blank letter">
           {choice('blank')}
         </ul>
-        <h3 className={GROUP_HEAD}>
+        <h3 ref={pinnedHead} tabIndex={-1} className={cn(GROUP_HEAD, 'outline-none')}>
           <Mark name="pin" className="size-4 text-ink" />
           Pinned templates
         </h3>
-        <ul className={CHOICES}>{STARTER_IDS.filter((id) => id !== 'blank').map((id) => choice(id))}</ul>
+        <ul className={CHOICES}>
+          {STARTER_IDS.filter((id) => id !== 'blank').map((id) => choice(id))}
+          {saved.state === 'ready' &&
+            saved.templates.map((template) => {
+              const it = savedChoice(template)
+              return (
+                <Card
+                  key={template.id}
+                  pieces={DRAWINGS.past}
+                  name={template.name}
+                  line={savedLine(template)}
+                  label={`Use this: ${it.name}`}
+                  busy={busy !== null}
+                  onUse={(button) => use(it, button)}
+                  more={
+                    // One group, so the two wrap under the name together rather than Remove alone.
+                    <span className="flex flex-wrap items-center gap-3">
+                      <button
+                        type="button"
+                        aria-label={renameLabel(template)}
+                        aria-disabled={busy !== null || undefined}
+                        onClick={() => {
+                          if (busy === null) {
+                            setName(template.name)
+                            setNameWords('')
+                            setSavedWords('')
+                            setNaming({ rename: template.id })
+                          }
+                        }}
+                        className={USE_BUTTON}
+                      >
+                        Rename
+                      </button>
+                      <button
+                        type="button"
+                        aria-label={`Remove: ${template.name}`}
+                        aria-disabled={busy !== null || undefined}
+                        onClick={(event) => {
+                          if (busy === null) {
+                            removeBack.current = event.currentTarget
+                            setSavedWords('')
+                            setRemoving(template)
+                          }
+                        }}
+                        className={USE_BUTTON}
+                      >
+                        Remove
+                      </button>
+                    </span>
+                  }
+                  below={renaming?.id === template.id ? nameForm : null}
+                />
+              )
+            })}
+        </ul>
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+          <p role="alert" className="text-[15px] text-ink">
+            {saved.state === 'failed' ? 'Saved templates could not be read.' : savedWords}
+          </p>
+          {saved.state === 'failed' && (
+            <button
+              type="button"
+              onClick={() => {
+                // The button goes as the templates are read again, so the focus goes to the group's head, as the last newsletters' does.
+                setSaved({ state: 'reading' })
+                setSavedAttempt((at) => at + 1)
+                pinnedHead.current?.focus()
+              }}
+              className="inline-flex min-h-11 items-center rounded-md px-2 text-[15px] font-semibold text-ink underline underline-offset-3 outline-none hover:no-underline focus-visible:ring-3 focus-visible:ring-focus"
+            >
+              Try again
+            </button>
+          )}
+        </div>
+        {naming === 'letter' ? (
+          nameForm
+        ) : naming === null ? (
+          <div className="mt-2">
+            <button
+              ref={saveOpener}
+              type="button"
+              aria-disabled={!letterHasWords || busy !== null || undefined}
+              aria-describedby={letterHasWords ? undefined : `${ids}-empty`}
+              onClick={() => {
+                if (letterHasWords && busy === null) {
+                  setSavedWords('')
+                  setNaming('letter')
+                }
+              }}
+              className={USE_BUTTON}
+            >
+              Save this letter as a template
+            </button>
+            {!letterHasWords && (
+              <p id={`${ids}-empty`} className="mt-1 text-[13px] leading-[1.35] text-muted-foreground">
+                This letter has no words yet, so it cannot be saved as a template.
+              </p>
+            )}
+          </div>
+        ) : null}
         <h3 ref={pastHead} tabIndex={-1} className={cn(GROUP_HEAD, 'outline-none')}>
           <Mark name="clock" className="size-4 text-ink" />
           Your last newsletters
@@ -567,6 +947,25 @@ function ChooserInside({ box, scrim, phone, opener, onClose, onUse, busy, said, 
                   label={pastNames[at]}
                   busy={busy !== null}
                   onUse={(button) => use(it, button)}
+                  more={
+                    <button
+                      type="button"
+                      aria-label={saveLabel(at)}
+                      aria-disabled={busy !== null || undefined}
+                      onClick={() => {
+                        if (busy === null) {
+                          setName('')
+                          setNameWords('')
+                          setSavedWords('')
+                          setNaming(at)
+                        }
+                      }}
+                      className={USE_BUTTON}
+                    >
+                      Save as a template
+                    </button>
+                  }
+                  below={naming === at ? nameForm : null}
                 />
               )
             })}
@@ -574,22 +973,100 @@ function ChooserInside({ box, scrim, phone, opener, onClose, onUse, busy, said, 
         )}
       </div>
       <ReplaceQuestion asking={asking} onAnswer={onAnswer} returnTo={() => pressed.current} />
+      <RemoveQuestion asking={removing} going={removingNow} onAnswer={(remove) => void answerRemove(remove)} returnTo={() => removeBack.current} />
     </>
   )
 }
 
-/** One choice: its drawing, its name with the line under it, and "Use this". */
-function Card({ pieces, name, line, label, busy, onUse }: { pieces: readonly Piece[]; name: string; line: string; label: string; busy: boolean; onUse: (button: HTMLButtonElement) => void }) {
+/**
+ * "Remove this template?", asked before a saved template leaves the list for everyone, in the form of "Replace this
+ * letter?": the focus on "Keep it" as it opens, Escape keeping it, the focus back to the Remove pressed as it closes
+ * unless the template went.
+ */
+function RemoveQuestion({ asking, going, onAnswer, returnTo }: { asking: ApiNewsletterTemplate | null; going: boolean; onAnswer: (remove: boolean) => void; returnTo: () => HTMLElement | null }) {
+  const keep = useRef<HTMLButtonElement>(null)
   return (
-    <li className="flex items-center gap-3 rounded-[10px] border border-border bg-background px-2 py-1.5">
+    <DialogPrimitive.Root
+      open={asking !== null}
+      onOpenChange={(next) => {
+        if (!next) onAnswer(false)
+      }}
+    >
+      <DialogPrimitive.Portal>
+        <DialogPrimitive.Overlay
+          data-slot="remove-scrim"
+          className="fixed inset-0 z-[90] flex items-center justify-center overflow-y-auto bg-brand-navy/55 px-4 pb-3 pt-[calc(var(--header-h,4rem)+0.75rem)]"
+          onMouseDown={(event) => {
+            if (event.target === event.currentTarget) event.preventDefault()
+          }}
+        >
+          <DialogPrimitive.Content
+            role="alertdialog"
+            aria-modal="true"
+            data-slot="remove-question"
+            onOpenAutoFocus={(event) => {
+              event.preventDefault()
+              keep.current?.focus()
+            }}
+            onCloseAutoFocus={(event) => {
+              event.preventDefault()
+              const to = returnTo()
+              if (to?.isConnected) to.focus()
+            }}
+            onPointerDownOutside={(event) => event.preventDefault()}
+            onInteractOutside={(event) => event.preventDefault()}
+            onFocus={(event) => {
+              if (event.target !== event.currentTarget) event.target.scrollIntoView?.({ block: 'nearest', inline: 'nearest' })
+            }}
+            className="my-auto w-[min(28rem,100%)] rounded-xl border border-border bg-background p-5 text-ink shadow-xl outline-none"
+          >
+            <DialogPrimitive.Title className="text-lg font-bold">Remove this template?</DialogPrimitive.Title>
+            <DialogPrimitive.Description className="mt-2 text-[15px] text-ink [overflow-wrap:anywhere]">
+              {asking ? `${asking.name} leaves the list for everyone. ` : ''}Letters already started from it keep their words.
+            </DialogPrimitive.Description>
+            <div className="mt-5 flex flex-wrap justify-end gap-2">
+              <button
+                ref={keep}
+                type="button"
+                onClick={() => onAnswer(false)}
+                className="inline-flex min-h-11 items-center rounded-lg border border-muted-foreground bg-background px-4 text-[15px] font-semibold text-ink outline-none focus-visible:ring-3 focus-visible:ring-focus"
+              >
+                Keep it
+              </button>
+              <button
+                type="button"
+                aria-disabled={going || undefined}
+                onClick={() => onAnswer(true)}
+                className="inline-flex min-h-11 items-center rounded-lg border border-transparent bg-brand-navy px-4 text-[15px] font-semibold text-white outline-none focus-visible:ring-3 focus-visible:ring-focus"
+              >
+                Remove it
+              </button>
+            </div>
+          </DialogPrimitive.Content>
+        </DialogPrimitive.Overlay>
+      </DialogPrimitive.Portal>
+    </DialogPrimitive.Root>
+  )
+}
+
+/**
+ * One choice: its drawing, its name with the line under it, and "Use this", with any further button of its own after it
+ * (a past newsletter's "Save as a template") and the name field opened from it under the whole row.
+ */
+function Card({ pieces, name, line, label, busy, onUse, more, below }: { pieces: readonly Piece[]; name: string; line: string; label: string; busy: boolean; onUse: (button: HTMLButtonElement) => void; more?: ReactNode; below?: ReactNode }) {
+  return (
+    <li className="flex flex-wrap items-center gap-3 rounded-[10px] border border-border bg-background px-2 py-1.5">
       <Drawing pieces={pieces} />
-      <span className="min-w-0 flex-1">
+      {/* The name holds a floor, so the buttons go below it on a narrow row rather than squeeze it to a letter wide. */}
+      <span className="min-w-[min(100%,10rem)] flex-1">
         <span className="block text-[15px] font-semibold leading-[1.3] text-ink [overflow-wrap:anywhere]">{name}</span>
         <span className="block text-[13px] leading-[1.35] text-muted-foreground [overflow-wrap:anywhere]">{line}</span>
       </span>
       <button type="button" aria-label={label} aria-disabled={busy || undefined} onClick={(event) => onUse(event.currentTarget)} className={USE_BUTTON}>
         Use this
       </button>
+      {more}
+      {below ? <div className="basis-full">{below}</div> : null}
     </li>
   )
 }

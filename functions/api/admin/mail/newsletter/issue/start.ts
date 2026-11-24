@@ -34,9 +34,10 @@ import { pageNotFound, startIssue, startRefusalWords, type StartFrom } from '../
 import { MAIL_PAGE_ON } from '../../../../../utils/mail/switches'
 import { errorResponse, handleOptions, jsonResponse, parseBody } from '../../../../../utils/response'
 
-/** The source the contract read, as startIssue takes it: a starter's id, a past letter or a send, and nothing beside it. */
+/** The source the contract read, as startIssue takes it: a starter's id, a past letter, a send or a saved template, and nothing beside it. */
 function sourceOf(from: NewsletterIssueStartRequest['from']): StartFrom {
   if (typeof from === 'string') return from
+  if (typeof from.templateId === 'string') return { templateId: from.templateId }
   if (typeof from.issueId === 'string') return { issueId: from.issueId }
   return { campaignId: String(from.campaignId) }
 }

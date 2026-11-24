@@ -12,7 +12,8 @@
 //   takes over, cleared to nothing, kept in the sheet's email on a phone, and
 //   sent as the page goes, with More options open.
 // - The phone's "Pick a template": a press, a key and a touch open the chooser
-//   once, which asks for the last newsletters and nothing else; a press on it
+//   once, which asks for the last newsletters and the saved templates, once
+//   each, and nothing else; a press on it
 //   or on "See the email" moves no focus while a field holds the caret, and
 //   is left as it is when none does, as one on the computer's first step is.
 // - The order of Tab through the page with the bar, at a computer's and a
@@ -336,7 +337,7 @@ describe('the inbox preview line', () => {
 })
 
 describe('the phone\'s "Pick a template"', () => {
-  it('opens the chooser once on a press, a key and a touch, and asks for the last newsletters and nothing else', async () => {
+  it('opens the chooser once on a press, a key and a touch, and asks for the last newsletters and the saved templates, once each, and nothing else', async () => {
     windowAt(390)
     await thePage()
     const pick = within(theBar()).getByRole('button', { name: 'Pick a template' })
@@ -356,7 +357,7 @@ describe('the phone\'s "Pick a template"', () => {
     expect(chooser.contains(focused())).toBe(true)
     expect(screen.queryByRole('menu')).toBeNull()
     expect(pick.getAttribute('aria-expanded')).toBe('true')
-    expect(calls.slice(before)).toEqual(['GET /api/admin/mail/newsletter/issues'])
+    expect(calls.slice(before)).toEqual(['GET /api/admin/mail/newsletter/issues', 'GET /api/admin/mail/newsletter/templates'])
   })
 
   it('moves no focus on a press of it or of "See the email" while a field holds the caret, so the tab bar cannot come back under the bar before the press ends, and leaves the press as it is when none does, and on the computer\'s first step', async () => {

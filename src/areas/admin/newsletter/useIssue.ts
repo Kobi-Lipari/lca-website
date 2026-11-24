@@ -110,8 +110,11 @@ export type SaveLine =
   | { kind: 'conflict'; reason: 'changed' | 'sent' | 'set_aside'; by: string | null; at: string; readFailures: number }
   | { kind: 'started'; from: string }
 
-/** Where a new letter's words come from: a blank letter or one of LCA's starters by its id, a past letter, or a past send. */
-export type StartFrom = StarterId | { issueId: string } | { campaignId: string }
+/**
+ * Where a new letter's words come from: a blank letter or one of LCA's starters by its id, a past letter, a past send,
+ * or a saved template by its id.
+ */
+export type StartFrom = StarterId | { issueId: string } | { campaignId: string } | { templateId: string }
 
 /**
  * A subject of its own that a new letter takes back: a letter set aside's, as "Your last newsletters" lists it, with the
