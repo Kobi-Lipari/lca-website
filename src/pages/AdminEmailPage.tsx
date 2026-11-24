@@ -321,10 +321,11 @@ function SesTestChoice({ checked, onChange }: { checked: boolean; onChange: (on:
  * set up in place of the send buttons, the newsletter's calls being refused
  * until then.
  */
-export function AdminEmailPage({ embedded = false, mediaManager }: { embedded?: boolean; mediaManager?: { secondFactor: boolean } } = {}) {
+export function AdminEmailPage({ embedded = false, mediaManager, noSecondFactor = false }: { embedded?: boolean; mediaManager?: { secondFactor: boolean }; noSecondFactor?: boolean } = {}) {
   usePageTitle(embedded ? 'Admin · Group email' : 'Group Email')
   const forMediaManager = FEATURES.mailLists && mediaManager !== undefined
-  const canSend = !forMediaManager || mediaManager?.secondFactor === true
+  // noSecondFactor: the President seat's holder whose session has no second factor, whom both mail guards refuse.
+  const canSend = !noSecondFactor && (!forMediaManager || mediaManager?.secondFactor === true)
   // The media manager's test goes to their own account's address alone, which the page shows whole, as the dashboard
   // and the support page show a person their own address (checkpoint M's review).
   const { member, user } = useAuth()
@@ -332,8 +333,9 @@ export function AdminEmailPage({ embedded = false, mediaManager }: { embedded?: 
 
   const [clubs, setClubs] = useState<ApiClubListItem[]>([])
   const [campaigns, setCampaigns] = useState<ApiCampaign[]>([])
-  const [loadingHistory, setLoadingHistory] = useState(true)
+  const [loadingHistory, setLoadingHistory] = useState(!noSecondFactor)
   const [memberPool, setMemberPool] = useState<ApiAdminMember[]>([])
+  const [memberPoolFailed, setMemberPoolFailed] = useState(false)
 
   const [subject, setSubject] = useState('')
   const [body, setBody] = useState('')
@@ -396,13 +398,17 @@ export function AdminEmailPage({ embedded = false, mediaManager }: { embedded?: 
     if (forMediaManager) return
     let cancelled = false
     getClubs().then((c) => { if (!cancelled) setClubs(c) }).catch(() => {})
-    adminGetMembers().then((m) => { if (!cancelled) setMemberPool(m) }).catch(() => {})
-    getCampaigns()
-      .then((c) => { if (!cancelled) setCampaigns(c) })
-      .catch(() => { /* keep prior list on transient failure */ })
-      .finally(() => { if (!cancelled) setLoadingHistory(false) })
+    // A refusal (the President seat's holder whose role may not read the member list) is said where the search answers.
+    adminGetMembers().then((m) => { if (!cancelled) setMemberPool(m) }).catch(() => { if (!cancelled) setMemberPoolFailed(true) })
+    // The president without a second factor is refused the history, so it is not asked for (and never shown loading).
+    if (!noSecondFactor) {
+      getCampaigns()
+        .then((c) => { if (!cancelled) setCampaigns(c) })
+        .catch(() => { /* keep prior list on transient failure */ })
+        .finally(() => { if (!cancelled) setLoadingHistory(false) })
+    }
     return () => { cancelled = true }
-  }, [forMediaManager])
+  }, [forMediaManager, noSecondFactor])
 
   // With mailLists on the page opens on the newsletter tab: its answer is read, and Help, open by itself, is remembered
   // as shown. With the switch off nothing here runs, so no key is read or written. The media manager without a second
@@ -427,12 +433,14 @@ export function AdminEmailPage({ embedded = false, mediaManager }: { embedded?: 
   const newsletterSending = newsletter?.summary.recent.some((s) => s.status === 'sending') ?? false
   useEffect(() => {
     if (!campaigns.some((c) => c.status === 'sending') && !newsletterSending) return
+    // The president without a second factor reads neither, so nothing is polled for them.
+    if (noSecondFactor) return
     const timer = setInterval(() => {
       if (!forMediaManager) void loadHistory()
       if (FEATURES.mailLists) void loadNewsletter()
     }, 3000)
     return () => clearInterval(timer)
-  }, [campaigns, newsletterSending, forMediaManager])
+  }, [campaigns, newsletterSending, forMediaManager, noSecondFactor])
 
   // Final send list = whatever the filter resolved to, minus anyone X'd
   // off, plus anyone hand-picked from the individual-member search.
@@ -671,7 +679,7 @@ export function AdminEmailPage({ embedded = false, mediaManager }: { embedded?: 
       )}
 
       <section className={embedded ? '' : 'mx-auto max-w-6xl px-6 py-10'}>
-        <div className={cn('grid gap-10', !forMediaManager && (embedded ? 'xl:grid-cols-[1.3fr_1fr]' : 'lg:grid-cols-[1.3fr_1fr]'))}>
+        <div className={cn('grid gap-10', !forMediaManager && !noSecondFactor && (embedded ? 'xl:grid-cols-[1.3fr_1fr]' : 'lg:grid-cols-[1.3fr_1fr]'))}>
 
           {/* ── Compose ── */}
           <div>
@@ -828,8 +836,8 @@ export function AdminEmailPage({ embedded = false, mediaManager }: { embedded?: 
               ) : error && <p className="text-sm text-destructive">{error}</p>}
 
               {!canSend ? (
-                // The media manager signed in without a second factor: in place of the send buttons, one line to where it
-                // is set up, since the newsletter's every call is refused until then.
+                // The media manager signed in without a second factor, or the president: in place of the send buttons,
+                // one line to where it is set up, since the newsletter's every call is refused until then.
                 <p className="text-sm text-ink">
                   <Link to="/account/security" className="rounded-sm font-medium underline underline-offset-2 outline-none hover:no-underline focus-visible:ring-3 focus-visible:ring-focus">
                     {SECOND_FACTOR_LINE}
@@ -985,7 +993,7 @@ export function AdminEmailPage({ embedded = false, mediaManager }: { embedded?: 
                           ))}
                         </div>
                       ) : (
-                        <p className="mt-1.5 text-[11px] text-muted-foreground">No members match "{addSearch.trim()}".</p>
+                        <p className="mt-1.5 text-[11px] text-muted-foreground">{memberPoolFailed ? 'Failed to load members' : <>No members match "{addSearch.trim()}".</>}</p>
                       )
                     )}
                   </div>
@@ -1020,8 +1028,8 @@ export function AdminEmailPage({ embedded = false, mediaManager }: { embedded?: 
             )}
           </div>
 
-          {/* ── History ── */}
-          {!forMediaManager && (
+          {/* ── History ── (none for a sender without a second factor: nothing was read to show) */}
+          {!forMediaManager && !noSecondFactor && (
           <div>
             <h2 className="mb-4 text-xl font-bold text-ink">Send history</h2>
             {mode === 'newsletter' ? (

@@ -52,7 +52,7 @@ import { linkKeyCheck } from '../../functions/utils/mail/links'
 import { createListCampaign } from '../../functions/utils/mail/lists'
 import { NOTHING_SENDING, WAITS_FOR_SES } from '../../functions/utils/mail/newsletterAnswers'
 import type { Env } from '../../functions/types'
-import { seedAdmin, seedMember, seedSeat, seedTournament } from './factories'
+import { seedAdmin, seedMember, seedPresident, seedSeat, seedTournament } from './factories'
 import { emailOutbox, invoke, resetHarness, type InvokeOptions } from './harness'
 import { countingDb } from './mailRuns'
 
@@ -81,7 +81,7 @@ type Handler = Parameters<typeof invoke>[0]
 const SAMPLE = { subject: 'Sample newsletter one', bodyHtml: '<p>Example words for a sample newsletter.</p>' }
 const key = () => (env as unknown as Env).MAIL_LINK_SECRET as string
 /** The officer's own words of WS16 step 4, which requireMailer gives an officer today. */
-const OFFICER_WORDS = 'Group email is limited to admins and the LCA Observer'
+const OFFICER_WORDS = LIST_MAILERS_ONLY
 
 let seq = 0
 const address = (name: string) => `${name}-${++seq}@officer.test.lca`
@@ -184,7 +184,7 @@ describe('(a) the guard, with MAIL_LISTS_ON set', () => {
 })
 
 describe('(b) with MAIL_LISTS_ON unset', () => {
-  it('gives an officer who holds the seat the officer\'s own words of WS16 step 4, byte for byte, on all four methods, and reads no seat', async () => {
+  it('gives an officer who holds the seat the officer\'s own words of WS16 step 4, byte for byte, on all four methods, and reads only the President seat', async () => {
     flags.listsOn = false
     const seated = await officer({ seat: true })
     const counting = countingDb()
@@ -195,7 +195,12 @@ describe('(b) with MAIL_LISTS_ON unset', () => {
         expect(await written(res), `${name}, ${aal}`).toEqual(answerOf(403, { error: OFFICER_WORDS }))
       }
     }
-    expect(counting.ran.filter((r) => r.sql.includes('board_seat_assignments') || r.sql.includes('board_members'))).toEqual([])
+    const seatReads = counting.ran.filter((r) => r.sql.includes('board_seat_assignments') || r.sql.includes('board_members'))
+    expect(seatReads.length).toBeGreaterThan(0)
+    for (const read of seatReads) {
+      expect(read.binds).toBe(1)
+      expect(read.sql).toContain("'president'")
+    }
     expect(await traces()).toEqual(before)
   })
 })
@@ -329,15 +334,16 @@ describe('(f) the edges of the seat', () => {
     expect(await written(await invoke(newsletterGet, { as: seated.id }))).toEqual(answerOf(403, { error: LIST_MAILERS_ONLY }))
   })
 
-  it('admits an LCA admin and the president who also hold the seat as themselves: the admin asked for a second factor in the admin\'s own words, the president not', async () => {
+  it('admits an LCA admin and the president who also hold the seat as themselves: each asked for a second factor, the admin in the admin\'s own words', async () => {
     const admin = await seedAdmin()
     const president = await seedMember({ fullName: 'Player Three', email: address('president'), role: 'lca_observer' })
+    await seedPresident(president)
     await seedSeat({ slug: MEDIA_MANAGER_SEAT, role: 'Media manager' }, [admin, president])
     for (const who of [admin, president]) expect((await invoke(newsletterGet, { as: who })).status).toBe(200)
     const noFactor = await invoke(newsletterGet, { as: admin, aal: 'aal1' })
     expect(noFactor.status).toBe(403)
     expect((await noFactor.json<{ error: string }>()).error).not.toBe(MEDIA_MANAGER_SECOND_FACTOR)
-    expect((await invoke(newsletterGet, { as: president, aal: 'aal1' })).status).toBe(200)
+    expect(await written(await invoke(newsletterGet, { as: president, aal: 'aal1' }))).toEqual(answerOf(403, { error: MEDIA_MANAGER_SECOND_FACTOR, mfaRequired: true }))
   })
 
   it('reads GET /api/me/media-manager false for an officer whose term has ended or whose seat is not active, and reads it afresh each time', async () => {

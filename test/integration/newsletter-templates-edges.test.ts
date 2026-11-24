@@ -22,7 +22,7 @@ import {
 } from '../../functions/api/admin/mail/newsletter/templates'
 import { MEDIA_MANAGER_SEAT } from '../../functions/utils/admin/mediaManager'
 import { TEMPLATES_FULL, TEMPLATES_MAX, TEMPLATE_CHANGED, saveIssue, startIssue, templateNameTaken } from '../../functions/utils/mail/issues'
-import { seedAdmin, seedMember, seedSeat } from './factories'
+import { seedAdmin, seedMember, seedPresident, seedSeat } from './factories'
 import { invoke, resetHarness } from './harness'
 
 const flags = vi.hoisted(() => ({ pageOn: true, listsOn: true }))
@@ -80,6 +80,7 @@ beforeEach(async () => {
 describe('two writers at once', () => {
   it('C1: a rename made while another writer\'s chooser is open leaves that writer\'s rename refused with who and when, and nothing changed', async () => {
     const one = await person('Player One', 'lca_observer')
+    await seedPresident(one)
     const two = await seedAdmin()
     const template = await saved(one, 'Sample shared')
     const seenByTwo = (await list(two))[0]!
@@ -95,6 +96,7 @@ describe('two writers at once', () => {
 
   it('C2: a remove made while another writer\'s chooser is open leaves that writer\'s rename, remove and start not found, and nothing written', async () => {
     const one = await person('Player One', 'lca_observer')
+    await seedPresident(one)
     const two = await seedAdmin()
     const template = await saved(one, 'Sample going')
     const seenByTwo = (await list(two))[0]!
@@ -108,6 +110,7 @@ describe('two writers at once', () => {
 
   it('C3: a name one writer just took is refused to the other in words, in turn and when both save at the same moment', async () => {
     const one = await person('Player One', 'lca_observer')
+    await seedPresident(one)
     const two = await seedAdmin()
     await saved(one, 'Sample taken')
     const late = await post(two, { name: 'sample TAKEN', bodyHtml: WORDS })
@@ -232,6 +235,7 @@ describe('part way', () => {
   it('C13: a start from a template removed a moment ago is not found, and the open letter is left as it was', async () => {
     const one = await seedAdmin()
     const two = await person('Player Two', 'lca_observer')
+    await seedPresident(two)
     const open = await openLetter(one)
     const template = await saved(one, 'Sample short lived')
     await del(two, { id: template.id, version: 1 })

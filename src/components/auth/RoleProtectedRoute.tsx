@@ -3,7 +3,7 @@ import { Navigate, useLocation, useParams } from 'react-router-dom'
 
 import { useAuth } from '@/contexts/auth-context'
 import { MediaManagerAnswerContext } from '@/areas/admin/mediaManagerAnswer'
-import { canManageClub, isViewOnlyAdmin, keepsAnyClub, toolsHomeFor, type MemberRole } from '@/areas/admin/roles'
+import { canManageClub, holdsPresidentSeat, isViewOnlyAdmin, keepsAnyClub, toolsHomeFor, type MemberRole } from '@/areas/admin/roles'
 import { useMediaManager } from '@/areas/admin/useMediaManager'
 import { regionEventsOn } from '@/areas/clubs/switches'
 import { useManagesEvent } from '@/areas/clubs/useManagesEvent'
@@ -35,10 +35,12 @@ interface RoleProtectedRouteProps {
    * whose role the roles list does not hold, when the server says they hold
    * the Media manager seat, and hand the page inside the answer it was let in
    * on. While that answer is on the way the route shows its loading line, as
-   * while a session loads. An LCA officer who holds a seat, whom the roles
-   * list lets in, is asked too (checkpoint M's review) and handed the answer
-   * when it comes, never waiting on it. With mailLists off this changes
-   * nothing and nothing is asked.
+   * while a session loads. An LCA officer or LCA Observer who holds a seat,
+   * whom the roles list lets in, is asked too (checkpoint M's review) and
+   * handed the answer when it comes, never waiting on it. With mailLists off
+   * this changes nothing and nothing is asked. Whatever the switch, the
+   * President seat's holder is let in too, without waiting on the answer:
+   * they send Group email whatever their role.
    */
   allowMediaManager?: boolean
   /**
@@ -156,7 +158,10 @@ export function RoleProtectedRoute({
   }
 
   const isDirector = directedTournamentIds.length > 0
-  if (roles && !roles.includes(role) && !(allowDirectors && isDirector) && !letInAsManager) {
+  // The President seat's holder sends Group email whatever their role, so a route that lets the media manager in lets
+  // them in too; the server reads the seat again at each request.
+  const letInAsPresident = !!allowMediaManager && holdsPresidentSeat(seats)
+  if (roles && !roles.includes(role) && !(allowDirectors && isDirector) && !letInAsManager && !letInAsPresident) {
     if (askManager && eventManager.asking) return <StillLoading />
     // The media manager is let in by the server's answer, never by a guess: until it comes, nothing of the page is drawn
     // and nobody is sent away, and anyone it does not name is sent where today's rule sends them.

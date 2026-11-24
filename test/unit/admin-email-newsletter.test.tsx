@@ -553,7 +553,7 @@ describe('Group email with mailLists on: the test send', () => {
     expect(api.sendTestCampaignEmail).not.toHaveBeenCalled()
   })
 
-  it('draws no Amazon SES box for the president, nor for anyone once Amazon SES sends', async () => {
+  it('draws no Amazon SES box for an LCA Observer who reaches the tab, nor for anyone once Amazon SES sends', async () => {
     await testWritten('lca_observer')
     expect(screen.queryByRole('checkbox', { name: WORDS.sesBox })).toBeNull()
     fireEvent.click(screen.getByRole('button', { name: 'Send test' }))

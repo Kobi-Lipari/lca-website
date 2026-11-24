@@ -23,7 +23,7 @@ import { onRequestPost as testPost } from '../../functions/api/admin/mail/newsle
 import { MEDIA_MANAGER_SEAT } from '../../functions/utils/admin/mediaManager'
 import { LIST_MAILERS_ONLY } from '../../functions/utils/auth'
 import { LINK_KEY_MISSING, SES_TEST_ADMINS_ONLY, TEST_TO_OWN_ADDRESS } from '../../functions/utils/mail/newsletterAnswers'
-import { seedAdmin, seedMember, seedSeat } from './factories'
+import { seedAdmin, seedMember, seedPresident, seedSeat } from './factories'
 import { emailOutbox, invoke, resetHarness } from './harness'
 
 const flags = vi.hoisted(() => ({ listsOn: true, sender: 'resend', plan: 'free', complaintStops: true }))
@@ -135,10 +135,29 @@ describe('an LCA admin and the president keep the address they type', () => {
   it('sends an LCA admin\'s test and the president\'s to another person\'s address, as today\'s Group email test does', async () => {
     const admin = await seedAdmin()
     const president = await seedMember({ fullName: 'Player Three', email: address('president'), role: 'lca_observer' })
+    await seedPresident(president)
     const [first, second] = [address('reader'), address('reader')]
     expect((await invoke(testPost, { as: admin, method: 'POST', body: { to: first, ...SAMPLE } })).status).toBe(200)
     expect((await invoke(testPost, { as: president, method: 'POST', body: { to: second, ...SAMPLE } })).status).toBe(200)
     expect(emailOutbox.map((e) => e.to)).toEqual([first, second])
+  })
+
+  it('sends the test of a president whose role is plain member to another person\'s address', async () => {
+    const president = await seedMember({ fullName: 'Player Four', email: address('president') })
+    await seedPresident(president)
+    const to = address('reader')
+    expect((await invoke(testPost, { as: president, method: 'POST', body: { to, ...SAMPLE } })).status).toBe(200)
+    expect(emailOutbox.map((e) => e.to)).toEqual([to])
+  })
+
+  it('refuses an LCA Observer without the President seat before the address rule, whatever address is typed, sending nothing', async () => {
+    const observer = await seedMember({ fullName: 'Player Five', email: address('observer'), role: 'lca_observer' })
+    for (const to of [address('reader'), 'not an address']) {
+      const res = await invoke(testPost, { as: observer, method: 'POST', body: { to, ...SAMPLE } })
+      expect(res.status, to).toBe(403)
+      expect(await res.json(), to).toEqual({ error: LIST_MAILERS_ONLY })
+    }
+    expect(emailOutbox).toEqual([])
   })
 })
 
@@ -234,6 +253,7 @@ describe('whoever the seat does not admit never reads the own-address words', ()
   it('lets an LCA admin and the president who hold the seat type any address, as themselves', async () => {
     const admin = await seedAdmin()
     const president = await seedMember({ fullName: 'Player Three', email: address('president'), role: 'lca_observer' })
+    await seedPresident(president)
     await seedSeat({ slug: MEDIA_MANAGER_SEAT, role: 'Media manager' }, [admin, president])
     const [first, second] = [address('reader'), address('reader')]
     expect((await test(admin, first)).status).toBe(200)
@@ -245,6 +265,7 @@ describe('whoever the seat does not admit never reads the own-address words', ()
     flags.listsOn = false
     const admin = await seedAdmin()
     const president = await seedMember({ fullName: 'Player Three', email: address('president'), role: 'lca_observer' })
+    await seedPresident(president)
     await seedSeat({ slug: MEDIA_MANAGER_SEAT, role: 'Media manager' }, [admin, president])
     const before = await traces()
     for (const who of [admin, president]) {

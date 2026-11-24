@@ -2,9 +2,11 @@
 import { createClient } from '@supabase/supabase-js'
 import type { User } from '@supabase/supabase-js'
 
+import { LIST_MAILERS_ONLY, PRESIDENT_NEEDS_SECOND_FACTOR } from '../../domain/mail/senders'
 import type { Env, MemberRow } from '../types'
 import { holdsMediaManagerSeat } from './admin/mediaManager'
 import { getMemberById, upsertMemberFromAuth } from './admin/members'
+import { holdsPresidentSeat } from './admin/presidentSeat'
 import { MAIL_LISTS_ON } from './mail/switches'
 import { errorResponse, jsonResponse } from './response'
 import { isMemberRole, type MemberRole } from './admin/permissions'
@@ -181,21 +183,23 @@ export function hasSecondFactor(request: Request): boolean {
 
 // ── LCA Observer and LCA Officer ─────────────────────────────────
 //
-// lca_observer (meant for the president) sees everything an admin sees and
-// can do a short list of things: send group email, email a tournament's
-// entrants, answer support tickets, and manage the governance documents
-// (bylaws, rules, minutes, treasurer's reports). Everything else stays with
-// admins. Read endpoints use the *View guards below; every other write keeps
-// requireAdmin / requireClubRep / requireTournamentManager, which an
-// observer never passes.
+// lca_observer sees everything an admin sees and can do a short list of
+// things: email a tournament's entrants, answer support tickets, and manage
+// the governance documents (bylaws, rules, minutes, treasurer's reports).
+// Everything else stays with admins. Read endpoints use the *View guards
+// below; every other write keeps requireAdmin / requireClubRep /
+// requireTournamentManager, which an observer never passes.
 //
 // lca_officer (meant for the treasurer, secretary and other officers) is
-// the same minus the mailing tools: no group email, no emailing entrants.
-// Everywhere below, "observer" means either role; requireMailer is the one
-// place they differ.
+// the same minus emailing entrants. Everywhere below, "observer" means
+// either role; canUseMailing is the one place they differ.
 //
-// No second factor is required of either: they cannot change roles,
-// delete accounts or send anything beyond the tools listed above.
+// Group email and the newsletter are not an observer's (the owner's
+// decision 79): requireMailer and requireListMailer admit an LCA admin, the
+// holder of the President seat whatever their role, and, on the newsletter
+// alone, the holder of the Media manager seat. No second factor is required
+// of an observer for the tools above: they cannot change roles, delete
+// accounts or send to the member lists.
 
 /** Roles with the admin panel in view-only mode. */
 export const OBSERVER_ROLES: MemberRole[] = ['lca_observer', 'lca_officer']
@@ -204,43 +208,53 @@ export function isObserver(member: { role: string }): boolean {
   return OBSERVER_ROLES.includes(member.role as MemberRole)
 }
 
-/** Group email and emailing entrants: admins and lca_observer, not officers. */
+/** Emailing a tournament's entrants (announce.ts): admins and lca_observer, not officers. */
 export function canUseMailing(member: { role: string }): boolean {
   return member.role === 'lca_admin' || member.role === 'lca_observer'
 }
 
-/** Admin read access plus the mailing tools. Officers are turned away. */
+/**
+ * Group email's five campaign endpoints: an LCA admin with a second factor,
+ * by requireAdmin as before (the session verified twice, no seat read), and
+ * the holder of the President seat, whatever their role, read at each
+ * request, with a second factor while PRESIDENT_NEEDS_SECOND_FACTOR is set.
+ * An observer or officer without the seat gets LIST_MAILERS_ONLY; anyone
+ * else 'Forbidden'. The Media manager seat counts only on the newsletter's
+ * own endpoints, under requireListMailer.
+ */
 export async function requireMailer(
   request: Request,
   env: Env,
 ): Promise<AuthedMember | Response> {
-  const authed = await requireAdminView(request, env)
+  const authed = await requireAuthedMember(request, env)
   if (isResponse(authed)) return authed
-  if (!canUseMailing(authed.member)) {
-    return errorResponse('Group email is limited to admins and the LCA Observer', 403)
-  }
-  return authed
+  if (authed.member.role === 'lca_admin') return requireAdmin(request, env)
+  if (await holdsPresidentSeat(env.DB, authed.member.id)) return presidentAdmitted(request, authed)
+  if (isObserver(authed.member)) return errorResponse(LIST_MAILERS_ONLY, 403)
+  return errorResponse('Forbidden', 403)
 }
 
 /**
  * The people who may send the LCA newsletter (WS16's endpoints under
  * /api/admin/mail), with the session verified once, where requireMailer
- * verifies an admin's twice: today's mailers, an LCA admin with a second
- * factor and the president (lca_observer), and, while MAIL_LISTS_ON is set,
- * the media manager (WS16 step 6, sendsAsMediaManager below), an LCA officer
- * among them since checkpoint M's review, signed in with a second factor.
+ * verifies an admin's twice: an LCA admin with a second factor, the holder
+ * of the President seat whatever their role (read at each request, with a
+ * second factor while PRESIDENT_NEEDS_SECOND_FACTOR is set), and, while
+ * MAIL_LISTS_ON is set, the media manager (WS16 step 6, sendsAsMediaManager
+ * below), whatever their role, signed in with a second factor.
  *
- * With MAIL_LISTS_ON unset every answer is requireMailer's own and no seat
- * is read: 401 signed out, 'Forbidden' for a role that is neither, the
- * mailing tools' words for an officer, and the second factor's 403 for an
- * admin without one. With it set, an admin and the president are answered
- * as before; the media manager without a second factor gets the 403 with
- * mfaRequired that requireAdmin gives, in words of its own; and anyone else,
- * an officer without the seat among them, gets LIST_MAILERS_ONLY.
- * requireMailer, the guard of today's five campaign endpoints, is unchanged,
- * so the media manager, an officer who holds the seat included, reaches only
- * WS16's own endpoints and never today's typed-in addresses or hand-picked
- * members; the newsletter's test goes to their own account's address alone.
+ * With MAIL_LISTS_ON unset every answer is requireMailer's own and the
+ * Media manager seat is not read: 401 signed out, the admin's and the
+ * president's answers as there, LIST_MAILERS_ONLY for an observer or
+ * officer without the President seat, and 'Forbidden' for anyone else. With
+ * it set, the media manager without a second factor gets the 403 with
+ * mfaRequired that requireAdmin gives, in words of its own, and anyone else
+ * gets LIST_MAILERS_ONLY. An admin reads no seat; anyone else reads the
+ * President seat first, in one statement. requireMailer, the guard of
+ * today's five campaign endpoints, never counts the Media manager seat, so
+ * the media manager reaches only WS16's own endpoints and never today's
+ * typed-in addresses or hand-picked members; the newsletter's test goes to
+ * their own account's address alone.
  */
 export async function requireListMailer(
   request: Request,
@@ -248,12 +262,10 @@ export async function requireListMailer(
 ): Promise<AuthedMember | Response> {
   const authed = await requireAuthedMember(request, env)
   if (isResponse(authed)) return authed
-  if (authed.member.role === 'lca_observer') return authed
   if (authed.member.role === 'lca_admin') return secondFactorMissing(request) ?? authed
+  if (await holdsPresidentSeat(env.DB, authed.member.id)) return presidentAdmitted(request, authed)
   if (!MAIL_LISTS_ON) {
-    if (authed.member.role === 'lca_officer') {
-      return errorResponse('Group email is limited to admins and the LCA Observer', 403)
-    }
+    if (isObserver(authed.member)) return errorResponse(LIST_MAILERS_ONLY, 403)
     return errorResponse('Forbidden', 403)
   }
   if (await sendsAsMediaManager(env.DB, authed.member)) {
@@ -263,25 +275,38 @@ export async function requireListMailer(
   return errorResponse(LIST_MAILERS_ONLY, 403)
 }
 
-/** The 403 for anyone requireListMailer refuses while MAIL_LISTS_ON is set, but the second factor's. */
-export const LIST_MAILERS_ONLY = 'Group email is limited to LCA admins, the president and the media manager.'
+/** The 403 for anyone the two mail guards refuse but the second factor's, set in domain/mail/senders.ts. */
+export { LIST_MAILERS_ONLY }
 
 /** The 403 the media manager gets, with mfaRequired, when the session carries no second factor. */
 export const MEDIA_MANAGER_SECOND_FACTOR = 'Two-factor sign-in is required to send group email. Set it up in your account security settings.'
+
+/**
+ * The president admitted by either mail guard: the session as it was
+ * verified, or, while PRESIDENT_NEEDS_SECOND_FACTOR is set and the session
+ * carries no second factor, the 403 with mfaRequired the media manager gets,
+ * in the same words. The constant is read here, at each call.
+ */
+function presidentAdmitted(request: Request, authed: AuthedMember): AuthedMember | Response {
+  if (PRESIDENT_NEEDS_SECOND_FACTOR && !hasSecondFactor(request)) {
+    return jsonResponse({ error: MEDIA_MANAGER_SECOND_FACTOR, mfaRequired: true }, 403)
+  }
+  return authed
+}
 
 /**
  * Whether the member sends as the media manager: they hold the Media manager
  * seat now (holdsMediaManagerSeat, read at each request), whatever their
  * role, each keeping their own role's rights. The seat is what counts (K's
  * decision 52, of Thursday, November 12, 2026, which settled decision 49):
- * an LCA officer, whom Admin lets in to read only, sends as the media
- * manager while they hold it. An LCA admin and the president send as
- * themselves, so the rule answers no for them before the seat is read. The
- * second factor is not read here: the guard asks for it, and GET
- * /api/me/media-manager answers it apart.
+ * an LCA officer or an LCA Observer, whom Admin lets in to read only, sends
+ * as the media manager while they hold it. An LCA admin sends as themselves,
+ * so the rule answers no for them before the seat is read; requireListMailer
+ * answers the president before it asks. The second factor is not read here:
+ * the guard asks for it, and GET /api/me/media-manager answers it apart.
  */
 export async function sendsAsMediaManager(db: D1Database, member: { id: string; role: string }): Promise<boolean> {
-  if (member.role === 'lca_admin' || member.role === 'lca_observer') return false
+  if (member.role === 'lca_admin') return false
   return holdsMediaManagerSeat(db, member.id)
 }
 

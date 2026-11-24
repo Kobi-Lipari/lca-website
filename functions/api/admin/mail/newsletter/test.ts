@@ -85,6 +85,7 @@ import {
   type NewsletterTestLetterResponse,
 } from '../../../../../domain/contracts/newsletter'
 import { listMessage, wordsUnderRules } from '../../../../utils/admin/campaigns'
+import { holdsPresidentSeat } from '../../../../utils/admin/presidentSeat'
 import { isResponse, requireListMailer, type AuthedMember } from '../../../../utils/auth'
 import { listMailParts } from '../../../../utils/mail/footer'
 import { bodyHasWords, letterToTest, refusalWords, type Letter } from '../../../../utils/mail/issues'
@@ -118,8 +119,9 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
   // A test through Amazon SES is an LCA admin's alone, by the role of the session the guard verified.
   const throughSes = test.service === 'ses'
   if (throughSes && authed.member.role !== 'lca_admin') return errorResponse(SES_TEST_ADMINS_ONLY, 403)
-  // The media manager's test goes to their own account's address alone; an LCA admin and the president type theirs.
-  if (authed.member.role !== 'lca_admin' && authed.member.role !== 'lca_observer' && !isOwnAddress(test.to, authed.member.email)) {
+  // The media manager's test goes to their own account's address alone; an LCA admin and the President seat's holder,
+  // read again only for someone else's address, type theirs.
+  if (authed.member.role !== 'lca_admin' && !isOwnAddress(test.to, authed.member.email) && !(await holdsPresidentSeat(context.env.DB, authed.member.id))) {
     return errorResponse(TEST_TO_OWN_ADDRESS, 403)
   }
   if (!context.env.MAIL_LINK_SECRET) return errorResponse(LINK_KEY_MISSING, 503)

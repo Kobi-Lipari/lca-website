@@ -11,9 +11,9 @@
 //
 // It asks only with mailLists on, only once the person's own record has
 // arrived, only for a signed-in member whose role Admin does not let in, or
-// for an LCA officer who holds a seat (the seats the session already has),
-// since the seat is what counts for the media manager whatever the role (K's
-// decision 52, checkpoint M's review), and only when a caller needs the
+// for an LCA officer or LCA Observer who holds a seat (the seats the session
+// already has), since the seat is what counts for the media manager whatever
+// the role (K's decision 52), and only when a caller needs the
 // answer; and it asks once a session: the route and the menu share one
 // answer, kept here by the person, their sign-in session and the session's
 // assurance level. A token refreshed in the same session asks nothing more;
@@ -29,7 +29,7 @@ import { useAuth } from '@/contexts/auth-context'
 import { getMediaManager, type ApiMediaManager } from '@/lib/api'
 import { FEATURES } from '@/lib/features'
 import { NOT_ASKED, type MediaManagerAnswer } from './mediaManagerAnswer'
-import { canAccessAdmin, type MemberRole } from './roles'
+import { canAccessAdmin, isViewOnlyAdmin, type MemberRole } from './roles'
 
 const ASKING: MediaManagerAnswer = { asking: true, mediaManager: false, secondFactor: false }
 const NO: ApiMediaManager = { mediaManager: false, secondFactor: false }
@@ -91,9 +91,9 @@ function ask(key: string, sessionKey: string): void {
     })
 }
 
-/** Whether the question is one to ask for this role: a role Admin does not let in, or an LCA officer who holds a seat. */
+/** Whether the question is one to ask for this role: a role Admin does not let in, or a view-only role that holds a seat. */
 function mayAsk(role: MemberRole, seatCount: number): boolean {
-  return !canAccessAdmin(role) || (role === 'lca_officer' && seatCount > 0)
+  return !canAccessAdmin(role) || (isViewOnlyAdmin(role) && seatCount > 0)
 }
 
 /**
