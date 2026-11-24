@@ -65,8 +65,9 @@
 // preview's own, in the same frames with the same copy and the same rules,
 // drawn at the sheet's own width, with no Phone, Computer or Hide, as the
 // board draws it; the sheet shows itself once its first email has loaded,
-// so it never opens on an empty frame. Its foot holds "Back to writing" and
-// is kept for page step 6's Send and Send later, a row above it.
+// so it never opens on an empty frame. Its foot holds "Back to writing"; on
+// a phone with the page's own Send switched on, the page gives it a row of
+// sends above that (FootBar.tsx SheetSendRow), and Send later is still to come.
 
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode, type RefObject } from 'react'
 import * as DialogPrimitive from '@radix-ui/react-dialog'
@@ -366,9 +367,11 @@ export interface EmailSheetProps {
    * stands, in the bar at the foot on a phone or in the head on a tablet, or, past 1024 pixels, the side preview's own.
    */
   returnFocus: () => Array<HTMLElement | null | undefined>
+  /** The row of sends above "Back to writing", given only on a phone with the page's own Send switched on. */
+  sends?: ReactNode
 }
 
-/** The sheet's foot, kept for page step 6's Send and Send later, which go in a row above "Back to writing". */
+/** The sheet's foot: "Back to writing", with the row of sends above it when the page gives one. */
 const SHEET_FOOT = 'flex flex-none flex-col gap-2 border-t border-border bg-background px-3.5 pt-2.5 pb-[calc(10px+env(safe-area-inset-bottom))] shadow-[0_-6px_14px_rgba(16,24,43,0.07)]'
 
 /** The element the site is drawn in (index.html, src/main.tsx): the page behind the sheet, whose portal stands outside it. */
@@ -388,7 +391,7 @@ function isShiftTab(event: { key: string; shiftKey: boolean; altKey: boolean; ct
  * the email's frame and to "Back to writing" and round again; Shift and Tab goes round the other way, from the frame or
  * from the sheet itself to "Back to writing", and never reaches the page behind.
  */
-export function EmailSheet({ open, onOpenChange, letter, notice, returnFocus }: EmailSheetProps) {
+export function EmailSheet({ open, onOpenChange, letter, notice, returnFocus, sends }: EmailSheetProps) {
   const sheet = useRef<HTMLDivElement>(null)
   const back = useRef<HTMLButtonElement>(null)
   // While the sheet is open, the site's root is inert: none of the page's controls can take the focus, whatever key is
@@ -457,7 +460,7 @@ export function EmailSheet({ open, onOpenChange, letter, notice, returnFocus }: 
           }}
           className="fixed inset-x-0 bottom-0 top-[min(100px,12dvh)] z-[80] mx-auto flex max-w-[860px] flex-col overflow-hidden rounded-t-[18px] bg-background text-ink shadow-[0_-10px_30px_rgba(16,24,43,0.25)] outline-none"
         >
-          <SheetInside letter={letter} notice={notice} backRef={back} />
+          <SheetInside letter={letter} notice={notice} backRef={back} sends={sends} />
         </DialogPrimitive.Content>
       </DialogPrimitive.Portal>
     </DialogPrimitive.Root>
@@ -471,7 +474,7 @@ const SHEET_WAIT_MS = 1000
  * What the sheet holds, drawn afresh each time it opens: it stays clear until the frame on show has loaded the email, so
  * the person never meets an empty frame, and the focus, already on the sheet, is not moved by it.
  */
-function SheetInside({ letter, notice, backRef }: { letter: PreviewLetter; notice?: ReactNode; backRef: RefObject<HTMLButtonElement | null> }) {
+function SheetInside({ letter, notice, backRef, sends }: { letter: PreviewLetter; notice?: ReactNode; backRef: RefObject<HTMLButtonElement | null>; sends?: ReactNode }) {
   const email = useFrameEmail(letter)
   const [ready, setReady] = useState(false)
   useEffect(() => {
@@ -494,6 +497,7 @@ function SheetInside({ letter, notice, backRef }: { letter: PreviewLetter; notic
         </div>
       </div>
       <div className={SHEET_FOOT} data-slot="email-sheet-foot">
+        {sends}
         <DialogPrimitive.Close ref={backRef} className="inline-flex min-h-[50px] w-full items-center justify-center gap-2 rounded-lg bg-brand-navy px-5 text-base font-semibold text-white outline-none focus-visible:ring-3 focus-visible:ring-focus focus-visible:ring-offset-2">
           <ChevronLeft className="size-[18px]" aria-hidden="true" />
           Back to writing

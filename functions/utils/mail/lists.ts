@@ -4,8 +4,9 @@
 // preferences endpoint (functions/api/mail/preferences/[token].ts) and the
 // newsletter's send read the same rule. The lists' ids are in
 // domain/mail/lists.ts. The newsletter's own reads and writes are here too
-// (WS16 step 4): its counts and recent sends, the one batch that makes a
-// send, and the stop. Every statement uses the audience clause at most
+// (WS16 step 4): its counts and recent sends, the batch that makes a send
+// (and, since page step 6, the batch that makes the send of the page's
+// stored letter, sharing its three audience statements), and the stop. Every statement uses the audience clause at most
 // once, in a subquery of its own, and binds a few values whatever the
 // list's size.
 //
@@ -27,6 +28,7 @@
 import { EXAMPLE_DOMAINS, RESERVED_TOP_LEVEL_NAMES, SITE_DOMAIN } from '../../../domain/mail/address'
 import { NEWSLETTER_LIST_ID, type Choice } from '../../../domain/mail/lists'
 import { STOPPED_WORDS } from '../admin/campaigns'
+import { letterStateStatement, refusalOf, type Refusal, type StateRow } from './issues'
 
 /**
  * The code points JavaScript's trim() takes off each end, which normalizeAddress trims and isSendableAddress's \s
@@ -255,9 +257,7 @@ export async function createListCampaign(
   db: D1Database,
   args: { listId: string; subject: string; bodyHtml: string; createdBy: string; linkCheck: string },
 ): Promise<{ campaignId: string; totalRecipients: number } | null> {
-  const audience = audienceOf(args.listId)
   const campaignId = `campaign-${Date.now().toString(36)}`
-  const made = 'EXISTS (SELECT 1 FROM email_campaigns WHERE id = ?1 AND list_id = ?2)'
   const results = await db.batch([
     db
       .prepare(
@@ -266,12 +266,28 @@ export async function createListCampaign(
           WHERE NOT EXISTS (SELECT 1 FROM email_campaigns WHERE list_id = ?2 AND status = 'sending')`,
       )
       .bind(campaignId, args.listId, args.subject, args.bodyHtml, JSON.stringify({ list: args.listId, linkCheck: args.linkCheck }), args.createdBy),
+    ...audienceStatements(db, campaignId, args.listId),
+  ])
+  if (!results[0]?.meta.changes) return null
+  return { campaignId, totalRecipients: results[2]?.meta.changes ?? 0 }
+}
+
+/**
+ * The three statements of a send after its campaign row, shared by the tab's send (createListCampaign) and the page's
+ * (createLetterCampaign): a contact for every address of the audience that has none yet, a recipient row for each
+ * contact the send may reach, and the campaign's total, counted from its rows. Each writes only when the campaign row
+ * `campaignId` exists on the list, so a batch whose first statements made nothing writes nothing here.
+ */
+function audienceStatements(db: D1Database, campaignId: string, listId: string): [D1PreparedStatement, D1PreparedStatement, D1PreparedStatement] {
+  const audience = audienceOf(listId)
+  const made = 'EXISTS (SELECT 1 FROM email_campaigns WHERE id = ?1 AND list_id = ?2)'
+  return [
     db
       .prepare(
         `INSERT OR IGNORE INTO mail_contacts (id, address)
          SELECT lower(hex(randomblob(16))), a.address FROM (${audience}) a WHERE ${made}`,
       )
-      .bind(campaignId, args.listId),
+      .bind(campaignId, listId),
     // OR IGNORE: a second press in the same millisecond carries the same campaign id and finds the rows already there.
     db
       .prepare(
@@ -285,13 +301,67 @@ export async function createListCampaign(
             AND NOT EXISTS (SELECT 1 FROM mail_do_not_send d WHERE d.address = c.address)
           ORDER BY c.address`,
       )
-      .bind(campaignId, args.listId, OUT),
+      .bind(campaignId, listId, OUT),
     db
       .prepare(`UPDATE email_campaigns SET total_recipients = (SELECT COUNT(*) FROM email_campaign_recipients WHERE campaign_id = ?1) WHERE id = ?1 AND list_id = ?2`)
-      .bind(campaignId, args.listId),
+      .bind(campaignId, listId),
+  ]
+}
+
+/** What the page's send made, or why it made nothing. */
+export type LetterCampaignResult =
+  | { made: { campaignId: string; totalRecipients: number } }
+  | { refused: Refusal }
+  | { sending: true }
+  | { notFound: true }
+
+/**
+ * Makes the send of a list's stored letter, from the newsletter's own page, in one db.batch, which D1 runs as one
+ * transaction:
+ * - first the mark: the letter's campaign_id is set to this send's id and its version moved by one, only while it is
+ *   the list's open letter at the version given, not a template, no send on the list is sending and no campaign has
+ *   this id. This is the only gate, so two presses, two tabs, a save or a start at the same moment leave one mark;
+ * - the campaign row, copied from the letter that carries this mark, so what goes out is exactly the letter at that
+ *   version: its subject and words, and in filter_json the list, the link key's check, its look, month and preview
+ *   line; status 'sending';
+ * - the three statements of the audience, as the tab's send makes them;
+ * - then two reads, which say why the mark was not made: the letter as it now stands, and a send on the list that is
+ *   sending.
+ * The id is `campaign-`, the time in base 36, `-` and 8 random hex characters, so two sends in one millisecond carry
+ * different ids. updated_by, updated_at and the letter's sending later columns are left as they are.
+ */
+export async function createLetterCampaign(
+  db: D1Database,
+  args: { listId: string; issueId: string; version: number; createdBy: string; linkCheck: string },
+): Promise<LetterCampaignResult> {
+  const random = crypto.getRandomValues(new Uint8Array(4))
+  const campaignId = `campaign-${Date.now().toString(36)}-${Array.from(random, (b) => b.toString(16).padStart(2, '0')).join('')}`
+  const results = await db.batch([
+    db
+      .prepare(
+        `UPDATE newsletter_issues SET campaign_id = ?1, version = version + 1
+          WHERE id = ?3 AND list_id = ?2 AND version = ?4 AND campaign_id IS NULL AND set_aside_at IS NULL AND pinned_name IS NULL
+            AND NOT EXISTS (SELECT 1 FROM email_campaigns WHERE list_id = ?2 AND status = 'sending')
+            AND NOT EXISTS (SELECT 1 FROM email_campaigns WHERE id = ?1)`,
+      )
+      .bind(campaignId, args.listId, args.issueId, args.version),
+    db
+      .prepare(
+        `INSERT INTO email_campaigns (id, subject, body_html, filter_json, total_recipients, created_by, status, list_id)
+         SELECT ?1, i.subject, i.body_html, json_object('list', ?2, 'linkCheck', ?3, 'look', 'navy', 'month', i.month_label, 'preheader', i.preheader), 0, ?4, 'sending', ?2
+           FROM newsletter_issues i
+          WHERE i.id = ?5 AND i.list_id = ?2 AND i.campaign_id = ?1`,
+      )
+      .bind(campaignId, args.listId, args.linkCheck, args.createdBy, args.issueId),
+    ...audienceStatements(db, campaignId, args.listId),
+    letterStateStatement(db, args.issueId, args.listId),
+    db.prepare(`SELECT id FROM email_campaigns WHERE list_id = ?1 AND status = 'sending' AND id <> ?2 LIMIT 1`).bind(args.listId, campaignId),
   ])
-  if (!results[0]?.meta.changes) return null
-  return { campaignId, totalRecipients: results[2]?.meta.changes ?? 0 }
+  if (results[0]?.meta.changes === 1) return { made: { campaignId, totalRecipients: results[3]?.meta.changes ?? 0 } }
+  const row = (results[5]?.results as StateRow[] | undefined)?.[0]
+  if (!row) return { notFound: true }
+  if (row.campaign_id !== null || row.set_aside_at !== null || row.version !== args.version) return { refused: refusalOf(row) }
+  return { sending: true }
 }
 
 /** The send on a list that is sending now, if any: its id and its subject. One query. */

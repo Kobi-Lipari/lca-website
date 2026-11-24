@@ -112,9 +112,10 @@ describe('the links\' key', () => {
   it('is named only by the link signer, the footer, the endpoints\' shared answers, the unsubscribe answer, the list path, the newsletter\'s send and test, and the Env type, which says both names are optional production secrets', () => {
     const readers = walk('functions').filter((f) => /MAIL_LINK_SECRET/.test(read(f))).map((f) => relative('', f)).sort()
     // WS16 step 4 adds the list path in the campaign sender, which checks the key a list campaign was made with, and the
-    // newsletter's send and test send, which refuse to start without it.
+    // newsletter's send and test send, which refuse to start without it. WS16 part two's page step 6 adds the Newsletter
+    // page's own Send, which refuses to start without it as well.
     expect(readers).toEqual([
-      'functions/api/admin/mail/newsletter.ts', 'functions/api/admin/mail/newsletter/test.ts',
+      'functions/api/admin/mail/newsletter.ts', 'functions/api/admin/mail/newsletter/issue/send.ts', 'functions/api/admin/mail/newsletter/test.ts',
       'functions/api/mail/unsubscribe/[token].ts', 'functions/types.ts', 'functions/utils/admin/campaigns.ts', 'functions/utils/mail/footer.ts',
       'functions/utils/mail/linkAnswers.ts', 'functions/utils/mail/links.ts',
     ])

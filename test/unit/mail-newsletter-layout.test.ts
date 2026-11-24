@@ -681,9 +681,10 @@ describe('the footer', () => {
 
   // WS16 part two's page step 4 gives the layout its first reader outside domain/: the newsletter page's side preview,
   // which draws the email with it (K's decision 29). Page step 6 gives it its first reader on the server, the test of the
-  // stored letter, which draws the email it sends with it; nothing under workers/ reads it, so the daily-emails worker
-  // bundles none of it.
-  it('is read by the navy layout, the page\'s side preview and the test of the stored letter alone: nothing else under src/, functions/ or workers/ imports the layout or reads the follow line yet', () => {
+  // stored letter, which draws the email it sends with it. The same step's Send gives it two more: the page's own Send,
+  // which draws the first emails with it, and the campaign sender, which draws a list send's email in the look it was
+  // made in, so the daily-emails worker, which finishes a send through the campaign sender, bundles it from then on.
+  it('is read by the navy layout, the page\'s side preview, the test of the stored letter, the page\'s own Send and the campaign sender alone: nothing else under src/, functions/ or workers/ imports the layout or reads the follow line', () => {
     const files = (dir: string): string[] =>
       readdirSync(join(ROOT, dir))
         .filter((name) => !name.startsWith('.') && name !== 'node_modules')
@@ -692,7 +693,8 @@ describe('the footer', () => {
       .flatMap(files)
       .filter((file) => /\.(?:ts|tsx)$/.test(file) && /newsletterLayout|NEWSLETTER_FOLLOW_LINE/.test(read(file)))
     expect(readers.sort()).toEqual([
-      'domain/mail/footer.ts', 'domain/mail/newsletterLayout.ts', 'functions/api/admin/mail/newsletter/test.ts', 'src/areas/admin/newsletter/SidePreview.tsx',
+      'domain/mail/footer.ts', 'domain/mail/newsletterLayout.ts', 'functions/api/admin/mail/newsletter/issue/send.ts',
+      'functions/api/admin/mail/newsletter/test.ts', 'functions/utils/admin/campaigns.ts', 'src/areas/admin/newsletter/SidePreview.tsx',
     ])
   })
 })

@@ -69,9 +69,10 @@
 // carry them, kind 'test', through the service a test goes through by
 // default, and no Amazon SES option; an email over EMAIL_MAX_BYTES as drawn
 // is refused, 413, in words that say by about how much. The email is drawn
-// here rather than by listMessage in functions/utils/admin/campaigns.ts, so
-// the campaign sender and the daily-emails worker that bundles it stay as
-// they are. It writes nothing on the letter and no campaign; it makes the
+// here with renderNewsletter, as listMessage in
+// functions/utils/admin/campaigns.ts draws a list send made from the page in
+// its look; test/integration/newsletter-page-send-edges.test.ts holds the two
+// equal byte for byte. It writes nothing on the letter and no campaign; it makes the
 // person's contact as today's test does, and sends once, as today's does.
 import type { Env } from '../../../../types'
 import { isSendableAddress, normalizeAddress } from '../../../../../domain/mail/address'

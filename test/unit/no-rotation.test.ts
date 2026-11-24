@@ -11,10 +11,11 @@
 //   self, is named in ALLOWED below by its file, with its reason and the
 //   number of calls in that file, which must match: a new call fails, and a
 //   removed one must take its entry down, so the list only shrinks. There
-//   are four: the home page's slideshow with newLook off, listed until WS03
-//   replaces the hero, and three that move nothing on, the email screen's
-//   poll while a campaign is sending, the annual meeting page's minute clock
-//   and the price clock of useNow, a hook in a .ts file;
+//   are five: the home page's slideshow with newLook off, listed until WS03
+//   replaces the hero, and four that move nothing on, the email screen's
+//   poll while a campaign is sending, the Newsletter page Send's poll while
+//   its send is going, the annual meeting page's minute clock and the price
+//   clock of useNow, a hook in a .ts file;
 // - a setTimeout (or requestAnimationFrame) that runs again by itself is a
 //   loop, and fails wherever it is: one whose callback is the function it
 //   sits in, one whose callback calls the function it sits in, and one in
@@ -80,6 +81,11 @@ const ALLOWED: Allowed[] = [
     file: 'src/pages/AnnualMeetingPage.tsx',
     count: 1,
     reason: 'The annual meeting page reads the clock once a minute for its countdown to the meeting. Nothing on show moves on by itself.',
+  },
+  {
+    file: 'src/areas/admin/newsletter/useSend.ts',
+    count: 1,
+    reason: 'The Newsletter page\'s own Send reads the send\'s progress again every 3 seconds, only while one is still sending or its start is not yet read, to show how far it has gone. Nothing on show moves on by itself.',
   },
   {
     file: 'src/hooks/useNow.ts',
@@ -440,9 +446,9 @@ describe('the timers in src', () => {
     expect(tree.loops).toEqual([])
   })
 
-  it('finds the five repeating calls the tree holds: the slideshow\'s two, the email poll, the minute clock and the price clock in a .ts hook', () => {
+  it('finds the six repeating calls the tree holds: the slideshow\'s two, the email poll, the newsletter Send\'s poll, the minute clock and the price clock in a .ts hook', () => {
     const where = tree.intervals.map((f) => f.file)
-    expect(where).toEqual(['src/hooks/useNow.ts', 'src/pages/AdminEmailPage.tsx', 'src/pages/AnnualMeetingPage.tsx', 'src/pages/HomePage.tsx', 'src/pages/HomePage.tsx'])
+    expect(where).toEqual(['src/areas/admin/newsletter/useSend.ts', 'src/hooks/useNow.ts', 'src/pages/AdminEmailPage.tsx', 'src/pages/AnnualMeetingPage.tsx', 'src/pages/HomePage.tsx', 'src/pages/HomePage.tsx'])
   })
 
   it('reads the one-shot timers as one-shot: the debounce, the reload, the give-up, the scroll, the copied message and the rest', () => {

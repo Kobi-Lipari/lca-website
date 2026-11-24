@@ -18,6 +18,7 @@
 // the hosting plan.
 import { LIST_SENDERS } from '../../../domain/mail/addresses'
 import { listFooterWords } from '../../../domain/mail/footer'
+import { renderNewsletter } from '../../../domain/mail/newsletterLayout'
 import { DEFAULT_FROM, DEFAULT_REPLY_TO } from '../email'
 import { renderEmail } from '../emailLayout'
 import { listMailParts } from '../mail/footer'
@@ -489,6 +490,9 @@ export const NO_LINK_WORDS = 'Not sent: no unsubscribe link could be made for th
  */
 export const STOPPED_WORDS = 'Not sent: the send was stopped.'
 
+/** A list send made in a look this deployment cannot draw (lookOf answers 'unknown'): nothing is sent until it can. */
+export const LOOK_UNKNOWN_WORDS = "Not sent yet: this deployment cannot draw this email's look."
+
 /**
  * The words a failure is recorded with under the rules. An answer that reached no service carries the seam's own words
  * (a refusal's, list mail held back while Resend sends or while the gate cannot be read, a call the runtime would not
@@ -525,18 +529,44 @@ export interface ListMessage {
  */
 export async function listMessage(
   env: CampaignEnv,
-  args: { listId: string; contactId: string; subject: string; bodyHtml: string },
+  args: { listId: string; contactId: string; subject: string; bodyHtml: string; look?: ListLook },
 ): Promise<ListMessage> {
   const sender = LIST_SENDERS[args.listId]
   if (!sender) throw new Error('No sender is written for this list.')
   const parts = await listMailParts(env, { contactId: args.contactId, listId: args.listId })
+  const look = args.look
   return {
     from: sender.from,
     fromName: sender.name,
     replyTo: env.REPLY_TO_EMAIL ?? DEFAULT_REPLY_TO,
     headers: parts.headers,
-    html: wrapBrandedEmail(env, args.subject, args.bodyHtml, parts.footerHtml),
+    html: look
+      ? renderNewsletter({ siteUrl: resolveSiteUrl(env), month: look.month, subject: args.subject, preheader: look.preheader, bodyHtml: args.bodyHtml, footerHtml: parts.footerHtml })
+      : wrapBrandedEmail(env, args.subject, args.bodyHtml, parts.footerHtml),
   }
+}
+
+/** The look a list send made from the newsletter's own page is drawn in: the navy newsletter, its month and preview line. */
+export interface ListLook {
+  month: string
+  preheader: string
+}
+
+/**
+ * The look a list campaign was made in (filter_json's look): null when it names none, as for every send made from
+ * Group email; the navy look with its month and preview line; or 'unknown' for a look this deployment cannot draw,
+ * which listFault stops before anything is sent. A filter that does not parse names no look.
+ */
+export function lookOf(filterJson: string | null): ListLook | null | 'unknown' {
+  let filter: { look?: unknown; month?: unknown; preheader?: unknown } | null
+  try {
+    filter = JSON.parse(filterJson ?? 'null') as typeof filter
+  } catch {
+    return null
+  }
+  if (filter === null || typeof filter !== 'object' || !('look' in filter)) return null
+  if (filter.look === 'navy' && typeof filter.month === 'string' && typeof filter.preheader === 'string') return { month: filter.month, preheader: filter.preheader }
+  return 'unknown'
 }
 
 /** The link key's check a list campaign was made with (filter_json's linkCheck), or null when it holds none. */
@@ -569,9 +599,9 @@ async function listFault(env: CampaignEnv, listId: string, filterJson: string | 
     throw err
   }
   const made = linkCheckOf(filterJson)
-  if (made !== null && made === current) return null
-  if (made !== null && env.MAIL_LINK_SECRET_PREVIOUS && made === (await linkKeyCheck(env.MAIL_LINK_SECRET_PREVIOUS))) return null
-  return LINK_KEY_DIFFERS_WORDS
+  const keyFits = made !== null && (made === current || (!!env.MAIL_LINK_SECRET_PREVIOUS && made === (await linkKeyCheck(env.MAIL_LINK_SECRET_PREVIOUS))))
+  if (!keyFits) return LINK_KEY_DIFFERS_WORDS
+  return lookOf(filterJson) === 'unknown' ? LOOK_UNKNOWN_WORDS : null
 }
 
 /**
@@ -731,6 +761,7 @@ async function sendRuled(
   recipient: ClaimedRecipient,
   html: string,
   gate: MailGate,
+  look: ListLook | null,
 ): Promise<RuledOutcome> {
   const listId = campaign.list_id
   let mail: OutgoingMail
@@ -739,7 +770,7 @@ async function sendRuled(
   } else {
     try {
       if (recipient.contact_id === null) throw new Error('A list row names its contact.')
-      const message = await listMessage(env, { listId, contactId: recipient.contact_id, subject: campaign.subject, bodyHtml: campaign.body_html })
+      const message = await listMessage(env, { listId, contactId: recipient.contact_id, subject: campaign.subject, bodyHtml: campaign.body_html, look: look ?? undefined })
       mail = { kind: 'optional', listId, headers: message.headers, from: message.from, fromName: message.fromName, to: recipient.email, replyTo: message.replyTo, subject: campaign.subject, html: message.html, shape: 'campaign' }
     } catch (err) {
       if (err instanceof MailLinkKeyMissing) return { kind: 'later', words: MAIL_KEY_MISSING_WORDS, endRun: false, untried: true }
@@ -828,6 +859,9 @@ async function runUnderRules(
       return finishRun(db, campaignId, sent, failed, false)
     }
   }
+  // A look this deployment cannot draw has already stopped the run in listFault.
+  const found = listId != null ? lookOf(campaign.filter_json) : null
+  const look = found === 'unknown' ? null : found
 
   const room = deadline === undefined ? limit : Math.min(limit, Math.ceil((deadline - Date.now()) / SEND_INTERVAL_MS))
   // Read before the claim is written, so the time the run counts it held is never shorter than the database's.
@@ -878,7 +912,7 @@ async function runUnderRules(
       return finishRun(db, campaignId, sent, failed, true)
     }
 
-    const outcome = await sendRuled(env, campaign, recipient, html, gate)
+    const outcome = await sendRuled(env, campaign, recipient, html, gate, look)
 
     if (outcome.kind === 'later') {
       await putBackRows(db, campaignId, listId, rows.slice(index), { kept: outcome.untried ? undefined : recipient.id, noted: recipient.id, words: outcome.words, own: recipient.id })

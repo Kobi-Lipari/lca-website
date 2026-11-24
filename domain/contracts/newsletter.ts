@@ -33,7 +33,9 @@ export const PREHEADER_MAX = 150
 
 /**
  * The most characters an id a request names may hold. A letter's id is 32 hex characters, and a send's is "campaign-"
- * and the time in base 36, 17 characters, as every send has been made; so an id of megabytes never reaches the database.
+ * and the time in base 36, 17 characters, as every send from Group email's tab is made; a send made from the
+ * newsletter's own page has "campaign-", the time in base 36, "-" and 8 hex characters, 26 in all. So an id of
+ * megabytes never reaches the database.
  */
 export const REQUEST_ID_MAX = 64
 
@@ -294,6 +296,22 @@ export const newsletterTestLetterResponseSchema = z.strictObject({
   to: z.string(),
 })
 
+/** The words for a letter to send that is not one the server can name. */
+const SEND_LETTER_WORDS = 'Name the letter to send.'
+
+/**
+ * POST /api/admin/mail/newsletter/issue/send, the real Send from the newsletter's own page, taken only while
+ * MAIL_PAGE_SEND_ON is set: the stored letter by its id and the version the page holds, and nothing typed. The words
+ * sent are the stored letter's at that version; a `subject`, `bodyHtml` or `to` beside the two passes through and is
+ * never read. Its 201 is the newsletter send's own (newsletterResponseSchema in ./mail); its 409 for a letter changed,
+ * sent or set aside since that version is the save's (newsletterIssueRefusedSchema); the rest are the shared error
+ * bodies, each in words.
+ */
+export const newsletterSendRequestSchema = z.looseObject({
+  issueId: z.string({ error: SEND_LETTER_WORDS }).min(1, SEND_LETTER_WORDS).max(REQUEST_ID_MAX, SEND_LETTER_WORDS),
+  version: z.number({ error: VERSION_WORDS }).int(VERSION_WORDS).min(1, VERSION_WORDS),
+})
+
 export type NewsletterLetter = z.infer<typeof newsletterLetterSchema>
 export type NewsletterIssueResponse = z.infer<typeof newsletterIssueResponseSchema>
 export type NewsletterIssueSaveRequest = z.infer<typeof newsletterIssueSaveRequestSchema>
@@ -312,3 +330,4 @@ export type NewsletterTemplateSavedResponse = z.infer<typeof newsletterTemplateS
 export type NewsletterTemplateRemovedResponse = z.infer<typeof newsletterTemplateRemovedResponseSchema>
 export type NewsletterTemplateChanged = z.infer<typeof newsletterTemplateChangedSchema>
 export type NewsletterTestLetterResponse = z.infer<typeof newsletterTestLetterResponseSchema>
+export type NewsletterSendRequest = z.infer<typeof newsletterSendRequestSchema>

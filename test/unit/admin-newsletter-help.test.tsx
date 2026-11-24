@@ -45,6 +45,7 @@ vi.mock('@/lib/features', async (importOriginal) => {
       get mailPage() {
         return flags.mailPage
       },
+      mailPageSend: false,
     },
   }
 })
@@ -175,8 +176,8 @@ afterEach(() => {
 })
 
 /** Each card's title and lines, read from the walkthrough drawn alone and walked with Next, step 1 to step 6. */
-function cards(width: 'desk' | 'tablet' | 'phone', sendReady: boolean) {
-  render(<HelpWalkthrough width={width} sendReady={sendReady} onClose={() => {}} opener={() => null} />)
+function cards(width: 'desk' | 'tablet' | 'phone', sendReady: boolean, phoneSends?: boolean) {
+  render(<HelpWalkthrough width={width} sendReady={sendReady} phoneSends={phoneSends} onClose={() => {}} opener={() => null} />)
   const read = []
   for (let n = 1; n <= 6; n++) {
     const card = screen.getByRole('dialog', { name: `Help, step ${n} of 6` })
@@ -229,10 +230,34 @@ describe('the six cards', () => {
     }
   })
 
+  it('on a phone where the email\'s sheet can send, step 6 keeps "Send a test" on "See the email" and says what the computer says, Send ready or quiet', () => {
+    for (const width of ['desk', 'tablet', 'phone'] as const) {
+      for (const ready of [false, true]) {
+        // Switched off, every width reads as it does today.
+        expect(cards(width, ready, false), `${width} ${ready}`).toEqual(cards(width, ready))
+      }
+    }
+    expect(cards('phone', true, true)[5]).toEqual({ title: 'Send a test', words: ['Send a test to yourself first. Then send.'] })
+    expect(cards('phone', false, true)[5]).toEqual({ title: 'Send a test', words: ['Send a test to yourself first.', 'Sending to members from this page is not available yet.'] })
+    // The computer and the tablet are as they were, whichever way the phone is.
+    for (const width of ['desk', 'tablet'] as const) {
+      for (const ready of [false, true]) expect(cards(width, ready, true), `${width} ${ready}`).toEqual(cards(width, ready, false))
+    }
+    // Step 6 still lights the button step 5 lights there, under its own title.
+    const steps = cards('phone', true, true)
+    expect(steps[4].title).toBe('See the email')
+    expect(new Set(steps.map((step) => step.title)).size).toBe(6)
+  })
+
   it('says "Then send." only once Send is wired, the board\'s sentence word for word', () => {
     for (const width of ['desk', 'tablet'] as const) {
       expect(cards(width, true)[5]).toEqual({ title: 'Send a test to me', words: ['Send a test to yourself first. Then send.'] })
       expect(cards(width, false)[5].words.join(' ')).not.toContain('Then send.')
+    }
+    // On a phone, only where its sheet can send, and the press there sends.
+    expect(cards('phone', true, true)[5].words).toEqual(['Send a test to yourself first. Then send.'])
+    for (const [ready, phoneSends] of [[true, false], [false, true], [false, false]] as const) {
+      expect(cards('phone', ready, phoneSends)[5].words.join(' '), `${ready} ${phoneSends}`).not.toContain('Then send.')
     }
   })
 
