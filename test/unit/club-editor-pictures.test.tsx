@@ -8,9 +8,9 @@
 // new tab. The editor keeps the parts of the rest of the listing apart, puts
 // the third number on "Where", says under the swatch when no club color is
 // chosen, says in the box beside today's words what a save does to them, and
-// moves the focus into Help, and lets Tab into its box, without pushing the
-// page's heading under the site's header, taking its box back to its top
-// when Help is pressed in a box scrolled down. Help's sentences on the page's
+// lets Tab into its box without pushing the page's heading under the site's
+// header, moving no focus and no box of its own when a person opens a mark
+// of Help. Help's sentences on the page's
 // address say what today's site does while the new club pages are off. An
 // address of another form is refused in the status that said Loading…. The
 // link's refusal says what to do, true whatever the reason. And the admin club page
@@ -42,8 +42,9 @@ vi.mock('@/lib/supabase', () => ({
 
 const { AdminClubPage } = await import('@/pages/AdminClubPage')
 const { YourClubPage } = await import('@/pages/YourClubPage')
-const { EditorHelp } = await import('@/areas/clubs/components/EditorHelp')
-const { HELP_SHOWN_KEY, LINK_WORDS, isWebAddress } = await import('@/areas/clubs/editor')
+const { EditorHelpMark } = await import('@/areas/clubs/components/EditorHelp')
+const { EditorHelpWords } = await import('@/areas/clubs/helpMarks')
+const { LINK_WORDS, isWebAddress } = await import('@/areas/clubs/editor')
 
 const ID = 'example-chess-club'
 const SLUG = 'example-chess'
@@ -68,8 +69,6 @@ let asked: string[] = []
 beforeEach(() => {
   Object.assign(flags, { clubKeepers: true, clubEmailHidden: true, newClubs: false, newLook: false })
   window.localStorage.clear()
-  // Help has opened by itself before, unless a case says otherwise.
-  window.localStorage.setItem(HELP_SHOWN_KEY, 'shown')
   routes = {}
   asked = []
   vi.stubGlobal('fetch', vi.fn(async (url: string, init?: RequestInit) => {
@@ -243,10 +242,12 @@ describe('the editor as the pictures showed it', () => {
     await openEditor()
     const basics = screen.getByLabelText('One sentence about the club').closest('ol') as HTMLOListElement
     const third = basics.children[2] as HTMLElement
-    expect(third.firstElementChild?.textContent).toBe('Where')
-    expect(third.firstElementChild?.tagName).toBe('P')
+    // The item's first line is "Where" with its mark after it, outside the words that name the group.
+    const line = third.firstElementChild?.firstElementChild as HTMLElement
+    expect(line.textContent).toBe('Where')
+    expect(line.tagName).toBe('P')
     const group = within(third).getByRole('group', { name: 'Where' })
-    expect(group.getAttribute('aria-labelledby')).toBe(third.firstElementChild?.id)
+    expect(group.getAttribute('aria-labelledby')).toBe(line.id)
     expect(group.querySelector(':scope > legend')).toBeNull()
   })
 
@@ -257,8 +258,10 @@ describe('the editor as the pictures showed it', () => {
       const none = screen.getByText('No club color chosen yet')
       expect(swatch.getAttribute('aria-describedby'), String(color)).toBe(none.id)
       expect(swatch.nextElementSibling, String(color)).toBe(none)
+      // The label's line, with the color's mark after the label, is a block of its own above the swatch.
       const label = document.querySelector('label[for="editor-color"]') as HTMLElement
-      expect(label.className.split(/\s+/), String(color)).toContain('block')
+      expect(label.parentElement?.tagName, String(color)).toBe('DIV')
+      expect(label.parentElement?.nextElementSibling, String(color)).toBe(swatch)
       // A color picked in the swatch is the club's own, so the line goes.
       fireEvent.change(swatch, { target: { value: '#2e7d32' } })
       expect(screen.queryByText('No club color chosen yet'), String(color)).toBeNull()
@@ -273,53 +276,58 @@ describe('the editor as the pictures showed it', () => {
     await openEditor()
     const box = document.getElementById('editor-howWeMeetText-differs') as HTMLElement
     expect(within(box).getByText('Saving puts this listing\'s words on today\'s page.')).toBeTruthy()
-    const help = document.getElementById('club-editor-help') as HTMLElement
-    const term = within(help).getByText('Today\'s page shows different words here')
-    expect(term.nextElementSibling?.textContent).toBe('Today\'s club page shows its own, shorter words where this listing holds the words written for the new club pages, or words changed in the older form since. Any save, even of one other field, puts this listing\'s words on today\'s page in place of today\'s, so read both before you save.')
+    const marks = screen.getAllByRole('button', { name: 'Help: Today\'s page shows different words here' })
+    expect(marks).toHaveLength(2)
+    const words = document.getElementById(marks[1].getAttribute('aria-controls')!) as HTMLElement
+    expect(box.parentElement?.contains(marks[1])).toBe(true)
+    expect(words.textContent).toBe('Today\'s club page shows its own, shorter words where this listing holds the words written for the new club pages, or words changed in the older form since. Any save, even of one other field, puts this listing\'s words on today\'s page in place of today\'s, so read both before you save.')
   })
 
-  it('moves the focus into Help on a first visit without the page\'s jump, and lets Tab into its box without one', async () => {
-    window.localStorage.clear()
+  it('moves no focus and opens no bubble on a first visit, and lets Tab into its box without the page\'s jump', async () => {
     const focus = vi.spyOn(HTMLElement.prototype, 'focus')
     await openEditor()
-    const help = document.getElementById('club-editor-help') as HTMLElement
-    await waitFor(() => expect(document.activeElement).toBe(help))
-    const intoHelp = focus.mock.contexts.map((el, i) => [el, focus.mock.calls[i][0]] as const).filter(([el]) => el === help)
-    expect(intoHelp).toEqual([[help, { preventScroll: true }]])
-    // Help keeps clear of the site's header when it is brought into view.
-    expect(help.className.split(/\s+/)).toContain('scroll-mt-24')
+    expect(focus).not.toHaveBeenCalled()
+    for (const bubble of document.querySelectorAll<HTMLElement>('[data-slot="help-mark-bubble"]')) expect(bubble.hidden).toBe(true)
     // The box Tab stops on first: a scroll margin of a whole window tells the browser it is in view while any of it is.
     expect(screen.getByRole('region', { name: 'Club listing' }).className.split(/\s+/)).toContain('scroll-mt-[100vh]')
   })
 
-  it('takes the editor\'s box back to its top when Help is pressed in a box scrolled down, so Help\'s top shows and the page stays still', async () => {
+  it('leaves the editor\'s box where the keeper scrolled it when a mark is pressed, and moves no focus', async () => {
     await openEditor()
     const box = screen.getByRole('region', { name: 'Club listing' })
-    const help = document.getElementById('club-editor-help') as HTMLElement
-    expect(help.hidden).toBe(true)
-    // A keeper has scrolled the box down to the private email, below Help's place at the box's top.
+    // A keeper has scrolled the box down to the private email.
     box.scrollTop = 300
     const focus = vi.spyOn(HTMLElement.prototype, 'focus')
-    fireEvent.click(within(box).getByRole('button', { name: 'Help' }))
-    await waitFor(() => expect(document.activeElement).toBe(help))
-    expect(help.hidden).toBe(false)
-    expect(box.scrollTop).toBe(0)
-    expect(focus.mock.contexts.map((el, i) => [el, focus.mock.calls[i][0]] as const).filter(([el]) => el === help)).toEqual([[help, { preventScroll: true }]])
+    const email = within(box).getByRole('button', { name: 'Help: Email for messages' })
+    fireEvent.click(email)
+    expect(document.getElementById(email.getAttribute('aria-controls')!)!.hidden).toBe(false)
+    expect(box.scrollTop).toBe(300)
+    expect(focus).not.toHaveBeenCalled()
   })
 })
 
 describe('Help\'s sentences on the page\'s address follow the new club pages', () => {
-  const sentence = (term: string) => within(document.getElementById('club-editor-help') as HTMLElement).getByText(term).nextElementSibling?.textContent ?? ''
+  /** The words of the mark named for a part, drawn with the editor's four choices. */
+  const sentence = (term: string) => {
+    const mark = screen.getByRole('button', { name: `Help: ${term}` })
+    return document.getElementById(mark.getAttribute('aria-controls')!)?.textContent ?? ''
+  }
+  const marks = (pagesOn: boolean) => (
+    <EditorHelpWords value={{ own: true, emailHidden: true, pagesOn, showAdmin: true }}>
+      <EditorHelpMark part="nameAndAddress" />
+      <EditorHelpMark part="adminFields" />
+    </EditorHelpWords>
+  )
 
   it('says what today\'s site does while the new club pages are off, and what the new pages do once they are on', () => {
-    render(<EditorHelp open own emailHidden pagesOn={false} showAdmin onClose={() => {}} />)
+    render(marks(false))
     const off = `${sentence('Name and address')}\n${sentence('Club name, region and page address')}`
     for (const untrue of ['made from the club\'s name the first time the page is saved', 'the part after /clubs/', 'the old address keeps working']) expect(off, untrue).not.toContain(untrue)
     expect(sentence('Name and address')).toContain('Today\'s club page keeps the address shown under "Your page\'s address", which stays the same if the club is renamed, so links and search results keep working.')
     expect(sentence('Club name, region and page address')).toBe('Only LCA admins change these. The page address is used once the new club pages open; today\'s club page keeps its own address, which does not change.')
     cleanup()
 
-    render(<EditorHelp open own emailHidden pagesOn showAdmin onClose={() => {}} />)
+    render(marks(true))
     expect(sentence('Name and address')).toContain('Your page\'s address is made from the club\'s name the first time the page is saved')
     expect(sentence('Club name, region and page address')).toContain('The page address is the part after /clubs/ in the club page\'s address; when it changes, the old address keeps working.')
   })

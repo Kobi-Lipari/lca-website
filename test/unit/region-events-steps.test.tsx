@@ -20,8 +20,6 @@ import { MemoryRouter, useLocation } from 'react-router-dom'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { AuthContext } from '@/contexts/auth-context'
 import type { AuthContextValue } from '@/contexts/AuthContext'
-import { HELP_SHOWN_KEY } from '@/areas/clubs/editor'
-import { REGION_HELP_SHOWN_KEY } from '@/areas/clubs/region'
 import { WAIT_HELP_SHOWN_KEY } from '@/areas/clubs/approval'
 
 // Each case may wait for a page's file to load, so each case has 20 seconds.
@@ -88,7 +86,7 @@ beforeEach(() => {
   flags.clubKeepers = true
   flags.regionEvents = true
   window.localStorage.clear()
-  for (const key of [HELP_SHOWN_KEY, REGION_HELP_SHOWN_KEY, WAIT_HELP_SHOWN_KEY]) window.localStorage.setItem(key, 'shown')
+  window.localStorage.setItem(WAIT_HELP_SHOWN_KEY, 'shown')
   asked = []
   answers = {
     [`GET ${CLUB_URL}/news`]: () => json({ news: [] }),

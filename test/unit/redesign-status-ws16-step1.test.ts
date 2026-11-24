@@ -80,8 +80,10 @@ const part = (heading: string) => {
 const MAP = '### WS16 map: what proves each acceptance criterion and decision'
 const STEP = '### WS16 step 1: the record, the switches and one seam'
 const LISTS = ['### WS16 decisions', '### WS16 deviations from the brief', '### WS16 verify items resolved', '### WS16 follow-ups']
-/** The block of the change between checkpoint M's merge and the switch-on, at the section's end, its heading as written. */
+/** The block of the change between checkpoint M's merge and the switch-on, after the four lists, its heading as written. */
 const BEFORE_SWITCH_ON = '### Before the switch-on: the newsletter tab\'s last rough spots'
+/** The block of the switch-on change, after it, its heading as written. */
+const SWITCH_ON = '### The switch-on: the newsletter list turned on'
 const map = part(MAP)
 const block = part(STEP)
 const decisions = part(LISTS[0])
@@ -120,8 +122,8 @@ const TAIL = 'step 1 is built.'
 const IN_FULL = /\b[Cc]heckpoints [J-O](?:, [J-O])* and [J-O]\b|\b[Cc]heckpoint [J-O]\b/g
 /** A checkpoint's own section, which the step that closes it adds after its block: "### Checkpoint M: WS16 steps 1 to 8", or one step's. */
 const isCheckpoint = (h: string) => /^### Checkpoint [MNO]: WS16 (?:steps \d+ to \d+|step \d+)$/.test(h)
-/** The headings of the section that are neither WS16's own, a checkpoint's section nor that block. */
-const strayHeadings = (section: string) => section.split('\n').filter((l) => l.startsWith('### ') && !l.startsWith('### WS16 ') && !isCheckpoint(l) && l !== BEFORE_SWITCH_ON)
+/** The headings of the section that are neither WS16's own, a checkpoint's section nor those two blocks. */
+const strayHeadings = (section: string) => section.split('\n').filter((l) => l.startsWith('### ') && !l.startsWith('### WS16 ') && !isCheckpoint(l) && l !== BEFORE_SWITCH_ON && l !== SWITCH_ON)
 /** Text with what sits in backticks taken out, since code is not prose. */
 const proseOf = (text: string) => text.replace(/`[^`\n]*`/g, '``')
 /** What is left of the prose once every checkpoint is named in full: a letter of WS08's or WS16's checkpoints on its own, K aside, who is the owner. */
@@ -319,7 +321,8 @@ describe('REDESIGN_STATUS.md, WS16 step 1: the step block', () => {
     const headings = sectionLines.filter((l) => l.startsWith('### '))
     const FIXED = [MAP, STEP, ...LISTS]
     for (const fixed of FIXED) expect(headings.filter((h) => h === fixed), fixed).toHaveLength(1)
-    for (const h of headings.filter((l) => !FIXED.includes(l))) expect(/^### WS16 step (?:[1-9]|1[0-2]): \S/.test(h) || isCheckpoint(h) || h === BEFORE_SWITCH_ON, h).toBe(true)
+    // The page half of WS16 part two keeps its part of the record under one heading of its own (its page step 3).
+    for (const h of headings.filter((l) => !FIXED.includes(l))) expect(/^### WS16 step (?:[1-9]|1[0-2]): \S/.test(h) || isCheckpoint(h) || h === '### WS16 part two: the newsletter\'s own page' || h === BEFORE_SWITCH_ON || h === SWITCH_ON, h).toBe(true)
     expect(strayHeadings(ws16)).toEqual([])
     expect(headings.filter((h) => /^### Step\b/.test(h))).toEqual([])
   })

@@ -213,8 +213,9 @@ describe('REDESIGN_STATUS.md, WS16 step 8: the Status line', () => {
     expect(statusLine.startsWith(STATUS_PREFIX)).toBe(true)
     const tail = statusLine.slice(STATUS_PREFIX.length)
     expect(latestStep).toBeGreaterThanOrEqual(8)
-    // Once checkpoint M merged, the tail says so as well, while this step is still the latest.
-    if (latestStep === 8) expect([TAIL, 'steps 1 to 8 are built and merged, switched off.']).toContain(tail)
+    // Once checkpoint M merged, the tail says so as well, while this step is still the latest, and once the switch-on change
+    // is made, that it switches them on.
+    if (latestStep === 8) expect([TAIL, 'steps 1 to 8 are built and merged, switched off.', 'steps 1 to 8 are built and merged, switched on by the switch-on change.']).toContain(tail)
     expect(tail).toMatch(/\bbuilt\b/)
     expect(tail.endsWith('.')).toBe(true)
   })
@@ -228,8 +229,10 @@ describe('REDESIGN_STATUS.md, WS16 step 8: the block', () => {
     for (const i of at) expect(i).toBeGreaterThan(-1)
     expect([...at].sort((a, b) => a - b)).toEqual(at)
     // Nothing between step 7's block and this one but step 7's own; between this block and the decisions, this block, checkpoint
-    // M's section and what a later step adds there: its own block, "### WS16 step 9: ..." and on, or a later checkpoint's section.
-    const later = (l: string) => /^### WS16 step (?:9|1[0-2]): \S/.test(l) || /^### Checkpoint [NO]: WS16 (?:steps \d+ to \d+|step \d+)$/.test(l)
+    // M's section and what a later step adds there: its own block, "### WS16 step 9: ..." and on, or a later checkpoint's section,
+    // or the part of the record of WS16 part two's page half, under its one heading.
+    const later = (l: string) =>
+      /^### WS16 step (?:9|1[0-2]): \S/.test(l) || /^### Checkpoint [NO]: WS16 (?:steps \d+ to \d+|step \d+)$/.test(l) || l === '### WS16 part two: the newsletter\'s own page'
     expect(ws16.slice(at[0], at[1]).split('\n').filter((l) => l.startsWith('### '))).toEqual([STEP_SEVEN])
     expect(ws16.slice(at[1], at[3]).split('\n').filter((l) => l.startsWith('### ') && !later(l))).toEqual([STEP, CHECKPOINT])
     expect(later('### WS16 step 9: a later block')).toBe(true)

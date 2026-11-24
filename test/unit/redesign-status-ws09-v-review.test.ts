@@ -190,8 +190,9 @@ describe('REDESIGN_STATUS.md, Checkpoint V: what it is and what it asks of K', (
     expect(sql).not.toMatch(/^\s*(?:DROP|UPDATE|DELETE|INSERT|CREATE)\b/m)
     expect(codeOf(APPROVAL)).toContain('export const onRequestPost: PagesFunction<Env> = async (context) => {\n  if (!REGION_EVENTS_ON) return errorResponse(APPROVAL_CLOSED, 403)\n')
     expect(read('src/areas/admin/components/AuditLogPanel.tsx')).toMatch(/tournament_submitted[\s\S]*tournament_approved[\s\S]*tournament_changes_asked/)
-    expect(read('functions/utils/clubs/pages.ts')).toContain('export const REGION_EVENTS_ON = false')
-    expect(read('src/lib/features.ts')).toContain('  regionEvents: false,')
+    // regionEvents and REGION_EVENTS_ON went on together in the block "WS09 switch-on: regionEvents and REGION_EVENTS_ON", so this step holds only that each is declared.
+    expect(read('functions/utils/clubs/pages.ts')).toMatch(/^export const REGION_EVENTS_ON = (?:false|true)$/m)
+    expect(read('src/lib/features.ts')).toMatch(/^ {2}regionEvents: (?:false|true),$/m)
     // The bodies are the three step 17's corrected sentence names.
     const step17 = bullet(part(STEP17), '- **What ships with every switch off.**')
     for (const piece of ['a body that is not JSON, 400 "Invalid JSON body", where `main` answered 400 "memberId is required"', 'a body of JSON that is not an object', 'a `memberId` that is not text, 400 with the field\'s error']) {
@@ -207,6 +208,7 @@ describe('REDESIGN_STATUS.md, Checkpoint V: what it is and what it asks of K', (
       '"What an approval covers afterwards, for K."', '"A save after approval (WS09 step 18)."', '`SUBMITS_A_DAY` in `functions/api/admin/tournaments/[id]/approval.ts`, which K may change',
       'no send to more than about 40 people at once', '"Emailing a club event\'s entrants (WS09 step 17)."', '100 emails a day', '`SIGNING_SECRET` set in Cloudflare by K\'s own hands',
       '"Owed before clubKeepers goes on, K\'s own."', '`regionEvents` and `REGION_EVENTS_ON` go on together, in one change', '`switchOrderProblems`',
+      'K\'s answers, decision 10 of Tuesday, November 17, 2026', 'may go on sooner than the site\'s move to Amazon SES', 'not metered against the sending service\'s day',
     ]) expect(owed, piece).toContain(piece)
     for (const start of [
       '- **A save after approval (WS09 step 18).** ', '- **Emailing a club event\'s entrants (WS09 step 17).** ', '- **K\'s signing secret, owed before clubKeepers goes on (WS09 step 13).** ',
@@ -440,7 +442,8 @@ describe('REDESIGN_STATUS.md, WS09 checkpoint V: the review of the whole and its
     expect(read('test/unit/redesign-status-ws09-step14.test.ts')).toContain('? [EMAILS_TEST, EDGES_TEST] : []')
     expect(read('test/unit/redesign-status-ws09-step19.test.ts')).toContain('[PAGES_TEST, ANSWERS_TEST, \'test/unit/approval-wait-panel.test.tsx\', \'test/unit/region-events-steps.test.tsx\'] : []')
     expect(read('test/unit/redesign-status-ws09-v-asked.test.ts')).toContain('expect(statusLine).not.toMatch(/checkpoint U[^;]*waits for K\'s word for its merge/)')
-    expect(read('test/unit/goldText.test.ts')).toContain('expect(result.badgeUses).toHaveLength(33)')
+    // 33 at this review; 34 with the newsletter's own page, whose "In this issue" label is one more (WS16 part two, page step 4).
+    expect(read('test/unit/goldText.test.ts')).toContain('expect(result.badgeUses).toHaveLength(34)')
     expect(read('test/unit/contracts-pending.ts')).toContain('export const PENDING_COUNT = 104')
   })
 

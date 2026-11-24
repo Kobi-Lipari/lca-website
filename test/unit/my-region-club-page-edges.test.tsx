@@ -18,8 +18,6 @@ import { MemoryRouter, Route, Routes, useLocation, useNavigate } from 'react-rou
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { AuthContext } from '@/contexts/auth-context'
 import type { AuthContextValue } from '@/contexts/AuthContext'
-import { HELP_SHOWN_KEY } from '@/areas/clubs/editor'
-import { REGION_HELP_SHOWN_KEY } from '@/areas/clubs/region'
 import { ClubEventsList, type EventLink } from '@/areas/clubs/components/ClubEventsList'
 import type { ApiAdminClubTournament } from '@/lib/api'
 
@@ -194,8 +192,6 @@ function answerFor(club: Record<string, unknown>, tournaments: Event[] = [OPEN])
 
 beforeEach(() => {
   window.localStorage.clear()
-  window.localStorage.setItem(HELP_SHOWN_KEY, 'shown')
-  window.localStorage.setItem(REGION_HELP_SHOWN_KEY, 'shown')
   asked = []
   answers = {
     [`GET /api/admin/clubs/${ID}`]: () => json(answerFor(CLUB)),

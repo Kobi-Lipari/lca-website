@@ -58,6 +58,18 @@ vi.mock('../../functions/utils/events/creation', async (importOriginal) => {
     },
   }
 })
+// The notice is held as WS08 built it, with REGION_EVENTS_ON unset through
+// a getter on the mocked module, so the creator's grant reads no regional
+// seat; test/integration/creation-grant.test.ts holds the grant with it set.
+vi.mock('../../functions/utils/clubs/pages', async (importOriginal) => {
+  const real = await importOriginal<typeof import('../../functions/utils/clubs/pages')>()
+  return {
+    ...real,
+    get REGION_EVENTS_ON() {
+      return false
+    },
+  }
+})
 vi.mock('../../functions/utils/mail/switches', async (importOriginal) => {
   const real = await importOriginal<typeof import('../../functions/utils/mail/switches')>()
   return {

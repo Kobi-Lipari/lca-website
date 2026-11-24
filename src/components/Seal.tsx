@@ -1,9 +1,12 @@
 // src/components/Seal.tsx
 //
-// The heritage look's seal, as the decided Looks board draws it on the
-// Bylaws page: the rook mark on a navy disc inside two rings of brand gold.
+// The heritage look's seal, after the decided Looks board's seal on the
+// Bylaws page: the rook mark on a navy disc inside one thin ring of brand
+// gold. The board draws two rings with the seal's words between them; the
+// words are left out, so it adds no copy, and of the rings only the outer
+// one is kept, as K chose on the preview on Monday, November 16, 2026.
 // Brand gold is the seal's line only, which the brief allows for rules and
-// seals; the words of the board's seal are left out, so it adds no copy.
+// seals.
 //
 // The mark is LcaMark itself, drawn inside the seal's own SVG, so its path
 // stays in src/components/LcaMark.tsx alone. LcaMark takes a size and no
@@ -35,7 +38,6 @@ export function Seal({ className }: SealProps) {
     >
       <circle cx="50" cy="50" r="49" className="fill-brand-navy" />
       <circle cx="50" cy="50" r="45.5" fill="none" strokeWidth="1.25" className="stroke-lca-gold" />
-      <circle cx="50" cy="50" r="30" fill="none" strokeWidth="1" className="stroke-lca-gold" />
       <g transform="translate(32.3 32) scale(0.34)" className="text-white">
         <LcaMark title="" className="size-full" />
       </g>

@@ -51,7 +51,8 @@ vi.mock('@/areas/clubs/components/ClubEditor', async (importOriginal) => {
 })
 
 const { ClubLocationPicker } = await import('@/areas/clubs/components/ClubLocationPicker')
-const { EditorHelp } = await import('@/areas/clubs/components/EditorHelp')
+const { EditorHelpMark } = await import('@/areas/clubs/components/EditorHelp')
+const { EditorHelpWords } = await import('@/areas/clubs/helpMarks')
 const { AdminClubPage } = await import('@/pages/AdminClubPage')
 const { YourClubPage } = await import('@/pages/YourClubPage')
 const { isWebAddress } = await import('@/areas/clubs/editor')
@@ -155,9 +156,11 @@ describe('the editor spells color as the site does', () => {
     await act(async () => {})
     expect((screen.getByLabelText('Club color') as HTMLInputElement).type).toBe('color')
     expect(screen.getByRole('group', { name: 'Logo and club color' })).toBeTruthy()
-    const help = document.getElementById('club-editor-help') as HTMLElement
+    // The color's own mark holds the color's sentence, beside the swatch's label.
+    const mark = screen.getByRole('button', { name: 'Help: Club color' })
+    fireEvent.click(mark)
+    const help = document.getElementById(mark.getAttribute('aria-controls')!) as HTMLElement
     expect(help.hidden).toBe(false)
-    expect(within(help).getByText('Logo and club color')).toBeTruthy()
     expect(within(help).getByText(/The club's color is drawn as a band/)).toBeTruthy()
     fireEvent.click(screen.getByRole('button', { name: 'Preview' }))
     expect(within(document.getElementById('club-editor-previews') as HTMLElement).getByText('Club color')).toBeTruthy()
@@ -167,12 +170,17 @@ describe('the editor spells color as the site does', () => {
 
 describe('Help\'s line on the city follows the new club pages', () => {
   const nameAndAddress = () => {
-    const term = within(document.getElementById('club-editor-help') as HTMLElement).getByText('Name and address')
-    return term.nextElementSibling?.textContent ?? ''
+    const mark = screen.getByRole('button', { name: 'Help: Name and address' })
+    return document.getElementById(mark.getAttribute('aria-controls')!)?.textContent ?? ''
   }
+  const marks = (pagesOn: boolean) => (
+    <EditorHelpWords value={{ own: true, emailHidden: true, pagesOn, showAdmin: false }}>
+      <EditorHelpMark part="nameAndAddress" />
+    </EditorHelpWords>
+  )
 
   it('says what today\'s page shows under the name while the new pages are off, and the new line once they are on', () => {
-    render(<EditorHelp open own emailHidden pagesOn={false} showAdmin={false} onClose={() => {}} />)
+    render(marks(false))
     const off = nameAndAddress()
     expect(off.startsWith('Today\'s club page shows the city under your club\'s name, such as "Baton Rouge, LA", and a shared link to the page starts with a line such as "Chess club in Baton Rouge, Louisiana", which search results may show too.')).toBe(true)
     expect(off).toContain('That line goes under the name once the new club pages open.')
@@ -180,7 +188,7 @@ describe('Help\'s line on the city follows the new club pages', () => {
     expect(off).toContain('Today\'s club page keeps the address shown under "Your page\'s address"')
     cleanup()
 
-    render(<EditorHelp open own emailHidden pagesOn showAdmin={false} onClose={() => {}} />)
+    render(marks(true))
     const on = nameAndAddress()
     expect(on.startsWith('The city makes the line under your club\'s name, such as "Chess club in Baton Rouge, Louisiana", on your page and in search results, and helps people who search for a chess club near it.')).toBe(true)
     expect(on).not.toContain('Baton Rouge, LA"')

@@ -193,7 +193,7 @@ describe('entries: one label for each destination', () => {
     const lists: Array<[string, readonly string[]]> = [
       ['sections', SECTIONS],
       ['About rows', [...ABOUT_ROWS, ABOUT_FOOTER_ROW]],
-      ['About menu, squeezed', aboutMenu(true).rows],
+      ['About menu', aboutMenu().rows],
       ['trust line', TRUST_LINE_LINKS],
       ['footer brand block', FOOTER_BRAND_ACTIONS],
       ['footer', footerColumns(ALL_ON).flatMap((c) => c.links)],
@@ -481,10 +481,10 @@ describe('the About menu and Donate', () => {
     }
   })
 
-  it('has seven rows and LCA on Facebook below them, with Donate the last row above it when the bar is squeezed', () => {
-    expect(labels(aboutMenu().rows)).toEqual(['About LCA', 'Board & regions', 'Bylaws & rules', 'Minutes', 'Annual meeting', 'State champions', 'Contact'])
+  it('has seven rows, then Donate, always its last row, since Donate is never in the bar (decision 68), and LCA on Facebook below them', () => {
+    expect(labels(aboutMenu().rows)).toEqual(['About LCA', 'Board & regions', 'Bylaws & rules', 'Minutes', 'Annual meeting', 'State champions', 'Contact', 'Donate'])
     expect(navLabel(aboutMenu().footer)).toBe('LCA on Facebook ↗')
-    expect(aboutMenu(true).rows).toEqual([...ABOUT_ROWS, 'donate'])
+    expect(aboutMenu().rows).toEqual([...ABOUT_ROWS, 'donate'])
   })
 
   it('opens today\'s donation dialog from Donate until newMembership is on, then /give, the same entry everywhere', () => {
@@ -494,7 +494,7 @@ describe('the About menu and Donate', () => {
     expect(headerUtilities({ signedIn: false })[0]).toBe('donate')
     expect(navSheet({ pathname: '/', signedIn: false }, ALL_OFF).utilities[0]).toBe('donate')
     expect(footerColumns(ALL_OFF)[3].links.at(-1)).toBe('donate')
-    expect(aboutMenu(true).rows.at(-1)).toBe('donate')
+    expect(aboutMenu().rows.at(-1)).toBe('donate')
   })
 })
 
@@ -743,7 +743,7 @@ describe('search\'s data', () => {
   })
 
   it('names a region for every alias', () => {
-    expect(REGION_ALIASES).toEqual({ nola: 'New Orleans Metro', northshore: 'North of Lake Pontchartrain', acadiana: 'South Central Louisiana' })
+    expect(REGION_ALIASES).toEqual({ nola: 'New Orleans Metro', northshore: 'New Orleans Metro', acadiana: 'Lafayette / South Central' })
     for (const [alias, region] of Object.entries(REGION_ALIASES)) {
       expect(alias, alias).toMatch(/^[a-z]+$/)
       expect(REGIONS as readonly string[], alias).toContain(region)

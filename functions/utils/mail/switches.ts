@@ -3,7 +3,8 @@
 // The server half of the mail switches: constants, their type and their
 // comments, and nothing else. MAIL_LISTS_ON is the server half of
 // mailLists in src/lib/features.ts, which the functions and the workers
-// cannot read; MAIL_SENDER names the one service that sends every email.
+// cannot read, and MAIL_PAGE_ON that of mailPage, the newsletter's own
+// page; MAIL_SENDER names the one service that sends every email.
 //
 // Two settings follow no switch: WORKERS_PLAN, the hosting plan the mail
 // engine's budgets are sized for, and COMPLAINT_STOPS_OTHER_SENDERS, what a
@@ -28,7 +29,18 @@ export type WorkersPlan = 'free' | 'paid'
  * WORKERS_PLAN). Turned on with mailLists in src/lib/features.ts, in the same change;
  * test/unit/mail-switches.test.ts holds the two equal.
  */
-export const MAIL_LISTS_ON = false
+export const MAIL_LISTS_ON = true
+
+/**
+ * Set: the newsletter's own page on the server, the four methods that read, save and start a letter and list the last
+ * ones (functions/api/admin/mail/newsletter/issue.ts, issue/start.ts and issues.ts), which answer 404 while it is unset,
+ * before reading anything, and the test of the stored letter, the second form of the newsletter's test
+ * (functions/api/admin/mail/newsletter/test.ts), which is refused while it is unset as any body today's form does not
+ * take. Turned on with mailPage in src/lib/features.ts, in the same change, and only while MAIL_LISTS_ON is set;
+ * test/unit/mail-switches.test.ts holds the two equal and holds it to MAIL_LISTS_ON. Set since the page's own
+ * switch-on change; turned off again with mailPage, in one change, and the letters stay in their table.
+ */
+export const MAIL_PAGE_ON = true
 
 /**
  * Which service sends every email: 'resend' today. It changes only in a pull request of its own (the cutover, whose
@@ -42,7 +54,7 @@ export const MAIL_SENDER: MailSender = 'resend'
  * is on Workers Paid, then 'paid' in the change that follows K's word. The cutover to Amazon SES waits for 'paid'
  * (WS16 step 7). test/unit/mail-switches.test.ts holds it written once, with either value.
  */
-export const WORKERS_PLAN: WorkersPlan = 'free'
+export const WORKERS_PLAN: WorkersPlan = 'paid'
 
 /**
  * Decision 18 of the WS16 plan (D35): a spam report always stops the list it was pressed on, and while this holds it

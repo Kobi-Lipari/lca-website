@@ -59,6 +59,17 @@ vi.mock('../../functions/utils/events/creation', async (importOriginal) => {
     },
   }
 })
+// These cases were written with REGION_EVENTS_ON unset, so it is held unset here;
+// test/integration/region-directors.test.ts holds the naming with it set.
+vi.mock('../../functions/utils/clubs/pages', async (importOriginal) => {
+  const real = await importOriginal<typeof import('../../functions/utils/clubs/pages')>()
+  return {
+    ...real,
+    get REGION_EVENTS_ON() {
+      return false
+    },
+  }
+})
 
 beforeEach(resetHarness)
 afterEach(() => {

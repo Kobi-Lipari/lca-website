@@ -28,7 +28,6 @@ import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { AuthContext } from '@/contexts/auth-context'
 import type { AuthContextValue } from '@/contexts/AuthContext'
-import { REGION_HELP_SHOWN_KEY } from '@/areas/clubs/region'
 import type { WorkspaceRegionResponse } from '@domain/contracts'
 
 // Each case may wait up to 5 seconds for a page's file to load, so each case has 15 seconds.
@@ -87,7 +86,6 @@ let answers: Record<string, () => Response | Promise<Response>> = {}
 
 beforeEach(() => {
   window.localStorage.clear()
-  window.localStorage.setItem(REGION_HELP_SHOWN_KEY, 'shown')
   signIn.session = null
   asked = []
   answers = {
@@ -130,7 +128,7 @@ const ready = () => screen.findByRole('button', { name: 'Still accurate' }, { ti
 const statusText = () => screen.getAllByRole('status').map((s) => s.textContent).join(' ')
 const linkCalls = () => asked.filter((a) => a.call.includes('/api/clubs/confirm/'))
 
-describe('the confirm page with clubKeepers off, as the step ships', () => {
+describe('the confirm page with clubKeepers off', () => {
   it('draws what the address draws today: no page file, no call and nothing in the main area', async () => {
     flags.clubKeepers = false
     open()
@@ -146,7 +144,8 @@ describe('the confirm page with clubKeepers off, as the step ships', () => {
     const route = app.indexOf('{FEATURES.clubKeepers && <Route path="/clubs/confirm/:token" element={<ClubConfirmPage />} />}')
     expect(route).toBeGreaterThan(-1)
     expect(route).toBeLessThan(app.indexOf('<Route path="/clubs/:id" element={<ClubDetailPage />} />'))
-    expect(read('src/lib/features.ts')).toContain('  clubKeepers: false,')
+    // clubKeepers went on with CLUB_KEEPERS_ON at the switch-on, so this holds only that it is declared; the cases above set it themselves.
+    expect(read('src/lib/features.ts')).toMatch(/^ {2}clubKeepers: (?:false|true),$/m)
   })
 })
 

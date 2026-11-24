@@ -23,7 +23,6 @@ import { MemoryRouter, useLocation, useNavigate, type NavigateFunction } from 'r
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { AuthContext } from '@/contexts/auth-context'
 import type { AuthContextValue } from '@/contexts/AuthContext'
-import { HELP_SHOWN_KEY } from '@/areas/clubs/editor'
 
 // Each case may wait up to 5 seconds for a page's or the editor's file to load, so each case has 15 seconds.
 vi.setConfig({ testTimeout: 15000 })
@@ -138,8 +137,6 @@ function serve(person: Person) {
 beforeEach(() => {
   Object.assign(flags, { clubKeepers: true, clubEmailHidden: true })
   window.localStorage.clear()
-  // Help has opened by itself before, so the page's own focus is what is read.
-  window.localStorage.setItem(HELP_SHOWN_KEY, 'shown')
   asked = []
   vi.stubGlobal('fetch', vi.fn(async (url: string, init?: RequestInit) => {
     const call = `${init?.method ?? 'GET'} ${url}`
@@ -252,7 +249,8 @@ describe('Your club\'s page: the ways in, with clubKeepers on', () => {
     expect(screen.queryByRole('button', { name: 'Save and publish' })).toBeNull()
     // The club is not this person's own, so the page is not called theirs.
     expect(screen.getAllByRole('heading', { level: 1 }).map((h) => h.textContent)).toEqual(['The club\'s page'])
-    expect(document.activeElement).toBe(screen.getByRole('heading', { level: 1 }))
+    // The heading takes the focus in an effect after the words draw, so wait for it.
+    await waitFor(() => expect(document.activeElement).toBe(screen.getByRole('heading', { level: 1 })))
   })
 
   it('says an address no club has in words, with a way back, and never sends an address of another form', async () => {

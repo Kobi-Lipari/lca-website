@@ -499,7 +499,7 @@ export function AdminClubPage() {
           </ViewOnlyFieldset>
         )}
         {/*
-          The editor shuts its own fields and Save for an observer and leaves Help open to them.
+          The editor shuts its own fields and Save for an observer and leaves its Help marks open to them.
           Its words say "your" only to the club's own rep, whom this page lets in at the club's
           id as before; an LCA admin, an observer and a region's representative read "the club's".
         */}

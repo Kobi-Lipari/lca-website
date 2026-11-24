@@ -6,7 +6,7 @@
 // its refusals for everyone else without the club's data; and the removal of
 // an officer is refused them every time, while a rep and an LCA admin removing
 // the same officer get one success and then today's 404, in any order.
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, vi } from 'vitest'
 import { env } from 'cloudflare:test'
 import { invoke } from './harness'
 import { seedAdmin, seedClub, seedMember, seedTournament } from './factories'
@@ -15,6 +15,18 @@ import { onRequestGet as adminClubGet } from '../../functions/api/admin/clubs/[i
 import { onRequestPost as officersPost } from '../../functions/api/admin/clubs/[id]/officers'
 import { onRequestDelete as officerDelete } from '../../functions/api/admin/clubs/[id]/officers/[officerId]'
 import { ROSTER_KEPT_BACK } from '../../functions/utils/clubs/memberView'
+
+// These cases were written with REGION_EVENTS_ON unset, so it is held unset here;
+// test/integration/region-events-answers.test.ts holds the answers with it set.
+vi.mock('../../functions/utils/clubs/pages', async (importOriginal) => {
+  const real = await importOriginal<typeof import('../../functions/utils/clubs/pages')>()
+  return {
+    ...real,
+    get REGION_EVENTS_ON() {
+      return false
+    },
+  }
+})
 
 const REGION = 'Bayou Region'
 

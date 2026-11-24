@@ -45,7 +45,7 @@ INSERT INTO clubs (id, name, city, location, description, meeting_schedule, cont
 VALUES
   ('fx-club-capital', 'Fixture Capital Chess Club', 'Baton Rouge', 'Fixture Community Center, 100 Example St, Baton Rouge, LA',
    'A made-up club for tests. Casual and rated games for every level.', 'Tuesdays at 7:00 PM', 'capital-club@example.org',
-   '#1f4e79', 'South Central Louisiana', 30.4515, -91.1871),
+   '#1f4e79', 'Baton Rouge / East Central', 30.4515, -91.1871),
   ('fx-club-north', 'Fixture North Chess Club', 'Monroe', 'Fixture Library, 200 Example Ave, Monroe, LA',
    'A made-up club for tests. Blitz on Fridays, lessons for new players on Saturdays.', 'Fridays at 6:30 PM', 'north-club@example.org',
    '#2e7d32', 'North Louisiana', 32.5093, -92.1193)

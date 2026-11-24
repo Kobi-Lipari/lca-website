@@ -11,7 +11,9 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { AuthContext } from '@/contexts/auth-context'
 import type { AuthContextValue } from '@/contexts/AuthContext'
 
-const flags = vi.hoisted(() => ({ membershipRequirementSwitch: true }))
+// regionEvents is held off here, as this page's membership switch was built
+// before it; test/unit/region-events-pages.test.tsx holds the page with it on.
+const flags = vi.hoisted(() => ({ membershipRequirementSwitch: true, regionEvents: false }))
 const api = vi.hoisted(() => ({
   adminGetTournamentManage: vi.fn(),
   adminUpdateTournament: vi.fn(),
@@ -23,7 +25,7 @@ vi.mock('@/lib/features', async (importOriginal) => {
   const real = await importOriginal<typeof import('@/lib/features')>()
   return {
     FEATURES: new Proxy(real.FEATURES, {
-      get: (target, key) => (key === 'membershipRequirementSwitch' ? flags.membershipRequirementSwitch : Reflect.get(target, key)),
+      get: (target, key) => (key === 'membershipRequirementSwitch' || key === 'regionEvents' ? flags[key] : Reflect.get(target, key)),
     }),
   }
 })

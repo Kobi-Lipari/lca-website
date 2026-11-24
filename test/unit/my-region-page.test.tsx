@@ -1,10 +1,10 @@
 // @vitest-environment jsdom
 //
 // My region (WS09 step 11), through the site's own routes in src/App.tsx at
-// /workspace/region. With clubKeepers off, which is how the step ships, the
-// route sends every kind of person to the dashboard, the page's file is
-// never fetched and no call reaches My region's answer. With it on, which
-// this file turns on through a getter on the mocked FEATURES, a holder of an
+// /workspace/region. With clubKeepers off the route sends every kind of
+// person to the dashboard, the page's file is never fetched and no call
+// reaches My region's answer. With it on, which this file sets through a
+// getter on the mocked FEATURES as it sets it off, a holder of an
 // active regional seat gets in whatever their role and so does an LCA admin,
 // while a guest, a plain member, a club's rep with no seat and the holder of
 // an officer's seat are sent away; the page draws the server's cards in the
@@ -21,8 +21,6 @@ import { MemoryRouter, useLocation } from 'react-router-dom'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { AuthContext } from '@/contexts/auth-context'
 import type { AuthContextValue } from '@/contexts/AuthContext'
-import { HELP_SHOWN_KEY } from '@/areas/clubs/editor'
-import { REGION_HELP_SHOWN_KEY } from '@/areas/clubs/region'
 import type { RegionClub, WorkspaceRegionResponse } from '@domain/contracts'
 import { contrast } from './helpers/cssTokens'
 
@@ -125,8 +123,6 @@ let answers: Record<string, () => Response | Promise<Response>> = {}
 
 beforeEach(() => {
   window.localStorage.clear()
-  // Help has opened by itself before, so the page's own parts are what is read; the Help cases clear it.
-  window.localStorage.setItem(REGION_HELP_SHOWN_KEY, 'shown')
   asked = []
   answers = {
     'GET /api/workspace/region': () => json(ANSWER),
@@ -180,10 +176,15 @@ async function page() {
 const cardOf = (name: string) => screen.getByRole('heading', { level: 3, name }).closest('article') as HTMLElement
 const cardNames = () => screen.getAllByRole('heading', { level: 3 }).map((h) => h.textContent)
 const stampOf = (name: string) => cardOf(name).querySelector('[data-slot="region-stamp"]')?.textContent
-const bar = () => screen.getByRole('heading', { level: 2, name: 'This month' }).closest('section') as HTMLElement
+/** The bar as a person sees it: the words of its Help marks' bubbles, hidden until pressed, are left out. */
+const bar = () => {
+  const seen = screen.getByRole('heading', { level: 2, name: 'This month' }).closest('section')!.cloneNode(true) as HTMLElement
+  for (const bubble of seen.querySelectorAll('[data-slot="help-mark-bubble"]')) bubble.remove()
+  return seen
+}
 const statusText = () => screen.getAllByRole('status').map((s) => s.textContent).join(' ')
 
-describe('My region with clubKeepers off, as the step ships', () => {
+describe('My region with clubKeepers off', () => {
   it('sends every kind of person to the dashboard, fetches no file of the page and calls no answer', async () => {
     flags.clubKeepers = false
     for (const person of Object.keys(PEOPLE) as Person[]) {
@@ -201,7 +202,8 @@ describe('My region with clubKeepers off, as the step ships', () => {
     expect(app).toContain('const MyRegionPage = lazy(() => import(\'@/pages/MyRegionPage\').then(m => ({ default: m.MyRegionPage })))')
     expect(app).toContain('<Route path="/workspace/region" element={FEATURES.clubKeepers ? <RoleProtectedRoute requireSeat><MyRegionPage /></RoleProtectedRoute> : <Navigate to="/dashboard" replace />} />')
     expect(app).toContain('<Route path="/workspace" element={<RoleProtectedRoute roles={WORKSPACE_ROLES} allowDirectors><WorkspacePage /></RoleProtectedRoute>} />')
-    expect(read('src/lib/features.ts')).toContain('  clubKeepers: false,')
+    // clubKeepers went on with CLUB_KEEPERS_ON at the switch-on, so this holds only that it is declared; the cases above set it themselves.
+    expect(read('src/lib/features.ts')).toMatch(/^ {2}clubKeepers: (?:false|true),$/m)
   })
 })
 
@@ -282,7 +284,7 @@ describe('My region with clubKeepers on: the page', () => {
     // Who else keeps each region is in the answer, but the board draws no such line, so the page leaves it out.
     expect(document.body.textContent).not.toContain('Player Four')
     // The bar in the server's words.
-    expect(bar().textContent).toBe('This month· Next monthly check lands Mon, Dec 7, 2026· 1 of 3 checked in the last 90 days· 2 not checked in 90 days'
+    expect(bar().textContent).toBe('This month· Next monthly check due Mon, Dec 7, 2026· 1 of 3 checked in the last 90 days· 2 not checked in 90 days'
       + 'Confirm all still accurate')
   })
 
@@ -307,7 +309,8 @@ describe('My region with clubKeepers on: the page', () => {
     }
     expect(screen.getByRole('link', { name: 'Open: Example Chess Club' }).getAttribute('href')).toBe('/workspace/region/clubs/c-chess')
     expect(screen.getByRole('button', { name: 'Confirm all still accurate' }).className.split(' ')).toContain('min-h-11')
-    expect(screen.getByRole('button', { name: 'Help' }).className.split(' ')).toContain('min-h-11')
+    // Help is small question marks since the WS09 aside, each drawn 24 pixels with a wider area to press.
+    for (const mark of screen.getAllByRole('button', { name: /^Help: / })) expect(mark.className.split(' ')).toEqual(expect.arrayContaining(['size-6', 'before:absolute']))
     // Nothing on the page shows an email address.
     expect(document.body.textContent).not.toMatch(/@/)
   })
@@ -432,7 +435,7 @@ describe('My region with clubKeepers on: the page', () => {
     await page()
     expect(screen.getByText('No clubs are in your region yet.')).toBeTruthy()
     expect(screen.getAllByRole('heading', { level: 1 }).map((h) => h.textContent)).toEqual(['My region'])
-    expect(bar().textContent).toBe('This month· Next monthly check lands Mon, Dec 7, 2026')
+    expect(bar().textContent).toBe('This month· Next monthly check due Mon, Dec 7, 2026')
     cleanup()
 
     // One club.
@@ -465,33 +468,39 @@ describe('My region with clubKeepers on: the page', () => {
     expect(screen.getAllByRole('heading', { level: 1 }).map((h) => h.textContent)).toEqual(['My region'])
   })
 
-  it('opens Help by itself once on the first visit, under its own key, with every explaining sentence behind it', async () => {
+  it('opens no Help by itself, keeps nothing in the browser, and holds every explaining sentence behind its marks', async () => {
     window.localStorage.clear()
     open('representative')
     await page()
-    const panel = document.getElementById('my-region-help') as HTMLElement
-    expect(panel.hidden).toBe(false)
-    expect(document.activeElement).toBe(panel)
-    expect(window.localStorage.getItem(REGION_HELP_SHOWN_KEY)).toBe('shown')
-    expect(window.localStorage.getItem(HELP_SHOWN_KEY)).toBeNull()
-    const button = screen.getByRole('button', { name: 'Help' })
-    expect(button.getAttribute('aria-controls')).toBe('my-region-help')
+    expect(screen.queryByRole('button', { name: 'Help' })).toBeNull()
+    expect(document.getElementById('my-region-help')).toBeNull()
+    const marks = screen.getAllByRole('button', { name: /^Help: / })
+    expect(marks.map((m) => m.getAttribute('aria-label'))).toEqual(['Help: This month', 'Help: Confirm all still accurate', 'Help: Clubs'])
+    const bubbles = marks.map((m) => document.getElementById(m.getAttribute('aria-controls')!) as HTMLElement)
+    for (const bubble of bubbles) expect(bubble.hidden).toBe(true)
+    expect(document.activeElement).toBe(document.body)
+    expect(window.localStorage.length).toBe(0)
     // Nothing runs the monthly check until a later step, so Help names the day it is due and no hour.
-    expect(panel.textContent).toContain('The bar names the day the next monthly check is due.')
-    expect(panel.textContent).not.toMatch(/\b\d{1,2}:\d{2} [AP]M\b/)
-    // The sentences on the 90 days and on Confirm all sit in Help alone, never beside a control.
+    const words = bubbles.map((b) => b.textContent).join('\n')
+    expect(words).toContain('The bar names the day the next monthly check is due.')
+    expect(words).not.toMatch(/\b\d{1,2}:\d{2} [AP]M\b/)
+    // The sentences on the 90 days and on Confirm all sit behind the marks alone, never beside a control.
     for (const piece of ['in the last 90 days.', 'one club after another']) {
-      const found = [...document.querySelectorAll('p, dd, span')].filter((el) => el.textContent?.includes(piece) && el.children.length === 0)
+      const found = [...document.querySelectorAll('p, dd, span, div')].filter((el) => el.textContent?.includes(piece) && el.children.length === 0)
       expect(found.length, piece).toBeGreaterThan(0)
-      for (const el of found) expect(panel.contains(el), piece).toBe(true)
+      for (const el of found) expect(bubbles.some((b) => b.contains(el)), piece).toBe(true)
     }
-    await act(async () => { fireEvent.keyDown(panel, { key: 'Escape' }) })
-    expect(panel.hidden).toBe(true)
-    expect(document.activeElement).toBe(button)
+    // A press opens the bar's mark, and Escape closes it with the focus left where it was.
+    marks[0].focus()
+    await act(async () => { fireEvent.click(marks[0]) })
+    expect(bubbles[0].hidden).toBe(false)
+    await act(async () => { fireEvent.keyDown(marks[0], { key: 'Escape' }) })
+    expect(bubbles[0].hidden).toBe(true)
+    expect(document.activeElement).toBe(marks[0])
     cleanup()
     open('representative')
     await page()
-    expect((document.getElementById('my-region-help') as HTMLElement).hidden).toBe(true)
+    for (const mark of screen.getAllByRole('button', { name: /^Help: / })) expect(mark.getAttribute('aria-expanded')).toBe('false')
   })
 
   it('keeps every control clear of today\'s header below lg, lets long words wrap and draws one column on a phone', async () => {
