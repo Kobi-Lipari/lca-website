@@ -23,6 +23,7 @@ import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { AuthContext } from '@/contexts/auth-context'
 import type { AuthContextValue } from '@/contexts/AuthContext'
+import type { ApiMySeat } from '@/areas/governance/api'
 import { canAssignDirectors, canCreate, type CreationPerson } from '../../domain/events/creation'
 
 const flags = vi.hoisted(() => ({ standingDirectors: true }))
@@ -108,10 +109,15 @@ afterEach(() => {
   vi.unstubAllGlobals()
 })
 
+/** The President seat as GET /api/board/my-seats answers it for its holder. */
+const PRESIDENT_SEAT: ApiMySeat = { id: 'fx-seat-president', slug: 'president', role: 'President', category: 'officer', started_at: '2026-01-01', regions: [] }
+
 async function openTournaments(role: string, id: string) {
   const member = { id, role, club_id: null, full_name: 'Avery Thibodeaux' }
+  // The seat holder is the reader with the president's id, whatever the role.
+  const seats = id === PRESIDENT ? [PRESIDENT_SEAT] : []
   const auth = {
-    user: { id }, member, session: null, role, loading: false, memberLoading: false, directedTournamentIds: [], directedTournaments: [],
+    user: { id }, member, session: null, role, loading: false, memberLoading: false, seats, directedTournamentIds: [], directedTournaments: [],
     refreshMember: async () => {},
   } as unknown as AuthContextValue
   render(

@@ -18,6 +18,7 @@ import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { AuthContext } from '@/contexts/auth-context'
 import type { AuthContextValue } from '@/contexts/AuthContext'
+import type { ApiMySeat } from '@/areas/governance/api'
 
 const flags = vi.hoisted(() => ({ standingDirectors: true }))
 vi.mock('@/lib/supabase', () => ({
@@ -79,11 +80,14 @@ afterEach(() => {
 
 const requestsTo = (path: string) => seen.filter((s) => s.url.split('?')[0] === path)
 
-async function openTournaments(who: { role: string; id: string }) {
+/** The President seat as GET /api/board/my-seats answers it for its holder. */
+const PRESIDENT_SEAT: ApiMySeat = { id: 'fx-seat-president', slug: 'president', role: 'President', category: 'officer', started_at: '2026-01-01', regions: [] }
+
+async function openTournaments(who: { role: string; id: string; seats?: ApiMySeat[] }) {
   const member = { id: who.id, role: who.role, club_id: null, full_name: 'Avery Thibodeaux' }
   const auth = {
     user: { id: who.id }, member, session: null, role: who.role, loading: false, memberLoading: false,
-    directedTournamentIds: [], directedTournaments: [], refreshMember: async () => {},
+    seats: who.seats ?? [], directedTournamentIds: [], directedTournaments: [], refreshMember: async () => {},
   } as unknown as AuthContextValue
   render(
     <AuthContext.Provider value={auth}>
@@ -102,7 +106,7 @@ async function openTournaments(who: { role: string; id: string }) {
 const card = (name: string) => screen.getByText(name).closest('.rounded-xl') as HTMLElement
 const directorsOn = (name: string) => within(card(name)).queryByRole('button', { name: /Directors/ })
 
-const PRESIDENT = { role: 'lca_observer', id: PRESIDENT_ID }
+const PRESIDENT = { role: 'lca_observer', id: PRESIDENT_ID, seats: [PRESIDENT_SEAT] }
 
 describe('New tournament for the president on Admin › Tournaments', () => {
   it('with the switch on and the president\'s grant, shows New tournament, and Directors on the LCA-run event the president created and on no other', async () => {
@@ -178,7 +182,7 @@ describe('New tournament for the president on Admin › Tournaments', () => {
   })
 
   it('with the switch on, an officer who holds the President seat is the president as well', async () => {
-    await openTournaments({ role: 'lca_officer', id: PRESIDENT_ID })
+    await openTournaments({ role: 'lca_officer', id: PRESIDENT_ID, seats: [PRESIDENT_SEAT] })
     expect(screen.getByRole('button', { name: /New tournament/ })).toBeTruthy()
     expect(directorsOn('Presidents Cup')).not.toBeNull()
     expect(directorsOn('Louisiana Open')).toBeNull()

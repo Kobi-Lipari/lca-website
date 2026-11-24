@@ -132,10 +132,17 @@ describe('useMediaManager, whether it asks', () => {
     expect(view.result.current).toEqual({ asking: false, mediaManager: false, secondFactor: false })
   })
 
-  it.each(['lca_admin', 'lca_observer'])('asks nothing for %s even with a seat: an LCA admin and the president send as themselves', async (role) => {
-    draw(newPerson(role, ['media-manager']))
+  it('asks nothing for an LCA admin even with a seat: an LCA admin sends as themselves', async () => {
+    draw(newPerson('lca_admin', ['media-manager']))
     await settle()
     expect(getMediaManager).not.toHaveBeenCalled()
+  })
+
+  it('asks for an LCA Observer who holds a seat, once, and gives the answer: the seat is what counts whatever the role', async () => {
+    const { view } = draw(newPerson('lca_observer', ['media-manager']))
+    await settle()
+    expect(getMediaManager).toHaveBeenCalledTimes(1)
+    expect(view.result.current).toEqual({ asking: false, mediaManager: true, secondFactor: true })
   })
 
   it('asks for an LCA officer who holds a seat, once, and gives the answer (checkpoint M\'s review)', async () => {

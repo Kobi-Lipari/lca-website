@@ -82,6 +82,11 @@ const GUARDS_TEST = 'test/unit/auth-first-draw-guard.test.tsx'
 const READERS_TEST = 'test/unit/auth-first-draw-readers.test.tsx'
 const SELF = 'test/unit/redesign-status-ws09-u-reload.test.ts'
 const NEW_TESTS = [FIRST_DRAW, READERS_TEST, GUARDS_TEST, SELF]
+/**
+ * Cases a later block added to a new test of this step, so the count this block wrote is the file's count less these:
+ * the block "WS16 part two: who may send" added three to the guards' test, a plain member who holds the President seat and one who holds another seat.
+ */
+const ADDED_LATER: Record<string, number> = { [GUARDS_TEST]: 3 }
 /** The record tests whose one pin each this step moves. */
 const MOVED = ['test/unit/redesign-status-ws09-step1.test.ts', 'test/unit/redesign-status-ws09-step13.test.ts']
 /** The two tests that draw the real sign-in context, which pass unchanged. */
@@ -271,7 +276,7 @@ describe('REDESIGN_STATUS.md, WS09 checkpoint U, the reload of a guarded page: t
 
   it('counts as many cases for each new test as the file holds', () => {
     const files = bullet(block, '- **Files.**')
-    for (const file of NEW_TESTS) expect(writtenCount(files, file), file).toBe(casesIn(file))
+    for (const file of NEW_TESTS) expect(writtenCount(files, file), file).toBe(casesIn(file) - (ADDED_LATER[file] ?? 0))
   })
 
   it('gives unit counts that add up: the base\'s and the new files\'', () => {

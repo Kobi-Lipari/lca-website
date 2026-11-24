@@ -36,7 +36,7 @@ import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-li
 import { MemoryRouter } from 'react-router-dom'
 import { createClient, type SupabaseClient, type User } from '@supabase/supabase-js'
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { MEMBER_ROLES, canAccessAdmin } from '@/areas/admin/roles'
+import { MEMBER_ROLES, canAccessAdmin, isViewOnlyAdmin } from '@/areas/admin/roles'
 import { AuthProvider, type AuthContextValue } from '@/contexts/AuthContext'
 import { AuthContext, useAuth } from '@/contexts/auth-context'
 import { Navbar } from '@/components/layout/Navbar'
@@ -228,9 +228,9 @@ describe('the planted session, read by the site\'s sign-in context and drawn by 
 
     const ANSWERED = ['POST /api/me', 'GET /api/me', 'GET /api/board/my-seats']
     // The media manager's question, asked by the account menu with mailLists on for a seat holder Admin does not let in,
-    // or an LCA officer who holds a seat, and answered no, as the helper answers it.
-    const officerWithSeat = holds.role === 'lca_officer' && (person.answers?.mySeats.seats.length ?? 0) > 0
-    const ASKED = FEATURES.mailLists && holds.isBoardMember && (!canAccessAdmin(holds.role) || officerWithSeat) ? ['GET /api/me/media-manager'] : []
+    // or a view-only role (an LCA officer or LCA Observer) that holds a seat, and answered no, as the helper answers it.
+    const viewOnlyWithSeat = isViewOnlyAdmin(holds.role) && (person.answers?.mySeats.seats.length ?? 0) > 0
+    const ASKED = FEATURES.mailLists && holds.isBoardMember && (!canAccessAdmin(holds.role) || viewOnlyWithSeat) ? ['GET /api/me/media-manager'] : []
     for (const call of ANSWERED) expect(record.calls, call).toContain(call)
     expect(record.calls.filter((call) => !ANSWERED.includes(call))).toEqual(ASKED)
     expect(record.signInCalls).toEqual([])
