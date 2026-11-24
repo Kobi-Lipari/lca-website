@@ -205,6 +205,8 @@ beforeEach(() => {
   on('GET', ISSUE_URL, { status: 200, body: letter() })
   on('GET', COUNT_URL, count())
   on('GET', ISSUES_URL, issues())
+  // No saved templates yet, as the server answers before anyone has saved one.
+  on('GET', '/api/admin/mail/newsletter/templates', { status: 200, body: { templates: [] } })
   on('PUT', ISSUE_URL, { status: 200, body: { id: 'sample-letter-1', version: 4, savedAt: '2026-11-16 20:20:00', bodyHtml: null } })
 })
 afterEach(() => {
@@ -321,7 +323,7 @@ describe('your last newsletters, at their edges', () => {
     on('GET', ISSUES_URL, issues(...stamps.map(([at], n) => row({ issueId: `sample-letter-${n}`, monthLabel: `Example month ${n + 1}`, at }))))
     await thePage()
     const dialog = await openFrom(pickWide())
-    const lines = within(dialog).getAllByRole('listitem').slice(4).map((item) => item.textContent?.replace(/Use this$/, ''))
+    const lines = within(dialog).getAllByRole('listitem').slice(4).map((item) => item.textContent?.replace(/Use thisSave as a template$/, ''))
     expect(lines).toEqual(stamps.map(([, day], n) => `Example month ${n + 1}Replaced by a newer letter on ${day}`))
   })
 
@@ -337,7 +339,7 @@ describe('your last newsletters, at their edges', () => {
     ))
     await thePage()
     const dialog = await openFrom(pickWide())
-    const lines = within(dialog).getAllByRole('listitem').slice(4).map((item) => item.textContent?.replace(/Use this$/, ''))
+    const lines = within(dialog).getAllByRole('listitem').slice(4).map((item) => item.textContent?.replace(/Use thisSave as a template$/, ''))
     expect(lines).toEqual([
       'Sample send oneSent Mon, Nov 16, 2026',
       'Example: tie oneReplaced by a newer letter on Mon, Nov 16, 2026 at 2:15 PM',
@@ -357,7 +359,8 @@ describe('your last newsletters, at their edges', () => {
     const dialog = await openFrom(pickWide())
     const name = within(dialog).getByText(long)
     expect(name.className).toContain('[overflow-wrap:anywhere]')
-    expect(name.parentElement?.className).toContain('min-w-0')
+    // Never wider than its row, and never narrower than 10rem, so its buttons go below it rather than squeeze it.
+    expect(name.parentElement?.className).toContain('min-w-[min(100%,10rem)]')
     expect(buttonFor(`${long}, sent Mon, Nov 16, 2026 to 12 members`).textContent).toBe('Use this')
   })
 

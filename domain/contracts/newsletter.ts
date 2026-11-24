@@ -23,7 +23,7 @@
 // named here passes through and is ignored; a new letter's source that
 // names both a past letter and a send is refused rather than read as one.
 import { z } from 'zod'
-import { STARTER_IDS } from '../mail/letter'
+import { STARTER_IDS, TEMPLATE_NAME_MAX, templateNameAsStored } from '../mail/letter'
 import { idSchema, storedTimestampSchema } from './common'
 
 /** The most characters a letter's month, subject and inbox preview line keep once trimmed. The subject's is the newsletter tab's. */
@@ -144,10 +144,19 @@ export const newsletterIssueRefusedSchema = z.strictObject({
 
 const CHOOSE_WORDS = 'Choose a blank letter, a starter, a past letter or a past newsletter.'
 
-/** Where a new letter's words come from: a blank letter or one of LCA's starters by its id, a past letter of the list, or a send on the list. */
+/** How many of a start's or a save's sources an object names: a past letter, a send, a saved template. One alone is read. */
+const sourcesNamed = (from: object) => ['issueId', 'campaignId', 'templateId'].filter((key) => key in from).length
+
+/**
+ * Where a new letter's words come from: a blank letter or one of LCA's starters by its id, a past letter of the list, a
+ * send on the list, or a saved template of the list.
+ */
 const startFromSchema = z
-  .union([z.enum(STARTER_IDS), z.looseObject({ issueId: requestIdSchema }), z.looseObject({ campaignId: requestIdSchema })], { error: CHOOSE_WORDS })
-  .refine((from) => typeof from === 'string' || !('issueId' in from && 'campaignId' in from), CHOOSE_WORDS)
+  .union(
+    [z.enum(STARTER_IDS), z.looseObject({ issueId: requestIdSchema }), z.looseObject({ campaignId: requestIdSchema }), z.looseObject({ templateId: requestIdSchema })],
+    { error: CHOOSE_WORDS },
+  )
+  .refine((from) => typeof from === 'string' || sourcesNamed(from) === 1, CHOOSE_WORDS)
 
 /** POST /api/admin/mail/newsletter/issue/start's body: where the words come from, and the month the new letter is for. */
 export const newsletterIssueStartRequestSchema = z.looseObject({
@@ -175,6 +184,92 @@ export const lastNewsletterSchema = z.strictObject({
 /** GET /api/admin/mail/newsletter/issues: the last 20 at most, newest first. */
 export const newsletterIssuesResponseSchema = z.strictObject({
   issues: z.array(lastNewsletterSchema).max(20),
+})
+
+/** The longest name a saved template may have, once cleaned (domain/mail/letter.ts), and the most a list shows at once: functions/utils/mail/issues.ts holds the same. */
+export { TEMPLATE_NAME_MAX }
+export const TEMPLATES_MAX = 40
+
+const TEMPLATE_NAME_WORDS = 'Write a name for the template.'
+const TEMPLATE_VERSION_WORDS = 'Give the version of the template you read.'
+const TEMPLATE_FROM_WORDS = 'Save the letter on the page, or one past newsletter, as a template.'
+
+/**
+ * A saved template's name: words, needed, held to TEMPLATE_NAME_MAX and to one line, cleaned first as
+ * templateNameAsStored cleans it (accents joined, the marks nobody sees taken out, trimmed), so two names a person reads
+ * alike are stored and compared alike. The page counts a name's characters through the same function.
+ */
+const templateNameSchema = z
+  .string({ error: TEMPLATE_NAME_WORDS })
+  .transform(templateNameAsStored)
+  .pipe(
+    z
+      .string()
+      .min(1, TEMPLATE_NAME_WORDS)
+      .max(TEMPLATE_NAME_MAX, `Keep the template's name to ${TEMPLATE_NAME_MAX} characters.`)
+      .refine((text) => !holdsControl(text), 'Write the template\'s name on one line, with no line break, tab or other hidden character.')
+      // An empty name is refused once, by min above; one of joiners, braille blanks or spaces alone, here, in the same words.
+      .refine((text) => text === '' || text.replace(/\u200D|\uFE0F|\u2800/g, '').trim() !== '', TEMPLATE_NAME_WORDS),
+  )
+
+const templateVersionSchema = z.number({ error: TEMPLATE_VERSION_WORDS }).int(TEMPLATE_VERSION_WORDS).min(1, TEMPLATE_VERSION_WORDS)
+/** A saved template's id as a rename or a remove names it, held to REQUEST_ID_MAX, answered in words as a test's letter is. */
+const templateIdSchema = z.string({ error: 'Name the template.' }).min(1, 'Name the template.').max(REQUEST_ID_MAX, 'Name the template.')
+
+/**
+ * POST /api/admin/mail/newsletter/templates's body: the name, and either the letter as the page holds it now
+ * (bodyHtml), which the server cleans as a save's, or one past newsletter by the id its row carries (from), never both.
+ */
+export const newsletterTemplateSaveRequestSchema = z
+  .looseObject({
+    name: templateNameSchema,
+    bodyHtml: z.string({ error: 'Add the letter as HTML.' }).optional(),
+    from: z.union([z.looseObject({ issueId: requestIdSchema }), z.looseObject({ campaignId: requestIdSchema })], { error: TEMPLATE_FROM_WORDS }).optional(),
+  })
+  .refine((body) => (body.bodyHtml === undefined) !== (body.from === undefined) && (body.from === undefined || sourcesNamed(body.from) === 1), TEMPLATE_FROM_WORDS)
+
+/** PUT /api/admin/mail/newsletter/templates's body: the template by its id and the version read, and its new name. */
+export const newsletterTemplateRenameRequestSchema = z.looseObject({
+  id: templateIdSchema,
+  version: templateVersionSchema,
+  name: templateNameSchema,
+})
+
+/** DELETE /api/admin/mail/newsletter/templates's body: the template by its id and the version read. It is taken out of the list, never deleted. */
+export const newsletterTemplateRemoveRequestSchema = z.looseObject({
+  id: templateIdSchema,
+  version: templateVersionSchema,
+})
+
+/** One saved template, without its words: its name, when it was saved, by whom by first name (null once that account is gone), and its version. */
+export const newsletterTemplateSchema = z.strictObject({
+  id: idSchema,
+  name: z.string(),
+  savedAt: storedTimestampSchema,
+  by: z.string().nullable(),
+  version: versionSchema,
+})
+
+/** GET /api/admin/mail/newsletter/templates: the shown ones, newest first, TEMPLATES_MAX at most. */
+export const newsletterTemplatesResponseSchema = z.strictObject({
+  templates: z.array(newsletterTemplateSchema).max(TEMPLATES_MAX),
+})
+
+/** The 201 of a save and the 200 of a rename: the template as it now stands. */
+export const newsletterTemplateSavedResponseSchema = z.strictObject({
+  template: newsletterTemplateSchema,
+})
+
+/** The 200 of a remove. */
+export const newsletterTemplateRemovedResponseSchema = z.strictObject({
+  removed: z.literal(true),
+})
+
+/** The 409 of a rename or a remove that changed nothing: someone wrote to the template after it was read, by name, and when. */
+export const newsletterTemplateChangedSchema = z.strictObject({
+  error: z.string(),
+  changedBy: z.string().nullable(),
+  changedAt: storedTimestampSchema,
 })
 
 /** The words for a test's letter that is not one the server can name. */
@@ -208,4 +303,12 @@ export type NewsletterIssueStartRequest = z.infer<typeof newsletterIssueStartReq
 export type LastNewsletter = z.infer<typeof lastNewsletterSchema>
 export type NewsletterIssuesResponse = z.infer<typeof newsletterIssuesResponseSchema>
 export type NewsletterTestLetterRequest = z.infer<typeof newsletterTestLetterRequestSchema>
+export type NewsletterTemplateSaveRequest = z.infer<typeof newsletterTemplateSaveRequestSchema>
+export type NewsletterTemplateRenameRequest = z.infer<typeof newsletterTemplateRenameRequestSchema>
+export type NewsletterTemplateRemoveRequest = z.infer<typeof newsletterTemplateRemoveRequestSchema>
+export type NewsletterTemplate = z.infer<typeof newsletterTemplateSchema>
+export type NewsletterTemplatesResponse = z.infer<typeof newsletterTemplatesResponseSchema>
+export type NewsletterTemplateSavedResponse = z.infer<typeof newsletterTemplateSavedResponseSchema>
+export type NewsletterTemplateRemovedResponse = z.infer<typeof newsletterTemplateRemovedResponseSchema>
+export type NewsletterTemplateChanged = z.infer<typeof newsletterTemplateChangedSchema>
 export type NewsletterTestLetterResponse = z.infer<typeof newsletterTestLetterResponseSchema>

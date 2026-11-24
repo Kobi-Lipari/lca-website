@@ -11,18 +11,27 @@
 //   letter and a send from the plain tab;
 // - since page step 6, POST /api/admin/mail/newsletter/test's second form, a
 //   test of the stored letter, its body read through the endpoint's request
-//   contract beside today's form, its 200, its 409 and its refusals.
+//   contract beside today's form, its 200, its 409 and its refusals;
+// - GET, POST, PUT and DELETE /api/admin/mail/newsletter/templates, the saved
+//   templates: the list, a save's 201, a rename's 200, a remove's 200, the
+//   409 of a write that lost to another, and the refusals.
 // Every refusal answers the shared error bodies, the 409 its own. MAIL_PAGE_ON
 // and MAIL_LISTS_ON are read through getters on the mocked switches module,
 // set before every case, with the module's other constants set beside them.
 // Every name and word here is made up.
 import { env } from 'cloudflare:test'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { contracts, errorBodySchema, fieldErrorBodySchema, newsletterIssueRefusedSchema } from '../../../domain/contracts'
+import { contracts, errorBodySchema, fieldErrorBodySchema, newsletterIssueRefusedSchema, newsletterTemplateChangedSchema } from '../../../domain/contracts'
 import { NEWSLETTER_LIST_ID } from '../../../domain/mail/lists'
 import { onRequestGet as issueGet, onRequestPut as issuePut } from '../../../functions/api/admin/mail/newsletter/issue'
 import { onRequestPost as startPost } from '../../../functions/api/admin/mail/newsletter/issue/start'
 import { onRequestGet as issuesGet } from '../../../functions/api/admin/mail/newsletter/issues'
+import {
+  onRequestDelete as templatesDelete,
+  onRequestGet as templatesGet,
+  onRequestPost as templatesPost,
+  onRequestPut as templatesPut,
+} from '../../../functions/api/admin/mail/newsletter/templates'
 import { onRequestPost as testPost } from '../../../functions/api/admin/mail/newsletter/test'
 import { seedAdmin, seedMember } from '../factories'
 import { emailOutbox, expectContract, invoke, resetHarness } from '../harness'
@@ -55,6 +64,10 @@ const save = contracts['admin/mail/newsletter/issue'].PUT
 const start = contracts['admin/mail/newsletter/issue/start'].POST
 const last = contracts['admin/mail/newsletter/issues'].GET
 const test = contracts['admin/mail/newsletter/test'].POST
+const templateList = contracts['admin/mail/newsletter/templates'].GET
+const templateSave = contracts['admin/mail/newsletter/templates'].POST
+const templateRename = contracts['admin/mail/newsletter/templates'].PUT
+const templateRemove = contracts['admin/mail/newsletter/templates'].DELETE
 
 const LETTER = '<h2>Sample heading one</h2><p>Example words for a sample letter.</p>'
 const SAVE = { id: null, version: 0, monthLabel: 'December 2026', subject: 'Sample subject one', preheader: 'Sample preview line', bodyHtml: LETTER }
@@ -252,5 +265,71 @@ describe('POST /api/admin/mail/newsletter/test, the test of the stored letter (p
       await expectContract(refused, errorBodySchema)
     }
     expect(emailOutbox).toEqual([])
+  })
+})
+
+describe('GET, POST, PUT and DELETE /api/admin/mail/newsletter/templates', () => {
+  it('takes each body its request contract accepts and answers the list, the save, the rename and the remove to their contracts', async () => {
+    const admin = await seedAdmin()
+    const empty = await expectContract(await invoke(templatesGet, { as: admin }), templateList.response)
+    expect(empty).toEqual({ templates: [] })
+
+    const body = { name: 'Sample monthly', bodyHtml: LETTER, page: 'the page' }
+    expect(templateSave.request.safeParse(body).success).toBe(true)
+    const res = await invoke(templatesPost, { as: admin, method: 'POST', body })
+    expect(res.status).toBe(201)
+    const { template } = await expectContract(res, templateSave.response)
+    expect(template).toMatchObject({ name: 'Sample monthly', version: 1 })
+    expect(templateSave.response.safeParse({ template: { ...template, bodyHtml: LETTER } }).success).toBe(false)
+    for (const bad of [{ name: 'Sample' }, { name: 'Sample', bodyHtml: LETTER, from: { issueId: 'a' } }, { name: 'Sample', from: { issueId: 'a', campaignId: 'b' } }, { name: 'Sample\nname', bodyHtml: LETTER }]) {
+      expect(templateSave.request.safeParse(bad).success, JSON.stringify(bad)).toBe(false)
+    }
+
+    const listed = await expectContract(await invoke(templatesGet, { as: admin }), templateList.response)
+    expect(listed.templates).toEqual([template])
+
+    const rename = { id: template.id, version: 1, name: 'Sample renamed' }
+    expect(templateRename.request.safeParse(rename).success).toBe(true)
+    const renamed = await expectContract(await invoke(templatesPut, { as: admin, method: 'PUT', body: rename }), templateRename.response)
+    expect(renamed.template).toMatchObject({ name: 'Sample renamed', version: 2 })
+
+    const remove = { id: template.id, version: 2 }
+    expect(templateRemove.request.safeParse(remove).success).toBe(true)
+    expect(templateRemove.request.safeParse({ id: template.id }).success).toBe(false)
+    const removed = await invoke(templatesDelete, { as: admin, method: 'DELETE', body: remove })
+    expect(removed.status).toBe(200)
+    expect(await expectContract(removed, templateRemove.response)).toEqual({ removed: true })
+  })
+
+  it('answers a write that lost to another with its 409 body, and the refusals with the shared error bodies', async () => {
+    const one = await seedMember({ fullName: 'Player One', role: 'lca_admin' })
+    const two = await seedMember({ fullName: 'Player Two', role: 'lca_admin' })
+    const { template } = await (await invoke(templatesPost, { as: one, method: 'POST', body: { name: 'Sample one', bodyHtml: LETTER } })).json<{ template: { id: string } }>()
+    await invoke(templatesPut, { as: two, method: 'PUT', body: { id: template.id, version: 1, name: 'Sample two' } })
+    const stale = await invoke(templatesDelete, { as: one, method: 'DELETE', body: { id: template.id, version: 1 } })
+    expect(stale.status).toBe(409)
+    expect(await expectContract(stale, newsletterTemplateChangedSchema)).toMatchObject({ changedBy: 'Player Two' })
+
+    const field = await invoke(templatesPost, { as: one, method: 'POST', body: { name: '', bodyHtml: LETTER } })
+    expect(field.status).toBe(400)
+    expect(Object.keys((await expectContract(field, fieldErrorBodySchema)).fields)).toEqual(['name'])
+    for (const [handler, method, body, status] of [
+      [templatesPost, 'POST', { name: 'Sample two', bodyHtml: LETTER }, 409],
+      [templatesPost, 'POST', { name: 'Sample empty', bodyHtml: '<p></p>' }, 400],
+      [templatesPost, 'POST', { name: 'Sample long', bodyHtml: `<p>${'a'.repeat(80_000)}</p>` }, 413],
+      [templatesPost, 'POST', { name: 'Sample nowhere', from: { campaignId: 'campaign-nowhere' } }, 404],
+      [templatesPut, 'PUT', { id: 'template-nowhere', version: 1, name: 'Sample' }, 404],
+    ] as const) {
+      const refused = await invoke(handler, { as: one, method, body })
+      expect(refused.status, JSON.stringify(body).slice(0, 80)).toBe(status)
+      await expectContract(refused, errorBodySchema)
+    }
+  })
+
+  it('answers 404 with the error body while MAIL_PAGE_ON is unset', async () => {
+    flags.pageOn = false
+    const res = await invoke(templatesGet, { as: await seedAdmin() })
+    expect(res.status).toBe(404)
+    expect(await expectContract(res, errorBodySchema)).toEqual({ error: 'Not found' })
   })
 })

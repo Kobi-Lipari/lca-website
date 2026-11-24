@@ -806,6 +806,8 @@ function NewsletterLetter({ issue, reach, view, onView, previewHidden, onPreview
         notice={<SavedLineNotice line={issue.line} />}
         asking={asking}
         onAnswer={answer}
+        letterBody={words.bodyHtml}
+        letterHasWords={holdsWords({ monthLabel: '', subject: '', preheader: '', bodyHtml: words.bodyHtml })}
       />
       {/* Help's walkthrough. Send on the bar is drawn quiet and sends nothing yet, so Help does not tell a person to send. */}
       {helpOpen && <HelpWalkthrough width={wide ? 'desk' : phone ? 'phone' : 'tablet'} sendReady={false} onClose={() => setHelpOpen(false)} opener={() => helpButton.current} notice={<SavedLineNotice line={issue.line} />} />}

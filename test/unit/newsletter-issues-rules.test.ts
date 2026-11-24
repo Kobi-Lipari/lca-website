@@ -21,6 +21,11 @@ import {
   PREHEADER_MAX,
   REQUEST_ID_MAX,
   SUBJECT_MAX,
+  TEMPLATE_NAME_MAX,
+  newsletterTemplateRemoveRequestSchema,
+  newsletterTemplateRenameRequestSchema,
+  newsletterTemplateSaveRequestSchema,
+  newsletterTemplatesResponseSchema,
 } from '../../domain/contracts/newsletter'
 import { defaultSubject, LETTER_MAX_BYTES, STARTER_IDS, STARTERS } from '../../domain/mail/letter'
 import * as issues from '../../functions/utils/mail/issues'
@@ -309,6 +314,62 @@ describe('the start\'s contract, at its edges', () => {
     expect(defaultSubject('')).toBe('LCA Newsletter')
     expect(defaultSubject('   ')).toBe('LCA Newsletter')
   })
+  it('takes a saved template by its id, held to REQUEST_ID_MAX, and refuses a template beside another source', () => {
+    expect(fieldsRefused(newsletterIssueStartRequestSchema, start({ templateId: 'template-sample-one' }))).toBeNull()
+    expect(fieldsRefused(newsletterIssueStartRequestSchema, start({ templateId: 'i'.repeat(REQUEST_ID_MAX + 1) }))).not.toBeNull()
+    for (const from of [{ templateId: '' }, { templateId: 3 }, { templateId: 'a', issueId: 'b' }, { templateId: 'a', campaignId: 'b' }]) {
+      expect(fieldsRefused(newsletterIssueStartRequestSchema, start(from)), JSON.stringify(from)).not.toBeNull()
+    }
+  })
+})
+
+describe('the saved templates\' contracts, at their edges', () => {
+  const NAME_WORDS = {
+    empty: 'name: Write a name for the template.',
+    long: `name: Keep the template's name to ${TEMPLATE_NAME_MAX} characters.`,
+    line: 'name: Write the template\'s name on one line, with no line break, tab or other hidden character.',
+  }
+  it('takes a name trimmed, up to TEMPLATE_NAME_MAX characters, and refuses an empty one, a longer one and one of two lines in words', () => {
+    const parsed = newsletterTemplateSaveRequestSchema.safeParse({ name: '  Sample monthly  ', bodyHtml: LETTER })
+    expect(parsed.success && parsed.data.name).toBe('Sample monthly')
+    expect(TEMPLATE_NAME_MAX).toBe(60)
+    expect(TEMPLATE_NAME_MAX).toBe(issues.TEMPLATE_NAME_MAX)
+    expect(fieldsRefused(newsletterTemplateSaveRequestSchema, { name: 'n'.repeat(TEMPLATE_NAME_MAX), bodyHtml: LETTER })).toBeNull()
+    expect(fieldsRefused(newsletterTemplateSaveRequestSchema, { name: 'n'.repeat(TEMPLATE_NAME_MAX + 1), bodyHtml: LETTER })).toEqual([NAME_WORDS.long])
+    for (const name of ['', '   ']) expect(fieldsRefused(newsletterTemplateSaveRequestSchema, { name, bodyHtml: LETTER }), JSON.stringify(name)).toEqual([NAME_WORDS.empty])
+    expect(fieldsRefused(newsletterTemplateSaveRequestSchema, { name: 'Sample\nmonthly', bodyHtml: LETTER })).toEqual([NAME_WORDS.line])
+    expect(fieldsRefused(newsletterTemplateRenameRequestSchema, { id: 'template-sample-one', version: 1, name: '' })).toEqual([NAME_WORDS.empty])
+  })
+  it('saves from the letter on the page, or from a past letter or a send by its id, and from one of them alone', () => {
+    expect(fieldsRefused(newsletterTemplateSaveRequestSchema, { name: 'Sample', bodyHtml: LETTER })).toBeNull()
+    expect(fieldsRefused(newsletterTemplateSaveRequestSchema, { name: 'Sample', from: { issueId: 'issue-sample-one' } })).toBeNull()
+    expect(fieldsRefused(newsletterTemplateSaveRequestSchema, { name: 'Sample', from: { campaignId: 'campaign-sample-one' } })).toBeNull()
+    for (const body of [{ name: 'Sample' }, { name: 'Sample', bodyHtml: LETTER, from: { issueId: 'a' } }, { name: 'Sample', from: { issueId: 'a', campaignId: 'b' } }, { name: 'Sample', from: 'monthly' }]) {
+      expect(fieldsRefused(newsletterTemplateSaveRequestSchema, body), JSON.stringify(body)).not.toBeNull()
+    }
+  })
+  it('renames and removes by id and the version read, a whole number from 1', () => {
+    expect(fieldsRefused(newsletterTemplateRenameRequestSchema, { id: 'template-sample-one', version: 2, name: 'Sample' })).toBeNull()
+    expect(fieldsRefused(newsletterTemplateRemoveRequestSchema, { id: 'template-sample-one', version: 2 })).toBeNull()
+    for (const version of [0, 1.5, '2', undefined]) {
+      expect(fieldsRefused(newsletterTemplateRemoveRequestSchema, { id: 'template-sample-one', version }), String(version)).not.toBeNull()
+    }
+    expect(fieldsRefused(newsletterTemplateRemoveRequestSchema, { id: '', version: 1 })).not.toBeNull()
+  })
+  it('lists at most TEMPLATES_MAX, strict, each with its name, when, by whom and its version', () => {
+    const one = { id: 'a'.repeat(32), name: 'Sample', savedAt: '2026-11-24 06:00:00', by: 'Player', version: 1 }
+    expect(newsletterTemplatesResponseSchema.safeParse({ templates: [one] }).success).toBe(true)
+    expect(newsletterTemplatesResponseSchema.safeParse({ templates: [{ ...one, by: null }] }).success).toBe(true)
+    expect(newsletterTemplatesResponseSchema.safeParse({ templates: [{ ...one, bodyHtml: LETTER }] }).success).toBe(false)
+    expect(newsletterTemplatesResponseSchema.safeParse({ templates: Array.from({ length: issues.TEMPLATES_MAX + 1 }, () => one) }).success).toBe(false)
+  })
+  it('says each refusal in plain words, with no dash and no old name', () => {
+    for (const words of [issues.TEMPLATE_EMPTY, issues.TEMPLATES_FULL, issues.templateNameTaken('Sample'), ...Object.values(NAME_WORDS)]) {
+      expect(words).not.toMatch(/[‒-―-]/)
+      expect(words).not.toMatch(OLD_NAME)
+      expect(words).not.toMatch(/\b(we|us|our)\b/i)
+    }
+  })
 })
 
 describe('the responses\' contracts, strict', () => {
@@ -355,6 +416,9 @@ describe('plain language over every word a person could read from the page\'s me
       [newsletterIssueSaveRequestSchema, { ...SAVE, monthLabel: 'a\nb', subject: 'a\nb', preheader: 'a\nb', version: -1 }],
       [newsletterIssueStartRequestSchema, { from: 'nobody-wrote-this', monthLabel: 'a\nb' }],
       [newsletterIssueStartRequestSchema, { from: { issueId: 'a', campaignId: 'b' }, monthLabel: 3 }],
+      [newsletterTemplateSaveRequestSchema, { name: 3 }],
+      [newsletterTemplateSaveRequestSchema, { name: 'n'.repeat(61), bodyHtml: 3 }],
+      [newsletterTemplateRenameRequestSchema, { id: '', version: 0, name: 'a\nb' }],
     ]
     for (const [schema, value] of bads) {
       const result = schema.safeParse(value)
@@ -366,7 +430,8 @@ describe('plain language over every word a person could read from the page\'s me
   it('finds the refusals\' words to read: the constants and the contracts\' messages', () => {
     expect(stringConstants.map(([name]) => name).sort()).toEqual([
       'CHANGED_SINCE_READ', 'CHANGED_WHILE_STARTING', 'LETTER_NOT_CLEAN', 'LETTER_STARTS_SMALL', 'LETTER_TOO_LONG', 'SENT_SINCE_READ',
-      'SENT_WHILE_STARTING', 'SET_ASIDE_SINCE_READ', 'SOURCE_NOT_CLEAN', 'SOURCE_STARTS_SMALL', 'SOURCE_TOO_LONG',
+      'SENT_WHILE_STARTING', 'SET_ASIDE_SINCE_READ', 'SOURCE_NOT_CLEAN', 'SOURCE_STARTS_SMALL', 'SOURCE_TOO_LONG', 'TEMPLATES_FULL',
+      'TEMPLATE_CHANGED', 'TEMPLATE_EMPTY',
     ])
     expect(contractWords.length).toBeGreaterThan(8)
   })
