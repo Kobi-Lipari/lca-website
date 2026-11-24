@@ -6,7 +6,8 @@
 // contact name shown on the page, and the email for messages. Each field is
 // a visible label tied to its control, and an error is words under the
 // field, tied to it. No explaining sentence sits beside a control: those
-// are behind Help (EditorHelp.tsx). While a save runs every box is read
+// are behind the small question mark after each part's label or legend
+// (EditorHelp.tsx, HelpMark.tsx). While a save runs every box is read
 // only (`waiting`), and the form's status says so in words; the two ticks,
 // the colour's swatch and, from WS09 step 9, the region's list, which cannot
 // be read only, are marked shut instead (aria-disabled, a press stopped),
@@ -30,8 +31,8 @@
 // "The club in your own words"): one column holds both, so the one box takes
 // up to 2,000 characters and shows its count under it; what the count means,
 // and that a search result shows the start of About and then how the club
-// meets, which fit together only while how the club meets is short, is in
-// Help.
+// meets, which fit together only while how the club meets is short, is
+// behind About's mark.
 //
 // After the basics comes the rest of the listing, in the site's order
 // (EditorRest): the name and the city with the page's address; the cost and
@@ -50,6 +51,7 @@ import { FEATURES } from '@/lib/features'
 import { REGIONS } from '@/lib/regions'
 import { EDITOR_LIMITS, addressCardName, type EditorField as FieldName, type EditorValues } from '@/areas/clubs/editor'
 import { clubPagesOn } from '@/areas/clubs/switches'
+import { EditorHelpMark } from '@/areas/clubs/components/EditorHelp'
 
 /** A box of one line: 44px tall at every width, and its border in the error's colour beside the error's words. */
 const LINE = 'min-h-11 aria-invalid:border-destructive'
@@ -67,9 +69,18 @@ export interface Differs {
   listing: string
 }
 
-/** One field of the editor: its label, its box, the line about today's page when the words differ, and its error. */
+/**
+ * One field of the editor: its label, its box, the line about today's page
+ * when the words differ, and its error. A field the editor's Help speaks of
+ * draws that part's mark (`help`) straight after its label, on the label's
+ * line and outside the label, so the field's name is its label alone; the
+ * field is the part its mark's bubble lies across. The notice of today's
+ * different words carries its own mark at the end of its first line, beside
+ * the part the field's description reads, so the description reads as it
+ * did.
+ */
 export function EditorField({
-  field, label, value, error, multiline, type, autoComplete, differs, readOnly, after, onChange,
+  field, label, value, error, multiline, type, autoComplete, differs, readOnly, after, help, onChange,
 }: {
   field: FieldName
   label: ReactNode
@@ -83,6 +94,8 @@ export function EditorField({
   readOnly?: boolean
   /** A line drawn right under the box, such as About's count. */
   after?: ReactNode
+  /** The part's mark, drawn straight after the label. */
+  help?: ReactNode
   onChange: (value: string) => void
 }) {
   const id = `editor-${field}`
@@ -98,8 +111,9 @@ export function EditorField({
     readOnly: readOnly || undefined,
   }
   return (
-    <div className="space-y-1.5">
+    <div className="relative space-y-1.5">
       <Label htmlFor={id} className="leading-snug">{label}</Label>
+      {help}
       {multiline ? (
         <textarea {...shared} className={LINES} onChange={(e) => onChange(e.target.value)} />
       ) : (
@@ -107,19 +121,22 @@ export function EditorField({
       )}
       {after}
       {differs && (
-        <div id={differsId} className="rounded-md border border-hairline px-3 py-2 text-sm text-ink">
-          <p className="font-medium">Today's page shows different words here</p>
-          <p>Saving puts this listing's words on today's page.</p>
-          <dl className="mt-1 space-y-1">
-            <div>
-              <dt className="font-medium">Today's page</dt>
-              <dd className="break-words">{differs.today}</dd>
-            </div>
-            <div>
-              <dt className="font-medium">This listing</dt>
-              <dd className="break-words">{differs.listing}</dd>
-            </div>
-          </dl>
+        <div className="relative flex items-start rounded-md border border-hairline px-3 py-2 text-sm text-ink">
+          <div id={differsId} className="min-w-0 flex-1">
+            <p className="font-medium">Today's page shows different words here</p>
+            <p>Saving puts this listing's words on today's page.</p>
+            <dl className="mt-1 space-y-1">
+              <div>
+                <dt className="font-medium">Today's page</dt>
+                <dd className="break-words">{differs.today}</dd>
+              </div>
+              <div>
+                <dt className="font-medium">This listing</dt>
+                <dd className="break-words">{differs.listing}</dd>
+              </div>
+            </dl>
+          </div>
+          <EditorHelpMark part="differs" align="end" />
         </div>
       )}
       {error && <p id={errorId} className="text-sm text-destructive">{error}</p>}
@@ -147,7 +164,7 @@ export function EditorBasics({
     <ol className="list-decimal space-y-6 pl-6 marker:font-semibold marker:text-muted-foreground">
       <li>
         <EditorField
-          field="aboutText" label="One sentence about the club" multiline
+          field="aboutText" label="One sentence about the club" multiline help={<EditorHelpMark part="about" tight />}
           value={values.aboutText} error={errors.aboutText} differs={differs.aboutText} readOnly={waiting}
           after={<p className="text-sm tabular-nums text-ink">{`${counted(values.aboutText.length)} of ${counted(EDITOR_LIMITS.aboutText)} characters`}</p>}
           onChange={(v) => onChange('aboutText', v)}
@@ -155,7 +172,7 @@ export function EditorBasics({
       </li>
       <li>
         <EditorField
-          field="howWeMeetText" label="How the club meets, in words" multiline
+          field="howWeMeetText" label="How the club meets, in words" multiline help={<EditorHelpMark part="howWeMeet" tight />}
           value={values.howWeMeetText} error={errors.howWeMeetText} differs={differs.howWeMeetText} readOnly={waiting}
           onChange={(v) => onChange('howWeMeetText', v)}
         />
@@ -165,6 +182,7 @@ export function EditorBasics({
         <EditorField
           field="contactNamePublic"
           label={pagesOn ? 'Contact name shown on the page' : 'Contact name, shown once the new club pages open'}
+          help={<EditorHelpMark part="contactName" tight />}
           value={values.contactNamePublic} error={errors.contactNamePublic} readOnly={waiting}
           onChange={(v) => onChange('contactNamePublic', v)}
         />
@@ -173,6 +191,7 @@ export function EditorBasics({
         <EditorField
           field="contactEmail" type="email" autoComplete="email"
           label={emailHidden ? 'Email for messages, never shown' : `Email for messages, shown on ${own ? 'your' : 'the'} club's page today`}
+          help={<EditorHelpMark part="email" tight />}
           value={values.contactEmail} error={errors.contactEmail} readOnly={waiting}
           onChange={(v) => onChange('contactEmail', v)}
         />
@@ -289,10 +308,20 @@ export function EditorRest({
 
   return (
     <div className="space-y-6">
-      <fieldset className={PART}>
-        <legend className={PART_NAME}>Name and address</legend>
+      {/*
+        A part's name is a legend; where the part carries a mark, the mark
+        stands in the legend after the name, and the part is named by the
+        name alone (aria-labelledby), so the mark never joins it. The logo
+        and the color each carry a mark after their own label, the color's
+        label on a line of its own above the swatch.
+      */}
+      <fieldset className={`${PART} relative`} aria-labelledby="editor-part-address">
+        <legend className={PART_NAME}><span id="editor-part-address">Name and address</span><EditorHelpMark part="nameAndAddress" /></legend>
         {showAdminFields ? (
-          <EditorField field="name" label="Club name" value={values.name} error={errors.name} readOnly={waiting} onChange={(v) => onChange('name', v)} />
+          <EditorField
+            field="name" label="Club name" value={values.name} error={errors.name} readOnly={waiting} onChange={(v) => onChange('name', v)}
+            help={<EditorHelpMark part="adminFields" tight />}
+          />
         ) : (
           <dl><KeptWords label="Club name" value={values.name} /></dl>
         )}
@@ -337,8 +366,8 @@ export function EditorRest({
         )}
       </fieldset>
 
-      <fieldset className={PART}>
-        <legend className={PART_NAME}>Cost and who is welcome</legend>
+      <fieldset className={`${PART} relative`} aria-labelledby="editor-part-cost">
+        <legend className={PART_NAME}><span id="editor-part-cost">Cost and who is welcome</span><EditorHelpMark part="cost" /></legend>
         <EditorField field="costText" label="Cost" value={values.costText} error={errors.costText} readOnly={waiting} onChange={(v) => onChange('costText', v)} />
         <EditorField
           field="welcomeText" label="Who is welcome" multiline
@@ -350,8 +379,8 @@ export function EditorRest({
         </div>
       </fieldset>
 
-      <fieldset className={PART}>
-        <legend className={PART_NAME}>Links</legend>
+      <fieldset className={`${PART} relative`} aria-labelledby="editor-part-links">
+        <legend className={PART_NAME}><span id="editor-part-links">Links</span><EditorHelpMark part="links" /></legend>
         <EditorField
           field="facebookUrl" label="Facebook page" type="url" autoComplete="url"
           value={values.facebookUrl} error={errors.facebookUrl} readOnly={waiting} onChange={(v) => onChange('facebookUrl', v)}
@@ -374,8 +403,9 @@ export function EditorRest({
 
       <fieldset className={PART}>
         <legend className={PART_NAME}>Logo and club color</legend>
-        <div className="space-y-1.5">
+        <div className="relative space-y-1.5">
           <Label htmlFor="editor-logo" className="leading-snug">Logo</Label>
+          <EditorHelpMark part="logo" tight />
           {logo
             ? <img src={logo} alt={own ? 'Your club\'s logo' : 'The club\'s logo'} className="h-24 w-auto max-w-full rounded-md border border-hairline bg-card object-contain p-2" />
             : <p className="text-sm text-ink">No logo yet</p>}
@@ -396,8 +426,11 @@ export function EditorRest({
             }}
           />
         </div>
-        <div className="space-y-1.5">
-          <Label htmlFor="editor-color" className="block leading-snug">Club color</Label>
+        <div className="relative space-y-1.5">
+          <div className="text-sm leading-snug">
+            <Label htmlFor="editor-color" className="leading-snug">Club color</Label>
+            <EditorHelpMark part="color" tight />
+          </div>
           <input
             id="editor-color" type="color" className={SWATCH} value={values.color} aria-disabled={waiting || undefined}
             aria-describedby={noColour ? 'editor-color-none' : undefined}

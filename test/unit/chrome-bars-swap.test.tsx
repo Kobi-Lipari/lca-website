@@ -13,11 +13,15 @@
 // - the tablet's drawer open as the window widens past 1024 or narrows
 //   past 768: the drawer closes, the header kept across 1024 and the app bar
 //   drawn below 768, and the page given back;
-// - the donation dialog open from the tablet header as the window narrows
-//   below 768, and from the sheet's Donate as it widens past 768: the same;
+// - the donation dialog open from the tablet header's drawer as the window
+//   narrows below 768, and from the sheet's Donate as it widens past 768:
+//   the same;
 // - across 1024 the header is the same element, so the donation dialog and
-//   an open My LCA menu stay open as its form changes, and the dialog still
-//   hands the focus back to Donate when it closes;
+//   an open My LCA menu stay open as its form changes; the dialog, opened
+//   from the About menu's Donate row at 1280, hands the focus to Menu when
+//   it closes at 1023, About having gone with the desktop form, never to the
+//   page's body, and to the About button the desktop form draws again when
+//   the window has come back to 1280 before it closes;
 // - the sheet's Donate handed on to the bar's donation dialog: once the
 //   dialog closes the page is given back and the focus is on Menu.
 //
@@ -206,11 +210,13 @@ describe('the sheet or the drawer open as the window crosses a line', () => {
 })
 
 describe('the donation dialog open as the window crosses a line', () => {
-  it('opened from the tablet header\'s Donate as the window narrows below 768: it goes with the header, and the page is given back', async () => {
+  it('opened from the tablet header\'s drawer as the window narrows below 768: it goes with the header, and the page is given back', async () => {
     const resize = stubWidth(900)
     drawNavbar()
-    press(bar().getByRole('button', { name: 'Donate' }))
+    const { sheet } = await openSheet()
+    fireEvent.click(within(sheet).getByRole('button', { name: 'Donate' }))
     await screen.findByRole('dialog', { name: DIALOG })
+    await waitFor(() => expect(screen.queryByRole('dialog', { name: 'Menu' })).toBeNull())
     expect(pageHold()).toEqual(HELD)
     resize(390)
     expect(drawn()).toBe('app-bar')
@@ -230,11 +236,13 @@ describe('the donation dialog open as the window crosses a line', () => {
     await givenBack()
   })
 
-  it('opened at 1280 stays open as the window narrows past 1024, the header the same element, and gives the focus back to Donate when it closes', async () => {
+  it('opened at 1280 from the About menu\'s Donate row stays open as the window narrows past 1024, the header the same element, and gives the focus to Menu when it closes, About having gone with the desktop form, never to the page\'s body', async () => {
     const resize = stubWidth(1280)
     drawNavbar()
     const kept = banner()
-    const donate = press(bar().getByRole('button', { name: 'Donate' }))
+    const about = bar().getByRole('button', { name: 'About' })
+    fireEvent.click(about)
+    press(within(document.getElementById(about.getAttribute('aria-controls')!)!).getByRole('button', { name: 'Donate' }))
     const dialog = await screen.findByRole('dialog', { name: DIALOG })
     resize(1023)
     // The page behind the dialog, its header among it, is hidden from screen readers while the dialog is open.
@@ -242,10 +250,32 @@ describe('the donation dialog open as the window crosses a line', () => {
     expect(header).toBe(kept)
     expect(header.getAttribute('data-form')).toBe('tablet')
     expect(screen.getByRole('dialog', { name: DIALOG })).toBe(dialog)
+    expect(about.isConnected).toBe(false)
     fireEvent.keyDown(dialog, { key: 'Escape' })
     await givenBack()
-    await waitFor(() => expect(document.activeElement).toBe(donate))
-    expect(donate.isConnected).toBe(true)
+    const menu = bar().getByRole('button', { name: 'Menu' })
+    await waitFor(() => expect(document.activeElement).toBe(menu))
+    expect(document.activeElement).not.toBe(document.body)
+  })
+
+  it('opened at 1280 from the About menu\'s Donate row and kept open as the window narrows past 1024 and widens back, gives the focus to the About button the desktop form draws again when it closes, not to the brand link', async () => {
+    const resize = stubWidth(1280)
+    drawNavbar()
+    const about = bar().getByRole('button', { name: 'About' })
+    fireEvent.click(about)
+    press(within(document.getElementById(about.getAttribute('aria-controls')!)!).getByRole('button', { name: 'Donate' }))
+    const dialog = await screen.findByRole('dialog', { name: DIALOG })
+    resize(1023)
+    resize(1280)
+    expect(screen.getByRole('banner', { hidden: true }).getAttribute('data-form')).toBe('desktop')
+    expect(screen.getByRole('dialog', { name: DIALOG })).toBe(dialog)
+    expect(about.isConnected).toBe(false)
+    fireEvent.keyDown(dialog, { key: 'Escape' })
+    await givenBack()
+    const drawnAgain = bar().getByRole('button', { name: 'About' })
+    expect(drawnAgain).not.toBe(about)
+    await waitFor(() => expect(document.activeElement).toBe(drawnAgain))
+    expect(document.activeElement).not.toBe(bar().getByRole('link', { name: 'Louisiana Chess Association, home' }))
   })
 })
 

@@ -96,7 +96,8 @@ describe('what the look adds to the page', () => {
     expect(count(html, '<script type="module"')).toBe(count(SHELL, '<script type="module"'))
     // No handler attribute and no address inside the written body, the links the club typed apart.
     expect(root).not.toMatch(/\son[a-z]+\s*=/i)
-    expect(root).not.toMatch(/\ssrc\s*=|\ssrcset\s*=|\sstyle\s*=|\sclass\s*=|\sid\s*=/i)
+    // The three sections' ids, which checkpoint W's review gave the body, are the body's own and not the look's.
+    expect(root.replace(/<section id="(?:about|when-and-where|events)">/g, '<section>')).not.toMatch(/\ssrc\s*=|\ssrcset\s*=|\sstyle\s*=|\sclass\s*=|\sid\s*=/i)
     expect(WRITTEN_PAGE_STYLE).not.toMatch(/url\(|@import|http|\/\//i)
     // The one added attribute is the mark, on the wrapper alone.
     expect(withoutStyle(root).match(new RegExp(WRITTEN_PAGE_MARK, 'g'))).toHaveLength(1)

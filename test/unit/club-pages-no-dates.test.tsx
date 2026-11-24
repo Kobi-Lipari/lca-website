@@ -26,7 +26,6 @@ import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { AuthContext } from '@/contexts/auth-context'
 import type { AuthContextValue } from '@/contexts/AuthContext'
-import { REGION_HELP_SHOWN_KEY } from '@/areas/clubs/region'
 import type { ClubPageResponse, RegionClub, WorkspaceRegionResponse } from '@domain/contracts'
 
 vi.mock('@/lib/supabase', () => ({
@@ -66,7 +65,6 @@ const ANSWER: WorkspaceRegionResponse = {
 let answer: WorkspaceRegionResponse = ANSWER
 beforeEach(() => {
   answer = ANSWER
-  window.localStorage.setItem(REGION_HELP_SHOWN_KEY, 'shown')
   vi.stubGlobal('fetch', vi.fn(async (url: string) => (url === '/api/workspace/region'
     ? new Response(JSON.stringify(answer), { status: 200 })
     : new Response(JSON.stringify({ error: 'Not found' }), { status: 404 }))))
@@ -131,7 +129,7 @@ describe('My region draws no weekly claims', () => {
       thisMonth: { ...ANSWER.thisMonth, nextCheck: { day: '2027-01-04', date: 'Mon, Jan 4, 2027', time: '8:00 AM' }, checked: 0, notChecked: 1 },
     }
     const words = await draw()
-    expect(words).toContain('Next monthly check lands Mon, Jan 4, 2027')
+    expect(words).toContain('Next monthly check due Mon, Jan 4, 2027')
     expect(words).toContain('Not checked since Jun 2026')
     expect(words).not.toMatch(/2031|Mar 2031/)
   })

@@ -23,7 +23,7 @@ import { baseClubRoute } from './helpers/clubPreviewBase'
 
 import { onRequestGet as routeGet } from '../../functions/clubs/[id]'
 import { onRequestGet as pageGet } from '../../functions/api/clubs/[id]/page'
-import { ABOUT_LABELS, ABOUT_TICKS, CONTACT_HEADING, CONTACT_WRITTEN_LINE, EVENTS_HEADING, aboutHeading, cityLine, eventDates, whenAndWhereHeading } from '../../domain/clubs/pageWords'
+import { ABOUT_LABELS, ABOUT_TICKS, CONTACT_HEADING, CONTACT_WRITTEN_LINE, EVENTS_HEADING, PAGE_SECTION_IDS, aboutHeading, cityLine, eventDates, whenAndWhereHeading } from '../../domain/clubs/pageWords'
 import type { ClubPageResponse } from '../../domain/contracts/clubPage'
 import { clubLinks, escapeHtml, WRITTEN_PAGE_MARK, WRITTEN_PAGE_STYLE } from '../../functions/utils/clubs/pageHtml'
 
@@ -51,9 +51,17 @@ const STYLE_ELEMENT = `<style>${WRITTEN_PAGE_STYLE}</style>`
 // here so the cases can hold the written body's words to it byte for byte.
 // Only the names are changed; every line that writes a byte is the base's.
 // escapeHtml and clubLinks are imported: this step leaves both as they were.
+// Checkpoint W's review since gave the three sections their ids and wrote how
+// the club meets with its single line breaks as <br>: the copy takes those two
+// changes alone (PAGE_SECTION_IDS and baseStatementOf), so it still holds the
+// look to the body it wraps.
 const hasWords = (value: string | null | undefined): value is string => typeof value === 'string' && value.trim() !== ''
 function baseParagraphsOf(words: string): string[] {
   return words.split(/\n\s*\n/).map((part) => part.trim()).filter(Boolean).map((part) => `<p>${escapeHtml(part)}</p>`)
+}
+function baseStatementOf(words: string): string[] {
+  return words.split(/\n\s*\n/).map((part) => part.trim()).filter(Boolean)
+    .map((part) => `<p>${part.split(/\r?\n/).map((line) => escapeHtml(line.trim())).join('<br>')}</p>`)
 }
 function baseAboutHtml(answer: ClubPageResponse): string[] {
   const { about } = answer
@@ -73,7 +81,7 @@ function baseAboutHtml(answer: ClubPageResponse): string[] {
     parts.push(`<h3>${ABOUT_LABELS.online}</h3>`, `<ul>${items.join('')}</ul>`)
   }
   if (parts.length === 0) return []
-  return [`<section><h2>${escapeHtml(aboutHeading(answer.club.name))}</h2>${parts.join('')}</section>`]
+  return [`<section id="${PAGE_SECTION_IDS.about}"><h2>${escapeHtml(aboutHeading(answer.club.name))}</h2>${parts.join('')}</section>`]
 }
 function basePlacesHtml(answer: ClubPageResponse): string[] {
   if (answer.places.length === 0) return []
@@ -83,7 +91,7 @@ function basePlacesHtml(answer: ClubPageResponse): string[] {
     if (hasWords(place.note)) lines.push(...baseParagraphsOf(place.note))
     return `<li>${lines.join('')}</li>`
   })
-  return [`<section><h2>${escapeHtml(whenAndWhereHeading(answer.club.name))}</h2><ul>${rows.join('')}</ul></section>`]
+  return [`<section id="${PAGE_SECTION_IDS.when_and_where}"><h2>${escapeHtml(whenAndWhereHeading(answer.club.name))}</h2><ul>${rows.join('')}</ul></section>`]
 }
 function baseEventsHtml(answer: ClubPageResponse): string[] {
   if (answer.events.length === 0) return []
@@ -91,13 +99,13 @@ function baseEventsHtml(answer: ClubPageResponse): string[] {
     const link = `<a href="/tournaments/${escapeHtml(encodeURIComponent(event.id))}">${escapeHtml(event.name)}</a>`
     return `<li><h3>${link}</h3><p>${escapeHtml(eventDates(event))}</p></li>`
   })
-  return [`<section><h2>${EVENTS_HEADING}</h2><ul>${rows.join('')}</ul></section>`]
+  return [`<section id="${PAGE_SECTION_IDS.events}"><h2>${EVENTS_HEADING}</h2><ul>${rows.join('')}</ul></section>`]
 }
 function baseBody(answer: ClubPageResponse): string {
   const { club } = answer
   const top = [`<h1>${escapeHtml(club.name)}</h1>`, `<p>${escapeHtml(cityLine(club.city, club.region))}</p>`]
-  if (hasWords(answer.statement.text)) top.push(...baseParagraphsOf(answer.statement.text))
-  // Contact's heading and line, which WS09 step 26 added after the base's sections, the one change to the copy.
+  if (hasWords(answer.statement.text)) top.push(...baseStatementOf(answer.statement.text))
+  // Contact's heading and line, which WS09 step 26 added after the base's sections, the one change to the copy besides checkpoint W's two above.
   const contact = `<section><h2>${CONTACT_HEADING}</h2><p>${CONTACT_WRITTEN_LINE}</p></section>`
   return `<main>${[...top, ...baseAboutHtml(answer), ...basePlacesHtml(answer), ...baseEventsHtml(answer), contact].join('')}</main>`
 }

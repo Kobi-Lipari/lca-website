@@ -10,7 +10,7 @@
 // another area owns is imported from that area's api.ts, never from
 // '@/lib/api', which re-exports this file.
 
-import { authHeaders, handleResponse } from '@/lib/http'
+import { ApiError, authHeaders, handleResponse } from '@/lib/http'
 
 /**
  * Opens a support ticket, optionally routed to a board seat.
@@ -324,6 +324,248 @@ export async function stopNewsletter(): Promise<ApiNewsletterStopped> {
     headers: await authHeaders(),
   })
   return handleResponse(response)
+}
+
+// The newsletter's own page (WS16 part two, page step 3): its four methods under /api/admin/mail/newsletter/issue and
+// /issues, behind requireListMailer, each answering 404 while the page is switched off on the server. Their answers are
+// the contracts in domain/contracts/newsletter.ts, written here by hand, as the newsletter's above are. The page's
+// own files under src/areas/admin/newsletter call them.
+
+/** One letter as the server keeps it (newsletterLetterSchema): its words are the cleaner's own, its times the database's. */
+export interface ApiNewsletterLetter {
+  id: string
+  /** 1 when the letter is made, one more at each write; a save sends the version it read. */
+  version: number
+  monthLabel: string
+  subject: string
+  /** The inbox preview line. */
+  preheader: string
+  bodyHtml: string
+  createdAt: string
+  updatedAt: string
+}
+
+/** What GET /api/admin/mail/newsletter/issue answers, and POST .../issue/start once it has started a letter. */
+export interface ApiNewsletterIssue {
+  issue: ApiNewsletterLetter | null
+  state: 'none' | 'draft'
+  /** Who wrote to the letter last, by name; null once their account is gone. */
+  lastSavedBy: string | null
+  lastSavedAt: string | null
+}
+
+/** What a save answers once it has saved: the new version, when, and the stored letter when the cleaner changed it, else null. */
+export interface ApiNewsletterIssueSaved {
+  id: string
+  version: number
+  savedAt: string
+  bodyHtml: string | null
+}
+
+/**
+ * What a save or a start refused with 409 answers, nothing written: why, who did it, by name, and when. 'changed' when
+ * someone wrote to the letter after it was read, 'sent' or 'set_aside' when it was sent or a new letter took its place.
+ */
+export interface ApiNewsletterIssueRefused {
+  error: string
+  reason: 'changed' | 'sent' | 'set_aside'
+  changedBy: string | null
+  changedAt: string
+}
+
+/** One of the last newsletters, without its words: a letter sent or set aside, or a send on the list with no letter. */
+export interface ApiLastNewsletter {
+  issueId: string | null
+  campaignId: string | null
+  /** '' for a send with no letter. */
+  monthLabel: string
+  subject: string
+  state: 'sending' | 'completed' | 'failed' | 'set_aside'
+  at: string
+  by: string | null
+  /** How many a send went to; null for a letter never sent. */
+  totalRecipients: number | null
+}
+
+/** The newsletter's open letter, or none, with who wrote to it last and when. */
+export async function getNewsletterIssue(): Promise<ApiNewsletterIssue> {
+  const response = await fetch('/api/admin/mail/newsletter/issue', {
+    headers: await authHeaders(),
+  })
+  return handleResponse(response)
+}
+
+/**
+ * Saves the open letter, by the id and version the page read (id null and version 0 for the first save when it read
+ * none). A 409 is answered, not thrown, so the page keeps the person's words and can name who changed the letter and
+ * when; every other refusal throws ApiError with the server's words. A 400 that names a field (parseBody's `fields`)
+ * throws that field's words, the first when it names more, since they say what to mend where the sentence above them
+ * does not. A 400 or a 413 that brings no words of the server's own, as an empty body or a page from the edge, throws
+ * with no words, so the page says it could not save rather than give a status code.
+ *
+ * As the page is left, the page sends the save with sign-in headers it read ahead and `keepalive`, so the request
+ * starts at once, before the page goes, and outlives it (the newsletter's own page, WS16 part two, page step 4).
+ */
+export async function saveNewsletterIssue(payload: {
+  id: string | null
+  version: number
+  monthLabel: string
+  subject: string
+  preheader: string
+  bodyHtml: string
+}, asPageGoes?: { headers: HeadersInit; keepalive: true }): Promise<{ saved: ApiNewsletterIssueSaved } | { refused: ApiNewsletterIssueRefused }> {
+  const response = await fetch('/api/admin/mail/newsletter/issue', {
+    method: 'PUT',
+    headers: asPageGoes ? asPageGoes.headers : await authHeaders(),
+    body: JSON.stringify(payload),
+    ...(asPageGoes ? { keepalive: true } : {}),
+  })
+  if (response.status === 409) {
+    const refused = (await response.clone().json().catch(() => null)) as ApiNewsletterIssueRefused | null
+    if (refused && typeof refused.reason === 'string') return { refused }
+  }
+  if (response.status === 400 || response.status === 413) {
+    const refused = (await response.clone().json().catch(() => null)) as { error?: unknown; fields?: unknown } | null
+    const words = response.status === 400 && refused && typeof refused.fields === 'object' && refused.fields !== null ? Object.values(refused.fields)[0] : undefined
+    if (typeof words === 'string' && words !== '') throw new ApiError(words, 400)
+    if (typeof refused?.error !== 'string' || refused.error === '') throw new ApiError('', response.status)
+  }
+  return { saved: await handleResponse<ApiNewsletterIssueSaved>(response) }
+}
+
+/**
+ * Starts a new letter for a month, from a blank letter or one of LCA's starters by its id (STARTER_IDS in
+ * domain/mail/letter.ts), a past letter, a past send or a saved template. The open letter is set aside, its words kept, when it holds any.
+ */
+export async function startNewsletterIssue(payload: {
+  from: 'blank' | 'monthly' | 'results-and-thanks' | 'short-notice' | { issueId: string } | { campaignId: string } | { templateId: string }
+  monthLabel: string
+}): Promise<{ started: ApiNewsletterIssue } | { refused: ApiNewsletterIssueRefused }> {
+  const response = await fetch('/api/admin/mail/newsletter/issue/start', {
+    method: 'POST',
+    headers: await authHeaders(),
+    body: JSON.stringify(payload),
+  })
+  if (response.status === 409) {
+    const refused = (await response.clone().json().catch(() => null)) as ApiNewsletterIssueRefused | null
+    if (refused && typeof refused.reason === 'string') return { refused }
+  }
+  return { started: await handleResponse<ApiNewsletterIssue>(response) }
+}
+
+/** The last newsletters, at most 20, newest first, without their words. */
+export async function getLastNewsletters(): Promise<{ issues: ApiLastNewsletter[] }> {
+  const response = await fetch('/api/admin/mail/newsletter/issues', {
+    headers: await authHeaders(),
+  })
+  return handleResponse(response)
+}
+
+/** One saved template, without its words (newsletterTemplateSchema): its name, when it was saved, and by whom by first name. */
+export interface ApiNewsletterTemplate {
+  id: string
+  name: string
+  savedAt: string
+  /** The first name of who saved it; null once that account is gone. */
+  by: string | null
+  version: number
+}
+
+/** A rename or a remove that changed nothing (newsletterTemplateChangedSchema): someone wrote to the template after the list was read. */
+export interface ApiNewsletterTemplateChanged {
+  error: string
+  changedBy: string | null
+  changedAt: string
+}
+
+/** The newsletter's saved templates, newest first, shared by everyone who may open the page. */
+export async function getNewsletterTemplates(): Promise<{ templates: ApiNewsletterTemplate[] }> {
+  const response = await fetch('/api/admin/mail/newsletter/templates', {
+    headers: await authHeaders(),
+  })
+  return handleResponse(response)
+}
+
+/**
+ * Saves a copy of words as a template under a name: the letter on the page by its words, or a past newsletter by its
+ * letter's or its send's id. The letter on the page is not changed. Every refusal throws ApiError with the server's
+ * words: a 400 in the words of the field it names, as a save of the letter does, or with no words when the server gave
+ * none.
+ */
+export async function saveNewsletterTemplate(payload: { name: string; bodyHtml: string } | { name: string; from: { issueId: string } | { campaignId: string } }): Promise<ApiNewsletterTemplate> {
+  const response = await fetch('/api/admin/mail/newsletter/templates', {
+    method: 'POST',
+    headers: await authHeaders(),
+    body: JSON.stringify(payload),
+  })
+  if (response.status === 400 || response.status === 413) {
+    const refused = (await response.clone().json().catch(() => null)) as { error?: unknown; fields?: unknown } | null
+    const words = response.status === 400 && refused && typeof refused.fields === 'object' && refused.fields !== null ? Object.values(refused.fields)[0] : undefined
+    if (typeof words === 'string' && words !== '') throw new ApiError(words, 400)
+    if (typeof refused?.error !== 'string' || refused.error === '') throw new ApiError('', response.status)
+  }
+  return (await handleResponse<{ template: ApiNewsletterTemplate }>(response)).template
+}
+
+/**
+ * Renames a saved template, by the version read. A 409 that lost to someone's write since then is answered, not
+ * thrown; a 409 for a name taken throws its words, and a 400 the words of the field it names.
+ */
+export async function renameNewsletterTemplate(payload: { id: string; version: number; name: string }): Promise<{ saved: ApiNewsletterTemplate } | { changed: ApiNewsletterTemplateChanged }> {
+  const response = await fetch('/api/admin/mail/newsletter/templates', {
+    method: 'PUT',
+    headers: await authHeaders(),
+    body: JSON.stringify(payload),
+  })
+  if (response.status === 409) {
+    const changed = (await response.clone().json().catch(() => null)) as ApiNewsletterTemplateChanged | null
+    if (changed && typeof changed.changedAt === 'string') return { changed }
+  }
+  if (response.status === 400 || response.status === 413) {
+    const refused = (await response.clone().json().catch(() => null)) as { error?: unknown; fields?: unknown } | null
+    const words = response.status === 400 && refused && typeof refused.fields === 'object' && refused.fields !== null ? Object.values(refused.fields)[0] : undefined
+    if (typeof words === 'string' && words !== '') throw new ApiError(words, 400)
+    if (typeof refused?.error !== 'string' || refused.error === '') throw new ApiError('', response.status)
+  }
+  return { saved: (await handleResponse<{ template: ApiNewsletterTemplate }>(response)).template }
+}
+
+/**
+ * Takes a saved template out of the list for everyone, by the version read; its words are kept on the server. A 409
+ * that lost to someone's write since then is answered, not thrown.
+ */
+export async function removeNewsletterTemplate(payload: { id: string; version: number }): Promise<{ removed: true } | { changed: ApiNewsletterTemplateChanged }> {
+  const response = await fetch('/api/admin/mail/newsletter/templates', {
+    method: 'DELETE',
+    headers: await authHeaders(),
+    body: JSON.stringify(payload),
+  })
+  if (response.status === 409) {
+    const changed = (await response.clone().json().catch(() => null)) as ApiNewsletterTemplateChanged | null
+    if (changed && typeof changed.changedAt === 'string') return { changed }
+  }
+  return handleResponse(response)
+}
+
+/**
+ * "Send a test to me" (page step 6): a test of the stored letter, by the id and version the page holds, to the
+ * signed-in account's own address, in the navy look with the real footer, through POST /api/admin/mail/newsletter/test's
+ * second form, which the server takes only while the page is switched on there. It answers the address the test went
+ * to. A 409 is answered, not thrown, as a save's is, with who changed, sent or replaced the letter and when; every
+ * other refusal throws ApiError with the server's own words, or with none for an answer that brings none, as a page
+ * from the edge, so the page says the test could not be sent rather than give a status code.
+ */
+export async function sendNewsletterIssueTest(payload: { issueId: string; version: number }): Promise<{ sent: { to: string } } | { refused: ApiNewsletterIssueRefused }> {
+  const response = await fetch('/api/admin/mail/newsletter/test', {
+    method: 'POST',
+    headers: await authHeaders(),
+    body: JSON.stringify(payload),
+  })
+  const answer = (await response.clone().json().catch(() => null)) as { error?: unknown; reason?: unknown; sent?: unknown; to?: unknown } | null
+  if (response.status === 409 && answer && typeof answer.reason === 'string') return { refused: answer as unknown as ApiNewsletterIssueRefused }
+  // A 200 is a test the mail service took; the address is said when the answer names it.
+  if (response.ok && answer?.sent === true) return { sent: { to: typeof answer.to === 'string' ? answer.to : '' } }
+  throw new ApiError(!response.ok && typeof answer?.error === 'string' ? answer.error : '', response.status)
 }
 
 // The media manager (WS16 step 6): whether the signed-in member sends the newsletter as the media manager, which only

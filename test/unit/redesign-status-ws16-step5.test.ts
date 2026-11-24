@@ -198,7 +198,9 @@ describe('REDESIGN_STATUS.md, WS16 step 5: the block', () => {
     expect([...at].sort((a, b) => a - b)).toEqual(at)
     // Nothing between the two blocks but step 4's own, and nothing between this block and the decisions but itself and what a
     // later step adds there: its own block, "### WS16 step 6: ..." and on, or a checkpoint's section.
-    const later = (l: string) => /^### WS16 step (?:[6-9]|1[0-2]): \S/.test(l) || /^### Checkpoint [MNO]: WS16 (?:steps \d+ to \d+|step \d+)$/.test(l)
+    // The page half of WS16 part two adds its part of the record there too, under its one heading (its page step 3).
+    const later = (l: string) =>
+      /^### WS16 step (?:[6-9]|1[0-2]): \S/.test(l) || /^### Checkpoint [MNO]: WS16 (?:steps \d+ to \d+|step \d+)$/.test(l) || l === '### WS16 part two: the newsletter\'s own page'
     expect(ws16.slice(at[0], at[1]).split('\n').filter((l) => l.startsWith('### '))).toEqual([STEP_FOUR])
     expect(ws16.slice(at[1], at[2]).split('\n').filter((l) => l.startsWith('### ') && !later(l))).toEqual([STEP])
     expect(later('### WS16 step 6: a later block')).toBe(true)

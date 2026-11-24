@@ -162,8 +162,8 @@ function ClubInRegion({ id }: { id: string }) {
   const setTab = (next: ClubTab) => setParams(next === 'listing' ? {} : { tab: next }, { replace: true })
   // Once the editor has been drawn with Listing showing it stays drawn, hidden while another tab
   // shows, so a change of tab never throws away what was typed. Until then it is drawn only while
-  // Listing shows, so it is never first drawn hidden, where its Help would open by itself unseen:
-  // not before Listing is first opened, and not when the person left Listing before its file came.
+  // Listing shows, so it is never first drawn hidden: not before Listing is first opened, and not
+  // when the person left Listing before its file came.
   const [editorDrawn, setEditorDrawn] = useState(false)
   const keepEditor = useCallback(() => setEditorDrawn(true), [])
 

@@ -153,7 +153,8 @@ describe('REDESIGN_STATUS.md, WS09 step 16: the block', () => {
       expect(tail).toBe('checkpoints S and T merged into `main` on Sun, Nov 15, 2026, and checkpoint U, steps 10 to 14 with the two small steps of K\'s decision 7, merged on the same day as pull request 132, and all three are live; checkpoint V is under way on `redesign/ws09-clubs-v`, its first step mending, behind `clubKeepers`, what checkpoint U\'s pictures showed, and WS09 step 16 giving the regional representative\'s grant and the four columns of the approval wait, behind `regionEvents`; WS09 step 15 follows as a pull request of its own; steps 1 to 14 and 16, K\'s answers to checkpoint S\'s review and K\'s second answer, the Clubs page on a narrow phone, are built.')
     }
     expect(tail).toMatch(/\bbuilt\.$/)
-    expect(prLine.match(/pull request \d+/g)).toEqual(['pull request 130', 'pull request 131', 'pull request 132'])
+    // Read only while this block is the latest: the switch-on's block names checkpoint V's own pull request.
+    if (latest) expect(prLine.match(/pull request \d+/g)).toEqual(['pull request 130', 'pull request 131', 'pull request 132'])
   })
 
   it('opens by saying where the step sits, that step 15 is still to come, K\'s answer and what it builds', () => {
@@ -335,8 +336,9 @@ describe('REDESIGN_STATUS.md, WS09 step 16: the parts against the files', () => 
     ]) {
       expect(ships, piece).toContain(piece)
     }
-    expect(read('functions/utils/clubs/pages.ts')).toContain('export const REGION_EVENTS_ON = false')
-    expect(read('src/lib/features.ts')).toContain('  regionEvents: false,')
+    // regionEvents and REGION_EVENTS_ON went on together in the block "WS09 switch-on: regionEvents and REGION_EVENTS_ON", so this step holds only that each is declared.
+    expect(read('functions/utils/clubs/pages.ts')).toMatch(/^export const REGION_EVENTS_ON = (?:false|true)$/m)
+    expect(read('src/lib/features.ts')).toMatch(/^ {2}regionEvents: (?:false|true),$/m)
     expect(bullet(block, '- **Owed before regionEvents goes on.**')).toContain('Nothing new from this step.')
     expect(bullet(block, '- **Step 15.**')).toContain('Still to come')
   })
@@ -347,8 +349,8 @@ describe('REDESIGN_STATUS.md, WS09 step 16: the parts against the files', () => 
     expect(pins).toContain('Not moved: `test/unit/routes.test.ts`, 103 handler files; `test/unit/contracts-pending.ts`, `PENDING_COUNT` 107')
     expect(read('test/unit/redesign-status-ws08-step2-claims.test.ts')).toContain('    expect([...keys.slice(0, 4)].sort()).toEqual(keys.slice(0, 4))\n')
     expect(read('test/unit/automation-runs-lagging-run.test.ts')).toContain('.toEqual([RUN_MARKS_UNCLEARED_LOG, APPROVALS_UNCLEARED_LOG])')
-    // Changed at WS09 step 25, whose 0071 is the last file now; this step's 0070 stands in the migrations folder.
-    expect(read('test/unit/drizzle-baseline.test.ts')).toMatch(/expect\(sql\.at\(-1\)\)\.toBe\('00(?:70_club_event_approval|71_rate_limits)\.sql'\)/)
+    // Changed at WS09 step 25, whose 0071 was the last file then, as the regions' 0072 is now; this step's 0070 stands in the migrations folder.
+    expect(read('test/unit/drizzle-baseline.test.ts')).toContain("expect(sql.at(-1)).toBe('0072_regions_by_seat.sql')")
   })
 
   it('gives the lint as unchanged and the build\'s figures', () => {

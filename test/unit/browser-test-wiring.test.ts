@@ -75,11 +75,12 @@ describe('the packages', () => {
 })
 
 describe('the scripts', () => {
-  it('test:a11y builds and seeds first, then runs only the two accessibility projects', () => {
+  it('test:a11y builds and seeds first, then runs only the three accessibility projects', () => {
     const script = pkg.scripts['test:a11y']
     expect(script).toMatch(/^node .*test\/a11y\/global-setup\.ts && playwright test /)
     expect(script).toContain('--project=a11y-on')
     expect(script).toContain('--project=a11y-off')
+    expect(script).toContain('--project=a11y-clubs')
     expect(script).not.toMatch(/e2e/)
     expect(existsSync(join(ROOT, 'test/a11y/global-setup.ts'))).toBe(true)
   })
@@ -193,7 +194,7 @@ describe('ignored and committed files', () => {
   // Each server has its own local database folder inside .wrangler/a11y (on
   // and off), since two servers on one SQLite file locked each other out
   // ("database is locked: SQLITE_BUSY"); both folders' files are ignored.
-  it.each(['dist-a11y-on/index.html', 'dist-a11y-off/assets/x.js', '.wrangler/a11y/on/v3/d1/x.sqlite', '.wrangler/a11y/off/v3/d1/x.sqlite', 'test-results/x/trace.zip', 'playwright-report/index.html'])(
+  it.each(['dist-a11y-on/index.html', 'dist-a11y-off/assets/x.js', 'dist-a11y-clubs/assets/x.js', '.wrangler/a11y/on/v3/d1/x.sqlite', '.wrangler/a11y/off/v3/d1/x.sqlite', 'test-results/x/trace.zip', 'playwright-report/index.html'])(
     'ignores %s',
     (path) => {
       expect(ignored(path)).toBe(true)

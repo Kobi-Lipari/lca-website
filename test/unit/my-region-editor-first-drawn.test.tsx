@@ -3,11 +3,9 @@
 // A club's page in My region: the Listing tab's editor is never first drawn
 // hidden (WS09 checkpoint U's review, E1). The editor's file is fetched only
 // when Listing draws it, and the person may leave Listing before it has
-// come. Its Help opens by itself the first time it is drawn, so an editor
-// first drawn in the hidden wrapper would open Help unseen and spend the one
-// opening. So until the editor has been drawn with Listing showing it is
-// drawn only while Listing shows; from then it is kept, hidden while another
-// tab shows.
+// come. Until the editor has been drawn with Listing showing it is drawn
+// only while Listing shows; from then it is kept, hidden while another tab
+// shows, so a change of tab keeps what was typed.
 //
 // The editor here is a stand-in whose file the case lets load when it
 // chooses; the page, its tabs and its calls are the real ones, with fetch

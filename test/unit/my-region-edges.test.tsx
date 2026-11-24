@@ -5,7 +5,7 @@
 // that works, Confirm all while a card is already being marked, a run where
 // every club fails, a run cut off by leaving the page, a sign-in that has
 // ended, an answer that never comes, the page's words for a seat holder and
-// for an LCA admin with Help open, and the words the page draws with the
+// for an LCA admin in Help's marks, and the words the page draws with the
 // clock at midnight and on a change of clocks in America/Chicago, where it
 // still says only what the server said. The page is drawn alone through the
 // real client with fetch stubbed, so each request is read as it leaves the
@@ -15,7 +15,6 @@ import { MemoryRouter } from 'react-router-dom'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { AuthContext } from '@/contexts/auth-context'
 import type { AuthContextValue } from '@/contexts/AuthContext'
-import { REGION_HELP_SHOWN_KEY } from '@/areas/clubs/region'
 import { confirmClubStillAccurate, getWorkspaceRegion } from '@/areas/clubs/api'
 import type { RegionClub, WorkspaceRegionResponse } from '@domain/contracts'
 
@@ -54,7 +53,6 @@ let answers: Record<string, () => Response | Promise<Response>> = {}
 
 beforeEach(() => {
   window.localStorage.clear()
-  window.localStorage.setItem(REGION_HELP_SHOWN_KEY, 'shown')
   asked = []
   answers = {
     'GET /api/workspace/region': () => json(ANSWER),
@@ -251,15 +249,21 @@ describe('My region: a load that does not come', () => {
   })
 })
 
+/** The words behind the Clubs heading's mark, which say whose clubs the page shows. */
+const clubsHelp = () => {
+  const mark = screen.getByRole('button', { name: 'Help: Clubs' })
+  return document.getElementById(mark.getAttribute('aria-controls')!)?.textContent ?? ''
+}
+
 describe('My region: the same words for the person signed in', () => {
   it('names the seat for a seat holder and every region for an LCA admin, in Help, never "your region" for the admin', async () => {
     window.localStorage.clear()
     await page('member')
-    expect(document.getElementById('my-region-help')?.textContent).toContain('the clubs your seat keeps')
+    expect(clubsHelp()).toContain('the clubs your seat keeps')
     cleanup()
     window.localStorage.clear()
     await page('lca_admin')
-    const help = document.getElementById('my-region-help')?.textContent ?? ''
+    const help = clubsHelp()
     expect(help).toContain('every region\'s clubs')
     expect(document.body.textContent).not.toMatch(/your (?:region|seat)/i)
   })
@@ -286,7 +290,7 @@ describe('My region: the same words for the person signed in', () => {
     for (const at of ['2026-12-07T06:00:00Z', '2026-11-01T06:30:00Z']) {
       vi.setSystemTime(new Date(at))
       await page()
-      expect(barText()).toContain('Next monthly check lands Mon, Dec 7, 2026')
+      expect(barText()).toContain('Next monthly check due Mon, Dec 7, 2026')
       expect(stampOf('Example Chess Club')).toBe('Checked Nov 2026')
       expect(stampOf('Example Rooks Club')).toBe('Not checked yet')
       cleanup()

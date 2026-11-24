@@ -2,7 +2,7 @@
 //
 // The regional representatives' club events on the pages (WS09 step 19),
 // with regionEvents and clubKeepers turned on through a getter on the mocked
-// FEATURES, and off again for the cases that hold what ships. Every page
+// FEATURES, and off again for the cases that hold the switch off. Every page
 // draws only what the server's answers say: the club's answer's
 // `eventRights` (who may add an event, run the club's events, approve, and
 // whether a payout request can go), the manage answer's `approval` (who may
@@ -17,8 +17,7 @@ import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { AuthContext } from '@/contexts/auth-context'
 import type { AuthContextValue } from '@/contexts/AuthContext'
-import { HELP_SHOWN_KEY } from '@/areas/clubs/editor'
-import { REGION_HELP_SHOWN_KEY, SITE_UNREACHED } from '@/areas/clubs/region'
+import { SITE_UNREACHED } from '@/areas/clubs/region'
 import { WAIT_HELP_SHOWN_KEY } from '@/areas/clubs/approval'
 import { WAITING_FOR_APPROVAL } from '@domain/events/approval'
 import { APPROVAL_NOTE_EMPTY, APPROVAL_NOTE_TOO_LONG } from '@domain/contracts/events'
@@ -92,7 +91,7 @@ beforeEach(() => {
   flags.clubKeepers = true
   flags.regionEvents = true
   window.localStorage.clear()
-  for (const key of [HELP_SHOWN_KEY, REGION_HELP_SHOWN_KEY, WAIT_HELP_SHOWN_KEY]) window.localStorage.setItem(key, 'shown')
+  window.localStorage.setItem(WAIT_HELP_SHOWN_KEY, 'shown')
   asked = []
   answers = {
     [`GET ${CLUB_URL}/news`]: () => json({ news: [] }),
@@ -404,14 +403,15 @@ describe('the manage page shows the wait and the right buttons per person', () =
     expect(callsTo('POST /api/admin/tournaments/t1/approval').map((c) => c.body)).toEqual([{ action: 'submit' }])
     expect((panel() as HTMLElement).textContent).toContain('Sent for review on Sat, Nov 14, 2026.')
     expect(within(panel() as HTMLElement).queryByRole('button', { name: 'Submit for LCA review' })).toBeNull()
-    expect(document.activeElement).toBe(statusOf(panel() as HTMLElement))
+    // The focus moves in an effect after the words are drawn, so it is waited for.
+    await waitFor(() => expect(document.activeElement).toBe(statusOf(panel() as HTMLElement)))
     cleanup()
     answers['POST /api/admin/tournaments/t1/approval'] = () => json({ ...WAIT.approved, approved_by: 'm-admin', email: 'Approved and listed. The person who drafted it was emailed.' })
     await openManage(ADMIN, manageAnswer(WAIT.review, { maySubmit: true, mayDecide: true }), 'registration')
     fireEvent.click(within(panel() as HTMLElement).getByRole('button', { name: 'Approve and publish' }))
     await waitFor(() => expect(statusOf(panel() as HTMLElement).textContent).toBe('Approved and listed. The person who drafted it was emailed.'))
     expect((panel() as HTMLElement).textContent).toContain('Approved by LCA on Mon, Nov 16, 2026.')
-    expect(document.activeElement).toBe(statusOf(panel() as HTMLElement))
+    await waitFor(() => expect(document.activeElement).toBe(statusOf(panel() as HTMLElement)))
     expect(screen.getByRole('button', { name: 'Visible to public' })).toBeTruthy()
   })
 
@@ -644,7 +644,7 @@ describe('My region\'s card and This month bar, with regionEvents on', () => {
   })
 })
 
-describe('with regionEvents off, as this step ships', () => {
+describe('with regionEvents off, as WS09 step 19 shipped it', () => {
   beforeEach(() => { flags.regionEvents = false })
 
   it('with regionEvents off none of it shows, whatever the answers carry', async () => {

@@ -5,9 +5,9 @@
 // length with no box of its own to scroll, so the box is neither a stop for
 // Tab nor a named region there, and a field a save refuses is brought into
 // view clear of the site's header; from that width up the box is as it was.
-// On a phone Help opened above the window, or with its top under the site's
-// header, comes into view by its top, and every control keeps clear of the
-// header when the focus moves to it, a box of words only when Tab moves it.
+// On a phone a bubble of Help that a press opens comes into view by its
+// nearest edge, and every control keeps clear of the header when the focus
+// moves to it, a box of words only when Tab moves it.
 // A box that scrolls at every width, as every other page's, draws as before.
 // The words say "your" only to the club's own rep: a region's representative
 // and an LCA admin read "the club's" in the previews, the checklist, the card
@@ -39,7 +39,6 @@ vi.mock('@/lib/supabase', () => ({
 const { AdminClubPage } = await import('@/pages/AdminClubPage')
 const { YourClubPage } = await import('@/pages/YourClubPage')
 const { ScrollPanel } = await import('@/components/ScrollPanel')
-const { HELP_SHOWN_KEY } = await import('@/areas/clubs/editor')
 
 const ID = 'example-chess-club'
 const SLUG = 'example-chess'
@@ -78,7 +77,6 @@ function turnTo(width: 'phone' | 'computer') {
 beforeEach(() => {
   Object.assign(flags, { clubKeepers: true, clubEmailHidden: true, newClubs: false, newLook: false })
   window.localStorage.clear()
-  window.localStorage.setItem(HELP_SHOWN_KEY, 'shown')
   screenNow.changed.clear()
   asked = []
   vi.stubGlobal('fetch', vi.fn(async (url: string, init?: RequestInit) => {
@@ -223,70 +221,48 @@ describe('the editor on a phone runs the page\'s length, and from the width of t
     expect(scrolled).not.toHaveBeenCalled()
   })
 
-  it('still moves the focus into Help without the page\'s jump on a phone, where Help sits in the page', async () => {
-    window.localStorage.clear()
+  it('opens no bubble by itself on a phone and moves no focus, and a press opens a mark\'s bubble in the page, under its part', async () => {
     windowIs('phone')
     const focus = vi.spyOn(HTMLElement.prototype, 'focus')
     await openAdminClub('admin')
-    const help = document.getElementById('club-editor-help') as HTMLElement
-    expect(document.activeElement).toBe(help)
-    expect(focus.mock.contexts.map((el, i) => [el, focus.mock.calls[i][0]] as const).filter(([el]) => el === help)).toEqual([[help, { preventScroll: true }]])
-    expect(classes(help)).toContain('scroll-mt-24')
+    expect(focus.mock.contexts.filter((el) => (el as HTMLElement).closest('[data-slot="scroll-panel"]'))).toEqual([])
+    for (const bubble of document.querySelectorAll<HTMLElement>('[data-slot="help-mark-bubble"]')) expect(bubble.hidden).toBe(true)
+    const about = screen.getByRole('button', { name: 'Help: One sentence about the club' })
+    fireEvent.click(about)
+    const bubble = document.getElementById(about.getAttribute('aria-controls')!) as HTMLElement
+    expect(bubble.hidden).toBe(false)
+    // Laid out in the page, inside the box's part: no fixed place and no move to the end of the page.
+    expect(classes(bubble)).toEqual(expect.arrayContaining(['absolute', 'w-[min(24rem,100%)]']))
+    expect(classes(bubble)).not.toContain('fixed')
+    expect(box().contains(bubble)).toBe(true)
   })
 
-  it('brings Help opened above the window or under the site\'s header on a phone into view by its top, where its heading is, by its nearest edge below the window, and from the width of the previews only from above the window', async () => {
+  it('brings a bubble a press opens into view by its nearest edge, on a phone and from the width of the previews, and a resting mouse never scrolls anything', async () => {
     const scrolled = vi.fn()
     Object.defineProperty(HTMLElement.prototype, 'scrollIntoView', { value: scrolled, configurable: true, writable: true })
-    // Help on a phone is taller than the window, here 1,900 pixels against the window's 768.
-    let helpTop = -1654
-    vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(function (this: HTMLElement) {
-      const top = this.id === 'club-editor-help' ? helpTop : 300
-      const height = this.id === 'club-editor-help' ? 1900 : 44
-      return { top, bottom: top + height, left: 0, right: 300, width: 300, height, x: 0, y: top, toJSON: () => ({}) } as DOMRect
-    })
-    windowIs('phone')
-    await openYourClub('rep')
-    const button = screen.getByRole('button', { name: 'Help' })
-    const help = document.getElementById('club-editor-help') as HTMLElement
-    const open = async () => {
+    for (const width of ['phone', 'computer'] as const) {
+      windowIs(width)
+      await openYourClub('rep')
       scrolled.mockClear()
-      await act(async () => { fireEvent.click(button) })
-      expect(document.activeElement).toBe(help)
-    }
-    // Pressed at the page's foot, as a screen reader can press it without scrolling the page: Help's top is far above the window.
-    await open()
-    expect(scrolled.mock.contexts).toEqual([help])
-    expect(scrolled.mock.calls).toEqual([[{ block: 'start' }]])
-    await act(async () => { fireEvent.click(button) })
-    // Below the window's foot: its nearest edge, as before.
-    helpTop = window.innerHeight + 10
-    await open()
-    expect(scrolled.mock.calls).toEqual([[{ block: 'nearest' }]])
-    await act(async () => { fireEvent.click(button) })
-    // Its top inside the window but under the header, so its heading would sit under it: by its top too.
-    helpTop = 40
-    await open()
-    expect(scrolled.mock.contexts).toEqual([help])
-    expect(scrolled.mock.calls).toEqual([[{ block: 'start' }]])
-    await act(async () => { fireEvent.click(button) })
-    // In view: it stays where it is.
-    helpTop = 200
-    await open()
-    expect(scrolled).not.toHaveBeenCalled()
-    cleanup()
-
-    // From the width of the previews up, as before: a top inside the window stays, one above it comes in by its top.
-    windowIs('computer')
-    await openYourClub('rep')
-    const wide = screen.getByRole('button', { name: 'Help' })
-    const wideHelp = document.getElementById('club-editor-help') as HTMLElement
-    for (const [at, calls] of [[40, []], [0, []], [-20, [[{ block: 'start' }]]]] as const) {
-      helpTop = at
-      scrolled.mockClear()
-      await act(async () => { fireEvent.click(wide) })
-      expect(document.activeElement, String(at)).toBe(wideHelp)
-      expect(scrolled.mock.calls, String(at)).toEqual(calls)
-      await act(async () => { fireEvent.click(wide) })
+      const links = screen.getByRole('button', { name: 'Help: Links' })
+      await act(async () => { fireEvent.click(links) })
+      const bubble = document.getElementById(links.getAttribute('aria-controls')!) as HTMLElement
+      expect(scrolled.mock.contexts, width).toEqual([bubble])
+      expect(scrolled.mock.calls, width).toEqual([[{ block: 'nearest', inline: 'nearest' }]])
+      await act(async () => { fireEvent.click(links) })
+      expect(bubble.hidden, width).toBe(true)
+      // A mouse that rests on a mark opens its bubble after a short wait, and nothing scrolls.
+      vi.useFakeTimers()
+      try {
+        scrolled.mockClear()
+        fireEvent.pointerEnter(links, { pointerType: 'mouse' })
+        await act(async () => { vi.advanceTimersByTime(200) })
+        expect(bubble.hidden, width).toBe(false)
+        expect(scrolled, width).not.toHaveBeenCalled()
+      } finally {
+        vi.useRealTimers()
+      }
+      cleanup()
     }
   })
 
@@ -399,9 +375,9 @@ describe('the editor on a phone runs the page\'s length, and from the width of t
 function editorWords(): string {
   const form = screen.getByRole('button', { name: 'Save and publish' }).closest('form') as HTMLFormElement
   const column = screen.getByRole('complementary', { name: 'Preview' })
-  const help = document.getElementById('club-editor-help') as HTMLElement
+  // The form's words take in the bubbles of the marks inside it; Preview's bubble is in the column's.
   const named = [...document.querySelectorAll('[alt], [aria-label]')].map((el) => el.getAttribute('alt') ?? el.getAttribute('aria-label'))
-  return [form.textContent, column.textContent, help.textContent, ...named].join('\n')
+  return [form.textContent, column.textContent, ...named].join('\n')
 }
 /** "your" before the club, its page, its card or its logo, which only the club's own rep may read. */
 const YOURS = /\byour (?:club|page|card|logo)/i

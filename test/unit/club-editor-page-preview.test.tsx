@@ -45,7 +45,6 @@ const PLACE = { id: 1, name: 'Example Library', street: '1 Example Street', note
 const fetched: string[] = []
 beforeEach(() => {
   fetched.length = 0
-  window.localStorage.setItem('lca-club-editor-help', 'shown')
   vi.stubGlobal('fetch', vi.fn(async (url: string) => {
     fetched.push(url)
     return new Response('{}', { status: 404 })

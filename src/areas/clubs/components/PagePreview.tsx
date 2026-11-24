@@ -12,7 +12,7 @@
 // they are, and the map. Its heading says "your club's page" only to the
 // club's own rep.
 import { LCA } from '@/lib/brand'
-import { drawnSections } from '@/areas/clubs/clubPage'
+import { drawnSections, webLink } from '@/areas/clubs/clubPage'
 import type { LatLng } from '@/areas/clubs/mapLocation'
 import { ClubAbout } from '@/areas/clubs/components/ClubAbout'
 import { ClubCover } from '@/areas/clubs/components/ClubCover'
@@ -81,7 +81,8 @@ export function PagePreview({
   }
   const statement = words(values.howWeMeetText)
   const sections = drawnSections(clubPageSections({
-    aboutText: about.text, costText: about.cost, welcomeText: about.welcome, links: [about.facebook, about.website, about.other],
+    // Only the links the page would draw count, so a link typed without its http:// names no About with nothing in it.
+    aboutText: about.text, costText: about.cost, welcomeText: about.welcome, links: [about.facebook, about.website, about.other].map(webLink),
     weekendPlay: about.weekend_play, scholasticFriendly: about.scholastic_friendly, statement, places: places.length, events: 0, news: 0, photos: 0,
   }))
   const club: ClubPageResponse['club'] = {

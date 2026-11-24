@@ -117,8 +117,15 @@
     {
       "idx": 16,
       "version": "6",
-      "when": 1794924849880,
-      "tag": "0016_rate_limits",
+      "when": 1794938510232,
+      "tag": "0016_newsletter_issues",
+      "breakpoints": true
+    },
+    {
+      "idx": 17,
+      "version": "6",
+      "when": 1795548122144,
+      "tag": "0017_rate_limits",
       "breakpoints": true
     }
   ]

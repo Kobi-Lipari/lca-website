@@ -191,7 +191,8 @@ describe('REDESIGN_STATUS.md, WS09 step 8: the parts', () => {
       'sent only when they differ from what was stored', 'no tick but the brief\'s two',
     ]) expect(fields, piece).toContain(piece)
     const code = codeOf(BASICS)
-    const order = ['<legend className={PART_NAME}>Name and address</legend>', 'Cost and who is welcome</legend>', 'Links</legend>', 'Logo and club color</legend>']
+    // Each part's name keeps its legend; since the WS09 aside, Help as small question marks, three hold their mark after the name.
+    const order = ['<legend className={PART_NAME}><span id="editor-part-address">Name and address</span>', '>Cost and who is welcome</span>', '>Links</span>', 'Logo and club color</legend>']
     const at = order.map((p) => code.indexOf(p))
     for (const [i, p] of order.entries()) expect(at[i], p).toBeGreaterThan(-1)
     expect([...at].sort((a, b) => a - b)).toEqual(at)
@@ -287,7 +288,8 @@ describe('REDESIGN_STATUS.md, WS09 step 8: the parts', () => {
     for (const piece of ['an LCA admin, an observer, the club\'s rep and the region\'s representative', '`test/unit/club-editor-off.test.tsx`', 'never fetched', 'No switch is added']) {
       expect(ships, piece).toContain(piece)
     }
-    expect(read('src/lib/features.ts')).toContain('  clubKeepers: false,')
+    // clubKeepers went on in the block "WS09 switch-on: clubKeepers and CLUB_KEEPERS_ON", so this step holds only that it is declared.
+    expect(read('src/lib/features.ts')).toMatch(/^ {2}clubKeepers: (?:false|true),$/m)
     expect(read(PAGE)).toContain('        {tab === \'details\' && !keepersOn() && (')
   })
 

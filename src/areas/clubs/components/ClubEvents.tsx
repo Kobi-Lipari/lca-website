@@ -35,7 +35,8 @@ function EventRow({ event }: { event: ClubPageEvent }) {
       </div>
       <div className="min-w-0 space-y-1">
         <h3 className="break-words text-lg font-semibold text-ink">
-          <Link to={address} className={WORD_LINK}>{event.name}</Link>
+          {/* The name may be one long run; it breaks anywhere inside the link, so the page never widens. */}
+          <Link to={address} className={cn(WORD_LINK, '[overflow-wrap:anywhere]')}>{event.name}</Link>
         </h3>
         <p className="break-words text-sm font-semibold text-ink">{eventDates(event)}</p>
         <p className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-ink">

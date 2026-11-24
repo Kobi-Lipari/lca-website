@@ -9,6 +9,9 @@
 // Louisiana · {region}"), and how the club meets in its own words, so when
 // and where is on the first screen. The name never sits on the club's
 // colour, which is a fill and never words: the cover draws no words at all.
+// How the club meets keeps the club's line breaks, as When and where keeps
+// them, and a long run with no space in it, such as a web address, breaks
+// inside the column rather than widening the page.
 //
 // Two buttons: Contact the club, which leads to the page's own Contact form
 // (WS09 step 26; it led to the site's contact page until then) with the
@@ -84,7 +87,8 @@ export function ClubCover({
             {meets && (
               <p className={cn('flex items-start gap-2 break-words text-ink', compact ? 'mt-2 text-sm' : 'mt-3 text-base')}>
                 <CalendarDays aria-hidden="true" className="mt-0.5 size-5 shrink-0 text-ink-muted" />
-                <span>{meets}</span>
+                {/* The club's own words: they may hold a long address, which breaks anywhere so the page never widens, and their line breaks are kept. */}
+                <span className="min-w-0 whitespace-pre-line [overflow-wrap:anywhere]">{meets}</span>
               </p>
             )}
           </div>

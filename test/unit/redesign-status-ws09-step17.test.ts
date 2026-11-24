@@ -179,7 +179,8 @@ describe('REDESIGN_STATUS.md, WS09 step 17: the block', () => {
       expect(tail).toBe('checkpoints S and T merged into `main` on Sun, Nov 15, 2026, and checkpoint U, steps 10 to 14 with the two small steps of K\'s decision 7, merged on the same day as pull request 132, and all three are live; checkpoint V is under way on `redesign/ws09-clubs-v`, its first step mending, behind `clubKeepers`, what checkpoint U\'s pictures showed, WS09 step 16 giving the regional representative\'s grant and the four columns of the approval wait, and WS09 step 17 the representative\'s club events on the server, created, named and run in the region and held back from listing until an LCA admin approves them, both behind `regionEvents`; WS09 step 15 follows as a pull request of its own; steps 1 to 14, 16 and 17, K\'s answers to checkpoint S\'s review and K\'s second answer, the Clubs page on a narrow phone, are built.')
     }
     expect(tail).toMatch(/\bbuilt\.$/)
-    expect(prLine.match(/pull request \d+/g)).toEqual(['pull request 130', 'pull request 131', 'pull request 132'])
+    // Read only while this block is the latest: the switch-on's block names checkpoint V's own pull request.
+    if (latest) expect(prLine.match(/pull request \d+/g)).toEqual(['pull request 130', 'pull request 131', 'pull request 132'])
   })
 
   it('opens by saying where the step sits, that step 15 is still to come, K\'s answer and what it builds', () => {
@@ -339,8 +340,9 @@ describe('REDESIGN_STATUS.md, WS09 step 17: the parts against the files', () => 
     for (const piece of ['every representative gets 403 on all four grants and on every caller', 'with not one query more', 'refuse nothing', '"Invalid JSON body"', 'No switch is added']) expect(ships, piece).toContain(piece)
     // A1 of checkpoint V's review: the three kinds of body answered otherwise than on main, and "each 400 as before" gone.
     expect(['three kinds of body no page sends', 'a body of JSON that is not an object', 'a number such as 7 got 404 "Member not found" on the POST and 200 with the directors\' list on the DELETE', 'each 400 as before'].map((piece) => ships.includes(piece))).toEqual([true, true, true, false])
-    expect(read('functions/utils/clubs/pages.ts')).toContain('export const REGION_EVENTS_ON = false')
-    expect(read('src/lib/features.ts')).toContain('  regionEvents: false,')
+    // regionEvents and REGION_EVENTS_ON went on together in the block "WS09 switch-on: regionEvents and REGION_EVENTS_ON", so this step holds only that each is declared.
+    expect(read('functions/utils/clubs/pages.ts')).toMatch(/^export const REGION_EVENTS_ON = (?:false|true)$/m)
+    expect(read('src/lib/features.ts')).toMatch(/^ {2}regionEvents: (?:false|true),$/m)
     expect(bullet(block, '- **Owed before regionEvents goes on.**')).toContain('WS09 steps 18 and 19 first')
     expect(bullet(block, '- **Step 15.**')).toContain('Still to come')
   })

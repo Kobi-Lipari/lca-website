@@ -232,8 +232,9 @@ describe('REDESIGN_STATUS.md, WS09 checkpoint U, the save notice at most once an
     }
     // Checkpoint U's review, A2: refused after the sign-in check and, for the listing save, the club's read and the body's check.
     expect(ships.includes('as before, after the sign-in check and, for the listing save, the club\'s read and the body\'s check, with nothing written;') && !ships.includes('before anything is read')).toBe(true)
-    expect(read('functions/utils/clubs/pages.ts')).toContain('export const CLUB_KEEPERS_ON = false')
-    expect(read('src/lib/features.ts')).toContain('  clubKeepers: false,')
+    // clubKeepers and CLUB_KEEPERS_ON went on together in the block "WS09 switch-on: clubKeepers and CLUB_KEEPERS_ON", so this step holds only that each is declared.
+    expect(read('functions/utils/clubs/pages.ts')).toMatch(/^export const CLUB_KEEPERS_ON = (?:false|true)$/m)
+    expect(read('src/lib/features.ts')).toMatch(/^ {2}clubKeepers: (?:false|true),$/m)
     const does = bullet(block, '- **What the merge does.**')
     for (const piece of ['No migration, no route and no contract', '`deploy-worker.yml`', 'keep their names and sizes']) expect(does, piece).toContain(piece)
     expect(bullet(block, '- **What `main`\'s code does on this step\'s database.**')).toContain('This step changes no table')

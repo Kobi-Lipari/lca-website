@@ -53,7 +53,7 @@ const { AdminClubPage } = await import('@/pages/AdminClubPage')
 const TODAYS_CLUB = {
   id: 'example-chess-club', name: 'Example Chess Club', city: 'Example City', location: 'Example Library, Room B',
   description: 'A made-up club for casual and rated games.', meeting_schedule: 'Tuesdays at 7:00 PM', contact_email: 'club@example.org',
-  created_at: '2026-01-01 12:00:00', color: '#1f4e79', image_url: null, region: 'Bayou Region', latitude: 30.1, longitude: -91.2,
+  created_at: '2026-01-01 12:00:00', color: '#1f4e79', image_url: null, region: 'Lafayette / South Central', latitude: 30.1, longitude: -91.2,
 }
 /** The same club as the GET answers it with the constant set: the new columns, set apart from today's, and two places. */
 const KEEPERS_CLUB = {
@@ -156,7 +156,7 @@ function todaysForm(admin: boolean, shut: boolean): string[] {
     `textarea#description "Description" = A made-up club for casual and rated games.${s}`,
     `input#schedule text "Meeting schedule" = Tuesdays at 7:00 PM${s}`,
     `input#email email "Contact email" = club@example.org${s}`,
-    `select#region "Region" = Bayou Region${named}`,
+    `select#region "Region" = Lafayette / South Central${named}`,
     `input color "" = #1f4e79${s}`,
     `input text "" = #1f4e79${s}`,
     `input file "" = ${s}`,
@@ -235,7 +235,7 @@ describe('the admin club page with clubKeepers off: the Details tab is today\'s 
     const patch = seen.find((s) => s.method === 'PATCH')!
     expect(JSON.parse(patch.body!)).toEqual({
       name: 'Example Chess Club', city: 'Example City', location: 'Example Library, Room B', description: 'A made-up club for casual and rated games.',
-      meetingSchedule: 'Tuesdays at 7:00 PM', contactEmail: 'club@example.org', color: '#1f4e79', region: 'Bayou Region',
+      meetingSchedule: 'Tuesdays at 7:00 PM', contactEmail: 'club@example.org', color: '#1f4e79', region: 'Lafayette / South Central',
     })
     expect(seen.map((s) => `${s.method} ${s.url}`)).toEqual([
       'GET /api/admin/clubs/example-chess-club', 'GET /api/admin/clubs/example-chess-club/news', 'PATCH /api/admin/clubs/example-chess-club',

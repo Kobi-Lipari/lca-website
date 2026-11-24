@@ -167,11 +167,11 @@ const SWITCHES = {
   membershipRequirementSwitch: false,
 
   // Redesign, brief 1.4. Off until each part is checked on a preview.
-  // clubEmailHidden and rosterShortNames are Phase 0 switches, so
-  // test/unit/features.test.ts holds them off in PHASE_0 as well.
+  // clubEmailHidden has been checked and is on. rosterShortNames is a Phase 0
+  // switch, so test/unit/features.test.ts holds it off in PHASE_0 as well.
 
   /** Today's club page offers "Contact this club through LCA" in place of the club's email. */
-  clubEmailHidden: false,
+  clubEmailHidden: true,
 
   /** Today's event page lists entrants under 18 by first name and last initial to anyone not running it. */
   rosterShortNames: false,
@@ -230,16 +230,21 @@ const SWITCHES = {
   // test/unit/club-pages-switch.test.ts holds: clubEmailHidden first, then
   // clubKeepers, then regionEvents, then newClubs with newLook on.
 
-  /** The one club editor, Your club's page, My region and the monthly check, for the people who keep club listings. */
-  clubKeepers: false,
+  /** The one club editor, Your club's page, My region and the monthly check, for the people who keep club listings. On, together with CLUB_KEEPERS_ON. */
+  clubKeepers: true,
 
-  /** Regional representatives create and run their clubs' events, which wait for an LCA admin's approval. */
-  regionEvents: false,
+  /** Regional representatives create and run their clubs' events, which wait for an LCA admin's approval before they list. On, together with REGION_EVENTS_ON. */
+  regionEvents: true,
 
-  // Redesign, mail. Off until it is checked on a preview.
+  // Redesign, mail. mailLists is on since the switch-on change, and mailPage
+  // since the page's own switch-on change; mailPage is on only while
+  // mailLists is.
 
   /** The LCA newsletter list in Group email, with the unsubscribe link, the email preferences page and the footer every optional email carries, and the media manager's way in to it: Admin with Group email alone and a Group email link in the account menu. */
-  mailLists: false,
+  mailLists: true,
+
+  /** The newsletter's own page, where the LCA admins, the president and the media manager write, save and start a letter and send themselves a test of it; it needs mailLists on. */
+  mailPage: true,
 } as const
 
 /** The name of one switch. */

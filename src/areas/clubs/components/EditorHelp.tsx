@@ -1,12 +1,12 @@
 // src/areas/clubs/components/EditorHelp.tsx
 //
-// Help for the one club editor: the button that opens and closes it, and the
-// part it opens, which holds every explaining sentence the editor's boards
-// print beside its fields. K's rule: explaining words sit behind Help, never
-// beside a control, and Help opens by itself once, the first time a person
-// uses the page (ClubEditor.tsx remembers that in the browser). When it
-// opens the focus moves into it; Escape or Close help shuts it and the focus
-// goes back to the button.
+// The one club editor's Help: every explaining sentence the editor's boards
+// print beside its fields, given out by part to the small question mark
+// beside that part (HelpMark.tsx, K's decision 16), so no sentence sits
+// beside a control and none takes room until a person asks for it. The
+// sentences are today's list, word for word, in the form's order; the logo's
+// and the colour's entry is shared between the logo's mark and the colour's,
+// at the end of the logo's two sentences.
 //
 // From WS09 step 8 it also holds the sentences for the rest of the listing
 // and the preview column: what About's count means and that a search result
@@ -32,26 +32,18 @@
 //
 // Help speaks of "your club" and "your page" only to the club's own rep
 // (`own`); anyone else who keeps the club, a region's representative or an
-// LCA admin, reads "the club's".
-import type { KeyboardEvent, Ref } from 'react'
-import { CircleHelp } from 'lucide-react'
+// LCA admin, reads "the club's". The editor gives the four choices once
+// (EditorHelpWords, in src/areas/clubs/helpMarks.ts), and each part's mark
+// reads them; a part drawn outside the editor draws no mark.
+import { useContext } from 'react'
 
 import { addressCardName } from '@/areas/clubs/editor'
+import { EditorHelpWords, type EditorWords } from '@/areas/clubs/helpMarks'
+import { HelpMark, type HelpEntry } from '@/areas/clubs/components/HelpMark'
 
-/** The id of the part Help opens, which its button controls. */
-const HELP_ID = 'club-editor-help'
-
-/** A button of Help: 44px tall, a visible ring on focus, its words 14px. */
-const OPENER =
-  'inline-flex min-h-11 items-center gap-1.5 rounded-md px-2 text-sm font-medium text-ink outline-none hover:underline focus-visible:ring-3 focus-visible:ring-focus'
-
-export function EditorHelpButton({ open, onToggle, ref }: { open: boolean; onToggle: () => void; ref?: Ref<HTMLButtonElement> }) {
-  return (
-    <button ref={ref} type="button" className={OPENER} aria-expanded={open} aria-controls={HELP_ID} onClick={onToggle}>
-      <CircleHelp className="size-4" aria-hidden="true" /> Help
-    </button>
-  )
-}
+/** The logo's two sentences, beside the logo, and the colour's one, beside the colour. */
+const LOGO_WORDS = 'A logo you choose is made to fit and saved at once, on its own, before Save and publish. Press Save and publish while it uploads and your changes save as soon as the upload is done.'
+const COLOUR_WORDS = 'The club\'s color is drawn as a band, a tint and small bars on the new club pages, never as words; a club with no color of its own shows navy.'
 
 /** Each field and what it is for, in the form's order, then the previews. */
 function sentences(own: boolean, emailHidden: boolean, pagesOn: boolean, showAdmin: boolean): Array<[string, string]> {
@@ -109,10 +101,7 @@ function sentences(own: boolean, emailHidden: boolean, pagesOn: boolean, showAdm
         ? 'Leave a box empty to show no link there.'
         : 'Today\'s club page shows none of these links; they show once the new club pages open, and a box left empty shows no link there.'}`,
     ],
-    [
-      'Logo and club color',
-      'A logo you choose is made to fit and saved at once, on its own, before Save and publish. Press Save and publish while it uploads and your changes save as soon as the upload is done. The club\'s color is drawn as a band, a tint and small bars on the new club pages, never as words; a club with no color of its own shows navy.',
-    ],
+    ['Logo and club color', `${LOGO_WORDS} ${COLOUR_WORDS}`],
     [
       'Today\'s page shows different words here',
       'Today\'s club page shows its own, shorter words where this listing holds the words written for the new club pages, or words changed in the older form since. Any save, even of one other field, puts this listing\'s words on today\'s page in place of today\'s, so read both before you save.',
@@ -131,46 +120,47 @@ function sentences(own: boolean, emailHidden: boolean, pagesOn: boolean, showAdm
   ]
 }
 
-export function EditorHelp({
-  open, own, emailHidden, pagesOn, showAdmin, onClose, ref,
-}: {
-  open: boolean
-  /** The club is the reader's own, as for its rep: only then does Help speak of "your club". */
-  own: boolean
-  emailHidden: boolean
-  /** The new club pages are on (clubPagesOn), which show the contact name and the place's note. */
-  pagesOn: boolean
-  showAdmin: boolean
-  onClose: () => void
-  ref?: Ref<HTMLElement>
-}) {
-  function onKeyDown(e: KeyboardEvent<HTMLElement>) {
-    if (e.key !== 'Escape') return
-    e.preventDefault()
-    e.stopPropagation()
-    onClose()
-  }
-  return (
-    <section
-      ref={ref}
-      id={HELP_ID}
-      data-slot="editor-help"
-      hidden={!open}
-      tabIndex={-1}
-      aria-labelledby={`${HELP_ID}-title`}
-      onKeyDown={onKeyDown}
-      className="scroll-mt-24 space-y-3 rounded-lg border border-hairline bg-card p-4 text-sm text-ink outline-none focus-visible:ring-3 focus-visible:ring-focus"
-    >
-      <h3 id={`${HELP_ID}-title`} className="text-base font-semibold">Help</h3>
-      <dl className="space-y-3">
-        {sentences(own, emailHidden, pagesOn, showAdmin).map(([term, text]) => (
-          <div key={term}>
-            <dt className="font-medium">{term}</dt>
-            <dd className="text-muted-foreground">{text}</dd>
-          </div>
-        ))}
-      </dl>
-      <button type="button" className={OPENER} onClick={onClose}>Close help</button>
-    </section>
-  )
+/** The parts of the editor that carry a mark. */
+export type EditorPart =
+  | 'about' | 'howWeMeet' | 'where' | 'contactName' | 'email' | 'nameAndAddress' | 'adminFields'
+  | 'cost' | 'links' | 'logo' | 'color' | 'differs' | 'save' | 'preview'
+
+/** Which part each entry of the list stands beside, by its term. The logo's and the colour's entry is shared. */
+const PART_OF: Record<string, EditorPart> = {
+  'One sentence about the club': 'about',
+  'How the club meets, in words': 'howWeMeet',
+  'Where': 'where',
+  'Contact name shown on the page': 'contactName',
+  'Contact name': 'contactName',
+  'Email for messages': 'email',
+  'Name and address': 'nameAndAddress',
+  'Club name, region and page address': 'adminFields',
+  'Cost and who is welcome': 'cost',
+  'Links': 'links',
+  'Today\'s page shows different words here': 'differs',
+  'Save and publish': 'save',
+  'Preview': 'preview',
+}
+
+/** The entries one part's mark holds. */
+function entriesFor(part: EditorPart, { own, emailHidden, pagesOn, showAdmin }: EditorWords): HelpEntry[] {
+  if (part === 'logo') return [['Logo and club color', LOGO_WORDS]]
+  if (part === 'color') return [['Logo and club color', COLOUR_WORDS]]
+  return sentences(own, emailHidden, pagesOn, showAdmin).filter(([term]) => PART_OF[term] === part)
+}
+
+/** Each mark's name after "Help: ": the entry's term, or the control's own label where the entry is shared. */
+function nameOf(part: EditorPart, entries: readonly HelpEntry[]): string {
+  if (part === 'logo') return 'Logo'
+  if (part === 'color') return 'Club color'
+  return entries[0][0]
+}
+
+/** The mark beside one part of the editor, with that part's words; none outside the editor, and none for a part with no words. */
+export function EditorHelpMark({ part, tight, align }: { part: EditorPart; tight?: boolean; align?: 'start' | 'end' }) {
+  const words = useContext(EditorHelpWords)
+  if (!words) return null
+  const entries = entriesFor(part, words)
+  if (entries.length === 0) return null
+  return <HelpMark name={nameOf(part, entries)} entries={entries} tight={tight} align={align} />
 }

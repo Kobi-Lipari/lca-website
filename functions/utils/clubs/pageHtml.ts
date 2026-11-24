@@ -25,11 +25,15 @@
 // and line separator is written as a JSON escape, so no value can end the
 // block or start a tag. The words the app's page also writes come from
 // domain/clubs/pageWords.ts, and the title and description from
-// domain/clubs/pageMeta.ts.
+// domain/clubs/pageMeta.ts. The three sections before Contact carry the ids
+// the app's page gives them (PAGE_SECTION_IDS there), so a shared section
+// link names its section before any script, and how the club meets keeps the
+// club's single line breaks as <br> (checkpoint W's review).
 import { clubPageDescription, clubPageTitle, SITE_NAME } from '../../../domain/clubs/pageMeta'
 import {
-  ABOUT_LABELS, ABOUT_TICKS, CONTACT_HEADING, CONTACT_WRITTEN_LINE, EVENTS_HEADING, aboutHeading, cityLine, eventDates, whenAndWhereHeading,
+  ABOUT_LABELS, ABOUT_TICKS, CONTACT_HEADING, CONTACT_WRITTEN_LINE, EVENTS_HEADING, PAGE_SECTION_IDS, aboutHeading, cityLine, eventDates, whenAndWhereHeading,
 } from '../../../domain/clubs/pageWords'
+import { isFacebookAddress } from '../../../domain/clubs/facebook'
 import type { ClubPageResponse } from '../../../domain/contracts/clubPage'
 
 /** Text made safe for HTML text and for a quoted attribute. */
@@ -72,11 +76,16 @@ function siteOf(url: string): string {
   }
 }
 
-/** The club's links the page draws, with the words the site's About gives each. */
+/**
+ * The club's links the page draws, with the words the site's About gives
+ * each: the Facebook field's link is called Facebook only when it goes to
+ * Facebook's own site (domain/clubs/facebook.ts), and is otherwise named by
+ * its site, as the other two are.
+ */
 export function clubLinks(about: ClubPageResponse['about']): Array<{ href: string; words: string }> {
   const links: Array<{ href: string; words: string }> = []
   const facebook = webLink(about.facebook)
-  if (facebook) links.push({ href: facebook, words: 'Facebook' })
+  if (facebook) links.push({ href: facebook, words: isFacebookAddress(facebook) ? 'Facebook' : siteOf(facebook) })
   const website = webLink(about.website)
   if (website) links.push({ href: website, words: `Website: ${siteOf(website)}` })
   const other = webLink(about.other)
@@ -163,6 +172,17 @@ function paragraphsOf(words: string): string[] {
   return words.split(/\n\s*\n/).map((part) => part.trim()).filter(Boolean).map((part) => `<p>${escapeHtml(part)}</p>`)
 }
 
+/**
+ * How the club meets, as paragraphs split at blank lines, with each single
+ * line break written as a <br> between the paragraph's escaped lines, so the
+ * words keep the lines the club gave them, as the page the site draws keeps
+ * them under the name and in When and where.
+ */
+function statementOf(words: string): string[] {
+  return words.split(/\n\s*\n/).map((part) => part.trim()).filter(Boolean)
+    .map((part) => `<p>${part.split(/\r?\n/).map((line) => escapeHtml(line.trim())).join('<br>')}</p>`)
+}
+
 /** About: the club's words, then Cost, Who is welcome and Find us online, each only when the club filled it in. */
 function aboutHtml(answer: ClubPageResponse): string[] {
   const { about } = answer
@@ -182,7 +202,7 @@ function aboutHtml(answer: ClubPageResponse): string[] {
     parts.push(`<h3>${ABOUT_LABELS.online}</h3>`, `<ul>${items.join('')}</ul>`)
   }
   if (parts.length === 0) return []
-  return [`<section><h2>${escapeHtml(aboutHeading(answer.club.name))}</h2>${parts.join('')}</section>`]
+  return [`<section id="${PAGE_SECTION_IDS.about}"><h2>${escapeHtml(aboutHeading(answer.club.name))}</h2>${parts.join('')}</section>`]
 }
 
 /** When and where: the club's places, each with its street and its note where it has them. */
@@ -194,7 +214,7 @@ function placesHtml(answer: ClubPageResponse): string[] {
     if (hasWords(place.note)) lines.push(...paragraphsOf(place.note))
     return `<li>${lines.join('')}</li>`
   })
-  return [`<section><h2>${escapeHtml(whenAndWhereHeading(answer.club.name))}</h2><ul>${rows.join('')}</ul></section>`]
+  return [`<section id="${PAGE_SECTION_IDS.when_and_where}"><h2>${escapeHtml(whenAndWhereHeading(answer.club.name))}</h2><ul>${rows.join('')}</ul></section>`]
 }
 
 /** Events: each of the club's events, its name a link to its page here and its dates with the weekday and year. */
@@ -204,7 +224,7 @@ function eventsHtml(answer: ClubPageResponse): string[] {
     const link = `<a href="/tournaments/${escapeHtml(encodeURIComponent(event.id))}">${escapeHtml(event.name)}</a>`
     return `<li><h3>${link}</h3><p>${escapeHtml(eventDates(event))}</p></li>`
   })
-  return [`<section><h2>${EVENTS_HEADING}</h2><ul>${rows.join('')}</ul></section>`]
+  return [`<section id="${PAGE_SECTION_IDS.events}"><h2>${EVENTS_HEADING}</h2><ul>${rows.join('')}</ul></section>`]
 }
 
 /** Contact: its heading and its one line, for every club, since every club can be written to through the site. */
@@ -250,7 +270,7 @@ export const WRITTEN_PAGE_STYLE = [
 export function clubPageBody(answer: ClubPageResponse): string {
   const { club } = answer
   const top = [`<h1>${escapeHtml(club.name)}</h1>`, `<p>${escapeHtml(cityLine(club.city, club.region))}</p>`]
-  if (hasWords(answer.statement.text)) top.push(...paragraphsOf(answer.statement.text))
+  if (hasWords(answer.statement.text)) top.push(...statementOf(answer.statement.text))
   const words = [...top, ...aboutHtml(answer), ...placesHtml(answer), ...eventsHtml(answer), ...contactHtml()].join('')
   return `<main ${WRITTEN_PAGE_MARK}><style>${WRITTEN_PAGE_STYLE}</style>${words}</main>`
 }

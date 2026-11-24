@@ -114,8 +114,8 @@ describe('section rules, regions and family size through the server paths', () =
     expect(eligibilityProblem({ name: 'K-5' }, { rating: 900, gradeRange: { min: 3, max: 3 } })).toBeNull()
   })
 
-  it('knows the seven regions and nothing else', () => {
-    expect(REGIONS).toHaveLength(7)
+  it('knows the five regions and nothing else', () => {
+    expect(REGIONS).toHaveLength(5)
     for (const r of REGIONS) expect(isRegion(r)).toBe(true)
     for (const r of ['Greater New Orleans', 'north louisiana', '', null, undefined, 3, 'toString']) expect(isRegion(r)).toBe(false)
   })

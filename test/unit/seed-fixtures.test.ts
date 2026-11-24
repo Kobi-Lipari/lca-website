@@ -51,18 +51,19 @@ function snapshot(db: DatabaseSync, keep: (table: string, row: Record<string, un
 }
 
 /**
- * True for a row the seed owns: its id, or the id of the tournament or seat
- * it hangs off, starts with fx-. A schedule's rounds hang off a schedule
- * whose id is random, so the comparisons below leave those tables out.
+ * True for a row the seed owns: its id, or the id of the tournament, seat or
+ * club it hangs off (a club's places have a number for an id), starts with
+ * fx-. A schedule's rounds hang off a schedule whose id is random, so the
+ * comparisons below leave those tables out.
  */
 const isFixtureRow = (_table: string, row: Record<string, unknown>) =>
-  ['id', 'tournament_id', 'seat_id'].some((k) => typeof row[k] === 'string' && (row[k] as string).startsWith('fx-'))
+  ['id', 'tournament_id', 'seat_id', 'club_id'].some((k) => typeof row[k] === 'string' && (row[k] as string).startsWith('fx-'))
 
 describe('scripts/seed/fixtures.sql loads on the migrated schema', () => {
-  it('is written against migrations 0001 to 0071', () => {
+  it('is written against migrations 0001 to 0072', () => {
     const files = migrationFiles()
     expect(files[0]).toMatch(/^0001_/)
-    expect(files.at(-1)).toMatch(/^0071_/)
+    expect(files.at(-1)).toMatch(/^0072_/)
   })
 
   it('loads, and loads again with the same result, leaving the migrations\' own rows alone', () => {

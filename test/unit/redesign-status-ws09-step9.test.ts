@@ -248,7 +248,8 @@ describe('REDESIGN_STATUS.md, WS09 step 9: the parts', () => {
       'with CLUB_KEEPERS_ON set, a person admitted by the region alone gets no roster, no officer\\\'s email and no hidden draft by the page address, and is still refused adding or removing an officer',
       'role safety: signed out, the GET by a page address answers 401, with CLUB_KEEPERS_ON set and unset',
     ]) expect(cases, name).toContain(`  it('${name}', async () => {`)
-    expect(cases.split('\n')[398]).toContain('body.tournaments')
+    // The getter of REGION_EVENTS_ON added in the block "WS09 switch-on: regionEvents and REGION_EVENTS_ON" moved this line down by five.
+    expect(cases.split('\n')[403]).toContain('body.tournaments')
   })
 
   it('says what the page draws, its last save read in Central time, and what it never draws', () => {
@@ -330,9 +331,12 @@ describe('REDESIGN_STATUS.md, WS09 step 9: the parts', () => {
     for (const piece of [
       '"off: the route sends to the dashboard and /manage/club is today\'s"', '`test/unit/your-club-route.test.tsx`', 'compares with the base\'s own answer', 'No switch is added',
     ]) expect(ships, piece).toContain(piece)
-    expect(read('src/lib/features.ts')).toContain('  clubKeepers: false,')
-    expect(read('src/lib/features.ts')).toContain('  clubEmailHidden: false,')
-    expect(read('functions/utils/clubs/pages.ts')).toContain('export const CLUB_KEEPERS_ON = false')
+    // clubKeepers went on in the block "WS09 switch-on: clubKeepers and CLUB_KEEPERS_ON", so this step holds only that it is declared.
+    expect(read('src/lib/features.ts')).toMatch(/^ {2}clubKeepers: (?:false|true),$/m)
+    // clubEmailHidden is the Phase 0 trim's switch, turned on by a change of its own, so this step holds only that it is declared.
+    expect(read('src/lib/features.ts')).toMatch(/^ {2}clubEmailHidden: (?:false|true),$/m)
+    // CLUB_KEEPERS_ON went on in the block "WS09 switch-on: clubKeepers and CLUB_KEEPERS_ON", so this step holds only that it is declared.
+    expect(read('functions/utils/clubs/pages.ts')).toMatch(/^export const CLUB_KEEPERS_ON = (?:false|true)$/m)
     expect(read('test/unit/your-club-route.test.tsx')).toContain('  it(\'off: the route sends to the dashboard and /manage/club is today\\\'s\', async () => {')
   })
 

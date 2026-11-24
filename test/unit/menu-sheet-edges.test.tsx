@@ -265,7 +265,7 @@ const markedInSheet = () => [...sheet().querySelectorAll('[aria-current]')].map(
 function markedInAboutMenu(path: string): string[] {
   const view = render(
     <MemoryRouter initialEntries={[path]}>
-      <AboutMenu current buttonClassName="" squeezed={false} onDonate={() => {}} />
+      <AboutMenu current buttonClassName="" onDonate={() => {}} />
     </MemoryRouter>,
   )
   fireEvent.click(within(view.container).getByRole('button', { name: 'About' }))
