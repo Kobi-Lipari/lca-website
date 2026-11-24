@@ -2,7 +2,20 @@
 
 Written on Saturday, November 14, 2026, for whoever takes this stream over. The whole project's handoff is `HANDOFF.md`; the rules where the two streams meet are `STREAMS.md`. This file holds only what is the clubs stream's own.
 
-## Where it stands (Thursday, November 19, 2026, about 3:10 AM UTC)
+## Where it stands (Tuesday, November 24, 2026, about 6:05 AM UTC)
+
+The work was stopped from Thursday, November 19, 2026, about 8:15 AM UTC until Tuesday, November 24, 2026, 5:23 AM UTC.
+
+- **Everything of Thursday is on main, merged by K by hand** on Thursday, November 19, 2026 (UTC): 140 at 12:36 PM, the mail stream's 142 at 12:47 PM, 144 at 1:01 PM, the mail stream's 143 at 1:17 PM and 145 at 1:34 PM, 146 at 4:09 PM, 141 at 8:19 PM. K's own 147 (Friday, one line in `functions/utils/admin/permissions.ts`) was taken back out by the mail stream's 148 on Tuesday on K's yes. Main is `c8209eb`.
+- **The product on main is line for line what was checked.** The live site shows the 25 clubs in the five regions (12, 3, 5, 2, 3).
+- **The record on main lost about 620 lines** where K settled the conflicts of 146 and 141 in GitHub: this stream's four club events blocks, the regions block and the Help block; the mail stream's part on the newsletter's own page; all of Phase 0's notes from the preview. 183 cases fail in 15 record test files on main (6 files this stream's); no product test fails.
+- **The record mend** is built on `redesign/ws09-record-mend` over `c8209eb`: `REDESIGN_STATUS.md` taken whole from the copy both streams had joined before the merges (agreed with the mail lead), this stream's two rehearsal blocks left out, one new block, "WS09 aside: how Thursday's changes reached main", one clause in the Status line, two record tests moved by one assertion, one new record test. A reviewer's read was taken in. Its full check is running; then its own pull request, the mail lead's own tests on its head, and K's yes.
+- **Asked of K on Tuesday, not yet answered,** three choices: LCA Observers and tournaments (relayed by the mail lead from K: an observer creates a tournament and manages the ones they created; asked K to confirm it here); the question mark bubbles' words by K's note of Thursday (nothing about how pages are built or may change; a list of today's words beside proposed ones was sent to K, in the scratch folder's `ws09-help-words/`); the order of the work.
+- **Migrations:** the mail stream may take 0073; this stream takes 0074 and up.
+- **Decisions 14 to 17** are in `ws09-k-decisions.md`. K's merging of 146 by hand is K's yes to it; no decision was written for it.
+- **Still held from last week:** step 28 (its launch note is written), checkpoints W and X (both must take main in: the five regions, migrations 0071 and 0072, the Help marks).
+
+## Where it stood on Thursday, November 19, 2026, about 3:10 AM UTC
 
 K's decisions 14 and 15 are in `ws09-k-decisions.md`. The meeting is this evening.
 
