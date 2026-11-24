@@ -70,7 +70,8 @@ describe('what D1 will run', () => {
       const added = all(db, `SELECT * FROM "${table}"`).filter((r) => !old.has(JSON.stringify(r)))
       if (table === 'tournament_schedules' || table === 'tournament_schedule_rounds' || table === 'tournament_sections') continue
       for (const row of added) {
-        const key = ['id', 'tournament_id', 'seat_id'].map((k) => row[k]).find((v) => typeof v === 'string')
+        // A club's places have a number for an id, so they are known by their club.
+        const key = ['id', 'tournament_id', 'seat_id', 'club_id'].map((k) => row[k]).find((v) => typeof v === 'string')
         expect(key, `${table}: ${JSON.stringify(row).slice(0, 120)}`).toMatch(/^fx-/)
       }
     }

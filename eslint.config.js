@@ -68,6 +68,7 @@ export default defineConfig([
     'test/unit/fixtures/lint',
     'dist-a11y-on',
     'dist-a11y-off',
+    'dist-a11y-clubs',
     '.wrangler',
     'test-results',
     'playwright-report',

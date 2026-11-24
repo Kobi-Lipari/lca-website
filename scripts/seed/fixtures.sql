@@ -54,6 +54,47 @@ ON CONFLICT(id) DO UPDATE SET
   meeting_schedule = excluded.meeting_schedule, contact_email = excluded.contact_email, color = excluded.color,
   region = excluded.region, latitude = excluded.latitude, longitude = excluded.longitude;
 
+-- What the new club page shows of the two clubs (WS09): the short address
+-- the slug rule makes from each name (domain/clubs/slug.ts), About, how the
+-- club meets in its own words, the cost, who is welcome and its two ticks
+-- (one club each way), the name the page may give, the links (a made-up
+-- Facebook link on one), and the day the listing was last checked, a fixed
+-- day so the told line always reads October 2026. These columns and
+-- club_places come from migration 0066; today's club page reads none of
+-- them. Upserted, as the clubs above are, so a second load puts them back.
+INSERT INTO clubs (
+  id, name, city, slug, about_text, how_we_meet_text, cost_text, welcome_text, weekend_play, scholastic_friendly,
+  contact_name_public, facebook_url, website_url, other_url, told_updated_at, last_confirmed_at
+) VALUES
+  ('fx-club-capital', 'Fixture Capital Chess Club', 'Baton Rouge', 'fixture-capital-chess-club',
+   'A made-up club for tests. Casual and rated games for every level, and a volunteer on hand every night to teach anyone new to the game.',
+   'Tuesdays at 7:00 PM, and the first Saturday of the month at 10:00 AM.',
+   'Free for a first visit, then $5 a night.', 'Players of every age and level.', 1, 0,
+   'Player One', 'https://example.org/fixture-capital-chess-club-on-facebook', NULL, NULL,
+   '2026-10-06 18:00:00', '2026-10-06 18:00:00'),
+  ('fx-club-north', 'Fixture North Chess Club', 'Monroe', 'fixture-north-chess-club',
+   'A made-up club for tests, with blitz on Fridays and lessons for new players on Saturdays.',
+   'Fridays at 6:30 PM. Lessons for new players on Saturdays at 10:00 AM.',
+   'Free.', 'Everyone, from a first game to a rated player.', 0, 1,
+   'Player Two', NULL, 'https://example.org/fixture-north-chess-club', NULL,
+   '2026-10-06 18:00:00', '2026-10-06 18:00:00')
+ON CONFLICT(id) DO UPDATE SET
+  slug = excluded.slug, about_text = excluded.about_text, how_we_meet_text = excluded.how_we_meet_text,
+  cost_text = excluded.cost_text, welcome_text = excluded.welcome_text, weekend_play = excluded.weekend_play,
+  scholastic_friendly = excluded.scholastic_friendly, contact_name_public = excluded.contact_name_public,
+  facebook_url = excluded.facebook_url, website_url = excluded.website_url, other_url = excluded.other_url,
+  told_updated_at = excluded.told_updated_at, last_confirmed_at = excluded.last_confirmed_at;
+
+-- Where the two clubs meet: two places for the first, one for the second.
+-- Deleted and written again with fixed ids, far above the ids migration
+-- 0067 gives its places, so a second load writes the same rows.
+DELETE FROM club_places WHERE club_id LIKE 'fx-%';
+INSERT INTO club_places (id, club_id, name, street, note, latitude, longitude, sort)
+VALUES
+  (90001, 'fx-club-capital', 'Fixture Community Center', '100 Example St, Baton Rouge, LA', 'Use the side door by the parking lot.', 30.4515, -91.1871, 0),
+  (90002, 'fx-club-capital', 'Fixture Branch Library', '300 Example Blvd, Baton Rouge, LA', 'The first Saturday of the month only.', 30.4420, -91.1500, 1),
+  (90003, 'fx-club-north', 'Fixture Library', '200 Example Ave, Monroe, LA', 'In the study room on the second floor.', 32.5093, -92.1193, 0);
+
 -- ---------------------------------------------------------------------------
 -- Members. The guardian comes first: the children name her in guardian_id.
 -- A child has no address of their own: like POST /api/me/children, each

@@ -27,7 +27,7 @@
     "test:integration": "vitest run --config vitest.integration.config.ts",
     "test:integration:watch": "vitest --config vitest.integration.config.ts",
     "test:all": "npm run test && npm run test:integration",
-    "test:a11y": "node --no-warnings --experimental-strip-types test/a11y/global-setup.ts && playwright test --project=a11y-on --project=a11y-off",
+    "test:a11y": "node --no-warnings --experimental-strip-types test/a11y/global-setup.ts && playwright test --project=a11y-on --project=a11y-off --project=a11y-clubs",
     "test:e2e": "playwright test --project=e2e-preview",
     "typecheck:functions": "tsc -p tsconfig.functions.json",
     "scanner:check": "node --no-warnings --experimental-strip-types --import ./scanner/sandbox/register.mjs scanner/sandbox/verify_s3.ts && node --no-warnings --experimental-strip-types --import ./scanner/sandbox/register.mjs scanner/sandbox/verify_s5.ts",
