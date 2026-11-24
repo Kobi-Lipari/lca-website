@@ -27,7 +27,7 @@
 // Nothing here sends anything, and no table but newsletter_issues is
 // written. A save writes no activity row: the letter's own row says who
 // saved it last and when.
-import { LETTER_MAX_BYTES, STARTERS, STARTER_IDS, defaultSubject, type StarterId } from '../../../domain/mail/letter'
+import { LETTER_MAX_BYTES, STARTERS, STARTER_IDS, TEMPLATE_NAME_MAX, defaultSubject, type StarterId } from '../../../domain/mail/letter'
 import { cleanLetterHtml } from './letterClean'
 
 /**
@@ -105,6 +105,10 @@ interface LetterRow {
 const LETTER_COLUMNS = 'i.id, i.version, i.month_label, i.subject, i.preheader, i.body_html, i.created_at, i.updated_at, m.full_name AS saved_by'
 /** A list's open letter, as the unique index holds it. */
 const OPEN = 'i.campaign_id IS NULL AND i.set_aside_at IS NULL'
+/** A saved template, shown or removed: a row with a name of its own, which no letter has. */
+const NOT_TEMPLATE = 'i.pinned_name IS NULL'
+/** A saved template the chooser lists: named, and not removed. */
+const SHOWN_TEMPLATE = 'i.pinned_name IS NOT NULL AND i.pinned_at IS NOT NULL'
 
 /** A name as an account holds it, or null for an account that is gone or holds none. */
 const nameOf = (name: string | null | undefined): string | null => (typeof name === 'string' && name.trim() !== '' ? name : null)
@@ -335,8 +339,8 @@ export async function saveIssue(db: D1Database, args: SaveArgs): Promise<SaveRes
   return { refused: refusalOf(row) }
 }
 
-/** Where a new letter's words come from, as the start's contract reads it. */
-export type StartFrom = StarterId | { issueId: string } | { campaignId: string }
+/** Where a new letter's words come from, as the start's contract reads it: a starter, a past letter, a send, or a saved template. */
+export type StartFrom = StarterId | { issueId: string } | { campaignId: string } | { templateId: string }
 
 export interface StartArgs {
   listId: string
@@ -353,11 +357,19 @@ export type StartResult =
   | { letterRefused: LetterRefusal }
   | { notFound: true }
 
-/** The words a new letter starts from, as stored before they are cleaned again: a starter's, a past letter's of the list, or a send's on the list. */
+/**
+ * The words a new letter starts from, as stored before they are cleaned again: a starter's, a past letter's of the list,
+ * a send's on the list, or a saved template's of the list while it shows. A template is never a past letter, so a
+ * template's id given as a past letter's is not found, as a removed template is.
+ */
 async function sourceWords(db: D1Database, listId: string, from: StartFrom): Promise<string | null> {
   if (typeof from === 'string') return starterLetter(from)
+  if ('templateId' in from && typeof from.templateId === 'string') {
+    const row = await db.prepare(`SELECT body_html FROM newsletter_issues i WHERE i.id = ?1 AND i.list_id = ?2 AND ${SHOWN_TEMPLATE}`).bind(from.templateId, listId).first<{ body_html: string }>()
+    return row?.body_html ?? null
+  }
   if ('issueId' in from && typeof from.issueId === 'string') {
-    const row = await db.prepare('SELECT body_html FROM newsletter_issues WHERE id = ?1 AND list_id = ?2').bind(from.issueId, listId).first<{ body_html: string }>()
+    const row = await db.prepare(`SELECT body_html FROM newsletter_issues i WHERE i.id = ?1 AND i.list_id = ?2 AND ${NOT_TEMPLATE}`).bind(from.issueId, listId).first<{ body_html: string }>()
     return row?.body_html ?? null
   }
   const campaignId = (from as { campaignId: string }).campaignId
@@ -456,7 +468,8 @@ export interface LastNewsletter {
 /**
  * The last newsletters of a list, at most 20, newest first, without their words: each letter sent, with its send's
  * status, time, sender and count; each letter set aside, with when and by whom; and each send on the list that has no
- * letter, a newsletter sent from the plain tab, with its own. Who is named as the open letter names a person. One query.
+ * letter, a newsletter sent from the plain tab, with its own. Who is named as the open letter names a person. A saved
+ * template, shown or removed, is never listed. One query.
  */
 export async function lastIssues(db: D1Database, listId: string): Promise<LastNewsletter[]> {
   const { results } = await db
@@ -469,7 +482,7 @@ export async function lastIssues(db: D1Database, listId: string): Promise<LastNe
                   CASE WHEN i.campaign_id IS NULL THEN i.updated_by ELSE c.created_by END AS by_id,
                   c.total_recipients AS total_recipients, i.rowid AS seq, 0 AS kind
              FROM newsletter_issues i LEFT JOIN email_campaigns c ON c.id = i.campaign_id
-            WHERE i.list_id = ?1 AND (i.campaign_id IS NOT NULL OR i.set_aside_at IS NOT NULL)
+            WHERE i.list_id = ?1 AND (i.campaign_id IS NOT NULL OR i.set_aside_at IS NOT NULL) AND ${NOT_TEMPLATE}
            UNION ALL
            SELECT NULL, c.id, '', c.subject, c.status, c.created_at, c.created_by, c.total_recipients, c.rowid, 1
              FROM email_campaigns c
@@ -494,4 +507,225 @@ export async function lastIssues(db: D1Database, listId: string): Promise<LastNe
     by: nameOf(row.by_name),
     totalRecipients: row.total_recipients,
   }))
+}
+
+// Saved templates. A saved template is a row of newsletter_issues of its own: a copy of a letter's words, set aside
+// from the start (set_aside_at), so it is never the open letter and never sent, with pinned_at, when it was saved, and
+// pinned_name, its name. It shows while pinned_at is set. Remove clears pinned_at and keeps the name and the words, so
+// no row is deleted, and a removed template is listed nowhere. Everyone requireListMailer admits sees and changes the
+// same ones, as they do the open letter. Its month, subject and preview line are always empty: only the body is kept,
+// as a past newsletter gives only its body to a start.
+
+/** The longest name a saved template may have, once cleaned: one number for the server and the page (domain/mail/letter.ts). */
+export { TEMPLATE_NAME_MAX }
+/** The most saved templates a list shows at once. */
+export const TEMPLATES_MAX = 40
+/** A template refused because its letter holds no words. */
+export const TEMPLATE_EMPTY = 'This letter has no words yet, so it cannot be saved as a template.'
+/** The save past TEMPLATES_MAX, refused. */
+export const TEMPLATES_FULL = `There are already ${TEMPLATES_MAX} saved templates. Remove one, then save this one.`
+/** A name another shown template already has, in any case, refused in its own words. */
+export const templateNameTaken = (name: string) => `A template is already called ${name}. Choose another name.`
+/** A rename or a remove refused, with nothing written: someone wrote to the template after the list was read. */
+export const TEMPLATE_CHANGED = 'Someone changed this template after you opened the list, so nothing was changed.'
+
+/** One saved template, as the contracts give it: its name, when it was saved and by whom, by first name, and its version. */
+export interface SavedTemplate {
+  id: string
+  name: string
+  savedAt: string
+  by: string | null
+  version: number
+}
+
+/** Why a rename or a remove changed nothing: the template was written to since it was read, by whom, by name, and when. */
+export interface TemplateChanged {
+  changedBy: string | null
+  changedAt: string
+}
+
+/** A template's words or name refused before anything is written: the status and the words to answer with. */
+export interface TemplateRefusal {
+  status: 400 | 409 | 413
+  error: string
+}
+
+interface TemplateRow {
+  id: string
+  name: string
+  saved_at: string
+  version: number
+  by_name: string | null
+}
+
+/** A saved template's columns and its saver's name, as the reads below select them from `i`, joined to members as `m`. */
+const TEMPLATE_COLUMNS = 'i.id, i.pinned_name AS name, i.pinned_at AS saved_at, i.version, m.full_name AS by_name'
+
+/** The first word of a name as an account holds it, or null for an account that is gone or holds none. */
+const firstNameOf = (name: string | null | undefined): string | null => nameOf(name)?.trim().split(/\s+/)[0] ?? null
+
+const templateOf = (row: TemplateRow): SavedTemplate => ({ id: row.id, name: row.name, savedAt: row.saved_at, by: firstNameOf(row.by_name), version: row.version })
+
+/** One shown template of a list by its id. */
+const templateStatement = (db: D1Database, id: string, listId: string) =>
+  db.prepare(`SELECT ${TEMPLATE_COLUMNS} FROM newsletter_issues i LEFT JOIN members m ON m.id = i.created_by WHERE i.id = ?1 AND i.list_id = ?2 AND ${SHOWN_TEMPLATE}`).bind(id, listId)
+
+/** Another shown template of a list with this name, in any case, by its name as the list shows it: never the one being renamed. */
+const nameTakenStatement = (db: D1Database, listId: string, name: string, id: string | null) =>
+  db
+    .prepare(`SELECT i.pinned_name AS name FROM newsletter_issues i WHERE i.list_id = ?1 AND ${SHOWN_TEMPLATE} AND lower(i.pinned_name) = lower(?2) AND (?3 IS NULL OR i.id <> ?3)`)
+    .bind(listId, name, id)
+
+/** A list's shown templates, newest first, at most TEMPLATES_MAX, without their words. One query. */
+export async function listTemplates(db: D1Database, listId: string): Promise<SavedTemplate[]> {
+  const { results } = await db
+    .prepare(
+      `SELECT ${TEMPLATE_COLUMNS} FROM newsletter_issues i LEFT JOIN members m ON m.id = i.created_by
+        WHERE i.list_id = ?1 AND ${SHOWN_TEMPLATE}
+        ORDER BY i.pinned_at DESC, i.rowid DESC
+        LIMIT ${TEMPLATES_MAX}`,
+    )
+    .bind(listId)
+    .all<TemplateRow>()
+  return (results ?? []).map(templateOf)
+}
+
+/** Where a saved template's words come from: the letter as the page holds it now, a past letter of the list, or a send on it. */
+export type TemplateFrom = { bodyHtml: string } | { issueId: string } | { campaignId: string }
+
+export interface SaveTemplateArgs {
+  listId: string
+  /** The name as the writer typed it; trimmed here. */
+  name: string
+  from: TemplateFrom
+  /** The member saving it. */
+  by: string
+}
+
+export type SaveTemplateResult = { saved: SavedTemplate } | { refused: TemplateRefusal } | { notFound: true }
+
+/** A new row's id: 32 hex characters, random, as the inserts above make with randomblob(16). */
+function newId(): string {
+  return Array.from(crypto.getRandomValues(new Uint8Array(16)), (byte) => byte.toString(16).padStart(2, '0')).join('')
+}
+
+/**
+ * Saves a copy of a letter's words as a template of the list under its name, trimmed. The words are cleaned as a save's
+ * (the letter on the page) or as a start's (a past letter or a send, by the id its row carries), and refused in the same
+ * words; a letter with no words is refused (TEMPLATE_EMPTY). The insert is one statement that writes only while no
+ * other shown template has the name, in any case, and while fewer than TEMPLATES_MAX show, then one read of it and of
+ * why not. Nothing else is written: the open letter, and the past letter or send copied, stay as they were.
+ */
+export async function saveTemplate(db: D1Database, args: SaveTemplateArgs): Promise<SaveTemplateResult> {
+  const name = args.name.trim()
+  const from = args.from
+  let cleaned: string
+  if ('bodyHtml' in from) {
+    const letter = await cleanedLetter(from.bodyHtml, 'save')
+    if ('refused' in letter) return { refused: letter.refused }
+    cleaned = letter.cleaned
+  } else {
+    const words = await sourceWords(db, args.listId, from)
+    if (words === null) return { notFound: true }
+    const letter = await cleanedLetter(words, 'start')
+    if ('refused' in letter) return { refused: letter.refused }
+    cleaned = letter.cleaned
+  }
+  if (!bodyHasWords(cleaned)) return { refused: { status: 400, error: TEMPLATE_EMPTY } }
+
+  const id = newId()
+  const [insert, read, taken] = await db.batch([
+    db
+      .prepare(
+        `INSERT INTO newsletter_issues (id, list_id, body_html, version, created_by, updated_by, set_aside_at, pinned_at, pinned_name)
+         SELECT ?1, ?2, ?3, 1, ?4, ?4, datetime('now'), datetime('now'), ?5
+          WHERE NOT EXISTS (SELECT 1 FROM newsletter_issues i WHERE i.list_id = ?2 AND ${SHOWN_TEMPLATE} AND lower(i.pinned_name) = lower(?5))
+            AND (SELECT count(*) FROM newsletter_issues i WHERE i.list_id = ?2 AND ${SHOWN_TEMPLATE}) < ${TEMPLATES_MAX}`,
+      )
+      .bind(id, args.listId, cleaned, args.by, name),
+    templateStatement(db, id, args.listId),
+    nameTakenStatement(db, args.listId, name, id),
+  ])
+  const row = (read.results as TemplateRow[])[0]
+  if (insert.meta.changes === 1 && row) return { saved: templateOf(row) }
+  const takenBy = (taken.results as Array<{ name: string }>)[0]
+  if (takenBy) return { refused: { status: 409, error: templateNameTaken(takenBy.name) } }
+  return { refused: { status: 409, error: TEMPLATES_FULL } }
+}
+
+/** A template's state as a rename or a remove that changed nothing reads it: its version, its last write and who made it. */
+interface TemplateStateRow {
+  version: number
+  updated_at: string
+  saved_by: string | null
+}
+
+const templateStateStatement = (db: D1Database, id: string, listId: string) =>
+  db
+    .prepare(`SELECT i.version, i.updated_at, m.full_name AS saved_by FROM newsletter_issues i LEFT JOIN members m ON m.id = i.updated_by WHERE i.id = ?1 AND i.list_id = ?2 AND ${SHOWN_TEMPLATE}`)
+    .bind(id, listId)
+
+export interface TemplateWriteArgs {
+  listId: string
+  id: string
+  /** The version the page read. */
+  version: number
+  /** The member writing. */
+  by: string
+}
+
+export type RenameTemplateResult = { saved: SavedTemplate } | { refused: TemplateRefusal } | { changed: TemplateChanged } | { notFound: true }
+
+/**
+ * Renames a shown template of the list, at the version read, to a name no other shown template has, in any case, in one
+ * statement that moves its version, then one read of it, of its state and of the name. A template removed, or not the
+ * list's, is not found; one written to since it was read is answered with who and when; a name taken, in words.
+ */
+export async function renameTemplate(db: D1Database, args: TemplateWriteArgs & { name: string }): Promise<RenameTemplateResult> {
+  const name = args.name.trim()
+  const [update, read, state, taken] = await db.batch([
+    db
+      .prepare(
+        `UPDATE newsletter_issues
+            SET pinned_name = ?4, version = version + 1, updated_by = ?5, updated_at = datetime('now')
+          WHERE id = ?1 AND list_id = ?2 AND version = ?3 AND pinned_name IS NOT NULL AND pinned_at IS NOT NULL
+            AND NOT EXISTS (SELECT 1 FROM newsletter_issues i WHERE i.list_id = ?2 AND ${SHOWN_TEMPLATE} AND lower(i.pinned_name) = lower(?4) AND i.id <> ?1)`,
+      )
+      .bind(args.id, args.listId, args.version, name, args.by),
+    templateStatement(db, args.id, args.listId),
+    templateStateStatement(db, args.id, args.listId),
+    nameTakenStatement(db, args.listId, name, args.id),
+  ])
+  const row = (read.results as TemplateRow[])[0]
+  const now = (state.results as TemplateStateRow[])[0]
+  if (!row || !now) return { notFound: true }
+  if (update.meta.changes === 1) return { saved: templateOf(row) }
+  if (now.version !== args.version) return { changed: { changedBy: nameOf(now.saved_by), changedAt: now.updated_at } }
+  const takenBy = (taken.results as Array<{ name: string }>)[0]
+  if (takenBy) return { refused: { status: 409, error: templateNameTaken(takenBy.name) } }
+  return { changed: { changedBy: nameOf(now.saved_by), changedAt: now.updated_at } }
+}
+
+export type RemoveTemplateResult = { removed: true } | { changed: TemplateChanged } | { notFound: true }
+
+/**
+ * Removes a shown template of the list from the chooser, at the version read: pinned_at is cleared and its version
+ * moved, its name and words kept, and nothing deleted. Letters already started from it are their own rows and stay. A
+ * template removed already, or not the list's, is not found; one written to since it was read is answered with who and when.
+ */
+export async function removeTemplate(db: D1Database, args: TemplateWriteArgs): Promise<RemoveTemplateResult> {
+  const [update, state] = await db.batch([
+    db
+      .prepare(
+        `UPDATE newsletter_issues
+            SET pinned_at = NULL, version = version + 1, updated_by = ?4, updated_at = datetime('now')
+          WHERE id = ?1 AND list_id = ?2 AND version = ?3 AND pinned_name IS NOT NULL AND pinned_at IS NOT NULL`,
+      )
+      .bind(args.id, args.listId, args.version, args.by),
+    templateStateStatement(db, args.id, args.listId),
+  ])
+  if (update.meta.changes === 1) return { removed: true }
+  const now = (state.results as TemplateStateRow[])[0]
+  if (!now) return { notFound: true }
+  return { changed: { changedBy: nameOf(now.saved_by), changedAt: now.updated_at } }
 }

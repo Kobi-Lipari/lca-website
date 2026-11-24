@@ -71,8 +71,9 @@ describe('collectRoutes on the real functions folder', () => {
     // functions/api/clubs/confirm/[token].ts, the monthly check's link, and functions/api/admin/clubs/monthly-check.ts, the LCA admin's button, two new routes, are the 102nd and 103rd since WS09 step 14.
     // functions/api/admin/tournaments/[id]/approval.ts, the LCA admins' wait for a representative's club event, a new route, is the 104th since WS09 step 18.
     // functions/api/admin/mail/newsletter/issue.ts, issue/start.ts and issues.ts, three new routes of WS16 part two, page step 3, are the 105th to 107th since main was brought in.
-    // functions/api/clubs/[id]/page.ts, the new club page's answer, a new route of WS09 step 20, is the 108th since checkpoint W took main in.
-    expect(real.filter((r) => r.startsWith('api/')).length).toBe(108)
+    // functions/api/admin/mail/newsletter/templates.ts, the newsletter's saved templates, a new route of WS16 part two, is the 108th.
+    // functions/api/clubs/[id]/page.ts, the new club page's answer, a new route of WS09 step 20, is the 109th since checkpoint W took main in again.
+    expect(real.filter((r) => r.startsWith('api/')).length).toBe(109)
     // functions/sitemap.xml.ts, the sitemap, is a page route outside api (WS09 step 24), so the count of api files stands.
     expect(real).toEqual(expect.arrayContaining(['tournaments/[id]', 'clubs/[id]', 'news/[slug]', 'sitemap.xml']))
     // functions/robots.txt.ts, the robots file that names the sitemap, is a page route outside api too (checkpoint W, K's decision 11).

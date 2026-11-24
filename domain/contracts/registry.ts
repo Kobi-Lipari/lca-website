@@ -66,6 +66,12 @@ import {
   newsletterIssueSaveRequestSchema,
   newsletterIssuesResponseSchema,
   newsletterIssueStartRequestSchema,
+  newsletterTemplateRemovedResponseSchema,
+  newsletterTemplateRemoveRequestSchema,
+  newsletterTemplateRenameRequestSchema,
+  newsletterTemplateSavedResponseSchema,
+  newsletterTemplateSaveRequestSchema,
+  newsletterTemplatesResponseSchema,
   newsletterTestLetterRequestSchema,
   newsletterTestLetterResponseSchema,
 } from './newsletter'
@@ -130,6 +136,12 @@ export const contracts = {
   },
   'admin/mail/newsletter/stop': {
     POST: { response: newsletterStopResponseSchema },
+  },
+  'admin/mail/newsletter/templates': {
+    GET: { response: newsletterTemplatesResponseSchema },
+    POST: { request: newsletterTemplateSaveRequestSchema, response: newsletterTemplateSavedResponseSchema },
+    PUT: { request: newsletterTemplateRenameRequestSchema, response: newsletterTemplateSavedResponseSchema },
+    DELETE: { request: newsletterTemplateRemoveRequestSchema, response: newsletterTemplateRemovedResponseSchema },
   },
   'admin/mail/newsletter/test': {
     // Today's form, and the newsletter's own page's test of the stored letter, taken only while MAIL_PAGE_ON is set.

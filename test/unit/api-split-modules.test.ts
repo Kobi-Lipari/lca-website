@@ -342,7 +342,7 @@ describe('calls through the barrel send what they sent before', () => {
     const { getTournamentCreation, requestPayoutAccount, ApiError } = await import('@/lib/api')
     expect([...ADDED.paths].sort()).toEqual([
       '/api/admin/clubs/*/confirm', '/api/admin/clubs/monthly-check', '/api/admin/mail/newsletter', '/api/admin/mail/newsletter/issue',
-      '/api/admin/mail/newsletter/issue/start', '/api/admin/mail/newsletter/issues', '/api/admin/mail/newsletter/stop', '/api/admin/mail/newsletter/test',
+      '/api/admin/mail/newsletter/issue/start', '/api/admin/mail/newsletter/issues', '/api/admin/mail/newsletter/stop', '/api/admin/mail/newsletter/templates', '/api/admin/mail/newsletter/test',
       '/api/admin/tournaments/*/approval', '/api/clubs/*/page', '/api/clubs/confirm/*', '/api/mail/preferences/*', '/api/mail/unsubscribe/*', '/api/me/media-manager', '/api/me/payout-request', '/api/me/tournament-creation', '/api/workspace/region',
     ])
     session.token = 'tok-5'

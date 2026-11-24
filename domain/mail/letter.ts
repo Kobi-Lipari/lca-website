@@ -200,3 +200,22 @@ export function defaultSubject(month: string): string {
   const words = month.replace(/\s+/g, ' ').trim()
   return words === '' ? SUBJECT_START : `${SUBJECT_START}${SUBJECT_SEPARATOR}${words}`
 }
+
+/** The longest name a saved template may have, counted in characters once it is cleaned as templateNameAsStored cleans it. */
+export const TEMPLATE_NAME_MAX = 60
+
+/**
+ * Every character Unicode says is drawn as nothing (zero width spaces, direction marks, word joiners, the byte order
+ * mark, soft hyphens, fillers), which a name pasted from a document can carry and nobody sees. The zero width joiner and
+ * the variation selector are left out of it, since an emoji needs them.
+ */
+const UNSEEN_IN_NAMES = /(?!\u200D|\uFE0F)\p{Default_Ignorable_Code_Point}/gu
+
+/**
+ * A saved template's name as it is stored and compared: accents joined to their letters, the marks nobody sees taken
+ * out, then trimmed, so two names a person reads alike are one name. The server's rule (domain/contracts/newsletter.ts)
+ * and the page's count of a name's characters (TemplateChooser.tsx) both use this, so they cannot drift apart.
+ */
+export function templateNameAsStored(text: string): string {
+  return text.normalize('NFC').replace(UNSEEN_IN_NAMES, '').trim()
+}

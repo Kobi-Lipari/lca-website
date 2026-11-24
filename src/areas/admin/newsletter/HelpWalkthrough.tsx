@@ -62,9 +62,13 @@ function helpSteps(width: HelpWidth, sendReady: boolean): HelpStep[] {
     {
       target: 'pick',
       title: pick,
+      // The card points at the control, so its words do not say where it is. Words already in the letter are set aside
+      // under Your last newsletters before a new start replaces them (startIssue, then lastIssues). A saved template is
+      // a copy of the letter's body (saveTemplate) that everyone the page admits can start from (listTemplates).
       words: [
-        offFront('Pick a template to start from, in the bar at the foot: a blank letter, a template or a past newsletter. It saves time: pick one, then change the words.', pick),
-        'If you have already written something, we ask before replacing it, and keep your words under Your last newsletters.',
+        'Start from a blank letter, a template or a past newsletter, then change the words.',
+        'If the letter already has words, the page asks before replacing them and keeps them under Your last newsletters.',
+        "To use a letter's words again, save it as a template. Everyone who writes the newsletter can start from it.",
       ],
     },
     { target: 'from', title: 'From', words: [offFront('From is who members see as the sender.', 'From')] },

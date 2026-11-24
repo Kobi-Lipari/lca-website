@@ -12,7 +12,8 @@
 // functions/utils/mail/issues.ts): the month, the subject, its state in a
 // word, when, who by, by name as the open letter names a person, and for a
 // send how many it went to, the count the newsletter tab already gives. No
-// reader's address and no other count.
+// reader's address and no other count. A saved template is never among them,
+// shown or removed (the templates endpoint beside this one lists those).
 import type { Env } from '../../../../types'
 import { NEWSLETTER_LIST_ID } from '../../../../../domain/mail/lists'
 import type { NewsletterIssuesResponse } from '../../../../../domain/contracts/newsletter'

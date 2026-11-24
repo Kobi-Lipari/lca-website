@@ -46,10 +46,10 @@ type Handler = Parameters<typeof invoke>[0]
 
 const modules = import.meta.glob('../../functions/api/admin/**/*.ts', { eager: true }) as Record<string, Record<string, unknown>>
 
-/** The handler files the media manager may pass, by path under functions/api/admin: part one's three, then the newsletter page's three. */
+/** The handler files the media manager may pass, by path under functions/api/admin: part one's three, then the newsletter page's three and its saved templates. */
 const ALLOWED = [
   'mail/newsletter.ts', 'mail/newsletter/stop.ts', 'mail/newsletter/test.ts',
-  'mail/newsletter/issue.ts', 'mail/newsletter/issue/start.ts', 'mail/newsletter/issues.ts',
+  'mail/newsletter/issue.ts', 'mail/newsletter/issue/start.ts', 'mail/newsletter/issues.ts', 'mail/newsletter/templates.ts',
 ]
 
 const METHODS: Record<string, string> = { Get: 'GET', Post: 'POST', Put: 'PUT', Patch: 'PATCH', Delete: 'DELETE' }

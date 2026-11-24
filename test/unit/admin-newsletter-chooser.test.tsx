@@ -91,6 +91,7 @@ const ISSUE_URL = '/api/admin/mail/newsletter/issue'
 const COUNT_URL = '/api/admin/mail/newsletter'
 const ISSUES_URL = '/api/admin/mail/newsletter/issues'
 const START_URL = '/api/admin/mail/newsletter/issue/start'
+const TEMPLATES_URL = '/api/admin/mail/newsletter/templates'
 const BODY = '<h2>Sample heading one</h2><p>Sample words one</p><h2>Sample heading two</h2><p>Sample words two</p>'
 const MONTH = 'December 2026'
 
@@ -117,7 +118,9 @@ let answers: Record<string, Given[]> = {}
 let calls: string[] = []
 let puts: Array<Record<string, unknown>> = []
 let starts: Array<Record<string, unknown>> = []
-const on = (method: string, url: string, ...list: Given[]) => {
+let templateSaves: Array<Record<string, unknown>> = []
+let templateRemoves: Array<Record<string, unknown>> = []
+const on =(method: string, url: string, ...list: Given[]) => {
   answers[`${method} ${url}`] = list
 }
 /** A deferred answer: the request waits until `give` is called. */
@@ -160,6 +163,10 @@ const row = (extra: Record<string, unknown> = {}) => ({
   at: '2026-11-16 20:15:00', by: null, totalRecipients: null, ...extra,
 })
 const issues = (...list: unknown[]) => ({ status: 200, body: { issues: list } })
+/** One saved template as GET .../templates gives it. */
+const template = (extra: Record<string, unknown> = {}) => ({ id: 'sample-template-1', name: 'Sample club night', savedAt: '2026-11-24 15:00:00', by: 'Player', version: 1, ...extra })
+const templates = (...list: unknown[]) => ({ status: 200, body: { templates: list } })
+const templateReads = () => calls.filter((call) => call === `GET ${TEMPLATES_URL}`).length
 const refusedWith = (reason: string, by = 'Player Two') => ({ status: 409, body: { error: 'Sample refusal words', reason, changedBy: by, changedAt: '2026-11-16 20:17:00' } })
 
 const part = (value: unknown) => btoa(JSON.stringify(value)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '')
@@ -182,6 +189,8 @@ beforeEach(() => {
   calls = []
   puts = []
   starts = []
+  templateSaves = []
+  templateRemoves = []
   animations = []
   flags.mailLists = true
   flags.mailPage = true
@@ -190,6 +199,8 @@ beforeEach(() => {
     calls.push(`${method} ${url}`)
     if (method === 'PUT') puts.push(JSON.parse(String(init?.body)))
     if (method === 'POST' && url === START_URL) starts.push(JSON.parse(String(init?.body)))
+    if (method === 'POST' && url === TEMPLATES_URL) templateSaves.push(JSON.parse(String(init?.body)))
+    if (method === 'DELETE' && url === TEMPLATES_URL) templateRemoves.push(JSON.parse(String(init?.body)))
     const list = answers[`${method} ${url}`]
     const answer = (await (list && list.length > 1 ? list.shift() : list?.[0])) ?? { status: 404, body: { error: 'Not found' } }
     if (answer === 'network') throw new TypeError('Failed to fetch')
@@ -208,6 +219,7 @@ beforeEach(() => {
   on('GET', ISSUE_URL, { status: 200, body: letter() })
   on('GET', COUNT_URL, count())
   on('GET', ISSUES_URL, issues())
+  on('GET', TEMPLATES_URL, templates())
   on('PUT', ISSUE_URL, { status: 200, body: { id: 'sample-letter-1', version: 4, savedAt: '2026-11-16 20:20:00', bodyHtml: null } })
 })
 afterEach(() => {
@@ -336,12 +348,15 @@ describe('the chooser', () => {
       at = text.indexOf(words, at + 1)
     }
     expect(within(dialog).getAllByRole('heading', { level: 3 }).map((h) => h.textContent)).toEqual(['Pinned templates', 'Your last newsletters'])
-    // Each "Use this" says which choice it is, in the chooser's order, and nothing else in it is a button but Close.
-    expect(within(dialog).getAllByRole('button').map((b) => b.getAttribute('aria-label'))).toEqual([
+    // Each "Use this" says which choice it is, in the chooser's order, and nothing else in it is a button but Close,
+    // "Save this letter as a template" under the templates and each past newsletter's own "Save as a template".
+    expect(within(dialog).getAllByRole('button').map((b) => b.getAttribute('aria-label') ?? b.textContent)).toEqual([
       'Close', 'Use this: Blank letter', 'Use this: Monthly newsletter', 'Use this: Results and thanks', 'Use this: Short notice',
+      'Save this letter as a template',
       'Use this: Example: November 2026, sent Mon, Nov 16, 2026 to 155 members',
+      'Save as a template: Example: November 2026, sent Mon, Nov 16, 2026 to 155 members',
     ])
-    for (const button of within(dialog).getAllByRole('button').slice(1)) expect(button.textContent).toBe('Use this')
+    for (const button of within(dialog).getAllByRole('button', { name: /^Use this: / })) expect(button.textContent).toBe('Use this')
     // The tournament templates are the tournament send-outs', and the board's two lines under the chooser are Help's.
     for (const words of ['tournament announcement', 'For a club', 'Pin it as a template', 'History', 'as it is now']) expect(text, words).not.toContain(words)
     // The small drawings, one for each choice, are hidden from a screen reader.
@@ -511,6 +526,402 @@ describe('the chooser', () => {
   })
 })
 
+describe('saved templates', () => {
+  it('stand after LCA\'s three starters under Pinned templates, newest first as the server lists them, each with its name, the day it was saved with its weekday and who saved it, and its own "Use this"', async () => {
+    windowAt(1440)
+    on('GET', TEMPLATES_URL, templates(
+      template({ id: 'sample-template-2', name: 'Sample spring open', savedAt: '2026-11-24 15:00:00', by: 'Player' }),
+      template({ id: 'sample-template-1', name: 'Sample club night', savedAt: '2026-11-20 18:30:00', by: null }),
+    ))
+    await thePage()
+    expect(templateReads()).toBe(0)
+    const dialog = await openFrom(pickWide())
+    expect(templateReads()).toBe(1)
+    const text = dialog.textContent ?? ''
+    const order = ['Pinned templates', 'Short notice', 'A few lines, no sections', 'Sample spring open', 'Saved Tue, Nov 24, 2026 by Player', 'Sample club night', 'Saved Fri, Nov 20, 2026', 'Your last newsletters']
+    let at = -1
+    for (const words of order) {
+      expect(text.indexOf(words, at + 1), words).toBeGreaterThan(at)
+      at = text.indexOf(words, at + 1)
+    }
+    expect(within(dialog).getAllByRole('heading', { level: 3 }).map((h) => h.textContent)).toEqual(['Pinned templates', 'Your last newsletters'])
+    // Each saved row holds "Use this" and then its own Rename and Remove, which the built in rows do not have.
+    const labels = within(dialog).getAllByRole('button').map((b) => b.getAttribute('aria-label'))
+    expect(labels.slice(labels.indexOf('Use this: Short notice') + 1, labels.indexOf('Use this: Short notice') + 7)).toEqual([
+      'Use this: Sample spring open, saved Tue, Nov 24, 2026 by Player',
+      'Rename: Sample spring open',
+      'Remove: Sample spring open',
+      'Use this: Sample club night, saved Fri, Nov 20, 2026',
+      'Rename: Sample club night',
+      'Remove: Sample club night',
+    ])
+    expect(labels.filter((label) => label?.startsWith('Rename: '))).toHaveLength(2)
+    expect(labels.filter((label) => label?.startsWith('Remove: '))).toHaveLength(2)
+    // Read again each time the chooser opens, so a template another writer saved meanwhile is there.
+    key(focused(), 'Escape')
+    await settle()
+    await openFrom(pickWide())
+    expect(templateReads()).toBe(2)
+  })
+
+  it('start a letter from a saved template by its id, saying once which template it came from', async () => {
+    windowAt(1440)
+    on('GET', ISSUE_URL, { status: 200, body: emptyLetter() })
+    on('GET', TEMPLATES_URL, templates(template()))
+    on('POST', START_URL, startedAs('<p>Sample template words</p>'))
+    await thePage()
+    await openFrom(pickWide())
+    fireEvent.click(buttonFor('Sample club night, saved Tue, Nov 24, 2026 by Player'))
+    await settle()
+    expect(starts).toEqual([{ from: { templateId: 'sample-template-1' }, monthLabel: MONTH }])
+    expect(noChooser()).toBeNull()
+    // The line says it a quarter of a second after the focus, as for every other choice.
+    await settle(300)
+    expect(quietLine()).toBe('Started from Sample club night')
+  })
+
+  it('say so in words when they could not be read, with Try again, the starters and the last newsletters usable meanwhile', async () => {
+    windowAt(1440)
+    on('GET', TEMPLATES_URL, { status: 500, body: { error: 'Sample failure' } }, templates(template()))
+    await thePage()
+    const dialog = await openFrom(pickWide())
+    expect(within(dialog).getAllByRole('alert').map((alert) => alert.textContent)).toContain('Saved templates could not be read.')
+    expect(buttonFor('Monthly newsletter').getAttribute('aria-disabled')).toBeNull()
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Try again' }))
+    // The button goes as the templates are read again, so the focus goes to the group's head.
+    expect(focused().textContent).toBe('Pinned templates')
+    await settle()
+    expect(templateReads()).toBe(2)
+    expect(dialog.textContent).not.toContain('Saved templates could not be read.')
+    expect(buttonFor('Sample club night, saved Tue, Nov 24, 2026 by Player')).toBeTruthy()
+  })
+})
+
+describe('saving this letter as a template', () => {
+  const saveButton = () => within(chooser()).getByRole('button', { name: 'Save this letter as a template' })
+  const nameField = () => within(chooser()).getByRole('textbox', { name: 'Template name' }) as HTMLInputElement
+
+  it('saves a copy of the words on the page under the name typed, reads the list again and puts the focus on the new template\'s "Use this"', async () => {
+    windowAt(1440)
+    const saving = template({ id: 'sample-template-9', name: 'Sample league night', savedAt: '2026-11-24 16:00:00' })
+    on('GET', TEMPLATES_URL, templates(), templates(saving))
+    on('POST', TEMPLATES_URL, { status: 201, body: { template: saving } })
+    await thePage()
+    const dialog = await openFrom(pickWide())
+    const text = dialog.textContent ?? ''
+    expect(text.indexOf('Save this letter as a template')).toBeGreaterThan(text.indexOf('A few lines, no sections'))
+    expect(text.indexOf('Save this letter as a template')).toBeLessThan(text.indexOf('Your last newsletters'))
+    fireEvent.click(saveButton())
+    expect(focused()).toBe(nameField())
+    // No maxLength: it counts an emoji as two, so the 60 characters are held on Save, as the server counts them.
+    expect(nameField().maxLength).toBe(-1)
+    fireEvent.change(nameField(), { target: { value: '  Sample league night ' } })
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Save template' }))
+    await settle()
+    expect(templateSaves).toEqual([{ name: 'Sample league night', bodyHtml: BODY }])
+    expect(templateReads()).toBe(2)
+    expect(focused()).toBe(buttonFor('Sample league night, saved Tue, Nov 24, 2026 by Player'))
+    expect(within(dialog).queryByRole('textbox', { name: 'Template name' })).toBeNull()
+    // The letter being written is left as it is.
+    expect(starts).toEqual([])
+    key(focused(), 'Escape')
+    await settle()
+    expect(subject().value).toBe(defaultSubject(MONTH))
+  })
+
+  it('says a refusal once, tied to the name field, and keeps the focus there with the name typed', async () => {
+    windowAt(1440)
+    on('POST', TEMPLATES_URL, { status: 409, body: { error: 'A template is already called Sample club night. Choose another name.' } })
+    await thePage()
+    const dialog = await openFrom(pickWide())
+    fireEvent.click(saveButton())
+    fireEvent.change(nameField(), { target: { value: 'Sample club night' } })
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Save template' }))
+    await settle()
+    const words = 'A template is already called Sample club night. Choose another name.'
+    expect(within(dialog).getAllByRole('alert').filter((alert) => alert.textContent === words)).toHaveLength(1)
+    expect(nameField().getAttribute('aria-invalid')).toBe('true')
+    expect(document.getElementById(nameField().getAttribute('aria-describedby') ?? '')?.textContent).toBe(words)
+    expect(focused()).toBe(nameField())
+    expect(nameField().value).toBe('Sample club night')
+  })
+
+  it('asks for a name before it sends anything', async () => {
+    windowAt(1440)
+    await thePage()
+    const dialog = await openFrom(pickWide())
+    fireEvent.click(saveButton())
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Save template' }))
+    await settle()
+    expect(templateSaves).toEqual([])
+    expect(document.getElementById(nameField().getAttribute('aria-describedby') ?? '')?.textContent).toBe('Write a name for the template.')
+    expect(focused()).toBe(nameField())
+  })
+
+  it('gives the focus back to "Save this letter as a template" on Cancel, with nothing sent', async () => {
+    windowAt(1440)
+    await thePage()
+    const dialog = await openFrom(pickWide())
+    fireEvent.click(saveButton())
+    fireEvent.change(nameField(), { target: { value: 'Sample league night' } })
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Cancel' }))
+    expect(focused()).toBe(saveButton())
+    expect(within(dialog).queryByRole('textbox', { name: 'Template name' })).toBeNull()
+    expect(templateSaves).toEqual([])
+  })
+
+  it('cannot save a letter with no words, and the button says why', async () => {
+    windowAt(1440)
+    on('GET', ISSUE_URL, { status: 200, body: emptyLetter() })
+    await thePage()
+    await openFrom(pickWide())
+    expect(saveButton().getAttribute('aria-disabled')).toBe('true')
+    expect(document.getElementById(saveButton().getAttribute('aria-describedby') ?? '')?.textContent).toBe('This letter has no words yet, so it cannot be saved as a template.')
+    fireEvent.click(saveButton())
+    expect(within(chooser()).queryByRole('textbox', { name: 'Template name' })).toBeNull()
+  })
+})
+
+describe('saving a past newsletter as a template', () => {
+  const nameField = () => within(chooser()).getByRole('textbox', { name: 'Template name' }) as HTMLInputElement
+
+  it('saves a past letter by its id, or a plain send by its send\'s, under the name typed, the focus then on the new template\'s "Use this"', async () => {
+    windowAt(1440)
+    const fromLetter = template({ id: 'sample-template-7', name: 'Sample from a letter', savedAt: '2026-11-24 16:00:00' })
+    const fromSend = template({ id: 'sample-template-8', name: 'Sample from a send', savedAt: '2026-11-24 16:05:00' })
+    on('GET', ISSUES_URL, issues(
+      row({ issueId: 'sample-letter-5', campaignId: 'campaign-sample-5', monthLabel: 'November 2026', state: 'completed', totalRecipients: 155 }),
+      row({ issueId: null, campaignId: 'campaign-sample-3', monthLabel: '', subject: 'Sample plain subject', state: 'completed', totalRecipients: 20 }),
+    ))
+    on('GET', TEMPLATES_URL, templates(), templates(fromLetter), templates(fromSend, fromLetter))
+    on('POST', TEMPLATES_URL, { status: 201, body: { template: fromLetter } }, { status: 201, body: { template: fromSend } })
+    await thePage()
+    const dialog = await openFrom(pickWide())
+    const saveFor = (name: string) => within(dialog).getByRole('button', { name: `Save as a template: ${name}` })
+    const letterRow = 'November 2026, sent Mon, Nov 16, 2026 to 155 members'
+    const sendRow = 'Sample plain subject, sent Mon, Nov 16, 2026 to 20 members'
+    expect(saveFor(letterRow).textContent).toBe('Save as a template')
+    fireEvent.click(saveFor(letterRow))
+    expect(focused()).toBe(nameField())
+    // One name field at a time: the letter's own save is not offered while it is open.
+    expect(within(dialog).queryByRole('button', { name: 'Save this letter as a template' })).toBeNull()
+    fireEvent.change(nameField(), { target: { value: 'Sample from a letter' } })
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Save template' }))
+    await settle()
+    expect(focused()).toBe(buttonFor('Sample from a letter, saved Tue, Nov 24, 2026 by Player'))
+    fireEvent.click(saveFor(sendRow))
+    fireEvent.change(nameField(), { target: { value: ' Sample from a send ' } })
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Save template' }))
+    await settle()
+    expect(templateSaves).toEqual([
+      { name: 'Sample from a letter', from: { issueId: 'sample-letter-5' } },
+      { name: 'Sample from a send', from: { campaignId: 'campaign-sample-3' } },
+    ])
+    expect(focused()).toBe(buttonFor('Sample from a send, saved Tue, Nov 24, 2026 by Player'))
+    expect(starts).toEqual([])
+  })
+
+  it('gives the focus back to that row\'s "Save as a template" on Cancel, with nothing sent', async () => {
+    windowAt(1440)
+    on('GET', ISSUES_URL, issues(row({ issueId: 'sample-letter-5', campaignId: 'campaign-sample-5', monthLabel: 'November 2026', state: 'completed', totalRecipients: 155 })))
+    await thePage()
+    const dialog = await openFrom(pickWide())
+    const opener = () => within(dialog).getByRole('button', { name: 'Save as a template: November 2026, sent Mon, Nov 16, 2026 to 155 members' })
+    fireEvent.click(opener())
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Cancel' }))
+    expect(focused()).toBe(opener())
+    expect(within(dialog).queryByRole('textbox', { name: 'Template name' })).toBeNull()
+    expect(templateSaves).toEqual([])
+  })
+})
+
+describe('renaming a saved template', () => {
+  const nameField = () => within(chooser()).getByRole('textbox', { name: 'Template name' }) as HTMLInputElement
+  const renames = () => puts.filter((body) => body.id === 'sample-template-1')
+
+  it('opens the name field with the template\'s name, sends the new name by the version read, and puts the focus on its "Use this" once the list is read again', async () => {
+    windowAt(1440)
+    const renamed = template({ name: 'Sample club evening', version: 2 })
+    on('GET', TEMPLATES_URL, templates(template()), templates(renamed))
+    on('PUT', TEMPLATES_URL, { status: 200, body: { template: renamed } })
+    await thePage()
+    const dialog = await openFrom(pickWide())
+    const rename = within(dialog).getByRole('button', { name: 'Rename: Sample club night' })
+    expect(rename.textContent).toBe('Rename')
+    fireEvent.click(rename)
+    expect(focused()).toBe(nameField())
+    expect(nameField().value).toBe('Sample club night')
+    expect(nameField().maxLength).toBe(-1)
+    // One name field at a time: the letter's own save is not offered while it is open.
+    expect(within(dialog).queryByRole('button', { name: 'Save this letter as a template' })).toBeNull()
+    fireEvent.change(nameField(), { target: { value: ' Sample club evening ' } })
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Save name' }))
+    await settle()
+    expect(renames()).toEqual([{ id: 'sample-template-1', version: 1, name: 'Sample club evening' }])
+    expect(templateReads()).toBe(2)
+    expect(focused()).toBe(buttonFor('Sample club evening, saved Tue, Nov 24, 2026 by Player'))
+    expect(within(dialog).queryByRole('textbox', { name: 'Template name' })).toBeNull()
+    expect(templateSaves).toEqual([])
+    expect(starts).toEqual([])
+  })
+
+  it('says a name taken, or a change by someone else with who and when, once and tied to the field, and a try after a change sends the version read again', async () => {
+    windowAt(1440)
+    on('GET', TEMPLATES_URL, templates(template()), templates(template({ version: 2 })))
+    on(
+      'PUT',
+      TEMPLATES_URL,
+      { status: 409, body: { error: 'A template is already called Sample spring open. Choose another name.' } },
+      { status: 409, body: { error: 'Someone changed this template after you opened the list, so nothing was changed.', changedBy: 'Player Two', changedAt: '2026-11-24 15:30:00' } },
+    )
+    await thePage()
+    const dialog = await openFrom(pickWide())
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Rename: Sample club night' }))
+    fireEvent.change(nameField(), { target: { value: 'Sample spring open' } })
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Save name' }))
+    await settle()
+    const taken = 'A template is already called Sample spring open. Choose another name.'
+    expect(within(dialog).getAllByRole('alert').filter((alert) => alert.textContent === taken)).toHaveLength(1)
+    expect(nameField().getAttribute('aria-invalid')).toBe('true')
+    expect(document.getElementById(nameField().getAttribute('aria-describedby') ?? '')?.textContent).toBe(taken)
+    expect(focused()).toBe(nameField())
+    fireEvent.change(nameField(), { target: { value: 'Sample club evening' } })
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Save name' }))
+    await settle()
+    const changed = 'Someone changed this template after you opened the list, so nothing was changed. Player Two changed it Tue, Nov 24, 2026 at 9:30 AM.'
+    expect(document.getElementById(nameField().getAttribute('aria-describedby') ?? '')?.textContent).toBe(changed)
+    expect(within(dialog).getAllByRole('alert').filter((alert) => alert.textContent === changed)).toHaveLength(1)
+    expect(focused()).toBe(nameField())
+    expect(nameField().value).toBe('Sample club evening')
+    // The list is read again, so the next try is made on the template as it now stands.
+    expect(templateReads()).toBe(2)
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Save name' }))
+    await settle()
+    expect(renames().map((body) => body.version)).toEqual([1, 1, 2])
+  })
+
+  it('says in words when someone removed the template meanwhile, reads the list again and puts the focus on the group\'s head', async () => {
+    windowAt(1440)
+    on('GET', TEMPLATES_URL, templates(template()), templates())
+    on('PUT', TEMPLATES_URL, { status: 404, body: { error: 'Not found' } })
+    await thePage()
+    const dialog = await openFrom(pickWide())
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Rename: Sample club night' }))
+    fireEvent.change(nameField(), { target: { value: 'Sample club evening' } })
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Save name' }))
+    await settle()
+    const gone = 'Someone removed this template after you opened the list, so nothing was changed.'
+    expect(within(dialog).getAllByRole('alert').filter((alert) => alert.textContent === gone)).toHaveLength(1)
+    expect(dialog.textContent).not.toContain('Not found')
+    expect(templateReads()).toBe(2)
+    expect(within(dialog).queryByRole('textbox', { name: 'Template name' })).toBeNull()
+    expect(focused().textContent).toBe('Pinned templates')
+  })
+
+  it('gives the focus back to Rename on Cancel, with nothing sent', async () => {
+    windowAt(1440)
+    on('GET', TEMPLATES_URL, templates(template()))
+    await thePage()
+    const dialog = await openFrom(pickWide())
+    const rename = () => within(dialog).getByRole('button', { name: 'Rename: Sample club night' })
+    fireEvent.click(rename())
+    fireEvent.change(nameField(), { target: { value: 'Sample club evening' } })
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Cancel' }))
+    expect(focused()).toBe(rename())
+    expect(within(dialog).queryByRole('textbox', { name: 'Template name' })).toBeNull()
+    expect(renames()).toEqual([])
+  })
+})
+
+describe('removing a saved template', () => {
+  const removeQuestion = () => screen.queryByRole('alertdialog', { name: 'Remove this template?' })
+
+  it('asks first, naming the template and saying letters started from it stay, then removes it by the version read and puts the focus on the next saved template', async () => {
+    windowAt(1440)
+    const second = template({ id: 'sample-template-2', name: 'Sample spring open', savedAt: '2026-11-20 18:30:00' })
+    on('GET', TEMPLATES_URL, templates(template(), second), templates(second))
+    on('DELETE', TEMPLATES_URL, { status: 200, body: { removed: true } })
+    await thePage()
+    const dialog = await openFrom(pickWide())
+    const remove = within(dialog).getByRole('button', { name: 'Remove: Sample club night' })
+    expect(remove.textContent).toBe('Remove')
+    fireEvent.click(remove)
+    await settle()
+    const asked = removeQuestion()
+    expect(asked?.textContent).toContain('Sample club night')
+    expect(asked?.textContent).toContain('Letters already started from it keep their words.')
+    expect(focused().textContent).toBe('Keep it')
+    fireEvent.click(within(asked as HTMLElement).getByRole('button', { name: 'Remove it' }))
+    await settle()
+    expect(templateRemoves).toEqual([{ id: 'sample-template-1', version: 1 }])
+    expect(removeQuestion()).toBeNull()
+    expect(templateReads()).toBe(2)
+    expect(within(dialog).queryByRole('button', { name: 'Remove: Sample club night' })).toBeNull()
+    expect(focused()).toBe(buttonFor('Sample spring open, saved Fri, Nov 20, 2026 by Player'))
+  })
+
+  it('sends one remove however often Remove it is pressed while it goes, and puts the focus on the group\'s head when the last saved template went', async () => {
+    windowAt(1440)
+    const going = later()
+    on('GET', TEMPLATES_URL, templates(template()), templates())
+    on('DELETE', TEMPLATES_URL, going.answer)
+    await thePage()
+    const dialog = await openFrom(pickWide())
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Remove: Sample club night' }))
+    await settle()
+    const removeIt = within(removeQuestion() as HTMLElement).getByRole('button', { name: 'Remove it' })
+    fireEvent.click(removeIt)
+    fireEvent.click(removeIt)
+    expect(removeIt.getAttribute('aria-disabled')).toBe('true')
+    await going.give({ status: 200, body: { removed: true } })
+    expect(templateRemoves).toHaveLength(1)
+    expect(removeQuestion()).toBeNull()
+    expect(focused().textContent).toBe('Pinned templates')
+  })
+
+  it('keeps the template on Keep it, the focus back on its Remove, and says a change by someone else in words, the list read again', async () => {
+    windowAt(1440)
+    on('GET', TEMPLATES_URL, templates(template()), templates(template({ name: 'Sample club evening', version: 2 })))
+    on('DELETE', TEMPLATES_URL, { status: 409, body: { error: 'Someone changed this template after you opened the list, so nothing was changed.', changedBy: 'Player Two', changedAt: '2026-11-24 15:30:00' } })
+    await thePage()
+    const dialog = await openFrom(pickWide())
+    const remove = () => within(dialog).getByRole('button', { name: /^Remove: / })
+    fireEvent.click(remove())
+    await settle()
+    fireEvent.click(within(removeQuestion() as HTMLElement).getByRole('button', { name: 'Keep it' }))
+    await settle()
+    expect(removeQuestion()).toBeNull()
+    expect(templateRemoves).toEqual([])
+    expect(focused()).toBe(remove())
+    fireEvent.click(remove())
+    await settle()
+    fireEvent.click(within(removeQuestion() as HTMLElement).getByRole('button', { name: 'Remove it' }))
+    await settle()
+    const words = 'Someone changed this template after you opened the list, so nothing was changed. Player Two changed it Tue, Nov 24, 2026 at 9:30 AM.'
+    expect(within(dialog).getAllByRole('alert').filter((alert) => alert.textContent === words)).toHaveLength(1)
+    expect(templateReads()).toBe(2)
+    expect(within(dialog).getByRole('button', { name: 'Remove: Sample club evening' })).toBeTruthy()
+  })
+
+  it('says in words when someone removed the template first, reads the list again and puts the focus on the group\'s head', async () => {
+    windowAt(1440)
+    on('GET', TEMPLATES_URL, templates(template()), templates())
+    on('DELETE', TEMPLATES_URL, { status: 404, body: { error: 'Not found' } })
+    await thePage()
+    const dialog = await openFrom(pickWide())
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Remove: Sample club night' }))
+    await settle()
+    fireEvent.click(within(removeQuestion() as HTMLElement).getByRole('button', { name: 'Remove it' }))
+    await settle()
+    const gone = 'Someone removed this template after you opened the list, so nothing was changed.'
+    expect(within(dialog).getAllByRole('alert').filter((alert) => alert.textContent === gone)).toHaveLength(1)
+    expect(dialog.textContent).not.toContain('Not found')
+    expect(templateReads()).toBe(2)
+    expect(removeQuestion()).toBeNull()
+    expect(focused().textContent).toBe('Pinned templates')
+  })
+})
+
 describe('your last newsletters', () => {
   it('are read each time the chooser opens, never as the page opens, and said while they are read, the starters usable meanwhile', async () => {
     windowAt(1440)
@@ -569,7 +980,7 @@ describe('your last newsletters', () => {
     ))
     await thePage()
     const dialog = await openFrom(pickWide())
-    const lines = within(dialog).getAllByRole('listitem').slice(4).map((item) => item.textContent?.replace(/Use this$/, ''))
+    const lines = within(dialog).getAllByRole('listitem').slice(4).map((item) => item.textContent?.replace(/Use thisSave as a template$/, ''))
     expect(lines).toEqual([
       'November 2026Sent by Player Two on Mon, Nov 16, 2026 to 155 members',
       'October 2026Sent Mon, Oct 5, 2026 to 1 member',
@@ -600,7 +1011,7 @@ describe('your last newsletters', () => {
       'Use this: December 2026, set aside by Player One on Mon, Nov 16, 2026 at 12:05 PM',
     ])
     // What is drawn is each row's own words; the place is for a screen reader, the rows standing newest first.
-    const lines = within(dialog).getAllByRole('listitem').slice(4).map((item) => item.textContent?.replace(/Use this$/, ''))
+    const lines = within(dialog).getAllByRole('listitem').slice(4).map((item) => item.textContent?.replace(/Use thisSave as a template$/, ''))
     expect(lines).toEqual([
       'December 2026Set aside by Player One on Mon, Nov 16, 2026 at 2:15 PM',
       'December 2026Set aside by Player One on Mon, Nov 16, 2026 at 2:15 PM',
@@ -617,11 +1028,12 @@ describe('your last newsletters', () => {
     await thePage()
     const dialog = await openFrom(pickWide())
     const buttons = within(dialog).getAllByRole('button')
-    expect(buttons).toHaveLength(25)
-    act(() => buttons[24].focus())
-    expect(focused().getAttribute('aria-label')).toBe('Use this: Example month 20, replaced by a newer letter on Mon, Nov 16, 2026 at 2:15 PM')
+    // Close, the four starters, "Save this letter as a template" and the twenty, each with its "Save as a template".
+    expect(buttons).toHaveLength(46)
+    act(() => buttons[45].focus())
+    expect(focused().getAttribute('aria-label')).toBe('Save as a template: Example month 20, replaced by a newer letter on Mon, Nov 16, 2026 at 2:15 PM')
     // The choices are the chooser's own scroller, under its head, which holds Close.
-    const choices = buttons[24].closest('.overflow-y-auto')
+    const choices = buttons[45].closest('.overflow-y-auto')
     expect(choices).toBeTruthy()
     expect(choices).not.toBe(dialog)
     expect(choices?.contains(buttons[0])).toBe(false)
