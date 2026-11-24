@@ -73,7 +73,8 @@ describe('REDESIGN_STATUS.md, WS09 aside: Help as small question marks', () => {
   it('sits once, right after the block before it, and before the four lists while it is the latest', () => {
     expect(block).not.toBe('')
     expect(ws09.split(`\n${BLOCK}\n`)).toHaveLength(2)
-    expect(headings[headings.indexOf(BEFORE) + 1]).toBe(BLOCK)
+    // Written straight after the club events switch-on's last block; on main it stands after the blocks the week's other changes wrote, the public event page's last.
+    expect([BEFORE, '### WS09 aside: the public event page on a phone']).toContain(headings[headings.indexOf(BLOCK) - 1])
     if (latest) expect(headings[headings.indexOf(BLOCK) + 1]).toBe(LISTS)
   })
 
