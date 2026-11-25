@@ -43,6 +43,11 @@
 // functions/utils/clubs/suggestions.ts to the club's rep, else to the
 // region's representatives, else to the LCA admins; a keeper's answer to it
 // is clubReplyEmail again, signed by the role alone.
+//
+// And so is the email of the 14 days (overdueSuggestionEmail, WS09 step 29),
+// sent by functions/utils/clubs/reportClock.ts when a suggestion has had no
+// answer in 14 days: to the LCA admins and, when the club's rep had it
+// first, to the region's representatives as well.
 
 import { trySendEmail, type EmailEnv, type EmailMessage } from '../email'
 import { emailDetails, emailQuote, escapeHtml, p, renderEmail } from '../emailLayout'
@@ -773,6 +778,123 @@ export function suggestionKeeperEmail(data: {
       opening,
       '',
       `What changed: ${choice}`,
+      '',
+      'Their words:',
+      message,
+      '',
+      address,
+      '',
+      SUGGESTION_ANSWER_LINE,
+      '',
+      `${SUGGESTION_LINK_LABEL}: ${data.link}`,
+      '',
+      SUGGESTION_FOOTER,
+    ].join('\n'),
+  }
+}
+
+/**
+ * Where a keeper of each kind answers on the site: Your club's page, the club's page in My region, the admin club
+ * page, each at the suggestion's own row. Written here, where both of the suggestion's emails are drawn, so the
+ * keeper's email (./suggestions.ts) and the email of the 14 days (./reportClock.ts) link the same way; `siteUrl` is the
+ * site's own address (functions/utils/site.ts).
+ */
+export function suggestionLink(siteUrl: string, club: { id: string; slug: string | null }, kind: SuggestionKeeperKind, rowId: number): string {
+  const place = kind === 'club_rep'
+    ? `/my/club/${encodeURIComponent(club.slug ?? club.id)}`
+    : kind === 'region'
+      ? `/workspace/region/clubs/${encodeURIComponent(club.id)}`
+      : `/admin/clubs/${encodeURIComponent(club.id)}`
+  return `${siteUrl}${place}#suggestion-${rowId}`
+}
+
+// ── The 14 days (WS09 step 29) ───────────────────────────────────
+
+/** The heading of the email a suggestion with no answer in 14 days sends on. */
+export const OVERDUE_HEADING = 'A suggestion is still waiting for an answer'
+
+/** Who had a suggestion first, by role alone: the club's rep, the region's representatives, or the LCA admins. */
+export type OverdueFirst = 'club_rep' | 'region' | 'lca'
+
+/** "16 days", the wait in whole days. */
+function daysWord(days: number): string {
+  return days === 1 ? '1 day' : `${days} days`
+}
+
+/** Why the email came: no answer in the 14 days, and for whom it first went, by role alone; for the admins' own, a reminder. */
+export function overdueWhy(first: OverdueFirst, dueDays: number): string {
+  const none = `No one has answered it in ${daysWord(dueDays)}.`
+  if (first === 'club_rep') return `${none} It went first to the club's representative.`
+  if (first === 'region') return `${none} It went first to the region's representatives.`
+  return `${none} It went first to the LCA admins, so this is a reminder.`
+}
+
+/** Why this copy came to this person, by the role they get it in. */
+export function overdueCopyFor(kind: 'region' | 'lca', region: string | null): string {
+  if (kind === 'region') {
+    const area = region ? oneLine(region) : ''
+    return `It comes to you as the ${area || 'region\'s'} representative.`
+  }
+  return 'It comes to you as an LCA admin.'
+}
+
+/**
+ * The email for one suggestion with no answer in 14 days, to one LCA admin or
+ * one of the region's representatives. The subject is fixed words with the
+ * club's name, never anything the visitor typed. It names which of the six
+ * parts changed in the choice's own words, quotes the visitor's words
+ * (escaped in the HTML and written as text in the plain part), says how long
+ * it has waited in whole days, why it came and for whom it first went by role
+ * alone, whether an address was left but never the address, and links to the
+ * suggestion's place on the site for this person's role. It names no one: no
+ * keeper, no volunteer and not the visitor. Its `to` is empty, as every
+ * template's is, and is filled for each person by the sender; the reply-to is
+ * the site's own, never the visitor's.
+ */
+export function overdueSuggestionEmail(data: {
+  siteUrl: string
+  clubName: string
+  region: string | null
+  /** Who had it first, read from the club as it is at the run. */
+  first: OverdueFirst
+  /** The role this person gets it in. */
+  kind: 'region' | 'lca'
+  choice: string
+  message: string
+  hasAddress: boolean
+  /** Whole days since the visitor sent it. */
+  waitedDays: number
+  /** The figure of the rule, SUGGESTION_DUE_DAYS in domain/clubs/regionCards.ts, handed in by the run. */
+  dueDays: number
+  link: string
+}): EmailMessage {
+  const clubName = oneLine(data.clubName)
+  const choice = oneLine(data.choice)
+  const message = data.message.trim()
+  const opening = `A visitor suggested an update to ${clubName}'s listing ${daysWord(data.waitedDays)} ago, and it has not been answered.`
+  const why = `${overdueWhy(data.first, data.dueDays)} ${overdueCopyFor(data.kind, data.region)}`
+  const address = data.hasAddress ? SUGGESTION_ADDRESS_LEFT : SUGGESTION_NO_ADDRESS
+  const waited = daysWord(data.waitedDays)
+  return {
+    to: '',
+    subject: `A suggestion for ${clubName}'s listing is still waiting`,
+    html: renderEmail({
+      siteUrl: data.siteUrl,
+      heading: OVERDUE_HEADING,
+      preheader: `A suggestion for ${clubName}'s listing has waited ${waited}`,
+      body: p(escapeHtml(opening)) + p(escapeHtml(why)) + emailDetails([['What changed', choice], ['Waiting', waited]]) + emailQuote(message, 'Their words') + p(escapeHtml(address)) + p(escapeHtml(SUGGESTION_ANSWER_LINE)),
+      cta: { label: SUGGESTION_LINK_LABEL, url: data.link },
+      footerNote: escapeHtml(SUGGESTION_FOOTER),
+    }),
+    text: [
+      `${OVERDUE_HEADING}.`,
+      '',
+      opening,
+      '',
+      why,
+      '',
+      `What changed: ${choice}`,
+      `Waiting: ${waited}`,
       '',
       'Their words:',
       message,

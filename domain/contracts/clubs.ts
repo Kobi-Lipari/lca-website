@@ -527,13 +527,23 @@ export const clubLinkConfirmResponseSchema = z.strictObject({
   month: z.string(),
 })
 
+/** The second action of POST /api/admin/clubs/monthly-check (WS09 step 29): the suggestions with no answer in 14 days. */
+export const REPORT_CLOCK_ACTION = 'run_report_clock'
+
 /**
  * POST /api/admin/clubs/monthly-check, the LCA admin's button: `send`
  * false asks only how many people the check goes to, for the button's one
  * question, and sends nothing; `send` true sends it to every one of them.
+ *
+ * With `action` set to run_report_clock (WS09 step 29) the same two ask
+ * about the suggestions no one has answered in 14 days instead: `send`
+ * false asks how many there are, and `send` true passes them on. With no
+ * `action` the body is the monthly check's, as it always was, so every
+ * request the endpoint took before parses as before.
  */
 export const monthlyCheckRequestSchema = z.looseObject({
   send: z.boolean(),
+  action: z.literal(REPORT_CLOCK_ACTION, 'Leave the action out for the monthly check, or name run_report_clock.').optional(),
 })
 
 /**
@@ -549,6 +559,25 @@ export const monthlyCheckResponseSchema = z.strictObject({
   notReached: z.number().int().nonnegative(),
 })
 
+/**
+ * POST /api/admin/clubs/monthly-check with `action` run_report_clock (WS09
+ * step 29): how many suggestions have had no answer in 14 days and not been
+ * passed on, and, once sent, how many were passed on, how many emails went
+ * and how many did not, and how many suggestions wait for the next run.
+ * Numbers only: no person, no address and none of the visitor's words.
+ */
+export const reportClockResponseSchema = z.strictObject({
+  due: z.number().int().nonnegative(),
+  passedOn: z.number().int().nonnegative(),
+  sent: z.number().int().nonnegative(),
+  notSent: z.number().int().nonnegative(),
+  notReached: z.number().int().nonnegative(),
+})
+
+/** Every answer of POST /api/admin/clubs/monthly-check: the monthly check's, or the second action's. */
+export const monthlyCheckAnswerSchema = z.union([monthlyCheckResponseSchema, reportClockResponseSchema])
+
+export type ReportClockResponse = z.infer<typeof reportClockResponseSchema>
 export type ClubLinkResponse = z.infer<typeof clubLinkResponseSchema>
 export type ClubLinkConfirmResponse = z.infer<typeof clubLinkConfirmResponseSchema>
 export type MonthlyCheckResponse = z.infer<typeof monthlyCheckResponseSchema>

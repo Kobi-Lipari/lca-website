@@ -228,7 +228,7 @@ describe('REDESIGN_STATUS.md, WS09 checkpoint U: the review of the whole and its
     expect(send).toBeGreaterThan(check.indexOf('if (!body.send) {'))
     expect(row).toBeGreaterThan(send)
     expect(check).toContain('      action: \'club_monthly_check_sent\',\n      targetLabel: done.month,\n      detail: { sent: done.sent, notSent: done.notSent, notReached: done.notReached },')
-    expect(check.match(/recordAdminAction\(/g)).toHaveLength(1)
+    expect(check.match(/recordAdminAction\(/g)).toHaveLength(2)
     expect(read('functions/utils/admin/audit.ts')).toContain('  | \'club_monthly_check_sent\'\n')
     expect(read('src/areas/admin/components/AuditLogPanel.tsx')).toContain('club_monthly_check_sent: { label: \'Sent the monthly check\', icon: Mail, className: \'bg-info-100 text-info-800\' },')
     expect(read('functions/utils/clubs/monthlyCheck.ts')).not.toMatch(/admin\/audit|recordAdminAction/)

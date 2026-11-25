@@ -39,6 +39,14 @@
 // issue (SuggestionRows.tsx); Apply this marks the row and opens the club's
 // page in My region at its listing. Confirm all skips a club with one open
 // and says how many it skipped. With none open the page is as before.
+//
+// An LCA admin also gets "Send overdue suggestions on" (WS09 step 29) under
+// the to-do list's heading, only while a row there has waited 14 days or
+// more with no answer and has not been passed on yet, by the rule of
+// domain/clubs/regionCards.ts. It asks one question naming how many, then
+// says how many were passed on and how many emails went; the page then reads
+// its answer again, so each row passed on says when. With no row overdue the
+// page is as before.
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { ArrowLeft } from 'lucide-react'
@@ -51,11 +59,13 @@ import { RegionClubCard } from '@/areas/clubs/components/RegionClubCard'
 import { RegionHelpMark } from '@/areas/clubs/components/RegionHelp'
 import { ThisMonthBar } from '@/areas/clubs/components/ThisMonthBar'
 import { MonthlyCheckButton } from '@/areas/clubs/components/MonthlyCheckButton'
+import { OverdueSuggestionsButton } from '@/areas/clubs/components/OverdueSuggestionsButton'
 import { SuggestionRows } from '@/areas/clubs/components/SuggestionRows'
 import { useRowsShown, type SuggestionRow } from '@/areas/clubs/suggestionRows'
 import {
   clubsToConfirm, clubsWord, confirmAllWords, errorWords, namesInWords, skippedWords, waitingForAnswer, withConfirmed, withoutSuggestion,
 } from '@/areas/clubs/region'
+import { isSuggestionOverdue } from '@domain/clubs/regionCards'
 import type { RegionClub, WorkspaceRegionResponse } from '@domain/contracts'
 
 /**
@@ -219,6 +229,17 @@ export function MyRegionPage() {
     .flatMap((club) => club.openItems.map((item) => ({ ...item, clubId: club.id, clubName: club.name })))
     .sort((a, b) => b.ageDays - a.ageDays || a.id - b.id)
   const todoShown = useRowsShown(todo.length > 0)
+  // The LCA admin's button for the rows no one has answered in 14 days: drawn from the first draw that has one, and on
+  // after a press has sent them, so its status, and the focus on it, stay on the page.
+  const overdue = isAdmin && todo.some((row) => isSuggestionOverdue({ status: 'open', passedOnAt: row.passedOnAt, ageDays: row.ageDays }))
+  const overdueShown = useRowsShown(overdue)
+
+  /** After a press of Send on: the answer again, quietly, so each row passed on says when; a failure leaves the page as it is. */
+  function readAgain() {
+    getWorkspaceRegion()
+      .then((fresh) => { if (live.current) setLoad((now) => (now.kind === 'ready' ? { kind: 'ready', answer: fresh } : now)) })
+      .catch(() => {})
+  }
 
   /** The card's "Answer it, then confirm": the focus goes to the club's first row in the to-do list. */
   function answerFirst(club: RegionClub) {
@@ -320,6 +341,7 @@ export function MyRegionPage() {
             kind="todo"
             rows={todo}
             headingId="region-suggestions-title"
+            tools={overdueShown ? <OverdueSuggestionsButton onSent={readAgain} /> : undefined}
             onResolved={(row) => setAnswer((a) => withoutSuggestion(a, row.clubId, row.id))}
             onApplied={(row) => navigate(`/workspace/region/clubs/${encodeURIComponent(row.clubId)}`, { state: { suggestionApplied: true } })}
           />

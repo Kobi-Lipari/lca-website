@@ -24,7 +24,12 @@
 // the server's words and leaves the list too. One mark beside the list's
 // heading holds what the list is for and how a reply goes; nothing opens by
 // itself.
-import { useEffect, useRef, useState } from 'react'
+//
+// A row passed on to the LCA admins after 14 days with no answer (WS09 step
+// 29) says so in one line under its age, with the day and its weekday; a row
+// not passed on draws as before. My region hands the to-do list the LCA
+// admin's button for those rows (`tools`), drawn under the list's heading.
+import { useEffect, useRef, useState, type ReactNode } from 'react'
 
 import { ApiError, resolveClubSuggestion } from '@/lib/api'
 import { Button } from '@/components/ui/button'
@@ -37,7 +42,7 @@ import { replyFieldError } from '@domain/clubs/replyMessage'
 import type { OpenSuggestion, SuggestionAction } from '@domain/contracts'
 
 export type { OpenSuggestion } from '@domain/contracts'
-import { useRowsShown, type SuggestionRow } from '@/areas/clubs/suggestionRows'
+import { passedOnWords, useRowsShown, type SuggestionRow } from '@/areas/clubs/suggestionRows'
 
 /** The list's two forms: My region's to-do list, and one club's banner. */
 export type RowsKind = 'todo' | 'banner'
@@ -61,7 +66,7 @@ function handledElsewhere(err: unknown): boolean {
 }
 
 export function SuggestionRows({
-  kind, rows, onResolved, onApplied, headingId = 'club-suggestions-title',
+  kind, rows, onResolved, onApplied, headingId = 'club-suggestions-title', tools,
 }: {
   kind: RowsKind
   rows: readonly SuggestionRow[]
@@ -70,6 +75,8 @@ export function SuggestionRows({
   /** A row was marked applied: the page takes the keeper to the club's editor. */
   onApplied: (row: SuggestionRow) => void
   headingId?: string
+  /** What the page draws under the list's heading, My region's button for the LCA admins (WS09 step 29); nothing when absent. */
+  tools?: ReactNode
 }) {
   const words = BUTTONS[kind]
   const [said, setSaid] = useState('')
@@ -163,6 +170,7 @@ export function SuggestionRows({
         </h2>
         <HelpMark name={kind === 'todo' ? 'Suggestions to answer' : 'Suggestions from visitors'} entries={ROWS_HELP} />
       </div>
+      {tools}
       <p role="status" className="min-w-0 break-words text-sm text-ink">{said}</p>
       {rows.length > 0 && (
         <ul className="space-y-3">
@@ -182,6 +190,7 @@ export function SuggestionRows({
                     {named}
                   </h3>
                   <p className="text-sm text-ink-muted">Suggested {row.ageDays <= 0 ? 'today' : `${ageWords(row.ageDays)} ago`}</p>
+                  {row.passedOnAt && <p className="text-sm text-ink">{passedOnWords(row.passedOnAt)}</p>}
                   <blockquote className="whitespace-pre-line text-sm text-ink [overflow-wrap:anywhere]">{row.message}</blockquote>
                   <p className="text-sm text-ink">{row.hasAddress ? 'They left an email address, so you can reply.' : 'No email address was left, so there is no one to reply to.'}</p>
                   {errors[row.id] && <p className="break-words text-sm font-semibold text-ink">{errors[row.id]}</p>}

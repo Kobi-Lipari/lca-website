@@ -131,7 +131,7 @@ export const SEND_UNSURE = 'The send may not have finished, so some people may a
  * of its own (the fetch helper's "Request failed (404)") could not be read,
  * so it is not one.
  */
-function refusedBeforeSending(err: unknown): err is ApiError {
+export function refusedBeforeSending(err: unknown): err is ApiError {
   return err instanceof ApiError && err.status >= 400 && err.status < 500 && err.message !== `Request failed (${err.status})`
 }
 

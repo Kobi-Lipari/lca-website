@@ -46,6 +46,10 @@ export type AdminAction =
   // step 28): applied, answered or dismissed. It names the club, the row and
   // the action, never the visitor's words, an address or the keeper's reply.
   | 'club_suggestion_resolved'
+  // A press of "Send overdue suggestions on" that tried to send (WS09 step 29):
+  // who pressed it and the counts alone, never a club, the visitor's words or
+  // an address.
+  | 'club_report_clock_sent'
   // A representative's club event in the LCA admins' wait (WS09 step 18): sent
   // for review, approved and listed, or sent back with changes asked. Each
   // names the event and its id, never the note an LCA admin wrote.

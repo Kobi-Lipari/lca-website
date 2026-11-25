@@ -38,6 +38,25 @@ export function wholeDaysSince(stamp: string | null | undefined, nowMs: number):
   return Math.max(0, Math.floor((nowMs - at) / DAY_MS))
 }
 
+/** A visitor's suggestion with no answer for this many whole days is passed on to the LCA admins (WS09 step 29). */
+export const SUGGESTION_DUE_DAYS = 14
+
+/**
+ * The rule of the 14 days, written once for the server's run
+ * (functions/utils/clubs/reportClock.ts) and My region's button: a
+ * suggestion is overdue when it is open, it has not been passed on yet, and
+ * its age in whole days by wholeDaysSince above is SUGGESTION_DUE_DAYS or
+ * more. The age is whole days of 24 hours from the stored UTC stamp, so a
+ * change of the clock in Central time never moves the edge: 13 days and 23
+ * hours is not due, 14 days is. A stamp that cannot be read is 0 days old,
+ * so it is never due.
+ */
+export function isSuggestionOverdue(item: { status: string; passedOnAt: string | null | undefined; ageDays: number }): boolean {
+  if (item.status !== 'open') return false
+  if (item.passedOnAt && item.passedOnAt.trim() !== '') return false
+  return item.ageDays >= SUGGESTION_DUE_DAYS
+}
+
 /**
  * True when the club has never been checked, or its last check is more than
  * 90 days before `now`. A check exactly 90 days old still counts.

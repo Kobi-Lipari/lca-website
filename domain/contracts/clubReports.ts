@@ -18,11 +18,13 @@
 //
 // openSuggestionSchema is one open suggestion as My region's cards and the
 // club's pages read it: its id, which part, the visitor's words, whether an
-// address was left and its age in whole days. Never the address.
+// address was left and its age in whole days, and, once it has been passed
+// on to the LCA admins after 14 days (WS09 step 29), when. Never the address.
 import { z } from 'zod'
 import { SUGGESTION_FIELDS, SUGGESTION_FIELD_WORDS as W, SUGGESTION_LIMITS, hasSuggestionText } from '../clubs/suggestion'
 import { REPLY_FIELD_WORDS, REPLY_MESSAGE_LIMIT } from '../clubs/replyMessage'
 import { hasLineBreak, isPlainAddress } from '../clubs/contactMessage'
+import { storedTimestampSchema } from './common'
 
 /** POST /api/clubs/[id]/reports. */
 export const clubSuggestionRequestSchema = z.object({
@@ -52,6 +54,11 @@ export const openSuggestionSchema = z.strictObject({
   message: z.string(),
   hasAddress: z.boolean(),
   ageDays: z.number().int().nonnegative(),
+  /**
+   * When the suggestion was passed on to the LCA admins after 14 days with no answer (WS09 step 29), stored in UTC;
+   * absent while it has not been, so the answer for one not passed on is as before. Never who it went to.
+   */
+  passedOnAt: storedTimestampSchema.optional(),
 })
 
 /** The three things a keeper can do with an open suggestion. */

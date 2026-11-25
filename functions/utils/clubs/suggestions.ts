@@ -32,7 +32,7 @@
 import { sendEmail, type EmailEnv } from '../email'
 import { resolveSiteUrl } from '../site'
 import {
-  clubRepsOf, keeperOf, lcaAdmins, regionRepresentativesOf, suggestionKeeperEmail, type Keeper, type SuggestionKeeperKind, type SuggestionReason,
+  clubRepsOf, keeperOf, lcaAdmins, regionRepresentativesOf, suggestionKeeperEmail, suggestionLink, type Keeper, type SuggestionKeeperKind, type SuggestionReason,
 } from './emails'
 import { SUGGESTION_FIELDS, suggestionLabel, type SuggestionField, type SuggestionGoesTo } from '../../../domain/clubs/suggestion'
 import { wholeDaysSince } from '../../../domain/clubs/regionCards'
@@ -67,15 +67,11 @@ export interface Suggestion {
 
 type SuggestionEnv = EmailEnv & { DB: D1Database; SITE_URL?: string }
 
-/** Where a keeper of each kind answers on the site: Your club's page, the club's page in My region, the admin club page. */
-export function suggestionLink(siteUrl: string, club: Pick<SuggestionClub, 'id' | 'slug'>, kind: SuggestionKeeperKind, rowId: number): string {
-  const place = kind === 'club_rep'
-    ? `/my/club/${encodeURIComponent(club.slug ?? club.id)}`
-    : kind === 'region'
-      ? `/workspace/region/clubs/${encodeURIComponent(club.id)}`
-      : `/admin/clubs/${encodeURIComponent(club.id)}`
-  return `${siteUrl}${place}#suggestion-${rowId}`
-}
+/**
+ * Where a keeper of each kind answers on the site. Drawn in ./emails.ts since WS09 step 29, so the email of the 14 days
+ * (./reportClock.ts) links the same way, and named here as before.
+ */
+export { suggestionLink }
 
 /** Writes the row and answers its id. */
 async function saveRow(db: D1Database, club: SuggestionClub, suggestion: Suggestion): Promise<number> {
@@ -166,19 +162,21 @@ interface OpenRow {
   message: string
   has_address: number
   created_at: string
+  escalated_at: string | null
 }
 
 /**
  * The open suggestions of each club named, oldest first, as the keeper's
- * pages read them: never the address, only whether one was left, and the age
- * in whole days against `nowMs`, the one time the answer is read against.
+ * pages read them: never the address, only whether one was left, the age
+ * in whole days against `nowMs`, the one time the answer is read against,
+ * and when it was passed on after 14 days, only once it was (WS09 step 29).
  * A club with none is not in the map.
  */
 export async function openSuggestionsOf(db: D1Database, clubIds: readonly string[], nowMs: number): Promise<Map<string, OpenSuggestion[]>> {
   const byClub = new Map<string, OpenSuggestion[]>()
   if (clubIds.length === 0) return byClub
   const { results } = await db.prepare(
-    `SELECT id, club_id, field, message, reporter_email IS NOT NULL AND TRIM(reporter_email) <> '' AS has_address, created_at
+    `SELECT id, club_id, field, message, reporter_email IS NOT NULL AND TRIM(reporter_email) <> '' AS has_address, created_at, escalated_at
        FROM club_reports
       WHERE club_id IN (SELECT value FROM json_each(?))
         AND kind = 'suggestion' AND status = 'open'
@@ -196,6 +194,9 @@ export async function openSuggestionsOf(db: D1Database, clubIds: readonly string
       message: row.message,
       hasAddress: Number(row.has_address) === 1,
       ageDays: wholeDaysSince(row.created_at, nowMs),
+      // When it was passed on to the LCA admins after 14 days (./reportClock.ts), and only once it was, so a row not
+      // passed on reads as before.
+      ...(row.escalated_at ? { passedOnAt: row.escalated_at } : {}),
     })
     byClub.set(row.club_id, list)
   }

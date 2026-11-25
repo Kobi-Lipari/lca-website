@@ -23,8 +23,8 @@ import {
   clubListResponseSchema,
   clubPlacesRequestSchema,
   clubPlacesResponseSchema,
+  monthlyCheckAnswerSchema,
   monthlyCheckRequestSchema,
-  monthlyCheckResponseSchema,
   updateClubRequestSchema,
   updateClubResponseSchema,
   workspaceRegionResponseSchema,
@@ -126,7 +126,7 @@ export const contracts = {
     POST: { request: clubReportActionRequestSchema, response: clubReportActionResponseSchema },
   },
   'admin/clubs/monthly-check': {
-    POST: { request: monthlyCheckRequestSchema, response: monthlyCheckResponseSchema },
+    POST: { request: monthlyCheckRequestSchema, response: monthlyCheckAnswerSchema },
   },
   'admin/mail/newsletter': {
     GET: { response: newsletterSummaryResponseSchema },

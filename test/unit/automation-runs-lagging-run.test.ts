@@ -218,7 +218,7 @@ const RUNS = 'functions/utils/admin/automations.ts'
  * file here, one line.
  */
 // functions/utils/clubs/reply.ts, the Reply through LCA link, joins since WS09 step 27.
-const IMPORTERS: string[] = ['functions/api/clubs/confirm/[token].ts', 'functions/utils/clubs/monthlyCheck.ts', 'functions/utils/clubs/reply.ts']
+const IMPORTERS: string[] = ['functions/api/clubs/confirm/[token].ts', 'functions/utils/clubs/monthlyCheck.ts', 'functions/utils/clubs/reply.ts', 'functions/utils/clubs/reportClock.ts']
 
 /** Every code file under the folders the site, the functions and the workers are built from. */
 function codeFiles(): string[] {

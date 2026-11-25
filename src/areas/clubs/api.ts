@@ -13,7 +13,7 @@ import { authHeaders, handleResponse } from '@/lib/http'
 import type { ApiAdminMember } from '@/areas/membership/api'
 import type { AdminClubResponse, ClubConfirmResponse, ClubPlace, UpdateClubRequest, WorkspaceRegionResponse } from '@domain/contracts'
 import type {
-  ClubContactRequest, ClubContactResponse, ClubLinkConfirmResponse, ClubLinkResponse, ClubPageResponse, ClubReplyRequest, ClubReplyResponse, ClubReplySentResponse, MonthlyCheckResponse,
+  ClubContactRequest, ClubContactResponse, ClubLinkConfirmResponse, ClubLinkResponse, ClubPageResponse, ClubReplyRequest, ClubReplyResponse, ClubReplySentResponse, MonthlyCheckResponse, ReportClockResponse,
   ClubReportActionRequest, ClubReportActionResponse, ClubSuggestionRequest, ClubSuggestionResponse, OpenSuggestion,
 } from '@domain/contracts'
 
@@ -361,6 +361,36 @@ export async function sendMonthlyCheck(): Promise<MonthlyCheckResponse> {
     body: JSON.stringify({ send: true }),
   })
   return handleResponse<MonthlyCheckResponse>(response)
+}
+
+/**
+ * How many visitors' suggestions have had no answer in 14 days, for the LCA
+ * admin's one question in My region (WS09 step 29): POST
+ * /api/admin/clubs/monthly-check with `action` run_report_clock and `send`
+ * false, which sends nothing.
+ */
+export async function countOverdueSuggestions(): Promise<ReportClockResponse> {
+  const response = await fetch('/api/admin/clubs/monthly-check', {
+    method: 'POST',
+    headers: await authHeaders(),
+    body: JSON.stringify({ action: 'run_report_clock', send: false }),
+  })
+  return handleResponse<ReportClockResponse>(response)
+}
+
+/**
+ * Sends the overdue suggestions on to the LCA admins and, where the club's
+ * rep had one, the region's representatives: the same call with `send`
+ * true. Answers how many were passed on, how many emails went and did not,
+ * and how many wait for another press.
+ */
+export async function sendOverdueSuggestions(): Promise<ReportClockResponse> {
+  const response = await fetch('/api/admin/clubs/monthly-check', {
+    method: 'POST',
+    headers: await authHeaders(),
+    body: JSON.stringify({ action: 'run_report_clock', send: true }),
+  })
+  return handleResponse<ReportClockResponse>(response)
 }
 
 export async function adminCreateClub(body: {
