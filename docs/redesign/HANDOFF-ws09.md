@@ -2,7 +2,15 @@
 
 Written on Saturday, November 14, 2026, for whoever takes this stream over. The whole project's handoff is `HANDOFF.md`; the rules where the two streams meet are `STREAMS.md`. This file holds only what is the clubs stream's own.
 
-## Where it stands (Wednesday, November 25, 2026, about 5:10 AM UTC)
+## Where it stands (Wednesday, November 25, 2026, about 7:40 AM UTC)
+
+- **Main is still `85f20ec`.** Draft pull requests 151 (`52395a9`) and 154 (`d2b449d`) both hold it, full check green, and wait only for K's word in this stream's conversation, with the seven small choices of Tuesday's 7:20 PM UTC report.
+- **Checkpoint X:** WS09 step 29, the fourteen-day step, is committed and pushed (`redesign/ws09-clubs-x` at `6786cba`). A visitor's suggestion with no answer in 14 days is passed on by email to the LCA admins, and to the region's representatives when the club's rep had it first; it runs only at an LCA admin's press of "Send overdue suggestions on" in My region, since the daily worker's line is held for the mail stream's word. Two small faults its last reader named were mended by hand, each with a case that fails without the mend: a suggestion with no one to write to no longer holds a later one back, and the status after a press says when one is still waiting.
+- **Being built:** WS09 step 30, Suggest a club, or start one. Its launch note departs from the plan in four ways, each written as a choice for K at the checkpoint: the parishes go to the five seats' regions (the plan's seven are gone since decision 14), as a best guess for K to confirm; only the server reads the place file; a keeper sees the person's name and address on the row, since the representative checks with the person by email (step 28 shows a visitor's address to nobody); and the sentence after sending names no region, seat or person. The place file is generated once from three public files of the Census Bureau, which answered from this machine.
+- **Then:** step 31, Ask to be its named rep, which closes checkpoint X; checkpoint X then takes checkpoint W and main in (eight files of the database meet), its review of the whole, its pull request and pictures for K.
+- **Not started:** the LCA Observers' tournaments step, which waits for K's word here.
+
+## Where it stood on Wednesday, November 25, 2026, about 5:10 AM UTC
 
 - **Main is `85f20ec`.** On K's word in the mail stream's conversation, that stream merged its pull request 153 (who may send email to members) at 12:12 AM UTC and 156 (a board seat that counts without being shown publicly, with migration `0073_seat_listing.sql`, applied to production by its own merge) at 3:30 AM UTC. 0074 is the next migration number for either stream. The mail stream expects its 152 and 155 no sooner than Wednesday morning Central.
 - **Waiting for K's word in this stream's conversation, each holding main at `85f20ec`, full check green, pushed:** draft pull request 151, the question marks' words (`redesign/ws09-help-words` at `52395a9`), and draft pull request 154, checkpoint W, the new public club page switched off (`redesign/ws09-clubs-w` at `d2b449d`). Each took main in twice tonight, with a record block or sentence for each taking in. Seven small choices wait with them (K's Tuesday report at 7:20 PM UTC); "all recommended" is enough. The mail lead agreed to point K to this conversation.
