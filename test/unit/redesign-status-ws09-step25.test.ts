@@ -286,10 +286,10 @@ describe('REDESIGN_STATUS.md, WS09 step 25: the parts against the files', () => 
     for (const piece of ['`npm run db:generate -- rate limits --number 0071`', '`drizzle/0016_rate_limits.sql`', 'idx 16, tag `0016_rate_limits`', 'No file was renamed by hand', '"No schema changes, nothing to migrate"', 'no production or preview database was read or written']) {
       expect(migration, piece).toContain(piece)
     }
-    // Since checkpoint X took checkpoint W in, the generator stages it as 0017, after main's newsletter table, and the header names that.
-    expect(read(MIGRATION)).toContain('-- staged as drizzle/0017_rate_limits.sql.')
+    // Since checkpoint X took checkpoint W in a third time, the generator stages it as 0018, after main's seat listing, and the header names that.
+    expect(read(MIGRATION)).toContain('-- staged as drizzle/0018_rate_limits.sql.')
     const journal = JSON.parse(read('drizzle/meta/_journal.json')) as { entries: Array<{ idx: number; tag: string }> }
-    expect(journal.entries.some((e) => e.idx === 17 && e.tag === '0017_rate_limits')).toBe(true)
+    expect(journal.entries.some((e) => e.idx === 18 && e.tag === '0018_rate_limits')).toBe(true)
     if (!latest) return
     expect(migration).toContain(`${migrationFiles().length} files in \`migrations/\``)
     expect(migration).toContain('43 tables of 409 columns and 20 links between tables')

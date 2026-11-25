@@ -11,8 +11,8 @@
 // - the two statements the limiter runs work on it: the count that adds and
 //   reads back, and the delete of the hours that have ended;
 // - the file is drizzle-kit's, made by npm run db:generate with --number, and
-//   drizzle/meta holds the journal's eighteenth entry and 0017_snapshot.json,
-//   staged on top of main's 0016_snapshot.json.
+//   drizzle/meta holds the journal's nineteenth entry and 0018_snapshot.json,
+//   staged on top of main's 0017_snapshot.json, the seat listing.
 // Every club and person here is made up.
 import { existsSync, readFileSync } from 'node:fs'
 import { join, resolve } from 'node:path'
@@ -109,20 +109,20 @@ describe('0071_rate_limits.sql on a database that holds rows', () => {
 })
 
 describe('drizzle/meta', () => {
-  it('records the change as the journal\'s eighteenth entry, with its snapshot, and the file is drizzle-kit\'s, its header naming the staged file', () => {
+  it('records the change as the journal\'s nineteenth entry, with its snapshot, and the file is drizzle-kit\'s, its header naming the staged file', () => {
     const journal = JSON.parse(readFileSync(join(ROOT, 'drizzle/meta/_journal.json'), 'utf8')) as { entries: Array<{ idx: number; tag: string; when: number }> }
-    // Since checkpoint X took checkpoint W in: main's newsletter table is entry 16, and the rate limits are staged after it as 17.
-    expect(journal.entries).toHaveLength(18)
-    expect(journal.entries[17]).toMatchObject({ idx: 17, tag: '0017_rate_limits' })
-    expect(journal.entries[17].when).toBeGreaterThan(journal.entries[16].when)
-    expect(existsSync(join(ROOT, 'drizzle/meta/0017_snapshot.json'))).toBe(true)
+    // Since checkpoint X took checkpoint W in a third time: main's seat listing is entry 17, and the rate limits are staged after it as 18.
+    expect(journal.entries).toHaveLength(19)
+    expect(journal.entries[18]).toMatchObject({ idx: 18, tag: '0018_rate_limits' })
+    expect(journal.entries[18].when).toBeGreaterThan(journal.entries[17].when)
+    expect(existsSync(join(ROOT, 'drizzle/meta/0018_snapshot.json'))).toBe(true)
     const text = readFileSync(join(MIGRATIONS_DIR, FILE), 'utf8')
     expect(text.split('\n')[0]).toBe('-- 0071_rate_limits.sql')
-    expect(text).toContain('-- Written by drizzle-kit from functions/db/schema.ts (npm run db:generate),\n-- staged as drizzle/0017_rate_limits.sql.')
-    const snapshot = JSON.parse(readFileSync(join(ROOT, 'drizzle/meta/0017_snapshot.json'), 'utf8')) as {
+    expect(text).toContain('-- Written by drizzle-kit from functions/db/schema.ts (npm run db:generate),\n-- staged as drizzle/0018_rate_limits.sql.')
+    const snapshot = JSON.parse(readFileSync(join(ROOT, 'drizzle/meta/0018_snapshot.json'), 'utf8')) as {
       prevId: string; tables: Record<string, { columns: Record<string, { type: string; primaryKey: boolean; notNull: boolean }>; foreignKeys: Record<string, unknown> }>
     }
-    expect(snapshot.prevId).toBe((JSON.parse(readFileSync(join(ROOT, 'drizzle/meta/0016_snapshot.json'), 'utf8')) as { id: string }).id)
+    expect(snapshot.prevId).toBe((JSON.parse(readFileSync(join(ROOT, 'drizzle/meta/0017_snapshot.json'), 'utf8')) as { id: string }).id)
     const table = snapshot.tables.rate_limits
     expect(Object.keys(table.columns)).toEqual(['bucket', 'hits', 'window_start'])
     expect(table.columns.bucket).toMatchObject({ type: 'text', primaryKey: true, notNull: true })

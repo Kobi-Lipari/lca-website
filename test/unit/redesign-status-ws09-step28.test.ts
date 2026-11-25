@@ -295,7 +295,9 @@ describe('REDESIGN_STATUS.md, the twenty-eighth step of WS09: the parts against 
     for (const file of ['test/unit/redesign-status-step28.test.ts', 'test/unit/club-routing-server-only.test.ts']) expect(pins, file).toContain(`\`${file}\``)
     // The lines held by number stand where they stood.
     expect(read('src/pages/AdminClubPage.tsx').split('\n')[427]).toContain('color: clubTextColor(color),')
-    expect(read('src/areas/admin/components/AuditLogPanel.tsx').split('\n')[277]).toContain('<span')
+    // Since checkpoint X took checkpoint W in a third time, the board seats move the panel's lines, so the line is the one the gold text test names.
+    const panelLine = Number(/'src\/areas\/admin\/components\/AuditLogPanel\.tsx:(\d+) '/.exec(read('test/unit/goldText.test.ts'))?.[1])
+    expect(read('src/areas/admin/components/AuditLogPanel.tsx').split('\n')[panelLine - 1]).toContain('<span')
   })
 
   it('gives the lint as the base\'s and the build\'s figures with why each moved, and the worker\'s dry run', () => {

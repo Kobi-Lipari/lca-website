@@ -194,15 +194,20 @@ describe('REDESIGN_STATUS.md, checkpoint X taking checkpoint W in with main: the
     expect(schema.indexOf('sqliteTable(\'rate_limits\'')).toBeGreaterThan(schema.indexOf('sqliteTable(\'newsletter_issues\''))
     const journal = JSON.parse(read(JOURNAL)) as Journal
     const newsletter = journal.entries.find((e) => e.tag === '0016_newsletter_issues')
-    const limits = journal.entries.find((e) => e.tag === '0017_rate_limits')
+    // Since checkpoint X took checkpoint W in a third time, main's seat listing is entry 17 and the rate limits are 18; the block's words stand.
+    // The rate limits' entry is found by its name and its snapshot by the entry's number, so a later join that moves the number moves nothing here.
+    const limits = journal.entries.find((e) => e.tag.endsWith('_rate_limits'))
     expect(newsletter?.idx).toBe(16)
-    expect(limits?.idx).toBe(17)
+    expect(limits!.idx).toBeGreaterThan(newsletter!.idx)
     expect(limits!.when).toBeGreaterThan(newsletter!.when)
     const sixteen = snapshot('0016')
     const seventeen = snapshot('0017')
+    const staged = snapshot(limits!.tag.slice(0, 4))
     expect(Object.keys(sixteen.tables)).not.toContain('rate_limits')
-    expect(Object.keys(seventeen.tables)).toContain('rate_limits')
+    expect(Object.keys(staged.tables)).toContain('rate_limits')
     expect(seventeen.prevId).toBe(sixteen.id)
+    // The rate limits' snapshot links to the one straight before it, as it linked to main's 16 at this join.
+    expect(staged.prevId).toBe(snapshot(String(limits!.idx - 1).padStart(4, '0')).id)
     // The header of 0071 names the staged file the journal's tag names, as main's rule for its 0061 holds.
     expect(read(MIGRATION)).toContain(`-- staged as drizzle/${limits!.tag}.sql.`)
     expect(read(MIGRATION).split('\n')[0]).toBe('-- 0071_rate_limits.sql')
@@ -259,7 +264,8 @@ describe('REDESIGN_STATUS.md, checkpoint X taking checkpoint W in with main: the
     expect(read('test/integration/club-fixtures-page.test.ts')).toContain('expect(capital.contact).toEqual({ name: \'Player One\', goes_to: \'club\' })')
     expect(read('test/integration/club-fixtures-page.test.ts')).toContain('expect(north.contact).toEqual({ name: \'Player Two\', goes_to: \'club\' })')
     expect(read('test/unit/club-page-review-fixes.test.tsx')).toContain('\'<section id="events">\', \'<section>\'])')
-    expect(read('test/unit/migration-0071-rate-limits.test.ts')).toContain('expect(journal.entries[17]).toMatchObject({ idx: 17, tag: \'0017_rate_limits\' })')
+    // Since checkpoint X took checkpoint W in a third time, the 0071 test holds the rate limits as entry 18.
+    expect(read('test/unit/migration-0071-rate-limits.test.ts')).toContain('expect(journal.entries[18]).toMatchObject({ idx: 18, tag: \'0018_rate_limits\' })')
     for (const [n, figure] of [[25, 105], [26, 106], [27, 107]] as const) {
       const text = read(`test/unit/redesign-status-ws09-step${n}.test.ts`)
       expect(text, String(n)).toContain(`.exec(read('test/unit/routes.test.ts'))?.[1])).toBeGreaterThanOrEqual(${figure})`)

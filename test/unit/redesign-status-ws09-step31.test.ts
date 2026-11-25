@@ -220,7 +220,8 @@ describe('REDESIGN_STATUS.md, the thirty-first step of WS09: the block', () => {
     expect(beyond).toContain('everything under `workers/daily-emails/`')
     for (const file of UNTOUCHED) expect(read(file), file).not.toMatch(OURS)
     for (const file of [...codeFiles('workers'), ...codeFiles('functions/utils/mail'), ...codeFiles('domain/mail')]) expect(read(file), file).not.toMatch(OURS)
-    expect(readdirSync(join(ROOT, 'migrations')).filter((f) => /^\d{4}_/.test(f)).sort().at(-1)).toBe('0072_regions_by_seat.sql')
+    // Since checkpoint X took checkpoint W in a third time, main's migrations move the newest on, so it is read from the baseline test that holds it.
+    expect(readdirSync(join(ROOT, 'migrations')).filter((f) => /^\d{4}_/.test(f)).sort().at(-1)).toBe(/expect\(sql\.at\(-1\)\)\.toBe\('(\d{4}_\w+\.sql)'\)/.exec(read('test/unit/drizzle-baseline.test.ts'))?.[1])
   })
 })
 
