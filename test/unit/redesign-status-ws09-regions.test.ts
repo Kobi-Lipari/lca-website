@@ -213,7 +213,7 @@ describe('REDESIGN_STATUS.md, WS09 aside: the regions by the five seats', () => 
     for (const file of moved) expect(pins, file).toMatch(new RegExp(`\`${file.replace(/[.]/g, '\\.')}\` \\(${casesIn(file)}\\), (WS\\d\\d|the officer roles work)`))
     expect(pins).toContain('`test/unit/fixtures/navPersonas.ts`, WS02\'s people list')
     expect(pins).toContain(`\`test/unit/nav-personas-edges.test.ts\` (${casesIn('test/unit/nav-personas-edges.test.ts')})`)
-    expect(read('test/unit/drizzle-baseline.test.ts')).toContain("expect(sql.at(-1)).toBe('0072_regions_by_seat.sql')")
+    expect(read('test/unit/drizzle-baseline.test.ts')).toContain("expect(sql.at(-1)).toBe('0073_seat_listing.sql')")
   })
 
   it('gives each figure of the checks once, the integration figure with the one todo beside it', () => {
