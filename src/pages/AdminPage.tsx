@@ -234,7 +234,7 @@ export function AdminPage() {
             <AdminSectionView
               section={section}
               mediaManager={asMediaManager || viewOnlyMediaManager ? { secondFactor: mediaManager.secondFactor } : undefined}
-              noSecondFactor={president && !presidentMayCall(assuranceLevel)}
+              noSecondFactor={president && (role === 'lca_admin' ? assuranceLevel !== 'aal2' : !presidentMayCall(assuranceLevel))}
             />
           )}
         </main>
@@ -256,8 +256,9 @@ function SectionHeading({ title, description, action }: { title: string; descrip
 }
 
 // Keyed by section so each one mounts fresh and loads only what it shows. The media manager reaches the email section
-// alone, which then draws their own form of Group email; the President seat's holder without the second factor they
-// need reads the line to set it up there in place of the send buttons.
+// alone, which then draws their own form of Group email; the President seat's holder without a second factor, only
+// while PRESIDENT_NEEDS_SECOND_FACTOR is set (it ships unset), reads the line to set it up there in place of the send
+// buttons. An LCA admin who holds the seat reads it whenever the session has no second factor, as before.
 function AdminSectionView({ section, mediaManager, noSecondFactor }: { section: AdminSection; mediaManager?: { secondFactor: boolean }; noSecondFactor?: boolean }) {
   switch (section) {
     case 'members': return <MembersSection key="members" />

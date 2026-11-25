@@ -594,7 +594,7 @@ export async function sendNewsletterIssue(payload: { issueId: string; version: n
 export interface ApiMediaManager {
   /** True for anyone but an LCA admin who holds the Media manager seat now, an officer or LCA Observer among them; false while the newsletter is off. */
   mediaManager: boolean
-  /** Whether the session carries a second factor, which sending asks of the media manager. */
+  /** Whether the session carries a second factor, which sending asks of the media manager only while MEDIA_MANAGER_NEEDS_SECOND_FACTOR is set. */
   secondFactor: boolean
 }
 

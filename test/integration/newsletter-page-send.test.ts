@@ -12,8 +12,11 @@
 //
 // - (a) who may send: the fifteen people of the saved templates' sweep and
 //   one more, an LCA Observer without the President seat who has a second
-//   factor; the four the tab lets in send, the rest get the tab's own
-//   answer, byte for byte, with nothing written.
+//   factor; those the tab lets in send, the rest get the tab's own answer,
+//   byte for byte, with nothing written. As the rule ships only an LCA admin
+//   is asked for a second factor, so seven send; with both constants of
+//   domain/mail/senders set (read through getters on its mock), the four
+//   with a second factor.
 // - (b) switched off, by MAIL_PAGE_SEND_ON or by MAIL_PAGE_ON: 404 to
 //   everyone, before the session, the body or the database is read.
 // - (c) while the site sends through Resend: WAITS_FOR_SES's 409, nothing
@@ -93,6 +96,20 @@ vi.mock('../../functions/utils/mail/switches', async (importOriginal) => {
     },
   }
 })
+/** The two second-factor constants: null reads the real one (both ship unset); a case that holds the old refusal sets both. */
+const turned = vi.hoisted(() => ({ president: null as boolean | null, mediaManager: null as boolean | null }))
+vi.mock('../../domain/mail/senders', async (importOriginal) => {
+  const real = await importOriginal<typeof import('../../domain/mail/senders')>()
+  return {
+    ...real,
+    get PRESIDENT_NEEDS_SECOND_FACTOR() {
+      return turned.president ?? real.PRESIDENT_NEEDS_SECOND_FACTOR
+    },
+    get MEDIA_MANAGER_NEEDS_SECOND_FACTOR() {
+      return turned.mediaManager ?? real.MEDIA_MANAGER_NEEDS_SECOND_FACTOR
+    },
+  }
+})
 
 type Row = Record<string, unknown>
 
@@ -138,13 +155,30 @@ beforeEach(async () => {
   flags.sender = 'ses'
   flags.plan = 'free'
   flags.complaintStops = true
+  turned.president = null
+  turned.mediaManager = null
   for (const table of ['newsletter_issues', 'email_campaign_recipients', 'email_campaigns', 'mail_list_choices', 'mail_contacts', 'mail_do_not_send']) {
     await env.DB.prepare(`DELETE FROM ${table}`).run()
   }
 })
 
 describe('(a) who may send', () => {
-  it('lets in exactly the people who may send the newsletter, and refuses everyone else as the tab does, byte for byte, writing nothing', async () => {
+  /** The four the tab lets in with a second factor, and, as the rule ships, the three seat holders without one. */
+  const WITH_A_SECOND_FACTOR = [
+    'an LCA admin with a second factor', 'the president', 'the media manager with a second factor', 'an officer who holds the seat, with a second factor',
+  ]
+  const AS_IT_SHIPS = [
+    'the president without a second factor', 'the media manager without a second factor', 'an officer who holds the seat, without a second factor',
+    ...WITH_A_SECOND_FACTOR,
+  ]
+  it.each([
+    ['as the rule ships, with both second-factor constants unset', null, AS_IT_SHIPS],
+    ['with PRESIDENT_NEEDS_SECOND_FACTOR and MEDIA_MANAGER_NEEDS_SECOND_FACTOR set', true, WITH_A_SECOND_FACTOR],
+  ] as const)('lets in exactly the people who may send the newsletter, %s, and refuses everyone else as the tab does, byte for byte, writing nothing', async (_state, asked, expected) => {
+    turned.president = asked
+    turned.mediaManager = asked
+    // The seats the other state made, so each state seats its own people, as test/integration/mail-senders.test.ts does.
+    await env.DB.prepare(`DELETE FROM board_members WHERE id LIKE 'seat-%'`).run()
     const person = (fullName: string, role = 'member') => seedMember({ fullName, email: address('person'), role })
     const writer = await seedAdmin()
     const seated = await person('Player Three')
@@ -187,9 +221,7 @@ describe('(a) who may send', () => {
       }
       await env.DB.prepare('DELETE FROM newsletter_issues WHERE campaign_id IS NULL').run()
     }
-    expect(answered).toEqual([
-      'an LCA admin with a second factor', 'the president', 'the media manager with a second factor', 'an officer who holds the seat, with a second factor',
-    ])
+    expect(answered).toEqual(expected)
   })
 })
 

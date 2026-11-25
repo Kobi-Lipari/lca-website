@@ -13,8 +13,11 @@
 // - (a) The guard, with MAIL_LISTS_ON set: an officer who holds the seat and
 //   is signed in with a second factor reads, tests and stops the newsletter
 //   and passes the guard on the send, which waits for Amazon SES; without a
-//   second factor the media manager's 403 with mfaRequired; an officer
-//   without the seat, and one whose term has ended, LIST_MAILERS_ONLY.
+//   second factor the same as the rule ships, and the media manager's 403
+//   with mfaRequired while MEDIA_MANAGER_NEEDS_SECOND_FACTOR is set (read,
+//   with PRESIDENT_NEEDS_SECOND_FACTOR, through getters on the mocked
+//   domain/mail/senders); an officer without the seat, and one whose term
+//   has ended, LIST_MAILERS_ONLY.
 // - (b) With MAIL_LISTS_ON unset, an officer who holds the seat gets the
 //   officer's own words of WS16 step 4, byte for byte, on all four methods,
 //   and no seat is read.
@@ -27,14 +30,16 @@
 //   sending nothing.
 // - (e) requireMailer and today's five campaign methods do not change: an
 //   officer who holds the seat still gets the officer's words from each.
-// - The sweep (d) is also made with no second factor, where the
-//   newsletter's files refuse both officers, the seat holder in the media
-//   manager's own words, and with MAIL_LISTS_ON unset, where every method,
+// - The sweep (d) is also made with no second factor, where as the rule
+//   ships it answers as with one, and while MEDIA_MANAGER_NEEDS_SECOND_FACTOR
+//   is set the newsletter's files refuse both officers, the seat holder in
+//   the media manager's own words; and with MAIL_LISTS_ON unset, where every method,
 //   the newsletter's files among them, answers the two officers alike.
 // - (f) The edges of the seat: another seat, or this one while it is not
 //   active; two officers who hold it together; a term that ends between two
 //   requests; an LCA admin and the president who also hold it, who send as
-//   themselves; and the endpoint's answer for each.
+//   themselves, the president asked for a second factor only while
+//   PRESIDENT_NEEDS_SECOND_FACTOR is set; and the endpoint's answer for each.
 // Every name, address and subject here is made up but the seat's own title.
 import { env } from 'cloudflare:test'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
@@ -73,6 +78,20 @@ vi.mock('../../functions/utils/mail/switches', async (importOriginal) => {
     },
     get COMPLAINT_STOPS_OTHER_SENDERS() {
       return flags.complaintStops
+    },
+  }
+})
+/** The two second-factor constants: null reads the real one (both ship unset); a case that holds the old refusal sets one. */
+const turned = vi.hoisted(() => ({ president: null as boolean | null, mediaManager: null as boolean | null }))
+vi.mock('../../domain/mail/senders', async (importOriginal) => {
+  const real = await importOriginal<typeof import('../../domain/mail/senders')>()
+  return {
+    ...real,
+    get PRESIDENT_NEEDS_SECOND_FACTOR() {
+      return turned.president ?? real.PRESIDENT_NEEDS_SECOND_FACTOR
+    },
+    get MEDIA_MANAGER_NEEDS_SECOND_FACTOR() {
+      return turned.mediaManager ?? real.MEDIA_MANAGER_NEEDS_SECOND_FACTOR
     },
   }
 })
@@ -134,6 +153,8 @@ beforeEach(async () => {
   flags.sender = 'resend'
   flags.plan = 'free'
   flags.complaintStops = true
+  turned.president = null
+  turned.mediaManager = null
   await env.DB.prepare(`DELETE FROM board_members WHERE id LIKE 'seat-%'`).run()
   for (const table of ['email_campaign_recipients', 'email_campaigns', 'mail_list_choices', 'mail_contacts']) {
     await env.DB.prepare(`DELETE FROM ${table}`).run()
@@ -159,7 +180,17 @@ describe('(a) the guard, with MAIL_LISTS_ON set', () => {
     expect(await stop.json()).toEqual({ stopped: made!.totalRecipients })
   })
 
-  it('gives an officer who holds the seat without a second factor the media manager\'s 403 with mfaRequired on all four methods, writing nothing', async () => {
+  it('admits an officer who holds the seat without a second factor, as the rule ships: the newsletter read, a test to their own address, the send waiting for Amazon SES, and the stop', async () => {
+    const seated = await officer({ seat: true })
+    expect((await invoke(newsletterGet, { as: seated.id, aal: 'aal1' })).status).toBe(200)
+    expect(await written(await invoke(newsletterPost, { as: seated.id, aal: 'aal1', method: 'POST', body: SAMPLE }))).toEqual(answerOf(409, { error: WAITS_FOR_SES }))
+    expect(await written(await invoke(testPost, { as: seated.id, aal: 'aal1', method: 'POST', body: { to: seated.email, ...SAMPLE } }))).toEqual(answerOf(200, { sent: true }))
+    expect(emailOutbox.map((e) => [e.to, e.subject])).toEqual([[seated.email, `[TEST] ${SAMPLE.subject}`]])
+    expect(await written(await invoke(stopPost, { as: seated.id, aal: 'aal1', method: 'POST' }))).toEqual(answerOf(409, { error: NOTHING_SENDING }))
+  })
+
+  it('with MEDIA_MANAGER_NEEDS_SECOND_FACTOR set, gives an officer who holds the seat without a second factor the media manager\'s 403 with mfaRequired on all four methods, writing nothing', async () => {
+    turned.mediaManager = true
     const seated = await officer({ seat: true })
     const before = await traces()
     for (const [name, handler, options] of newsletterCalls(seated.email)) {
@@ -271,21 +302,33 @@ describe('(d) every Admin handler, swept as an officer who holds the seat', () =
     return { differ, newsletter }
   }
 
+  /** The newsletter's files that answer the officer who holds the seat rather than refuse them. */
+  const ANSWERING = [
+    'DELETE mail/newsletter/templates.ts',
+    'GET mail/newsletter.ts', 'GET mail/newsletter/issue.ts', 'GET mail/newsletter/issues.ts', 'GET mail/newsletter/templates.ts', 'POST mail/newsletter.ts',
+    'POST mail/newsletter/issue/send.ts', 'POST mail/newsletter/issue/start.ts', 'POST mail/newsletter/stop.ts', 'POST mail/newsletter/templates.ts', 'POST mail/newsletter/test.ts',
+    'PUT mail/newsletter/issue.ts',
+    'PUT mail/newsletter/templates.ts',
+  ]
+
   it('lets the newsletter\'s files answer, and answers every other method exactly as it answers an officer without the seat, sending nothing', async () => {
     const { differ, newsletter } = await sweep('aal2')
     expect(differ).toEqual([])
     const answering = Object.entries(newsletter).filter(([, a]) => a.withSeat.status !== 403).map(([name]) => name)
-    expect(answering.sort()).toEqual([
-      'DELETE mail/newsletter/templates.ts',
-      'GET mail/newsletter.ts', 'GET mail/newsletter/issue.ts', 'GET mail/newsletter/issues.ts', 'GET mail/newsletter/templates.ts', 'POST mail/newsletter.ts',
-      'POST mail/newsletter/issue/send.ts', 'POST mail/newsletter/issue/start.ts', 'POST mail/newsletter/stop.ts', 'POST mail/newsletter/templates.ts', 'POST mail/newsletter/test.ts',
-      'PUT mail/newsletter/issue.ts',
-      'PUT mail/newsletter/templates.ts',
-    ])
+    expect(answering.sort()).toEqual(ANSWERING)
     for (const [name, a] of Object.entries(newsletter)) expect(a.without.status, `${name} without the seat`).toBe(403)
   })
 
-  it('answers every other method as it answers an officer without the seat, also when the session has no second factor, and the newsletter\'s files refuse both, the seat holder in the media manager\'s own words', async () => {
+  it('answers the same when the session has no second factor, as the rule ships: the newsletter\'s files answer the seat holder and every other method answers as for an officer without the seat', async () => {
+    const { differ, newsletter } = await sweep('aal1')
+    expect(differ).toEqual([])
+    const answering = Object.entries(newsletter).filter(([, a]) => a.withSeat.status !== 403).map(([name]) => name)
+    expect(answering.sort()).toEqual(ANSWERING)
+    for (const [name, a] of Object.entries(newsletter)) expect(a.without, `${name} without the seat`).toEqual(answerOf(403, { error: LIST_MAILERS_ONLY }))
+  })
+
+  it('with MEDIA_MANAGER_NEEDS_SECOND_FACTOR set, answers every other method as it answers an officer without the seat, also when the session has no second factor, and the newsletter\'s files refuse both, the seat holder in the media manager\'s own words', async () => {
+    turned.mediaManager = true
     const { differ, newsletter } = await sweep('aal1')
     expect(differ).toEqual([])
     for (const [name, a] of Object.entries(newsletter)) {
@@ -339,7 +382,7 @@ describe('(f) the edges of the seat', () => {
     expect(await written(await invoke(newsletterGet, { as: seated.id }))).toEqual(answerOf(403, { error: LIST_MAILERS_ONLY }))
   })
 
-  it('admits an LCA admin and the president who also hold the seat as themselves: each asked for a second factor, the admin in the admin\'s own words', async () => {
+  it('admits an LCA admin and the president who also hold the seat as themselves: the admin asked for a second factor in the admin\'s own words, the president, as the rule ships, not asked', async () => {
     const admin = await seedAdmin()
     const president = await seedMember({ fullName: 'Player Three', email: address('president'), role: 'lca_observer' })
     await seedPresident(president)
@@ -348,7 +391,22 @@ describe('(f) the edges of the seat', () => {
     const noFactor = await invoke(newsletterGet, { as: admin, aal: 'aal1' })
     expect(noFactor.status).toBe(403)
     expect((await noFactor.json<{ error: string }>()).error).not.toBe(MEDIA_MANAGER_SECOND_FACTOR)
-    expect(await written(await invoke(newsletterGet, { as: president, aal: 'aal1' }))).toEqual(answerOf(403, { error: MEDIA_MANAGER_SECOND_FACTOR, mfaRequired: true }))
+    expect((await invoke(newsletterGet, { as: president, aal: 'aal1' })).status).toBe(200)
+  })
+
+  it('with PRESIDENT_NEEDS_SECOND_FACTOR set, asks the president who also holds the seat for a second factor, whatever the Media manager seat\'s constant, and the admin in the admin\'s own words', async () => {
+    turned.president = true
+    const admin = await seedAdmin()
+    const president = await seedMember({ fullName: 'Player Three', email: address('president'), role: 'lca_observer' })
+    await seedPresident(president)
+    await seedSeat({ slug: MEDIA_MANAGER_SEAT, role: 'Media manager' }, [admin, president])
+    for (const mediaManager of [false, true]) {
+      turned.mediaManager = mediaManager
+      const noFactor = await invoke(newsletterGet, { as: admin, aal: 'aal1' })
+      expect(noFactor.status).toBe(403)
+      expect((await noFactor.json<{ error: string }>()).error).not.toBe(MEDIA_MANAGER_SECOND_FACTOR)
+      expect(await written(await invoke(newsletterGet, { as: president, aal: 'aal1' })), String(mediaManager)).toEqual(answerOf(403, { error: MEDIA_MANAGER_SECOND_FACTOR, mfaRequired: true }))
+    }
   })
 
   it('reads GET /api/me/media-manager false for an officer whose term has ended or whose seat is not active, and reads it afresh each time', async () => {

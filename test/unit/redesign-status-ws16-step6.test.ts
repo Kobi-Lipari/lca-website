@@ -563,7 +563,9 @@ describe('REDESIGN_STATUS.md, WS16 step 6: the date and the new files', () => {
       ['AdminEmailPage.tsx, the page\'s props', between(page, '`mediaManager`, which', 'const [clubs, setClubs]')],
       ['AdminEmailPage.tsx, the calls', between(page, 'The media manager\'s page asks for none of Group email\'s own lists', '// Final send list')],
       ['AdminEmailPage.tsx, the recent sends', between(page, 'The newsletter\'s own recent sends, with the status region and the stop', '  return (')],
-      ['AdminEmailPage.tsx, the line', between(page, 'The media manager signed in without a second factor', ') : mode === \'newsletter\' ? (')],
+      // The line's comment was reworded by the block for two-factor sign-in for LCA admins only (K's decision 82), so the
+      // part is read from the branch that draws the line.
+      ['AdminEmailPage.tsx, the line', between(page, '{!canSend ? (', ') : mode === \'newsletter\' ? (')],
       ['AdminEmailPage.tsx, under the tab', between(page, 'The media manager\'s page has no history column', '/* ── History')],
       ['features.ts, the comment on mailLists', between(read(older[3]), 'The LCA newsletter list in Group email, with the unsubscribe link', 'mailLists: false')],
     ]

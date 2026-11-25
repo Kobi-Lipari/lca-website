@@ -1029,8 +1029,8 @@ function createKeeper(report: Report) {
 }
 
 /**
- * The page's letter. `enabled` is false for anyone the server would refuse, a media manager with no second factor
- * among them, so no call is made that would be refused.
+ * The page's letter. `enabled` is false for anyone the server would refuse (a media manager with no second factor
+ * among them only while MEDIA_MANAGER_NEEDS_SECOND_FACTOR is set), so no call is made that would be refused.
  */
 export function useIssue(enabled: boolean): Issue {
   const [status, setStatus] = useState<Issue['status']>('loading')

@@ -140,10 +140,10 @@ afterEach(() => {
 })
 
 const settle = (ms = 40) => act(async () => new Promise((resolve) => setTimeout(resolve, ms)))
-async function thePage() {
+async function thePage(who: AuthContextValue = ADMIN) {
   await act(async () => {
     render(
-      <AuthContext.Provider value={ADMIN}>
+      <AuthContext.Provider value={who}>
         <MemoryRouter initialEntries={['/admin/newsletter']}>
           <App />
         </MemoryRouter>
@@ -257,6 +257,39 @@ describe('switched on, with the newsletter going through Amazon', () => {
     expect(send.className).toContain('min-h-[46px]')
     expect(send.className).toContain('border-transparent')
   })
+
+  it('draws the gold Send for the President seat\'s holder and the media manager without a second factor, as the rule ships, and its question sends', async () => {
+    flags.mailPageSend = true
+    windowAt(1440)
+    // Each holder is a person of their own, as the media manager's answer is kept by the person and the session.
+    const holder = (role: string, slug: string) => ({
+      ...ADMIN,
+      user: { id: `member-sample-${slug}`, email: `${slug}@example.org`, user_metadata: { role } },
+      session: { access_token: `${part({ alg: 'HS256', typ: 'JWT' })}.${part({ sub: `member-sample-${slug}`, session_id: `session-sample-${slug}`, aal: 'aal1', role: 'authenticated' })}.sample-signature` },
+      member: { id: `member-sample-${slug}`, email: `${slug}@example.org`, full_name: 'Player Three', role, club_id: null, membership_status: 'active' },
+      role, seats: [{ id: `seat-sample-${slug}`, slug, role: slug === 'media-manager' ? 'Media manager' : 'President', category: 'officer', started_at: '2026-11-02 15:00:00' }],
+      assuranceLevel: 'aal1', mfaRequired: false,
+    }) as unknown as AuthContextValue
+    for (const [who, answer] of [
+      [holder('lca_observer', 'president'), { mediaManager: false, secondFactor: false }],
+      [holder('member', 'media-manager'), { mediaManager: true, secondFactor: false }],
+    ] as const) {
+      calls = []
+      sends = []
+      on('GET', '/api/me/media-manager', { status: 200, body: answer })
+      await thePage(who)
+      const send = sendStep()
+      expect(send.hasAttribute('aria-disabled')).toBe(false)
+      expect(send.className).toContain('bg-lca-gold')
+      expect(screen.queryByRole('link', { name: 'Set up two-factor sign-in to send group email.' })).toBeNull()
+      fireEvent.click(send)
+      const question = await screen.findByRole('alertdialog', { name: 'Send to 155 people?' })
+      fireEvent.click(within(question).getByRole('button', { name: 'Send' }))
+      await waitFor(() => expect(sends).toEqual([{ issueId: 'sample-letter-1', version: 3 }]))
+      expect(calls).toContain(`POST ${SEND_URL}`)
+      cleanup()
+    }
+  }, 30_000)
 
   it('while a send is on its way, draws how far it has gone beside mark 3 and a Stop sending described by it', async () => {
     flags.mailPageSend = true

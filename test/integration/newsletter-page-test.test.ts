@@ -11,8 +11,10 @@
 // answers the sign-in service and stands in for the mail service.
 //
 // - (a) who may: an LCA admin with a second factor, the president and the
-//   media manager with a second factor, an officer who holds the seat among
-//   them; everyone else gets the guard's own answer, as today's form does.
+//   media manager, an officer who holds the seat among them, each asked for
+//   a second factor only while their constant in domain/mail/senders.ts is
+//   set (read through getters on the mocked module; both ship unset);
+//   everyone else gets the guard's own answer, as today's form does.
 // - (b) one address: the account's own, whatever the body holds; an account
 //   with no usable address and an address mail no longer reaches get
 //   today's words.
@@ -71,6 +73,20 @@ vi.mock('../../functions/utils/mail/switches', async (importOriginal) => {
     },
     get COMPLAINT_STOPS_OTHER_SENDERS() {
       return flags.complaintStops
+    },
+  }
+})
+/** The two second-factor constants: null reads the real one (both ship unset); the case that holds the old refusal sets them. */
+const turned = vi.hoisted(() => ({ president: null as boolean | null, mediaManager: null as boolean | null }))
+vi.mock('../../domain/mail/senders', async (importOriginal) => {
+  const real = await importOriginal<typeof import('../../domain/mail/senders')>()
+  return {
+    ...real,
+    get PRESIDENT_NEEDS_SECOND_FACTOR() {
+      return turned.president ?? real.PRESIDENT_NEEDS_SECOND_FACTOR
+    },
+    get MEDIA_MANAGER_NEEDS_SECOND_FACTOR() {
+      return turned.mediaManager ?? real.MEDIA_MANAGER_NEEDS_SECOND_FACTOR
     },
   }
 })
@@ -166,6 +182,8 @@ beforeEach(async () => {
   flags.sender = 'resend'
   flags.plan = 'free'
   flags.complaintStops = true
+  turned.president = null
+  turned.mediaManager = null
   await env.DB.prepare(`DELETE FROM board_members WHERE id LIKE 'seat-%'`).run()
   for (const table of ['newsletter_issues', 'email_campaign_recipients', 'email_campaigns', 'mail_list_choices', 'mail_contacts', 'mail_do_not_send']) {
     await env.DB.prepare(`DELETE FROM ${table}`).run()
@@ -187,7 +205,23 @@ describe('(a) who may send a test of the letter', () => {
     expect(emailOutbox.map((e) => e.to)).toEqual(await Promise.all(people.map(emailOf)))
   })
 
-  it('gives everyone else the guard\'s own answer, byte for byte as today\'s form gets it, sending nothing and writing nothing', async () => {
+  it('sends it, as the rule ships, for the president and the media manager without a second factor, to their own addresses', async () => {
+    const admin = await seedAdmin()
+    const letter = await saved(admin)
+    const president = await person('Player One', 'lca_observer')
+    await seedPresident(president)
+    const people = [president, await holder(), await holder('lca_officer')]
+    for (const who of people) {
+      const res = await testOf(who, letter, {}, { aal: 'aal1' })
+      expect(res.status, who).toBe(200)
+      expect(await res.json(), who).toEqual({ sent: true, to: await emailOf(who) })
+    }
+    expect(emailOutbox.map((e) => e.to)).toEqual(await Promise.all(people.map(emailOf)))
+  })
+
+  it('with both second-factor constants set, gives everyone else the guard\'s own answer, byte for byte as today\'s form gets it, sending nothing and writing nothing', async () => {
+    turned.president = true
+    turned.mediaManager = true
     const admin = await seedAdmin()
     const letter = await saved(admin)
     const plain = await person('Player Two')
