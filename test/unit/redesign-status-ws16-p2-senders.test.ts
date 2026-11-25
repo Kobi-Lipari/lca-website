@@ -86,8 +86,8 @@ const ADMIN = 'src/pages/AdminPage.tsx'
 const EMAIL = 'src/pages/AdminEmailPage.tsx'
 const NEWSLETTER = 'src/pages/AdminNewsletterPage.tsx'
 
-/** The latest migration on main at `992b145`, which this change was built on and adds none to. */
-const LATEST_MIGRATION = '0072'
+/** The latest migration: `0072` on main at `992b145`, which this change was built on and adds none to; the seat listing's `0073` came after. */
+const LATEST_MIGRATION = '0073'
 
 /** A string a source file exports by name, read from its `export const NAME = '...'`. */
 const exportedWords = (file: string, name: string) => new RegExp(`export const ${name} = '((?:[^'\\\\\\n]|\\\\.)*)'`).exec(read(file))?.[1] ?? ''

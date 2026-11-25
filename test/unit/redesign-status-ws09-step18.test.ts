@@ -380,8 +380,9 @@ describe('REDESIGN_STATUS.md, WS09 step 18: the parts against the files', () => 
     expect(read('test/unit/redesign-status-ws09-step17.test.ts')).toContain('    for (const file of NEW_TESTS) if (latest || file !== EVENTS_TEST) expect(writtenCount(files, file), file).toBe(casesIn(file))\n')
     expect(read('test/unit/redesign-status-ws09-step6.test.ts')).toContain('for (const [file, n] of CHANGED_TESTS.filter(([f]) => latestStep === 6 || f !== \'test/integration/role-safety.test.ts\')) if (latestStep === 6 || file !== \'test/integration/club-permissions.test.ts\') expect(casesIn(file), file).toBe(n)')
     expect(read('test/unit/redesign-status-ws09-u-notice.test.ts')).toContain('if (latestBlock === BLOCK || file !== \'test/integration/role-safety.test.ts\') expect(casesIn(file), file).toBe(count)')
-    expect(read('test/unit/goldText.test.ts')).toContain('\'src/areas/admin/components/AuditLogPanel.tsx:278 \',')
-    expect(read(PANEL).split('\n')[277]).toContain('<span')
+    // The seat that is not shown publicly adds a label and a detail case above the badge, so the line moves from 278 to 280.
+    expect(read('test/unit/goldText.test.ts')).toContain('\'src/areas/admin/components/AuditLogPanel.tsx:280 \',')
+    expect(read(PANEL).split('\n')[279]).toContain('<span')
     expect(read('test/unit/redesign-status-ws08-step6-claims.test.ts')).toContain('[send, functionNamed(notice, \'lcaAdminAddresses\')]')
   })
 

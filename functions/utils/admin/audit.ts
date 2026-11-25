@@ -53,6 +53,8 @@ export type AdminAction =
   | 'seat_assign'
   | 'seat_end'
   | 'seat_regions'
+  // A retired seat brought back, open and with no holder.
+  | 'seat_reactivate'
   // Member data leaving the site.
   | 'members_export'
   // Governance documents: bylaws, rules, amendments, minutes, treasurer's reports.
