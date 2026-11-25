@@ -33,6 +33,9 @@ import { clubContactRequestSchema, clubContactResponseSchema } from './clubConta
 import { clubReplyRequestSchema, clubReplyResponseSchema, clubReplySentResponseSchema } from './clubReply'
 import { clubPageResponseSchema } from './clubPage'
 import {
+  clubReportActionRequestSchema, clubReportActionResponseSchema, clubSuggestionRequestSchema, clubSuggestionResponseSchema,
+} from './clubReports'
+import {
   adminTournamentResponseSchema,
   clearinghouseQuerySchema,
   clearinghouseResponseSchema,
@@ -119,6 +122,9 @@ export const contracts = {
   'admin/clubs/[id]/places': {
     PUT: { request: clubPlacesRequestSchema, response: clubPlacesResponseSchema },
   },
+  'admin/clubs/[id]/reports/[reportId]': {
+    POST: { request: clubReportActionRequestSchema, response: clubReportActionResponseSchema },
+  },
   'admin/clubs/monthly-check': {
     POST: { request: monthlyCheckRequestSchema, response: monthlyCheckResponseSchema },
   },
@@ -195,6 +201,9 @@ export const contracts = {
   },
   'clubs/[id]/page': {
     GET: { response: clubPageResponseSchema },
+  },
+  'clubs/[id]/reports': {
+    POST: { request: clubSuggestionRequestSchema, response: clubSuggestionResponseSchema },
   },
   'clubs/confirm/[token]': {
     GET: { response: clubLinkResponseSchema },

@@ -37,14 +37,21 @@
 // through LCA (clubReplyEmail, WS09 step 27), sent by
 // functions/api/clubs/reply/[token].ts to the visitor's address the sealed
 // link holds, from LCA's own address and with LCA's own reply-to.
+//
+// And so is the email a keeper gets when a visitor suggests an update to a
+// club's listing (suggestionKeeperEmail, WS09 step 28), sent by
+// functions/utils/clubs/suggestions.ts to the club's rep, else to the
+// region's representatives, else to the LCA admins; a keeper's answer to it
+// is clubReplyEmail again, signed by the role alone.
 
 import { trySendEmail, type EmailEnv, type EmailMessage } from '../email'
 import { emailDetails, emailQuote, escapeHtml, p, renderEmail } from '../emailLayout'
 import { resolveSiteUrl } from '../site'
 import { regionRepresentativesOf, representativesOfRegion } from './routing'
 // The contact relay (./relay.ts) reads the region's representatives and the LCA admins through this file, the one reader
-// of the routing among the club mail's files with the monthly check.
-export { lcaAdmins, regionRepresentativesOf, type Keeper } from './routing'
+// of the routing among the club mail's files with the monthly check; Suggest an update (./suggestions.ts, WS09 step 28)
+// reads who keeps the club first, and each keeper after, the same way.
+export { clubRepsOf, keeperOf, lcaAdmins, regionRepresentativesOf, type ClubKeepers, type Keeper } from './routing'
 import { formatDate } from '../../../domain/format/date'
 import { NO_STATEMENT } from '../../../domain/clubs/monthlyCheck'
 
@@ -678,4 +685,110 @@ export function clubReplyEmail(data: {
       last,
     ].join('\n'),
   }
+}
+
+// ── Suggest an update (WS09 step 28) ─────────────────────────────
+
+/** Who a suggestion's email goes to: the club's rep, a representative of its region, or an LCA admin. */
+export type SuggestionKeeperKind = 'club_rep' | 'region' | 'lca'
+
+/** The heading of a keeper's email. */
+export const SUGGESTION_HEADING = 'A suggestion for a club listing'
+
+/** The link's words on a keeper's email. */
+export const SUGGESTION_LINK_LABEL = 'Open the suggestion'
+
+/** The line on a keeper's email when the visitor left an address: the keeper may reply from the site, and the address is not shown. */
+export const SUGGESTION_ADDRESS_LEFT = 'They left an email address, so you can reply to them from the site. Their address is kept private, so it is not shown here.'
+
+/** The line on a keeper's email when the visitor left no address. */
+export const SUGGESTION_NO_ADDRESS = 'They left no email address, so there is no one to reply to.'
+
+/** Where a keeper answers: on the site, where the club's Still accurate waits until they do. */
+export const SUGGESTION_ANSWER_LINE = 'Answer it on the site: fix the listing, reply, or mark it not an issue. The club cannot be marked still accurate until you do.'
+
+/** The last line of a keeper's email, as the relay's copies say it. */
+export const SUGGESTION_FOOTER = 'A reply to this email goes to the Louisiana Chess Association, not to the person who wrote.'
+
+/**
+ * Why a suggestion came to an LCA admin: the club has no rep and no one holds
+ * its region's seat, or its keepers' addresses took nothing (or were the
+ * address the visitor typed, which is never written to).
+ */
+export type SuggestionReason = 'no_keeper' | 'unreachable'
+
+/** Why the suggestion came to this keeper. */
+export function suggestionOpening(club: string, kind: SuggestionKeeperKind, region: string | null, reason: SuggestionReason): string {
+  if (kind === 'club_rep') return `A visitor suggested an update to ${club}'s listing. It came to you as the club's representative.`
+  if (kind === 'region') {
+    const area = region ? oneLine(region) : ''
+    return `A visitor suggested an update to ${club}'s listing. It came to you as the ${area || 'region\'s'} representative.`
+  }
+  return reason === 'no_keeper'
+    ? `A visitor suggested an update to ${club}'s listing. It came to you as an LCA admin, since the club has no representative and no one holds its region's seat.`
+    : `A visitor suggested an update to ${club}'s listing. It came to you as an LCA admin, since it could not reach the club's keepers.`
+}
+
+/**
+ * The email a keeper gets for one suggestion. The subject is fixed words
+ * with the club's name, never anything the visitor typed. It names which of
+ * the six parts changed in the choice's own words, quotes the visitor's
+ * words (escaped in the HTML and written as text in the plain part), says
+ * whether an address was left but never the address, and links to the
+ * suggestion's place on the site, where it is answered. Its `to` is empty, as
+ * every template's is, and is filled for each person by the sender; the
+ * reply-to is the site's own, never the visitor's.
+ */
+export function suggestionKeeperEmail(data: {
+  siteUrl: string
+  clubName: string
+  region: string | null
+  kind: SuggestionKeeperKind
+  /** Why an LCA admin's email came to them; read only when `kind` is 'lca'. */
+  reason: SuggestionReason
+  choice: string
+  message: string
+  hasAddress: boolean
+  link: string
+}): EmailMessage {
+  const clubName = oneLine(data.clubName)
+  const choice = oneLine(data.choice)
+  const message = data.message.trim()
+  const opening = suggestionOpening(clubName, data.kind, data.region, data.reason)
+  const address = data.hasAddress ? SUGGESTION_ADDRESS_LEFT : SUGGESTION_NO_ADDRESS
+  return {
+    to: '',
+    subject: `A suggestion for ${clubName}'s listing on the LCA website`,
+    html: renderEmail({
+      siteUrl: data.siteUrl,
+      heading: SUGGESTION_HEADING,
+      preheader: `A suggestion for ${clubName}'s listing`,
+      body: p(escapeHtml(opening)) + emailDetails([['What changed', choice]]) + emailQuote(message, 'Their words') + p(escapeHtml(address)) + p(escapeHtml(SUGGESTION_ANSWER_LINE)),
+      cta: { label: SUGGESTION_LINK_LABEL, url: data.link },
+      footerNote: escapeHtml(SUGGESTION_FOOTER),
+    }),
+    text: [
+      `${SUGGESTION_HEADING}.`,
+      '',
+      opening,
+      '',
+      `What changed: ${choice}`,
+      '',
+      'Their words:',
+      message,
+      '',
+      address,
+      '',
+      SUGGESTION_ANSWER_LINE,
+      '',
+      `${SUGGESTION_LINK_LABEL}: ${data.link}`,
+      '',
+      SUGGESTION_FOOTER,
+    ].join('\n'),
+  }
+}
+
+/** How the club's own rep signs an answer to a suggestion: by the role and the club alone, never by a name. */
+export function clubRepSignOff(clubName: string): string {
+  return `${oneLine(clubName)} representative`
 }

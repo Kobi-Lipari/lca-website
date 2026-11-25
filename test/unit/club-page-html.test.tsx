@@ -40,6 +40,7 @@ function bare(): ClubPageResponse {
     statement: { text: 'Tuesdays at 7:00 PM', told: 'Last checked November 2026' },
     places: [{ name: 'Example Library', street: null, note: null, latitude: null, longitude: null }],
     contact: { name: 'Player One', goes_to: 'club' },
+    suggestion: { goes_to: 'club_rep' },
     events: [],
     news: [{ id: 'n1', title: 'Example news', excerpt: 'A made up note.', news_date: '2026-11-01' }],
     nearest: [],

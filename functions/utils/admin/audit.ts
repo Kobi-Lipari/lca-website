@@ -42,6 +42,10 @@ export type AdminAction =
   // A press of "Send this month's check now" that sent (WS09): who pressed
   // it, the month in words and the counts, never an address or a link.
   | 'club_monthly_check_sent'
+  // A keeper's answer to a visitor's suggestion for a club's listing (WS09
+  // step 28): applied, answered or dismissed. It names the club, the row and
+  // the action, never the visitor's words, an address or the keeper's reply.
+  | 'club_suggestion_resolved'
   // A representative's club event in the LCA admins' wait (WS09 step 18): sent
   // for review, approved and listed, or sent back with changes asked. Each
   // names the event and its id, never the note an LCA admin wrote.

@@ -43,6 +43,7 @@ describe('the club page contract with the five regions', () => {
     statement: { text: 'Tuesdays at 7:00 PM', told: '' },
     places: [],
     contact: { name: null, goes_to: 'club' },
+    suggestion: { goes_to: 'club_rep' },
     events: [],
     news: [],
     nearest: [],

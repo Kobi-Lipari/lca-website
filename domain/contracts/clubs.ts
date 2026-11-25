@@ -7,6 +7,7 @@
 import { z } from 'zod'
 import { dollarsSchema, flagSchema, idSchema, isoDateSchema, storedTimestampSchema } from './common'
 import { registrationStatusSchema, savedSectionSchema, tournamentStatusSchema } from './events'
+import { openSuggestionSchema } from './clubReports'
 
 /**
  * The club's public row: today's 13 columns of clubs, in the table's own
@@ -410,6 +411,11 @@ export const adminClubResponseSchema = z.strictObject({
   places: z.array(clubPlaceSchema).optional(),
   /** What the person may do with the club's events, answered only while REGION_EVENTS_ON is set (WS09 step 19). */
   eventRights: clubEventRightsSchema.optional(),
+  /**
+   * The club's open suggestions (WS09 step 28), answered only while CLUB_KEEPERS_ON is set, only to a keeper of the
+   * club (canManageClub), and only when at least one is open; never an address.
+   */
+  openSuggestions: z.array(openSuggestionSchema).optional(),
 })
 
 /**
@@ -444,7 +450,7 @@ export const clubConfirmResponseSchema = z.strictObject({
  * logo address and statement (how the club meets, in its own words), the
  * last check (null for a club never checked) with its words and whether it
  * needs a check, the count of the club's events the person is shown, and
- * its open items, empty until WS09 steps 19 and 28 give them their rows.
+ * its open items: its open suggestions (WS09 step 28), the one kind there is.
  * No email of any kind, no roster and no member.
  */
 export const regionClubSchema = z.strictObject({
@@ -459,7 +465,8 @@ export const regionClubSchema = z.strictObject({
   lastCheckWords: z.string(),
   needsCheck: z.boolean(),
   events: z.number().int().nonnegative(),
-  openItems: z.array(z.never()),
+  /** The club's open suggestions (WS09 step 28), the one kind of open item; never an address. */
+  openItems: z.array(openSuggestionSchema),
   /** How many of the club's events wait in LCA review (marked, sent and not approved), answered only while REGION_EVENTS_ON is set (WS09 step 19). */
   inReview: z.number().int().nonnegative().optional(),
 })

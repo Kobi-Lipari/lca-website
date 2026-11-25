@@ -14,6 +14,7 @@ import type { ApiAdminMember } from '@/areas/membership/api'
 import type { AdminClubResponse, ClubConfirmResponse, ClubPlace, UpdateClubRequest, WorkspaceRegionResponse } from '@domain/contracts'
 import type {
   ClubContactRequest, ClubContactResponse, ClubLinkConfirmResponse, ClubLinkResponse, ClubPageResponse, ClubReplyRequest, ClubReplyResponse, ClubReplySentResponse, MonthlyCheckResponse,
+  ClubReportActionRequest, ClubReportActionResponse, ClubSuggestionRequest, ClubSuggestionResponse, OpenSuggestion,
 } from '@domain/contracts'
 
 export interface ApiClubDetail {
@@ -116,6 +117,39 @@ export async function sendClubMessage(address: string, body: ClubContactRequest)
   return handleResponse<ClubContactResponse>(response)
 }
 
+/**
+ * A suggestion for a club's listing from its page's Suggest an update sheet,
+ * POST /api/clubs/:address/reports (WS09 step 28): which of the six parts
+ * changed, the visitor's words, an address only if they give one, and the
+ * spam check's token. The server saves it for whoever keeps the listing and
+ * emails them. Sent with no sign-in, since the answer is the same for
+ * everyone and the row holds no more for a member. A refusal throws an
+ * ApiError with its status and words.
+ */
+export async function sendClubSuggestion(address: string, body: ClubSuggestionRequest): Promise<ClubSuggestionResponse> {
+  const response = await fetch(`/api/clubs/${encodeURIComponent(address)}/reports`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  })
+  return handleResponse<ClubSuggestionResponse>(response)
+}
+
+/**
+ * A keeper's answer to one open suggestion of a club, POST
+ * /api/admin/clubs/:id/reports/:reportId (WS09 step 28): apply, answer with
+ * the keeper's words, or dismiss. Answers the row and its new status; a
+ * suggestion already handled is refused with 409 in words.
+ */
+export async function resolveClubSuggestion(clubId: string, reportId: number, body: ClubReportActionRequest): Promise<ClubReportActionResponse> {
+  const response = await fetch(`/api/admin/clubs/${encodeURIComponent(clubId)}/reports/${encodeURIComponent(String(reportId))}`, {
+    method: 'POST',
+    headers: await authHeaders(),
+    body: JSON.stringify(body),
+  })
+  return handleResponse<ClubReportActionResponse>(response)
+}
+
 export async function adminUpdateClub(
   id: string,
   body: {
@@ -189,6 +223,8 @@ export async function adminGetClub(id: string): Promise<{
   places?: ApiClubPlace[]
   /** What the person may do with the club's events, answered only while REGION_EVENTS_ON is set on the server. */
   eventRights?: AdminClubResponse['eventRights']
+  /** The club's open suggestions, answered to a keeper only while one is open and CLUB_KEEPERS_ON is set (WS09 step 28). */
+  openSuggestions?: OpenSuggestion[]
 }> {
   const response = await fetch(`/api/admin/clubs/${encodeURIComponent(id)}`, {
     headers: await authHeaders(),

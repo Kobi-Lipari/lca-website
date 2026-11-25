@@ -36,7 +36,7 @@
 // hears them too. After any refusal the spam check is drawn afresh for a
 // new token, since a token is good once. Nothing the visitor typed is kept in
 // the browser's storage.
-import { useEffect, useRef, useState, type FormEvent, type KeyboardEvent } from 'react'
+import { useEffect, useRef, useState, type FormEvent, type KeyboardEvent, type ReactNode } from 'react'
 import { CircleHelp } from 'lucide-react'
 
 import { ApiError, sendClubMessage } from '@/lib/api'
@@ -115,9 +115,12 @@ function helpWords(goesTo: ContactGoesTo, region: string | null): string[] {
   ]
 }
 
-/** The Contact section: its heading, the line saying where the message goes, Help and the form. */
+/**
+ * The Contact section: its heading, the line saying where the message goes, Help and the form. Beside the heading
+ * the page puts Suggest an update (WS09 step 28), one of the sheet's two ways in (`suggest`).
+ */
 export function ClubContact({
-  id, address, region, goesTo,
+  id, address, region, goesTo, suggest,
 }: {
   /** The section's id, for the section nav. */
   id: string
@@ -125,18 +128,28 @@ export function ClubContact({
   address: string
   region: string | null
   goesTo: ContactGoesTo
+  /** Suggest an update, beside the heading; the page passes it. */
+  suggest?: ReactNode
 }) {
+  const heading = (
+    <h2
+      id={CONTACT_HEADING_ID}
+      tabIndex={-1}
+      className="flex items-center gap-2.5 break-words rounded-sm text-2xl font-bold tracking-tight text-ink outline-none focus-visible:ring-3 focus-visible:ring-focus"
+    >
+      <span aria-hidden="true" className="h-6 w-1.5 shrink-0 rounded-full bg-ink" />
+      {CONTACT_HEADING}
+    </h2>
+  )
   return (
     <section id={id} aria-labelledby={CONTACT_HEADING_ID} className={cn(CLEAR_OF_BARS, 'py-8')}>
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
-        <h2
-          id={CONTACT_HEADING_ID}
-          tabIndex={-1}
-          className="flex items-center gap-2.5 break-words rounded-sm text-2xl font-bold tracking-tight text-ink outline-none focus-visible:ring-3 focus-visible:ring-focus"
-        >
-          <span aria-hidden="true" className="h-6 w-1.5 shrink-0 rounded-full bg-ink" />
-          {CONTACT_HEADING}
-        </h2>
+        {suggest ? (
+          <div className="flex max-w-2xl flex-wrap items-center justify-between gap-x-4">
+            {heading}
+            {suggest}
+          </div>
+        ) : heading}
         <ContactRelayForm address={address} region={region} goesTo={goesTo} />
       </div>
     </section>

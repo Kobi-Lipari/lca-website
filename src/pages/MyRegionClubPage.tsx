@@ -40,6 +40,13 @@
 // for each event the person runs, and the LCA admins' wait in words. After
 // the create the steps go to the event's manage page. With regionEvents off
 // the tab is as before.
+//
+// While a visitor's suggestion for the club is open (WS09 step 28) a banner
+// above the tabs' contents shows each, with Fix the listing, Reply to visitor
+// (only when the visitor left an address) and Not an issue
+// (SuggestionRows.tsx); Fix the listing marks it and opens Listing. A page
+// opened by My region's Apply this says the row was marked and puts the
+// focus on the heading. With none open the page is as before.
 import { lazy, Suspense, useCallback, useEffect, useRef, useState, type FocusEvent, type FormEvent } from 'react'
 import { Link, useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { ArrowLeft, ExternalLink } from 'lucide-react'
@@ -55,6 +62,8 @@ import { usePageTitle } from '@/hooks/usePageTitle'
 import { ClubNewsPanel, type ClubNewsForm } from '@/areas/clubs/components/ClubNewsPanel'
 import { ClubEventsList, type EventLink } from '@/areas/clubs/components/ClubEventsList'
 import { errorWords } from '@/areas/clubs/region'
+import { ClubSuggestionsBanner } from '@/areas/clubs/components/SuggestionRows'
+import { RESOLVED_WORDS } from '@domain/clubs/suggestion'
 import { regionEventsOn } from '@/areas/clubs/switches'
 import { checkWords } from '@domain/clubs/regionCards'
 // The one club editor, fetched only when the Listing tab draws it.
@@ -220,6 +229,16 @@ function ClubInRegion({ id }: { id: string }) {
     live.current = true
     return () => { live.current = false }
   }, [])
+
+  // Opened by My region's Apply this: the page says the row was marked, once, with the focus on its heading.
+  const { state: arrival } = useLocation()
+  const appliedOnArrival = useRef((arrival as { suggestionApplied?: boolean } | null)?.suggestionApplied === true)
+  useEffect(() => {
+    if (!club || !appliedOnArrival.current) return
+    appliedOnArrival.current = false
+    setSaid(RESOLVED_WORDS.applied)
+    heading.current?.focus()
+  }, [club])
 
   async function stillAccurate() {
     if (!club || confirming) return
@@ -433,6 +452,9 @@ function ClubInRegion({ id }: { id: string }) {
             <ArrowLeft className="size-4" aria-hidden="true" /> Back to My region
           </Link>
         )}
+
+        {/* A visitor's suggestions, while any is open (WS09 step 28); with none it draws nothing. */}
+        {club && data && <ClubSuggestionsBanner key={club.id} suggestions={data.openSuggestions ?? []} clubId={club.id} clubName={club.name} onApplied={() => setTab('listing')} />}
 
         {/* Hidden, not taken away, while another tab shows: out of the tab order and of what a screen reader reads, with what was typed kept. */}
         {club && data && (tab === 'listing' || editorDrawn) && (

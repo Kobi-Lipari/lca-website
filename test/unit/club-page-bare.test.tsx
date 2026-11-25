@@ -97,8 +97,9 @@ describe('a club with only the five basics', () => {
     expect(within(where).getByText('Example Library')).toBeTruthy()
     // No Follow button and no other control: the crumb, the two cover buttons, the nav's three, Directions, Contact's Help, Close help and Send message, and the foot line's Copy link; no Edit for a visitor.
     expect(screen.queryByText(/Follow/)).toBeNull()
+    // Moved at WS09 step 28: Suggest an update stands under the told line and beside Contact's heading, and nowhere else.
     expect([...page.querySelectorAll('a, button')].map((c) => c.getAttribute('aria-label') ?? c.textContent?.trim())).toEqual([
-      'Clubs', 'Contact the club', 'Share', 'About', 'When and where', 'Contact', 'Directions to Example Library (opens in a new tab)', 'Help', 'Close help', 'Send message', 'Copy link',
+      'Clubs', 'Contact the club', 'Share', 'About', 'When and where', 'Contact', 'Suggest an update', 'Directions to Example Library (opens in a new tab)', 'Suggest an update', 'Help', 'Close help', 'Send message', 'Copy link',
     ])
     expect(screen.getByRole('link', { name: 'Directions to Example Library (opens in a new tab)' }).textContent).toBe('Directions')
   })
@@ -108,7 +109,9 @@ describe('a club with only the five basics', () => {
     const words = wordsOf(page)
     expect(words).not.toMatch(/[[\]{}]/)
     expect(words).not.toMatch(/not listed|not set|none yet|no description|coming soon/i)
-    expect(words).not.toMatch(/Suggest an update|Ask to be its named rep|Is this your club/i)
+    // Moved at WS09 step 28: Suggest an update is in the page twice, under the told line and beside Contact, never on a block.
+    expect(words).not.toMatch(/Ask to be its named rep|Is this your club/i)
+    expect(words.match(/Suggest an update/g)).toHaveLength(2)
     expect(words).not.toMatch(/null|undefined/)
     // No box of About's: Cost, Who is welcome and Find us online have nothing in them, so none is drawn.
     expect(screen.queryByText('Cost')).toBeNull()

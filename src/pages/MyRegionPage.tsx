@@ -30,8 +30,17 @@
 // Confirm all still accurate and the Clubs heading; no club's card carries
 // one, nothing opens by itself and nothing is kept in the browser. Nothing
 // here shows an email address: the answer carries none.
+//
+// A visitor's suggestion that no keeper has answered yet (WS09 step 28) is
+// an open item of its club's card: the card says how many and the oldest's
+// age, and its button reads "Answer it, then confirm", which takes the
+// focus to the club's first row in the to-do list under the cards. Each row
+// has Reply (only when the visitor left an address), Apply this and Not an
+// issue (SuggestionRows.tsx); Apply this marks the row and opens the club's
+// page in My region at its listing. Confirm all skips a club with one open
+// and says how many it skipped. With none open the page is as before.
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { ArrowLeft } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
@@ -42,8 +51,10 @@ import { RegionClubCard } from '@/areas/clubs/components/RegionClubCard'
 import { RegionHelpMark } from '@/areas/clubs/components/RegionHelp'
 import { ThisMonthBar } from '@/areas/clubs/components/ThisMonthBar'
 import { MonthlyCheckButton } from '@/areas/clubs/components/MonthlyCheckButton'
+import { SuggestionRows } from '@/areas/clubs/components/SuggestionRows'
+import { useRowsShown, type SuggestionRow } from '@/areas/clubs/suggestionRows'
 import {
-  clubsToConfirm, clubsWord, confirmAllWords, errorWords, namesInWords, withConfirmed,
+  clubsToConfirm, clubsWord, confirmAllWords, errorWords, namesInWords, skippedWords, waitingForAnswer, withConfirmed, withoutSuggestion,
 } from '@/areas/clubs/region'
 import type { RegionClub, WorkspaceRegionResponse } from '@domain/contracts'
 
@@ -79,6 +90,7 @@ function settleError(err: unknown): Load {
 export function MyRegionPage() {
   const { role } = useAuth()
   const isAdmin = role === 'lca_admin'
+  const navigate = useNavigate()
   usePageTitle('My region')
 
   const [load, setLoad] = useState<Load>({ kind: 'loading' })
@@ -196,8 +208,24 @@ export function MyRegionPage() {
     }
     if (!live.current) return
     setRunning(false)
-    setSaid(confirmAllWords(marked, failed))
+    // A club with a suggestion open waits for its answer, and the run says how many it passed over.
+    const skipped = waitingForAnswer(answer.clubs).length
+    setSaid(skipped > 0 ? `${confirmAllWords(marked, failed)} ${skippedWords(skipped)}` : confirmAllWords(marked, failed))
     setRunsDone((n) => n + 1)
+  }
+
+  // The to-do list: every open suggestion, the oldest first, each with its club.
+  const todo: SuggestionRow[] = (answer?.clubs ?? [])
+    .flatMap((club) => club.openItems.map((item) => ({ ...item, clubId: club.id, clubName: club.name })))
+    .sort((a, b) => b.ageDays - a.ageDays || a.id - b.id)
+  const todoShown = useRowsShown(todo.length > 0)
+
+  /** The card's "Answer it, then confirm": the focus goes to the club's first row in the to-do list. */
+  function answerFirst(club: RegionClub) {
+    const first = todo.find((row) => row.clubId === club.id)
+    const target = first ? document.getElementById(`suggestion-${first.id}-title`) : null
+    target?.scrollIntoView?.({ block: 'center' })
+    target?.focus()
   }
 
   const regions = answer?.regions.map((r) => r.region) ?? []
@@ -279,12 +307,22 @@ export function MyRegionPage() {
               <ul className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 {answer.clubs.map((club) => (
                   <li key={club.id} className="min-w-0">
-                    <RegionClubCard club={club} busy={busy.has(club.id)} error={errors[club.id] ?? null} onConfirm={(c) => { void stillAccurate(c) }} />
+                    <RegionClubCard club={club} busy={busy.has(club.id)} error={errors[club.id] ?? null} onConfirm={(c) => { void stillAccurate(c) }} onAnswer={answerFirst} />
                   </li>
                 ))}
               </ul>
             )}
           </section>
+        )}
+
+        {answer && todoShown && (
+          <SuggestionRows
+            kind="todo"
+            rows={todo}
+            headingId="region-suggestions-title"
+            onResolved={(row) => setAnswer((a) => withoutSuggestion(a, row.clubId, row.id))}
+            onApplied={(row) => navigate(`/workspace/region/clubs/${encodeURIComponent(row.clubId)}`, { state: { suggestionApplied: true } })}
+          />
         )}
       </section>
     </div>

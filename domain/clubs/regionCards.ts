@@ -26,6 +26,19 @@ export function storedUtcMs(stamp: string | null | undefined): number | null {
 }
 
 /**
+ * Whole days from a stored UTC stamp to now, by the rule above, never below 0,
+ * and 0 for a stamp that cannot be read: the age of a visitor's suggestion
+ * (WS09 step 28), which the server reads and the pages are handed. It lives
+ * here and not beside the suggestion's words (../clubs/suggestion.ts) so that
+ * the pages that draw those words do not take this file in with them.
+ */
+export function wholeDaysSince(stamp: string | null | undefined, nowMs: number): number {
+  const at = storedUtcMs(stamp)
+  if (at === null) return 0
+  return Math.max(0, Math.floor((nowMs - at) / DAY_MS))
+}
+
+/**
  * True when the club has never been checked, or its last check is more than
  * 90 days before `now`. A check exactly 90 days old still counts.
  */

@@ -146,7 +146,8 @@ describe('REDESIGN_STATUS.md, checkpoint W taking main in: the parts against the
       '`REGION_HELP_SHOWN_KEY` is left out', 'Nothing of either side was dropped', 'checked file by file against each parent', '`git diff --stat 18634b8` ends', '`git diff --stat 216e7ae` ends',
     ]) expect(holds, piece).toContain(piece)
     // 111 since checkpoint X took checkpoint W in: checkpoint X's two routes beside the mail work's four.
-    expect(read('test/unit/routes.test.ts')).toContain('expect(real.filter((r) => r.startsWith(\'api/\')).length).toBe(111)')
+    // Moved at WS09 step 28, whose two routes are the 112th and 113th: 111 before it, a later figure now.
+    expect(read('test/unit/routes.test.ts')).toContain('expect(real.filter((r) => r.startsWith(\'api/\')).length).toBe(113)')
     expect(read('test/unit/api-split-modules.test.ts')).toContain('\'/api/clubs/*/page\'')
     expect(read('test/unit/club-pages-no-dates.test.tsx')).toContain('import type { ClubPageResponse, RegionClub, WorkspaceRegionResponse } from \'@domain/contracts\'')
   })

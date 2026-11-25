@@ -14,6 +14,7 @@ import { z } from 'zod'
 import { idSchema, isoDateSchema } from './common'
 import { registrationStatusSchema, tournamentStatusSchema } from './events'
 import { CONTACT_GOES_TO } from '../clubs/contactMessage'
+import { SUGGESTION_GOES_TO } from '../clubs/suggestion'
 
 /** The sections a club page names, in its nav's order (domain/clubs/sections.ts). */
 export const clubPageSectionSchema = z.enum(['about', 'when_and_where', 'events', 'news', 'photos', 'contact'])
@@ -78,6 +79,11 @@ export const clubPageResponseSchema = z.strictObject({
    * representative, or LCA. It never names a person, an address, how many people, or whether an address works.
    */
   contact: z.strictObject({ name: z.string().nullable(), goes_to: z.enum(CONTACT_GOES_TO) }),
+  /**
+   * Where a suggestion from Suggest an update goes (WS09 step 28): the club's rep, the region's representative or LCA,
+   * as one word, never who and never an address.
+   */
+  suggestion: z.strictObject({ goes_to: z.enum(SUGGESTION_GOES_TO) }),
   events: z.array(clubPageEventSchema),
   news: z.array(z.strictObject({
     id: idSchema,

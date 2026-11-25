@@ -35,6 +35,11 @@
 //   403 SEAT_ENDED    the person's seat no longer covers the club
 //   429 TOO_MANY      a good link opened more than LINK_CALLS_AN_HOUR times
 //                     in an hour from one place (WS09 step 25)
+// and for POST then:
+//   409 LINK_WAITS    a visitor's suggestion for the club is open (WS09 step
+//                     28): nothing is written, and the page says in words
+//                     that a suggestion waits and is answered in My region
+//                     after logging in
 // The club is read only once the token holds, so no answer tells whether a
 // club exists to someone without a good link.
 //
@@ -52,6 +57,8 @@ import { errorResponse, handleOptions, jsonResponse, parseBody } from '../../../
 import { CLUB_KEEPERS_ON } from '../../../utils/clubs/pages'
 import { CONFIRM_PURPOSE } from '../../../utils/clubs/monthlyCheck'
 import { markStillAccurate } from '../../../utils/clubs/stillAccurate'
+import { hasOpenSuggestion } from '../../../utils/clubs/suggestions'
+import { LINK_WAITS } from '../../../../domain/clubs/suggestion'
 import { oneLine } from '../../../utils/clubs/emails'
 import { isRegionalRepFor } from '../../../utils/admin/permissions'
 import { readToken } from '../../../utils/tokens'
@@ -148,6 +155,8 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
   if (link instanceof Response) return link
   const parsed = await parseBody(context.request, clubLinkConfirmRequestSchema)
   if (parsed instanceof Response) return withLinkHeaders(parsed)
+  // A suggestion no keeper has answered yet: the link waits for it, as Still accurate does in My region.
+  if (await hasOpenSuggestion(context.env.DB, link.club.id)) return refuse(LINK_WAITS, 409)
   const row = await markStillAccurate(context.env.DB, link.club.id, link.memberId)
   // Deleted between the read above and this write.
   if (!row) return refuse(CLUB_GONE, 404)

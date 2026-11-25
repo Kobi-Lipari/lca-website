@@ -237,7 +237,8 @@ describe('the bare club', () => {
     const controls = [...page.querySelectorAll('a, button')].map((c) => c.getAttribute('aria-label') ?? c.textContent?.trim())
     expect(controls.at(-1)).toBe('Copy link')
     // Contact (WS09 step 26) adds its nav link, Help, Close help and Send message.
-    expect(controls).toHaveLength(11)
+    // Moved at WS09 step 28: Suggest an update adds its two ways in, under the told line and beside Contact.
+    expect(controls).toHaveLength(13)
     expect(wordsOf(page)).not.toMatch(/No events|No news|not listed|Schedule/i)
   })
 })
@@ -247,7 +248,9 @@ describe('what is left out', () => {
     answer = restAnswer({ sections: ['about', 'when_and_where', 'events', 'news', 'photos', 'contact'] })
     const page = await draw()
     const words = wordsOf(page)
-    expect(words).not.toMatch(/Follow|calendar|Partner event|organizer's site|Photos|Suggest an update/i)
+    // Moved at WS09 step 28: Suggest an update is in the page twice, under the told line and beside Contact, never on a block.
+    expect(words).not.toMatch(/Follow|calendar|Partner event|organizer's site|Photos/i)
+    expect(words.match(/Suggest an update/g)).toHaveLength(2)
     expect(screen.queryByRole('heading', { name: /^Photos/ })).toBeNull()
     expect(page.querySelector('#photos, [data-status="partner"], [aria-disabled="true"], [disabled]')).toBeNull()
     expect([...page.querySelectorAll('nav[aria-label="On this page"] a')].map((a) => a.textContent)).toEqual(['About', 'When and where', 'Events', 'News', 'Contact'])

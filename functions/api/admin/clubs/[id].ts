@@ -42,6 +42,8 @@ import {
   type SavedChange,
 } from '../../../utils/clubs/save'
 import { sendClubSaveNotice } from '../../../utils/clubs/emails'
+import { openSuggestionsOf } from '../../../utils/clubs/suggestions'
+import { canManageClub } from '../../../utils/admin/permissions'
 import { isReservedSlug } from '../../../../domain/clubs/slug'
 import {
   todaysClubSaveRequestSchema,
@@ -175,11 +177,19 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
 
   // With CLUB_KEEPERS_ON set the club's fifteen new columns join it (two of
   // them member ids, never an email) and its places follow, for each person
-  // admitted; the roster rule above stays as it is.
+  // admitted; the roster rule above stays as it is. A keeper of the club
+  // (canManageClub, so not an observer who only views it) is also answered
+  // its open suggestions (WS09 step 28), only while one is open, so the
+  // answer with none is as before; never an address.
+  const keeperColumns = await readKeeperColumns(context.env.DB, clubId)
+  const places = await readPlaces(context.env.DB, clubId)
+  const waiting = (await openSuggestionsOf(context.env.DB, [clubId], Date.now())).get(clubId) ?? []
+  const open = waiting.length > 0 && await canManageClub(context.env.DB, authResult.member, clubId) ? waiting : []
   return jsonResponse({
     ...answer,
-    club: { ...club, ...(await readKeeperColumns(context.env.DB, clubId)) },
-    places: await readPlaces(context.env.DB, clubId),
+    club: { ...club, ...keeperColumns },
+    places,
+    ...(open.length > 0 ? { openSuggestions: open } : {}),
   })
 }
 

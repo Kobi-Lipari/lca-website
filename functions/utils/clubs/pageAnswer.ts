@@ -25,6 +25,8 @@
 // approval wait. Who keeps the club is not in it at all (K's decision 12):
 // where a message from the Contact form goes is one word of a closed list,
 // read by relayKind in ./relay.ts (WS09 step 26), never a name or an address.
+// Where a suggestion from Suggest an update goes is one word of a closed list
+// too, read by suggestionGoesTo in ./suggestions.ts (WS09 step 28).
 // The told line comes as words, "Last checked" and a month
 // (functions/utils/clubs/authorLine.ts). The events are the club's listed
 // events, through listedWhere, with the keys a visitor's event answers
@@ -32,6 +34,7 @@
 import { clubToldLine } from './authorLine'
 import { nearestClubs } from './nearest'
 import { relayKind } from './relay'
+import { suggestionGoesTo } from './suggestions'
 import { listedWhere } from '../events/listing'
 import { clubPageSections, filled } from '../../../domain/clubs/sections'
 import type { ClubPageEvent, ClubPageResponse } from '../../../domain/contracts/clubPage'
@@ -173,6 +176,8 @@ export async function clubPageAnswer(db: D1Database, club: PageClub): Promise<Cl
   const nearest = await nearestClubs(db, club.id)
   // Where the Contact form's message goes, as one word: never who, never an address (WS09 step 26).
   const goesTo = await relayKind(db, club.id)
+  // Where Suggest an update's suggestion goes, as one word: never who, never an address (WS09 step 28).
+  const suggestionTo = await suggestionGoesTo(db, club.id)
 
   const about = {
     text: text(club.about_text),
@@ -225,6 +230,7 @@ export async function clubPageAnswer(db: D1Database, club: PageClub): Promise<Cl
     statement: { text: statement, told },
     places: placeRows,
     contact: { name: text(club.contact_name_public), goes_to: goesTo },
+    suggestion: { goes_to: suggestionTo },
     events: eventRows,
     news: newsRows,
     nearest,

@@ -204,6 +204,8 @@ describe('GET /api/admin/clubs/[id] with REGION_EVENTS_ON set: what each person 
       BASE_VISIBLE_EVENTS_SQL,
       expect.stringMatching(/^SELECT slug, about_text, .* FROM clubs WHERE id = \?$/),
       expect.stringMatching(/^SELECT id, name, street, note, latitude, longitude FROM club_places WHERE club_id = \?/),
+      // Moved at WS09 step 28: the club's open suggestions are read last, and with none open the body is as before.
+      expect.stringContaining('FROM club_reports'),
     ])
     expect(off.ran.some((r) => r.sql.includes('needs_lca_approval'))).toBe(false)
     // And the body is the base's byte for byte, built here the base's way

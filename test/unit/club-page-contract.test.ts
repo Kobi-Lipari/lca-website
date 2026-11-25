@@ -19,6 +19,7 @@ const sample = () => ({
   statement: { text: 'Tuesdays at 7:00 PM', told: 'Last checked November 2026' },
   places: [place],
   contact: { name: 'Contact P.', goes_to: 'club' },
+  suggestion: { goes_to: 'club_rep' },
   events: [event],
   news: [{ id: 'news-1', title: 'Example News', excerpt: 'Example excerpt', news_date: '2026-11-01' }],
   nearest: [near],

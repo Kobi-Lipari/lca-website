@@ -12,8 +12,12 @@
 //
 // Each club comes as its card: the listing's name, town, region, colour,
 // logo address and statement, the last check with its words, the count of
-// its events the person is shown and its open items (empty until WS09 steps
-// 19 and 28 fill them), in My region's order (domain/clubs/regionCards.ts).
+// its events the person is shown and its open items, in My region's order
+// (domain/clubs/regionCards.ts). The one kind of open item is a visitor's
+// suggestion that no keeper has answered yet (WS09 step 28): its id, which
+// of the six parts it names, the visitor's words, whether an address was
+// left and its age in whole days, never the address itself
+// (functions/utils/clubs/suggestions.ts). With none open the list is empty.
 // This month gives the next check (domain/clubs/monthlyCheck.ts) and how
 // many clubs were checked in the last 90 days and how many not, and the
 // regions name who else keeps them: the name and seat title of each other
@@ -39,6 +43,7 @@ import { CLUB_KEEPERS_ON } from '../../utils/clubs/pages'
 import { REGION_EVENTS_ON } from '../../utils/clubs/pages'
 import { getRegionalClubIds } from '../../utils/admin/permissions'
 import { admittedByRegionAlone } from '../../utils/clubs/memberView'
+import { openSuggestionsOf } from '../../utils/clubs/suggestions'
 import { checkCounts, checkWords, needsCheck, sortRegionCards } from '../../../domain/clubs/regionCards'
 import { nextCheckWords } from '../../../domain/clubs/monthlyCheck'
 import type { RegionClub, WorkspaceRegionResponse } from '../../../domain/contracts/clubs'
@@ -195,6 +200,7 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
   const counts = await eventCounts(db, ids, regionEvents ? ids : ids.filter((id) => !admittedByRegionAlone(member, id)))
   const inReview = regionEvents ? await reviewCounts(db, ids) : null
   const now = Date.now()
+  const open = await openSuggestionsOf(db, ids, now)
   const cards: RegionClub[] = sortRegionCards(rows.map((row) => ({
     id: row.id,
     name: row.name,
@@ -207,7 +213,7 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
     lastCheckWords: checkWords(row.last_confirmed_at, now),
     needsCheck: needsCheck(row.last_confirmed_at, now),
     events: counts.get(row.id) ?? 0,
-    openItems: [],
+    openItems: open.get(row.id) ?? [],
     ...(inReview ? { inReview: inReview.get(row.id) ?? 0 } : {}),
   })))
 

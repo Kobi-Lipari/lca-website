@@ -57,7 +57,8 @@ function drawnIn(pattern: RegExp): string[] {
 
 describe('the new components are drawn on the fixture page only', () => {
   it.each(['filter-chip', 'DateBlock'])('%s is imported by the fixture page, and DateBlock by the new club page\'s events too, and nothing else under src', (name) => {
-    expect(importersOf(name)).toEqual(name === 'DateBlock' ? [CLUB_EVENTS, FIXTURE].sort() : [FIXTURE])
+    // Moved at WS09 step 28: the Suggest an update sheet draws its six choices as filter chips.
+    expect(importersOf(name)).toEqual(name === 'DateBlock' ? [CLUB_EVENTS, FIXTURE].sort() : ['src/areas/clubs/components/SuggestUpdateSheet.tsx', FIXTURE].sort())
   })
 
   it('ScrollPanel is imported by the fixture page, the Menu sheet and the club editor, and nothing else under src', () => {

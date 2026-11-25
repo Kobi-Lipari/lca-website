@@ -12,7 +12,9 @@
 // where, then (WS09 step 22) the club's events and its news, each only with
 // a row to draw, the nearest clubs where the answer gives any, and the foot
 // line with Copy link, with Contact and its form (WS09 step 26) after the
-// club's news. On a phone with the new chrome the club bar in the dock holds
+// club's news. Suggest an update (WS09 step 28) opens from two places only,
+// the end of the "Last checked" line and beside Contact's heading, and the
+// focus goes back to the one that opened it. On a phone with the new chrome the club bar in the dock holds
 // Directions and Message the club. Photos comes with the step that builds
 // it; until then the page draws no block for it and the nav does not list
 // it, whatever the answer names. The told line and a nearest club's
@@ -58,6 +60,7 @@ import { LCAMap } from '@/areas/clubs/components/LCAMap'
 import { NearbyClubs } from '@/areas/clubs/components/NearbyClubs'
 import { SectionNav } from '@/areas/clubs/components/SectionNav'
 import { WhenAndWhere } from '@/areas/clubs/components/WhenAndWhere'
+import { SuggestUpdateHost, SuggestUpdateLink } from '@/areas/clubs/components/SuggestUpdateLink'
 import { SITE_NAME, clubPageTitle } from '@domain/clubs/pageMeta'
 import type { ClubPageResponse } from '@domain/contracts'
 
@@ -189,6 +192,20 @@ export function ClubPageView({
     const words = await copyLink(link)
     setSaid({ words, from: 'foot' })
   }
+  // Suggest an update (WS09 step 28): the button that opened the sheet, while it is open, so the focus goes back to it.
+  const [suggestFrom, setSuggestFrom] = useState<HTMLElement | null>(null)
+  const returnTo = useRef<HTMLElement | null>(null)
+  const closeSuggest = () => {
+    returnTo.current = suggestFrom
+    setSuggestFrom(null)
+  }
+  // Once the sheet has left the page, the focus goes back to the button that opened it.
+  useEffect(() => {
+    if (suggestFrom || !returnTo.current) return
+    returnTo.current.focus()
+    returnTo.current = null
+  }, [suggestFrom])
+  const suggestLink = <SuggestUpdateLink onOpen={setSuggestFrom} />
   return (
     <div data-slot="club-page" className="@container bg-ground text-ink">
       <div className={CONTROLS_CLEAR_OF_BARS}>
@@ -215,6 +232,7 @@ export function ClubPageView({
             name={club.name}
             statement={answer.statement.text}
             told={answer.statement.told}
+            suggest={suggestLink}
             places={answer.places}
             map={pins.length > 0 ? (
               <LCAMap key={club.id} mode="single" clubName={club.name} places={pins} directions={false} quietWithoutKey height={260} />
@@ -224,12 +242,13 @@ export function ClubPageView({
         {sections.includes('events') && <ClubEvents id={SECTION_IDS.events} events={answer.events} />}
         {sections.includes('news') && <ClubNews id={SECTION_IDS.news} news={answer.news} />}
         {sections.includes('contact') && (
-          <ClubContact id={SECTION_IDS.contact} address={club.slug} region={club.region} goesTo={answer.contact.goes_to} />
+          <ClubContact id={SECTION_IDS.contact} address={club.slug} region={club.region} goesTo={answer.contact.goes_to} suggest={suggestLink} />
         )}
         {answer.nearest.length > 0 && <NearbyClubs city={club.city} nearest={answer.nearest} />}
         <ClubFootLine name={club.name} city={club.city} address={link} said={said} onCopy={() => { void copyFromFoot() }} />
       </div>
       <ClubBar place={pins[0] ?? null} />
+      <SuggestUpdateHost from={suggestFrom} onClose={closeSuggest} clubName={club.name} address={club.slug} goesTo={answer.suggestion.goes_to} region={club.region} />
     </div>
   )
 }
