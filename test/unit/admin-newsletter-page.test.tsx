@@ -219,17 +219,45 @@ describe('the route, only with mailPage on', () => {
 })
 
 describe('who is let in, and who is sent where', () => {
-  it('lets in an LCA admin with a second factor and the president, who needs none, with no "View only" badge', async () => {
-    for (const who of [person({ role: 'lca_admin' }), person({ role: 'lca_observer', aal: 'aal1' })]) {
+  it('lets in an LCA admin with a second factor and the President seat\'s holder with one, an LCA Observer or a member, with no "View only" badge', async () => {
+    for (const who of [person({ role: 'lca_admin' }), person({ role: 'lca_observer', seats: ['president'] }), person({ role: 'member', seats: ['president'] })]) {
       calls = []
       await site('/admin/newsletter', who)
       await thePage()
+      expect(where()).toBe('/admin/newsletter')
       expect(await screen.findByText('155 people will get it')).toBeTruthy()
       expect(newsletterCalls()).toHaveLength(2)
       expect(screen.queryByText(/View only/)).toBeNull()
       cleanup()
     }
-  })
+  }, 30_000)
+
+  it('tells the President seat\'s holder without a second factor so, with the way to set it up, and makes no call', async () => {
+    for (const who of [person({ role: 'lca_observer', seats: ['president'], aal: 'aal1' }), person({ role: 'member', seats: ['president'], aal: 'aal1' })]) {
+      calls = []
+      await site('/admin/newsletter', who)
+      await thePage()
+      const line = await screen.findByRole('link', { name: SECOND_FACTOR_LINE })
+      expect(line.getAttribute('href')).toBe('/account/security')
+      expect(newsletterCalls()).toEqual([])
+      cleanup()
+    }
+  }, 30_000)
+
+  it('tells an LCA Observer who holds neither seat who sends the newsletter, in the page\'s frame, and makes no call', async () => {
+    on('GET', ASK_URL, { status: 200, body: { mediaManager: false, secondFactor: true } })
+    for (const who of [person({ role: 'lca_observer' }), person({ role: 'lca_observer', seats: ['sample-seat'] })]) {
+      calls = []
+      await site('/admin/newsletter', who)
+      const status = await screen.findByText('Group email is limited to LCA admins, the president and the media manager.')
+      expect(status.getAttribute('role')).toBe('status')
+      // Under the page's own heading, so a screen reader lands on a page with a name.
+      expect(screen.getByRole('heading', { level: 1, name: 'Newsletter' })).toBeTruthy()
+      expect(where()).toBe('/admin/newsletter')
+      expect(newsletterCalls()).toEqual([])
+      cleanup()
+    }
+  }, 30_000)
 
   it('lets in the media manager, a member who holds the seat, and an officer who holds it once the answer says so', async () => {
     on('GET', ASK_URL, { status: 200, body: { mediaManager: true, secondFactor: true } })

@@ -64,7 +64,7 @@ import { createListCampaign, NEWSLETTER_AUDIENCE_SQL, newsletterSummary, STOPPED
 import { ALREADY_SENDING, LINK_KEY_MISSING, NOBODY_ON_THE_LIST, NOTHING_SENDING, WAITS_FOR_SES } from '../../functions/utils/mail/newsletterAnswers'
 import { GATE_UNREAD_WORDS, WAIT_FOR_SES_WORDS } from '../../functions/utils/mail/send'
 import type { Env } from '../../functions/types'
-import { seedAdmin, seedMailContact, seedMember, seedTournament } from './factories'
+import { seedAdmin, seedMailContact, seedMember, seedPresident, seedTournament } from './factories'
 import { emailOutbox, fetchCount, invoke, resetHarness } from './harness'
 import { bindings, countingDb, noLongerReceives } from './mailRuns'
 import { campaignOf, rowsOf, stageCampaign } from './campaignRuns'
@@ -183,9 +183,10 @@ describe('(a) who may use the newsletter\'s four methods', () => {
   it('lets an LCA admin with a second factor and the president read, test and stop, and pass the guard on the send, which waits for Amazon SES', async () => {
     const admin = await seedAdmin()
     const president = await member(address('president'), { role: 'lca_observer' })
+    await seedPresident(president)
     await member(address('reader'))
     for (const who of [admin, president]) {
-      const read = await invoke(newsletterGet, { as: who, aal: who === president ? 'aal1' : 'aal2' })
+      const read = await invoke(newsletterGet, { as: who, aal: 'aal2' })
       expect(read.status, who).toBe(200)
       const send = await invoke(newsletterPost, { as: who, method: 'POST', body: SAMPLE })
       expect(send.status, who).toBe(409)
@@ -213,6 +214,7 @@ describe('(b) with MAIL_LISTS_ON unset', () => {
     flags.listsOn = false
     const admin = await seedAdmin()
     const president = await member(address('president'), { role: 'lca_observer' })
+    await seedPresident(president)
     const plain = await member(address('plain'))
     const before = await traces()
     for (const [handler, options] of [

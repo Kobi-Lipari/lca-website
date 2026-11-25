@@ -74,7 +74,7 @@ describe("REDESIGN_STATUS.md, WS16 part two: the bar's narrow form and its forms
     expect(before).toBeGreaterThan(-1)
     // Directly after: the next heading after the Help and "Add an event" block's own is this one.
     expect(status.indexOf('\n#', before + 1 + BEFORE.length)).toBe(at)
-    // Later blocks, the newsletter email in the Gmail phone apps and saved templates, may stand between this one and the WS16 decisions.
+    // Later blocks, the newsletter email in the Gmail phone apps, saved templates and who may send, may stand between this one and the WS16 decisions.
     expect(status.indexOf(`\n${AFTER}\n`, at)).toBeGreaterThanOrEqual(at + 1 + block.length)
     expect(blockLines[0]).toBe(BLOCK)
     expect(blockLines.filter((l) => /^#{1,6} /.test(l))).toEqual([BLOCK])

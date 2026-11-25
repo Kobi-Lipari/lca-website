@@ -1,10 +1,12 @@
 // test/integration/observer.test.ts
-// LCA Observer: sees what an admin sees, can send group email, email
-// entrants and answer tickets, and cannot change anything else. No 2FA.
+// LCA Observer: sees what an admin sees, can email entrants and answer
+// tickets, and cannot change anything else. No 2FA. Group email is for the
+// observer who holds the President seat alone, with a second factor.
 import { beforeEach, describe, expect, it } from 'vitest'
 import { env } from 'cloudflare:test'
 import { invoke, resetHarness } from './harness'
-import { seedClub, seedMember, seedRegistration, seedTournament } from './factories'
+import { seedClub, seedMember, seedPresident, seedRegistration, seedTournament } from './factories'
+import { LIST_MAILERS_ONLY, MEDIA_MANAGER_SECOND_FACTOR } from '../../functions/utils/auth'
 
 import { onRequestGet as membersGet } from '../../functions/api/admin/members'
 import { onRequestPatch as rolePatch } from '../../functions/api/admin/members/[id]/role'
@@ -74,11 +76,27 @@ describe('LCA Observer cannot change things', () => {
 })
 
 describe('LCA Observer can use the communication tools', () => {
-  it('sends group email (logged under their name)', async () => {
+  it('is refused group email without the President seat, and nothing is logged', async () => {
     const who = await observer()
     await seedMember({ email: 'someone@example.org' })
     const res = await invoke(campaignsPost, {
       method: 'POST', as: who, aal: 'aal1',
+      body: { subject: 'Hello', bodyHtml: '<p>Hi</p>', filter: { all: true } },
+    })
+    expect(res.status).toBe(403)
+    expect(await res.json()).toEqual({ error: LIST_MAILERS_ONLY })
+    const log = await env.DB.prepare(
+      `SELECT COUNT(*) AS n FROM admin_audit_log WHERE action = 'group_email_sent' AND actor_id = ?`,
+    ).bind(who).first<{ n: number }>()
+    expect(log?.n).toBe(0)
+  })
+
+  it('sends group email while holding the President seat with a second factor (logged under their name)', async () => {
+    const who = await observer()
+    await seedPresident(who)
+    await seedMember({ email: 'someone@example.org' })
+    const res = await invoke(campaignsPost, {
+      method: 'POST', as: who, aal: 'aal2',
       body: { subject: 'Hello', bodyHtml: '<p>Hi</p>', filter: { all: true } },
     })
     expect(res.status).toBe(201)
@@ -86,6 +104,22 @@ describe('LCA Observer can use the communication tools', () => {
       `SELECT actor_id FROM admin_audit_log WHERE action = 'group_email_sent'`,
     ).first<{ actor_id: string }>()
     expect(log?.actor_id).toBe(who)
+  })
+
+  it('holding the President seat without a second factor is asked for one, and nothing is logged', async () => {
+    const who = await observer()
+    await seedPresident(who)
+    await seedMember({ email: 'someone@example.org' })
+    const res = await invoke(campaignsPost, {
+      method: 'POST', as: who, aal: 'aal1',
+      body: { subject: 'Hello', bodyHtml: '<p>Hi</p>', filter: { all: true } },
+    })
+    expect(res.status).toBe(403)
+    expect(await res.json()).toEqual({ error: MEDIA_MANAGER_SECOND_FACTOR, mfaRequired: true })
+    const log = await env.DB.prepare(
+      `SELECT COUNT(*) AS n FROM admin_audit_log WHERE action = 'group_email_sent' AND actor_id = ?`,
+    ).bind(who).first<{ n: number }>()
+    expect(log?.n).toBe(0)
   })
 
   it('emails a tournament’s entrants', async () => {

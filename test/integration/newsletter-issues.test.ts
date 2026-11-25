@@ -54,7 +54,7 @@ import {
   starterLetter,
 } from '../../functions/utils/mail/issues'
 import { cleanLetterHtml } from '../../functions/utils/mail/letterClean'
-import { seedAdmin, seedMember, seedSeat } from './factories'
+import { seedAdmin, seedMember, seedPresident, seedSeat } from './factories'
 import { emailOutbox, fetchCount, invoke, resetHarness, type InvokeOptions } from './harness'
 import { countingDb } from './mailRuns'
 
@@ -231,8 +231,11 @@ describe('(b) who may: the people requireListMailer lets send the newsletter, an
     const seated = await person('Player Three')
     const seatedOfficer = await person('Player Four', 'lca_officer')
     await seedSeat({ slug: MEDIA_MANAGER_SEAT, role: 'Media manager' }, [seated, seatedOfficer])
+    const president = await person('Player Ten', 'lca_observer')
+    await seedPresident(president)
     return [
       ['nobody signed in', undefined, 'aal2'],
+      ['an LCA Observer without the President seat', await person('Player Eleven', 'lca_observer'), 'aal1'],
       ['a plain member', await person('Player Five'), 'aal2'],
       ['an officer without the seat', await person('Player Six', 'lca_officer'), 'aal2'],
       ['a club rep', await person('Player Seven', 'club_rep'), 'aal2'],
@@ -242,7 +245,8 @@ describe('(b) who may: the people requireListMailer lets send the newsletter, an
       ['the media manager without a second factor', seated, 'aal1'],
       ['an officer who holds the seat, without a second factor', seatedOfficer, 'aal1'],
       ['an LCA admin with a second factor', await seedAdmin(), 'aal2'],
-      ['the president', await person('Player Ten', 'lca_observer'), 'aal1'],
+      ['the president without a second factor', president, 'aal1'],
+      ['the president', president, 'aal2'],
       ['the media manager with a second factor', seated, 'aal2'],
       ['an officer who holds the seat, with a second factor', seatedOfficer, 'aal2'],
     ] as const
@@ -279,10 +283,10 @@ describe('(b) who may: the people requireListMailer lets send the newsletter, an
       return { status: res.status, body: await res.json() }
     }
     expect(await answer('nobody signed in')).toEqual({ status: 401, body: { error: 'Unauthorized' } })
-    for (const who of ['a plain member', 'an officer without the seat', 'a club rep', 'a tournament director', 'an LCA auditor']) {
+    for (const who of ['a plain member', 'an officer without the seat', 'a club rep', 'a tournament director', 'an LCA auditor', 'an LCA Observer without the President seat']) {
       expect(await answer(who), who).toEqual({ status: 403, body: { error: LIST_MAILERS_ONLY } })
     }
-    for (const who of ['the media manager without a second factor', 'an officer who holds the seat, without a second factor']) {
+    for (const who of ['the media manager without a second factor', 'an officer who holds the seat, without a second factor', 'the president without a second factor']) {
       expect(await answer(who), who).toEqual({ status: 403, body: { error: MEDIA_MANAGER_SECOND_FACTOR, mfaRequired: true } })
     }
     expect((await answer('an LCA admin without a second factor')).body.mfaRequired).toBe(true)
@@ -296,7 +300,7 @@ describe('(b) who may: the people requireListMailer lets send the newsletter, an
     for (const [name, handler, options] of METHODS) {
       const res = await invoke(handler, { ...options, as: holder })
       expect(res.status, name).toBe(403)
-      expect(await res.json(), name).toEqual({ error: 'Group email is limited to admins and the LCA Observer' })
+      expect(await res.json(), name).toEqual({ error: LIST_MAILERS_ONLY })
       expect([200, 201], name).toContain((await invoke(handler, { ...options, as: admin })).status)
       await env.DB.prepare('DELETE FROM newsletter_issues').run()
     }
@@ -345,8 +349,9 @@ describe('(c) saving', () => {
   it('moves the version by one at each save, names who saved it last, and keeps who started it', async () => {
     const admin = await seedAdmin()
     const president = await person('Player One', 'lca_observer')
+    await seedPresident(president)
     const first = await (await save(admin)).json<{ id: string; version: number }>()
-    const second = await save(president, { id: first.id, version: 1, bodyHtml: `${LETTER}<p>More sample words.</p>` }, { aal: 'aal1' })
+    const second = await save(president, { id: first.id, version: 1, bodyHtml: `${LETTER}<p>More sample words.</p>` }, { aal: 'aal2' })
     expect(second.status).toBe(200)
     expect((await second.json<{ version: number }>()).version).toBe(2)
     expect(await rowOf(first.id)).toMatchObject({ version: 2, created_by: admin, updated_by: president, body_html: `${LETTER}<p>More sample words.</p>` })
