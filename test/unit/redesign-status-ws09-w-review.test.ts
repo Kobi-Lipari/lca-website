@@ -223,7 +223,8 @@ describe('REDESIGN_STATUS.md, checkpoint W\'s review: the Status and PR lines', 
       'and on K\'s decision 12 the club page names no keeper to anyone', 'and on K\'s decision 11 a small `robots.txt` that names the sitemap is served only',
     ]) expect(statusLine, piece).toContain(piece)
     const tail = statusLine.slice(statusLine.lastIndexOf('; ') + 2)
-    expect(tail).toContain('the new club page in the browser, `main` taken in again after the saved templates, checkpoint W\'s review and its fixes, K\'s answers')
+    // The third taking in of main adds its own item straight after this one, before K's answers.
+    expect(tail).toContain('the new club page in the browser, `main` taken in again after the saved templates, checkpoint W\'s review and its fixes, ')
     expect(tail).toMatch(/\bbuilt\.$/)
   })
 
