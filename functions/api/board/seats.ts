@@ -28,7 +28,7 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
        LEFT JOIN board_seat_assignments a
               ON a.seat_id = s.id AND a.ended_at IS NULL
        LEFT JOIN members m ON m.id = a.member_id
-      WHERE s.is_active = 1
+      WHERE s.is_active = 1 AND s.is_listed = 1
       GROUP BY s.id
       ORDER BY s.sort_order ASC, s.role ASC`,
   ).all<Record<string, unknown>>()

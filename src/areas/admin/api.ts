@@ -573,7 +573,7 @@ export async function sendNewsletterIssueTest(payload: { issueId: string; versio
 
 /** What GET /api/me/media-manager answers (mediaManagerResponseSchema), about the person signed in and no one else. */
 export interface ApiMediaManager {
-  /** True for anyone but an LCA admin and the president who holds the Media manager seat now, an officer among them; false while the newsletter is off. */
+  /** True for anyone but an LCA admin who holds the Media manager seat now, an officer or LCA Observer among them; false while the newsletter is off. */
   mediaManager: boolean
   /** Whether the session carries a second factor, which sending asks of the media manager. */
   secondFactor: boolean

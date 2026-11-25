@@ -370,6 +370,9 @@ export const boardMembers = sqliteTable('board_members', {
   isActive: integer('is_active').default(1).notNull(),
   isShared: integer('is_shared').default(0).notNull(),
   photoUrl: text('photo_url'),
+  // 1 when the seat is shown publicly (the Board page, the contact form);
+  // 0 keeps it off every public read while its holder keeps what it gives.
+  isListed: integer('is_listed').default(1).notNull(),
 },
 (table) => [
   uniqueIndex('idx_board_members_slug').on(table.slug),

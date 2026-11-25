@@ -11,6 +11,8 @@
 // though Admin does not let their role in, gets one group, Communications,
 // with Group email alone: any other Admin address goes to /admin/email
 // before a section is drawn, so nothing of another section is asked for.
+// The President seat's holder whose role Admin does not let in gets the same
+// one section, with Group email's whole form (decision 79).
 import { useEffect, useState, type FormEvent, type ReactNode } from 'react'
 import { Link, Navigate, useNavigate, useParams } from 'react-router-dom'
 import {
@@ -56,7 +58,8 @@ import {
   type ApiTournamentListItem,
 } from '@/lib/api'
 import { useMediaManagerAnswer } from '@/areas/admin/mediaManagerAnswer'
-import { canAccessAdmin, canUseMailing, type MemberRole } from '@/areas/admin/roles'
+import { canAccessAdmin, holdsPresidentSeat, isViewOnlyAdmin, presidentMayCall, type MemberRole } from '@/areas/admin/roles'
+import { LIST_MAILERS_ONLY } from '@domain/mail/senders'
 import { FEATURES } from '@/lib/features'
 import { REGIONS } from '@/lib/regions'
 import { cn } from '@/lib/utils'
@@ -118,23 +121,30 @@ export function AdminPage() {
   const navigate = useNavigate()
 
   const viewOnly = useViewOnly()
-  const { role } = useAuth()
-  // The route lets in a role outside Admin's only for the media manager, on the server's answer, which it hands down;
-  // this page asks nothing itself.
+  const { role, seats, assuranceLevel } = useAuth()
+  // The President seat's holder sends Group email whatever their role (decision 79); the server reads the seat again at
+  // each request. One whose role Admin does not let in, let in by the route on the seat, gets Group email alone.
+  const president = holdsPresidentSeat(seats)
+  const presidentOutside = president && !canAccessAdmin(role)
+  // The route lets in a role outside Admin's for the media manager, on the server's answer, which it hands down, and
+  // for the President seat's holder; this page asks nothing itself.
   const mediaManager = useMediaManagerAnswer()
-  const asMediaManager = FEATURES.mailLists && !canAccessAdmin(role) && mediaManager.mediaManager
-  // An LCA officer who holds the Media manager seat (K's decision 52, checkpoint M's review), with mailLists on, keeps
-  // every read-only section and gains Group email in the media manager's form; while the answer is on the way their
-  // Admin is today's, without Group email.
-  const officerMediaManager = FEATURES.mailLists && role === 'lca_officer' && mediaManager.mediaManager
-  // An officer who opened Group email's own address while the answer is on the way keeps the address, its section
-  // showing the loading line until the answer says whether it is theirs; every other section draws at once.
-  const officerWaitsOnEmail = FEATURES.mailLists && role === 'lca_officer' && mediaManager.asking && rawSection === 'email'
-  // LCA Officers get everything an Observer does except the mailing tools.
-  const mailing = canUseMailing(role)
-  const groups = asMediaManager
+  const asMediaManager = FEATURES.mailLists && !president && !canAccessAdmin(role) && mediaManager.mediaManager
+  // A view-only person (an LCA officer or LCA Observer) who holds the Media manager seat (K's decision 52, checkpoint
+  // M's review, decision 79), with mailLists on, keeps every read-only section and gains Group email in the media
+  // manager's form; while the answer is on the way their Admin is the one their role gives, without Group email.
+  const viewOnlyMediaManager = FEATURES.mailLists && !president && isViewOnlyAdmin(role) && mediaManager.mediaManager
+  // A view-only person who opened Group email's own address while the answer is on the way keeps the address, its
+  // section showing the loading line until the answer says whether it is theirs; every other section draws at once.
+  const viewOnlyWaitsOnEmail = FEATURES.mailLists && !president && isViewOnlyAdmin(role) && mediaManager.asking && rawSection === 'email'
+  // Group email is for an LCA admin and the President seat's holder, and in its newsletter form for the media manager.
+  const mailing = role === 'lca_admin' || president
+  // An LCA Observer who sends no Group email and opens its address reads why, in Admin's frame, where an officer is
+  // sent to Admin as before.
+  const observerRefused = role === 'lca_observer' && !mailing && !viewOnlyMediaManager && !viewOnlyWaitsOnEmail && rawSection === 'email'
+  const groups = asMediaManager || presidentOutside
     ? MEDIA_MANAGER_GROUPS
-    : mailing || officerMediaManager
+    : mailing || viewOnlyMediaManager
       ? GROUPS
       : GROUPS.map((g) => ({ ...g, items: g.items.filter((i) => i.id !== 'email') }))
   const section = (LEGACY[rawSection ?? ''] ?? rawSection ?? 'members') as AdminSection
@@ -142,24 +152,28 @@ export function AdminPage() {
   usePageTitle(current ? `Admin · ${current.label}` : 'Admin panel')
 
   // Any other Admin address, typed by hand or followed from an old link, goes to Group email before anything is drawn.
-  if (asMediaManager && rawSection !== 'email') return <Navigate to="/admin/email" replace />
-  if (!current && !officerWaitsOnEmail) return <Navigate to="/admin" replace />
+  if ((asMediaManager || presidentOutside) && rawSection !== 'email') return <Navigate to="/admin/email" replace />
+  if (!current && !viewOnlyWaitsOnEmail && !observerRefused) return <Navigate to="/admin" replace />
   if (rawSection && LEGACY[rawSection]) return <Navigate to={`/admin/${section}`} replace />
 
   return (
     <div>
       <PageHero
         title="Admin panel"
-        subtitle={asMediaManager
+        subtitle={asMediaManager || presidentOutside
           ? undefined
           : viewOnly
             ? mailing
-              ? 'See everything across the LCA. You can send group email, email entrants, answer support tickets and manage the bylaws and minutes; other changes are made by admins.'
-              : officerMediaManager
+              ? role === 'lca_observer'
+                ? 'See everything across the LCA. You can send group email, email entrants, answer support tickets and manage the bylaws and minutes; other changes are made by admins.'
+                : 'See everything across the LCA. You can send group email, answer support tickets and manage the bylaws and minutes; other changes are made by admins.'
+              : viewOnlyMediaManager
                 ? 'See everything across the LCA. You can send the LCA newsletter, answer support tickets and manage the bylaws and minutes; other changes are made by admins.'
-                : 'See everything across the LCA. You can answer support tickets and manage the bylaws and minutes; other changes are made by admins.'
+                : role === 'lca_observer'
+                  ? 'See everything across the LCA. You can email entrants, answer support tickets and manage the bylaws and minutes; other changes are made by admins.'
+                  : 'See everything across the LCA. You can answer support tickets and manage the bylaws and minutes; other changes are made by admins.'
             : 'Manage members, clubs, tournaments and communications across the LCA.'}
-        badges={viewOnly ? <span className="rounded-full border border-white/25 px-2.5 py-0.5 text-xs text-white/85">{officerMediaManager ? VIEW_ONLY_BUT_NEWSLETTER : 'View only'}</span> : undefined}
+        badges={viewOnly ? <span className="rounded-full border border-white/25 px-2.5 py-0.5 text-xs text-white/85">{viewOnlyMediaManager ? VIEW_ONLY_BUT_NEWSLETTER : 'View only'}</span> : undefined}
         size="compact"
       />
 
@@ -173,6 +187,8 @@ export function AdminPage() {
             value={section}
             onChange={(e) => navigate(`/admin/${e.target.value}`)}
           >
+            {/* The refused observer's picker names the address shown, so every real section stays a change. */}
+            {observerRefused && <option value="email" disabled>Group email</option>}
             {groups.map((g) => (
               <optgroup key={g.label} label={g.label}>
                 {g.items.map((s) => <option key={s.id} value={s.id}>{s.label}</option>)}
@@ -210,10 +226,16 @@ export function AdminPage() {
         </nav>
 
         <main className="min-w-0">
-          {officerWaitsOnEmail ? (
+          {viewOnlyWaitsOnEmail ? (
             <p className="text-muted-foreground">Loading...</p>
+          ) : observerRefused ? (
+            <p role="status" className="text-ink">{LIST_MAILERS_ONLY}</p>
           ) : (
-            <AdminSectionView section={section} mediaManager={asMediaManager || officerMediaManager ? { secondFactor: mediaManager.secondFactor } : undefined} />
+            <AdminSectionView
+              section={section}
+              mediaManager={asMediaManager || viewOnlyMediaManager ? { secondFactor: mediaManager.secondFactor } : undefined}
+              noSecondFactor={president && !presidentMayCall(assuranceLevel)}
+            />
           )}
         </main>
       </div>
@@ -234,8 +256,9 @@ function SectionHeading({ title, description, action }: { title: string; descrip
 }
 
 // Keyed by section so each one mounts fresh and loads only what it shows. The media manager reaches the email section
-// alone, which then draws their own form of Group email.
-function AdminSectionView({ section, mediaManager }: { section: AdminSection; mediaManager?: { secondFactor: boolean } }) {
+// alone, which then draws their own form of Group email; the President seat's holder without the second factor they
+// need reads the line to set it up there in place of the send buttons.
+function AdminSectionView({ section, mediaManager, noSecondFactor }: { section: AdminSection; mediaManager?: { secondFactor: boolean }; noSecondFactor?: boolean }) {
   switch (section) {
     case 'members': return <MembersSection key="members" />
     case 'board-seats': return <><SectionHeading title="Board seats" description="Who holds each board seat, and for how long." /><ViewOnlyNote /><ViewOnlyFieldset><BoardSeatsPanel /></ViewOnlyFieldset></>
@@ -243,7 +266,7 @@ function AdminSectionView({ section, mediaManager }: { section: AdminSection; me
     case 'clubs': return <ClubsSection key="clubs" />
     case 'champions': return <><SectionHeading title="State champions" description="The honor roll on the public State champions page." /><ViewOnlyNote /><ChampionsPanel /></>
     case 'news': return <PostsPanel />
-    case 'email': return <AdminEmailPage embedded mediaManager={mediaManager} />
+    case 'email': return <AdminEmailPage embedded mediaManager={mediaManager} noSecondFactor={noSecondFactor} />
     case 'announcements': return <><SectionHeading title="Site banners" description="Short notices shown across the top of every page. For full announcements, use News posts." /><ViewOnlyNote /><ViewOnlyFieldset><AdminAnnouncementPanel /></ViewOnlyFieldset></>
     case 'support': return <AdminSupportPage embedded />
     case 'activity': return <><SectionHeading title="Admin activity" description="Who changed what: roles, memberships, events, payments and club pages." /><AuditLogPanel /></>

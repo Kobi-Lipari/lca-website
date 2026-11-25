@@ -192,6 +192,8 @@ export interface SeedSeatOptions {
   role?: string
   /** Whether the seat is active; it is by default. */
   isActive?: boolean
+  /** Whether the seat is shown publicly (board_members.is_listed); it is by default. */
+  isListed?: boolean
 }
 
 /**
@@ -206,8 +208,8 @@ export interface SeedSeatOptions {
 export async function seedSeat(opts: SeedSeatOptions, holders: string[] = []): Promise<string> {
   const id = nextId('seat')
   await env.DB.prepare(
-    `INSERT INTO board_members (id, role, name, sort_order, slug, category, is_active, is_shared) VALUES (?, ?, ?, ?, ?, 'officer', ?, 0)`,
-  ).bind(id, opts.role ?? 'Sample seat', 'Player One', 900, opts.slug, opts.isActive === false ? 0 : 1).run()
+    `INSERT INTO board_members (id, role, name, sort_order, slug, category, is_active, is_shared, is_listed) VALUES (?, ?, ?, ?, ?, 'officer', ?, 0, ?)`,
+  ).bind(id, opts.role ?? 'Sample seat', 'Player One', 900, opts.slug, opts.isActive === false ? 0 : 1, opts.isListed === false ? 0 : 1).run()
   for (const memberId of holders) {
     await env.DB.prepare(
       `INSERT INTO board_seat_assignments (id, seat_id, member_id, started_at) VALUES (?, ?, ?, datetime('now'))`,

@@ -48,7 +48,7 @@ import { listMailParts } from '../../functions/utils/mail/footer'
 import { CHANGED_SINCE_READ, SENT_SINCE_READ, SET_ASIDE_SINCE_READ } from '../../functions/utils/mail/issues'
 import { LINK_KEY_MISSING, TEST_TO_OWN_ADDRESS } from '../../functions/utils/mail/newsletterAnswers'
 import type { Env } from '../../functions/types'
-import { seedAdmin, seedMember, seedSeat } from './factories'
+import { seedAdmin, seedMember, seedPresident, seedSeat } from './factories'
 import { emailBehavior, emailOutbox, invoke, resetHarness, type InvokeOptions } from './harness'
 import { noLongerReceives } from './mailRuns'
 
@@ -176,7 +176,9 @@ describe('(a) who may send a test of the letter', () => {
   it('sends it for an LCA admin with a second factor, the president, and the media manager with a second factor, an officer who holds the seat among them', async () => {
     const admin = await seedAdmin()
     const letter = await saved(admin)
-    const people = [admin, await person('Player One', 'lca_observer'), await holder(), await holder('lca_officer')]
+    const president = await person('Player One', 'lca_observer')
+    await seedPresident(president)
+    const people = [admin, president, await holder(), await holder('lca_officer')]
     for (const who of people) {
       const res = await testOf(who, letter)
       expect(res.status, who).toBe(200)
@@ -191,9 +193,14 @@ describe('(a) who may send a test of the letter', () => {
     const plain = await person('Player Two')
     const officer = await person('Player Three', 'lca_officer')
     const seated = await holder()
+    const observer = await person('Player Four', 'lca_observer')
+    const president = await person('Player Five', 'lca_observer')
+    await seedPresident(president)
     const before = { rows: await rows(), traces: await traces(), contacts: await contacts() }
     const cases: Array<[string, string | undefined, 'aal1' | 'aal2']> = [
       ['an LCA admin without a second factor', admin, 'aal1'],
+      ['an LCA Observer without the President seat', observer, 'aal1'],
+      ['the president without a second factor', president, 'aal1'],
       ['the media manager without a second factor', seated, 'aal1'],
       ['an officer without the seat', officer, 'aal2'],
       ['a member', plain, 'aal2'],
@@ -207,7 +214,9 @@ describe('(a) who may send a test of the letter', () => {
       expect([401, 403], who).toContain(res.status)
     }
     expect(await (await testOf(plain, letter)).json()).toEqual({ error: LIST_MAILERS_ONLY })
+    expect(await (await testOf(observer, letter, {}, { aal: 'aal1' })).json()).toEqual({ error: LIST_MAILERS_ONLY })
     expect(await (await testOf(seated, letter, {}, { aal: 'aal1' })).json()).toEqual({ error: MEDIA_MANAGER_SECOND_FACTOR, mfaRequired: true })
+    expect(await (await testOf(president, letter, {}, { aal: 'aal1' })).json()).toEqual({ error: MEDIA_MANAGER_SECOND_FACTOR, mfaRequired: true })
     expect({ rows: await rows(), traces: await traces(), contacts: await contacts() }).toEqual(before)
   })
 })
@@ -303,6 +312,7 @@ describe('(c) the stored letter is what is sent', () => {
   it('draws each person\'s own footer: the president\'s test carries the president\'s links, not the admin\'s', async () => {
     const admin = await seedAdmin()
     const president = await person('Player One', 'lca_observer')
+    await seedPresident(president)
     const letter = await saved(admin)
     expect((await testOf(admin, letter)).status).toBe(200)
     expect((await testOf(president, letter)).status).toBe(200)
@@ -317,6 +327,7 @@ describe('(d) a letter that is not the open one at the version named', () => {
   it('refuses an old version with the save\'s 409, in the save\'s words, naming who saved last and when, and sends nothing', async () => {
     const admin = await seedAdmin()
     const other = await person('Player Two', 'lca_observer')
+    await seedPresident(other)
     const first = await saved(admin)
     const save = await invoke(issuePut, { method: 'PUT', as: other, body: { id: first.id, version: first.version, monthLabel: MONTH, subject: 'Sample subject two', preheader: '', bodyHtml: LETTER } })
     expect(save.status).toBe(200)
@@ -494,6 +505,7 @@ describe('(g) nothing is written on the letter', () => {
   it('leaves the letter\'s row byte for byte as it was, its version, time, writer and send among it, writes no campaign, recipient, choice or activity row, and makes only the person\'s own contact', async () => {
     const admin = await seedAdmin()
     const other = await person('Player Two', 'lca_observer')
+    await seedPresident(other)
     const letter = await saved(other)
     const before = { rows: await rows(), traces: await traces() }
     expect((await testOf(admin, letter)).status).toBe(200)

@@ -49,6 +49,7 @@ import { MEDIA_MANAGER_SEAT } from '../../functions/utils/admin/mediaManager'
 import {
   NO_CLEAR_ANSWER_WORDS, STOPPED_WORDS, WRITTEN_OFF_WORDS, processCampaign, sweepPendingCampaigns,
 } from '../../functions/utils/admin/campaigns'
+import { LIST_MAILERS_ONLY, MEDIA_MANAGER_SECOND_FACTOR } from '../../functions/utils/auth'
 import { escapeHtml } from '../../functions/utils/emailLayout'
 import { linkKeyCheck } from '../../functions/utils/mail/links'
 import { createListCampaign, stopListCampaign } from '../../functions/utils/mail/lists'
@@ -56,7 +57,7 @@ import { ALREADY_SENDING, SES_TEST_ADMINS_ONLY } from '../../functions/utils/mai
 import { WAIT_FOR_SES_WORDS } from '../../functions/utils/mail/send'
 import { SES_KEY_MISSING } from '../../functions/utils/mail/ses'
 import type { Env } from '../../functions/types'
-import { seedAdmin, seedMember, seedSeat, seedTournament } from './factories'
+import { seedAdmin, seedMember, seedPresident, seedSeat, seedTournament } from './factories'
 import { emailBehavior, emailOutbox, flushWaitUntil, invoke, resetHarness, sesSignatures, type SentEmail } from './harness'
 import { bindings, holdClock, noLongerReceives, noWaits, paidEntrants, runDaily } from './mailRuns'
 import { campaignOf, quickPauses, rowsOf, stageCampaign } from './campaignRuns'
@@ -477,10 +478,19 @@ describe('the test through Amazon SES, an LCA admin\'s alone', () => {
   it('refuses it to the president and to the media manager, each passing the guard, with the words, writing nothing and sending nothing', async () => {
     flags.sender = 'resend'
     const president = await member(address('president'), { role: 'lca_observer' })
+    await seedPresident(president)
     const holder = await mediaManager()
     const calls = watchMail()
     const contacts = async () => (await env.DB.prepare('SELECT COUNT(*) AS n FROM mail_contacts').first<{ n: number }>())!.n
-    for (const [who, aal] of [[president, 'aal1'], [president, 'aal2'], [holder, 'aal2']] as const) {
+    // The president without a second factor is stopped at the guard, before the Amazon SES rule, with or without the box.
+    for (const service of [{ service: 'ses' }, {}]) {
+      const [before, sent] = [await contacts(), calls.length]
+      const res = await invoke(testPost, { as: president, aal: 'aal1', method: 'POST', body: { to: address('tester'), ...SAMPLE, ...service } })
+      expect(res.status).toBe(403)
+      expect(await res.json()).toEqual({ error: MEDIA_MANAGER_SECOND_FACTOR, mfaRequired: true })
+      expect([await contacts(), calls.length]).toEqual([before, sent])
+    }
+    for (const [who, aal] of [[president, 'aal2'], [holder, 'aal2']] as const) {
       const [before, sent] = [await contacts(), calls.length]
       const res = await invoke(testPost, { as: who, aal, method: 'POST', body: { to: address('tester'), ...SAMPLE, service: 'ses' } })
       expect(res.status, who).toBe(403)
@@ -500,12 +510,17 @@ describe('the test through Amazon SES, an LCA admin\'s alone', () => {
     flags.listsOn = false
     flags.sender = 'resend'
     const president = await member(address('president'), { role: 'lca_observer' })
+    await seedPresident(president)
     const plain = await member(address('plain'))
     const admin = await seedAdmin()
     const body = { to: address('tester'), ...SAMPLE, service: 'ses' }
     for (const who of [president, admin]) expect((await invoke(testPost, { as: who, method: 'POST', body })).status, who).toBe(404)
     expect((await invoke(testPost, { as: plain, method: 'POST', body })).status).toBe(403)
     expect(await (await invoke(testPost, { as: plain, method: 'POST', body })).json()).toEqual({ error: 'Forbidden' })
+    const unseated = await member(address('observer'), { role: 'lca_observer' })
+    const refused = await invoke(testPost, { as: unseated, method: 'POST', body })
+    expect(refused.status).toBe(403)
+    expect(await refused.json()).toEqual({ error: LIST_MAILERS_ONLY })
     expect((await invoke(testPost, { method: 'POST', body })).status).toBe(401)
   })
 
@@ -538,10 +553,11 @@ describe('the sent newsletter, the cases WS16 steps 4 and 6 left to this step', 
   it('answers the POST 201 for an LCA admin with a second factor, the president and the media manager with one, and each send reaches the outbox', async () => {
     const admin = await seedAdmin()
     const president = await member(address('president'), { role: 'lca_observer' })
+    await seedPresident(president)
     const holder = await mediaManager()
     const reader = address('reader')
     await member(reader)
-    for (const [who, aal] of [[admin, 'aal2'], [president, 'aal1'], [holder, 'aal2']] as const) {
+    for (const [who, aal] of [[admin, 'aal2'], [president, 'aal2'], [holder, 'aal2']] as const) {
       const res = await invoke(newsletterPost, { as: who, aal, method: 'POST', body: SAMPLE })
       expect(res.status, who).toBe(201)
       const made = await res.json<{ campaignId: string; totalRecipients: number; status: string }>()
