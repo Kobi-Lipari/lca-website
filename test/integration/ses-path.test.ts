@@ -81,8 +81,19 @@ vi.mock('../../functions/utils/mail/switches', async (importOriginal) => {
     },
   }
 })
+/** The president's second-factor constant: null reads the real one (it ships unset); the part that holds the old refusal sets it. */
+const turned = vi.hoisted(() => ({ president: null as boolean | null }))
+vi.mock('../../domain/mail/senders', async (importOriginal) => {
+  const real = await importOriginal<typeof import('../../domain/mail/senders')>()
+  return {
+    ...real,
+    get PRESIDENT_NEEDS_SECOND_FACTOR() {
+      return turned.president ?? real.PRESIDENT_NEEDS_SECOND_FACTOR
+    },
+  }
+})
 
-const SES = 'email.us-east-1.amazonaws.com'
+const SES ='email.us-east-1.amazonaws.com'
 const RESEND = 'api.resend.com'
 const SITE = 'https://www.louisianachess.org'
 /** A newsletter's words, plainly made up. */
@@ -184,6 +195,7 @@ beforeEach(async () => {
   flags.sender = 'ses'
   flags.plan = 'paid'
   flags.complaintStops = true
+  turned.president = null
   quickPauses()
   for (const table of ['email_campaign_recipients', 'email_campaigns', 'mail_list_choices', 'mail_contacts', 'mail_do_not_send']) {
     await env.DB.prepare(`DELETE FROM ${table}`).run()
@@ -482,13 +494,24 @@ describe('the test through Amazon SES, an LCA admin\'s alone', () => {
     const holder = await mediaManager()
     const calls = watchMail()
     const contacts = async () => (await env.DB.prepare('SELECT COUNT(*) AS n FROM mail_contacts').first<{ n: number }>())!.n
-    // The president without a second factor is stopped at the guard, before the Amazon SES rule, with or without the box.
+    // With PRESIDENT_NEEDS_SECOND_FACTOR set, the president without a second factor is stopped at the guard, before the
+    // Amazon SES rule, with or without the box.
+    turned.president = true
     for (const service of [{ service: 'ses' }, {}]) {
       const [before, sent] = [await contacts(), calls.length]
       const res = await invoke(testPost, { as: president, aal: 'aal1', method: 'POST', body: { to: address('tester'), ...SAMPLE, ...service } })
       expect(res.status).toBe(403)
       expect(await res.json()).toEqual({ error: MEDIA_MANAGER_SECOND_FACTOR, mfaRequired: true })
       expect([await contacts(), calls.length]).toEqual([before, sent])
+    }
+    // As the rule ships, the president and the media manager without a second factor pass the guard and meet the Amazon SES rule.
+    turned.president = null
+    for (const [who, aal] of [[president, 'aal1'], [holder, 'aal1']] as const) {
+      const [before, sent] = [await contacts(), calls.length]
+      const res = await invoke(testPost, { as: who, aal, method: 'POST', body: { to: address('tester'), ...SAMPLE, service: 'ses' } })
+      expect(res.status, who).toBe(403)
+      expect(await res.json(), who).toEqual({ error: SES_TEST_ADMINS_ONLY })
+      expect([await contacts(), calls.length], who).toEqual([before, sent])
     }
     for (const [who, aal] of [[president, 'aal2'], [holder, 'aal2']] as const) {
       const [before, sent] = [await contacts(), calls.length]

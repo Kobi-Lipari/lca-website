@@ -33,6 +33,17 @@ import type { AuthContextValue } from '@/contexts/AuthContext'
 import { defaultSubject } from '@domain/mail/letter'
 
 const flags = vi.hoisted(() => ({ mailLists: true, mailPage: true }))
+/** The media manager's second-factor constant: null reads the real one (it ships unset); the case that holds the line sets it. */
+const asked = vi.hoisted(() => ({ mediaManager: null as boolean | null }))
+vi.mock('@domain/mail/senders', async (importOriginal) => {
+  const real = await importOriginal<typeof import('@domain/mail/senders')>()
+  return {
+    ...real,
+    get MEDIA_MANAGER_NEEDS_SECOND_FACTOR() {
+      return asked.mediaManager ?? real.MEDIA_MANAGER_NEEDS_SECOND_FACTOR
+    },
+  }
+})
 vi.mock('@/lib/features', async (importOriginal) => {
   const real = await importOriginal<typeof import('@/lib/features')>()
   return {
@@ -158,6 +169,7 @@ const helpButton = () => screen.queryByRole('button', { name: 'Help' })
 beforeEach(() => {
   flags.mailLists = true
   flags.mailPage = true
+  asked.mediaManager = null
   answers = {}
   window.localStorage.clear()
   vi.stubGlobal('fetch', vi.fn(async (url: string, init?: RequestInit) => {
@@ -886,7 +898,17 @@ describe('the Help button', () => {
     expect(helpButton()).toBeNull()
   })
 
-  it('is not drawn to a person who has yet to set up a second factor', async () => {
+  it('is drawn, as the rule ships, to the media manager signed in without a second factor, with no line about it', async () => {
+    window.localStorage.setItem('lca-newsletter-page-help', 'shown')
+    on('GET', ASK_URL, { status: 200, body: { mediaManager: true, secondFactor: false } })
+    await site('/admin/newsletter', person({ seats: ['media-manager'], aal: 'aal1' }))
+    await theLetter()
+    expect(helpButton()).toBeTruthy()
+    expect(screen.queryByRole('link', { name: SECOND_FACTOR_LINE })).toBeNull()
+  }, 30_000)
+
+  it('is not drawn to a person who has yet to set up a second factor while MEDIA_MANAGER_NEEDS_SECOND_FACTOR is set', async () => {
+    asked.mediaManager = true
     on('GET', ASK_URL, { status: 200, body: { mediaManager: true, secondFactor: false } })
     await site('/admin/newsletter', person({ seats: ['media-manager'], aal: 'aal1' }))
     await thePage()
