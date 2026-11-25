@@ -358,7 +358,7 @@ describe('the media manager, with mailLists on', () => {
     expect(asks()).toHaveLength(1)
   }, 30_000)
 
-  it('asks nothing for a member who holds no seat while they browse, nor for an LCA admin or the president, who keep today\'s Admin', async () => {
+  it('asks nothing for a member who holds no seat while they browse, nor for an LCA admin, who keeps today\'s Admin', async () => {
     flags.mailLists = true
     on('GET', ASK_URL, { status: 200, body: { mediaManager: true, secondFactor: true } })
     await site('/sample/no-such-page', person())
@@ -366,8 +366,9 @@ describe('the media manager, with mailLists on', () => {
     expect(asks()).toEqual([])
     cleanup()
 
-    // An LCA officer who holds a seat is asked since checkpoint M's review, in its own cases below.
-    for (const role of ['lca_admin', 'lca_observer'] as const) {
+    // An LCA officer who holds a seat is asked since checkpoint M's review, and an LCA Observer who holds one since
+    // decision 79, in their own cases below.
+    for (const role of ['lca_admin'] as const) {
       calls = []
       await site('/admin/members', person({ role, seats: [MEDIA_MANAGER] }))
       await screen.findByRole('heading', { level: 2, name: 'Members' }, { timeout: 10_000 })
@@ -456,9 +457,10 @@ describe('Admin\'s page, drawn beside a copy of it as it stood at 5e7a23c', () =
     on('GET', '/api/admin/campaigns', { status: 200, body: { campaigns: [{ id: 'campaign-sample', subject: 'Sample group message', total_recipients: 2, sent_count: 2, failed_count: 0, status: 'completed', created_at: '2026-11-02 15:00:00', completed_at: '2026-11-02 15:01:00' }] } })
   })
 
-  it.each([false, true])('is today\'s for everyone Admin lets in by role, a holder of the seat among them, at each address, with mailLists %s', async (switchOn) => {
+  // An LCA Observer who holds no President seat sends no Group email since decision 79, in its own cases at the end.
+  it.each([false, true])('is today\'s for an LCA admin and an LCA officer, a holder of the seat among them, at each address, with mailLists %s', async (switchOn) => {
     flags.mailLists = switchOn
-    for (const role of ['lca_admin', 'lca_observer', 'lca_officer'] as const) {
+    for (const role of ['lca_admin', 'lca_officer'] as const) {
       const who = person({ role, seats: [MEDIA_MANAGER] })
       for (const path of ADMIN_PATHS) {
         const today = await drawnAdmin(AdminPageToday, path, who)
@@ -765,12 +767,14 @@ describe('the header\'s badge for an LCA officer who holds the Media manager sea
     expect(screen.queryByText('View only')).toBeNull()
   }, 60_000)
 
-  it('reads "View only" for every other officer, for an officer while the answer is on the way, and for an LCA observer, with mailLists on', async () => {
+  it('reads "View only" for every other officer and an officer while the answer is on the way, and the officer\'s words for an LCA Observer the answer names, with mailLists on', async () => {
     flags.mailLists = true
     const holder = person({ role: 'lca_officer', seats: [MEDIA_MANAGER] })
     expect(badgeOf((await drawnAdmin(AdminPage, '/admin/members', holder, { mediaManager: false, secondFactor: true })).markup)).toBe('View only')
     expect(badgeOf((await drawnAdmin(AdminPage, '/admin/members', person({ role: 'lca_officer' }))).markup)).toBe('View only')
-    expect(badgeOf((await drawnAdmin(AdminPage, '/admin/members', person({ role: 'lca_observer', seats: [MEDIA_MANAGER] }), { mediaManager: true, secondFactor: true })).markup)).toBe('View only')
+    // Since decision 79 an LCA Observer who holds the seat is the media manager as an officer is (decision 52).
+    expect(badgeOf((await drawnAdmin(AdminPage, '/admin/members', person({ role: 'lca_observer', seats: [MEDIA_MANAGER] }), { mediaManager: true, secondFactor: true })).markup)).toBe('View only, except the newsletter')
+    expect(badgeOf((await drawnAdmin(AdminPage, '/admin/members', person({ role: 'lca_observer', seats: [MEDIA_MANAGER] }), { mediaManager: false, secondFactor: true })).markup)).toBe('View only')
     // While the answer is on the way the route hands down asking, with no yes.
     const later = held({ status: 200, body: { mediaManager: true, secondFactor: true } })
     on('GET', ASK_URL, later.answer)
@@ -784,7 +788,8 @@ describe('the header\'s badge for an LCA officer who holds the Media manager sea
 
   it('reads "View only" byte for byte as today\'s with mailLists off, beside the copy of Admin as stored, even with an answer of yes handed down', async () => {
     flags.mailLists = false
-    for (const role of ['lca_officer', 'lca_observer'] as const) {
+    // An LCA Observer without the President seat lost Group email in decision 79, so their Admin is no longer today's.
+    for (const role of ['lca_officer'] as const) {
       const who = person({ role, seats: [MEDIA_MANAGER] })
       for (const answer of [undefined, { mediaManager: true, secondFactor: true }]) {
         const today = await drawnAdmin(AdminPageToday, '/admin/members', who, answer)
@@ -793,5 +798,113 @@ describe('the header\'s badge for an LCA officer who holds the Media manager sea
         expect(badgeOf(now.markup), role).toBe('View only')
       }
     }
+  }, 60_000)
+})
+
+describe('who sends from Admin since decision 79: an LCA admin, the President seat\'s holder and the media manager', () => {
+  const PRESIDENT = 'president'
+  const N1 = 'See everything across the LCA. You can email entrants, answer support tickets and manage the bylaws and minutes; other changes are made by admins.'
+  const LIST_MAILERS_ONLY = 'Group email is limited to LCA admins, the president and the media manager.'
+  /** The Admin addresses a drawing's sidebar links to, in order. */
+  const sectionLinks = (markup: string) => [...new Set([...markup.matchAll(/href="(\/admin\/[a-z-]+)"/g)].map((m) => m[1]))]
+  const mailCalls = (drawn: Drawn) => drawn.calls.filter((c) => c.includes('/api/admin/campaigns') || c.includes(NEWSLETTER_URL))
+
+  beforeEach(() => {
+    on('GET', '/api/admin/members', { status: 200, body: { members: [] } })
+    on('GET', '/api/clubs', { status: 200, body: { clubs: [] } })
+    on('GET', '/api/admin/board-seats', { status: 200, body: { seats: [], holders: [], history: [] } })
+    on('GET', '/api/admin/campaigns', { status: 200, body: { campaigns: [{ id: 'campaign-sample', subject: 'Sample group message', total_recipients: 2, sent_count: 2, failed_count: 0, status: 'completed', created_at: '2026-11-02 15:00:00', completed_at: '2026-11-02 15:01:00' }] } })
+  })
+
+  it.each([false, true])('an LCA Observer who holds neither seat: no Group email among the sections, the subtitle without it, and at its address the reason in words with no mail call, with mailLists %s', async (switchOn) => {
+    flags.mailLists = switchOn
+    const who = person({ role: 'lca_observer' })
+    const members = await drawnAdmin(AdminPage, '/admin/members', who)
+    expect(members.markup).toContain(N1)
+    expect(sectionLinks(members.markup)).not.toContain('/admin/email')
+    expect(sectionLinks(members.markup)).toContain('/admin/activity')
+    expect(members.markup).not.toContain('<option value="email">')
+
+    const email = await drawnAdmin(AdminPage, '/admin/email', who)
+    expect(email.where).toBe('/admin/email')
+    expect(email.markup).toMatch(new RegExp(`<p role="status"[^>]*>${LIST_MAILERS_ONLY.replace(/[.]/g, '\\.')}</p>`))
+    expect(email.markup).toContain('View only')
+    expect(email.markup).not.toContain('Compose')
+    // The phone picker names the address shown, as a choice that cannot be made, and every real section stays choosable.
+    expect(email.markup).toContain('<option value="email" disabled="">Group email</option>')
+    expect(email.markup).toContain('<option value="members">Members</option>')
+    expect(mailCalls(email)).toEqual([])
+  }, 60_000)
+
+  it.each([false, true])('an LCA Observer who holds the President seat, with a second factor: Admin as today at each address, with mailLists %s', async (switchOn) => {
+    flags.mailLists = switchOn
+    const who = person({ role: 'lca_observer', seats: [PRESIDENT] })
+    for (const path of ADMIN_PATHS) {
+      const today = await drawnAdmin(AdminPageToday, path, who)
+      const now = await drawnAdmin(AdminPage, path, who)
+      expect(now, path).toEqual(today)
+    }
+    expect((await drawnAdmin(AdminPage, '/admin/email', who)).markup).toContain(switchOn ? 'Sample newsletter one' : 'Sample group message')
+  }, 120_000)
+
+  it.each([false, true])('the same without a second factor: the line to set one up in place of the send buttons, and no call for the history or the newsletter, with mailLists %s', async (switchOn) => {
+    flags.mailLists = switchOn
+    const who = person({ role: 'lca_observer', seats: [PRESIDENT], aal: 'aal1' })
+    const email = await drawnAdmin(AdminPage, '/admin/email', who)
+    expect(email.where).toBe('/admin/email')
+    expect(email.markup).toContain(SECOND_FACTOR_LINE)
+    expect(email.markup).toContain('href="/account/security"')
+    for (const words of ['Send test', 'Send to the LCA newsletter list', 'Review recipients']) expect(email.markup, words).not.toContain(words)
+    // With nothing read, no history column: neither a loading line that never ends nor a claim that nothing was sent.
+    expect(email.markup).not.toContain('Send history')
+    expect(email.markup).not.toContain('Loading')
+    expect(email.markup).not.toContain('No campaigns sent yet.')
+    expect(mailCalls(email)).toEqual([])
+  }, 60_000)
+
+  it.each([false, true])('a member who holds the President seat: Admin is Group email alone, the whole form with both its tabs, and any other address goes to Group email, with mailLists %s', async (switchOn) => {
+    flags.mailLists = switchOn
+    const who = person({ role: 'member', seats: [PRESIDENT] })
+    for (const path of ['/admin', '/admin/members', '/admin/activity']) {
+      expect((await drawnAdmin(AdminPage, path, who)).where, path).toBe('/admin/email')
+    }
+    const email = await drawnAdmin(AdminPage, '/admin/email', who)
+    expect(email.where).toBe('/admin/email')
+    expect(sectionLinks(email.markup)).toEqual(['/admin/email'])
+    expect(email.markup).not.toContain('See everything across the LCA.')
+    expect(email.markup).not.toContain('Manage members, clubs, tournaments and communications across the LCA.')
+    expect(email.markup).not.toContain('View only')
+    expect(email.markup).toContain('Specific people')
+    expect(email.markup).toContain(switchOn ? 'The LCA newsletter list' : 'Groups of members')
+    expect(email.markup).not.toContain('Send the LCA newsletter.')
+    expect(email.markup).toContain(switchOn ? 'Sample newsletter one' : 'Sample group message')
+  }, 60_000)
+
+  it.each([false, true])('an LCA Officer who holds the President seat: Group email among the sections, the subtitle that says so, View only, and the whole form with both its tabs, with mailLists %s', async (switchOn) => {
+    flags.mailLists = switchOn
+    const who = person({ role: 'lca_officer', seats: [PRESIDENT] })
+    const email = await drawnAdmin(AdminPage, '/admin/email', who)
+    expect(email.where).toBe('/admin/email')
+    expect(email.markup).toContain('See everything across the LCA. You can send group email, answer support tickets and manage the bylaws and minutes; other changes are made by admins.')
+    expect(sectionLinks(email.markup)).toContain('/admin/email')
+    expect(sectionLinks(email.markup)).toContain('/admin/members')
+    expect(email.markup).toContain('View only')
+    expect(email.markup).toContain('Specific people')
+    expect(email.markup).toContain(switchOn ? 'The LCA newsletter list' : 'Groups of members')
+    expect(email.markup).not.toContain(LIST_MAILERS_ONLY)
+  }, 60_000)
+
+  it('tells a member who holds the President seat, whose role may not read the member list, that it failed to load when they search it, rather than that nobody matches', async () => {
+    flags.mailLists = true
+    on('GET', '/api/admin/members', { status: 403, body: { error: 'Forbidden' } })
+    await site('/admin/email', person({ role: 'member', seats: [PRESIDENT] }))
+    await groupEmail()
+    fireEvent.click(screen.getByRole('tab', { name: 'Specific people' }))
+    fireEvent.change(screen.getByPlaceholderText('e.g. Fall tournament registration is open'), { target: { value: 'Sample subject' } })
+    fireEvent.change(screen.getByLabelText('Message'), { target: { value: '<p>Sample message.</p>' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Choose people' }))
+    fireEvent.change(await screen.findByPlaceholderText(/type \/ paste email addresses/), { target: { value: 'Player' } })
+    expect(await screen.findByText('Failed to load members')).toBeTruthy()
+    expect(screen.queryByText(/No members match/)).toBeNull()
   }, 60_000)
 })

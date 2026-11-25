@@ -19,6 +19,7 @@
 import { regionAlone, type CreationGrant, type CreationPerson } from '../../../domain/events/creation'
 import type { MemberRow } from '../../types'
 import { getRegionalClubIds } from '../admin/permissions'
+import { holdsPresidentSeat } from '../admin/presidentSeat'
 import { REGION_EVENTS_ON } from '../clubs/pages'
 
 /**
@@ -34,24 +35,11 @@ export const CREATION_ROLES_ON = false
  * Whether the member holds the President seat now: a current assignment
  * (ended_at empty) to the active seat whose slug is 'president', the seat
  * migration 0011 seeded as "President" and 0025 gave that slug. The seat is
- * the grant (D20, D21), so members.role is not read here.
+ * the grant (D20, D21), so members.role is not read here. The read itself is
+ * in functions/utils/admin/presidentSeat.ts, which imports nothing, so the
+ * mail guards in ../auth.ts share it without taking in this file.
  */
-export async function holdsPresidentSeat(db: D1Database, memberId: string): Promise<boolean> {
-  const row = await db
-    .prepare(
-      `SELECT 1
-         FROM board_seat_assignments a
-         JOIN board_members s ON s.id = a.seat_id
-        WHERE a.member_id = ?
-          AND a.ended_at IS NULL
-          AND s.is_active = 1
-          AND s.slug = 'president'
-        LIMIT 1`,
-    )
-    .bind(memberId)
-    .first()
-  return !!row
-}
+export { holdsPresidentSeat }
 
 /** The three columns of a member the grant is read from. */
 export type GrantMember = Pick<MemberRow, 'id' | 'role' | 'club_id'>

@@ -53,8 +53,8 @@ To change the schema:
    lists `0060`, the newsletter's letters `0061`, the club regions `0065`, the
    club pages `0066`, the club pages seed `0067`, the automation runs `0068`,
    the club check marks `0069`, the club event approval `0070`, the rate
-   limits `0071`, the regions by seat `0072`; `0073` is next), adds a header
-   and writes it here as `0073_club_notes.sql`. Commit it
+   limits `0071`, the regions by seat `0072`, the seat listing `0073`; `0074`
+   is next), adds a header and writes it here as `0074_club_notes.sql`. Commit it
    together with the new snapshot in `drizzle/meta`.
 3. Read the file, run `npm run db:migrate:local` and `npm run test:all`.
 
@@ -63,19 +63,21 @@ To give the file a number of its own, add `--number` and four digits
 The script refuses a number that is not four digits, or that a file here
 already has, says why, and writes nothing; without `--number` it numbers
 the file as in step 2, the highest prefix here plus one, so with
-`0072_regions_by_seat.sql` in this folder it gives `0073` next. Two streams of
+`0073_seat_listing.sql` in this folder it gives `0074` next. Two streams of
 work share this folder: `0061` to `0064` are kept for the mail work and
 `0065` to `0071` for the clubs work, and each stream makes its files with
 `--number`, so that once a clubs file is on `main` nobody is handed a number
 the other stream holds. `0072`, a data migration written by hand, was agreed
 between the two streams; `0071_rate_limits.sql`, the last number the clubs
-work holds, is beside it in this folder, from a clubs branch that was not yet
-on `main` when `0072` was, and wrangler applies each file it has not run by
-its name, so a database that ran `0072` first runs `0071` after it, without
-the gap or the order mattering. The clubs work's next file, `0073`, is made with
+work holds, is beside it and `0073_seat_listing.sql` in this folder, from a
+clubs branch that was not yet on `main` when `0072` and `0073` were, and
+wrangler applies each file it has not run by its name, so a database that ran
+`0072` first runs `0071` after it, and one that ran `0073` as well runs `0071`
+after both, without the gap or the order mattering. `0073`, the seat listing,
+is the mail work's. The clubs work's next file, `0074`, is made with
 `--number` as well, like each of its files after it, once the two streams
 have agreed it, since it lies past `0071`; the mail work's next files
-are numbered from `0073` too, so the two streams agree a number before either
+are numbered from `0074` too, so the two streams agree a number before either
 takes one.
 
 The script refuses, writes nothing and puts `drizzle/` back when the file

@@ -260,6 +260,14 @@ const admin = () => navPersona('admin')
 const member = () => navPersona('active-member')
 const assignedDirector = () => withAccountRole(navPersona('director'), 'member')
 
+/** A plain member whose one seat is the President seat (slug 'president'), which the mail guards read whatever the role. */
+function holdingThePresidentSeat(person: NavPersona): NavPersona {
+  const answers = person.answers!
+  const seat = { ...answers.mySeats.seats[0], id: 'fx-seat-the-president', slug: 'president', role: 'President', category: 'officer' as const, regions: [] }
+  return { ...person, answers: { ...answers, mySeats: { ...answers.mySeats, seats: [seat] } } } as NavPersona
+}
+const memberPresident = () => holdingThePresidentSeat(navPersona('regional-rep'))
+
 /** [what the route is, the address reloaded, the person it admits] */
 const ADMITTED: Array<[string, string, () => NavPersona, string]> = [
   ['the plain sign-in guard', '/dashboard', member, '/dashboard'],
@@ -273,6 +281,8 @@ const ADMITTED: Array<[string, string, () => NavPersona, string]> = [
   ['requireSeat with requireClubMatch, a club in the seat\'s region', '/workspace/region/clubs/fx-club-north', regionalRep, '/workspace/region/clubs/:id'],
   ['allowMediaManager with mailLists as it ships, for an LCA admin', '/admin', admin, '/admin'],
   ['allowMediaManager with mailLists as it ships, a deeper address', '/admin/members', admin, '/admin/:section'],
+  ['allowMediaManager, for a plain member who holds the President seat', '/admin', memberPresident, '/admin'],
+  ['allowMediaManager, for a plain member who holds the President seat, at Group email', '/admin/email', memberPresident, '/admin/:section'],
   ['requireClubMatch, for the club\'s own rep', '/admin/clubs/fx-club-capital', clubRep, '/admin/clubs/:id'],
   ['requireClubMatch, for an LCA admin', '/admin/clubs/fx-club-north', admin, '/admin/clubs/:id'],
   ['requireTournamentAccess, for the event\'s director by assignment alone', '/admin/tournaments/fx-t-open', assignedDirector, '/admin/tournaments/:id'],
@@ -299,6 +309,7 @@ const REFUSED: Array<[string, string, () => NavPersona, string]> = [
   ['requireSeat with requireClubMatch, a club outside the seat\'s region', '/workspace/region/clubs/fx-club-capital', regionalRep, '/dashboard'],
   ['allowMediaManager, for a club\'s rep, sent to their own tools', '/admin', clubRep, '/workspace'],
   ['allowMediaManager, for a plain member', '/admin/members', member, '/dashboard'],
+  ['allowMediaManager, for a plain member who holds a seat other than the President seat', '/admin/email', regionalRep, '/dashboard'],
   ['requireClubMatch, another club\'s rep', '/admin/clubs/fx-club-north', clubRep, '/dashboard'],
   ['requireTournamentAccess, a plain member', '/admin/tournaments/fx-t-open', member, '/dashboard'],
 ]

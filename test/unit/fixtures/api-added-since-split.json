@@ -46,6 +46,7 @@
     "ApiTournamentCreation": "membership",
     "ApiUnsubscribeLink": "membership",
     "ApiUnsubscribed": "membership",
+    "adminReactivateBoardSeat": "governance",
     "confirmClubByLink": "clubs",
     "confirmClubStillAccurate": "clubs",
     "countMonthlyCheck": "clubs",

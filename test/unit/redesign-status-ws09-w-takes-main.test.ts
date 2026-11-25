@@ -173,7 +173,9 @@ describe('REDESIGN_STATUS.md, checkpoint W taking main in: the parts against the
     }
     expect(read(PREVIEW_TEST)).not.toContain('lca-club-' + 'editor-help')
     const migrations = readdirSync(join(ROOT, 'migrations')).filter((name) => /^\d{4}_/.test(name)).sort()
-    expect(migrations.at(-1)).toBe('0072_regions_by_seat.sql')
+    // main's migrations after 0072 move the newest on, so it is read from the baseline test that holds it; the block's words stand.
+    expect(migrations.at(-1)).toBe(/expect\(sql\.at\(-1\)\)\.toBe\('(\d{4}_\w+\.sql)'\)/.exec(read('test/unit/drizzle-baseline.test.ts'))?.[1])
+    expect(migrations).toContain('0072_regions_by_seat.sql')
     // Since checkpoint X took checkpoint W in, its rate limits hold 0071, beside the regions' 0072.
     expect(migrations.filter((name) => name.startsWith('0071'))).toEqual(['0071_rate_limits.sql'])
     expect(read('src/areas/clubs/components/ClubEditor.tsx')).toContain('<PagePreview')

@@ -48,7 +48,7 @@ import {
   starterLetter,
 } from '../../functions/utils/mail/issues'
 import { cleanLetterHtml } from '../../functions/utils/mail/letterClean'
-import { seedAdmin, seedMember, seedSeat } from './factories'
+import { seedAdmin, seedMember, seedPresident, seedSeat } from './factories'
 import { emailOutbox, expectContract, invoke, resetHarness, type InvokeOptions } from './harness'
 
 const flags = vi.hoisted(() => ({ pageOn: true, listsOn: true, sender: 'resend', plan: 'free', complaintStops: true }))
@@ -786,9 +786,10 @@ describe('(e) each kind of person against a letter that holds words', () => {
   it('lets the people the guard admits do all four, and writes no audit row and sends nothing by any of them', async () => {
     const admin = await seedAdmin()
     const president = await seedMember({ fullName: 'Player Nine', role: 'lca_observer' })
+    await seedPresident(president)
     const auditBefore = (await counts()).audit
     for (const as of [admin, president]) {
-      const opts: InvokeOptions = { aal: as === admin ? 'aal2' : 'aal1' }
+      const opts: InvokeOptions = { aal: 'aal2' }
       const made = await invoke(issuePut, { method: 'PUT', as, ...opts, body: saveBody({ id: null }) })
       expect([200, 409]).toContain(made.status)
       expect((await invoke(issueGet, { as, ...opts })).status).toBe(200)

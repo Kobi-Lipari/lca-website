@@ -279,8 +279,9 @@ describe('REDESIGN_STATUS.md, WS09 checkpoint U: the review of the whole and its
       'test/unit/redesign-status-ws09-u-notice.test.ts', 'test/unit/redesign-status-ws09-u-reload.test.ts',
     ]) expect(pins, file).toContain(`\`${file}\``)
     // WS09 step 18 adds three labels above the badge, so the line both read moves from 275 to 278.
-    expect(read('test/unit/goldText.test.ts')).toContain('\'src/areas/admin/components/AuditLogPanel.tsx:278 \',')
-    expect(read('src/areas/admin/components/AuditLogPanel.tsx').split('\n')[277]).toContain('<span')
+    // The seat that is not shown publicly adds a label and a detail case above it, so it moves on to 280.
+    expect(read('test/unit/goldText.test.ts')).toContain('\'src/areas/admin/components/AuditLogPanel.tsx:280 \',')
+    expect(read('src/areas/admin/components/AuditLogPanel.tsx').split('\n')[279]).toContain('<span')
     expect(read('test/unit/redesign-status-ws09-step12.test.ts')).toContain('expect(prLine.startsWith(\'**PR:** checkpoint S (steps 1 to 5) merged into `main` as pull request 130')
     for (const file of ['test/unit/redesign-status-ws09-u-notice.test.ts', 'test/unit/redesign-status-ws09-u-reload.test.ts']) {
       expect(read(file), file).toContain('expect(tagged(followUps).map(head).filter((h) => h !== \'The run record\\\'s prune and the read of `seen_by` (WS09 checkpoint U).\')).toEqual([])')

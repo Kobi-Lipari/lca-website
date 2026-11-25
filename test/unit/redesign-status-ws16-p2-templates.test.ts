@@ -245,7 +245,10 @@ describe("REDESIGN_STATUS.md, WS16 part two: saved templates and the tutorial's 
     expect(named).not.toBeNull()
     const numbered = readdirSync(join(ROOT, 'migrations')).filter((file) => /^\d{4}_.+\.sql$/.test(file)).sort()
     expect(numbered.length).toBeGreaterThan(0)
-    expect(numbered[numbered.length - 1].slice(0, 4)).toBe(named?.[1])
+    // The files after the one the block names are the later changes' own: the seat listing's 0073.
+    const later = numbered.filter((file) => file.slice(0, 4) > (named?.[1] ?? '9999'))
+    expect(later).toEqual(['0073_seat_listing.sql'])
+    expect(numbered.some((file) => file.slice(0, 4) === named?.[1])).toBe(true)
   })
 
   it("is right that there is no new feature flag: the endpoint rides MAIL_PAGE_ON and the page mailPage, both on", () => {

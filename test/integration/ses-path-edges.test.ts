@@ -34,7 +34,7 @@ import { SES_TEST_ADMINS_ONLY } from '../../functions/utils/mail/newsletterAnswe
 import { GATE_UNREAD_WORDS, REFUSAL_WORDS } from '../../functions/utils/mail/send'
 import { SES_KEY_MISSING } from '../../functions/utils/mail/ses'
 import type { Env } from '../../functions/types'
-import { seedAdmin, seedMember } from './factories'
+import { seedAdmin, seedMember, seedPresident } from './factories'
 import { emailBehavior, emailOutbox, flushWaitUntil, invoke, resetHarness, sesSignatures } from './harness'
 import { bindings, holdClock, noLongerReceives, noWaits, paidEntrants, runDaily } from './mailRuns'
 import { campaignOf, quickPauses, rowsOf, stageCampaign } from './campaignRuns'
@@ -139,6 +139,7 @@ describe('the test through Amazon SES, asked in ways the page never asks', () =>
   it('reads the role from the session and never from the body: the president writing a role of an LCA admin into the request is refused', async () => {
     flags.sender = 'resend'
     const president = await member(address('president'), { role: 'lca_observer' })
+    await seedPresident(president)
     const calls = watchMail()
     const before = await contacts()
     for (const extra of [{ role: 'lca_admin' }, { member: { role: 'lca_admin' } }, { as: 'lca_admin' }, { admin: true }]) {
@@ -189,6 +190,7 @@ describe('the test through Amazon SES, asked in ways the page never asks', () =>
     flags.sender = 'resend'
     const admin = await seedAdmin()
     const president = await member(address('president'), { role: 'lca_observer' })
+    await seedPresident(president)
     const calls = watchMail()
     const before = await contacts()
     const noKey = { MAIL_LINK_SECRET: '' }
@@ -283,6 +285,7 @@ describe('the test through Amazon SES, asked in ways the page never asks', () =>
     expect(after[0].error).toBe(words)
     expect(calls.map((c) => c.via)).toEqual(['ses', 'ses'])
     const president = await member(address('president'), { role: 'lca_observer' })
+    await seedPresident(president)
     const shown = await invoke(newsletterGet, { as: president, aal: 'aal2' })
     expect(shown.status).toBe(200)
     const summary = await shown.json<{ summary: { waits: string | null } }>()
@@ -333,6 +336,7 @@ describe('the test through Amazon SES, asked in ways the page never asks', () =>
     const rows = await rowsOf(id)
     expect(rows.filter((r) => readers.includes(r.email)).map((r) => [r.status, r.error])).toEqual([['failed', words], ['failed', words]])
     const president = await member(address('president'), { role: 'lca_observer' })
+    await seedPresident(president)
     const shown = await invoke(newsletterGet, { as: president, aal: 'aal2' })
     const summary = await shown.json<{ summary: { waits: string | null } }>()
 
