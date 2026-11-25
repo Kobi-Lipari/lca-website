@@ -79,7 +79,7 @@ export type SuggestionGoesTo = (typeof SUGGESTION_GOES_TO)[number]
 
 /** The sheet's send button, worded by where the suggestion goes, naming nobody. */
 export function suggestSendLabel(goesTo: SuggestionGoesTo, region: string | null): string {
-  if (goesTo === 'club_rep') return 'Send to the club\'s representative'
+  if (goesTo === 'club_rep') return 'Send to the club\'s rep'
   if (goesTo === 'region') {
     const area = region?.trim()
     return area ? `Send to the ${area} representative` : 'Send to the region\'s representative'
@@ -101,15 +101,19 @@ export const SUGGESTION_SENT = 'Sent. Whoever keeps this club\'s listing checks 
 /** The words when the suggestion could not be saved. */
 export const SUGGESTION_NOT_SENT = 'We couldn\'t send this. Try again later.'
 
-/** What a card and a row say of a suggestion's age, in whole days. */
+/**
+ * What a row says of its age, in whole days of 24 hours since it was sent, never the calendar's days: "less than a
+ * day ago", "1 day ago", "9 days ago". A row sent 22 hours before, across a midnight, is less than a day old.
+ */
 export function ageWords(days: number): string {
-  if (days <= 0) return 'today'
-  return days === 1 ? '1 day' : `${days} days`
+  if (days <= 0) return 'less than a day ago'
+  return days === 1 ? '1 day ago' : `${days} days ago`
 }
 
-/** A card's line for its open suggestions: how many, and the oldest's age ("1 suggestion · 9 days"). */
+/** A card's line for its open suggestions: how many, and the oldest's age in whole days ("1 suggestion · 9 days"). */
 export function openSuggestionsWords(count: number, oldestDays: number): string {
-  return `${count} ${count === 1 ? 'suggestion' : 'suggestions'} · ${ageWords(oldestDays)}`
+  const age = oldestDays <= 0 ? 'less than a day' : oldestDays === 1 ? '1 day' : `${oldestDays} days`
+  return `${count} ${count === 1 ? 'suggestion' : 'suggestions'} · ${age}`
 }
 
 /** The card's button while a suggestion is open, and the start of every refusal of Still accurate while one waits. */

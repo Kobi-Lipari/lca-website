@@ -300,7 +300,8 @@ describe('REDESIGN_STATUS.md, WS09 step 27: the parts against the files', () => 
     for (const file of MOVED) expect(pins, file).toContain(`\`${file}\``)
     expect(pins).toContain('no earlier test file changes its count of cases')
     expect(pins).toContain('The file keeps its 19 cases.')
-    expect(read('test/integration/club-contact-relay.test.ts').match(/^\s*it\(/gm)).toHaveLength(19)
+    // WS09 checkpoint X's review adds two cases to the file (F3); the block's 19 is the count at this step.
+    expect(read('test/integration/club-contact-relay.test.ts').match(/^\s*it\(/gm)).toHaveLength(19 + 2)
     for (const file of ['test/unit/redesign-status-step27.test.ts', 'test/unit/club-routing-server-only.test.ts', 'test/unit/club-confirm-page.test.tsx']) expect(pins, file).toContain(`Not moved: ${file === 'test/unit/redesign-status-step27.test.ts' ? 'WS01\'s ' : ''}\`${file}\``)
   })
 

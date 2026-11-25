@@ -89,6 +89,16 @@ const NEW_FILES = [
   RULES, 'domain/contracts/clubRepRequests.ts', SAVE, NAME, PUBLIC, DECIDE, 'src/areas/clubs/components/RepRequestLink.tsx', SHEET, ROWS, 'src/areas/clubs/repRequestRows.ts',
 ]
 /** Each new test with the count of cases its run gives. */
+/**
+ * The cases WS09 checkpoint X's review added to this block's test files, each held to a fix of that review; the
+ * block keeps the count each file had at this step.
+ */
+const X_REVIEW_ADDED: Record<string, number> = {
+  'test/integration/club-rep-requests.test.ts': 4,
+  'test/unit/rep-request-rows.test.tsx': 5,
+  'test/unit/rep-request-words.test.ts': 1,
+  'test/unit/rep-request-sheet.test.tsx': 1,
+}
 const NEW_TESTS: Record<string, number> = {
   'test/integration/club-rep-requests.test.ts': 36,
   'test/integration/club-rep-requests-edges.test.ts': 51,
@@ -208,7 +218,7 @@ describe('REDESIGN_STATUS.md, the thirty-first step of WS09: the block', () => {
     for (const file of [...NEW_FILES, ...Object.keys(NEW_TESTS), FIXTURE]) expect(existsSync(join(ROOT, file)), file).toBe(true)
     for (const [file, count] of Object.entries(NEW_TESTS)) {
       expect(writtenCount(files, file), file).toBe(count)
-      expect(casesIn(file), file).toBe(count)
+      expect(casesIn(file), file).toBe(count + (X_REVIEW_ADDED[file] ?? 0))
     }
     expect(writtenCount(files, SELF)).toBe((read(SELF).match(/^\s*it\(/gm) ?? []).length)
     const grown = bullet(files, '  - Grown with no change:')
@@ -250,7 +260,9 @@ describe('REDESIGN_STATUS.md, the thirty-first step of WS09: the parts against t
     for (const piece of ['one `db.batch`', 'never the count of the statement before', '`syncSupabaseUserMetadata`', '`upsertMemberFromAuth`', '`club_rep_named`', '`club_rep_request_declined`', '`/manage/club`', '`requireAdmin`', '`isRegionalRepFor`']) {
       expect(naming, piece).toContain(piece)
     }
-    for (const name of ['REP_DECIDE_ALREADY', 'REP_DECIDE_FOR_KEEPERS', 'REP_DECIDE_OWN', 'REP_DECIDE_NOT_THIS_CLUBS', 'REP_DECIDE_CLOSED']) expect(naming, name).toContain(`"${wordsOf(RULES, name)}"`)
+    for (const name of ['REP_DECIDE_ALREADY', 'REP_DECIDE_FOR_KEEPERS', 'REP_DECIDE_NOT_THIS_CLUBS', 'REP_DECIDE_CLOSED']) expect(naming, name).toContain(`"${wordsOf(RULES, name)}"`)
+    // WS09 checkpoint X's review (D5) gave REP_DECIDE_OWN new words; the closed block keeps the words of this step.
+    expect(naming).toContain('"This is your own request. Another keeper or an LCA admin decides it."')
     expect(naming).toContain(`"${wordsOf(EMAILS, 'REP_NAMED_CAN')}"`)
     const code = codeOf(NAME)
     expect(code).toContain('db.batch([')

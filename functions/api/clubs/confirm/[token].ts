@@ -33,8 +33,9 @@
 //   404 CLUB_GONE     the club has been deleted since the email
 //   404 MEMBER_GONE   the person's account has been deleted since the email
 //   403 SEAT_ENDED    the person's seat no longer covers the club
-//   429 TOO_MANY      a good link opened more than LINK_CALLS_AN_HOUR times
-//                     in an hour from one place (WS09 step 25)
+//   429 LINK_TOO_OFTEN a good link opened more than LINK_CALLS_AN_HOUR
+//                     times in an hour from one place (WS09 step 25), in
+//                     the link's own words, since the person sent nothing
 // and for POST then:
 //   409 LINK_WAITS    a visitor's suggestion for the club is open (WS09 step
 //                     28): nothing is written, and the page says in words
@@ -80,6 +81,8 @@ export const CLUB_GONE = 'This club is no longer listed on the site.'
 export const MEMBER_GONE = 'The account this link was sent to is no longer on the site.'
 /** The 403 for a person whose seat no longer covers the club. */
 export const SEAT_ENDED = 'Your seat no longer covers this club.'
+/** The 429 for a good link opened too often in an hour from one place: the link's own words, not the limiter's. */
+export const LINK_TOO_OFTEN = 'This link has been opened too many times this hour. Try again in an hour.'
 
 /** How many calls one place may make with good links in an hour, GET and POST together. */
 export const LINK_CALLS_AN_HOUR = 30
@@ -123,7 +126,7 @@ async function opened(context: Parameters<PagesFunction<Env>>[0]): Promise<{ clu
   const { club: clubId, member: memberId } = read.claim
   if (typeof clubId !== 'string' || clubId === '' || typeof memberId !== 'string' || memberId === '') return refuse(LINK_FORGED, 400)
   const counted = await limit(context.env, context.request, LINK_LIMIT_ROUTE, { perHour: LINK_CALLS_AN_HOUR })
-  if (!counted.ok) return refuse(counted.error, counted.status)
+  if (!counted.ok) return refuse(counted.status === 429 ? LINK_TOO_OFTEN : counted.error, counted.status)
 
   const db = context.env.DB
   const club = await db.prepare('SELECT id, name, city, how_we_meet_text FROM clubs WHERE id = ?').bind(clubId).first<LinkClub>()

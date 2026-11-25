@@ -64,7 +64,7 @@ describe('suggestionFieldError', () => {
 describe('the send button', () => {
   it('is worded by where the suggestion goes and names nobody', () => {
     expect(SUGGESTION_GOES_TO).toEqual(['club_rep', 'region', 'lca'])
-    expect(suggestSendLabel('club_rep', 'Example Region')).toBe('Send to the club\'s representative')
+    expect(suggestSendLabel('club_rep', 'Example Region')).toBe('Send to the club\'s rep')
     expect(suggestSendLabel('lca', 'Example Region')).toBe('Send to LCA')
     expect(suggestSendLabel('region', 'Example Region')).toBe('Send to the Example Region representative')
     expect(suggestSendLabel('region', null)).toBe('Send to the region\'s representative')
@@ -91,12 +91,23 @@ describe('ages and the card\'s line', () => {
   })
 
   it('says it in words, with the middle dot the card uses and no long dash', () => {
-    expect(ageWords(0)).toBe('today')
-    expect(ageWords(1)).toBe('1 day')
-    expect(ageWords(14)).toBe('14 days')
+    expect(ageWords(0)).toBe('less than a day ago')
+    expect(ageWords(1)).toBe('1 day ago')
+    expect(ageWords(14)).toBe('14 days ago')
     expect(openSuggestionsWords(1, 9)).toBe('1 suggestion · 9 days')
     expect(openSuggestionsWords(4, 1)).toBe('4 suggestions · 1 day')
-    expect(openSuggestionsWords(2, 0)).toBe('2 suggestions · today')
+    expect(openSuggestionsWords(2, 0)).toBe('2 suggestions · less than a day')
+  })
+
+  it('counts whole days of 24 hours, not the calendar\'s: a row made 22 hours before, across a Central midnight, is less than a day old', () => {
+    // 10:00 PM Central on Tue, Nov 24, 2026 is 4:00 AM UTC on Wed, Nov 25; 22 hours on is 8:00 PM Central on Wed, Nov 25.
+    const made = '2026-11-25 04:00:00'
+    const now = Date.UTC(2026, 10, 26, 2, 0, 0)
+    expect(wholeDaysSince(made, now)).toBe(0)
+    expect(ageWords(wholeDaysSince(made, now))).toBe('less than a day ago')
+    expect(ageWords(wholeDaysSince(made, now + 2 * 60 * 60 * 1000))).toBe('1 day ago')
+    expect(ageWords(wholeDaysSince(made, now + 5 * 24 * 60 * 60 * 1000))).toBe('5 days ago')
+    for (const days of [0, 1, 6]) expect(ageWords(days)).not.toMatch(/today|yesterday/)
   })
 })
 
@@ -159,7 +170,7 @@ describe('the keeper\'s email', () => {
   })
 
   it('signs a club\'s own rep by the role and the club alone', () => {
-    expect(clubRepSignOff('Example Chess Club')).toBe('Example Chess Club representative')
-    expect(clubRepSignOff('Example\nChess Club')).toBe('Example Chess Club representative')
+    expect(clubRepSignOff('Example Chess Club')).toBe('Example Chess Club\'s rep')
+    expect(clubRepSignOff('Example\nChess Club')).toBe('Example Chess Club\'s rep')
   })
 })

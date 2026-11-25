@@ -408,7 +408,9 @@ describe('a club\'s colour is never words', () => {
     expect(fill[0].getAttribute('aria-hidden')).toBe('true')
     expect(fill[0].textContent).toBe('')
     fill[0].removeAttribute('style')
-    const markup = page.outerHTML
+    // The ids a question mark generates for its bubble (WS09 checkpoint X's review put two on the Contact form) differ
+    // from one draw to the next, so they are written alike.
+    const markup = page.outerHTML.replace(/_r_[0-9a-z]+_/g, '_r_N_')
     view.unmount()
     return markup
   }
@@ -453,7 +455,10 @@ describe('every control and section keeps the room the sticky section nav needs'
     expect(controls.length).toBeGreaterThanOrEqual(9)
     for (const control of controls) {
       const name = control.getAttribute('aria-label') ?? control.textContent
-      expect(control.className, name!).toMatch(/\bmin-h-11\b/)
+      // A question mark (the Contact form's two since WS09 checkpoint X's review) is drawn 24 pixels across, its
+      // pressable area 44 pixels by a layer of its own (HelpMark.tsx), as K's decision 16 has it on every page.
+      if (control.dataset.slot === 'help-mark') expect(control.className, name!).toMatch(/before:absolute/)
+      else expect(control.className, name!).toMatch(/\bmin-h-11\b/)
       expect(control.className, name!).toMatch(/focus-visible:ring-3/)
       expect(control.className, name!).toMatch(/focus-visible:ring-focus/)
       // No control takes its outline away without a ring of its own.

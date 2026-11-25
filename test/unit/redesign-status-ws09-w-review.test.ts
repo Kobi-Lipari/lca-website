@@ -239,7 +239,8 @@ describe('REDESIGN_STATUS.md, checkpoint W\'s review: the Status and PR lines', 
 
   it('give the PR line checkpoint W\'s clause in the manner of checkpoint V\'s, and change no other clause', () => {
     expect(prLine).not.toContain('under way')
-    expect(prLine.endsWith('; checkpoint W, steps 20 to 24, is built and reviewed on `redesign/ws09-clubs-w` and waits in draft pull request 154 for K\'s word for its merge, and WS09 step 15 follows as a pull request of its own.')).toBe(true)
+    // Since checkpoint X's review the line goes on after this clause with checkpoint X's and pull request 151's.
+    expect(prLine).toContain('; checkpoint W, steps 20 to 24, is built and reviewed on `redesign/ws09-clubs-w` and waits in draft pull request 154 for K\'s word for its merge, and WS09 step 15 follows as a pull request of its own; ')
     expect(prLine).toContain('checkpoint V, its first step and steps 16 to 19, is built and reviewed on `redesign/ws09-clubs-v` and waits in draft pull request 134 for K\'s word for its merge')
     expect(prLine).toContain('as pull request 140, `6257419`, on Thu, Nov 19, 2026, so the three clauses of this line that say they wait stand as they were written before those merges; checkpoint W, steps 20 to 24,')
     const said = bullet(block, '- **The Status and PR lines.**')

@@ -143,7 +143,7 @@ describe('the server\'s own words', () => {
 })
 
 describe('the keyboard', () => {
-  it('moves from Help to the name, the address, the message and Send message, in that order, with no control hidden or out of reach', async () => {
+  it('moves from the line\'s question mark to the name, the address, the message and Send message, in that order, with no control hidden or out of reach', async () => {
     const { container } = draw()
     await fill()
     const tabbable = [...container.querySelectorAll<HTMLElement>('input, textarea, button, a[href], [tabindex]:not([tabindex="-1"])')]
@@ -151,7 +151,7 @@ describe('the keyboard', () => {
     const names = tabbable.map((el) => el.getAttribute('aria-label') ?? el.id ?? el.textContent)
     const at = (matcher: (el: HTMLElement) => boolean) => tabbable.findIndex(matcher)
     const order = [
-      at((el) => el === screen.getByRole('button', { name: 'Help' })),
+      at((el) => el === screen.getByRole('button', { name: 'Help: Where your message goes' })),
       at((el) => el === field('Your name')),
       at((el) => el === field('Your email')),
       at((el) => el === field('Message')),

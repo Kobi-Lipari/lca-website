@@ -97,6 +97,13 @@ const HARNESS = 'test/integration/harness.ts'
 const SETUP = 'test/a11y/global-setup.ts'
 const SELF = 'test/unit/redesign-status-ws09-step25.test.ts'
 const NEW_FILES = [MIGRATION, SNAPSHOT, LIMIT, SPAM, WIDGET, LOADER]
+/**
+ * The cases WS09 checkpoint X's review added to this block's test files, each held to a fix of that review; the
+ * block keeps the count each file had at this step.
+ */
+const X_REVIEW_ADDED: Record<string, number> = {
+  'test/integration/rate-limit-confirm-edges.test.ts': 1,
+}
 const NEW_TESTS = [
   'test/integration/rate-limit.test.ts', 'test/integration/rate-limit-confirm.test.ts', 'test/integration/rate-limit-lagging-run.test.ts', 'test/integration/spam-check.test.ts',
   'test/unit/spam-check.test.ts', 'test/unit/spam-check-widget.test.tsx', 'test/unit/club-confirm-page-limit.test.tsx', 'test/unit/migration-0071-rate-limits.test.ts',
@@ -181,7 +188,7 @@ describe('REDESIGN_STATUS.md, WS09 step 25: the block', () => {
     const files = bullet(block, '- **Files.**')
     for (const name of [...NEW_FILES, ...NEW_TESTS, ...CHANGED, 'REDESIGN_STATUS.md']) expect(files, name).toContain(`\`${name}\``)
     for (const file of [...NEW_FILES, ...NEW_TESTS]) expect(existsSync(join(ROOT, file)), file).toBe(true)
-    for (const file of NEW_TESTS) expect(writtenCount(files, file), file).toBe(casesIn(file))
+    for (const file of NEW_TESTS) expect(writtenCount(files, file), file).toBe(casesIn(file) - (X_REVIEW_ADDED[file] ?? 0))
     expect(bullet(files, '  - Grown with no change:')).toContain('none')
     const beyond = bullet(files, '  - Files beyond the step\'s list:')
     for (const piece of ['No file the mail stream holds is touched', ...HELD.map((f) => `\`${f}\``), ...UNTOUCHED.map((f) => `\`${f}\``)]) expect(beyond, piece).toContain(piece)

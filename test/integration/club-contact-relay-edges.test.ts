@@ -484,7 +484,7 @@ describe('what every answer carries', () => {
     }
   }, SLOW)
 
-  it('logs a copy the mail service refuses in fixed words alone, though the service\'s own words name the address, with either sender', async () => {
+  it('logs a copy the mail service refuses in this file\'s fixed line, beside the seam\'s own line, and no line carries anything the visitor typed, with either sender', async () => {
     for (const sender of ['resend', 'ses'] as const) {
       flags.sender = sender
       const club = await makeClub({ reps: 1 })
@@ -501,10 +501,13 @@ describe('what every answer carries', () => {
       expect(status, sender).toBe(503)
       expect(serviceRefusal.refused, sender).toEqual([club.email, club.reps[0].email, admin.email])
       expect(emailOutbox, sender).toEqual([])
-      // One fixed line for each copy that did not go, and nothing the service said.
-      expect(lines, sender).toEqual([COPY_NOT_SENT_LOG, COPY_NOT_SENT_LOG, COPY_NOT_SENT_LOG])
+      // One fixed line of this file for each copy that did not go. The seam logs its own line for each as well (WS09
+      // checkpoint X's review, F3), which may carry the service's words and so a keeper's address; never the
+      // visitor's, since no copy goes to the visitor's address.
+      expect(lines.filter((line) => line === COPY_NOT_SENT_LOG), sender).toHaveLength(3)
+      expect(lines, sender).toHaveLength(6)
       for (const line of lines) {
-        for (const secret of [club.email!, club.reps[0].email, admin.email, words.email, words.name, words.message, 'example.org', 'not allowed', 'not verified']) {
+        for (const secret of [words.email, words.name, words.message]) {
           expect(line, `${sender} ${secret}`).not.toContain(secret)
         }
       }

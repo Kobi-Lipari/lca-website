@@ -273,7 +273,7 @@ describe('no one to write to, and stale rows', () => {
     const club = await makeClub({ rep: true })
     await suggest(club, { createdAt: '2026-11-09 18:00:00' })
     expect(await runReportClock(clockEnv(), now, FAST)).toMatchObject({ passedOn: 1, sent: 1 })
-    expect(mailTo(admin.email)[0].text).toContain('It went first to the club\'s representative.')
+    expect(mailTo(admin.email)[0].text).toContain('It went first to the club\'s rep.')
     expect(mailTo(club.rep!.email)).toEqual([])
   })
 })

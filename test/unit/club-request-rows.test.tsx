@@ -16,7 +16,7 @@
 //   in words and the focus goes to the next row, or to the list's heading;
 // - a stranger's words are drawn as text, wrapped anywhere.
 // Every club, person and address is made up; the places are Louisiana's own.
-import { act, cleanup, fireEvent, render, screen, within } from '@testing-library/react'
+import { act, cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { AuthContext } from '@/contexts/auth-context'
@@ -128,7 +128,7 @@ describe('the rows', () => {
     expect(within(list()).getByRole('heading', { level: 3, name: 'Wants to start a club: Example Bishops Club' })).toBeTruthy()
     const first = within(row(7))
     expect(first.getByText('Sent 2 days ago')).toBeTruthy()
-    expect(within(row(8)).getByText('Sent today')).toBeTruthy()
+    expect(within(row(8)).getByText('Sent less than a day ago')).toBeTruthy()
     expect(first.getByText('Sulphur')).toBeTruthy()
     expect(first.getByText('Lake Charles / Southwestern')).toBeTruthy()
     expect(first.getByText('Player Three')).toBeTruthy()
@@ -204,5 +204,19 @@ describe('Mark as handled', () => {
     await act(async () => { fireEvent.click(within(question).getByRole('button', { name: 'Mark as handled' })) })
     await act(async () => {})
     expect(within(row(7)).getByText('Nothing changed: This request is not for a region your seat keeps.')).toBeTruthy()
+  })
+
+  it('a failed press is said in the list\'s one status too, and the button that keeps the focus is described by the row\'s line', async () => {
+    answer = { ...baseAnswer, clubRequests: rows }
+    markAnswers = [{ status: 503, body: { error: 'We couldn\'t do that. Try again later.' } }]
+    await draw('member')
+    const button = within(row(7)).getByRole('button', { name: /^Mark as handled/ })
+    fireEvent.click(button)
+    const question = await screen.findByRole('dialog', { name: MARK_HANDLED_QUESTION })
+    await act(async () => { fireEvent.click(within(question).getByRole('button', { name: 'Mark as handled' })) })
+    const words = 'Nothing changed: We couldn\'t do that. Try again later.'
+    await waitFor(() => expect(within(list()).getByRole('status').textContent).toBe(words))
+    await waitFor(() => expect(document.activeElement).toBe(button))
+    expect(document.getElementById(button.getAttribute('aria-describedby') ?? '')?.textContent).toBe(words)
   })
 })

@@ -28,7 +28,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { AuthContext } from '@/contexts/auth-context'
 import type { AuthContextValue } from '@/contexts/AuthContext'
 import type { RegionClub, RepRequestRow, WorkspaceRegionResponse } from '@domain/contracts'
-import { REP_ROLE_CHANGED, declineQuestion, declinedWords, namedWords } from '@domain/clubs/repRequest'
+import { REP_DECIDE_FOR_KEEPERS, REP_ROLE_CHANGED, adminsDecideRow, adminsDecideWords, declineQuestion, declinedWords, namedWords } from '@domain/clubs/repRequest'
 import base from './fixtures/my-region-base-markup.json'
 import clubBase from './fixtures/my-region-club-base-markup.json'
 
@@ -94,7 +94,7 @@ const fetchMock = vi.fn(async (url: string, _init?: RequestInit) => {
   if (url.startsWith('/api/admin/clubs/c-knights/rep-requests/')) {
     const id = Number(url.split('/').pop())
     const body = JSON.parse(String(_init?.body))
-    const next = decideAnswers.shift() ?? { status: 200, body: { id, status: body.decision === 'approve' ? 'approved' : 'declined' } }
+    const next = decideAnswers.shift() ?? { status: 200, body: { id, status: body.decision === 'approve' ? 'approved' : 'declined', told: true } }
     return new Response(JSON.stringify(next.body), { status: next.status })
   }
   return new Response(JSON.stringify({ error: 'Not found' }), { status: 404 })
@@ -207,11 +207,93 @@ describe('the rows', () => {
 
   it('a refusal that is not "decided already" leaves the row with the server\'s words beside its buttons', async () => {
     answer = { ...baseAnswer, repRequests: rows }
-    decideAnswers = [{ status: 409, body: { error: REP_ROLE_CHANGED } }]
+    decideAnswers = [{ status: 403, body: { error: REP_DECIDE_FOR_KEEPERS } }]
     await drawRegion('lca_admin')
     await act(async () => { fireEvent.click(within(row(11)).getByRole('button', { name: /^Name as rep/ })) })
     await act(async () => { fireEvent.click(within(await screen.findByRole('dialog')).getByRole('button', { name: 'Name as rep' })) })
-    await waitFor(() => expect(within(row(11)).getByText(`Nothing changed: ${REP_ROLE_CHANGED}`)).toBeTruthy())
+    await waitFor(() => expect(within(row(11)).getByText(`Nothing changed: ${REP_DECIDE_FOR_KEEPERS}`)).toBeTruthy())
+  })
+
+  it('a failed press is said in the list\'s one status too, and the button that keeps the focus is described by the row\'s line', async () => {
+    answer = { ...baseAnswer, repRequests: rows }
+    decideAnswers = [{ status: 403, body: { error: REP_DECIDE_FOR_KEEPERS } }]
+    await drawRegion('lca_admin')
+    const decline = within(row(11)).getByRole('button', { name: /^Decline/ })
+    await act(async () => { fireEvent.click(decline) })
+    await act(async () => { fireEvent.click(within(await screen.findByRole('dialog')).getByRole('button', { name: 'Decline' })) })
+    const words = `Nothing changed: ${REP_DECIDE_FOR_KEEPERS}`
+    await waitFor(() => expect(within(list()).getByRole('status').textContent).toBe(words))
+    await waitFor(() => expect(document.activeElement).toBe(decline))
+    const line = document.getElementById(decline.getAttribute('aria-describedby') ?? '')
+    expect(line?.textContent).toBe(words)
+  })
+
+  it('when the email to the member did not go, the status says so for a naming and for a decline, and the decision stands', async () => {
+    answer = { ...baseAnswer, repRequests: rows }
+    decideAnswers = [{ status: 200, body: { id: 11, status: 'approved', told: false } }, { status: 200, body: { id: 12, status: 'declined', told: false } }]
+    await drawRegion('lca_admin')
+    await act(async () => { fireEvent.click(within(row(11)).getByRole('button', { name: /^Name as rep/ })) })
+    await act(async () => { fireEvent.click(within(await screen.findByRole('dialog')).getByRole('button', { name: 'Name as rep' })) })
+    await waitFor(() => expect(within(list()).getByRole('status').textContent).toBe('Player One is now Example Knights Club\'s rep. The email to them did not go, so tell them yourself.'))
+    expect(document.getElementById('rep-request-11')).toBeNull()
+    await act(async () => { fireEvent.click(within(row(12)).getByRole('button', { name: /^Decline/ })) })
+    await act(async () => { fireEvent.click(within(await screen.findByRole('dialog')).getByRole('button', { name: 'Decline' })) })
+    await waitFor(() => expect(within(list()).getByRole('status').textContent).toBe('Player Three\'s request was declined. The email to them did not go, so tell them yourself.'))
+    expect(document.getElementById('rep-request-12')).toBeNull()
+  })
+
+  it('a refusal that says the role changed asks My region to read its answer once, keeps the words in the status, and draws the row afresh', async () => {
+    answer = { ...baseAnswer, repRequests: rows }
+    decideAnswers = [{ status: 409, body: { error: REP_ROLE_CHANGED } }]
+    await drawRegion('member')
+    const reads = () => fetchMock.mock.calls.filter(([url]) => url === '/api/workspace/region').length
+    expect(reads()).toBe(1)
+    // The answer the page reads again: Player One is another club's rep now, so this representative cannot name them.
+    const noName = adminsDecideRow('Player One', 'club_rep', 'Example Rooks Club')
+    answer = { ...baseAnswer, repRequests: [{ ...rows[0], memberRole: 'club_rep', noName }, rows[1]] }
+    await act(async () => { fireEvent.click(within(row(11)).getByRole('button', { name: /^Name as rep/ })) })
+    await act(async () => { fireEvent.click(within(await screen.findByRole('dialog')).getByRole('button', { name: 'Name as rep' })) })
+    await waitFor(() => expect(within(row(11)).getByText(noName)).toBeTruthy())
+    expect(reads()).toBe(2)
+    expect(within(list()).getByRole('status').textContent).toBe(`Nothing changed: ${REP_ROLE_CHANGED}`)
+    expect(within(row(11)).queryByRole('button', { name: /^Name as rep/ })).toBeNull()
+    expect(within(row(11)).queryByText(`Nothing changed: ${REP_ROLE_CHANGED}`)).toBeNull()
+    await waitFor(() => expect(document.activeElement).toBe(document.getElementById('rep-request-11-title')))
+    expect(reads()).toBe(2)
+  })
+
+  it('a refusal that says an LCA admin decides this one asks for the same read, so no button stays that can only be refused', async () => {
+    answer = { ...baseAnswer, repRequests: rows }
+    const refusal = adminsDecideWords('Player One', 'club_rep', 'Example Rooks Club')
+    decideAnswers = [{ status: 409, body: { error: refusal } }]
+    await drawRegion('member')
+    const reads = () => fetchMock.mock.calls.filter(([url]) => url === '/api/workspace/region').length
+    expect(reads()).toBe(1)
+    const noName = adminsDecideRow('Player One', 'club_rep', 'Example Rooks Club')
+    answer = { ...baseAnswer, repRequests: [{ ...rows[0], memberRole: 'club_rep', noName }, rows[1]] }
+    await act(async () => { fireEvent.click(within(row(11)).getByRole('button', { name: /^Name as rep/ })) })
+    await act(async () => { fireEvent.click(within(await screen.findByRole('dialog')).getByRole('button', { name: 'Name as rep' })) })
+    await waitFor(() => expect(within(row(11)).getByText(noName)).toBeTruthy())
+    expect(reads()).toBe(2)
+    expect(within(list()).getByRole('status').textContent).toBe(`Nothing changed: ${refusal}`)
+    expect(within(row(11)).queryByRole('button', { name: /^Name as rep/ })).toBeNull()
+  })
+
+  it('on a club in My region the same refusal reads the club again, once', async () => {
+    club = { ...clubAnswer, repRequests: [rows[0]] }
+    decideAnswers = [{ status: 409, body: { error: REP_ROLE_CHANGED } }]
+    await drawClub('member')
+    const reads = () => fetchMock.mock.calls.filter(([url]) => url === '/api/admin/clubs/c-knights').length
+    const before = reads()
+    const noName = adminsDecideRow('Player One', 'club_rep', 'Example Rooks Club')
+    // The fresh answer names the club otherwise: only its rep requests are taken, so the page keeps its own club.
+    club = { ...clubAnswer, club: { ...clubAnswer.club, name: 'Example Knights Club, renamed' }, repRequests: [{ ...rows[0], memberRole: 'club_rep', noName }] }
+    await act(async () => { fireEvent.click(within(row(11)).getByRole('button', { name: /^Name as rep/ })) })
+    await act(async () => { fireEvent.click(within(await screen.findByRole('dialog')).getByRole('button', { name: 'Name as rep' })) })
+    await waitFor(() => expect(within(row(11)).getByText(noName)).toBeTruthy())
+    expect(reads()).toBe(before + 1)
+    expect(within(list()).getByRole('status').textContent).toBe(`Nothing changed: ${REP_ROLE_CHANGED}`)
+    expect(screen.getByRole('heading', { level: 1, name: 'Example Knights Club' })).toBeTruthy()
   })
 
   it('a club in My region draws that club\'s requests under their own heading, and the row leaves once decided', async () => {

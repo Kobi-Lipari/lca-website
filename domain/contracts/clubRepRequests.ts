@@ -63,10 +63,11 @@ export const repDecisionRequestSchema = z.object({
   role: z.string().max(40).optional(),
 })
 
-/** The answer once the request is decided. */
+/** The answer once the request is decided, with whether the email to the member went (told). */
 export const repDecisionResponseSchema = z.strictObject({
   id: z.number().int().positive(),
   status: z.enum(['approved', 'declined']),
+  told: z.boolean(),
 })
 
 export type RepRequest = z.infer<typeof repRequestSchema>

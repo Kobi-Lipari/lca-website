@@ -41,7 +41,9 @@
 // short sentence. The member may ask again afterwards.
 //
 // Neither email names who decided, a region or a seat. An email that did not
-// go leaves one line of fixed words.
+// go leaves one line of fixed words, and the decision stands; each answers
+// whether its email went (told), so the person who decided is told when it
+// did not and can tell the member themselves.
 import type { Env, MemberRow } from '../../types'
 import { recordAdminAction } from '../admin/audit'
 import { getMemberById } from '../admin/members'
@@ -59,19 +61,27 @@ export interface DecisionClub {
   name: string
 }
 
-/** Emails the member, logging fixed words alone when it does not go. */
-async function tell(env: Env, member: MemberRow, mail: { subject: string; html: string; text?: string }): Promise<void> {
+/** What a decision that changed something answers: whether the email to the member went. */
+export interface Decided {
+  told: boolean
+}
+
+/** Emails the member and answers whether it went, logging fixed words alone when it does not. */
+async function tell(env: Env, member: MemberRow, mail: { subject: string; html: string; text?: string }): Promise<boolean> {
   try {
     // The reply-to is left to sendEmail, LCA's own.
     await sendEmail(env, { ...mail, to: member.email })
+    return true
   } catch {
     console.warn(REP_DECISION_NOT_SENT_LOG)
+    return false
   }
 }
 
 /**
- * Names the member the club's rep, as above. Answers false when the batch changed nothing: the request was decided
- * meanwhile, or the member's role is no longer `roleBefore`. Nothing after the batch runs then.
+ * Names the member the club's rep, as above, and answers whether the member's email went. Answers false when the batch
+ * changed nothing: the request was decided meanwhile, or the member's role is no longer `roleBefore`. Nothing after the
+ * batch runs then.
  */
 export async function nameRep(
   env: Env,
@@ -80,7 +90,7 @@ export async function nameRep(
   requestId: number,
   club: DecisionClub,
   member: MemberRow,
-): Promise<boolean> {
+): Promise<Decided | false> {
   const db = env.DB
   const roleBefore = member.role
   const [changedMember, changedRequest] = await db.batch([
@@ -107,11 +117,11 @@ export async function nameRep(
     targetLabel: `${member.full_name} <${member.email}>`,
     detail: { requestId, clubId: club.id, from: roleBefore, to: 'club_rep', clubFrom: member.club_id ?? null },
   })
-  await tell(env, member, repNamedEmail({ siteUrl: resolveSiteUrl(env, request), clubName: club.name }))
-  return true
+  const told = await tell(env, member, repNamedEmail({ siteUrl: resolveSiteUrl(env, request), clubName: club.name }))
+  return { told }
 }
 
-/** Declines the request, as above. Answers false when it was decided meanwhile, with nothing changed. */
+/** Declines the request, as above, and answers whether the member's email went. Answers false when it was decided meanwhile, with nothing changed. */
 export async function declineRep(
   env: Env,
   request: Request,
@@ -119,7 +129,7 @@ export async function declineRep(
   requestId: number,
   club: DecisionClub,
   member: MemberRow,
-): Promise<boolean> {
+): Promise<Decided | false> {
   const db = env.DB
   const claimed = await db.prepare(
     `UPDATE club_rep_requests SET status = 'declined', decided_by = ?, decided_at = datetime('now')
@@ -135,6 +145,6 @@ export async function declineRep(
     targetLabel: club.name,
     detail: { requestId, clubId: club.id },
   })
-  await tell(env, member, repDeclinedEmail({ siteUrl: resolveSiteUrl(env, request), clubName: club.name }))
-  return true
+  const told = await tell(env, member, repDeclinedEmail({ siteUrl: resolveSiteUrl(env, request), clubName: club.name }))
+  return { told }
 }

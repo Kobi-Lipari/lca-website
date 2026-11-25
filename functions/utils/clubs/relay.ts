@@ -7,11 +7,23 @@
 //      the visitor's address as the reply-to, so the club answers directly;
 //   2. else each representative whose seat covers the club's region;
 //   3. else, while that seat is open, each LCA admin.
-// When no copy at one keeper's address goes (the mail gate refuses a dead
-// address, or the service does not take it), the relay goes on to the next
-// keeper in the same order, and the copy then says the club's email could
-// not be reached. Only when no keeper's address takes the message is the
-// visitor told it could not be sent.
+// What came of each copy is read from the seam's own answer, sendEmailOutcome
+// in functions/utils/email.ts (classify in functions/utils/mail/outcome.ts):
+//   - 'sent': that address took it;
+//   - 'never': that address was refused (the mail gate's refusal of a dead
+//     address, or a refusal of this message), so the relay goes on to the
+//     next keeper in the same order, and the copy then says the club's email
+//     could not be reached;
+//   - 'later': the service did not take it for now (busy, unavailable, or a
+//     fault of its own), which says nothing of the address, so the relay
+//     stops there: no further keeper is written to and the visitor is told
+//     the message was not sent.
+// Which failures give which answer is the seam's rule, not this file's: with
+// the engine's rules on (MAIL_LISTS_ON) a 500, a 502, a 504 and a request with
+// no answer read 'never', since the service may have taken the message, so
+// for those the relay goes on as before; with the rules off they read
+// 'later'. Only when no keeper's address takes the message is the visitor
+// told it could not be sent.
 //
 // The visitor's address is the reply-to on the club's own copy alone, and
 // stands in that copy's body. A representative's or an admin's copy carries
@@ -26,14 +38,17 @@
 //
 // Nothing is written: the message, the visitor's name and the visitor's
 // address are held only while the copies are sent. A copy that did not go is
-// logged in fixed words alone, never in the words its failure carries, since
-// a mail service's own words for a refusal may name the address it refused;
-// so no log line of this file carries what was typed or any keeper's address.
+// logged by this file in fixed words alone, and by the seam in its own line,
+// which may carry the service's words. The copies go only to a club's or a
+// keeper's address, never to the visitor's own, and this file's line carries
+// neither what was typed nor an address. The club's own copy has the
+// visitor's address as its reply-to, so a service's refusal that quoted the
+// fields it was sent could carry that address into the seam's line.
 //
 // The page's answer reads relayKind alone: which of the three the message
 // goes to, by the same reads, never a name, an address, a count or whether
 // an address works.
-import { sendEmail, type EmailEnv } from '../email'
+import { sendEmailOutcome, type EmailEnv } from '../email'
 import { resolveSiteUrl } from '../site'
 import { replyLink } from './reply'
 import {
@@ -71,6 +86,9 @@ export async function relayKind(db: D1Database, clubId: string): Promise<Contact
 /** What came of a message: some keeper's address took it, or none did. */
 export type RelayOutcome = 'sent' | 'not_sent'
 
+/** What came of one copy, by the seam's own answer. */
+type CopyOutcome = 'sent' | 'never' | 'later'
+
 type RelayEnv = EmailEnv & { DB: D1Database; SITE_URL?: string; SIGNING_SECRET?: string; SIGNING_SECRET_PREVIOUS?: string }
 
 /** The club a message is for, as the endpoint found it. */
@@ -95,36 +113,43 @@ export async function relayMessage(env: RelayEnv, request: Request, club: RelayC
   let link: Promise<string | null> | null = null
   const linkFor = () => (link ??= replyLink(env, siteUrl, visitor, club.id))
 
-  const sendTo = async (address: string, kind: RelayCopyKind, reason: RelayReason): Promise<boolean> => {
+  /** One copy: what came of it, or 'never' for an address tried already, which is passed over as a refused one is. */
+  const sendTo = async (address: string, kind: RelayCopyKind, reason: RelayReason): Promise<CopyOutcome> => {
     const key = address.trim().toLowerCase()
-    if (tried.has(key)) return false
+    if (tried.has(key)) return 'never'
     tried.add(key)
     if (sends++ > 0) await new Promise((resolve) => setTimeout(resolve, SEND_INTERVAL_MS))
     const replyUrl = kind === 'club' ? null : await linkFor()
     const copy = relayCopyEmail({ siteUrl, clubName: club.name, region: club.region, kind, reason, visitor, replyUrl })
-    try {
-      await sendEmail(env, { ...copy, to: address, ...(kind === 'club' ? { replyTo: visitor.email.trim() } : {}) })
-      return true
-    } catch {
-      // The failure's own words are not logged: a service's refusal may name the address it refused.
-      console.warn(COPY_NOT_SENT_LOG)
-      return false
-    }
+    const outcome = await sendEmailOutcome(env, { ...copy, to: address, ...(kind === 'club' ? { replyTo: visitor.email.trim() } : {}) })
+    // This file's own line is fixed words; the seam has logged its own.
+    if (outcome !== 'sent') console.warn(COPY_NOT_SENT_LOG)
+    return outcome
   }
 
-  const sendToEach = async (people: Keeper[], kind: RelayCopyKind, reason: RelayReason): Promise<boolean> => {
+  /** A copy to each person of one tier: 'sent' when any took it, 'later' when the service stopped the walk first. */
+  const sendToEach = async (people: Keeper[], kind: RelayCopyKind, reason: RelayReason): Promise<CopyOutcome> => {
     let any = false
-    for (const person of people) if (await sendTo(person.email, kind, reason)) any = true
-    return any
+    for (const person of people) {
+      const outcome = await sendTo(person.email, kind, reason)
+      if (outcome === 'sent') any = true
+      else if (outcome === 'later') return any ? 'sent' : 'later'
+    }
+    return any ? 'sent' : 'never'
   }
 
   const own = await clubAddressOf(env.DB, club.id)
-  if (own && await sendTo(own, 'club', 'no_address')) return 'sent'
+  if (own) {
+    const outcome = await sendTo(own, 'club', 'no_address')
+    if (outcome === 'sent') return 'sent'
+    if (outcome === 'later') return 'not_sent'
+  }
   const reason: RelayReason = own ? 'unreachable' : 'no_address'
 
   const representatives = await regionRepresentativesOf(env.DB, club.id)
-  if (await sendToEach(representatives, 'region', reason)) return 'sent'
+  const region = await sendToEach(representatives, 'region', reason)
+  if (region === 'sent') return 'sent'
+  if (region === 'later') return 'not_sent'
 
-  if (await sendToEach(await lcaAdmins(env.DB), 'lca', reason)) return 'sent'
-  return 'not_sent'
+  return (await sendToEach(await lcaAdmins(env.DB), 'lca', reason)) === 'sent' ? 'sent' : 'not_sent'
 }

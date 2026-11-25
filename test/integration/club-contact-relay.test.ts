@@ -301,6 +301,57 @@ describe('where a message goes', () => {
     expect(await expectContract(none, errorBodySchema)).toEqual({ error: CONTACT_NOT_SENT })
     expect(emailOutbox).toEqual([])
   }, SLOW)
+
+  it('a 429, a fault of the service or no answer at the club\'s address is no verdict on it: the visitor is told it was not sent, no further keeper is written to, and nothing goes twice (F3)', async () => {
+    flags.pagesOn = true
+    const busyWays = [
+      ['a 429', () => { emailBehavior.succeed = false; emailBehavior.status = 429 }],
+      ['a fault of the service', () => { emailBehavior.succeed = false; emailBehavior.status = 500 }],
+      ['no answer', () => { emailBehavior.loseAnswer = 1 }],
+    ] as const
+    for (const [way, busy] of busyWays) {
+      emailOutbox.length = 0
+      emailBehavior.succeed = true
+      emailBehavior.status = 500
+      emailBehavior.failFor = null
+      emailBehavior.loseAnswer = null
+      const club = await makeClub({ reps: 1 })
+      await onlyAdmin()
+      busy()
+      if (!emailBehavior.succeed) emailBehavior.failFor = [club.email!]
+      const result = await send(club.slug, visitorWords())
+      expect(result.status, way).toBe(503)
+      expect(await expectContract(result, errorBodySchema), way).toEqual({ error: CONTACT_NOT_SENT })
+      // With no answer the service may have it: the club's own copy alone, once; refused for now, no copy at all.
+      expect(emailOutbox.map((e) => e.to), way).toEqual(emailBehavior.succeed ? [club.email] : [])
+    }
+  }, SLOW)
+
+  it('a 429 at the region\'s representative, after the club\'s address was refused, stops there too: no admin is written to', async () => {
+    flags.pagesOn = true
+    const club = await makeClub({ reps: 1 })
+    const admin = await onlyAdmin()
+    emailBehavior.succeed = false
+    emailBehavior.status = 422
+    emailBehavior.failFor = [club.email!]
+    // The representative's address answers 429; the club's own keeps its 422.
+    const harnessFetch = globalThis.fetch
+    globalThis.fetch = (async (input: RequestInfo | URL, init?: RequestInit) => {
+      const url = new URL(typeof input === 'string' ? input : input instanceof URL ? input.href : input.url)
+      if (url.hostname === 'api.resend.com' && typeof init?.body === 'string' && init.body.includes(club.reps[0].email)) {
+        return new Response(JSON.stringify({ message: 'example: too many requests' }), { status: 429 })
+      }
+      return harnessFetch(input, init)
+    }) as typeof fetch
+    try {
+      const result = await send(club.slug, visitorWords())
+      expect(result.status).toBe(503)
+    } finally {
+      globalThis.fetch = harnessFetch
+    }
+    expect(emailOutbox.filter((e) => e.to === admin.email)).toHaveLength(0)
+    expect(emailOutbox).toEqual([])
+  }, SLOW)
 })
 
 describe('before any script', () => {

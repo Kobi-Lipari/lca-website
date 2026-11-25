@@ -107,7 +107,7 @@ export const REP_DECIDE_CLOSED = 'Rep requests cannot be decided yet.'
 /** The 403 for anyone who is neither an LCA admin nor the holder of the club's regional seat. */
 export const REP_DECIDE_FOR_KEEPERS = 'Rep requests are decided by the representative of the club\'s region and the LCA admins.'
 /** The 403 for a keeper's own request. */
-export const REP_DECIDE_OWN = 'This is your own request. Another keeper or an LCA admin decides it.'
+export const REP_DECIDE_OWN = 'This is your own request. Another representative of the region or an LCA admin decides it.'
 /** The 404 for an id that names no request of this club. */
 export const REP_DECIDE_NOT_THIS_CLUBS = 'This is not one of this club\'s rep requests.'
 /** The 409 for a request decided already. */
@@ -153,9 +153,15 @@ export function adminsDecideRow(name: string, role: string, otherClub: string | 
   return `An LCA admin decides this one: ${holds(name, role, otherClub)} now, and a member holds one role.`
 }
 
-/** The question Name as rep asks first: what the member will be able to do. */
+/**
+ * What a club's rep may do besides the club's own page: the member directory, which main already opens to the role
+ * (functions/utils/auth.ts DIRECTORY_ROLES), so the question says it before anyone is named.
+ */
+export const REP_DIRECTORY_WORDS = 'They will also be able to look up members in the member directory: names, email addresses and US Chess IDs.'
+
+/** The question Name as rep asks first: what the member will be able to do, the member directory among it. */
 export function nameQuestion(name: string, clubName: string): string {
-  return `${name} will be able to edit ${clubName}'s page, create its events and set their fees.`
+  return `${name} will be able to edit ${clubName}'s page, create its events and set their fees. ${REP_DIRECTORY_WORDS}`
 }
 
 /** For an LCA admin naming a member who holds another role: what naming replaces. */
@@ -177,12 +183,19 @@ export function declineQuestion(name: string): string {
   return `Decline ${name}'s request? They are told by email.`
 }
 
-/** What the rows' status says once a request is decided. */
-export function namedWords(name: string, clubName: string): string {
-  return `${name} is now ${clubName}'s rep. They are told by email.`
+/**
+ * What the rows' status says once a request is decided. told is whether the email to the member went: when it did
+ * not, the decision stands all the same and the words ask the person who decided to tell them.
+ */
+export function namedWords(name: string, clubName: string, told = true): string {
+  return told
+    ? `${name} is now ${clubName}'s rep. They are told by email.`
+    : `${name} is now ${clubName}'s rep. The email to them did not go, so tell them yourself.`
 }
-export function declinedWords(name: string): string {
-  return `${name}'s request was declined. They are told by email.`
+export function declinedWords(name: string, told = true): string {
+  return told
+    ? `${name}'s request was declined. They are told by email.`
+    : `${name}'s request was declined. The email to them did not go, so tell them yourself.`
 }
 
 /** A row's heading: "Rep request · {Club} · {name} · {connection} · {weekday, date}". */

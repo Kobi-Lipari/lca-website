@@ -269,3 +269,32 @@ describe('what is refused, in words', () => {
     expect(box(LABELS.email).getAttribute('spellcheck')).toBe('false')
   })
 })
+
+describe('the spam check failed, and a send on its way (WS09 checkpoint X\'s review)', () => {
+  it('after the spam check has failed, a press of Send to LCA says to press Try again, never to wait', async () => {
+    window.turnstile = { render: vi.fn((_container: HTMLElement, options: Options & { 'error-callback': () => void }) => { options['error-callback'](); return 'widget-failed' }), remove: vi.fn() }
+    await draw()
+    await fill()
+    await screen.findByRole('button', { name: 'Try again' })
+    await act(async () => { fireEvent.click(send()) })
+    expect(fetchMock).not.toHaveBeenCalled()
+    expect(screen.getByText('The spam check didn\'t load, so this can\'t be sent yet. Press Try again.')).toBeTruthy()
+    expect(screen.queryByText('Wait for the spam check to finish, then send.')).toBeNull()
+  })
+
+  it('a press of the two-way switch while a send is on its way does nothing, says so, and the sent sentence is the sent side\'s', async () => {
+    let release: (r: Response) => void = () => {}
+    next = () => new Promise<Response>((resolve) => { release = resolve })
+    await draw()
+    await fill()
+    await act(async () => { fireEvent.click(send()) })
+    expect(screen.getByRole('group', { name: 'I\'d like to' }).getAttribute('aria-disabled')).toBe('true')
+    await act(async () => { fireEvent.click(chip('Start a club')) })
+    expect(chip('Suggest a club').getAttribute('aria-pressed')).toBe('true')
+    await act(async () => { release(Response.json({ sent: true })) })
+    // The sent sentence is Suggest a club's, the side that was sent; had the press moved the switch it would be gone.
+    expect(await screen.findByText(CLUB_REQUEST_SENT.new_club)).toBeTruthy()
+    expect(fetchMock).toHaveBeenCalledTimes(1)
+    expect((JSON.parse(String(fetchMock.mock.calls[0][1]?.body)) as { kind: string }).kind).toBe('new_club')
+  })
+})

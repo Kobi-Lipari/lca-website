@@ -18,7 +18,9 @@
 // - every email read for the plain-language rules, and for what it holds when
 //   a keeper's address is not taken.
 // Each case sets CLUB_PAGES_ON and CLUB_KEEPERS_ON itself through a getter on
-// a mock of their module; no case reads a shipped value of any switch. Every
+// a mock of their module, and MAIL_LISTS_ON and MAIL_SENDER through getters
+// on a mock of the mail switches, as the sibling files do; no case reads a
+// shipped value of any switch. Every
 // club, person and address is made up; ZIP codes and town names are
 // Louisiana's own, the data under test.
 import { env } from 'cloudflare:test'
@@ -42,7 +44,7 @@ import { emailBehavior, emailOutbox, invoke, resetHarness } from './harness'
 /** US Chess's old initials, built in two parts so this file does not spell them. */
 const OLD_NAME = new RegExp(`\\b${'US' + 'CF'}\\b`)
 
-const flags = vi.hoisted(() => ({ pagesOn: false, keepersOn: false }))
+const flags = vi.hoisted(() => ({ pagesOn: false, keepersOn: false, listsOn: false, sender: 'resend' as 'resend' | 'ses' }))
 vi.mock('../../functions/utils/clubs/pages', async (importOriginal) => {
   const real = await importOriginal<typeof import('../../functions/utils/clubs/pages')>()
   return {
@@ -52,6 +54,18 @@ vi.mock('../../functions/utils/clubs/pages', async (importOriginal) => {
     },
     get CLUB_KEEPERS_ON() {
       return flags.keepersOn
+    },
+  }
+})
+vi.mock('../../functions/utils/mail/switches', async (importOriginal) => {
+  const real = await importOriginal<typeof import('../../functions/utils/mail/switches')>()
+  return {
+    ...real,
+    get MAIL_LISTS_ON() {
+      return flags.listsOn
+    },
+    get MAIL_SENDER() {
+      return flags.sender
     },
   }
 })
@@ -73,6 +87,8 @@ beforeEach(async () => {
   resetHarness()
   flags.pagesOn = false
   flags.keepersOn = false
+  flags.listsOn = false
+  flags.sender = 'resend'
   const middle = new Date()
   middle.setUTCMinutes(30, 0, 0)
   vi.useFakeTimers({ toFake: ['Date'] })
@@ -574,7 +590,9 @@ describe('what the emails hold', () => {
     flags.pagesOn = true
     const admin = await onlyAdmin()
     const holder = await rep(BATON_ROUGE)
+    // The representative's address is refused (a 422), a verdict on the address, so the row falls to the admins.
     emailBehavior.succeed = false
+    emailBehavior.status = 422
     emailBehavior.failFor = [holder.email]
     const body = request({ kind: 'start_club', place: 'Baton Rouge' })
     const logs = await logsOf(async () => {

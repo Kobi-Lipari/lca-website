@@ -19,8 +19,10 @@
 // the button; a second press while sending does nothing. Once sent the form
 // gives way to one sentence with the focus on it, naming no person, region
 // or seat. While the sheet is open the focus stays inside it; Escape and
-// Close shut it, and the page puts the focus back on the invitation. Nothing
-// typed is kept in the browser's storage.
+// Close shut it, and the page puts the focus back on the invitation; while a
+// send is on its way Close, Escape and a press outside do nothing, so the
+// person always reads how it ended. Nothing typed is kept in the browser's
+// storage.
 import { useEffect, useRef, useState, type FormEvent } from 'react'
 import { Link } from 'react-router-dom'
 
@@ -127,7 +129,8 @@ export function RepRequestSheet({ open, onClose, clubName, address }: {
   const describedBy = (part: 'connection' | 'note') => (errors[part] ? `${uid}-${part}-error` : undefined)
 
   return (
-    <Dialog open={open} onOpenChange={(next) => { if (!next) onClose() }}>
+    // While a send is on its way, Close, Escape and a press outside do nothing, so the person reads how it ended.
+    <Dialog open={open} onOpenChange={(next) => { if (!next && !sending) onClose() }}>
       <DialogContent
         hideClose
         aria-describedby={undefined}
@@ -137,7 +140,7 @@ export function RepRequestSheet({ open, onClose, clubName, address }: {
       >
         <div className="relative flex items-start justify-between gap-3 border-b border-hairline px-4 pt-4 pb-3 sm:px-6">
           <DialogTitle className="min-w-0 break-words text-xl leading-snug font-bold text-ink">{repRequestTitle(clubName)}</DialogTitle>
-          <DialogClose className={cn(CONTROL, '-mr-2 shrink-0 border border-field bg-surface px-3 text-ink hover:bg-surface-2')}>
+          <DialogClose aria-disabled={sending || undefined} className={cn(CONTROL, '-mr-2 shrink-0 border border-field bg-surface px-3 text-ink hover:bg-surface-2')}>
             Close
           </DialogClose>
         </div>

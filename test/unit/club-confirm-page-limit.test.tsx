@@ -16,8 +16,8 @@ vi.setConfig({ testTimeout: 15000 })
 const TOKEN = 'v1.s.example-made-up-payload.example-made-up-mac'
 const LINK = `/api/clubs/confirm/${TOKEN}`
 const CLUB = { name: 'Example Chess Club', city: 'Example City', statement: null }
-/** The server's words for the limit, as functions/utils/rateLimit.ts writes them. */
-const TOO_MANY = 'Too many messages from here. Try again in an hour.'
+/** The server's words for the limit, as functions/api/clubs/confirm/[token].ts writes them for a link opened too often. */
+const TOO_MANY = 'This link has been opened too many times this hour. Try again in an hour.'
 
 const json = (body: unknown, status = 200) => new Response(JSON.stringify(body), { status })
 let answers: Record<string, () => Response> = {}

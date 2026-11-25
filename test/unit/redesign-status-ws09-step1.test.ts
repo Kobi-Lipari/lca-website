@@ -236,7 +236,8 @@ describe('REDESIGN_STATUS.md, WS09 step 1: the step block', () => {
     const headings = sectionLines.filter((l) => l.startsWith('### '))
     const FIXED = [MAP, STEP, ...LISTS]
     for (const fixed of FIXED) expect(headings.filter((h) => h === fixed), fixed).toHaveLength(1)
-    for (const h of headings.filter((l) => !FIXED.includes(l))) expect(/^### (?:WS09 step (?:[1-9]|[1-3]\d): \S|Checkpoint [S-Z]: WS09 |WS09 checkpoint T: \S|WS09 checkpoint U: \S|WS09 checkpoint V: \S|WS09 checkpoint S, after K's second answer: \S|WS09 checkpoint W: \S|WS09 aside: \S|WS09 switch-on: \S|WS09 checkpoint S, after K's answers: \S)/.test(h), h).toBe(true)
+    // Checkpoint X's review adds the heading form `WS09 checkpoint X: `, as checkpoint W's did before it.
+    for (const h of headings.filter((l) => !FIXED.includes(l))) expect(/^### (?:WS09 step (?:[1-9]|[1-3]\d): \S|Checkpoint [S-Z]: WS09 |WS09 checkpoint T: \S|WS09 checkpoint U: \S|WS09 checkpoint V: \S|WS09 checkpoint S, after K's second answer: \S|WS09 checkpoint W: \S|WS09 checkpoint X: \S|WS09 aside: \S|WS09 switch-on: \S|WS09 checkpoint S, after K's answers: \S)/.test(h), h).toBe(true)
   })
 
   it('has every part, in order', () => {

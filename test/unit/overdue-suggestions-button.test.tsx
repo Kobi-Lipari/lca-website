@@ -97,7 +97,7 @@ describe('the button', () => {
     answers[ASK] = [() => json({ due: 2, passedOn: 0, sent: 0, notSent: 0, notReached: 0 })]
     fireEvent.click(at)
     const dialog = await screen.findByRole('dialog')
-    expect(within(dialog).getByRole('heading').textContent).toBe('2 suggestions have waited 14 days or more with no answer. Send them on to the LCA admins and the regions\' representatives?')
+    expect(within(dialog).getByRole('heading').textContent).toBe('2 suggestions have waited 14 days or more with no answer. Send them on now?')
     expect(asked.filter((a) => a.call.startsWith('POST'))).toEqual([{ call: 'POST /api/admin/clubs/monthly-check', body: '{"action":"run_report_clock","send":false}' }])
     // Cancel leaves everything as it was and puts the focus back on the button.
     fireEvent.click(within(dialog).getByRole('button', { name: 'Cancel' }))
@@ -113,13 +113,19 @@ describe('the button', () => {
     answers['GET /api/workspace/region'] = [() => json(answerOf([card('c-knights', 'Example Knights Club', [suggestionOf(4, { ageDays: 15, passedOnAt: '2026-11-23 18:00:00' })])]))]
     fireEvent.click(button()!)
     const dialog = await screen.findByRole('dialog')
-    expect(within(dialog).getByRole('heading').textContent).toBe('1 suggestion has waited 14 days or more with no answer. Send it on to the LCA admins and the region\'s representatives?')
+    expect(within(dialog).getByRole('heading').textContent).toBe('1 suggestion has waited 14 days or more with no answer. Send it on now?')
     await act(async () => { fireEvent.click(within(dialog).getByRole('button', { name: 'Send on' })) })
     await waitFor(() => expect(within(todo()).getByText('1 suggestion passed on: 3 emails sent, 0 not sent.')).toBeTruthy())
     const status = within(todo()).getByText('1 suggestion passed on: 3 emails sent, 0 not sent.')
     expect(status.getAttribute('role')).toBe('status')
     await waitFor(() => expect(document.activeElement).toBe(button()))
     await waitFor(() => expect(within(todo()).getByText('Passed to the LCA admins on Mon, Nov 23, 2026')).toBeTruthy())
+  })
+
+  it('asks by the count alone, in both forms, naming no one it goes to', () => {
+    expect(overdueQuestion(1)).toBe('1 suggestion has waited 14 days or more with no answer. Send it on now?')
+    expect(overdueQuestion(3)).toBe('3 suggestions have waited 14 days or more with no answer. Send them on now?')
+    for (const n of [1, 2, 9]) expect(overdueQuestion(n)).not.toMatch(/admins|representative/)
   })
 
   it('is not drawn for an admin when no row has waited 14 days, nor for a passed-on row, nor ever for a region\'s representative', async () => {
@@ -145,7 +151,7 @@ describe('the button', () => {
 
 describe('the words', () => {
   it('count in words and say what waits for another press', () => {
-    expect(overdueQuestion(3)).toBe('3 suggestions have waited 14 days or more with no answer. Send them on to the LCA admins and the regions\' representatives?')
+    expect(overdueQuestion(3)).toBe('3 suggestions have waited 14 days or more with no answer. Send them on now?')
     expect(overdueSentWords({ due: 3, passedOn: 2, sent: 7, notSent: 1, notReached: 1 })).toBe('2 suggestions passed on: 7 emails sent, 1 not sent. 1 more suggestion waits: press again to send it on.')
     expect(overdueSentWords({ due: 1, passedOn: 0, sent: 0, notSent: 2, notReached: 0 })).toBe('None could be passed on: 0 emails sent, 2 not sent. It is still waiting, so you can try again later.')
     expect(overdueSentWords({ due: 0, passedOn: 0, sent: 0, notSent: 0, notReached: 0 })).toBe('No suggestion is waiting to be sent on now.')

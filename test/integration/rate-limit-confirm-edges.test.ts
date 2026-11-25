@@ -15,7 +15,7 @@
 import { env } from 'cloudflare:test'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import {
-  LINK_CALLS_AN_HOUR, LINK_EXPIRED, LINK_FORGED, onRequestGet as linkGet, onRequestPost as linkPost,
+  LINK_CALLS_AN_HOUR, LINK_EXPIRED, LINK_FORGED, LINK_TOO_OFTEN, onRequestGet as linkGet, onRequestPost as linkPost,
 } from '../../functions/api/clubs/confirm/[token]'
 import { CONFIRM_PURPOSE, LINK_TTL_SECONDS } from '../../functions/utils/clubs/monthlyCheck'
 import { ADDRESS_HEADER, TOO_MANY } from '../../functions/utils/rateLimit'
@@ -97,7 +97,7 @@ describe('calls made together at the confirm endpoint', () => {
     expect(statuses.filter((s) => s === 200)).toHaveLength(LINK_CALLS_AN_HOUR)
     expect(statuses.filter((s) => s === 429)).toHaveLength(10)
     expect(statuses.filter((s) => s !== 200 && s !== 429)).toEqual([])
-    for (const r of results.filter((x) => x.status === 429)) expect(await r.json()).toEqual({ error: TOO_MANY })
+    for (const r of results.filter((x) => x.status === 429)) expect(await r.json()).toEqual({ error: LINK_TOO_OFTEN })
   })
 
   it('GET and POST made together share the one thirty', async () => {
@@ -149,7 +149,7 @@ describe('a call at the limit', () => {
       const counting = countingDb()
       const refused = await call(handler, token, address, {}, counting.db)
       expect(refused.status).toBe(429)
-      expect(await refused.json()).toEqual({ error: TOO_MANY })
+      expect(await refused.json()).toEqual({ error: LINK_TOO_OFTEN })
       // Only the limiter's own batch ran: no club, no member, no seat was read, and no still-accurate mark was written.
       expect(counting.ran.filter((r) => /\bclubs\b|\bmembers\b|board_/.test(r.sql))).toEqual([])
     }
@@ -164,8 +164,22 @@ describe('a call at the limit', () => {
     const refused = await call(linkPost, token, address)
     expect(refused.status).toBe(429)
     const text = await refused.response.clone().text()
-    expect(JSON.parse(text)).toEqual({ error: TOO_MANY })
+    expect(JSON.parse(text)).toEqual({ error: LINK_TOO_OFTEN })
     for (const piece of ['Example Chess Club', 'Example City', 'Player One', 'example.org', address]) expect(text).not.toContain(piece)
+  })
+
+  it('the 429 is in the link\'s own words, never the limiter\'s: nothing in it speaks of messages', async () => {
+    const { token } = await linked()
+    const address = place()
+    for (let i = 0; i < LINK_CALLS_AN_HOUR; i++) await call(linkGet, token, address)
+    for (const handler of [linkGet, linkPost]) {
+      const refused = await call(handler, token, address)
+      expect(refused.status).toBe(429)
+      const text = await refused.response.clone().text()
+      expect(JSON.parse(text)).toEqual({ error: 'This link has been opened too many times this hour. Try again in an hour.' })
+      expect(text).not.toMatch(/messages/i)
+      expect(text).not.toContain(TOO_MANY)
+    }
   })
 
   it('a place served again when the hour is over, with its thirty to spend afresh', async () => {

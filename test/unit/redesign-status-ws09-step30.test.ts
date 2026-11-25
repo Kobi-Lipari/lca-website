@@ -95,6 +95,15 @@ const NEW_FILES = [
   ROWS, 'src/areas/clubs/clubRequestRows.ts', 'scripts/data/build-la-places.ts',
 ]
 /** Each new test with the count of cases its run gives; the three with tables of cases are counted by their rows. */
+/**
+ * The cases WS09 checkpoint X's review added to this block's test files, each held to a fix of that review; the
+ * block keeps the count each file had at this step.
+ */
+const X_REVIEW_ADDED: Record<string, number> = {
+  'test/integration/club-suggest-club.test.ts': 1,
+  'test/unit/club-request-rows.test.tsx': 1,
+  'test/unit/suggest-club-form-edges.test.tsx': 2,
+}
 const NEW_TESTS: Record<string, number> = {
   'test/integration/club-suggest-club.test.ts': 24,
   'test/integration/club-suggest-club-edges.test.ts': 31,
@@ -223,7 +232,7 @@ describe('REDESIGN_STATUS.md, the thirtieth step of WS09: the block', () => {
     for (const file of [...NEW_FILES, ...Object.keys(NEW_TESTS), FIXTURE]) expect(existsSync(join(ROOT, file)), file).toBe(true)
     for (const [file, count] of Object.entries(NEW_TESTS)) {
       expect(writtenCount(files, file), file).toBe(count)
-      expect(casesIn(file), file).toBe(count)
+      expect(casesIn(file), file).toBe(count + (X_REVIEW_ADDED[file] ?? 0))
     }
     expect(writtenCount(files, SELF)).toBe((read(SELF).match(/^\s*it\(/gm) ?? []).length)
     const grown = bullet(files, '  - Grown with no change:')
@@ -301,7 +310,8 @@ describe('REDESIGN_STATUS.md, the thirtieth step of WS09: the parts against the 
     const code = codeOf(PUBLIC)
     expect(code).toContain('key: CLUB_REQUEST_ADMINS_KEY })).ok')
     expect(code.indexOf('const adminsMayBeWritten')).toBeLessThan(code.indexOf('saveClubRequest(env'))
-    expect(codeOf(SAVE)).toContain('if (key === own) return true')
+    // WS09 checkpoint X's review reads each send's answer (F3): the person's own address still counts as reached.
+    expect(codeOf(SAVE)).toContain('if (key === own) return \'sent\'')
     expect(codeOf(SAVE)).not.toMatch(/new Set<string>\(\[sent\.email/)
     const kept = bullet(block, '- **Rulings not kept.**')
     for (const piece of ['ruling fourteen', '`admin_audit_log.actor_id`', 'a 500', 'The club delete half is kept']) expect(kept, piece).toContain(piece)

@@ -86,6 +86,13 @@ const ROWS = 'src/areas/clubs/components/SuggestionRows.tsx'
 const SHARED = 'src/areas/clubs/suggestionRows.ts'
 const SELF = 'test/unit/redesign-status-ws09-step29.test.ts'
 const NEW_FILES = [CLOCK, BUTTON, WORDS]
+/**
+ * The cases WS09 checkpoint X's review added to this block's test files, each held to a fix of that review; the
+ * block keeps the count each file had at this step.
+ */
+const X_REVIEW_ADDED: Record<string, number> = {
+  'test/unit/overdue-suggestions-button.test.tsx': 1,
+}
 const NEW_TESTS = [
   'test/integration/club-report-clock.test.ts', 'test/integration/contracts/club-report-clock.test.ts', 'test/unit/club-report-clock.test.ts',
   'test/unit/overdue-suggestions-button.test.tsx', 'test/integration/club-report-clock-edges.test.ts', 'test/unit/overdue-suggestions-markup.test.tsx',
@@ -180,7 +187,7 @@ describe('REDESIGN_STATUS.md, the twenty-ninth step of WS09: the block', () => {
     const files = bullet(block, '- **Files.**')
     for (const name of [...NEW_FILES, ...NEW_TESTS, FIXTURE, ...CHANGED, 'REDESIGN_STATUS.md']) expect(files, name).toContain(`\`${name}\``)
     for (const file of [...NEW_FILES, ...NEW_TESTS, FIXTURE]) expect(existsSync(join(ROOT, file)), file).toBe(true)
-    for (const file of NEW_TESTS) expect(writtenCount(files, file), file).toBe(casesIn(file))
+    for (const file of NEW_TESTS) expect(writtenCount(files, file), file).toBe(casesIn(file) - (X_REVIEW_ADDED[file] ?? 0))
     const grown = bullet(files, '  - Grown with no change:')
     for (const piece of ['none', '`test/unit/domain-boundaries.test.ts` at 70', '`test/unit/route-audit.test.ts` at 103', '`test/unit/chrome-reads.test.ts` at 54', '113 handler files']) expect(grown, piece).toContain(piece)
     const beyond = bullet(files, '  - Files beyond the step\'s list:')

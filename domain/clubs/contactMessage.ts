@@ -93,6 +93,21 @@ export function contactGoesLine(goesTo: ContactGoesTo, region: string | null): s
   return 'No club address on file, so your message goes to the Louisiana Chess Association by email.'
 }
 
+/**
+ * The Contact form's question marks (K's decision 16, applied to the form in WS09 checkpoint X's review), split by
+ * what each explains: beside the line that says where the message goes, and beside the email's label, who answers
+ * and where. Only what helps a person send the message, as K's later word on the marks asks.
+ */
+export const CONTACT_LINE_HELP = 'The club\'s address is not shown on its page. Your message is sent by email.'
+export function contactEmailHelp(goesTo: ContactGoesTo, region: string | null): string {
+  const who = goesTo === 'club'
+    ? 'The club\'s contact'
+    : goesTo === 'region'
+      ? (region?.trim() ? `The ${region.trim()} representative` : 'The region\'s representative')
+      : 'Someone at LCA'
+  return `${who} answers by email, to the address you give here.`
+}
+
 /** The words the visitor is told once the message has gone. */
 export const CONTACT_SENT = 'Sent.'
 

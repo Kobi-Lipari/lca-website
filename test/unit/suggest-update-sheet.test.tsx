@@ -116,7 +116,7 @@ describe('the sheet', () => {
 
   it('words the send button by where it goes and names nobody, the longest region whole on its own lines', () => {
     for (const [goesTo, region, words] of [
-      ['club_rep', 'North Louisiana', 'Send to the club\'s representative'],
+      ['club_rep', 'North Louisiana', 'Send to the club\'s rep'],
       ['region', 'Lake Charles / Southwestern', 'Send to the Lake Charles / Southwestern representative'],
       ['lca', null, 'Send to LCA'],
     ] as const) {
@@ -218,6 +218,38 @@ describe('the sheet', () => {
     fireEvent.click(within(dialog()).getByRole('button', { name: 'Close' }))
     expect(again).toHaveBeenCalledTimes(1)
   })
+
+  it('stays open while a send is on its way: Close, Escape and a press outside do nothing, and Close works once it has ended', async () => {
+    answers = ['hold']
+    const onClose = drawSheet()
+    await act(async () => {})
+    await fill()
+    fireEvent.click(sendButton())
+    await act(async () => {})
+    const close = within(dialog()).getByRole('button', { name: 'Close' })
+    expect(close.getAttribute('aria-disabled')).toBe('true')
+    fireEvent.click(close)
+    fireEvent.keyDown(dialog(), { key: 'Escape' })
+    fireEvent.pointerDown(document.body)
+    fireEvent.click(document.body)
+    expect(onClose).not.toHaveBeenCalled()
+    await act(async () => { release?.() })
+    await within(dialog()).findByText(SUGGESTION_SENT)
+    fireEvent.click(within(dialog()).getByRole('button', { name: 'Close' }))
+    expect(onClose).toHaveBeenCalledTimes(1)
+  })
+
+  it('after the spam check has failed, a press of the send button says to press Try again, never to wait', async () => {
+    window.turnstile = { render: vi.fn((_container: HTMLElement, options: Options & { 'error-callback': () => void }) => { options['error-callback'](); return 'widget-failed' }), remove: vi.fn() }
+    drawSheet()
+    await act(async () => {})
+    await fill()
+    await within(dialog()).findByRole('button', { name: 'Try again' })
+    await act(async () => { fireEvent.click(sendButton()) })
+    expect(fetchMock).not.toHaveBeenCalled()
+    expect(within(dialog()).getByText('The spam check didn\'t load, so this can\'t be sent yet. Press Try again.')).toBeTruthy()
+    expect(within(dialog()).queryByText('Wait for the spam check to finish, then send.')).toBeNull()
+  })
 })
 
 describe('where it opens', () => {
@@ -250,7 +282,7 @@ describe('where it opens', () => {
       await act(async () => { fireEvent.click(opener) })
       const sheet = await screen.findByRole('dialog', { name: /^Suggest an update to / }, { timeout: 5000 })
       expect(sheet.contains(document.activeElement)).toBe(true)
-      expect(within(sheet).getByRole('button', { name: 'Send to the club\'s representative' })).toBeTruthy()
+      expect(within(sheet).getByRole('button', { name: 'Send to the club\'s rep' })).toBeTruthy()
       await act(async () => { fireEvent.keyDown(sheet, { key: 'Escape' }) })
       await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull())
       expect(document.activeElement).toBe(links()[at])

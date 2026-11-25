@@ -2,7 +2,7 @@
 //
 // The club page's Contact form (src/areas/clubs/components/ContactRelayForm.tsx,
 // the contact relay of WS09): the one line saying where the message goes, in three plain
-// forms that never name a volunteer; Help, which holds the rest; three fields
+// forms that never name a volunteer; two question marks, which hold the rest; three fields
 // with visible labels and the browser's autocomplete; errors in words beside
 // the field, tied to it for a screen reader; one send at a time, its button
 // saying so; "Sent." with the focus on it and the fields emptied; the words
@@ -77,7 +77,7 @@ async function fill(values: { name?: string; email?: string; message?: string } 
 const submit = async () => { await act(async () => { fireEvent.click(sendButton()) }) }
 
 describe('where the message goes, said before it is sent', () => {
-  it('says it in one of three plain lines, never naming a volunteer or showing an address, and keeps the rest behind Help', async () => {
+  it('says it in one of three plain lines, never naming a volunteer or showing an address, and keeps the rest behind two question marks', async () => {
     const lines: Array<['club' | 'region' | 'lca', string | null, string]> = [
       ['club', 'Bayou Region', 'Your message goes to the club\'s contact by email. Their address stays private.'],
       ['region', 'Bayou Region', 'No club address on file, so your message goes to the Bayou Region representative by email.'],
@@ -87,19 +87,27 @@ describe('where the message goes, said before it is sent', () => {
     for (const [goesTo, region, line] of lines) {
       const view = draw(goesTo, region)
       expect(screen.getByText(line)).toBeTruthy()
-      // Help is shut until asked, and holds how answers come back and why the address is private.
-      const help = screen.getByRole('button', { name: 'Help' })
-      expect(help.getAttribute('aria-expanded')).toBe('false')
-      const part = document.getElementById(help.getAttribute('aria-controls')!)!
-      expect(part.hidden).toBe(true)
-      await act(async () => { fireEvent.click(help) })
-      await waitFor(() => expect(document.activeElement).toBe(part))
-      expect(part.hidden).toBe(false)
-      expect(part.textContent).toMatch(/answers by email, to the address you give here/)
-      expect(part.textContent).toMatch(/keeps no copy of it, your name or your address/)
-      fireEvent.keyDown(part, { key: 'Escape' })
-      expect(part.hidden).toBe(true)
-      expect(document.activeElement).toBe(help)
+      // No Help button or panel (WS09 checkpoint X's review): two question marks, each shut until pressed, each
+      // opened by a press and closed by Escape with the focus back on it; the line's says the address is not shown,
+      // the email's who answers and where.
+      expect(screen.queryByRole('button', { name: 'Help' })).toBeNull()
+      expect(screen.queryByRole('button', { name: 'Close help' })).toBeNull()
+      expect(screen.queryByRole('region', { name: 'Help with Contact' })).toBeNull()
+      const marks = [screen.getByRole('button', { name: 'Help: Where your message goes' }), screen.getByRole('button', { name: 'Help: Your email' })]
+      const words = [/The club's address is not shown on its page\. Your message is sent by email\./, /answers by email, to the address you give here/]
+      for (const [i, mark] of marks.entries()) {
+        expect(mark.getAttribute('aria-expanded')).toBe('false')
+        const bubble = document.getElementById(mark.getAttribute('aria-controls')!)!
+        expect(bubble.hidden).toBe(true)
+        expect(bubble.textContent).toMatch(words[i])
+        expect(bubble.textContent).not.toMatch(/spam|keeps no copy/)
+        mark.focus()
+        await act(async () => { fireEvent.click(mark) })
+        expect(bubble.hidden).toBe(false)
+        fireEvent.keyDown(window, { key: 'Escape' })
+        expect(bubble.hidden).toBe(true)
+        expect(document.activeElement).toBe(mark)
+      }
       expect(view.container.textContent).not.toMatch(/@|Contact P\.|Rita|Example Rep|Example Admin/)
       view.unmount()
     }
@@ -115,7 +123,7 @@ describe('the fields', () => {
     expect(field('Message').tagName).toBe('TEXTAREA')
     for (const label of ['Your name', 'Your email', 'Message']) expect(screen.getByText(label).tagName).toBe('LABEL')
     expect(sendButton().textContent).toBe('Send message')
-    for (const control of [sendButton(), screen.getByRole('button', { name: 'Help' })]) {
+    for (const control of [sendButton()]) {
       expect(control.className).toMatch(/\bmin-h-11\b/)
       expect(control.className).toMatch(/focus-visible:ring-3 focus-visible:ring-focus/)
     }
@@ -226,6 +234,18 @@ describe('sending', () => {
     expect(fetchMock).not.toHaveBeenCalled()
     expect(screen.getByText('Wait for the spam check to finish, then send.')).toBeTruthy()
     expect(document.getElementById(sendButton().getAttribute('aria-describedby')!)!.textContent).toBe('Wait for the spam check to finish, then send.')
+  })
+
+  it('after the spam check has failed, a press of Send message says to press Try again, never to wait', async () => {
+    window.turnstile = { render: vi.fn((_container: HTMLElement, options: Options) => { options['error-callback'](); return 'widget-failed' }), remove: vi.fn() }
+    draw()
+    await fill()
+    await screen.findByRole('button', { name: 'Try again' })
+    await submit()
+    expect(fetchMock).not.toHaveBeenCalled()
+    const words = 'The spam check didn\'t load, so this can\'t be sent yet. Press Try again.'
+    expect(document.getElementById(sendButton().getAttribute('aria-describedby')!)!.textContent).toBe(words)
+    expect(screen.queryByText('Wait for the spam check to finish, then send.')).toBeNull()
   })
 
   it('keeps nothing the visitor typed in the browser\'s storage', async () => {

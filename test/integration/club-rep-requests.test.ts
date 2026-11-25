@@ -16,7 +16,8 @@ import { env } from 'cloudflare:test'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import {
   REP_DECIDE_ALREADY, REP_DECIDE_CLOSED, REP_DECIDE_FOR_KEEPERS, REP_DECIDE_NOT_THIS_CLUBS, REP_DECIDE_OWN, REP_REQUESTS_CLOSED, REP_REQUEST_ALREADY,
-  REP_REQUEST_GUEST, REP_REQUEST_HAS_REP, REP_REQUEST_KEEPERS_BUSY, REP_REQUEST_MEMBER_BUSY, REP_REQUEST_NO_CLUB, REP_ROLE_CHANGED, adminsDecideWords, neverNamed,
+  REP_DIRECTORY_WORDS, REP_REQUEST_GUEST, REP_REQUEST_HAS_REP, REP_REQUEST_KEEPERS_BUSY, REP_REQUEST_MEMBER_BUSY, REP_REQUEST_NO_CLUB, REP_ROLE_CHANGED,
+  adminsDecideWords, neverNamed,
 } from '../../domain/clubs/repRequest'
 import { onRequestPost as askPost } from '../../functions/api/clubs/[id]/rep-requests'
 import { onRequestPost as decidePost } from '../../functions/api/admin/clubs/[id]/rep-requests/[requestId]'
@@ -325,6 +326,37 @@ describe('asking: who may, and what is saved', () => {
     expect(await unkeyed.json()).toEqual({ error: CANT_SEND_NOW })
   }, SLOW)
 
+  it('the admins are counted for every request: with seats held in two regions, ten to the first and one to the second, the eleventh is refused and no admin has more than ten emails', async () => {
+    const { admin, keeper } = await scene()
+    const lake = await rep(LAKE)
+    emailOutbox.length = 0
+    for (let i = 0; i < 10; i++) expect((await ask((await club(NORTH)).id, (await person()).id)).status, `request ${i + 1}`).toBe(200)
+    const lakeClub = await club(LAKE)
+    const hits = async () => (await env.DB.prepare('SELECT COALESCE(SUM(hits), 0) AS n FROM rate_limits').first<{ n: number }>())!.n
+    const hitsBefore = await hits()
+    const eleventh = await ask(lakeClub.id, (await person()).id)
+    expect(eleventh.status).toBe(429)
+    expect(await eleventh.json()).toEqual({ error: REP_REQUEST_KEEPERS_BUSY })
+    // The member's count, the second region's and the admins' were each taken, and the second region's is kept
+    // though the admins' then refused.
+    expect(await hits() - hitsBefore).toBe(3)
+    expect(await requestsOf(lakeClub.id)).toHaveLength(0)
+    expect(emailOutbox.filter((m) => m.to === admin.email)).toHaveLength(10)
+    expect(emailOutbox.filter((m) => m.to === keeper!.email)).toHaveLength(10)
+    expect(emailOutbox.filter((m) => m.to === lake.email)).toHaveLength(0)
+  }, 60_000)
+
+  it('a region\'s count used up refuses before the admins\' count is touched', async () => {
+    await scene()
+    for (let i = 0; i < 10; i++) expect((await ask((await club(NORTH)).id, (await person()).id)).status, `request ${i + 1}`).toBe(200)
+    const counting = countingDb()
+    const refused = await ask((await club(NORTH)).id, (await person()).id, undefined, { DB: counting.db })
+    expect(refused.status).toBe(429)
+    expect(await refused.json()).toEqual({ error: REP_REQUEST_KEEPERS_BUSY })
+    // Two counts ran, the member's and the region's; the admins' was never asked.
+    expect(counting.ran.filter((r) => r.sql === 'batch')).toHaveLength(2)
+  }, 60_000)
+
   it.each([false, true])('a request no address took is saved all the same, and the logs carry neither the member\'s words nor their address, with the mail engine\'s rules on: %s', async (on) => {
     const { club: c, member } = await scene()
     flags.listsOn = on
@@ -446,7 +478,7 @@ describe('naming', () => {
     const before = await tableCounts()
     const result = await press(c.id, row.id, { decision: 'approve', role: 'member' }, keeper!.id, 'aal1')
     expect(result.status).toBe(200)
-    expect(await result.json()).toEqual({ id: row.id, status: 'approved' })
+    expect(await result.json()).toEqual({ id: row.id, status: 'approved', told: true })
     expect(await roleAndClub(member.id)).toEqual({ role: 'club_rep', club_id: c.id })
     const decided = await lastRequest(c.id)
     expect(decided).toMatchObject({ status: 'approved', decided_by: keeper!.id })
@@ -524,7 +556,7 @@ describe('naming', () => {
     const member = await person({ clubId: other.id })
     const row = await asked(c.id, member.id)
     const found = (await regionOf(admin.id)).body.repRequests!.find((r) => r.id === row.id)!
-    expect(found.nameQuestion).toBe(`${member.name} will be able to edit ${c.name}'s page, create its events and set their fees. ${member.name} is on ${other.name}'s roster now. Naming them rep moves them to ${c.name}'s.`)
+    expect(found.nameQuestion).toBe(`${member.name} will be able to edit ${c.name}'s page, create its events and set their fees. ${REP_DIRECTORY_WORDS} ${member.name} is on ${other.name}'s roster now. Naming them rep moves them to ${c.name}'s.`)
     expect((await press(c.id, row.id, { decision: 'approve', role: 'member' }, admin.id)).status).toBe(200)
     expect(await roleAndClub(member.id)).toEqual({ role: 'club_rep', club_id: c.id })
   }, SLOW)
@@ -548,16 +580,38 @@ describe('naming', () => {
     expect(await roleAndClub(member.id)).toEqual({ role: 'club_rep', club_id: c.id })
   }, SLOW)
 
-  it('an email to the member that did not go leaves one fixed line, and the naming stands', async () => {
+  it('an email to the member that did not go leaves one fixed line, and the naming stands, with told false in the answer', async () => {
     const { admin, club: c, member } = await scene()
     const row = await asked(c.id, member.id)
     emailBehavior.succeed = false
+    let answer: unknown
     const lines = await logsOf(async () => {
-      expect((await press(c.id, row.id, { decision: 'approve', role: 'member' }, admin.id)).status).toBe(200)
+      const result = await press(c.id, row.id, { decision: 'approve', role: 'member' }, admin.id)
+      expect(result.status).toBe(200)
+      answer = await result.json()
     })
+    expect(answer).toEqual({ id: row.id, status: 'approved', told: false })
     expect(lines).toContain(REP_DECISION_NOT_SENT_LOG)
     for (const line of lines) expect(line).not.toContain(member.email)
     expect(await roleAndClub(member.id)).toEqual({ role: 'club_rep', club_id: c.id })
+  }, SLOW)
+
+  it('a representative pressing Name as rep for a member made another club\'s rep since the page was read is told an LCA admin decides it, never to read the question again', async () => {
+    const { admin, club: c, keeper } = await scene()
+    const second = await club()
+    const member = await person()
+    const first = await asked(second.id, member.id)
+    const row = await asked(c.id, member.id)
+    expect((await press(second.id, first.id, { decision: 'approve', role: 'member' }, admin.id)).status).toBe(200)
+    // The page still holds the row as it was read: the role it sends is member.
+    const result = await press(c.id, row.id, { decision: 'approve', role: 'member' }, keeper!.id, 'aal1')
+    expect(result.status).toBe(409)
+    expect(await result.json()).toEqual({ error: adminsDecideWords(member.name, 'club_rep', second.name) })
+    expect(await roleAndClub(member.id)).toEqual({ role: 'club_rep', club_id: second.id })
+    // An LCA admin's order is as before: the body's role is compared first.
+    const stale = await press(c.id, row.id, { decision: 'approve', role: 'member' }, admin.id)
+    expect(stale.status).toBe(409)
+    expect(await stale.json()).toEqual({ error: REP_ROLE_CHANGED })
   }, SLOW)
 })
 
@@ -630,7 +684,7 @@ describe('declining', () => {
     const before = await tableCounts()
     const result = await press(c.id, row.id, { decision: 'decline' }, keeper!.id, 'aal1')
     expect(result.status).toBe(200)
-    expect(await result.json()).toEqual({ id: row.id, status: 'declined' })
+    expect(await result.json()).toEqual({ id: row.id, status: 'declined', told: true })
     expect(await roleAndClub(member.id)).toEqual({ role: 'member', club_id: null })
     expect(await lastRequest(c.id)).toMatchObject({ status: 'declined', decided_by: keeper!.id })
     expect(copies).toEqual([])
@@ -639,6 +693,19 @@ describe('declining', () => {
     expect(emailOutbox[0].text).toContain(repDeclinedLine(c.name))
     expect(whole(emailOutbox[0])).not.toContain(keeper!.name)
     expect((await ask(c.id, member.id)).status).toBe(200)
+  }, SLOW)
+
+  it('a decline whose email to the member did not go still stands, and its answer carries told false', async () => {
+    const { club: c, keeper, member } = await scene()
+    const row = await asked(c.id, member.id)
+    emailBehavior.succeed = false
+    const lines = await logsOf(async () => {
+      const result = await press(c.id, row.id, { decision: 'decline' }, keeper!.id, 'aal1')
+      expect(result.status).toBe(200)
+      expect(await result.json()).toEqual({ id: row.id, status: 'declined', told: false })
+    })
+    expect(lines).toContain(REP_DECISION_NOT_SENT_LOG)
+    expect(await lastRequest(c.id)).toMatchObject({ status: 'declined', decided_by: keeper!.id })
   }, SLOW)
 })
 

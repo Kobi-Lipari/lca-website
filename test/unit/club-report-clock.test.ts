@@ -72,7 +72,7 @@ describe('the email of the 14 days', () => {
 
   it('says why it came and for whom it first went, by role alone, for each first keeper and each role', () => {
     const repFirst = overdueSuggestionEmail({ ...base, first: 'club_rep', kind: 'region' })
-    expect(repFirst.text).toContain('No one has answered it in 14 days. It went first to the club\'s representative. It comes to you as the Example Region representative.')
+    expect(repFirst.text).toContain('No one has answered it in 14 days. It went first to the club\'s rep. It comes to you as the Example Region representative.')
     const regionFirst = overdueSuggestionEmail({ ...base, first: 'region', kind: 'lca' })
     expect(regionFirst.text).toContain('No one has answered it in 14 days. It went first to the region\'s representatives. It comes to you as an LCA admin.')
     const reminder = overdueSuggestionEmail({ ...base, first: 'lca', kind: 'lca' })

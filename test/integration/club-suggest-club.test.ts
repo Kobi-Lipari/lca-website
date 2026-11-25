@@ -372,7 +372,9 @@ describe('where a request goes', () => {
     flags.keepersOn = true
     const admin = await onlyAdmin()
     const holder = await rep(LAKE_CHARLES)
+    // Each address is refused (a 422), so the row falls from the representative to the admins, who refuse too.
     emailBehavior.succeed = false
+    emailBehavior.status = 422
     const body = request({ place: 'Sulphur' })
     const logs = await logsOf(async () => {
       const result = await post(body)
@@ -494,12 +496,40 @@ describe('the limit and the spam check', () => {
     expect(emailOutbox.filter((e) => e.to === admin.email)).toHaveLength(1)
   }, 60_000)
 
+  it('a 429, a fault of the service or no answer at the region\'s representative is no verdict on the address: no admin is written to, the row waits, and nothing goes twice (F3)', async () => {
+    flags.pagesOn = true
+    const busyWays = [
+      ['a 429', () => { emailBehavior.succeed = false; emailBehavior.status = 429 }],
+      ['a fault of the service', () => { emailBehavior.succeed = false; emailBehavior.status = 500 }],
+      ['no answer', () => { emailBehavior.loseAnswer = 1 }],
+    ] as const
+    for (const [way, busy] of busyWays) {
+      emailOutbox.length = 0
+      emailBehavior.succeed = true
+      emailBehavior.status = 500
+      emailBehavior.failFor = null
+      emailBehavior.loseAnswer = null
+      const admin = await onlyAdmin()
+      const holder = await rep(LAKE_CHARLES)
+      busy()
+      if (!emailBehavior.succeed) emailBehavior.failFor = [holder.email]
+      const result = await post(request({ place: 'Sulphur' }))
+      expect(result.status, way).toBe(200)
+      expect(await result.json(), way).toEqual({ sent: true })
+      expect(emailOutbox.filter((e) => e.to === admin.email), way).toHaveLength(0)
+      expect(emailOutbox.map((e) => e.to), way).toEqual(emailBehavior.succeed ? [holder.email] : [])
+      expect(await lastRow(), way).toMatchObject({ region: LAKE_CHARLES, status: 'open' })
+      await env.DB.prepare(`UPDATE board_seat_assignments SET ended_at = datetime('now') WHERE ended_at IS NULL`).run()
+    }
+  }, 60_000)
+
   it('counts a row its representatives could not be reached for against the admins\' own hour, so no region\'s count is spent on the admins', async () => {
     flags.pagesOn = true
     flags.keepersOn = true
     const admin = await onlyAdmin()
     const holder = await rep(LAKE_CHARLES)
     emailBehavior.succeed = false
+    emailBehavior.status = 422
     emailBehavior.failFor = [holder.email]
     const toAdmin = () => emailOutbox.filter((e) => e.to === admin.email)
     for (let i = 0; i < 6; i++) expect((await post(request({ place: 'Example Nowhere' }))).status).toBe(200)

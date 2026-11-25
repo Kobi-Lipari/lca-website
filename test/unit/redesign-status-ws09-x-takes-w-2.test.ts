@@ -311,7 +311,8 @@ describe('REDESIGN_STATUS.md, checkpoint X taking checkpoint W in with main: the
 
   it('adds the one follow-up, tagged for checkpoint X, last of its list while the block is the latest', () => {
     expect(followUp).toMatch(TAG)
-    expect(entries(followUps).filter((l) => TAG.test(l))).toEqual([followUp])
+    // Checkpoint X's review adds two follow-ups tagged for checkpoint X after it; this one stays the first.
+    expect(entries(followUps).filter((l) => TAG.test(l))[0]).toBe(followUp)
     if (latest) expect(entries(followUps).at(-1)).toBe(followUp)
     for (const piece of ['`PAGE_SECTION_IDS`', '`contactHtml` in `functions/utils/clubs/pageHtml.ts`', '`id="contact"`', '`SECTION_IDS.contact`', 'lands at the top of the page until the app draws', 'To be settled in checkpoint X\'s own work']) {
       expect(followUp, piece).toContain(piece)

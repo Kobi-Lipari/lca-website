@@ -32,3 +32,22 @@ export function replyFieldError(value: string): string | null {
 export function replySentWords(firstName: string): string {
   return `Sent to ${firstName}. Their address was never shown to you.`
 }
+
+/**
+ * The words of the reply page's two question marks (K's decision 16, applied to the page in WS09 checkpoint X's
+ * review), each a term and its words: beside the heading, how the visitor answers and how long the link works; beside
+ * the reply's label, who sees what and how the reply is signed. Only what helps a person answer, as K's later word on
+ * the marks asks.
+ */
+export function replyHeadingHelp(firstName: string): ReadonlyArray<readonly [string, string]> {
+  return [
+    ['Their answer', `If ${firstName} answers your email, it comes to LCA's own mailbox. They can also write to the club again from its page.`],
+    ['The link', 'A link from the email works for 30 days. If it will not open, check that the whole link was copied from the email.'],
+  ]
+}
+export function replyLabelHelp(firstName: string): ReadonlyArray<readonly [string, string]> {
+  return [
+    ['Who sees what', `Your reply goes to ${firstName} by email from LCA's own address. Their address is never shown to you, and yours is never shown to them.`],
+    ['How it is signed', 'The reply is signed with your role, such as the region\'s representative, and not with your name. To sign your own name, write it in your reply.'],
+  ]
+}

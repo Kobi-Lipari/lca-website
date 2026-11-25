@@ -8,8 +8,11 @@
 // holds, the day a row is dated on at midnight and across the clock change
 // in America/Chicago, two requests sent at the same second, a naming that
 // meets a role or a request that has changed since the keeper read them, and
-// a copy to the sign-in service that fails. Every club, person and address is
-// made up.
+// a copy to the sign-in service that fails. Each case sets CLUB_PAGES_ON and
+// CLUB_KEEPERS_ON through a getter on a mock of their module, and
+// MAIL_LISTS_ON and MAIL_SENDER through getters on a mock of the mail
+// switches, as the sibling files do; no case reads a shipped value of any
+// switch. Every club, person and address is made up.
 import { env } from 'cloudflare:test'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import {
@@ -26,7 +29,7 @@ import type { WorkspaceRegionResponse } from '../../domain/contracts'
 import { seedClub, seedMember } from './factories'
 import { emailBehavior, emailOutbox, invoke, resetHarness } from './harness'
 
-const flags = vi.hoisted(() => ({ pagesOn: false, keepersOn: false }))
+const flags = vi.hoisted(() => ({ pagesOn: false, keepersOn: false, listsOn: false, sender: 'resend' as 'resend' | 'ses' }))
 vi.mock('../../functions/utils/clubs/pages', async (importOriginal) => {
   const real = await importOriginal<typeof import('../../functions/utils/clubs/pages')>()
   return {
@@ -36,6 +39,18 @@ vi.mock('../../functions/utils/clubs/pages', async (importOriginal) => {
     },
     get CLUB_KEEPERS_ON() {
       return flags.keepersOn
+    },
+  }
+})
+vi.mock('../../functions/utils/mail/switches', async (importOriginal) => {
+  const real = await importOriginal<typeof import('../../functions/utils/mail/switches')>()
+  return {
+    ...real,
+    get MAIL_LISTS_ON() {
+      return flags.listsOn
+    },
+    get MAIL_SENDER() {
+      return flags.sender
     },
   }
 })
@@ -56,6 +71,8 @@ beforeEach(async () => {
   resetHarness()
   flags.pagesOn = true
   flags.keepersOn = true
+  flags.listsOn = false
+  flags.sender = 'resend'
   copyStatus = 200
   copiesTried = 0
   underneath = globalThis.fetch

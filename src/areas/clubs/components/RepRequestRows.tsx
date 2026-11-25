@@ -25,7 +25,13 @@
 // next row's heading, or to the list's heading when none is left. A request
 // another keeper decided first leaves too, in the server's words; any other
 // refusal (a role that has changed, a member an admin decides) leaves the
-// row as it was with the server's words beside its buttons.
+// row as it was with the server's words beside its buttons, said in the
+// list's one status as well so a screen reader hears them, and the button
+// that keeps the focus is described by them. A refusal that says the role has
+// changed asks the page to read its rows again (onStale), so the row is drawn
+// afresh with the question and the buttons that are true now. When the email
+// to the member did not go, the status says so and asks the keeper to tell
+// them; the decision stands.
 import { useEffect, useRef, useState } from 'react'
 import * as DialogPrimitive from '@radix-ui/react-dialog'
 
@@ -37,7 +43,7 @@ import { REP_REQUEST_ROWS_HEADING, REP_REQUEST_ROWS_HELP } from '@/areas/clubs/r
 import { errorWords } from '@/areas/clubs/region'
 import { firstNameOf } from '@domain/clubs/newClub'
 import {
-  REP_DECIDE_ALREADY, REP_DECIDE_NOT_THIS_CLUBS, declineQuestion, declinedWords, namedWords, repRequestRowHeading,
+  ADMINS_DECIDE, REP_DECIDE_ALREADY, REP_DECIDE_NOT_THIS_CLUBS, REP_ROLE_CHANGED, declineQuestion, declinedWords, namedWords, repRequestRowHeading,
 } from '@domain/clubs/repRequest'
 import type { RepRequestRow } from '@domain/contracts'
 
@@ -55,10 +61,20 @@ function decidedElsewhere(err: unknown): boolean {
   return err instanceof ApiError && (err.status === 404 || (err.status === 409 && err.message === REP_DECIDE_ALREADY) || err.message === REP_DECIDE_NOT_THIS_CLUBS)
 }
 
-export function RepRequestRows({ rows, onDecided, headingId = 'region-rep-requests-title' }: {
+/**
+ * A refusal that says the row is no longer true of the member: their role has changed since the row was read, or the
+ * request is now the LCA admins' to decide. The page reads its rows again, so no button stays that can only be refused.
+ */
+function roleChanged(err: unknown): boolean {
+  return err instanceof ApiError && err.status === 409 && (err.message === REP_ROLE_CHANGED || err.message.endsWith(ADMINS_DECIDE))
+}
+
+export function RepRequestRows({ rows, onDecided, onStale, headingId = 'region-rep-requests-title' }: {
   rows: readonly RepRequestRow[]
   /** A row was decided, or was found decided: the page takes it out of its answer. */
   onDecided: (row: RepRequestRow) => void
+  /** A row's member has another role now: the page reads its rows again, quietly. */
+  onStale?: () => void
   headingId?: string
 }) {
   const [said, setSaid] = useState('')
@@ -80,6 +96,20 @@ export function RepRequestRows({ rows, onDecided, headingId = 'region-rep-reques
     else if (target.to === 'row') rowHeadings.current.get(target.id)?.focus()
     else buttons.current.get(target.key)?.focus()
   })
+  // The row whose role changed, as it was drawn when the page was asked to read again.
+  const stale = useRef<RepRequestRow | null>(null)
+  useEffect(() => {
+    const was = stale.current
+    if (was === null) return
+    const now = rows.find((r) => r.id === was.id)
+    if (now === was) return
+    stale.current = null
+    if (!now) return
+    // Drawn afresh: its own line of the old refusal goes, the status keeps the words, and where the button pressed is
+    // gone the focus goes to the row's heading.
+    setErrors((errs) => ({ ...errs, [now.id]: '' }))
+    if (!buttons.current.has(`${now.id}:approve`)) rowHeadings.current.get(now.id)?.focus()
+  }, [rows])
 
   const keyOf = (row: RepRequestRow, decision: Decision) => `${row.id}:${decision}`
 
@@ -97,8 +127,8 @@ export function RepRequestRows({ rows, onDecided, headingId = 'region-rep-reques
     setSaid('')
     setErrors((now) => ({ ...now, [row.id]: '' }))
     try {
-      await decideRepRequest(row.clubId, row.id, decision === 'approve' ? { decision, role: row.memberRole } : { decision })
-      setSaid(decision === 'approve' ? namedWords(row.memberName, row.clubName) : declinedWords(row.memberName))
+      const answer = await decideRepRequest(row.clubId, row.id, decision === 'approve' ? { decision, role: row.memberRole } : { decision })
+      setSaid(decision === 'approve' ? namedWords(row.memberName, row.clubName, answer.told) : declinedWords(row.memberName, answer.told))
       focusAfter(row)
       onDecided(row)
     } catch (err) {
@@ -107,8 +137,14 @@ export function RepRequestRows({ rows, onDecided, headingId = 'region-rep-reques
         focusAfter(row)
         onDecided(row)
       } else {
-        setErrors((now) => ({ ...now, [row.id]: `Nothing changed: ${errorWords(err)}` }))
+        const words = `Nothing changed: ${errorWords(err)}`
+        setErrors((now) => ({ ...now, [row.id]: words }))
+        setSaid(words)
         focusNext.current = { to: 'button', key: keyOf(row, decision) }
+        if (roleChanged(err) && onStale) {
+          stale.current = row
+          onStale()
+        }
       }
     } finally {
       setBusy(false)
@@ -135,6 +171,8 @@ export function RepRequestRows({ rows, onDecided, headingId = 'region-rep-reques
         <ul className="space-y-3">
           {rows.map((row) => {
             const rowHeading = `rep-request-${row.id}-title`
+            const errorId = `rep-request-${row.id}-error`
+            const described = errors[row.id] ? errorId : undefined
             const first = firstNameOf(row.memberName)
             return (
               <li key={row.id} id={`rep-request-${row.id}`} className="min-w-0 rounded-lg border border-hairline bg-card p-4">
@@ -149,7 +187,7 @@ export function RepRequestRows({ rows, onDecided, headingId = 'region-rep-reques
                   </h3>
                   {row.note && <blockquote className="whitespace-pre-line text-sm text-ink [overflow-wrap:anywhere]">{row.note}</blockquote>}
                   {row.noName && <p className="break-words text-sm text-ink">{row.noName}</p>}
-                  {errors[row.id] && <p className="break-words text-sm font-semibold text-ink">{errors[row.id]}</p>}
+                  {errors[row.id] && <p id={errorId} className="break-words text-sm font-semibold text-ink">{errors[row.id]}</p>}
                   <div className="flex flex-wrap gap-2">
                     <a href={`mailto:${encodeURIComponent(row.memberEmail)}`} className={LINK_BUTTON} aria-label={`Email ${first} about ${row.clubName}`}>
                       Email {first}
@@ -160,6 +198,7 @@ export function RepRequestRows({ rows, onDecided, headingId = 'region-rep-reques
                         type="button"
                         className={CONTROL}
                         aria-label={`Name as rep: ${row.memberName} for ${row.clubName}`}
+                        aria-describedby={described}
                         aria-disabled={busy || undefined}
                         onClick={() => open(row, 'approve')}
                       >
@@ -172,6 +211,7 @@ export function RepRequestRows({ rows, onDecided, headingId = 'region-rep-reques
                       variant="outline"
                       className={CONTROL}
                       aria-label={`Decline: ${row.memberName} for ${row.clubName}`}
+                      aria-describedby={described}
                       aria-disabled={busy || undefined}
                       onClick={() => open(row, 'decline')}
                     >

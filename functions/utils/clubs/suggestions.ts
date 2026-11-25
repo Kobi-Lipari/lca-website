@@ -8,12 +8,14 @@
 //   1. the club's rep when it has one;
 //   2. else each representative whose seat covers the club's region;
 //   3. else, while that seat is open, each LCA admin.
-// When no email at one keeper's address goes (the mail gate refuses a dead
-// address, or the service does not take it), the next keepers in the same
-// order are written to, as the contact relay does (./relay.ts). The row is
-// saved before any email is sent, so a suggestion no address took still
-// shows in My region and on the club's pages, and the visitor is told
-// "Sent." all the same.
+// When one keeper's address is refused (the seam answers 'never': the mail
+// gate refuses a dead address, or the service refuses the message), the next
+// keepers in the same order are written to, as the contact relay does
+// (./relay.ts). When the service does not take an email for now (the seam
+// answers 'later'), which says nothing of the address, no further keeper is
+// written to: the row waits in My region. The row is saved before any email
+// is sent, so a suggestion no address took still shows in My region and on
+// the club's pages, and the visitor is told "Sent." all the same.
 //
 // The row holds the least: the club, the kind, which of the six parts (a
 // short fixed key), the visitor's words, the address only if one was given,
@@ -26,10 +28,10 @@
 // The address is shown to nobody. A keeper's email says only whether one was
 // left. One email goes to each person, so no keeper sees another's address,
 // and none goes to the address the visitor typed, even where it is a
-// keeper's own. An email that did not go is logged in fixed words alone,
-// never in the words its failure carries, since a mail service's refusal may
-// name the address it refused.
-import { sendEmail, type EmailEnv } from '../email'
+// keeper's own. An email that did not go is logged by this file in fixed
+// words alone, and by the seam in its own line, which may carry the service's
+// words; the emails go only to keepers' addresses, never to the visitor's.
+import { sendEmailOutcome, type EmailEnv } from '../email'
 import { resolveSiteUrl } from '../site'
 import {
   clubRepsOf, keeperOf, lcaAdmins, regionRepresentativesOf, suggestionKeeperEmail, suggestionLink, type Keeper, type SuggestionKeeperKind, type SuggestionReason,
@@ -103,9 +105,10 @@ export async function saveSuggestion(env: SuggestionEnv, request: Request, club:
   // Set once the order of keepers is read below: whether the admins are the club's first keepers or the last resort.
   let reason: SuggestionReason = 'no_keeper'
 
-  const sendTo = async (person: Keeper, kind: SuggestionKeeperKind): Promise<boolean> => {
+  /** One email: what came of it, or 'never' for an address tried already, which is passed over as a refused one is. */
+  const sendTo = async (person: Keeper, kind: SuggestionKeeperKind): Promise<'sent' | 'never' | 'later'> => {
     const key = person.email.trim().toLowerCase()
-    if (tried.has(key)) return false
+    if (tried.has(key)) return 'never'
     tried.add(key)
     if (sends++ > 0) await new Promise((resolve) => setTimeout(resolve, SEND_INTERVAL_MS))
     const mail = suggestionKeeperEmail({
@@ -119,22 +122,23 @@ export async function saveSuggestion(env: SuggestionEnv, request: Request, club:
       hasAddress: suggestion.email !== null,
       link: suggestionLink(siteUrl, club, kind, rowId),
     })
-    try {
-      // The reply-to is left to sendEmail, LCA's own: never the visitor's.
-      await sendEmail(env, { ...mail, to: person.email })
-      sent++
-      return true
-    } catch {
-      // The failure's own words are not logged: a service's refusal may name the address it refused.
-      console.warn(SUGGESTION_NOT_SENT_LOG)
-      return false
-    }
+    // The reply-to is left to the seam, LCA's own: never the visitor's.
+    const outcome = await sendEmailOutcome(env, { ...mail, to: person.email })
+    if (outcome === 'sent') sent++
+    // This file's own line is fixed words; the seam has logged its own.
+    else console.warn(SUGGESTION_NOT_SENT_LOG)
+    return outcome
   }
 
-  const sendToEach = async (people: Keeper[], kind: SuggestionKeeperKind): Promise<boolean> => {
+  /** An email to each person of one tier: 'sent' when any took it, 'later' when the service stopped the walk first. */
+  const sendToEach = async (people: Keeper[], kind: SuggestionKeeperKind): Promise<'sent' | 'never' | 'later'> => {
     let any = false
-    for (const person of people) if (await sendTo(person, kind)) any = true
-    return any
+    for (const person of people) {
+      const outcome = await sendTo(person, kind)
+      if (outcome === 'sent') any = true
+      else if (outcome === 'later') return any ? 'sent' : 'later'
+    }
+    return any ? 'sent' : 'never'
   }
 
   // Who keeps the club first, then each keeper after it in the same order, only while no address has taken one.
@@ -145,11 +149,17 @@ export async function saveSuggestion(env: SuggestionEnv, request: Request, club:
     ['lca', () => lcaAdmins(env.DB)],
   ]
   const start = first.kind === 'club_rep' ? 0 : first.kind === 'region' ? 1 : 2
-  reason = start === 2 ? 'no_keeper' : 'unreachable'
+  // Whether the region's seat had anyone when the walk came to it, for the admins' words.
+  let regionHeld = start === 1
   for (let i = start; i < tiers.length; i++) {
     const [kind, read] = tiers[i]
     const people = i === start ? first.people : await read()
-    if (await sendToEach(people, kind)) break
+    if (kind === 'region') regionHeld = people.length > 0
+    // The admins are told why it came to them, by what the walk met before them.
+    if (kind === 'lca') reason = start === 2 ? 'no_keeper' : start === 1 ? 'region_unreachable' : regionHeld ? 'unreachable' : 'rep_unreachable'
+    const outcome = await sendToEach(people, kind)
+    // Taken, or the service will not take one for now: either way no further keeper is written to.
+    if (outcome !== 'never') break
   }
   return sent
 }

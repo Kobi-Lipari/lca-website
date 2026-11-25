@@ -251,7 +251,10 @@ export function MyRegionPage() {
   const repRequests = answer?.repRequests ?? []
   const repRequestsShown = useRowsShown(repRequests.length > 0)
 
-  /** After a press of Send on: the answer again, quietly, so each row passed on says when; a failure leaves the page as it is. */
+  /**
+   * After a press of Send on, or a rep request whose member has another role now: the answer again, quietly, so each
+   * row says what is true now; a failure leaves the page as it is.
+   */
   function readAgain() {
     getWorkspaceRegion()
       .then((fresh) => { if (live.current) setLoad((now) => (now.kind === 'ready' ? { kind: 'ready', answer: fresh } : now)) })
@@ -376,6 +379,7 @@ export function MyRegionPage() {
           <RepRequestRows
             rows={repRequests}
             onDecided={(row) => setAnswer((a) => ({ ...a, repRequests: (a.repRequests ?? []).filter((r) => r.id !== row.id) }))}
+            onStale={readAgain}
           />
         )}
       </section>

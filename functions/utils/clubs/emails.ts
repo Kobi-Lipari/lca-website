@@ -733,18 +733,26 @@ export const SUGGESTION_FOOTER = 'A reply to this email goes to the Louisiana Ch
  * its region's seat, or its keepers' addresses took nothing (or were the
  * address the visitor typed, which is never written to).
  */
-export type SuggestionReason = 'no_keeper' | 'unreachable'
+/**
+ * Why a suggestion reached the LCA admins, by what the walk met: no keeper at all ('no_keeper'); the club's rep and
+ * then the region's representatives not reached ('unreachable'); the club's rep not reached with no one in the
+ * region's seat ('rep_unreachable'); or, for a club with no rep, the region's representatives not reached
+ * ('region_unreachable').
+ */
+export type SuggestionReason = 'no_keeper' | 'unreachable' | 'rep_unreachable' | 'region_unreachable'
 
 /** Why the suggestion came to this keeper. */
 export function suggestionOpening(club: string, kind: SuggestionKeeperKind, region: string | null, reason: SuggestionReason): string {
-  if (kind === 'club_rep') return `A visitor suggested an update to ${club}'s listing. It came to you as the club's representative.`
+  if (kind === 'club_rep') return `A visitor suggested an update to ${club}'s listing. It came to you as the club's rep.`
   if (kind === 'region') {
     const area = region ? oneLine(region) : ''
     return `A visitor suggested an update to ${club}'s listing. It came to you as the ${area || 'region\'s'} representative.`
   }
-  return reason === 'no_keeper'
-    ? `A visitor suggested an update to ${club}'s listing. It came to you as an LCA admin, since the club has no representative and no one holds its region's seat.`
-    : `A visitor suggested an update to ${club}'s listing. It came to you as an LCA admin, since it could not reach the club's keepers.`
+  const opening = `A visitor suggested an update to ${club}'s listing. It came to you as an LCA admin, since`
+  if (reason === 'no_keeper') return `${opening} the club has no rep and no one holds its region's seat.`
+  if (reason === 'rep_unreachable') return `${opening} it could not reach the club's rep and no one holds its region's seat.`
+  if (reason === 'region_unreachable') return `${opening} it could not reach the region's representatives.`
+  return `${opening} it could not reach the club's rep or the region's representatives.`
 }
 
 /**
@@ -837,7 +845,7 @@ function daysWord(days: number): string {
 /** Why the email came: no answer in the 14 days, and for whom it first went, by role alone; for the admins' own, a reminder. */
 export function overdueWhy(first: OverdueFirst, dueDays: number): string {
   const none = `No one has answered it in ${daysWord(dueDays)}.`
-  if (first === 'club_rep') return `${none} It went first to the club's representative.`
+  if (first === 'club_rep') return `${none} It went first to the club's rep.`
   if (first === 'region') return `${none} It went first to the region's representatives.`
   return `${none} It went first to the LCA admins, so this is a reminder.`
 }
@@ -925,7 +933,7 @@ export function overdueSuggestionEmail(data: {
 
 /** How the club's own rep signs an answer to a suggestion: by the role and the club alone, never by a name. */
 export function clubRepSignOff(clubName: string): string {
-  return `${oneLine(clubName)} representative`
+  return `${oneLine(clubName)}'s rep`
 }
 
 // ── Suggest a club and Start a club (WS09 step 30) ───────────────

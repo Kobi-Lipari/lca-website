@@ -59,17 +59,20 @@ describe('the relay and the handler', () => {
       expect(code).not.toMatch(/\b(INSERT|UPDATE|DELETE|REPLACE)\b\s+(INTO|\w+)/i)
       // The handler logs no line; the relay logs one, its fixed words, and nothing a failure carries.
       expect([...code.matchAll(/console\.\w+\(([^)]*)\)/g)].map((m) => m[1])).toEqual(file === RELAY ? ['COPY_NOT_SENT_LOG'] : [])
-      expect(code).not.toMatch(/\bdeliver\(|deliverEmail|trySendEmail\(|sendEmailOutcome\(/)
+      // Since WS09 checkpoint X's review (F3) the relay reads each copy's answer from the seam's sendEmailOutcome.
+      expect(code).not.toMatch(file === RELAY ? /\bdeliver\(|deliverEmail|trySendEmail\(/ : /\bdeliver\(|deliverEmail|trySendEmail\(|sendEmailOutcome\(/)
       expect(code).not.toMatch(/resend|amazonaws|\bSES\b|api\.mail|mailgun|sendgrid/i)
       expect(code).not.toMatch(/localStorage|sessionStorage|waitUntil/)
     })
   }
 
-  it('the relay sends through sendEmail alone, in its own catch, one copy to one address, and names no recipient from the request', () => {
+  it('the relay sends through the seam alone, one copy to one address, and names no recipient from the request', () => {
     const code = codeOf(RELAY)
-    expect([...code.matchAll(/\bsendEmail\(/g)]).toHaveLength(1)
-    // The failure is caught with no name, so nothing it says can be logged or passed on.
-    expect(code).toMatch(/await sendEmail\([^\n]*\n\s*return true\n\s*\} catch \{\n/)
+    // Since WS09 checkpoint X's review (F3) each copy goes through sendEmailOutcome, whose answer the walk reads; the
+    // seam logs its own line for a failed send, and this file's one line is its fixed words.
+    expect([...code.matchAll(/\bsendEmail\(/g)]).toHaveLength(0)
+    expect([...code.matchAll(/\bsendEmailOutcome\(/g)]).toHaveLength(1)
+    expect(code).toMatch(/const outcome = await sendEmailOutcome\(env, \{ \.\.\.copy, to: address/)
     expect(code).toMatch(/export const COPY_NOT_SENT_LOG = 'Contact relay: a copy was not sent\.'/)
     expect([...code.matchAll(/\bto:\s*([\w.]+)/g)].map((m) => m[1])).toEqual(['address'])
     expect(code).not.toMatch(/\b(cc|bcc)\b\s*:/i)

@@ -263,7 +263,7 @@ describe('where a suggestion goes', () => {
     expect(emailOutbox.map((e) => e.to)).toEqual([club.rep!.email])
     const [mail] = emailOutbox
     expect(mail.subject).toBe(`A suggestion for ${club.name}'s listing on the LCA website`)
-    expect(mail.text).toContain('It came to you as the club\'s representative.')
+    expect(mail.text).toContain('It came to you as the club\'s rep.')
     expect(mail.text).toContain('What changed: Venue or address')
     expect(mail.text).toContain(words.message)
     expect(mail.text).toContain('They left an email address, so you can reply to them from the site.')
@@ -296,7 +296,7 @@ describe('where a suggestion goes', () => {
     expect((await suggest(club.slug, suggestion({ email: '' }))).status).toBe(200)
     const [row] = await rowsOf(club.id)
     expect(emailOutbox.map((e) => e.to)).toEqual([admin.email])
-    expect(emailOutbox[0].text).toContain('It came to you as an LCA admin, since the club has no representative and no one holds its region\'s seat.')
+    expect(emailOutbox[0].text).toContain('It came to you as an LCA admin, since the club has no rep and no one holds its region\'s seat.')
     expect(emailOutbox[0].text).toContain(`${SITE}/admin/clubs/${club.id}#suggestion-${row.id}`)
     expect(emailOutbox[0].text).toContain('They left no email address, so there is no one to reply to.')
     expect(row.reporter_email).toBeNull()
@@ -306,20 +306,23 @@ describe('where a suggestion goes', () => {
     flags.pagesOn = true
     const club = await makeClub({ rep: true, reps: 1 })
     const admin = await onlyAdmin()
+    // The service refuses that address (a 422), which is a verdict on the address: the walk goes on.
     emailBehavior.succeed = false
+    emailBehavior.status = 422
     emailBehavior.failFor = [club.rep!.email]
     const logs = await logsOf(async () => { expect((await suggest(club.slug, suggestion())).status).toBe(200) })
     expect(emailOutbox.map((e) => e.to)).toEqual([club.reps[0].email])
-    expect(logs).toEqual([SUGGESTION_NOT_SENT_LOG])
+    // This file's one fixed line, beside the seam's own.
+    expect(logs.filter((line) => line === SUGGESTION_NOT_SENT_LOG)).toHaveLength(1)
     // A club with a rep whose address took nothing and an open seat: the admins are told it could not reach the
-    // club's keepers, never that the club has no representative.
+    // club's rep, with no one in the seat, never that the club has no rep.
     emailOutbox.length = 0
     const unreached = await makeClub({ rep: true, vacantSeat: true })
     emailBehavior.failFor = [unreached.rep!.email]
     expect((await suggest(unreached.slug, suggestion())).status).toBe(200)
     expect(emailOutbox.map((e) => e.to)).toEqual([admin.email])
-    expect(emailOutbox[0].text).toContain('It came to you as an LCA admin, since it could not reach the club\'s keepers.')
-    expect(emailOutbox[0].text).not.toContain('has no representative')
+    expect(emailOutbox[0].text).toContain('It came to you as an LCA admin, since it could not reach the club\'s rep and no one holds its region\'s seat.')
+    expect(emailOutbox[0].text).not.toContain('has no rep')
     // Every keeper refused: the suggestion is saved all the same and the visitor told it went.
     emailOutbox.length = 0
     emailBehavior.failFor = [club.rep!.email, club.reps[0].email, admin.email]
@@ -329,6 +332,47 @@ describe('where a suggestion goes', () => {
     expect(await result.json()).toEqual({ sent: true })
     expect(emailOutbox).toEqual([])
     expect((await rowsOf(club.id)).map((r) => r.message)).toContain(words.message)
+  }, SLOW)
+})
+
+describe('a busy service is no verdict on an address (WS09 checkpoint X\'s review, F3)', () => {
+  it('a 429, a fault of the service or no answer at the club\'s rep writes to no further keeper: the row waits in My region, the visitor is told Sent., and nothing goes twice', async () => {
+    flags.pagesOn = true
+    const busyWays = [
+      ['a 429', () => { emailBehavior.succeed = false; emailBehavior.status = 429 }],
+      ['a fault of the service', () => { emailBehavior.succeed = false; emailBehavior.status = 500 }],
+      ['no answer', () => { emailBehavior.loseAnswer = 1 }],
+    ] as const
+    for (const [way, busy] of busyWays) {
+      emailOutbox.length = 0
+      emailBehavior.succeed = true
+      emailBehavior.status = 500
+      emailBehavior.failFor = null
+      emailBehavior.loseAnswer = null
+      const club = await makeClub({ rep: true, reps: 1 })
+      await onlyAdmin()
+      busy()
+      if (!emailBehavior.succeed) emailBehavior.failFor = [club.rep!.email]
+      const words = suggestion()
+      const result = await suggest(club.slug, words)
+      expect(result.status, way).toBe(200)
+      expect(await result.json(), way).toEqual({ sent: true })
+      // No answer means the service may have it: the club's rep alone, once; a refusal for now, no one at all.
+      expect(emailOutbox.map((e) => e.to), way).toEqual(emailBehavior.succeed ? [club.rep!.email] : [])
+      expect((await rowsOf(club.id)).map((r) => r.message), way).toContain(words.message)
+    }
+  }, SLOW)
+
+  it('with the engine\'s rules on, a 503 at the club\'s rep stops the walk as well', async () => {
+    flags.pagesOn = true
+    flags.listsOn = true
+    const club = await makeClub({ rep: true, reps: 1 })
+    await onlyAdmin()
+    emailBehavior.succeed = false
+    emailBehavior.status = 503
+    emailBehavior.failFor = [club.rep!.email]
+    expect((await suggest(club.slug, suggestion())).status).toBe(200)
+    expect(emailOutbox).toEqual([])
   }, SLOW)
 })
 
@@ -570,7 +614,7 @@ describe('the reply is sent and not kept', () => {
     expect(emailOutbox[0].text).not.toContain('representative\n')
   }, SLOW)
 
-  it('is signed by the club\'s own rep as the club\'s representative, naming nobody, with LCA\'s own reply-to', async () => {
+  it('is signed by the club\'s own rep as the club\'s rep, naming nobody, with LCA\'s own reply-to', async () => {
     flags.pagesOn = true
     flags.keepersOn = true
     const club = await makeClub({ rep: true })
@@ -578,7 +622,7 @@ describe('the reply is sent and not kept', () => {
     emailOutbox.length = 0
     expect((await resolve(club.id, id, { action: 'answer', message: 'Example answer.' }, { as: club.rep!.id, aal: 'aal1' })).status).toBe(200)
     expect(emailOutbox.map((e) => e.to)).toEqual([words.email])
-    expect(emailOutbox[0].text).toContain(`${club.name} representative`)
+    expect(emailOutbox[0].text).toContain(`${club.name}'s rep`)
     expect(emailOutbox[0].text).not.toContain(club.rep!.name)
     expect(DEFAULT_REPLY_TO).not.toContain(club.rep!.email)
   })

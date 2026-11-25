@@ -18,7 +18,11 @@
 // is counted against the admins' own hour before any admin is written to
 // (`adminsMayBeWritten`, from the endpoint), so no region's count is ever
 // spent on the admins; with that hour used up no email goes, and the row
-// waits in My region.
+// waits in My region. A representative counts as not reached only when the
+// seam answers 'never' for their address (refused: the mail gate's refusal
+// of a dead address, or a refusal of the message); when it answers 'later'
+// (the service does not take it for now, which says nothing of the address)
+// no further keeper is written to and the row waits in My region.
 //
 // The row holds the least: no club, the kind, the person's words of where and
 // when, their address, the region found (null when the place was not found),
@@ -32,10 +36,11 @@
 // statement.
 //
 // The email names neither the person nor their address: both are on the row,
-// for the keeper who signs in. An email that did not go is logged in fixed
-// words alone, never in the words its failure carries, since a mail service's
-// refusal may name the address it refused.
-import { sendEmail, type EmailEnv } from '../email'
+// for the keeper who signs in. An email that did not go is logged by this
+// file in fixed words alone, and by the seam in its own line, which may carry
+// the service's words; the emails go only to keepers' addresses, never to
+// the person's.
+import { sendEmailOutcome, type EmailEnv } from '../email'
 import { resolveSiteUrl } from '../site'
 import { clubRequestKeeperEmail, clubRequestLink, lcaAdmins, representativesOfRegion, type ClubRequestReason, type Keeper } from './emails'
 import type { ClubRequestKind } from '../../../domain/clubs/newClub'
@@ -109,37 +114,42 @@ export async function saveClubRequest(
   let sends = 0
   let delivered = 0
 
-  /** True when the keeper is reached: written to, or the person themselves, whose own list holds the row. */
-  const sendTo = async (person: Keeper, reason: ClubRequestReason): Promise<boolean> => {
+  /**
+   * 'sent' when the keeper is reached: written to, or the person themselves, whose own list holds the row; else what
+   * the seam answered, or 'never' for an address tried already, which is passed over as a refused one is.
+   */
+  const sendTo = async (person: Keeper, reason: ClubRequestReason): Promise<'sent' | 'never' | 'later'> => {
     const key = person.email.trim().toLowerCase()
-    if (key === own) return true
-    if (tried.has(key)) return false
+    if (key === own) return 'sent'
+    if (tried.has(key)) return 'never'
     tried.add(key)
     if (sends++ > 0) await new Promise((resolve) => setTimeout(resolve, SEND_INTERVAL_MS))
     const mail = clubRequestKeeperEmail({
       siteUrl, kind: sent.kind, reason, region: sent.region, clubName: sent.clubName, place: sent.place, message: sent.message, link,
     })
-    try {
-      // The reply-to is left to sendEmail, LCA's own: never the person's.
-      await sendEmail(env, { ...mail, to: person.email })
-      delivered++
-      return true
-    } catch {
-      // The failure's own words are not logged: a service's refusal may name the address it refused.
-      console.warn(CLUB_REQUEST_NOT_SENT_LOG)
-      return false
-    }
+    // The reply-to is left to the seam, LCA's own: never the person's.
+    const outcome = await sendEmailOutcome(env, { ...mail, to: person.email })
+    if (outcome === 'sent') delivered++
+    // This file's own line is fixed words; the seam has logged its own.
+    else console.warn(CLUB_REQUEST_NOT_SENT_LOG)
+    return outcome
   }
 
-  const sendToEach = async (people: Keeper[], reason: ClubRequestReason): Promise<boolean> => {
+  /** An email to each person of one tier: 'sent' when any was reached, 'later' when the service stopped the walk first. */
+  const sendToEach = async (people: Keeper[], reason: ClubRequestReason): Promise<'sent' | 'never' | 'later'> => {
     let any = false
-    for (const person of people) if (await sendTo(person, reason)) any = true
-    return any
+    for (const person of people) {
+      const outcome = await sendTo(person, reason)
+      if (outcome === 'sent') any = true
+      else if (outcome === 'later') return any ? 'sent' : 'later'
+    }
+    return any ? 'sent' : 'never'
   }
 
   const reps = sent.region ? await representativesOfRegion(env.DB, sent.region) : []
   if (reps.length > 0) {
-    if (await sendToEach(reps, 'region')) return delivered
+    // Reached, or the service will not take one for now: either way the row does not fall to the admins.
+    if ((await sendToEach(reps, 'region')) !== 'never') return delivered
     // Not one representative was reached: the admins' own hour is counted before the row falls to them.
     if (!(await adminsMayBeWritten())) return delivered
   }

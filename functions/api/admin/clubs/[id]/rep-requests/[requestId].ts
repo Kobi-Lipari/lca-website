@@ -24,6 +24,14 @@
 // never an admin (it would take their admin role away, and they can already
 // edit every club's page) or a guest account.
 //
+// For a representative the reason a member of another role is the admins'
+// is asked before the body's role is compared with the member's, so a
+// representative is told an LCA admin decides this one, never to read the
+// question again; an LCA admin's order is the comparison first, as before.
+//
+// The answer of a decision carries told: whether the email to the member
+// went. The naming or the decline stands either way.
+//
 // The answers, each in words:
 //   403 REP_DECIDE_CLOSED      while CLUB_KEEPERS_ON is unset, before
 //                              anything is read
@@ -112,30 +120,32 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
   if (!club || !member) return refuse(REP_DECIDE_NOT_THIS_CLUBS, 404)
 
   if (body.decision === 'decline') {
-    if (!(await declineRep(env, request, decider, requestId, club, member))) return refuse(REP_DECIDE_ALREADY, 409)
-    const answer: RepDecisionResponse = { id: requestId, status: 'declined' }
+    const declined = await declineRep(env, request, decider, requestId, club, member)
+    if (!declined) return refuse(REP_DECIDE_ALREADY, 409)
+    const answer: RepDecisionResponse = { id: requestId, status: 'declined', told: declined.told }
     return jsonResponse(answer, 200, HEADERS)
   }
 
   // One role: who may be named through this door, by whom.
   const never = neverNamed(member.full_name, member.role)
   if (never) return refuse(never, 409)
-  if (body.role !== undefined && body.role !== member.role) return refuse(REP_ROLE_CHANGED, 409)
-  if (member.role !== 'member') {
-    if (as === 'region') {
-      const other = member.role === 'club_rep' && member.club_id
-        ? (await db.prepare('SELECT name FROM clubs WHERE id = ?').bind(member.club_id).first<{ name: string }>())?.name ?? null
-        : null
-      return refuse(adminsDecideWords(member.full_name, member.role, other), 409)
-    }
-    // An admin replaces another role only when the body names the one the question named.
-    if (body.role !== member.role) return refuse(REP_ROLE_CHANGED, 409)
+  // A representative names only a plain member: any other role is the admins' to decide, asked before the body's
+  // role is compared, so the representative reads why and not that the question changed.
+  if (member.role !== 'member' && as === 'region') {
+    const other = member.role === 'club_rep' && member.club_id
+      ? (await db.prepare('SELECT name FROM clubs WHERE id = ?').bind(member.club_id).first<{ name: string }>())?.name ?? null
+      : null
+    return refuse(adminsDecideWords(member.full_name, member.role, other), 409)
   }
+  if (body.role !== undefined && body.role !== member.role) return refuse(REP_ROLE_CHANGED, 409)
+  // An admin replaces another role only when the body names the one the question named.
+  if (member.role !== 'member' && body.role !== member.role) return refuse(REP_ROLE_CHANGED, 409)
 
-  if (!(await nameRep(env, request, decider, requestId, club, member))) {
+  const named = await nameRep(env, request, decider, requestId, club, member)
+  if (!named) {
     const now = await db.prepare('SELECT status FROM club_rep_requests WHERE id = ?').bind(requestId).first<{ status: string }>()
     return refuse(now?.status === 'open' ? REP_ROLE_CHANGED : REP_DECIDE_ALREADY, 409)
   }
-  const answer: RepDecisionResponse = { id: requestId, status: 'approved' }
+  const answer: RepDecisionResponse = { id: requestId, status: 'approved', told: named.told }
   return jsonResponse(answer, 200, HEADERS)
 }

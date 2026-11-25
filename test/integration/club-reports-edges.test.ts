@@ -7,8 +7,10 @@
 // a replayed press, and the age of an open suggestion across midnight and
 // the two changes of the clock in America/Chicago, with a stamp that cannot
 // be read and ties. Each case sets CLUB_PAGES_ON and CLUB_KEEPERS_ON itself
-// through a getter on a mock of their module; no case reads a shipped value
-// of any switch. Every club, person and address is made up.
+// through a getter on a mock of their module, and MAIL_LISTS_ON and
+// MAIL_SENDER through getters on a mock of the mail switches, as the sibling
+// files do; no case reads a shipped value of any switch. Every club, person
+// and address is made up.
 import { env } from 'cloudflare:test'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { contracts } from '../../domain/contracts'
@@ -25,7 +27,7 @@ import { ADDRESS_HEADER, limit } from '../../functions/utils/rateLimit'
 import { seedMember } from './factories'
 import { emailOutbox, expectContract, invoke, resetHarness } from './harness'
 
-const flags = vi.hoisted(() => ({ pagesOn: false, keepersOn: false }))
+const flags = vi.hoisted(() => ({ pagesOn: false, keepersOn: false, listsOn: false, sender: 'resend' as 'resend' | 'ses' }))
 vi.mock('../../functions/utils/clubs/pages', async (importOriginal) => {
   const real = await importOriginal<typeof import('../../functions/utils/clubs/pages')>()
   return {
@@ -35,6 +37,18 @@ vi.mock('../../functions/utils/clubs/pages', async (importOriginal) => {
     },
     get CLUB_KEEPERS_ON() {
       return flags.keepersOn
+    },
+  }
+})
+vi.mock('../../functions/utils/mail/switches', async (importOriginal) => {
+  const real = await importOriginal<typeof import('../../functions/utils/mail/switches')>()
+  return {
+    ...real,
+    get MAIL_LISTS_ON() {
+      return flags.listsOn
+    },
+    get MAIL_SENDER() {
+      return flags.sender
     },
   }
 })
@@ -52,6 +66,8 @@ beforeEach(() => {
   resetHarness()
   flags.pagesOn = false
   flags.keepersOn = false
+  flags.listsOn = false
+  flags.sender = 'resend'
 })
 afterEach(() => {
   vi.useRealTimers()
@@ -493,14 +509,14 @@ describe('the age of an open suggestion, by whole days of 24 hours', () => {
 })
 
 describe('the words of an age, and of a card\'s line', () => {
-  it('says today, 1 day and days, and the card\'s line by the count and the oldest', () => {
-    expect(ageWords(0)).toBe('today')
-    expect(ageWords(-3)).toBe('today')
-    expect(ageWords(1)).toBe('1 day')
-    expect(ageWords(9)).toBe('9 days')
+  it('says less than a day ago, 1 day ago and days ago, and the card\'s line by the count and the oldest', () => {
+    expect(ageWords(0)).toBe('less than a day ago')
+    expect(ageWords(-3)).toBe('less than a day ago')
+    expect(ageWords(1)).toBe('1 day ago')
+    expect(ageWords(9)).toBe('9 days ago')
     expect(openSuggestionsWords(1, 9)).toBe('1 suggestion · 9 days')
     expect(openSuggestionsWords(2, 1)).toBe('2 suggestions · 1 day')
-    expect(openSuggestionsWords(3, 0)).toBe('3 suggestions · today')
+    expect(openSuggestionsWords(3, 0)).toBe('3 suggestions · less than a day')
     expect(wholeDaysSince(null, Date.now())).toBe(0)
     expect(wholeDaysSince(undefined, Date.now())).toBe(0)
   })

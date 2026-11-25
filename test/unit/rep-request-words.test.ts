@@ -15,6 +15,7 @@ import * as words from '../../domain/clubs/repRequest'
 import { REP_REQUEST_ROWS_HEADING, REP_REQUEST_ROWS_HELP } from '../../src/areas/clubs/repRequestRows'
 import { repDeclinedEmail, repNamedEmail, repRequestKeeperEmail } from '../../functions/utils/clubs/emails'
 import { REGIONS } from '../../domain/clubs/regions'
+import { openRepRequests } from '../../functions/utils/clubs/repRequests'
 
 const OLD_NAME = new RegExp(`\\b${'US' + 'CF'}\\b`)
 const ROOT = resolve(__dirname, '../..')
@@ -102,6 +103,30 @@ describe('the words of Ask to be its named rep', () => {
     expect(repDeclinedEmail({ siteUrl: 'https://example.org', clubName: 'Example Knights Club' }).text).toContain(
       'Your request to be named Example Knights Club\'s rep was not approved. If you think this is a mistake, reply to this email.',
     )
+  })
+
+  it('the question before Name as rep names the member directory straight after its first sentence, in each of its three forms', async () => {
+    const directory = 'They will also be able to look up members in the member directory: names, email addresses and US Chess IDs.'
+    const first = 'Player One will be able to edit Example Knights Club\'s page, create its events and set their fees.'
+    expect(words.nameQuestion('Player One', 'Example Knights Club')).toBe(`${first} ${directory}`)
+    // The three forms as the rows are built: a plain member, a plain member on another club's roster, and a member who
+    // holds another role, read by an LCA admin. A made-up database answers the one statement the rows run.
+    const row = (role: string, memberClub: string | null) => ({
+      id: 7, club_id: 'club-1', club_name: 'Example Knights Club', full_name: 'Player One', email: 'player-one@example.org', role,
+      member_club: memberClub, member_club_name: memberClub ? 'Example Rooks Club' : null, connection: 'runs_it', note: null, created_at: '2026-11-24 15:00:00',
+    })
+    const rowsOf = async (r: ReturnType<typeof row>) => {
+      const db = { prepare: () => ({ bind: () => ({ all: async () => ({ results: [r] }) }) }) } as unknown as D1Database
+      return openRepRequests(db, { member: { id: 'admin-1', role: 'lca_admin', club_id: null }, all: true, regions: [] })
+    }
+    const questions = [
+      (await rowsOf(row('member', null)))[0].nameQuestion,
+      (await rowsOf(row('member', 'club-2')))[0].nameQuestion,
+      (await rowsOf(row('tournament_director', null)))[0].nameQuestion,
+    ]
+    expect(questions[0]).toBe(`${first} ${directory}`)
+    expect(questions[1]).toBe(`${first} ${directory} Player One is on Example Rooks Club's roster now. Naming them rep moves them to Example Knights Club's.`)
+    expect(questions[2]).toBe(`${first} ${directory} Player One is a tournament director now. Naming them rep replaces that.`)
   })
 
   it('the keeper\'s email quotes the note escaped, and carries neither a name nor an address of the member', () => {

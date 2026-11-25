@@ -129,7 +129,8 @@ describe('REDESIGN_STATUS.md, checkpoint X: checkpoint W\'s newer commits taken 
       ]) expect(tail, piece).toContain(piece)
     }
     expect(tail.indexOf('on K\'s decision 12')).toBeGreaterThan(-1)
-    expect(tail.indexOf('on K\'s decision 12')).toBeLessThan(tail.indexOf('checkpoint X is under way'))
+    // Since checkpoint X's review the clause reads that checkpoint X is built and reviewed, where it read under way.
+    expect(tail.indexOf('on K\'s decision 12')).toBeLessThan(tail.indexOf('checkpoint X, steps 25 to 31, is built and reviewed'))
     expect(tail).toMatch(/\bbuilt\.$/)
     for (const pr of ['pull request 130', 'pull request 131', 'pull request 132']) expect(lines.find((l) => l.startsWith('**PR:**')), pr).toContain(pr)
   })

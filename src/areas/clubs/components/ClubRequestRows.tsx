@@ -105,7 +105,10 @@ export function ClubRequestRows({ rows, isAdmin, onHandled, headingId = 'region-
         focusAfter(row)
         onHandled(row)
       } else {
-        setErrors((now) => ({ ...now, [row.id]: `Nothing changed: ${errorWords(err)}` }))
+        // Said in the list's one status too, so a screen reader hears it, as the page's own failures are.
+        const failed = `Nothing changed: ${errorWords(err)}`
+        setErrors((now) => ({ ...now, [row.id]: failed }))
+        setSaid(failed)
         focusNext.current = { to: 'button', id: row.id }
       }
     } finally {
@@ -128,6 +131,8 @@ export function ClubRequestRows({ rows, isAdmin, onHandled, headingId = 'region-
             const rowHeading = `club-request-${row.id}-title`
             const named = `${CLUB_REQUEST_ROW_WORDS[row.kind]}: ${row.clubName}`
             const first = firstNameOf(row.name)
+            // The row's own line of a failed press, which describes the button that keeps the focus.
+            const errorId = `club-request-${row.id}-error`
             return (
               <li key={row.id} id={`club-request-${row.id}`} className="min-w-0 rounded-lg border border-hairline bg-card p-4">
                 <article aria-labelledby={rowHeading} className="min-w-0 space-y-2">
@@ -139,7 +144,7 @@ export function ClubRequestRows({ rows, isAdmin, onHandled, headingId = 'region-
                   >
                     {named}
                   </h3>
-                  <p className="text-sm text-ink-muted">Sent {row.ageDays <= 0 ? 'today' : `${ageWords(row.ageDays)} ago`}</p>
+                  <p className="text-sm text-ink-muted">Sent {ageWords(row.ageDays)}</p>
                   <dl className="grid grid-cols-[auto_minmax(0,1fr)] gap-x-3 gap-y-1 text-sm text-ink">
                     <dt className="font-medium">City or ZIP</dt>
                     <dd className="[overflow-wrap:anywhere]">{row.place}</dd>
@@ -149,7 +154,7 @@ export function ClubRequestRows({ rows, isAdmin, onHandled, headingId = 'region-
                     <dd className="[overflow-wrap:anywhere]">{row.name}</dd>
                   </dl>
                   <blockquote className="whitespace-pre-line text-sm text-ink [overflow-wrap:anywhere]">{row.message}</blockquote>
-                  {errors[row.id] && <p className="break-words text-sm font-semibold text-ink">{errors[row.id]}</p>}
+                  {errors[row.id] && <p id={errorId} className="break-words text-sm font-semibold text-ink">{errors[row.id]}</p>}
                   <div className="flex flex-wrap gap-2">
                     <a href={`mailto:${encodeURIComponent(row.email)}`} className={LINK_BUTTON} aria-label={`Email ${first} about ${row.clubName}`}>
                       Email {first}
@@ -159,6 +164,7 @@ export function ClubRequestRows({ rows, isAdmin, onHandled, headingId = 'region-
                       type="button"
                       className={CONTROL}
                       aria-label={`Mark as handled: ${named}`}
+                      aria-describedby={errors[row.id] ? errorId : undefined}
                       aria-disabled={busy || undefined}
                       onClick={() => { if (!busy) { asked.current = row.id; setAsking(row) } }}
                     >

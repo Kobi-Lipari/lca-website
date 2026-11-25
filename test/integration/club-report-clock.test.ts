@@ -205,7 +205,7 @@ describe('the 14 days', () => {
     for (const rep of club.reps) {
       const [mail, ...more] = mailTo(rep.email)
       expect(more).toEqual([])
-      expect(mail.text).toContain(`It went first to the club's representative. It comes to you as the ${club.region} representative.`)
+      expect(mail.text).toContain(`It went first to the club's rep. It comes to you as the ${club.region} representative.`)
       expect(mail.text).toContain(`${SITE}/workspace/region/clubs/${club.id}#suggestion-${s.id}`)
     }
     expect(mailTo(admin.email)[0].text).toContain('It comes to you as an LCA admin.')

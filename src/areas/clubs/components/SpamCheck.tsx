@@ -20,6 +20,11 @@
 // failure's words; and a form whose send the server refused changes
 // `refresh`, which clears the token, since a token is good once, and draws
 // the widget afresh for a new one.
+//
+// The form is told when the check has failed or has no site key (onFailed,
+// true) and when the person presses Try again (false), so a press of its
+// send button then says to press Try again, never to wait for the check
+// (WS09 checkpoint X's review).
 import { useEffect, useRef, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { loadSpamCheckScript } from '../spamCheckScript'
@@ -36,9 +41,14 @@ interface SpamCheckProps {
   siteKey?: string
   /** Changed by the form after the server refuses a send: the token is cleared and the widget drawn afresh. */
   refresh?: number
+  /**
+   * Told true when the check has failed or has no site key, so the form says to press Try again rather than to wait,
+   * and false when the person presses Try again.
+   */
+  onFailed?: (failed: boolean) => void
 }
 
-export function SpamCheck({ onToken, siteKey = import.meta.env.VITE_TURNSTILE_SITE_KEY, refresh = 0 }: SpamCheckProps) {
+export function SpamCheck({ onToken, siteKey = import.meta.env.VITE_TURNSTILE_SITE_KEY, refresh = 0, onFailed }: SpamCheckProps) {
   const box = useRef<HTMLDivElement>(null)
   const again = useRef<HTMLButtonElement>(null)
   const [failed, setFailed] = useState(false)
@@ -117,8 +127,13 @@ export function SpamCheck({ onToken, siteKey = import.meta.env.VITE_TURNSTILE_SI
   }, [siteKey, attempt, refresh])
 
   const showFailed = failed || !siteKey
+  // The form is told each time the failure's words come, and again at each try that fails once more.
+  const failedTell = useRef(onFailed)
+  useEffect(() => { failedTell.current = onFailed }, [onFailed])
+  useEffect(() => { failedTell.current?.(showFailed) }, [showFailed, attempt])
 
   const tryAgain = () => {
+    failedTell.current?.(false)
     // With a site key the button leaves the page for the widget, so focus moves to the widget's place. Without
     // one the button stays, focus stays on it, and the words are written afresh so a screen reader hears them again.
     if (siteKey) focusNext.current = 'box'

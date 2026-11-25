@@ -14,10 +14,10 @@ import { env } from 'cloudflare:test'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { errorBodySchema } from '../../domain/contracts'
 import {
-  LINK_CALLS_AN_HOUR, LINK_CLOSED, LINK_FORGED, LINK_NO_KEY, onRequestGet as linkGet, onRequestPost as linkPost,
+  LINK_CALLS_AN_HOUR, LINK_CLOSED, LINK_FORGED, LINK_NO_KEY, LINK_TOO_OFTEN, onRequestGet as linkGet, onRequestPost as linkPost,
 } from '../../functions/api/clubs/confirm/[token]'
 import { CONFIRM_PURPOSE, LINK_TTL_SECONDS } from '../../functions/utils/clubs/monthlyCheck'
-import { ADDRESS_HEADER, TOO_MANY } from '../../functions/utils/rateLimit'
+import { ADDRESS_HEADER } from '../../functions/utils/rateLimit'
 import { signToken } from '../../functions/utils/tokens'
 import { seedAdmin, seedClub, seedMember } from './factories'
 import { expectContract, invoke, resetHarness } from './harness'
@@ -133,7 +133,7 @@ describe('the confirm endpoints with the limit', () => {
     for (const handler of [linkGet, linkPost]) {
       const result = await call(handler, token, { address })
       expect(result.status).toBe(429)
-      expect(await expectContract(result, errorBodySchema)).toEqual({ error: TOO_MANY })
+      expect(await expectContract(result, errorBodySchema)).toEqual({ error: LINK_TOO_OFTEN })
       expectLinkHeaders(result.response)
     }
     expect((await call(linkGet, token, { address: place() })).status).toBe(200)
@@ -172,6 +172,6 @@ describe('the confirm endpoints with the limit', () => {
     for (let i = 1; i <= 30; i++) expect((await call(linkGet, token, { address, as: i % 2 ? admin : undefined })).status, `call ${i}`).toBe(200)
     const refused = await call(linkGet, token, { address, as: admin })
     expect(refused.status).toBe(429)
-    expect(await refused.json()).toEqual({ error: TOO_MANY })
+    expect(await refused.json()).toEqual({ error: LINK_TOO_OFTEN })
   })
 })

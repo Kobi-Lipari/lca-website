@@ -169,6 +169,24 @@ describe('signed in', () => {
     expect(await within(dialog()).findByText(REP_REQUEST_SENT)).toBeTruthy()
     expect(fetchMock).toHaveBeenCalledTimes(2)
   })
+
+  it('stays open while a send is on its way: Close, Escape and a press outside do nothing, and Close works once it has ended', async () => {
+    answers = ['hold']
+    const onClose = drawSheet()
+    fireEvent.click(chip('I run it'))
+    await act(async () => { fireEvent.click(within(dialog()).getByRole('button', { name: REP_SEND })) })
+    const close = within(dialog()).getByRole('button', { name: 'Close' })
+    expect(close.getAttribute('aria-disabled')).toBe('true')
+    fireEvent.click(close)
+    fireEvent.keyDown(dialog(), { key: 'Escape' })
+    fireEvent.pointerDown(document.body)
+    fireEvent.click(document.body)
+    expect(onClose).not.toHaveBeenCalled()
+    await act(async () => { release?.() })
+    await within(dialog()).findByText(REP_REQUEST_SENT)
+    fireEvent.click(within(dialog()).getByRole('button', { name: 'Close' }))
+    expect(onClose).toHaveBeenCalledTimes(1)
+  })
 })
 
 describe('the invitation on the club\'s page', () => {

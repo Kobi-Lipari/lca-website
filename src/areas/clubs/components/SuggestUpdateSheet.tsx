@@ -14,7 +14,7 @@
 // first and exactly one is once a person presses one. Then a box for what
 // changed, "Your email (optional)", the spam check, and the send button,
 // worded by where the suggestion goes as the page's answer says it, naming
-// nobody: "Send to the club's representative", "Send to the {region}
+// nobody: "Send to the club's rep", "Send to the {region}
 // representative" or "Send to LCA". The words that explain why an address
 // is asked and what happens to a suggestion sit behind two small question
 // marks (HelpMark.tsx, K's decision 16), beside the address's label and the
@@ -28,9 +28,12 @@
 // the server is said once, in the sheet's one status, above the send button,
 // so it is in sight wherever the button is; a refusal keeps everything typed,
 // and the spam check is drawn afresh for a new token. While the suggestion
-// is sent the button says so and a second press does nothing. Once sent the
-// form gives way to the sent words with the focus on them. Nothing typed is
-// kept in the browser's storage.
+// is sent the button says so and a second press does nothing, and Close,
+// Escape and a press outside do nothing either, so the person always reads
+// how it ended. Once sent the form gives way to the sent words with the focus
+// on them. A press of the send button after the spam check has failed, or
+// with no site key, says to press Try again, never to wait for the check.
+// Nothing typed is kept in the browser's storage.
 import { useEffect, useRef, useState, type FormEvent } from 'react'
 
 import { ApiError, sendClubSuggestion } from '@/lib/api'
@@ -49,6 +52,8 @@ import {
 
 /** The words when the spam check has handed back no token yet. */
 const SPAM_CHECK_WAIT = 'Wait for the spam check to finish, then send.'
+/** The words when the spam check has failed, or has no site key: waiting will not help. */
+const SPAM_CHECK_DIDNT_LOAD = 'The spam check didn\'t load, so this can\'t be sent yet. Press Try again.'
 /** The words when the server's spam check said no. */
 const SPAM_CHECK_FAILED = 'The spam check didn\'t pass. Try it again, then send.'
 /** The words when no answer came at all. */
@@ -115,6 +120,8 @@ export function SuggestUpdateSheet({
   const [email, setEmail] = useState('')
   const [errors, setErrors] = useState<Errors>({})
   const [token, setToken] = useState<string | null>(null)
+  // The spam check has failed, or has no site key, until the person presses its Try again.
+  const [spamFailed, setSpamFailed] = useState(false)
   const [refresh, setRefresh] = useState(0)
   const [sending, setSending] = useState(false)
   const [sent, setSent] = useState(false)
@@ -142,7 +149,7 @@ export function SuggestUpdateSheet({
     if (messageError) found.message = messageError
     const emailError = suggestionFieldError('email', email)
     if (emailError) found.email = emailError
-    if (!token && Object.keys(found).length === 0) found.token = SPAM_CHECK_WAIT
+    if (!token && Object.keys(found).length === 0) found.token = spamFailed ? SPAM_CHECK_DIDNT_LOAD : SPAM_CHECK_WAIT
     setErrors(found)
     setRefusal('')
     if (found.field) {
@@ -184,7 +191,8 @@ export function SuggestUpdateSheet({
   const describedBy = (part: SuggestionPart | 'token') => (errors[part] ? errorOf(part) : undefined)
 
   return (
-    <Dialog open={open} onOpenChange={(next) => { if (!next) onClose() }}>
+    // While a send is on its way, Close, Escape and a press outside do nothing, so the person reads how it ended.
+    <Dialog open={open} onOpenChange={(next) => { if (!next && !sending) onClose() }}>
       <DialogContent
         hideClose
         aria-describedby={undefined}
@@ -194,7 +202,7 @@ export function SuggestUpdateSheet({
       >
         <div className="relative flex items-start justify-between gap-3 border-b border-hairline px-4 pt-4 pb-3 sm:px-6">
           <DialogTitle className="min-w-0 break-words text-xl leading-snug font-bold text-ink">{suggestTitle(clubName)}</DialogTitle>
-          <DialogClose className={cn(CONTROL, '-mr-2 shrink-0 border border-field bg-surface px-3 text-ink hover:bg-surface-2')}>
+          <DialogClose aria-disabled={sending || undefined} className={cn(CONTROL, '-mr-2 shrink-0 border border-field bg-surface px-3 text-ink hover:bg-surface-2')}>
             Close
           </DialogClose>
         </div>
@@ -274,7 +282,7 @@ export function SuggestUpdateSheet({
               </div>
 
               <div>
-                <SpamCheck onToken={(t) => { setToken(t); if (t) setErrors((now) => ({ ...now, token: undefined })) }} refresh={refresh} />
+                <SpamCheck onToken={(t) => { setToken(t); if (t) setErrors((now) => ({ ...now, token: undefined })) }} onFailed={setSpamFailed} refresh={refresh} />
                 <p id={errorOf('token')} role="status" className={cn('text-sm font-semibold text-destructive', errors.token && 'mt-1.5')}>
                   {errors.token}
                 </p>

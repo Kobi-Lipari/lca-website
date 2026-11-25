@@ -114,7 +114,7 @@ describe('My region with a suggestion open', () => {
     expect(quote.querySelector('b')).toBeNull()
     expect(quote.className).toContain('[overflow-wrap:anywhere]')
     expect(within(rows[0]).getByText('Suggested 9 days ago')).toBeTruthy()
-    expect(within(rows[1]).getByText('Suggested today')).toBeTruthy()
+    expect(within(rows[1]).getByText('Suggested less than a day ago')).toBeTruthy()
     expect(within(rows[0]).getAllByRole('button').map((b) => b.textContent)).toEqual(['Reply', 'Apply this', 'Not an issue'])
     expect(within(rows[1]).getAllByRole('button').map((b) => b.textContent)).toEqual(['Apply this', 'Not an issue'])
     expect(within(rows[1]).getByText('No email address was left, so there is no one to reply to.')).toBeTruthy()
@@ -170,8 +170,18 @@ describe('My region with a suggestion open', () => {
     await waitFor(() => expect(listStatus().textContent).toBe('This suggestion was already handled, so nothing changed.'))
     expect(within(todo()).getAllByRole('listitem').map((li) => li.id)).toEqual(['suggestion-5'])
     await act(async () => { fireEvent.click(within(todo()).getByRole('button', { name: /^Not an issue/ })) })
-    await waitFor(() => expect(within(todo()).getByText(/^Nothing changed: /)).toBeTruthy())
+    await waitFor(() => expect(within(document.getElementById('suggestion-5')!).getByText(/^Nothing changed: /)).toBeTruthy())
     expect(within(todo()).getAllByRole('listitem')).toHaveLength(1)
+  })
+
+  it('a failed press is said in the list\'s one status too, and the button that keeps the focus is described by the row\'s line', async () => {
+    await page([card('c-knights', 'Example Knights Club', true, [suggestionOf(4)])])
+    answers['POST /api/admin/clubs/c-knights/reports/4'] = () => json({ error: 'We couldn\'t send this. Try again later.' }, 503)
+    const button = within(todo()).getByRole('button', { name: /^Not an issue/ })
+    await act(async () => { fireEvent.click(button) })
+    const words = 'Nothing changed: We couldn\'t send this. Try again later.'
+    await waitFor(() => expect(listStatus().textContent).toBe(words))
+    expect(document.getElementById(button.getAttribute('aria-describedby') ?? '')?.textContent).toBe(words)
   })
 
   it('Confirm all skips a club with one open and says how many it skipped', async () => {

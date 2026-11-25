@@ -20,9 +20,14 @@
 //   5. the club: 404 when the address names none, 409 when it already has a
 //      named rep (clubHasRep, by the routing's own rule);
 //   6. an open request of this member for this club: 409;
-//   7. ten requests an hour to one set of keepers, from everyone together:
-//      the club's region while someone holds its seat, the LCA admins
-//      otherwise: 429 in words of its own.
+//   7. ten requests an hour to each set of keepers a request writes to, from
+//      everyone together: every request writes to the LCA admins, and also to
+//      the club's region while someone holds its seat, so the region's count
+//      is taken first and then the admins' own (key 'lca', the name step 30
+//      gives the admins' set), each at ten, and either used up is the 429 in
+//      words of its own; while the region's seat is open the one count is
+//      the admins'. A count taken at the region's key is kept when the
+//      admins' then refuses.
 // Then the row is written by a statement that writes only when no open
 // request of the member and the club stands, so of two sends at once the
 // second is told it has asked already. The member is the one the session
@@ -36,7 +41,7 @@ import { isResponse, requireAuthedMember } from '../../../utils/auth'
 import { errorResponse, handleOptions, jsonResponse, parseBody } from '../../../utils/response'
 import { CLUB_PAGES_ON } from '../../../utils/clubs/pages'
 import { clubNamedBy } from '../../../utils/clubs/pageAnswer'
-import { clubHasRep, hasOpenRepRequest, repRequestGoesTo, saveRepRequest } from '../../../utils/clubs/repRequests'
+import { REP_REQUEST_ADMINS_KEY, clubHasRep, hasOpenRepRequest, repRequestGoesTo, saveRepRequest } from '../../../utils/clubs/repRequests'
 import { limit } from '../../../utils/rateLimit'
 import {
   REP_REQUESTS_CLOSED, REP_REQUEST_ALREADY, REP_REQUEST_GUEST, REP_REQUEST_HAS_REP, REP_REQUEST_KEEPERS_BUSY, REP_REQUEST_MEMBER_BUSY, REP_REQUEST_NO_CLUB,
@@ -85,11 +90,15 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
   if (await clubHasRep(env.DB, club.id)) return refuse(REP_REQUEST_HAS_REP, 409)
   if (await hasOpenRepRequest(env.DB, club.id, member.id)) return refuse(REP_REQUEST_ALREADY, 409)
 
-  // The keepers' own count, from everyone together: where the emails go stands in for the place.
+  // The keepers' own counts, from everyone together: each set the emails go to stands in for the place, the region's
+  // first while someone holds its seat, then the admins', who are written to for every request.
   const target = { id: club.id, name: club.name, region: club.region || null }
   const goesTo = await repRequestGoesTo(env.DB, target)
-  const toKeepers = await limit(env, request, REP_REQUEST_KEEPER_ROUTE, { perHour: REP_REQUESTS_AN_HOUR_TO_ONE_KEEPER, key: goesTo })
-  if (!toKeepers.ok) return refuse(toKeepers.status === 429 ? REP_REQUEST_KEEPERS_BUSY : toKeepers.error, toKeepers.status)
+  const sets = goesTo === REP_REQUEST_ADMINS_KEY ? [REP_REQUEST_ADMINS_KEY] : [goesTo, REP_REQUEST_ADMINS_KEY]
+  for (const key of sets) {
+    const toKeepers = await limit(env, request, REP_REQUEST_KEEPER_ROUTE, { perHour: REP_REQUESTS_AN_HOUR_TO_ONE_KEEPER, key })
+    if (!toKeepers.ok) return refuse(toKeepers.status === 429 ? REP_REQUEST_KEEPERS_BUSY : toKeepers.error, toKeepers.status)
+  }
 
   const saved = await saveRepRequest(env, request, target, member, { connection: body.connection, note: body.note ?? '' })
   if (saved === null) return refuse(REP_REQUEST_ALREADY, 409)

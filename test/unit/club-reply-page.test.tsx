@@ -10,8 +10,8 @@
 //   visitor's first name, the club, the first lines, one labelled box and
 //   Send reply; an empty send refused beside the box; Sending while the
 //   reply goes, with a second press doing nothing; the sent words with the
-//   focus on them; each refusal in words above the button; Help that opens
-//   by itself once; nothing typed kept in the browser's storage; no
+//   focus on them; each refusal in words above the button; two question
+//   marks that open only when pressed; nothing kept in the browser's storage; no
 //   referrer and no index while drawn.
 //
 // The real page runs through the real client with fetch stubbed. Every
@@ -52,7 +52,7 @@ vi.mock('@/components/ImpersonationBanner', () => ({ ImpersonationBanner: () => 
 vi.mock('@/components/auth/PasswordRecoveryRedirect', () => ({ PasswordRecoveryRedirect: () => null }))
 
 const { default: App } = await import('@/App')
-const { ClubReplyPage, LOG_IN_FIRST, REPLY_HELP_SHOWN_KEY, SIGN_IN_ENDED } = await import('@/pages/ClubReplyPage')
+const { ClubReplyPage, LOG_IN_FIRST, SIGN_IN_ENDED } = await import('@/pages/ClubReplyPage')
 
 const ROOT = resolve(__dirname, '../..')
 const read = (path: string) => readFileSync(join(ROOT, path), 'utf8')
@@ -69,7 +69,6 @@ let answers: Record<string, () => Response | Promise<Response>> = {}
 beforeEach(() => {
   window.localStorage.clear()
   window.sessionStorage.clear()
-  window.localStorage.setItem(REPLY_HELP_SHOWN_KEY, 'shown')
   flags.newClubs = false
   flags.newLook = false
   asked = []
@@ -288,30 +287,35 @@ describe('refused on load', () => {
   })
 })
 
-describe('Help and what the browser keeps', () => {
-  it('Help opens by itself the first time, once, with the focus left where it is, and Escape closes it', async () => {
-    window.localStorage.removeItem(REPLY_HELP_SHOWN_KEY)
+describe('the question marks and what the browser keeps', () => {
+  it('has no Help button or panel; two question marks, beside the heading and the reply\'s label, each closed until pressed, and Escape closes each with the focus back on it', async () => {
     openPage()
     await ready()
-    const help = screen.getByRole('button', { name: 'Help' })
-    await waitFor(() => expect(help.getAttribute('aria-expanded')).toBe('true'))
-    const part = screen.getByRole('region', { name: 'Help with Reply through LCA' })
-    expect(part.textContent).toContain('signed with your role')
-    expect(part.textContent).toContain('To sign your own name, write it in your reply.')
-    expect(part.textContent).toContain('LCA\'s own mailbox')
-    expect(document.activeElement).not.toBe(part)
-    fireEvent.keyDown(part, { key: 'Escape' })
-    expect(help.getAttribute('aria-expanded')).toBe('false')
-    expect(document.activeElement).toBe(help)
-    cleanup()
-    // The next time, it stays closed until asked.
-    openPage()
-    await ready()
-    expect(screen.getByRole('button', { name: 'Help' }).getAttribute('aria-expanded')).toBe('false')
+    expect(screen.queryByRole('button', { name: 'Help' })).toBeNull()
+    expect(screen.queryByRole('region', { name: 'Help with Reply through LCA' })).toBeNull()
+    expect(screen.queryByRole('button', { name: 'Close help' })).toBeNull()
+    const heading = screen.getByRole('button', { name: 'Help: Reply through LCA' })
+    const label = screen.getByRole('button', { name: 'Help: Your reply' })
+    for (const mark of [heading, label]) {
+      expect(mark.getAttribute('aria-expanded')).toBe('false')
+      expect(document.getElementById(mark.getAttribute('aria-controls')!)!.hidden).toBe(true)
+    }
+    const words = (mark: HTMLElement) => document.getElementById(mark.getAttribute('aria-controls')!)!.textContent ?? ''
+    expect(words(heading)).toContain('LCA\'s own mailbox')
+    expect(words(heading)).toContain('works for 30 days')
+    expect(words(label)).toContain('signed with your role')
+    expect(words(label)).toContain('To sign your own name, write it in your reply.')
+    for (const mark of [heading, label]) {
+      mark.focus()
+      fireEvent.click(mark)
+      expect(mark.getAttribute('aria-expanded')).toBe('true')
+      fireEvent.keyDown(window, { key: 'Escape' })
+      expect(mark.getAttribute('aria-expanded')).toBe('false')
+      expect(document.activeElement).toBe(mark)
+    }
   })
 
-  it('keeps nothing typed in the browser\'s storage, only that Help has opened', async () => {
-    window.localStorage.removeItem(REPLY_HELP_SHOWN_KEY)
+  it('keeps nothing in the browser\'s storage, nothing typed and no key of its own', async () => {
     openPage()
     await ready()
     fireEvent.change(box(), { target: { value: 'An example answer, typed.' } })
@@ -319,7 +323,8 @@ describe('Help and what the browser keeps', () => {
     await screen.findByText(replySentWords('Player'))
     const kept = JSON.stringify({ ...window.localStorage }) + JSON.stringify({ ...window.sessionStorage })
     expect(kept).not.toMatch(/example answer|Player|Example Chess Club|v1\.x/i)
-    expect(Object.keys(window.localStorage)).toEqual([REPLY_HELP_SHOWN_KEY])
+    expect(Object.keys(window.localStorage)).toEqual([])
+    expect(window.localStorage.getItem('lca-club-reply-help')).toBeNull()
   })
 
   it('asks for no referrer and no index while drawn, and keeps the token out of the title', async () => {

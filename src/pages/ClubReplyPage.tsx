@@ -18,18 +18,19 @@
 // status stands above Send reply, so the words are in sight wherever the
 // button is, and is brought clear of any fixed bar as the Contact form's is.
 //
-// How the visitor's answer comes back, why the address is hidden and how to
-// sign one's own name sit behind Help, which opens by itself once, the first
-// time the message is drawn in this browser; only that it has opened is
-// kept, never anything typed.
+// How the visitor's answer comes back, how long the link works, that neither
+// address is shown and how to sign one's own name sit behind two small
+// question marks (K's decision 16, applied to this page in WS09 checkpoint
+// X's review), beside the heading and beside the reply's label. Each opens
+// only when pressed; nothing opens by itself and nothing is kept in the
+// browser.
 //
 // The token rides in the address, so the page keeps it there alone: it is
 // never in the title or in a link's address, the page asks browsers to send
 // no referrer from it and search engines not to index it. Its two calls live
 // in src/areas/clubs/api.ts.
-import { useEffect, useRef, useState, type FormEvent, type KeyboardEvent } from 'react'
+import { useEffect, useRef, useState, type FormEvent } from 'react'
 import { Link, useLocation, useParams } from 'react-router-dom'
-import { CircleHelp } from 'lucide-react'
 
 import { useAuth } from '@/contexts/auth-context'
 import { usePageTitle } from '@/hooks/usePageTitle'
@@ -37,7 +38,8 @@ import { ApiError, getClubReply, sendClubReply } from '@/lib/api'
 import { Label } from '@/components/ui/label'
 import { cn } from '@/lib/utils'
 import { CONTROL, WORD_LINK, bringClearOfBars, keepFocusClearOfBars } from '@/areas/clubs/clubPage'
-import { replyFieldError, replySentWords } from '@domain/clubs/replyMessage'
+import { HelpMark } from '@/areas/clubs/components/HelpMark'
+import { replyHeadingHelp, replyLabelHelp, replyFieldError, replySentWords } from '@domain/clubs/replyMessage'
 import type { ClubReplyResponse } from '@domain/contracts'
 
 /** The page's heading in every state. */
@@ -52,36 +54,6 @@ const SEND_FAILED = 'We couldn\'t send this. Check your connection, then try aga
 
 /** The statuses the server refuses with, each said in the server's own words. */
 const REFUSALS = new Set([400, 401, 403, 404, 429, 503])
-
-/** The key that says Help has opened by itself in this browser before. Only that is kept. */
-export const REPLY_HELP_SHOWN_KEY = 'lca-club-reply-help'
-
-/** Whether Help has opened by itself before; a browser whose storage cannot be read reads as yes. */
-function helpShownBefore(): boolean {
-  try {
-    return window.localStorage.getItem(REPLY_HELP_SHOWN_KEY) !== null
-  } catch {
-    return true
-  }
-}
-
-function rememberHelpShown(): void {
-  try {
-    window.localStorage.setItem(REPLY_HELP_SHOWN_KEY, 'shown')
-  } catch {
-    // Nothing is kept: where storage can still be read, Help opens by itself next time too.
-  }
-}
-
-/** What Help says. */
-function helpWords(firstName: string): string[] {
-  return [
-    `Your reply goes to ${firstName} by email from LCA's own address. Their address is never shown to you, and yours is never shown to them.`,
-    'The reply is signed with your role, such as the region\'s representative, and not with your name. To sign your own name, write it in your reply.',
-    `If ${firstName} answers your email, it comes to LCA's own mailbox, and someone there passes it on. They can also write to the club again from its page.`,
-    'A link from the email works for 30 days. If it will not open, check that the whole link was copied from the email.',
-  ]
-}
 
 /** What the page draws. */
 type View =
@@ -119,7 +91,7 @@ function useLinkHead() {
 const LINES =
   'flex min-h-40 w-full rounded-md border border-field bg-background px-3 py-2 text-base text-ink outline-none focus-visible:ring-3 focus-visible:ring-focus aria-invalid:border-destructive'
 
-const ids = { help: 'club-reply-help', box: 'club-reply-message', error: 'club-reply-message-error', status: 'club-reply-status', heading: 'club-reply-heading' } as const
+const ids = { box: 'club-reply-message', error: 'club-reply-message-error', status: 'club-reply-status', heading: 'club-reply-heading' } as const
 
 export function ClubReplyPage() {
   const { token = '' } = useParams<{ token: string }>()
@@ -135,15 +107,12 @@ export function ClubReplyPage() {
   const [refusal, setRefusal] = useState('')
   const [sending, setSending] = useState(false)
   const [answered, setAnswered] = useState(0)
-  const [helpOpen, setHelpOpen] = useState(false)
   const busy = useRef(false)
   const sentLine = useRef<HTMLParagraphElement>(null)
   const statusLine = useRef<HTMLParagraphElement>(null)
   const sendButton = useRef<HTMLButtonElement>(null)
   const box = useRef<HTMLTextAreaElement>(null)
-  const helpButton = useRef<HTMLButtonElement>(null)
-  const helpPart = useRef<HTMLDivElement>(null)
-  const focusNext = useRef<'sent' | 'help' | null>(null)
+  const focusNext = useRef<'sent' | null>(null)
 
   const signedIn = !loading && !!user
   useEffect(() => {
@@ -153,11 +122,6 @@ export function ClubReplyPage() {
       .then((found) => {
         if (cancelled) return
         setView({ kind: 'ready', ...found })
-        // Help opens by itself once, the first time a message is drawn in this browser, with the focus left where it is.
-        if (!helpShownBefore()) {
-          rememberHelpShown()
-          setHelpOpen(true)
-        }
       })
       .catch((err: unknown) => {
         if (cancelled) return
@@ -171,8 +135,7 @@ export function ClubReplyPage() {
     const target = focusNext.current
     if (!target) return
     focusNext.current = null
-    if (target === 'sent') sentLine.current?.focus()
-    else helpPart.current?.focus()
+    sentLine.current?.focus()
   })
 
   // A refusal above Send reply pushes the button down: the button, when it has the focus, is kept clear of the bars
@@ -212,64 +175,15 @@ export function ClubReplyPage() {
     }
   }
 
-  function closeHelp() {
-    setHelpOpen(false)
-    helpButton.current?.focus()
-  }
-
-  function toggleHelp() {
-    if (helpOpen) {
-      closeHelp()
-      return
-    }
-    focusNext.current = 'help'
-    setHelpOpen(true)
-  }
-
-  function helpKey(e: KeyboardEvent<HTMLDivElement>) {
-    if (e.key !== 'Escape') return
-    e.preventDefault()
-    e.stopPropagation()
-    closeHelp()
-  }
-
   const firstName = view.kind === 'ready' || view.kind === 'sent' ? view.firstName : ''
   const showHelp = view.kind === 'ready' || view.kind === 'sent'
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-12 sm:px-6 sm:py-16">
-      <div className="flex flex-wrap items-start justify-between gap-x-4 gap-y-2">
+      <div className="relative flex items-baseline">
         <h1 id={ids.heading} className="min-w-0 break-words text-2xl font-bold text-ink">{REPLY_PAGE_HEADING}</h1>
-        {showHelp && (
-          <button
-            ref={helpButton}
-            type="button"
-            aria-expanded={helpOpen}
-            aria-controls={ids.help}
-            onClick={toggleHelp}
-            className="inline-flex min-h-11 items-center gap-1.5 rounded-md px-2 text-sm font-medium text-ink outline-none hover:underline focus-visible:ring-3 focus-visible:ring-focus"
-          >
-            <CircleHelp aria-hidden="true" className="size-4" /> Help
-          </button>
-        )}
+        {showHelp && <HelpMark name={REPLY_PAGE_HEADING} entries={replyHeadingHelp(firstName)} />}
       </div>
-      {showHelp && (
-        <div
-          ref={helpPart}
-          id={ids.help}
-          hidden={!helpOpen}
-          tabIndex={-1}
-          role="region"
-          aria-label="Help with Reply through LCA"
-          onKeyDown={helpKey}
-          className="mt-4 space-y-2 rounded-lg border border-hairline bg-surface p-4 text-sm text-ink outline-none focus-visible:ring-3 focus-visible:ring-focus"
-        >
-          {helpWords(firstName).map((words) => <p key={words}>{words}</p>)}
-          <button type="button" onClick={closeHelp} className="inline-flex min-h-11 items-center rounded-md px-2 text-sm font-medium text-ink outline-none hover:underline focus-visible:ring-3 focus-visible:ring-focus">
-            Close help
-          </button>
-        </div>
-      )}
 
       {loading ? (
         <p role="status" className="mt-4 text-muted-foreground">Reading the link…</p>
@@ -288,8 +202,11 @@ export function ClubReplyPage() {
           <p className="break-words text-ink">{`${view.firstName} wrote to ${view.club}:`}</p>
           <blockquote className="whitespace-pre-line break-words border-l-4 border-hairline pl-4 text-ink">{view.excerpt}</blockquote>
           <form noValidate onSubmit={(e) => { void submit(e) }} className="space-y-4" onFocus={(e) => keepFocusClearOfBars(e.target)}>
-            <div className="space-y-1.5">
-              <Label htmlFor={ids.box}>Your reply</Label>
+            <div className="relative space-y-1.5">
+              <div className="flex items-baseline">
+                <Label htmlFor={ids.box}>Your reply</Label>
+                <HelpMark name="Your reply" entries={replyLabelHelp(view.firstName)} tight />
+              </div>
               <textarea
                 ref={box}
                 id={ids.box}

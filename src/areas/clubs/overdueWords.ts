@@ -22,11 +22,14 @@ export function emailsWord(n: number): string {
   return `${n} ${n === 1 ? 'email' : 'emails'}`
 }
 
-/** The one question, naming how many are due. */
+/**
+ * The one question, naming how many are due and nothing of who gets them: who is written to differs by club (the
+ * region's representatives only where the club's rep had it first), so the question says the count alone.
+ */
 export function overdueQuestion(due: number): string {
   return due === 1
-    ? `1 suggestion has waited ${SUGGESTION_DUE_DAYS} days or more with no answer. Send it on to the LCA admins and the region's representatives?`
-    : `${due} suggestions have waited ${SUGGESTION_DUE_DAYS} days or more with no answer. Send them on to the LCA admins and the regions' representatives?`
+    ? `1 suggestion has waited ${SUGGESTION_DUE_DAYS} days or more with no answer. Send it on now?`
+    : `${due} suggestions have waited ${SUGGESTION_DUE_DAYS} days or more with no answer. Send them on now?`
 }
 
 /** The question's send button. */

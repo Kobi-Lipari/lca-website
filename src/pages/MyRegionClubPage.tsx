@@ -242,6 +242,18 @@ function ClubInRegion({ id }: { id: string }) {
     return () => { live.current = false }
   }, [])
 
+  /**
+   * A rep request whose member has another role now: the club's answer again, quietly, so its rows are drawn with the
+   * question and the buttons that are true now. Only the rep requests are taken from it: the club and its places stay
+   * as the page has them, so nothing moves under what a keeper is typing in the editor. The page's heading keeps no
+   * focus from it, and a failure leaves the page as it is.
+   */
+  function readClubAgain(forClub: string) {
+    adminGetClub(forClub)
+      .then((fresh) => { if (live.current && fresh && fresh.club) setClubData(forClub, (d) => ({ ...d, repRequests: fresh.repRequests })) })
+      .catch(() => {})
+  }
+
   // Opened by My region's Apply this: the page says the row was marked, once, with the focus on its heading.
   const { state: arrival } = useLocation()
   const appliedOnArrival = useRef((arrival as { suggestionApplied?: boolean } | null)?.suggestionApplied === true)
@@ -474,6 +486,7 @@ function ClubInRegion({ id }: { id: string }) {
             rows={repRequests}
             headingId="club-rep-requests-title"
             onDecided={(row) => setClubData(club.id, (d) => ({ ...d, repRequests: (d.repRequests ?? []).filter((r) => r.id !== row.id) }))}
+            onStale={() => readClubAgain(club.id)}
           />
         )}
 

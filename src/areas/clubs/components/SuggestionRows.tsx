@@ -141,7 +141,10 @@ export function SuggestionRows({
         focusAfter(row)
         onResolved(row)
       } else {
-        setErrors((now) => ({ ...now, [row.id]: `Nothing changed: ${errorWords(err)}` }))
+        // Said in the list's one status too, so a screen reader hears it, as the page's own failures are.
+        const failed = `Nothing changed: ${errorWords(err)}`
+        setErrors((now) => ({ ...now, [row.id]: failed }))
+        setSaid(failed)
       }
     } finally {
       setBusy(null)
@@ -178,6 +181,9 @@ export function SuggestionRows({
             const rowHeading = `suggestion-${row.id}-title`
             const label = suggestionLabel(row.field)
             const named = kind === 'todo' ? `${row.clubName}: ${label}` : label
+            // The row's own line of a failed press, which describes the button that keeps the focus.
+            const errorId = `suggestion-${row.id}-error`
+            const described = errors[row.id] ? errorId : undefined
             return (
               <li key={row.id} id={`suggestion-${row.id}`} className="min-w-0 rounded-lg border border-warn-300 bg-card p-4">
                 <article aria-labelledby={rowHeading} className="min-w-0 space-y-2">
@@ -189,11 +195,11 @@ export function SuggestionRows({
                   >
                     {named}
                   </h3>
-                  <p className="text-sm text-ink-muted">Suggested {row.ageDays <= 0 ? 'today' : `${ageWords(row.ageDays)} ago`}</p>
+                  <p className="text-sm text-ink-muted">Suggested {ageWords(row.ageDays)}</p>
                   {row.passedOnAt && <p className="text-sm text-ink">{passedOnWords(row.passedOnAt)}</p>}
                   <blockquote className="whitespace-pre-line text-sm text-ink [overflow-wrap:anywhere]">{row.message}</blockquote>
                   <p className="text-sm text-ink">{row.hasAddress ? 'They left an email address, so you can reply.' : 'No email address was left, so there is no one to reply to.'}</p>
-                  {errors[row.id] && <p className="break-words text-sm font-semibold text-ink">{errors[row.id]}</p>}
+                  {errors[row.id] && <p id={errorId} className="break-words text-sm font-semibold text-ink">{errors[row.id]}</p>}
                   {replying === row.id ? (
                     <div ref={replyArea} className="scroll-mb-[calc(var(--bottom-chrome-h,0px)+1rem)] space-y-2">
                       <Label htmlFor={`suggestion-${row.id}-reply`}>Your reply</Label>
@@ -203,13 +209,13 @@ export function SuggestionRows({
                         value={reply}
                         readOnly={busy === row.id || undefined}
                         aria-invalid={replyError ? true : undefined}
-                        aria-describedby={replyError ? `suggestion-${row.id}-reply-error` : undefined}
+                        aria-describedby={replyError ? `suggestion-${row.id}-reply-error` : described}
                         className={LINES}
                         onChange={(e) => { setReply(e.target.value); if (replyError) setReplyError('') }}
                       />
                       {replyError && <p id={`suggestion-${row.id}-reply-error`} className="text-sm font-semibold text-destructive">{replyError}</p>}
                       <div className="flex flex-wrap gap-2">
-                        <Button type="button" className={CONTROL} aria-disabled={busy === row.id || undefined} onClick={() => { void act(row, 'answer') }}>
+                        <Button type="button" className={CONTROL} aria-describedby={described} aria-disabled={busy === row.id || undefined} onClick={() => { void act(row, 'answer') }}>
                           {busy === row.id ? 'Sending…' : 'Send reply'}
                         </Button>
                         <Button type="button" variant="outline" className={CONTROL} onClick={() => cancelReply(row)}>Cancel</Button>
@@ -222,10 +228,10 @@ export function SuggestionRows({
                           {words.reply}
                         </Button>
                       )}
-                      <Button type="button" className={CONTROL} aria-label={`${words.apply}: ${named}`} aria-disabled={busy === row.id || undefined} onClick={() => { void act(row, 'apply') }}>
+                      <Button type="button" className={CONTROL} aria-label={`${words.apply}: ${named}`} aria-describedby={described} aria-disabled={busy === row.id || undefined} onClick={() => { void act(row, 'apply') }}>
                         {words.apply}
                       </Button>
-                      <Button type="button" variant="outline" className={CONTROL} aria-label={`${words.dismiss}: ${named}`} aria-disabled={busy === row.id || undefined} onClick={() => { void act(row, 'dismiss') }}>
+                      <Button type="button" variant="outline" className={CONTROL} aria-label={`${words.dismiss}: ${named}`} aria-describedby={described} aria-disabled={busy === row.id || undefined} onClick={() => { void act(row, 'dismiss') }}>
                         {words.dismiss}
                       </Button>
                     </div>

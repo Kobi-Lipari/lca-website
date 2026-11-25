@@ -17,7 +17,10 @@
 // focus moved to the first that needs a change. A refusal from the server is
 // said once, in the form's one status, above the send button; a refusal
 // keeps everything typed, and the spam check is drawn afresh for a new token.
-// While it is sent the button says so and a second press does nothing.
+// While it is sent the button says so and a second press does nothing, and a
+// press of the two-way switch does nothing either, so the sent sentence is
+// the side's that was sent. A press of the send button after the spam check
+// has failed, or with no site key, says to press Try again, never to wait.
 // Once sent the form gives way to one sentence, true wherever it went, with
 // the focus on it; opened on the other side after that, by a link, the form
 // is drawn again, empty, since the sentence is the sent side's alone. Nothing
@@ -45,6 +48,8 @@ import {
 
 /** The words when the spam check has handed back no token yet. */
 const SPAM_CHECK_WAIT = 'Wait for the spam check to finish, then send.'
+/** The words when the spam check has failed, or has no site key: waiting will not help. */
+const SPAM_CHECK_DIDNT_LOAD = 'The spam check didn\'t load, so this can\'t be sent yet. Press Try again.'
 /** The words when the server's spam check said no. */
 const SPAM_CHECK_FAILED = 'The spam check didn\'t pass. Try it again, then send.'
 /** The words when no answer came at all. */
@@ -88,6 +93,8 @@ export function SuggestClubForm({ kind, onKind }: {
   const [values, setValues] = useState<Values>(EMPTY)
   const [errors, setErrors] = useState<Errors>({})
   const [token, setToken] = useState<string | null>(null)
+  // The spam check has failed, or has no site key, until the person presses its Try again.
+  const [spamFailed, setSpamFailed] = useState(false)
   const [refresh, setRefresh] = useState(0)
   const [sending, setSending] = useState(false)
   const [sent, setSent] = useState<ClubRequestKind | null>(null)
@@ -118,7 +125,7 @@ export function SuggestClubForm({ kind, onKind }: {
       const error = clubRequestFieldError(field, values[field])
       if (error) found[field] = error
     }
-    if (!token && Object.keys(found).length === 0) found.token = SPAM_CHECK_WAIT
+    if (!token && Object.keys(found).length === 0) found.token = spamFailed ? SPAM_CHECK_DIDNT_LOAD : SPAM_CHECK_WAIT
     setErrors(found)
     setRefusal('')
     const first = FIELDS.find((field) => found[field])
@@ -192,7 +199,8 @@ export function SuggestClubForm({ kind, onKind }: {
   return (
     <form noValidate onSubmit={(e) => { void submit(e) }} className="space-y-5">
       <div className="relative">
-        <div role="group" aria-labelledby={`${uid}-switch-label`} className="space-y-2">
+        {/* While a send is on its way the switch does nothing, and says so as the send button does. */}
+        <div role="group" aria-labelledby={`${uid}-switch-label`} aria-disabled={sending || undefined} className="space-y-2">
           <div className="flex items-baseline">
             <span id={`${uid}-switch-label`} className="text-sm font-medium text-ink">I&apos;d like to</span>
             <HelpMark name="Suggest a club or start one" entries={SWITCH_HELP} tight />
@@ -204,7 +212,7 @@ export function SuggestClubForm({ kind, onKind }: {
                 label={CLUB_REQUEST_TITLES[side]}
                 pressed={kind === side}
                 // A press always chooses: exactly one side is pressed.
-                onPressedChange={() => { if (kind !== side) onKind(side) }}
+                onPressedChange={() => { if (kind !== side && !busy.current) onKind(side) }}
                 className="h-auto min-h-11 whitespace-normal"
               />
             ))}
@@ -236,7 +244,7 @@ export function SuggestClubForm({ kind, onKind }: {
       {line('email', CLUB_REQUEST_LABELS.email, { type: 'email', autoComplete: 'email', inputMode: 'email' })}
 
       <div>
-        <SpamCheck onToken={(t) => { setToken(t); if (t) setErrors((now) => ({ ...now, token: undefined })) }} refresh={refresh} />
+        <SpamCheck onToken={(t) => { setToken(t); if (t) setErrors((now) => ({ ...now, token: undefined })) }} onFailed={setSpamFailed} refresh={refresh} />
         <p id={errorOf('token')} role="status" className={cn('text-sm font-semibold text-destructive', errors.token && 'mt-1.5')}>
           {errors.token}
         </p>
