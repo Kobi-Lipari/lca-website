@@ -4,7 +4,9 @@
 // joined with "who may send" and switched on in the same change. Light, as the
 // record test of "who may send" is, this file reads only this block, from its
 // heading to the next heading. Pinned: the block's heading, once, directly
-// after "who may send" and before the WS16 decisions; the bold names of its
+// after the block for a seat that is not shown publicly, which reached main
+// first and stands directly after "who may send", and before the WS16
+// decisions; the bold names of its
 // bullets, in order; that every file it names is in the tree; and the facts a
 // later change must not let drift, each read from the source so the record
 // and the code cannot differ: both switch constants set, the list of WS16
@@ -62,7 +64,7 @@ const proseOf = (text: string) => text.replace(/`[^`\n]*`/g, '``')
 /** Prose with what sits in double quotes taken out, since a quote keeps its speaker's words. */
 const ownWordsOf = (text: string) => proseOf(text).replace(/"[^"\n]*"/g, '""')
 
-const BEFORE = '#### WS16 part two: who may send'
+const BEFORE = '#### WS16 part two: a seat that is not shown publicly'
 const BLOCK = "#### WS16 part two: the page's own Send"
 const AFTER = '### WS16 decisions'
 /** This block: from its heading to the next heading of any level. */
@@ -123,13 +125,13 @@ const QUOTED: { quote: string; files: string[] }[] = [
 ]
 
 describe("REDESIGN_STATUS.md, WS16 part two: the page's own Send, its place and its parts", () => {
-  it('sits once, directly after "who may send" and before the WS16 decisions', () => {
+  it('sits once, directly after the block for a seat that is not shown publicly and before the WS16 decisions', () => {
     expect(block).not.toBe('')
     expect(status.split(`\n${BLOCK}\n`)).toHaveLength(2)
     const at = status.indexOf(`\n${BLOCK}\n`)
     const before = status.indexOf(`\n${BEFORE}\n`)
     expect(before).toBeGreaterThan(-1)
-    // Directly after: the next heading after the block of "who may send" is this one.
+    // Directly after: the next heading after the block for a seat that is not shown publicly is this one.
     expect(status.indexOf('\n#', before + 1 + BEFORE.length)).toBe(at)
     // A later block may stand between this one and the WS16 decisions.
     expect(status.indexOf(`\n${AFTER}\n`, at)).toBeGreaterThanOrEqual(at + 1 + block.length)

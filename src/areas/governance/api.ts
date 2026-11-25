@@ -151,6 +151,8 @@ export interface ApiAdminBoardSeat {
   category: 'officer' | 'regional_rep'
   is_active: number
   is_shared: number
+  /** 1 when the seat is shown publicly; 0 keeps it off the Board page and the contact form. */
+  is_listed: number
   sort_order: number
   /** board_members.name — the display fallback for seats with no account linked. */
   fallback_name: string
@@ -352,6 +354,16 @@ export async function addBoardTicketNote(
     method: 'POST',
     headers: await authHeaders(),
     body: JSON.stringify({ body, kind: 'note', occurredAt: occurredAt ?? null }),
+  })
+  return handleResponse(response)
+}
+
+/** Brings a retired seat back into use. Its typed name goes back to TBD and its own photo is cleared; its holders and listing stay as they are. */
+export async function adminReactivateBoardSeat(seatId: string): Promise<void> {
+  const response = await fetch('/api/admin/board-seats', {
+    method: 'POST',
+    headers: await authHeaders(),
+    body: JSON.stringify({ seatId, reactivate: true }),
   })
   return handleResponse(response)
 }

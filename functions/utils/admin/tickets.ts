@@ -32,7 +32,9 @@ export interface SeatHolder {
  * (/contact?to=scholastic-director); the form may post either. Only active
  * seats resolve: an unknown or retired ref returns null and the caller falls
  * back to a general inquiry rather than erroring, so a stale bookmark or a
- * seat retired mid-session still delivers the message.
+ * seat retired mid-session still delivers the message. A seat that is not
+ * shown publicly (is_listed = 0) resolves to null the same way, so a message
+ * naming it is answered exactly as one naming a seat nobody has.
  */
 export async function getActiveSeat(
   db: D1Database,
@@ -42,7 +44,7 @@ export async function getActiveSeat(
     .prepare(
       `SELECT id, slug, role, category, is_shared
          FROM board_members
-        WHERE is_active = 1 AND (slug = ?1 OR id = ?1)
+        WHERE is_active = 1 AND is_listed = 1 AND (slug = ?1 OR id = ?1)
         LIMIT 1`,
     )
     .bind(ref)
