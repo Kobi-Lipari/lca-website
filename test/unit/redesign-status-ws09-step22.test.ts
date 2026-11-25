@@ -282,7 +282,8 @@ describe('REDESIGN_STATUS.md, WS09 step 22: the parts against the files', () => 
     expect(pins).toContain('no file changes its count of cases')
     for (const [file, count] of MOVED.slice(0, 3)) expect((read(file).match(/^\s*it\(/gm) ?? []).length + (read(file).match(/^\s*it\.each\(/gm) ?? []).length, file).toBeLessThanOrEqual(count)
     // Moved at WS09 step 28, whose two routes are the 112th and 113th: 111 before it, a later figure now.
-    expect(read('test/unit/routes.test.ts')).toContain('expect(real.filter((r) => r.startsWith(\'api/\')).length).toBe(115)')
+    // Moved at WS09 step 31, whose two routes are the 116th and 117th: 115 before it.
+    expect(read('test/unit/routes.test.ts')).toContain('expect(real.filter((r) => r.startsWith(\'api/\')).length).toBe(117)')
     expect(read('test/unit/contracts-pending.ts')).toContain('export const PENDING_COUNT = 104')
     if (!latest) return
     expect(Object.values(contracts).reduce((n, route) => n + Object.keys(route).length, 0)).toBe(41)

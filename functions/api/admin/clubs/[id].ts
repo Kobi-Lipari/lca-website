@@ -43,6 +43,7 @@ import {
 } from '../../../utils/clubs/save'
 import { sendClubSaveNotice } from '../../../utils/clubs/emails'
 import { openSuggestionsOf } from '../../../utils/clubs/suggestions'
+import { repRequestsFor } from '../../../utils/clubs/repRequests'
 import { canManageClub } from '../../../utils/admin/permissions'
 import { isReservedSlug } from '../../../../domain/clubs/slug'
 import {
@@ -185,6 +186,18 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
   const places = await readPlaces(context.env.DB, clubId)
   const waiting = (await openSuggestionsOf(context.env.DB, [clubId], Date.now())).get(clubId) ?? []
   const open = waiting.length > 0 && await canManageClub(context.env.DB, authResult.member, clubId) ? waiting : []
+  // The club's open requests of Ask to be its named rep (WS09 step 31), only to a keeper who may decide them, only
+  // when one is open, and then kept by no cache, since the member's name and address are in each.
+  const repRequests = await repRequestsFor(context.env.DB, authResult.member, clubId)
+  if (repRequests.length > 0) {
+    return jsonResponse({
+      ...answer,
+      club: { ...club, ...keeperColumns },
+      places,
+      ...(open.length > 0 ? { openSuggestions: open } : {}),
+      repRequests,
+    }, 200, { 'Cache-Control': 'no-store' })
+  }
   return jsonResponse({
     ...answer,
     club: { ...club, ...keeperColumns },

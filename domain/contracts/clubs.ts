@@ -9,6 +9,7 @@ import { dollarsSchema, flagSchema, idSchema, isoDateSchema, storedTimestampSche
 import { registrationStatusSchema, savedSectionSchema, tournamentStatusSchema } from './events'
 import { openSuggestionSchema } from './clubReports'
 import { clubRequestRowSchema } from './clubRequests'
+import { repRequestRowSchema } from './clubRepRequests'
 
 /**
  * The club's public row: today's 13 columns of clubs, in the table's own
@@ -417,6 +418,12 @@ export const adminClubResponseSchema = z.strictObject({
    * club (canManageClub), and only when at least one is open; never an address.
    */
   openSuggestions: z.array(openSuggestionSchema).optional(),
+  /**
+   * The club's open requests of Ask to be its named rep (WS09 step 31), answered only while CLUB_KEEPERS_ON is set,
+   * only to a keeper who may decide them (an LCA admin, or a holder of the club's regional seat who is not the club's
+   * own rep), and only when at least one is open.
+   */
+  repRequests: z.array(repRequestRowSchema).optional(),
 })
 
 /**
@@ -501,6 +508,12 @@ export const workspaceRegionResponseSchema = z.strictObject({
    * none, so the answer with none is as before.
    */
   clubRequests: z.array(clubRequestRowSchema).optional(),
+  /**
+   * The open requests of Ask to be its named rep (WS09 step 31) the person may decide: for a holder of a seat, those of
+   * the clubs in the regions the seat covers; for an LCA admin, every one; never the person's own. Absent when there is
+   * none, so the answer with none is as before.
+   */
+  repRequests: z.array(repRequestRowSchema).optional(),
 })
 
 /**

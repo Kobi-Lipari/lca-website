@@ -36,6 +36,13 @@
 // src/areas/clubs/clubPage.ts), and only while clubKeepers is on, since the
 // pages Edit leads to exist only then. Who keeps a club is not shown to
 // anyone else (K's decision 12): with no keeper there is no band.
+//
+// While the club has no named rep (the answer's rep_wanted, sent only while
+// CLUB_PAGES_ON is set) and clubPagesOn() holds, one quiet line of its own
+// before the foot line invites a member to Ask to be its named rep (WS09
+// step 31, RepRequestLink.tsx); the sheet it opens gives the focus back to
+// it. With either off, or once the club has a rep, the page draws nothing of
+// it, and it never says who keeps the club.
 import { useEffect, useEffectEvent, useRef, useState, type Ref } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { ArrowLeft, Users } from 'lucide-react'
@@ -43,7 +50,7 @@ import { ArrowLeft, Users } from 'lucide-react'
 import { ApiError, getClubPage } from '@/lib/api'
 import { useAuth } from '@/contexts/auth-context'
 import { cn } from '@/lib/utils'
-import { keepersOn } from '@/areas/clubs/switches'
+import { clubPagesOn, keepersOn } from '@/areas/clubs/switches'
 import { placePoints } from '@/areas/clubs/clubMap'
 import {
   CONTROL, CONTROLS_CLEAR_OF_BARS, SECTION_IDS, WORD_LINK, copyLink, drawnSections, keeperFor, pageAddress, pageLink, type Keeper, type Said,
@@ -61,6 +68,7 @@ import { NearbyClubs } from '@/areas/clubs/components/NearbyClubs'
 import { SectionNav } from '@/areas/clubs/components/SectionNav'
 import { WhenAndWhere } from '@/areas/clubs/components/WhenAndWhere'
 import { SuggestUpdateHost, SuggestUpdateLink } from '@/areas/clubs/components/SuggestUpdateLink'
+import { RepRequestHost, RepRequestLink } from '@/areas/clubs/components/RepRequestLink'
 import { SITE_NAME, clubPageTitle } from '@domain/clubs/pageMeta'
 import type { ClubPageResponse } from '@domain/contracts'
 
@@ -206,6 +214,19 @@ export function ClubPageView({
     returnTo.current = null
   }, [suggestFrom])
   const suggestLink = <SuggestUpdateLink onOpen={setSuggestFrom} />
+  // Ask to be its named rep (WS09 step 31): the invitation that opened the sheet, while it is open, so the focus goes back to it.
+  const askRep = clubPagesOn() && answer.rep_wanted === true
+  const [repFrom, setRepFrom] = useState<HTMLElement | null>(null)
+  const repReturnTo = useRef<HTMLElement | null>(null)
+  const closeRep = () => {
+    repReturnTo.current = repFrom
+    setRepFrom(null)
+  }
+  useEffect(() => {
+    if (repFrom || !repReturnTo.current) return
+    repReturnTo.current.focus()
+    repReturnTo.current = null
+  }, [repFrom])
   return (
     <div data-slot="club-page" className="@container bg-ground text-ink">
       <div className={CONTROLS_CLEAR_OF_BARS}>
@@ -245,9 +266,11 @@ export function ClubPageView({
           <ClubContact id={SECTION_IDS.contact} address={club.slug} region={club.region} goesTo={answer.contact.goes_to} suggest={suggestLink} />
         )}
         {answer.nearest.length > 0 && <NearbyClubs city={club.city} nearest={answer.nearest} />}
+        {askRep && <RepRequestLink onOpen={setRepFrom} />}
         <ClubFootLine name={club.name} city={club.city} address={link} said={said} onCopy={() => { void copyFromFoot() }} />
       </div>
       <ClubBar place={pins[0] ?? null} />
+      {askRep && <RepRequestHost from={repFrom} onClose={closeRep} clubName={club.name} address={club.slug} />}
       <SuggestUpdateHost from={suggestFrom} onClose={closeSuggest} clubName={club.name} address={club.slug} goesTo={answer.suggestion.goes_to} region={club.region} />
     </div>
   )

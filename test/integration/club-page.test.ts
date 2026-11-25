@@ -311,8 +311,9 @@ describe('GET /api/clubs/[id]/page: what it carries', () => {
       expect(body, reader).toContain('Example Listed Open')
       expect(body, reader).toContain('"registered_count":3')
     }
-    // Every reader is answered the same words.
-    expect(new Set(bodies.map(([, body]) => body)).size).toBe(1)
+    // Every reader is answered the same words. Moved in WS09 step 31: the public answer carries rep_wanted while
+    // CLUB_PAGES_ON is set and the keepers' preview, with it unset, does not, so the bodies are compared without that key.
+    expect(new Set(bodies.map(([, body]) => body.replace(/,"rep_wanted":(?:true|false)/, ''))).size).toBe(1)
   })
 
   it('answers the same bytes with CLUB_EMAIL_HIDDEN unset and set, neither carrying the club\'s email', async () => {

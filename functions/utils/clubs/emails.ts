@@ -53,6 +53,12 @@
 // or wants to start one (clubRequestKeeperEmail, WS09 step 30), sent by
 // functions/utils/clubs/clubRequests.ts to the representatives of the region
 // the place was found in, else to the LCA admins.
+//
+// And so are the three emails of Ask to be its named rep (WS09 step 31),
+// sent by functions/utils/clubs/repRequests.ts and functions/utils/clubs/nameRep.ts:
+// the keeper's (repRequestKeeperEmail), to the representatives of the club's
+// region and the LCA admins; and the member's two, once a keeper names them
+// the club's rep (repNamedEmail) or declines (repDeclinedEmail).
 
 import { trySendEmail, type EmailEnv, type EmailMessage } from '../email'
 import { emailDetails, emailQuote, escapeHtml, p, renderEmail } from '../emailLayout'
@@ -61,7 +67,8 @@ import { regionRepresentativesOf, representativesOfRegion } from './routing'
 // The contact relay (./relay.ts) reads the region's representatives and the LCA admins through this file, the one reader
 // of the routing among the club mail's files with the monthly check; Suggest an update (./suggestions.ts, WS09 step 28)
 // reads who keeps the club first, and each keeper after, the same way; Suggest a club and Start a club
-// (./clubRequests.ts, WS09 step 30) read a region's representatives by its name, and the LCA admins.
+// (./clubRequests.ts, WS09 step 30) read a region's representatives by its name, and the LCA admins; Ask to be its named
+// rep (./repRequests.ts, WS09 step 31) reads the club's rep, its region's representatives and the LCA admins.
 export { clubRepsOf, keeperOf, lcaAdmins, regionRepresentativesOf, representativesOfRegion, type ClubKeepers, type Keeper } from './routing'
 import { formatDate } from '../../../domain/format/date'
 import { NO_STATEMENT } from '../../../domain/clubs/monthlyCheck'
@@ -1023,5 +1030,150 @@ export function clubRequestKeeperEmail(data: {
       '',
       SUGGESTION_FOOTER,
     ].join('\n'),
+  }
+}
+
+// ── Ask to be its named rep (WS09 step 31) ───────────────────────
+
+/** The keeper's subject and heading: fixed words, never anything the member typed. */
+export const REP_REQUEST_KEEPER_SUBJECT = 'A member asked to be a club\'s named rep'
+
+/** The link's words on a keeper's email. */
+export const REP_REQUEST_LINK_LABEL = 'Open My region'
+
+/** Where the member's name and address are: on the request, for a keeper who signs in, and never in the email. */
+export const REP_REQUEST_WHO_LINE = 'Their name and email address are on the request in My region, where you can name them the club\'s rep or decline. Sign in to see them.'
+
+/** Why the email came to this keeper. */
+export type RepRequestReason = 'region' | 'admin'
+
+/**
+ * Where a keeper decides one request: My region's list on the site's own address, at the request. `siteUrl` is the
+ * site's own address (functions/utils/site.ts), never anything from the request's body.
+ */
+export function repRequestLink(siteUrl: string, requestId: number): string {
+  return `${siteUrl}/workspace/region#rep-request-${requestId}`
+}
+
+/**
+ * The email a keeper gets for one request. It names the club, the
+ * connection in its words, and quotes the member's note as their own words
+ * (escaped in the HTML, as text in the plain part) when there is one; it
+ * says the member's name and address are on the request, and links to My
+ * region. It carries neither the member's name nor their address: its `to`
+ * is empty, as every template's is, and the reply-to is left to the sender,
+ * LCA's own.
+ */
+export function repRequestKeeperEmail(data: {
+  siteUrl: string
+  reason: RepRequestReason
+  region: string | null
+  clubName: string
+  connection: string
+  note: string
+  link: string
+}): EmailMessage {
+  const heading = REP_REQUEST_KEEPER_SUBJECT
+  const clubName = oneLine(data.clubName)
+  const area = data.region ? oneLine(data.region) : ''
+  const why = data.reason === 'region'
+    ? `It came to you as the ${area || 'region\'s'} representative.`
+    : 'It came to you as an LCA admin.'
+  const opening = `A member asked to be named ${clubName}'s rep on the LCA website. ${why}`
+  const note = data.note.trim()
+  return {
+    to: '',
+    subject: heading,
+    html: renderEmail({
+      siteUrl: data.siteUrl,
+      heading,
+      preheader: heading,
+      body: p(escapeHtml(opening))
+        + emailDetails([['Club', clubName], ['How they are connected', data.connection]])
+        + (note ? emailQuote(note, 'Their note, in their words') : '')
+        + p(escapeHtml(REP_REQUEST_WHO_LINE)),
+      cta: { label: REP_REQUEST_LINK_LABEL, url: data.link },
+      footerNote: escapeHtml(SUGGESTION_FOOTER),
+    }),
+    text: [
+      `${heading}.`,
+      '',
+      opening,
+      '',
+      `Club: ${clubName}`,
+      `How they are connected: ${data.connection}`,
+      ...(note ? ['', 'Their note, in their words:', note] : []),
+      '',
+      REP_REQUEST_WHO_LINE,
+      '',
+      `${REP_REQUEST_LINK_LABEL}: ${data.link}`,
+      '',
+      SUGGESTION_FOOTER,
+    ].join('\n'),
+  }
+}
+
+/** What a club's rep may do, as the named email says it. */
+export const REP_NAMED_CAN = 'As its rep you can edit the club\'s page, create its events and set their fees.'
+
+/** The named email's link: the page a club's rep opens, which takes them to their club's page. */
+export const REP_NAMED_LINK_LABEL = 'Open your club\'s page'
+
+/** The last line of the member's two emails. */
+export const REP_MEMBER_FOOTER = 'A reply to this email goes to the Louisiana Chess Association.'
+
+/** The subject and first line of the named email. */
+export function repNamedSubject(clubName: string): string {
+  return `You are now ${oneLine(clubName)}'s rep on the LCA site`
+}
+
+/** The declined email's subject and its one sentence. */
+export function repDeclinedSubject(clubName: string): string {
+  return `Your request to be named ${oneLine(clubName)}'s rep`
+}
+export function repDeclinedLine(clubName: string): string {
+  return `Your request to be named ${oneLine(clubName)}'s rep was not approved. If you think this is a mistake, reply to this email.`
+}
+
+/**
+ * The email a member gets once a keeper names them the club's rep: what it
+ * lets them do and one link to `/manage/club`, which takes a club's rep to
+ * their club's page. It names no one who decided, no region and no seat.
+ * The site reads the role afresh on every page it opens, so the link works
+ * at once.
+ */
+export function repNamedEmail(data: { siteUrl: string; clubName: string }): EmailMessage {
+  const heading = repNamedSubject(data.clubName)
+  const link = `${data.siteUrl}/manage/club`
+  return {
+    to: '',
+    subject: heading,
+    html: renderEmail({
+      siteUrl: data.siteUrl,
+      heading,
+      preheader: heading,
+      body: p(escapeHtml(`${heading}.`)) + p(escapeHtml(REP_NAMED_CAN)),
+      cta: { label: REP_NAMED_LINK_LABEL, url: link },
+      footerNote: escapeHtml(REP_MEMBER_FOOTER),
+    }),
+    text: [`${heading}.`, '', REP_NAMED_CAN, '', `${REP_NAMED_LINK_LABEL}: ${link}`, '', REP_MEMBER_FOOTER].join('\n'),
+  }
+}
+
+/** The email a member gets once a keeper declines their request: one sentence, naming no one who decided. */
+export function repDeclinedEmail(data: { siteUrl: string; clubName: string }): EmailMessage {
+  const heading = repDeclinedSubject(data.clubName)
+  const line = repDeclinedLine(data.clubName)
+  return {
+    to: '',
+    subject: heading,
+    html: renderEmail({
+      siteUrl: data.siteUrl,
+      heading,
+      preheader: heading,
+      body: p(escapeHtml(line)),
+      footerNote: escapeHtml(REP_MEMBER_FOOTER),
+    }),
+    text: [`${heading}.`, '', line, '', REP_MEMBER_FOOTER].join('\n'),
   }
 }

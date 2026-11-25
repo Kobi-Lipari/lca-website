@@ -6,7 +6,8 @@
 // (WS09 step 23). Both find the club by clubNamedBy and build the answer by
 // clubPageAnswer, so the HTML a search engine reads and the page a visitor
 // sees come from the same queries and the same listing rule. Who may read is
-// each caller's own: this file reads no sign-in and no constant.
+// each caller's own: this file reads no sign-in, and one constant only,
+// CLUB_PAGES_ON, for the one key of WS09 step 31 (rep_wanted below).
 //
 // The address part is looked up in a fixed order: a current slug, then an
 // old slug from club_slug_history, then a club's id. A slug and an old slug
@@ -32,6 +33,7 @@
 // events, through listedWhere, with the keys a visitor's event answers
 // already carry; the news rows are today's club answer's, by its rule.
 import { clubToldLine } from './authorLine'
+import { CLUB_PAGES_ON } from './pages'
 import { nearestClubs } from './nearest'
 import { relayKind } from './relay'
 import { suggestionGoesTo } from './suggestions'
@@ -231,6 +233,11 @@ export async function clubPageAnswer(db: D1Database, club: PageClub): Promise<Cl
     places: placeRows,
     contact: { name: text(club.contact_name_public), goes_to: goesTo },
     suggestion: { goes_to: suggestionTo },
+    // Whether the page invites a member to Ask to be its named rep (WS09 step 31): while the club has no named rep,
+    // which is exactly while the suggestion does not go to the club's rep, so no query more is made. Never who.
+    // Sent only while CLUB_PAGES_ON is set, read here at each call, so with it unset the keepers' preview is the
+    // base's answer to the byte.
+    ...(CLUB_PAGES_ON ? { rep_wanted: suggestionTo !== 'club_rep' } : {}),
     events: eventRows,
     news: newsRows,
     nearest,

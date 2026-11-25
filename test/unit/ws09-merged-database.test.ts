@@ -105,10 +105,14 @@ describe('0071 and 0072 in either order', () => {
   const clocked = (db: DatabaseSync, t: string) =>
     all<{ name: string; dflt_value: string | null }>(db, `SELECT name, dflt_value FROM pragma_table_info('${t}')`)
       .filter((c) => /now|current_(timestamp|date|time)/i.test(c.dflt_value ?? '')).map((c) => c.name)
+  // Migration 0067's seed writes a club's told_updated_at from the clock, with no default: whether it is set is held, never the second.
+  const STAMPED = ['told_updated_at']
   const contents = (db: DatabaseSync) => Object.fromEntries(TOUCHED.map((t) => {
     const skip = clocked(db, t)
     const rows = all<Record<string, unknown>>(db, `SELECT * FROM "${t}" ORDER BY rowid`)
-    return [t, rows.map((row) => Object.fromEntries(Object.entries(row).filter(([k]) => !skip.includes(k))))]
+    return [t, rows.map((row) => Object.fromEntries(
+      Object.entries(row).filter(([k]) => !skip.includes(k)).map(([k, v]) => [k, STAMPED.includes(k) && v !== null ? 'set' : v]),
+    ))]
   }))
   const definitions = (db: DatabaseSync) =>
     all<{ type: string; name: string; sql: string | null }>(db, 'SELECT type, name, sql FROM sqlite_master ORDER BY type, name')

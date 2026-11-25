@@ -347,7 +347,9 @@ describe('calls through the barrel send what they sent before', () => {
     // Moved at WS09 step 28: Suggest an update's two paths are held on their own the same way.
     expect(ADDED.paths).toEqual(expect.arrayContaining(['/api/clubs/*/reports', '/api/admin/clubs/*/reports/*']))
     // Moved at WS09 step 30: Mark as handled's path is held on its own too, with Suggest a club's, which ends in /reports.
-    expect([...ADDED.paths].filter((p) => p !== '/api/clubs/*/contact' && p !== '/api/clubs/reply/*' && !p.endsWith('/reports') && !p.endsWith('/reports/*') && p !== '/api/admin/club-reports/*').sort()).toEqual([
+    // Moved at WS09 step 31: Ask to be its named rep's two paths are held on their own the same way.
+    expect(ADDED.paths).toEqual(expect.arrayContaining(['/api/clubs/*/rep-requests', '/api/admin/clubs/*/rep-requests/*']))
+    expect([...ADDED.paths].filter((p) => p !== '/api/clubs/*/contact' && p !== '/api/clubs/reply/*' && !p.endsWith('/reports') && !p.endsWith('/reports/*') && p !== '/api/admin/club-reports/*' && !p.includes('/rep-requests')).sort()).toEqual([
       '/api/admin/clubs/*/confirm', '/api/admin/clubs/monthly-check', '/api/admin/mail/newsletter', '/api/admin/mail/newsletter/issue',
       '/api/admin/mail/newsletter/issue/start', '/api/admin/mail/newsletter/issues', '/api/admin/mail/newsletter/stop', '/api/admin/mail/newsletter/templates', '/api/admin/mail/newsletter/test',
       '/api/admin/tournaments/*/approval', '/api/clubs/*/page', '/api/clubs/confirm/*', '/api/mail/preferences/*', '/api/mail/unsubscribe/*', '/api/me/media-manager', '/api/me/payout-request', '/api/me/tournament-creation', '/api/workspace/region',

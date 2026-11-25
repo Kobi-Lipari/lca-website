@@ -36,6 +36,9 @@ import {
   clubReportActionRequestSchema, clubReportActionResponseSchema, clubSuggestionRequestSchema, clubSuggestionResponseSchema,
 } from './clubReports'
 import {
+  repDecisionRequestSchema, repDecisionResponseSchema, repRequestResponseSchema, repRequestSchema,
+} from './clubRepRequests'
+import {
   clubRequestHandledRequestSchema, clubRequestHandledResponseSchema, clubRequestResponseSchema, clubRequestSchema,
 } from './clubRequests'
 import {
@@ -131,6 +134,9 @@ export const contracts = {
   'admin/clubs/[id]/reports/[reportId]': {
     POST: { request: clubReportActionRequestSchema, response: clubReportActionResponseSchema },
   },
+  'admin/clubs/[id]/rep-requests/[requestId]': {
+    POST: { request: repDecisionRequestSchema, response: repDecisionResponseSchema },
+  },
   'admin/clubs/monthly-check': {
     POST: { request: monthlyCheckRequestSchema, response: monthlyCheckAnswerSchema },
   },
@@ -210,6 +216,9 @@ export const contracts = {
   },
   'clubs/[id]/reports': {
     POST: { request: clubSuggestionRequestSchema, response: clubSuggestionResponseSchema },
+  },
+  'clubs/[id]/rep-requests': {
+    POST: { request: repRequestSchema, response: repRequestResponseSchema },
   },
   'clubs/confirm/[token]': {
     GET: { response: clubLinkResponseSchema },

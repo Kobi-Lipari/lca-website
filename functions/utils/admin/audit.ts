@@ -54,6 +54,14 @@ export type AdminAction =
   // it names the row's id and kind alone, never the person, their address or
   // anyone's words.
   | 'club_request_handled'
+  // Ask to be its named rep (WS09 step 31): a keeper named the member the
+  // club's rep. It names the member as role_change does, with the club's id,
+  // the request's id and the role and club before; never the member's note.
+  | 'club_rep_named'
+  // Ask to be its named rep (WS09 step 31): a keeper declined the request.
+  // It names the club and the request's id, never the member, so it never
+  // stands in the way of the member delete; nothing changed of the member.
+  | 'club_rep_request_declined'
   // A representative's club event in the LCA admins' wait (WS09 step 18): sent
   // for review, approved and listed, or sent back with changes asked. Each
   // names the event and its id, never the note an LCA admin wrote.

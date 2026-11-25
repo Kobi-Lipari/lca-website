@@ -84,6 +84,12 @@ export const clubPageResponseSchema = z.strictObject({
    * as one word, never who and never an address.
    */
   suggestion: z.strictObject({ goes_to: z.enum(SUGGESTION_GOES_TO) }),
+  /**
+   * Whether the page invites a member to Ask to be its named rep (WS09 step 31): true while the club has no named rep.
+   * It says no more than suggestion.goes_to already does, and never who; the page draws the invitation only with
+   * clubPagesOn(), and the request it opens is refused while CLUB_PAGES_ON is unset.
+   */
+  rep_wanted: z.boolean().optional(),
   events: z.array(clubPageEventSchema),
   news: z.array(z.strictObject({
     id: idSchema,

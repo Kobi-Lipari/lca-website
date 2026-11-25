@@ -61,7 +61,8 @@ describe('uniqueSlug', () => {
   })
 
   it('is never a reserved word, nor a reserved word with a suffix that is taken', () => {
-    expect([...RESERVED_SLUGS]).toEqual(['suggest', 'reports', 'confirm', 'reply', 'page', 'contact', 'logo'])
+    // Moved at WS09 step 31: 'rep-requests', the name of Ask to be its named rep's file beside the address part.
+    expect([...RESERVED_SLUGS]).toEqual(['suggest', 'reports', 'confirm', 'reply', 'page', 'contact', 'logo', 'rep-requests'])
     for (const word of RESERVED_SLUGS) {
       expect(isReservedSlug(word), word).toBe(true)
       expect(uniqueSlug(word, []), word).toBe(`${word}-2`)

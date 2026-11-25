@@ -19,9 +19,10 @@ export const FALLBACK_SLUG = 'club'
 
 /**
  * The words that name the club pages' own addresses (/clubs/suggest and the
- * like), which no club may take as its slug.
+ * like), which no club may take as its slug. 'rep-requests' joined at WS09
+ * step 31, the name of Ask to be its named rep's file beside the address part.
  */
-export const RESERVED_SLUGS: readonly string[] = ['suggest', 'reports', 'confirm', 'reply', 'page', 'contact', 'logo']
+export const RESERVED_SLUGS: readonly string[] = ['suggest', 'reports', 'confirm', 'reply', 'page', 'contact', 'logo', 'rep-requests']
 
 /** True for a word the club pages keep for their own addresses. */
 export function isReservedSlug(slug: string): boolean {

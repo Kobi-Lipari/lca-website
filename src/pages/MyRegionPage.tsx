@@ -70,6 +70,7 @@ import { MonthlyCheckButton } from '@/areas/clubs/components/MonthlyCheckButton'
 import { OverdueSuggestionsButton } from '@/areas/clubs/components/OverdueSuggestionsButton'
 import { SuggestionRows } from '@/areas/clubs/components/SuggestionRows'
 import { ClubRequestRows } from '@/areas/clubs/components/ClubRequestRows'
+import { RepRequestRows } from '@/areas/clubs/components/RepRequestRows'
 import { useRowsShown, type SuggestionRow } from '@/areas/clubs/suggestionRows'
 import {
   clubsToConfirm, clubsWord, confirmAllWords, errorWords, namesInWords, skippedWords, waitingForAnswer, withConfirmed, withoutSuggestion,
@@ -246,6 +247,9 @@ export function MyRegionPage() {
   // has one, and on after the last has gone, so the list's status and heading stay on the page.
   const requests = answer?.clubRequests ?? []
   const requestsShown = useRowsShown(requests.length > 0)
+  // The requests of Ask to be its named rep (WS09 step 31), drawn the same way under a heading of their own.
+  const repRequests = answer?.repRequests ?? []
+  const repRequestsShown = useRowsShown(repRequests.length > 0)
 
   /** After a press of Send on: the answer again, quietly, so each row passed on says when; a failure leaves the page as it is. */
   function readAgain() {
@@ -365,6 +369,13 @@ export function MyRegionPage() {
             rows={requests}
             isAdmin={isAdmin}
             onHandled={(row) => setAnswer((a) => ({ ...a, clubRequests: (a.clubRequests ?? []).filter((r) => r.id !== row.id) }))}
+          />
+        )}
+
+        {answer && repRequestsShown && (
+          <RepRequestRows
+            rows={repRequests}
+            onDecided={(row) => setAnswer((a) => ({ ...a, repRequests: (a.repRequests ?? []).filter((r) => r.id !== row.id) }))}
           />
         )}
       </section>

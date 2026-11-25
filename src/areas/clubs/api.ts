@@ -16,6 +16,7 @@ import type {
   ClubContactRequest, ClubContactResponse, ClubLinkConfirmResponse, ClubLinkResponse, ClubPageResponse, ClubReplyRequest, ClubReplyResponse, ClubReplySentResponse, MonthlyCheckResponse, ReportClockResponse,
   ClubReportActionRequest, ClubReportActionResponse, ClubSuggestionRequest, ClubSuggestionResponse, OpenSuggestion,
   ClubRequest, ClubRequestHandledResponse, ClubRequestResponse,
+  RepDecisionRequest, RepDecisionResponse, RepRequest, RepRequestResponse, RepRequestRow,
 } from '@domain/contracts'
 
 export interface ApiClubDetail {
@@ -182,6 +183,37 @@ export async function markClubRequestHandled(reportId: number): Promise<ClubRequ
   return handleResponse<ClubRequestHandledResponse>(response)
 }
 
+/**
+ * Ask to be its named rep, POST /api/clubs/:address/rep-requests (WS09 step
+ * 31): how the member is connected to the club and an optional note, sent
+ * signed in, since the request is the member's own. The answer says only
+ * that it was sent. A refusal throws an ApiError with its status and words.
+ */
+export async function sendRepRequest(address: string, body: RepRequest): Promise<RepRequestResponse> {
+  const response = await fetch(`/api/clubs/${encodeURIComponent(address)}/rep-requests`, {
+    method: 'POST',
+    headers: await authHeaders(),
+    body: JSON.stringify(body),
+  })
+  return handleResponse<RepRequestResponse>(response)
+}
+
+/**
+ * A keeper's decision on one request of Ask to be its named rep, POST
+ * /api/admin/clubs/:id/rep-requests/:requestId (WS09 step 31): approve, with
+ * the member's role as the question named it, or decline. Answers the
+ * request and its new status; a request decided already, or a member whose
+ * role has changed, is refused with 409 in words.
+ */
+export async function decideRepRequest(clubId: string, requestId: number, body: RepDecisionRequest): Promise<RepDecisionResponse> {
+  const response = await fetch(`/api/admin/clubs/${encodeURIComponent(clubId)}/rep-requests/${encodeURIComponent(String(requestId))}`, {
+    method: 'POST',
+    headers: await authHeaders(),
+    body: JSON.stringify(body),
+  })
+  return handleResponse<RepDecisionResponse>(response)
+}
+
 export async function adminUpdateClub(
   id: string,
   body: {
@@ -257,6 +289,8 @@ export async function adminGetClub(id: string): Promise<{
   eventRights?: AdminClubResponse['eventRights']
   /** The club's open suggestions, answered to a keeper only while one is open and CLUB_KEEPERS_ON is set (WS09 step 28). */
   openSuggestions?: OpenSuggestion[]
+  /** The club's open requests of Ask to be its named rep, answered only to a keeper who may decide them, only while one is open (WS09 step 31). */
+  repRequests?: RepRequestRow[]
 }> {
   const response = await fetch(`/api/admin/clubs/${encodeURIComponent(id)}`, {
     headers: await authHeaders(),

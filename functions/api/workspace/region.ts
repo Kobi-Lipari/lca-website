@@ -43,6 +43,14 @@
 // rows is marked for no cache to keep. With none the key is absent, so the
 // answer is as before, its headers too.
 //
+// The open requests of Ask to be its named rep (WS09 step 31) come the same
+// way under `repRequests`: for a holder of a seat, those of the clubs in the
+// regions the seat covers; for an LCA admin, every one; never the person's
+// own, and never one of the club whose rep the person is
+// (functions/utils/clubs/repRequests.ts). Each carries the member's name and
+// address, for the keeper to write to them; an answer with such rows is
+// marked for no cache to keep, and with none the key is absent.
+//
 // While CLUB_KEEPERS_ON is unset everyone gets 403 in words before anything
 // is read: no sign in is checked and no query is made.
 import type { Env, MemberRow } from '../../types'
@@ -54,6 +62,7 @@ import { getRegionalClubIds } from '../../utils/admin/permissions'
 import { admittedByRegionAlone } from '../../utils/clubs/memberView'
 import { openSuggestionsOf } from '../../utils/clubs/suggestions'
 import { openClubRequests } from '../../utils/clubs/clubRequests'
+import { openRepRequests } from '../../utils/clubs/repRequests'
 import { checkCounts, checkWords, needsCheck, sortRegionCards } from '../../../domain/clubs/regionCards'
 import { nextCheckWords } from '../../../domain/clubs/monthlyCheck'
 import type { RegionClub, WorkspaceRegionResponse } from '../../../domain/contracts/clubs'
@@ -246,10 +255,11 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
   if (inReview) answer.thisMonth.inReview = [...inReview.values()].reduce((sum, n) => sum + n, 0)
   // The rows of Suggest a club and Start a club the person keeps, only when there is one.
   const requests = await openClubRequests(db, { all: isAdmin, regions: namedRegions(seats) }, now)
-  if (requests.length > 0) {
-    answer.clubRequests = requests
-    // People's names and addresses are in it: no cache keeps it.
-    return jsonResponse(answer, 200, { 'Cache-Control': 'no-store' })
-  }
+  if (requests.length > 0) answer.clubRequests = requests
+  // The requests of Ask to be its named rep the person may decide, only when there is one (WS09 step 31).
+  const repRequests = await openRepRequests(db, { member, all: isAdmin, regions: namedRegions(seats) })
+  if (repRequests.length > 0) answer.repRequests = repRequests
+  // People's names and addresses are in either: no cache keeps it.
+  if (requests.length > 0 || repRequests.length > 0) return jsonResponse(answer, 200, { 'Cache-Control': 'no-store' })
   return jsonResponse(answer)
 }

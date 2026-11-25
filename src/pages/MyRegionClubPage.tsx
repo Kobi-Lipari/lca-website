@@ -47,6 +47,11 @@
 // (SuggestionRows.tsx); Fix the listing marks it and opens Listing. A page
 // opened by My region's Apply this says the row was marked and puts the
 // focus on the heading. With none open the page is as before.
+//
+// While a member's request of Ask to be its named rep for the club is open
+// (WS09 step 31) and the person may decide it, its row stands under the
+// banner with Name as rep and Decline (RepRequestRows.tsx); with none the
+// page is as before.
 import { lazy, Suspense, useCallback, useEffect, useRef, useState, type FocusEvent, type FormEvent } from 'react'
 import { Link, useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { ArrowLeft, ExternalLink } from 'lucide-react'
@@ -63,6 +68,8 @@ import { ClubNewsPanel, type ClubNewsForm } from '@/areas/clubs/components/ClubN
 import { ClubEventsList, type EventLink } from '@/areas/clubs/components/ClubEventsList'
 import { errorWords } from '@/areas/clubs/region'
 import { ClubSuggestionsBanner } from '@/areas/clubs/components/SuggestionRows'
+import { RepRequestRows } from '@/areas/clubs/components/RepRequestRows'
+import { useRowsShown } from '@/areas/clubs/suggestionRows'
 import { RESOLVED_WORDS } from '@domain/clubs/suggestion'
 import { regionEventsOn } from '@/areas/clubs/switches'
 import { checkWords } from '@domain/clubs/regionCards'
@@ -214,6 +221,11 @@ function ClubInRegion({ id }: { id: string }) {
   }, [club, id, navigate, search])
 
   usePageTitle(club ? `${club.name} · My region` : 'My region')
+
+  // The club's requests of Ask to be its named rep: drawn from the first draw that has one, and on after the last has
+  // gone, so the list's status and heading stay on the page.
+  const repRequests = data?.repRequests ?? []
+  const repRequestsShown = useRowsShown(repRequests.length > 0)
 
   // A change to the club in hand, made only while it is still the club the change was asked for.
   const setClubData = (forClub: string, change: (d: ClubAnswer) => ClubAnswer) => {
@@ -455,6 +467,15 @@ function ClubInRegion({ id }: { id: string }) {
 
         {/* A visitor's suggestions, while any is open (WS09 step 28); with none it draws nothing. */}
         {club && data && <ClubSuggestionsBanner key={club.id} suggestions={data.openSuggestions ?? []} clubId={club.id} clubName={club.name} onApplied={() => setTab('listing')} />}
+
+        {/* A member's requests to be the club's rep, while any is open and the person may decide it (WS09 step 31); with none it draws nothing. */}
+        {club && repRequestsShown && (
+          <RepRequestRows
+            rows={repRequests}
+            headingId="club-rep-requests-title"
+            onDecided={(row) => setClubData(club.id, (d) => ({ ...d, repRequests: (d.repRequests ?? []).filter((r) => r.id !== row.id) }))}
+          />
+        )}
 
         {/* Hidden, not taken away, while another tab shows: out of the tab order and of what a screen reader reads, with what was typed kept. */}
         {club && data && (tab === 'listing' || editorDrawn) && (

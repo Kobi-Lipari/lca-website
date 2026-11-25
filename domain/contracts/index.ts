@@ -5,6 +5,7 @@
 export * from './clubs'
 export * from './clubContact'
 export * from './clubPage'
+export * from './clubRepRequests'
 export * from './clubReply'
 export * from './clubReports'
 export * from './clubRequests'
