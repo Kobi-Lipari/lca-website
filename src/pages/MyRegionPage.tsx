@@ -47,6 +47,14 @@
 // says how many were passed on and how many emails went; the page then reads
 // its answer again, so each row passed on says when. With no row overdue the
 // page is as before.
+//
+// The rows of Suggest a club and Start a club (WS09 step 30) come after the
+// to-do list, under their own heading, "New clubs to check"
+// (ClubRequestRows.tsx): for a holder of a seat the rows of the regions it
+// covers, for an LCA admin every row, those whose place was not found among
+// them. Each shows the person's name and address, with Email {first name}
+// and Mark as handled, and for an LCA admin Add the club. With none the page
+// is as before.
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { ArrowLeft } from 'lucide-react'
@@ -61,6 +69,7 @@ import { ThisMonthBar } from '@/areas/clubs/components/ThisMonthBar'
 import { MonthlyCheckButton } from '@/areas/clubs/components/MonthlyCheckButton'
 import { OverdueSuggestionsButton } from '@/areas/clubs/components/OverdueSuggestionsButton'
 import { SuggestionRows } from '@/areas/clubs/components/SuggestionRows'
+import { ClubRequestRows } from '@/areas/clubs/components/ClubRequestRows'
 import { useRowsShown, type SuggestionRow } from '@/areas/clubs/suggestionRows'
 import {
   clubsToConfirm, clubsWord, confirmAllWords, errorWords, namesInWords, skippedWords, waitingForAnswer, withConfirmed, withoutSuggestion,
@@ -233,6 +242,10 @@ export function MyRegionPage() {
   // after a press has sent them, so its status, and the focus on it, stay on the page.
   const overdue = isAdmin && todo.some((row) => isSuggestionOverdue({ status: 'open', passedOnAt: row.passedOnAt, ageDays: row.ageDays }))
   const overdueShown = useRowsShown(overdue)
+  // The rows of Suggest a club and Start a club, oldest first as the server sends them: drawn from the first draw that
+  // has one, and on after the last has gone, so the list's status and heading stay on the page.
+  const requests = answer?.clubRequests ?? []
+  const requestsShown = useRowsShown(requests.length > 0)
 
   /** After a press of Send on: the answer again, quietly, so each row passed on says when; a failure leaves the page as it is. */
   function readAgain() {
@@ -344,6 +357,14 @@ export function MyRegionPage() {
             tools={overdueShown ? <OverdueSuggestionsButton onSent={readAgain} /> : undefined}
             onResolved={(row) => setAnswer((a) => withoutSuggestion(a, row.clubId, row.id))}
             onApplied={(row) => navigate(`/workspace/region/clubs/${encodeURIComponent(row.clubId)}`, { state: { suggestionApplied: true } })}
+          />
+        )}
+
+        {answer && requestsShown && (
+          <ClubRequestRows
+            rows={requests}
+            isAdmin={isAdmin}
+            onHandled={(row) => setAnswer((a) => ({ ...a, clubRequests: (a.clubRequests ?? []).filter((r) => r.id !== row.id) }))}
           />
         )}
       </section>

@@ -6,8 +6,8 @@
 // /clubs/suggest is today's "Club not found", and nothing asks the new
 // page's answer. With newClubs on but newLook off the same holds, since the
 // new page is drawn only with both. With both on, /clubs/:id draws the new
-// page from its one answer, and /clubs/suggest goes to today's contact page
-// until its own form is built. Each case sets the switches it reads through
+// page from its one answer, and /clubs/suggest draws its own form (WS09's
+// thirtieth step; before it, a way to today's contact page). Each case sets the switches it reads through
 // the mocked FEATURES. Every name, address and club here is made up.
 import { act, cleanup, render, screen, waitFor } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
@@ -158,10 +158,11 @@ describe('with newClubs and newLook on', () => {
     expect(asked).not.toContain(`/api/clubs/${CLUB_SLUG}`)
   })
 
-  it('sends /clubs/suggest to today\'s contact page, and asks no club for it', async () => {
+  it('draws Suggest a club at /clubs/suggest, and asks no club for it', async () => {
     set({ newClubs: true, newLook: true, clubEmailHidden: true })
     await site('/clubs/suggest')
-    await waitFor(() => expect(screen.queryByRole('heading', { level: 1, name: /contact/i })).toBeTruthy(), { timeout: 10000 })
+    // WS09's thirtieth step draws Suggest a club there in place of the way to the contact page.
+    await waitFor(() => expect(screen.queryByRole('heading', { level: 1, name: 'Suggest a club' })).toBeTruthy(), { timeout: 10000 })
     expect(screen.queryByText('Club not found')).toBeNull()
     expect(asked.filter((url) => url.startsWith('/api/clubs/'))).toEqual([])
   })

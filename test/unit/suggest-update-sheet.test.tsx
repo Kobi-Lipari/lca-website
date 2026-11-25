@@ -201,7 +201,8 @@ describe('the sheet', () => {
       expect((within(dialog()).getByLabelText('Tell us what changed') as HTMLTextAreaElement).value).toBe('Example words kept.')
       expect((within(dialog()).getByLabelText('Your email (optional)') as HTMLInputElement).value).toBe('player.one@example.org')
       expect(pressed()).toEqual(['Venue or address'])
-      expect(window.turnstile!.render).toHaveBeenCalledTimes(2)
+      // The check is drawn afresh once its script's promise settles, a moment after the words show.
+      await waitFor(() => expect(window.turnstile!.render).toHaveBeenCalledTimes(2))
       cleanup()
       window.turnstile = standIn()
     }

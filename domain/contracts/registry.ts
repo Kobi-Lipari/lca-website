@@ -36,6 +36,9 @@ import {
   clubReportActionRequestSchema, clubReportActionResponseSchema, clubSuggestionRequestSchema, clubSuggestionResponseSchema,
 } from './clubReports'
 import {
+  clubRequestHandledRequestSchema, clubRequestHandledResponseSchema, clubRequestResponseSchema, clubRequestSchema,
+} from './clubRequests'
+import {
   adminTournamentResponseSchema,
   clearinghouseQuerySchema,
   clearinghouseResponseSchema,
@@ -111,6 +114,9 @@ export type RouteContracts = Partial<Record<ContractMethod, MethodContract>>
 export const contracts = {
   tournaments: {
     GET: { response: tournamentsListResponseSchema },
+  },
+  'admin/club-reports/[reportId]': {
+    POST: { request: clubRequestHandledRequestSchema, response: clubRequestHandledResponseSchema },
   },
   'admin/clubs/[id]': {
     GET: { response: adminClubResponseSchema },
@@ -212,6 +218,9 @@ export const contracts = {
   'clubs/reply/[token]': {
     GET: { response: clubReplyResponseSchema },
     POST: { request: clubReplyRequestSchema, response: clubReplySentResponseSchema },
+  },
+  'clubs/reports': {
+    POST: { request: clubRequestSchema, response: clubRequestResponseSchema },
   },
   'mail/preferences/[token]': {
     GET: { response: emailChoicesResponseSchema },

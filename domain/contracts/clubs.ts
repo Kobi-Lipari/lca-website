@@ -8,6 +8,7 @@ import { z } from 'zod'
 import { dollarsSchema, flagSchema, idSchema, isoDateSchema, storedTimestampSchema } from './common'
 import { registrationStatusSchema, savedSectionSchema, tournamentStatusSchema } from './events'
 import { openSuggestionSchema } from './clubReports'
+import { clubRequestRowSchema } from './clubRequests'
 
 /**
  * The club's public row: today's 13 columns of clubs, in the table's own
@@ -494,6 +495,12 @@ export const workspaceRegionResponseSchema = z.strictObject({
     inReview: z.number().int().nonnegative().optional(),
   }),
   regions: z.array(regionKeepersSchema),
+  /**
+   * The open rows of Suggest a club and Start a club (WS09 step 30) the person keeps: for a holder of a seat, those of
+   * the regions the seat covers; for an LCA admin, every one, those with no region among them. Absent when there is
+   * none, so the answer with none is as before.
+   */
+  clubRequests: z.array(clubRequestRowSchema).optional(),
 })
 
 /**

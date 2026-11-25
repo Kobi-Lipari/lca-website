@@ -157,7 +157,8 @@ describe('where the provider\'s address is', () => {
     expect(site.filter((f) => /spamCheckScript['"]/.test(read(f)))).toEqual(['src/areas/clubs/components/SpamCheck.tsx'])
     // The contact relay's form (WS09 step 26) is the one importer, inside the club page's own chunk, never the main script.
     // Moved at WS09 step 28: the Suggest an update sheet draws it too, in its own chunk, fetched when it first opens.
-    expect(site.filter((f) => /components\/SpamCheck['"]|['"]\.\/SpamCheck['"]/.test(read(f))).sort()).toEqual(['src/areas/clubs/components/ContactRelayForm.tsx', 'src/areas/clubs/components/SuggestUpdateSheet.tsx'])
+    // Moved at WS09 step 30: the form of Suggest a club and Start a club draws it too, in its page's own chunk.
+    expect(site.filter((f) => /components\/SpamCheck['"]|['"]\.\/SpamCheck['"]/.test(read(f))).sort()).toEqual(['src/areas/clubs/components/ContactRelayForm.tsx', 'src/areas/clubs/components/SuggestClubForm.tsx', 'src/areas/clubs/components/SuggestUpdateSheet.tsx'])
     expect(read('index.html')).not.toContain('challenges.cloudflare.com')
   })
 })

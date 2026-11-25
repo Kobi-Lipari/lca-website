@@ -47,6 +47,7 @@ const ScannerPage = lazy(() => import('@/pages/ScannerPage').then(m => ({ defaul
 const RegisterPage = lazy(() => import('@/pages/RegisterPage').then(m => ({ default: m.RegisterPage })))
 const ResetPasswordPage = lazy(() => import('@/pages/ResetPasswordPage').then(m => ({ default: m.ResetPasswordPage })))
 const ScholasticPage = lazy(() => import('@/pages/ScholasticPage').then(m => ({ default: m.ScholasticPage })))
+const SuggestClubPage = lazy(() => import('@/pages/SuggestClubPage').then(m => ({ default: m.SuggestClubPage })))
 const SupportPage = lazy(() => import('@/pages/SupportPage').then(m => ({ default: m.SupportPage })))
 const TournamentDetailPage = lazy(() => import('@/pages/TournamentDetailPage').then(m => ({ default: m.TournamentDetailPage })))
 const TournamentManagePage = lazy(() => import('@/pages/TournamentManagePage').then(m => ({ default: m.TournamentManagePage })))
@@ -201,8 +202,8 @@ function App() {
             <Route path="/clubs" element={<ClubsPage />} />
             {/* The page a Still accurate link in the monthly check opens, with no sign-in (WS09 step 14); routed only while clubKeepers is on, so with it off the address draws what it draws today. */}
             {FEATURES.clubKeepers && <Route path="/clubs/confirm/:token" element={<ClubConfirmPage />} />}
-            {/* Suggest a club, which the menus open with newClubs on, goes to today's contact page until its own form is built (WS09 step 21, until step 30); with newClubs off there is no such route, and the address draws today's "Club not found". */}
-            {FEATURES.newClubs && <Route path="/clubs/suggest" element={<Navigate to="/contact?subject=club" replace />} />}
+            {/* Suggest a club and Start a club, which the menus open with newClubs on (WS09 step 30); with newClubs off there is no such route, and the address draws today's "Club not found". */}
+            {FEATURES.newClubs && <Route path="/clubs/suggest" element={<SuggestClubPage />} />}
             {/* Reply through LCA, behind sign-in on the page itself (WS09 step 27); routed only with clubPagesOn, before the club page's address. */}
             {clubPagesOn() && <Route path="/clubs/reply/:token" element={<ClubReplyPage />} />}
             {/* The new club page with clubPagesOn (newClubs and newLook, WS09 step 21); otherwise today's club page, as it always was. */}

@@ -48,6 +48,11 @@
 // sent by functions/utils/clubs/reportClock.ts when a suggestion has had no
 // answer in 14 days: to the LCA admins and, when the club's rep had it
 // first, to the region's representatives as well.
+//
+// And so is the email a keeper gets when someone suggests a club for the map
+// or wants to start one (clubRequestKeeperEmail, WS09 step 30), sent by
+// functions/utils/clubs/clubRequests.ts to the representatives of the region
+// the place was found in, else to the LCA admins.
 
 import { trySendEmail, type EmailEnv, type EmailMessage } from '../email'
 import { emailDetails, emailQuote, escapeHtml, p, renderEmail } from '../emailLayout'
@@ -55,8 +60,9 @@ import { resolveSiteUrl } from '../site'
 import { regionRepresentativesOf, representativesOfRegion } from './routing'
 // The contact relay (./relay.ts) reads the region's representatives and the LCA admins through this file, the one reader
 // of the routing among the club mail's files with the monthly check; Suggest an update (./suggestions.ts, WS09 step 28)
-// reads who keeps the club first, and each keeper after, the same way.
-export { clubRepsOf, keeperOf, lcaAdmins, regionRepresentativesOf, type ClubKeepers, type Keeper } from './routing'
+// reads who keeps the club first, and each keeper after, the same way; Suggest a club and Start a club
+// (./clubRequests.ts, WS09 step 30) read a region's representatives by its name, and the LCA admins.
+export { clubRepsOf, keeperOf, lcaAdmins, regionRepresentativesOf, representativesOfRegion, type ClubKeepers, type Keeper } from './routing'
 import { formatDate } from '../../../domain/format/date'
 import { NO_STATEMENT } from '../../../domain/clubs/monthlyCheck'
 
@@ -913,4 +919,109 @@ export function overdueSuggestionEmail(data: {
 /** How the club's own rep signs an answer to a suggestion: by the role and the club alone, never by a name. */
 export function clubRepSignOff(clubName: string): string {
   return `${oneLine(clubName)} representative`
+}
+
+// ── Suggest a club and Start a club (WS09 step 30) ───────────────
+
+/** Each kind's subject and heading: fixed words, never anything the person typed. */
+export const CLUB_REQUEST_SUBJECTS = {
+  new_club: 'Someone suggested a club for the map',
+  start_club: 'Someone wants to start a club',
+} as const
+
+/** The link's words on a keeper's email. */
+export const CLUB_REQUEST_LINK_LABEL = 'Open My region'
+
+/** Where the person's name and address are: on the row, for a keeper who signs in, and never in the email. */
+export const CLUB_REQUEST_WHO_LINE = 'Their name and email address are on the row in My region, so you can check with them. Sign in to see them.'
+
+/** Why the email came to this keeper, by the role they get it in. */
+export type ClubRequestReason = 'region' | 'open_seat' | 'not_found' | 'unreachable'
+
+/** The opening of a keeper's email: what it is, and why it came to them. */
+export function clubRequestOpening(kind: 'new_club' | 'start_club', reason: ClubRequestReason, region: string | null): string {
+  const what = kind === 'new_club'
+    ? 'Someone suggested a club for the map with Suggest a club on the LCA website.'
+    : 'Someone wants to start a club and wrote to LCA with Start a club on the LCA website.'
+  const area = region ? oneLine(region) : ''
+  const why = reason === 'region'
+    ? `It came to you as the ${area || 'region\'s'} representative.`
+    : reason === 'open_seat'
+      ? `It came to you as an LCA admin, since no one holds the ${area || 'region\'s'} seat.`
+      : reason === 'not_found'
+        ? 'It came to you as an LCA admin, since the place they gave was not found in Louisiana.'
+        : 'It came to you as an LCA admin, since it could not reach the region\'s representatives.'
+  return `${what} ${why}`
+}
+
+/**
+ * Where a keeper answers one row: My region's to-do list on the site's own address, at the row. `siteUrl` is the
+ * site's own address (functions/utils/site.ts), never anything from the request's body.
+ */
+export function clubRequestLink(siteUrl: string, rowId: number): string {
+  return `${siteUrl}/workspace/region#club-request-${rowId}`
+}
+
+/**
+ * The email a keeper gets for one row of Suggest a club or Start a club. The
+ * subject is fixed words by kind. It quotes the club's name, the place as
+ * typed and the person's words of where and when, each as a stranger's
+ * words (escaped in the HTML and written as text in the plain part), and
+ * never in the subject; it says the person's name and address are on the
+ * row, and links to the row in My region. It carries neither the person's
+ * name nor their address, in any part or header: its `to` is empty, as every
+ * template's is, and is filled for each keeper by the sender; the reply-to is
+ * left to the sender, LCA's own.
+ */
+export function clubRequestKeeperEmail(data: {
+  siteUrl: string
+  kind: 'new_club' | 'start_club'
+  reason: ClubRequestReason
+  region: string | null
+  clubName: string
+  place: string
+  message: string
+  link: string
+}): EmailMessage {
+  const heading = CLUB_REQUEST_SUBJECTS[data.kind]
+  const opening = clubRequestOpening(data.kind, data.reason, data.region)
+  const clubName = oneLine(data.clubName)
+  const place = oneLine(data.place)
+  const message = data.message.trim()
+  return {
+    to: '',
+    subject: heading,
+    html: renderEmail({
+      siteUrl: data.siteUrl,
+      heading,
+      preheader: heading,
+      body: p(escapeHtml(opening))
+        + emailQuote(clubName, 'Club name, in their words')
+        + emailQuote(place, 'City or ZIP, as they typed it')
+        + emailQuote(message, 'Where and when, in their words')
+        + p(escapeHtml(CLUB_REQUEST_WHO_LINE)),
+      cta: { label: CLUB_REQUEST_LINK_LABEL, url: data.link },
+      footerNote: escapeHtml(SUGGESTION_FOOTER),
+    }),
+    text: [
+      `${heading}.`,
+      '',
+      opening,
+      '',
+      'Club name, in their words:',
+      clubName,
+      '',
+      'City or ZIP, as they typed it:',
+      place,
+      '',
+      'Where and when, in their words:',
+      message,
+      '',
+      CLUB_REQUEST_WHO_LINE,
+      '',
+      `${CLUB_REQUEST_LINK_LABEL}: ${data.link}`,
+      '',
+      SUGGESTION_FOOTER,
+    ].join('\n'),
+  }
 }

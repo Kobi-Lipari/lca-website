@@ -34,6 +34,15 @@
 // since the person runs them; with it unset the answer is as before, with
 // no query more.
 //
+// The open rows of Suggest a club and Start a club (WS09 step 30), which
+// have no club, come under `clubRequests`: for a holder of a seat, the rows
+// of the regions the seat covers; for an LCA admin, every row, those whose
+// place was not found among them. Each carries the person's name and
+// address, for the keeper to check with them, and no one else's answer
+// carries them (functions/utils/clubs/clubRequests.ts); an answer with such
+// rows is marked for no cache to keep. With none the key is absent, so the
+// answer is as before, its headers too.
+//
 // While CLUB_KEEPERS_ON is unset everyone gets 403 in words before anything
 // is read: no sign in is checked and no query is made.
 import type { Env, MemberRow } from '../../types'
@@ -44,6 +53,7 @@ import { REGION_EVENTS_ON } from '../../utils/clubs/pages'
 import { getRegionalClubIds } from '../../utils/admin/permissions'
 import { admittedByRegionAlone } from '../../utils/clubs/memberView'
 import { openSuggestionsOf } from '../../utils/clubs/suggestions'
+import { openClubRequests } from '../../utils/clubs/clubRequests'
 import { checkCounts, checkWords, needsCheck, sortRegionCards } from '../../../domain/clubs/regionCards'
 import { nextCheckWords } from '../../../domain/clubs/monthlyCheck'
 import type { RegionClub, WorkspaceRegionResponse } from '../../../domain/contracts/clubs'
@@ -172,6 +182,11 @@ async function keepersOf(db: D1Database, regions: string[], memberId: string): P
   }))
 }
 
+/** The regions the seats name, each once; a seat with no region names none. */
+function namedRegions(seats: Array<{ region: string | null }>): string[] {
+  return [...new Set(seats.map((seat) => seat.region).filter((region): region is string => !!region))]
+}
+
 function byText(a: string, b: string): number {
   return a < b ? -1 : a > b ? 1 : 0
 }
@@ -229,5 +244,12 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
   }
   // This month's count of the events in LCA review, only while REGION_EVENTS_ON is set.
   if (inReview) answer.thisMonth.inReview = [...inReview.values()].reduce((sum, n) => sum + n, 0)
+  // The rows of Suggest a club and Start a club the person keeps, only when there is one.
+  const requests = await openClubRequests(db, { all: isAdmin, regions: namedRegions(seats) }, now)
+  if (requests.length > 0) {
+    answer.clubRequests = requests
+    // People's names and addresses are in it: no cache keeps it.
+    return jsonResponse(answer, 200, { 'Cache-Control': 'no-store' })
+  }
   return jsonResponse(answer)
 }

@@ -1,5 +1,6 @@
 {
   "paths": [
+    "/api/admin/club-reports/*",
     "/api/admin/clubs/*/confirm",
     "/api/admin/clubs/*/reports/*",
     "/api/admin/clubs/monthly-check",
@@ -16,6 +17,7 @@
     "/api/clubs/*/reports",
     "/api/clubs/confirm/*",
     "/api/clubs/reply/*",
+    "/api/clubs/reports",
     "/api/mail/preferences/*",
     "/api/mail/unsubscribe/*",
     "/api/me/media-manager",
@@ -57,6 +59,7 @@
     "getNewsletterTemplates": "admin",
     "getTournamentCreation": "membership",
     "getWorkspaceRegion": "clubs",
+    "markClubRequestHandled": "clubs",
     "moveTournamentApproval": "admin",
     "removeNewsletterTemplate": "admin",
     "renameNewsletterTemplate": "admin",
@@ -68,6 +71,7 @@
     "saveNewsletterTemplate": "admin",
     "sendClubMessage": "clubs",
     "sendClubReply": "clubs",
+    "sendClubRequest": "clubs",
     "sendClubSuggestion": "clubs",
     "sendMonthlyCheck": "clubs",
     "sendNewsletter": "admin",

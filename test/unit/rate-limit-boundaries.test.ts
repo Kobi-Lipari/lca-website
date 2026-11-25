@@ -56,8 +56,10 @@ describe('the limit and the spam check, as the tree holds them', () => {
     // Moved at WS09 step 28: Suggest an update calls both, and a keeper's reply to a suggestion calls the limit alone.
     const SUGGEST = 'functions/api/clubs/[id]/reports.ts'
     const ANSWER = 'functions/api/admin/clubs/[id]/reports/[reportId].ts'
-    expect(importsOf(LIMIT).sort()).toEqual([CONTACT, CONFIRM, REPLY, SPAM, SUGGEST, ANSWER].sort())
-    expect(importsOf(SPAM).sort()).toEqual([CONTACT, SUGGEST].sort())
+    // Moved at WS09 step 30: Suggest a club and Start a club calls both.
+    const NEW_CLUB = 'functions/api/clubs/reports.ts'
+    expect(importsOf(LIMIT).sort()).toEqual([CONTACT, CONFIRM, REPLY, SPAM, SUGGEST, ANSWER, NEW_CLUB].sort())
+    expect(importsOf(SPAM).sort()).toEqual([CONTACT, SUGGEST, NEW_CLUB].sort())
     expect(codeOf(CONFIRM)).toContain('const counted = await limit(context.env, context.request, LINK_LIMIT_ROUTE, { perHour: LINK_CALLS_AN_HOUR })')
     // Only once the token holds: after the forged link's refusal and before the club is read.
     const code = codeOf(CONFIRM)

@@ -50,6 +50,10 @@ export type AdminAction =
   // who pressed it and the counts alone, never a club, the visitor's words or
   // an address.
   | 'club_report_clock_sent'
+  // Mark as handled on a row of Suggest a club or Start a club (WS09 step 30):
+  // it names the row's id and kind alone, never the person, their address or
+  // anyone's words.
+  | 'club_request_handled'
   // A representative's club event in the LCA admins' wait (WS09 step 18): sent
   // for review, approved and listed, or sent back with changes asked. Each
   // names the event and its id, never the note an LCA admin wrote.

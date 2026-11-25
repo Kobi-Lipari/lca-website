@@ -15,6 +15,7 @@ import type { AdminClubResponse, ClubConfirmResponse, ClubPlace, UpdateClubReque
 import type {
   ClubContactRequest, ClubContactResponse, ClubLinkConfirmResponse, ClubLinkResponse, ClubPageResponse, ClubReplyRequest, ClubReplyResponse, ClubReplySentResponse, MonthlyCheckResponse, ReportClockResponse,
   ClubReportActionRequest, ClubReportActionResponse, ClubSuggestionRequest, ClubSuggestionResponse, OpenSuggestion,
+  ClubRequest, ClubRequestHandledResponse, ClubRequestResponse,
 } from '@domain/contracts'
 
 export interface ApiClubDetail {
@@ -148,6 +149,37 @@ export async function resolveClubSuggestion(clubId: string, reportId: number, bo
     body: JSON.stringify(body),
   })
   return handleResponse<ClubReportActionResponse>(response)
+}
+
+/**
+ * Suggest a club or Start a club, POST /api/clubs/reports (WS09 step 30):
+ * which of the two, the club's name, a city or ZIP code, where and when in
+ * the person's words, their name and address, and the spam check's token.
+ * Sent with no sign-in, since the answer is the same for everyone and the
+ * row holds no more for a member. The answer says only that it was sent. A
+ * refusal throws an ApiError with its status and words.
+ */
+export async function sendClubRequest(body: ClubRequest): Promise<ClubRequestResponse> {
+  const response = await fetch('/api/clubs/reports', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  })
+  return handleResponse<ClubRequestResponse>(response)
+}
+
+/**
+ * Mark as handled for one row of Suggest a club or Start a club, POST
+ * /api/admin/club-reports/:reportId (WS09 step 30). Answers the row and its
+ * new status; a row already handled is refused with 409 in words.
+ */
+export async function markClubRequestHandled(reportId: number): Promise<ClubRequestHandledResponse> {
+  const response = await fetch(`/api/admin/club-reports/${encodeURIComponent(String(reportId))}`, {
+    method: 'POST',
+    headers: await authHeaders(),
+    body: JSON.stringify({ action: 'handled' }),
+  })
+  return handleResponse<ClubRequestHandledResponse>(response)
 }
 
 export async function adminUpdateClub(

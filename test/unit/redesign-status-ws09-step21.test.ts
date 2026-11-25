@@ -295,11 +295,11 @@ describe('REDESIGN_STATUS.md, WS09 step 21: the parts against the files', () => 
   it('names its pins with their figures, and the moved checks hold', () => {
     const pins = bullet(block, '- **Pins moved.**')
     for (const file of MOVED) expect(pins, file).toContain(`\`${file}\``)
-    // Moved at WS09 step 27, whose page is the 42nd: 40 at this step, a later figure now.
-    expect(read('test/unit/app-routes.test.tsx')).toContain('expect(pages.length).toBe(42)')
+    // Moved at WS09 step 27, whose page is the 42nd, and at WS09 step 30, whose page is the 43rd: 40 at this step, a later figure now.
+    expect(read('test/unit/app-routes.test.tsx')).toContain('expect(pages.length).toBe(43)')
     expect(read('test/unit/redesign-status-ws09-step20.test.ts')).toContain('/clubPage(?!sOn\\b)|getClubPage|authorLine|nearestClubs|clubPageSections/')
     // Moved at WS09 step 28, whose two routes are the 112th and 113th: 111 before it, a later figure now.
-    expect(read('test/unit/routes.test.ts')).toContain('expect(real.filter((r) => r.startsWith(\'api/\')).length).toBe(113)')
+    expect(read('test/unit/routes.test.ts')).toContain('expect(real.filter((r) => r.startsWith(\'api/\')).length).toBe(115)')
     expect(read('test/unit/contracts-pending.ts')).toContain('export const PENDING_COUNT = 104')
     if (!latest) return
     expect(Object.values(contracts).reduce((n, route) => n + Object.keys(route).length, 0)).toBe(41)
