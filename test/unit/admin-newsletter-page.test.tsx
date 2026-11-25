@@ -49,6 +49,20 @@ import { holdsWords, starterLetter } from '../../functions/utils/mail/issues'
 import { defaultSubject, STARTER_IDS } from '@domain/mail/letter'
 
 const flags = vi.hoisted(() => ({ mailLists: true, mailPage: true }))
+/** The two second-factor constants: null reads the real one (both ship unset); a case that holds the line sets one. */
+const asked = vi.hoisted(() => ({ president: null as boolean | null, mediaManager: null as boolean | null }))
+vi.mock('@domain/mail/senders', async (importOriginal) => {
+  const real = await importOriginal<typeof import('@domain/mail/senders')>()
+  return {
+    ...real,
+    get PRESIDENT_NEEDS_SECOND_FACTOR() {
+      return asked.president ?? real.PRESIDENT_NEEDS_SECOND_FACTOR
+    },
+    get MEDIA_MANAGER_NEEDS_SECOND_FACTOR() {
+      return asked.mediaManager ?? real.MEDIA_MANAGER_NEEDS_SECOND_FACTOR
+    },
+  }
+})
 vi.mock('@/lib/features', async (importOriginal) => {
   const real = await importOriginal<typeof import('@/lib/features')>()
   return {
@@ -181,6 +195,8 @@ const editorOf = () => (document.querySelector('.ProseMirror') as HTMLElement & 
 beforeEach(() => {
   flags.mailLists = true
   flags.mailPage = true
+  asked.president = null
+  asked.mediaManager = null
   calls = []
   answers = {}
   window.localStorage.clear()
@@ -232,7 +248,25 @@ describe('who is let in, and who is sent where', () => {
     }
   }, 30_000)
 
-  it('tells the President seat\'s holder without a second factor so, with the way to set it up, and makes no call', async () => {
+  it('lets the President seat\'s holder and the media manager in without a second factor, as the rule ships, and makes the calls', async () => {
+    on('GET', ASK_URL, { status: 200, body: { mediaManager: true, secondFactor: false } })
+    for (const who of [
+      person({ role: 'lca_observer', seats: ['president'], aal: 'aal1' }),
+      person({ role: 'member', seats: ['president'], aal: 'aal1' }),
+      person({ seats: ['media-manager'], aal: 'aal1' }),
+    ]) {
+      calls = []
+      await site('/admin/newsletter', who)
+      await thePage()
+      expect(await screen.findByText('155 people will get it')).toBeTruthy()
+      expect(screen.queryByRole('link', { name: SECOND_FACTOR_LINE })).toBeNull()
+      expect(newsletterCalls()).toHaveLength(2)
+      cleanup()
+    }
+  }, 30_000)
+
+  it('tells the President seat\'s holder without a second factor so while PRESIDENT_NEEDS_SECOND_FACTOR is set, with the way to set it up, and makes no call', async () => {
+    asked.president = true
     for (const who of [person({ role: 'lca_observer', seats: ['president'], aal: 'aal1' }), person({ role: 'member', seats: ['president'], aal: 'aal1' })]) {
       calls = []
       await site('/admin/newsletter', who)
@@ -295,7 +329,8 @@ describe('who is let in, and who is sent where', () => {
     expect(newsletterCalls()).toEqual([])
   })
 
-  it('tells a media manager without a second factor so in the newsletter tab\'s words, with the way to set it up, and makes no call', async () => {
+  it('tells a media manager without a second factor so while MEDIA_MANAGER_NEEDS_SECOND_FACTOR is set, in the newsletter tab\'s words, with the way to set it up, and makes no call', async () => {
+    asked.mediaManager = true
     on('GET', ASK_URL, { status: 200, body: { mediaManager: true, secondFactor: false } })
     await site('/admin/newsletter', person({ seats: ['media-manager'], aal: 'aal1' }))
     await thePage()

@@ -1,4 +1,4 @@
-import { PRESIDENT_NEEDS_SECOND_FACTOR } from '@domain/mail/senders'
+import { MEDIA_MANAGER_NEEDS_SECOND_FACTOR, PRESIDENT_NEEDS_SECOND_FACTOR } from '@domain/mail/senders'
 import { FEATURES } from '@/lib/features'
 
 /** Least to most privileged; the admin panel offers them in this order. */
@@ -92,9 +92,19 @@ export function holdsPresidentSeat(seats: ReadonlyArray<{ slug: string }>): bool
   return seats.some((s) => s.slug === 'president')
 }
 
-/** Whether the President seat's holder may call the mail endpoints in this session: with a second factor while PRESIDENT_NEEDS_SECOND_FACTOR is set. */
+/** Whether the President seat's holder may call the mail endpoints in this session: always while PRESIDENT_NEEDS_SECOND_FACTOR is unset, as it ships; with a second factor while it is set. */
 export function presidentMayCall(assuranceLevel: string | null): boolean {
   return !PRESIDENT_NEEDS_SECOND_FACTOR || assuranceLevel === 'aal2'
+}
+
+/**
+ * Whether the media manager may call the newsletter's endpoints in this
+ * session: always while MEDIA_MANAGER_NEEDS_SECOND_FACTOR is unset, as it
+ * ships; while it is set, only when GET /api/me/media-manager answered that
+ * the session has a second factor.
+ */
+export function mediaManagerMayCall(secondFactor: boolean): boolean {
+  return !MEDIA_MANAGER_NEEDS_SECOND_FACTOR || secondFactor
 }
 
 /** Adding, editing and removing bylaws, rules, minutes and treasurer's reports. */

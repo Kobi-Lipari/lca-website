@@ -23,9 +23,11 @@
 //   waits for Amazon SES, the session verified once and the seat read in one
 //   statement; and still gets today's 403 from each of today's five campaign
 //   methods, writing nothing and sending nothing;
-// - (c) the second factor: a holder signed in without one, a token whose
-//   claim is missing or is not exactly 'aal2', a token the sign-in service
-//   refuses, and an LCA admin who holds the seat without one;
+// - (c) the second factor: a holder signed in without one, and a token whose
+//   claim is missing or is not exactly 'aal2', each let in as the rule ships
+//   and refused while MEDIA_MANAGER_NEEDS_SECOND_FACTOR is set (read through
+//   a getter on the mocked domain/mail/senders); a token the sign-in service
+//   refuses; and an LCA admin who holds the seat without one, refused in both;
 // - (d) the seat read at each request: a term ended between two calls, a
 //   seat marked inactive, and seats named almost the same;
 // - (e) every other part of Admin the media manager might try: the members
@@ -96,6 +98,20 @@ vi.mock('../../functions/utils/mail/switches', async (importOriginal) => {
     },
     get COMPLAINT_STOPS_OTHER_SENDERS() {
       return flags.complaintStops
+    },
+  }
+})
+/** The two second-factor constants: null reads the real one (both ship unset); a case that holds the old refusal sets one. */
+const turned = vi.hoisted(() => ({ president: null as boolean | null, mediaManager: null as boolean | null }))
+vi.mock('../../domain/mail/senders', async (importOriginal) => {
+  const real = await importOriginal<typeof import('../../domain/mail/senders')>()
+  return {
+    ...real,
+    get PRESIDENT_NEEDS_SECOND_FACTOR() {
+      return turned.president ?? real.PRESIDENT_NEEDS_SECOND_FACTOR
+    },
+    get MEDIA_MANAGER_NEEDS_SECOND_FACTOR() {
+      return turned.mediaManager ?? real.MEDIA_MANAGER_NEEDS_SECOND_FACTOR
     },
   }
 })
@@ -178,6 +194,8 @@ beforeEach(async () => {
   flags.sender = 'resend'
   flags.plan = 'free'
   flags.complaintStops = true
+  turned.president = null
+  turned.mediaManager = null
   // The seats a case made, with their terms, which cascade; and every newsletter and mail row a case left.
   await env.DB.prepare(`DELETE FROM board_members WHERE id LIKE 'seat-%'`).run()
   for (const table of ['email_campaign_recipients', 'email_campaigns', 'mail_list_choices', 'mail_contacts']) {
@@ -210,7 +228,8 @@ describe('(a) with MAIL_LISTS_ON unset', () => {
       ['an LCA admin', { as: admin }, answerOf(404, { error: 'Not found' })],
       ['an LCA Observer without the President seat', { as: observer, aal: 'aal1' }, answerOf(403, { error: LIST_MAILERS_ONLY })],
       ['the president', { as: president }, answerOf(404, { error: 'Not found' })],
-      ['the president without a second factor', { as: president, aal: 'aal1' }, answerOf(403, { error: MEDIA_MANAGER_SECOND_FACTOR, mfaRequired: true })],
+      // As the rule ships the president is not asked for a second factor; test/integration/mail-senders.test.ts holds the refusal while it is asked.
+      ['the president without a second factor', { as: president, aal: 'aal1' }, answerOf(404, { error: 'Not found' })],
     ]
     for (const [name, call] of NEWSLETTER) {
       for (const [who, as, expected] of callers) {
@@ -315,7 +334,23 @@ describe('(b) with MAIL_LISTS_ON set, the media manager signed in with a second 
 })
 
 describe('(c) the second factor', () => {
-  it('refuses the seat holder signed in without one on all four methods, 403 with mfaRequired in words of its own, writing nothing', async () => {
+  it('lets the seat holder signed in without one, as the rule ships, read, test, send and stop as with one', async () => {
+    const seated = await holder()
+    const read = await invoke(newsletterGet, { as: seated.id, aal: 'aal1' })
+    expect(read.status).toBe(200)
+    expect((await read.json<{ list: { id: string } }>()).list.id).toBe(NEWSLETTER_LIST_ID)
+    const send = await invoke(newsletterPost, { as: seated.id, aal: 'aal1', method: 'POST', body: SAMPLE })
+    expect(await written(send)).toEqual(answerOf(409, { error: WAITS_FOR_SES }))
+    const to = (await env.DB.prepare('SELECT email FROM members WHERE id = ?').bind(seated.id).first<{ email: string }>())!.email
+    const test = await invoke(testPost, { as: seated.id, aal: 'aal1', method: 'POST', body: { to, ...SAMPLE } })
+    expect(await written(test)).toEqual(answerOf(200, { sent: true }))
+    expect(emailOutbox.map((e) => [e.to, e.subject])).toEqual([[to, `[TEST] ${SAMPLE.subject}`]])
+    const stop = await invoke(stopPost, { as: seated.id, aal: 'aal1', method: 'POST' })
+    expect(await written(stop)).toEqual(answerOf(409, { error: NOTHING_SENDING }))
+  })
+
+  it('with MEDIA_MANAGER_NEEDS_SECOND_FACTOR set, refuses the seat holder signed in without one on all four methods, 403 with mfaRequired in words of its own, writing nothing', async () => {
+    turned.mediaManager = true
     const seated = await holder()
     const before = await traces()
     for (const [name, call] of NEWSLETTER) {
@@ -326,7 +361,20 @@ describe('(c) the second factor', () => {
     expect(await traces()).toEqual(before)
   })
 
-  it('refuses a token whose second-factor claim is missing or is not exactly aal2, and one the sign-in service refuses', async () => {
+  it('admits, as the rule ships, a token whose second-factor claim is missing or is not exactly aal2, and still refuses one the sign-in service refuses', async () => {
+    const seated = await holder()
+    for (const claim of [undefined, 'aal1', 'AAL2', 'aal2 ', ' aal2', 'aal3', true, 2, ['aal2'], { aal: 'aal2' }, null]) {
+      const claims: Record<string, unknown> = { sub: seated.id, role: 'authenticated' }
+      if (claim !== undefined) claims.aal = claim
+      const res = await invoke(newsletterGet, { headers: { Authorization: `Bearer ${tokenWith(claims)}` } })
+      expect(res.status, JSON.stringify(claim)).toBe(200)
+    }
+    const refused = await invoke(newsletterGet, { headers: { Authorization: 'Bearer invalid-sample-token' } })
+    expect(await written(refused)).toEqual(answerOf(401, { error: 'Unauthorized' }))
+  })
+
+  it('with MEDIA_MANAGER_NEEDS_SECOND_FACTOR set, refuses a token whose second-factor claim is missing or is not exactly aal2, and one the sign-in service refuses', async () => {
+    turned.mediaManager = true
     const seated = await holder()
     for (const claim of [undefined, 'aal1', 'AAL2', 'aal2 ', ' aal2', 'aal3', true, 2, ['aal2'], { aal: 'aal2' }, null]) {
       const claims: Record<string, unknown> = { sub: seated.id, role: 'authenticated' }
@@ -478,7 +526,7 @@ describe('(g) with MAIL_LISTS_ON set, everyone else', () => {
     expect(await traces()).toEqual(before)
   })
 
-  it('says who may send in its words, and what the media manager without a second factor must do', () => {
+  it('says who may send in its words, and what the media manager must do while a second factor is asked of them', () => {
     expect(LIST_MAILERS_ONLY).toBe('Group email is limited to LCA admins, the president and the media manager.')
     expect(MEDIA_MANAGER_SECOND_FACTOR).toBe('Two-factor sign-in is required to send group email. Set it up in your account security settings.')
   })

@@ -162,9 +162,14 @@ describe('REDESIGN_STATUS.md, WS16 part two: who may send, its place and its par
 })
 
 describe('REDESIGN_STATUS.md, WS16 part two: who may send, true to the code', () => {
-  it("is right about the president's second factor: one constant, set, in domain/mail/senders.ts", () => {
-    expect(read(SENDERS)).toMatch(/^export const PRESIDENT_NEEDS_SECOND_FACTOR = true$/m)
+  it("is right about the president's second factor: one constant in domain/mail/senders.ts, unset since decision 82", () => {
+    // K's decision 82 turned the constant off; the block for two-factor sign-in for LCA admins only records it, and
+    // this block keeps its words with one dated sentence after them.
+    expect(read(SENDERS)).toMatch(/^export const PRESIDENT_NEEDS_SECOND_FACTOR = false$/m)
     expect(block).toContain(`while \`PRESIDENT_NEEDS_SECOND_FACTOR\` in \`${SENDERS}\` is set, as it is`)
+    expect(block).toContain(
+      "Changed on Wednesday, November 25, 2026, by K's decision 82, as the block for two-factor sign-in for LCA admins only records: the President seat's holder no longer needs a second factor to send, since `PRESIDENT_NEEDS_SECOND_FACTOR` now ships unset.",
+    )
     // The guards and the pages read the same constant, so both answer the same.
     expect(read(AUTH)).toMatch(/import \{[^}]*\bPRESIDENT_NEEDS_SECOND_FACTOR\b[^}]*\} from '[^']*\/domain\/mail\/senders'/)
     expect(read(ROLES)).toMatch(/import \{[^}]*\bPRESIDENT_NEEDS_SECOND_FACTOR\b[^}]*\} from '@domain\/mail\/senders'/)
