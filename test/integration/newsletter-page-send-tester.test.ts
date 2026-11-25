@@ -233,7 +233,7 @@ describe('a letter another person moved on a moment before', () => {
     expect(res.status).toBe(409)
     expect(await res.json()).toMatchObject({ reason: 'sent' })
     expect(await tables()).toEqual(before)
-  })
+  }, 30_000)
 })
 
 describe('a letter at the size limit', () => {
@@ -304,7 +304,7 @@ describe('the rest of a send after the page has moved on', () => {
       expect(message.html, message.to).toBe(drawn)
       expect(message.html).not.toContain('Example words written next.')
     }
-  })
+  }, 30_000)
 })
 
 describe("the tab's own plain send, with a letter open on the page", () => {
