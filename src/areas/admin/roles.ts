@@ -1,3 +1,4 @@
+import { PRESIDENT_NEEDS_SECOND_FACTOR } from '@domain/mail/senders'
 import { FEATURES } from '@/lib/features'
 
 /** Least to most privileged; the admin panel offers them in this order. */
@@ -55,10 +56,12 @@ export function resolveRole(
 }
 
 /**
- * lca_observer (the president) and lca_officer (treasurer, secretary and
- * other officers) see the admin panel in view-only mode. Both can answer
- * support tickets and manage bylaws and minutes; only the observer has the
- * mailing tools. Mirrors OBSERVER_ROLES in functions/utils/auth.ts.
+ * lca_observer and lca_officer (treasurer, secretary and other officers) see
+ * the admin panel in view-only mode. Both can answer support tickets and
+ * manage bylaws and minutes; only the observer emails a tournament's
+ * entrants. Group email is for an LCA admin and the President seat's holder
+ * (holdsPresidentSeat below), and the newsletter for the media manager too.
+ * Mirrors OBSERVER_ROLES in functions/utils/auth.ts.
  */
 export const OBSERVER_ROLES: MemberRole[] = ['lca_observer', 'lca_officer']
 
@@ -74,9 +77,24 @@ export function isViewOnlyAdmin(role: MemberRole): boolean {
   return OBSERVER_ROLES.includes(role)
 }
 
-/** Group email and emailing a tournament's entrants. */
+/** Emailing a tournament's entrants. */
 export function canUseMailing(role: MemberRole): boolean {
   return role === 'lca_admin' || role === 'lca_observer'
+}
+
+/**
+ * Whether the session's seats include the President seat, by its slug, as
+ * the server's mail guards read it (functions/utils/admin/presidentSeat.ts):
+ * its holder sends Group email and the newsletter whatever their role. The
+ * server reads the seat again at each request, so this only draws the page.
+ */
+export function holdsPresidentSeat(seats: ReadonlyArray<{ slug: string }>): boolean {
+  return seats.some((s) => s.slug === 'president')
+}
+
+/** Whether the President seat's holder may call the mail endpoints in this session: with a second factor while PRESIDENT_NEEDS_SECOND_FACTOR is set. */
+export function presidentMayCall(assuranceLevel: string | null): boolean {
+  return !PRESIDENT_NEEDS_SECOND_FACTOR || assuranceLevel === 'aal2'
 }
 
 /** Adding, editing and removing bylaws, rules, minutes and treasurer's reports. */

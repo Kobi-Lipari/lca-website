@@ -19,7 +19,7 @@ import { SiteHeader } from '@/components/layout/SiteHeader'
 import { Button } from '@/components/ui/button'
 import { FacebookIcon } from '@/components/ui/FacebookIcon'
 import { useAuth } from '@/contexts/auth-context'
-import { WORKSPACE_ROLES, canAccessAdmin } from '@/areas/admin/roles'
+import { WORKSPACE_ROLES, canAccessAdmin, holdsPresidentSeat, isViewOnlyAdmin } from '@/areas/admin/roles'
 import { useMediaManager } from '@/areas/admin/useMediaManager'
 import { useTabletScreen, useWideScreen } from '@/hooks/useWideScreen'
 import { FEATURES } from '@/lib/features'
@@ -84,10 +84,12 @@ function useAccountLinks(): NavLink[] {
   const { user, loading, role, isBoardMember, seats, directedTournamentIds, managedClubs } = useAuth()
   // With mailLists on, a seat holder whose role Admin does not let in may be the
   // media manager (WS16 step 6), whose Admin is Group email alone, and so may an
-  // LCA officer who holds a seat (checkpoint M's review); the server is asked
-  // once a session, and only for them. With the switch off nothing is asked.
-  const mayBeMediaManager = FEATURES.mailLists && isBoardMember && (!canAccessAdmin(role) || (role === 'lca_officer' && seats.length > 0))
+  // LCA officer or LCA Observer who holds a seat; the server is asked once a
+  // session, and only for them. With the switch off nothing is asked.
+  const mayBeMediaManager = FEATURES.mailLists && isBoardMember && (!canAccessAdmin(role) || (isViewOnlyAdmin(role) && seats.length > 0))
   const mediaManager = useMediaManager(mayBeMediaManager)
+  // The President seat's holder sends Group email and the newsletter whatever their role.
+  const president = holdsPresidentSeat(seats)
   if (loading || !user) return []
 
   const links: NavLink[] = []
@@ -103,12 +105,14 @@ function useAccountLinks(): NavLink[] {
   if (isBoardMember) {
     links.push({ label: 'Board inbox', href: '/board/inbox' })
   }
-  if (mayBeMediaManager && mediaManager.mediaManager) {
+  // Group email for the media manager, and for a President seat holder whose role Admin does not let in; anyone else who
+  // sends finds it in Admin.
+  if ((mayBeMediaManager && mediaManager.mediaManager) || (president && !canAccessAdmin(role))) {
     links.push({ label: 'Group email', href: '/admin/email' })
   }
   // The newsletter's own page, with mailPage on, for those it lets in: the LCA
-  // admins, the president (lca_observer) and the media manager.
-  if (FEATURES.mailPage && (role === 'lca_admin' || role === 'lca_observer' || (mayBeMediaManager && mediaManager.mediaManager))) {
+  // admins, the President seat's holder and the media manager.
+  if (FEATURES.mailPage && (role === 'lca_admin' || president || (mayBeMediaManager && mediaManager.mediaManager))) {
     links.push({ label: 'Newsletter', href: '/admin/newsletter' })
   }
   // Regional representatives manage their region's clubs from the dashboard.

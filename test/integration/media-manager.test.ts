@@ -16,8 +16,8 @@
 // manager who may send would try beyond their reach:
 // - (a) with MAIL_LISTS_ON unset, every answer of the newsletter's four
 //   methods is WS16 step 4's, byte for byte, for each kind of caller, the
-//   seat holder among them, no seat is read, and the endpoint that tells a
-//   member what they are answers false;
+//   seat holder among them, no seat but the President seat is read, and the
+//   endpoint that tells a member what they are answers false;
 // - (b) with it set, the seat's holder signed in with a second factor reads,
 //   tests and stops the newsletter and passes the guard on the send, which
 //   waits for Amazon SES, the session verified once and the seat read in one
@@ -76,7 +76,7 @@ import { linkKeyCheck } from '../../functions/utils/mail/links'
 import { createListCampaign } from '../../functions/utils/mail/lists'
 import { NOTHING_SENDING, WAITS_FOR_SES } from '../../functions/utils/mail/newsletterAnswers'
 import type { Env } from '../../functions/types'
-import { seedAdmin, seedClub, seedMember, seedRegistration, seedSeat, seedTournament, seedTournamentDirector } from './factories'
+import { seedAdmin, seedClub, seedMember, seedPresident, seedRegistration, seedSeat, seedTournament, seedTournamentDirector } from './factories'
 import { emailOutbox, fetchCount, invoke, resetHarness, type InvokeOptions } from './harness'
 import { countingDb } from './mailRuns'
 
@@ -105,7 +105,7 @@ type Handler = Parameters<typeof invoke>[0]
 /** A newsletter's words, plainly made up. */
 const SAMPLE = { subject: 'Sample newsletter one', bodyHtml: '<p>Example words for a sample newsletter.</p>' }
 const key = () => (env as unknown as Env).MAIL_LINK_SECRET as string
-const OFFICER_WORDS = 'Group email is limited to admins and the LCA Observer'
+const OFFICER_WORDS = LIST_MAILERS_ONLY
 const ADMIN_SECOND_FACTOR = 'Two-factor authentication is required for admin access. Set it up in your account security settings.'
 
 let seq = 0
@@ -186,12 +186,14 @@ beforeEach(async () => {
 })
 
 describe('(a) with MAIL_LISTS_ON unset', () => {
-  it('answers each kind of caller as WS16 step 4 did, byte for byte, on all four methods, and reads no seat', async () => {
+  it('answers each kind of caller as WS16 step 4 did, byte for byte, on all four methods, and reads only the President seat', async () => {
     flags.listsOn = false
     const plain = await member()
     const rep = await member({ role: 'club_rep', clubId: await seedClub({ name: 'Example Chess Club', city: 'Sample City' }) })
     const officer = await member({ role: 'lca_officer' })
+    const observer = await member({ role: 'lca_observer' })
     const president = await member({ role: 'lca_observer' })
+    await seedPresident(president)
     const admin = await seedAdmin()
     const seated = await holder()
     await seedSeat({ slug: 'sample-seat-officer', role: 'Sample seat' }, [officer])
@@ -206,7 +208,9 @@ describe('(a) with MAIL_LISTS_ON unset', () => {
       ['an officer', { as: officer }, answerOf(403, { error: OFFICER_WORDS })],
       ['an LCA admin without a second factor', { as: admin, aal: 'aal1' }, answerOf(403, { error: ADMIN_SECOND_FACTOR, mfaRequired: true })],
       ['an LCA admin', { as: admin }, answerOf(404, { error: 'Not found' })],
-      ['the president', { as: president, aal: 'aal1' }, answerOf(404, { error: 'Not found' })],
+      ['an LCA Observer without the President seat', { as: observer, aal: 'aal1' }, answerOf(403, { error: LIST_MAILERS_ONLY })],
+      ['the president', { as: president }, answerOf(404, { error: 'Not found' })],
+      ['the president without a second factor', { as: president, aal: 'aal1' }, answerOf(403, { error: MEDIA_MANAGER_SECOND_FACTOR, mfaRequired: true })],
     ]
     for (const [name, call] of NEWSLETTER) {
       for (const [who, as, expected] of callers) {
@@ -214,7 +218,12 @@ describe('(a) with MAIL_LISTS_ON unset', () => {
         expect(await written(await invoke(handler, { ...options, ...as, env: { DB: counting.db } })), `${name}, ${who}`).toEqual(expected)
       }
     }
-    expect(counting.ran.filter((r) => r.sql.includes('board_seat_assignments'))).toEqual([])
+    const seatReads = counting.ran.filter((r) => r.sql.includes('board_seat_assignments'))
+    expect(seatReads.length).toBeGreaterThan(0)
+    for (const read of seatReads) {
+      expect(read.binds).toBe(1)
+      expect(read.sql).toContain("'president'")
+    }
     expect(await traces()).toEqual(before)
   })
 
@@ -265,17 +274,19 @@ describe('(b) with MAIL_LISTS_ON set, the media manager signed in with a second 
     expect(row).toEqual({ actor_id: seated.id, action: 'group_email_stopped' })
   })
 
-  it('verifies the session once, reads the seat in one statement that names its columns, and is told so by GET /api/me/media-manager', async () => {
+  it('verifies the session once, reads the President seat and then the Media manager seat, each in one statement that names its columns, and is told so by GET /api/me/media-manager', async () => {
     const seated = await holder()
     const counting = countingDb()
     const read = await invoke(newsletterGet, { as: seated.id, env: { DB: counting.db } })
     expect(read.status).toBe(200)
     expect(fetchCount).toBe(1)
     const seatReads = counting.ran.filter((r) => r.sql.includes('board_seat_assignments'))
-    expect(seatReads).toHaveLength(1)
-    expect(seatReads[0].sql).not.toMatch(/SELECT\s+\*/i)
-    expect(seatReads[0].sql).toMatch(/ended_at IS NULL/)
-    expect(seatReads[0].binds).toBe(2)
+    expect(seatReads.map((r) => r.binds)).toEqual([1, 2])
+    for (const r of seatReads) {
+      expect(r.sql).not.toMatch(/SELECT\s+\*/i)
+      expect(r.sql).toMatch(/ended_at IS NULL/)
+    }
+    expect(seatReads[0].sql).toContain("'president'")
     const told = await invoke(mediaManagerGet, { as: seated.id, path: '/api/me/media-manager' })
     expect(await told.json()).toEqual({ mediaManager: true, secondFactor: true })
   })
@@ -445,13 +456,14 @@ describe('(f) the seat holder keeps their own role\'s rights', () => {
 })
 
 describe('(g) with MAIL_LISTS_ON set, everyone else', () => {
-  it('refuses a plain member, a club rep, a director, an auditor and an officer without the seat in one plain sentence, and a signed-out caller with 401', async () => {
+  it('refuses a plain member, a club rep, a director, an auditor, an officer and an LCA Observer without the seat in one plain sentence, and a signed-out caller with 401', async () => {
     const people = {
       'a plain member': await member(),
       'a club rep without the seat': await member({ role: 'club_rep', clubId: await seedClub({ name: 'Example Chess Club', city: 'Sample City' }) }),
       'a director without the seat': await member({ role: 'tournament_director' }),
       'an auditor without the seat': await member({ role: 'lca_auditor' }),
       'an officer without the seat': await member({ role: 'lca_officer' }),
+      'an LCA Observer without the seat': await member({ role: 'lca_observer' }),
     }
     const before = await traces()
     for (const [name, call] of NEWSLETTER) {

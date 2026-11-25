@@ -48,7 +48,7 @@ import {
   startIssue,
   templateNameTaken,
 } from '../../functions/utils/mail/issues'
-import { seedAdmin, seedMember, seedSeat } from './factories'
+import { seedAdmin, seedMember, seedPresident, seedSeat } from './factories'
 import { fetchCount, invoke, resetHarness, type InvokeOptions } from './harness'
 import { countingDb } from './mailRuns'
 
@@ -261,8 +261,12 @@ describe('(b) who may use the saved templates', () => {
     const seated = await person('Player Three')
     const seatedOfficer = await person('Player Four', 'lca_officer')
     await seedSeat({ slug: MEDIA_MANAGER_SEAT, role: 'Media manager' }, [seated, seatedOfficer])
+    const president = await person('Player Ten', 'lca_observer')
+    await seedPresident(president)
     const people = [
       ['nobody signed in', undefined, 'aal2'],
+      ['an LCA Observer without the President seat', await person('Player Eleven', 'lca_observer'), 'aal1'],
+      ['the president without a second factor', president, 'aal1'],
       ['a plain member', await person('Player Five'), 'aal2'],
       ['an officer without the seat', await person('Player Six', 'lca_officer'), 'aal2'],
       ['a club rep', await person('Player Seven', 'club_rep'), 'aal2'],
@@ -272,7 +276,7 @@ describe('(b) who may use the saved templates', () => {
       ['the media manager without a second factor', seated, 'aal1'],
       ['an officer who holds the seat, without a second factor', seatedOfficer, 'aal1'],
       ['an LCA admin with a second factor', await seedAdmin(), 'aal2'],
-      ['the president', await person('Player Ten', 'lca_observer'), 'aal1'],
+      ['the president', president, 'aal2'],
       ['the media manager with a second factor', seated, 'aal2'],
       ['an officer who holds the seat, with a second factor', seatedOfficer, 'aal2'],
     ] as const
@@ -307,6 +311,7 @@ describe('(c) the endpoint', () => {
   it('saves a copy of the open letter\'s words and of a past newsletter\'s, and every writer sees the same list', async () => {
     const one = await seedAdmin()
     const two = await person('Player Two', 'lca_observer')
+    await seedPresident(two)
     const open = await openLetter(one)
     const before = await rowOf(open.id)
 

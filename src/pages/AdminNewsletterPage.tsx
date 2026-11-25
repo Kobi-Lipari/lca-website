@@ -6,11 +6,12 @@
 // (src/App.tsx), so with it off nobody reaches this page.
 //
 // Who is let in: whoever the server lets send the newsletter
-// (requireListMailer): the LCA admins, the president, and whoever holds the
-// Media manager seat, an officer among them (K's decision 52). The route
-// lets in Admin's roles, and the media manager on the server's answer,
-// which it hands down; an officer without the seat, whom Admin's roles let
-// in, is sent to Admin here. Nobody here sees a "View only" badge. A media
+// (requireListMailer): the LCA admins, the President seat's holder whatever
+// their role (decision 79), and whoever holds the Media manager seat, an
+// officer or LCA Observer among them (K's decision 52). The route lets in
+// Admin's roles, the President seat's holder, and the media manager on the
+// server's answer, which it hands down; an LCA Observer without either seat
+// reads why here, and an officer without the seat is sent to Admin. Nobody here sees a "View only" badge. A media
 // manager signed in without a second factor, whom the server would refuse,
 // is told so in the newsletter tab's own words, with the way to set it up,
 // and no call is made.
@@ -61,7 +62,9 @@ import { useCallback, useEffect, useRef, useState, type KeyboardEvent } from 're
 import { Link, Navigate } from 'react-router-dom'
 import { defaultSubject } from '@domain/mail/letter'
 import { TEST_NO_WORDS, WAITS_FOR_SES } from '@domain/mail/newsletterWords'
+import { LIST_MAILERS_ONLY } from '@domain/mail/senders'
 import { useAuth } from '@/contexts/auth-context'
+import { holdsPresidentSeat, presidentMayCall } from '@/areas/admin/roles'
 import { useMediaManagerAnswer } from '@/areas/admin/mediaManagerAnswer'
 import { CountCard } from '@/areas/admin/newsletter/CountCard'
 import { FootBar, type BarSaid, type FocusCarry, type FocusHold } from '@/areas/admin/newsletter/FootBar'
@@ -337,10 +340,12 @@ function useFocusCarry(): FocusCarry {
 
 export function AdminNewsletterPage() {
   usePageTitle('Admin · Newsletter')
-  const { role } = useAuth()
+  const { role, seats, assuranceLevel } = useAuth()
   const answer = useMediaManagerAnswer()
-  // The LCA admins and the president send as themselves; anyone else is let in on the server's answer alone.
-  const asThemselves = role === 'lca_admin' || role === 'lca_observer'
+  // The LCA admins and the President seat's holder send as themselves (decision 79); anyone else is let in on the
+  // server's answer alone.
+  const president = holdsPresidentSeat(seats)
+  const asThemselves = role === 'lca_admin' || president
   if (!asThemselves && answer.asking) {
     return (
       <div className="mx-auto flex max-w-6xl items-center justify-center px-6 py-24">
@@ -348,8 +353,20 @@ export function AdminNewsletterPage() {
       </div>
     )
   }
+  // An LCA Observer who sends no newsletter reads why, in the page's frame; anyone else is sent to Admin as before.
+  if (!asThemselves && !answer.mediaManager && role === 'lca_observer') {
+    return (
+      <div className={DESK}>
+        <NewsletterHead />
+        <div className="mx-auto max-w-[1198px] px-4 py-6 sm:px-6">
+          <p role="status" className="text-ink">{LIST_MAILERS_ONLY}</p>
+        </div>
+      </div>
+    )
+  }
   if (!asThemselves && !answer.mediaManager) return <Navigate to="/admin" replace />
-  return <NewsletterDesk mayCall={asThemselves || answer.secondFactor} />
+  const mayCall = role === 'lca_admin' || (president ? presidentMayCall(assuranceLevel) : answer.secondFactor)
+  return <NewsletterDesk mayCall={mayCall} />
 }
 
 /** The page once the person is let in: the letter's state, the count, and how the side is shown, kept as letters come and go. */

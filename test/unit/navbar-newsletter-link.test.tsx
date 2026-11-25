@@ -3,8 +3,12 @@
 // Today's header (src/components/layout/Navbar.tsx): the More menu's
 // account links name "Newsletter", to /admin/newsletter, only with the
 // switch mailPage on and only for those the newsletter's own page lets in:
-// an LCA admin, the president and the media manager (on the server's
-// answer). With mailPage off the menu is as it was for every person.
+// an LCA admin, the President seat's holder whatever their role, and the
+// media manager (on the server's answer), an LCA Observer who holds the
+// Media manager seat among them; never an LCA Observer without either seat.
+// "Group email" is there for the media manager and for a President seat
+// holder whom Admin does not let in. With mailPage off the menu names no
+// Newsletter for any person.
 //
 // Every person here is made up.
 import { cleanup, fireEvent, render, screen, within } from '@testing-library/react'
@@ -45,17 +49,26 @@ interface Person {
   role: MemberRole
   boardSeat: boolean
   mediaManager: boolean
+  /** The slug of the seat held, when one is: a plainly made-up one unless it is the President seat. */
+  seat?: string
 }
 
+/** The first seven are let in by the newsletter's page; the rest are not. */
 const PEOPLE: Person[] = [
   { title: 'an LCA admin', role: 'lca_admin', boardSeat: true, mediaManager: false },
-  { title: 'the president', role: 'lca_observer', boardSeat: true, mediaManager: false },
+  { title: 'the president', role: 'lca_observer', boardSeat: true, mediaManager: false, seat: 'president' },
   { title: 'the media manager', role: 'member', boardSeat: true, mediaManager: true },
   { title: 'an officer who holds the Media manager seat', role: 'lca_officer', boardSeat: true, mediaManager: true },
+  { title: 'a member who holds the President seat', role: 'member', boardSeat: true, mediaManager: false, seat: 'president' },
+  { title: 'an LCA Observer who holds the Media manager seat', role: 'lca_observer', boardSeat: true, mediaManager: true },
+  { title: 'an officer who holds the President seat', role: 'lca_officer', boardSeat: true, mediaManager: false, seat: 'president' },
   { title: 'a member', role: 'member', boardSeat: false, mediaManager: false },
   { title: 'a board member who is not the media manager', role: 'member', boardSeat: true, mediaManager: false },
   { title: 'an officer without the seat', role: 'lca_officer', boardSeat: true, mediaManager: false },
+  { title: 'an LCA Observer without either seat', role: 'lca_observer', boardSeat: false, mediaManager: false },
+  { title: 'an LCA Observer who holds another seat', role: 'lca_observer', boardSeat: true, mediaManager: false },
 ]
+const LET_IN = 7
 
 function auth(person: Person): AuthContextValue {
   return {
@@ -63,7 +76,7 @@ function auth(person: Person): AuthContextValue {
     session: null,
     member: null,
     role: person.role,
-    seats: person.boardSeat ? [{ id: 'fx-seat' }] : [],
+    seats: person.boardSeat ? [{ id: 'fx-seat', slug: person.seat ?? 'sample-seat' }] : [],
     managedClubs: [],
     isBoardMember: person.boardSeat,
     assuranceLevel: 'aal2',
@@ -109,7 +122,7 @@ describe('with mailPage off', () => {
 })
 
 describe('with mailPage on', () => {
-  it.each(PEOPLE.slice(0, 4).map((p) => [p.title, p] as const))('%s: the More menu has Newsletter, to /admin/newsletter', (_title, person) => {
+  it.each(PEOPLE.slice(0, LET_IN).map((p) => [p.title, p] as const))('%s: the More menu has Newsletter, to /admin/newsletter', (_title, person) => {
     flags.mailPage = true
     const rows = moreMenuRows(person)
     expect(rows.filter((r) => r === 'Newsletter /admin/newsletter')).toHaveLength(1)
@@ -121,9 +134,21 @@ describe('with mailPage on', () => {
     expect(rows.indexOf('Newsletter /admin/newsletter')).toBe(rows.indexOf('Group email /admin/email') + 1)
   })
 
-  it.each(PEOPLE.slice(4).map((p) => [p.title, p] as const))('%s: no Newsletter, as the page does not let them in', (_title, person) => {
+  it.each(PEOPLE.slice(LET_IN).map((p) => [p.title, p] as const))('%s: no Newsletter, as the page does not let them in', (_title, person) => {
     flags.mailPage = true
     const rows = moreMenuRows(person)
     expect(rows.some((r) => r.startsWith('Newsletter'))).toBe(false)
+  })
+
+  it.each([PEOPLE[4], PEOPLE[5]].map((p) => [p.title, p] as const))('%s: the More menu has Group email, to /admin/email', (_title, person) => {
+    flags.mailPage = true
+    const rows = moreMenuRows(person)
+    expect(rows.filter((r) => r === 'Group email /admin/email')).toHaveLength(1)
+  })
+
+  it.each([PEOPLE[1], PEOPLE[6], PEOPLE[10]].map((p) => [p.title, p] as const))('%s: no Group email in the More menu, as Admin is theirs', (_title, person) => {
+    flags.mailPage = true
+    const rows = moreMenuRows(person)
+    expect(rows.some((r) => r.startsWith('Group email'))).toBe(false)
   })
 })
