@@ -19,6 +19,8 @@ interface AssignBody {
   endMemberId?: string | null
   /** Vacate the seat entirely — ends every current holder. */
   vacate?: boolean
+  /** Bring a retired seat back (is_active = 1). It comes back with no holder, its typed name goes back to TBD, its own photo is cleared, and it keeps is_listed as it is. */
+  reactivate?: boolean
   note?: string | null
 }
 
@@ -38,6 +40,7 @@ export const onRequestGet: PagesFunction<Env> = async (ctx) => {
             s.category,
             s.is_active,
             s.is_shared,
+            s.is_listed,
             s.sort_order,
             s.name AS fallback_name,
             (SELECT COUNT(*) FROM support_tickets t WHERE t.seat_id = s.id) AS ticket_count
@@ -118,11 +121,33 @@ export const onRequestPost: PagesFunction<Env> = async (ctx) => {
   if (!body?.seatId) return errorResponse('seatId is required', 400)
 
   const seat = await ctx.env.DB.prepare(
-    'SELECT id, role, is_shared FROM board_members WHERE id = ?',
+    'SELECT id, role, is_shared, is_active FROM board_members WHERE id = ?',
   )
     .bind(body.seatId)
-    .first<{ id: string; role: string; is_shared: number }>()
+    .first<{ id: string; role: string; is_shared: number; is_active: number }>()
   if (!seat) return errorResponse('Seat not found', 404)
+
+  // ── Bring a retired seat back ──────────────────────────────────────────────
+  // Retiring ended every term, so the seat comes back open; whether it is shown
+  // publicly (is_listed) is left as it was. Retiring leaves the typed name and
+  // the seat's own photo in place, so the name is reset to 'TBD' and the photo
+  // is cleared here: an open seat hands out nothing of whoever held it before.
+  // A seat already in use answers the same with nothing changed and nothing
+  // recorded.
+  if (body.reactivate === true) {
+    if (seat.is_active === 1) {
+      return jsonResponse({ success: true, seatId: body.seatId, reactivated: true })
+    }
+    await ctx.env.DB.prepare("UPDATE board_members SET is_active = 1, name = 'TBD', photo_url = NULL WHERE id = ?")
+      .bind(body.seatId)
+      .run()
+
+    await recordAdminAction(ctx.env.DB, auth.member, {
+      action: 'seat_reactivate', targetLabel: seat.role, detail: { seat_id: seat.id, seat: seat.role },
+    })
+
+    return jsonResponse({ success: true, seatId: body.seatId, reactivated: true })
+  }
 
   // ── Remove one holder ──────────────────────────────────────────────────────
   if (body.endMemberId) {

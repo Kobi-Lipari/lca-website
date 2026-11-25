@@ -4,14 +4,15 @@
 // holders change; the governance board editor still owns the seat's role name
 // and sort order.
 
-import { useEffect, useMemo, useState } from 'react'
-import { Building2, ChevronDown, History, UserMinus, UserPlus, Users } from 'lucide-react'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { Building2, ChevronDown, History, RotateCcw, UserMinus, UserPlus, Users } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {
   adminAssignBoardSeat,
   adminGetBoardSeats,
   adminGetMembers,
+  adminReactivateBoardSeat,
   adminRemoveBoardSeatHolder,
   adminSetSeatRegions,
   type ApiAdminBoardSeat,
@@ -77,7 +78,7 @@ function SeatRegions({ seat, clubsByRegion, busy, onChange }: {
 }
 
 function SeatRow({
-  seat, holders, history, members, busy, clubsByRegion, onAssign, onRemove, onVacate, onSetRegions,
+  seat, holders, history, members, busy, clubsByRegion, onAssign, onRemove, onVacate, onSetRegions, onReactivate,
 }: {
   seat: ApiAdminBoardSeat
   holders: ApiSeatHolder[]
@@ -89,6 +90,7 @@ function SeatRow({
   onRemove: (seatId: string, memberId: string) => void
   onVacate: (seatId: string) => void
   onSetRegions: (seatId: string, regions: string[]) => void
+  onReactivate: (seatId: string) => void
 }) {
   const [picking, setPicking] = useState(false)
   const [showHistory, setShowHistory] = useState(false)
@@ -120,7 +122,8 @@ function SeatRow({
     <div className="rounded-xl border bg-card p-4 shadow-sm">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-0">
-          <p className="text-[11px] font-semibold uppercase tracking-wide text-ink">
+          {/* Takes the focus after "Bring back", since that button goes once the seat is in use. */}
+          <p id={`seat-title-${seat.id}`} tabIndex={-1} className="text-[11px] font-semibold uppercase tracking-wide text-ink">
             {seat.role}
             {seat.is_shared === 1 && (
               <span className="ml-2 inline-flex items-center gap-1 rounded bg-lca-gold/15 px-1.5 py-0.5 text-[10px] font-normal text-gold-ink-badge">
@@ -130,6 +133,11 @@ function SeatRow({
             {!seat.is_active && (
               <span className="ml-2 rounded bg-muted px-1.5 py-0.5 text-[10px] font-normal text-muted-foreground">
                 retired
+              </span>
+            )}
+            {seat.is_listed === 0 && (
+              <span className="ml-2 rounded bg-muted px-1.5 py-0.5 text-[10px] font-normal text-muted-foreground">
+                not shown publicly
               </span>
             )}
           </p>
@@ -161,11 +169,30 @@ function SeatRow({
           )}
 
           <p className="mt-1.5 text-xs text-muted-foreground">
-            {seat.ticket_count} {seat.ticket_count === 1 ? 'message' : 'messages'} on file · /contact?to={seat.slug}
+            {seat.ticket_count} {seat.ticket_count === 1 ? 'message' : 'messages'} on file{seat.is_listed !== 0 && ` · /contact?to=${seat.slug}`}
           </p>
+
+          {!seat.is_active && seat.is_listed !== 0 && (
+            <p id={`seat-back-note-${seat.id}`} className="mt-1.5 text-xs text-muted-foreground">
+              Bringing it back shows it on the Board page and in the contact form.
+            </p>
+          )}
         </div>
 
         <div className="flex flex-shrink-0 gap-2">
+          {!seat.is_active && (
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              disabled={busy}
+              onClick={() => onReactivate(seat.id)}
+              aria-label={`Bring back ${seat.role}`}
+              aria-describedby={seat.is_listed !== 0 ? `seat-back-note-${seat.id}` : undefined}
+            >
+              <RotateCcw className="mr-1.5 size-3.5" /> Bring back
+            </Button>
+          )}
           <Button type="button" variant="outline" size="sm" disabled={busy} onClick={() => setPicking((p) => !p)}>
             <UserPlus className="mr-1.5 size-3.5" /> {addLabel}
           </Button>
@@ -264,6 +291,15 @@ export function BoardSeatsPanel() {
   const [loading, setLoading] = useState(true)
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  // Said once a seat is back in use; the focus then goes to that seat's title.
+  const [status, setStatus] = useState('')
+  const focusSeatId = useRef<string | null>(null)
+
+  useEffect(() => {
+    if (!focusSeatId.current) return
+    document.getElementById(`seat-title-${focusSeatId.current}`)?.focus()
+    focusSeatId.current = null
+  }, [seats])
 
   async function load() {
     const [seatData, memberList] = await Promise.all([
@@ -293,14 +329,17 @@ export function BoardSeatsPanel() {
     return () => { cancelled = true }
   }, [])
 
-  async function run(action: () => Promise<void>, failure: string) {
+  async function run(action: () => Promise<void>, failure: string): Promise<boolean> {
     setBusy(true)
     setError(null)
+    setStatus('')
     try {
       await action()
       await load()
+      return true
     } catch {
       setError(failure)
+      return false
     } finally {
       setBusy(false)
     }
@@ -337,6 +376,8 @@ export function BoardSeatsPanel() {
         </div>
       )}
 
+      <p role="status" className={status ? 'text-sm text-ink' : 'sr-only'}>{status}</p>
+
       <div className={`${ADMIN_SCROLL} space-y-3 pr-1`}>
         {seats.map((seat) => (
           <SeatRow
@@ -371,6 +412,19 @@ export function BoardSeatsPanel() {
                 'Could not vacate that seat.',
               )
             }
+            onReactivate={async (seatId) => {
+              // The list read after the press moves the focus to this seat's title.
+              focusSeatId.current = seatId
+              const done = await run(
+                () => adminReactivateBoardSeat(seatId),
+                'Could not bring that seat back. Try again.',
+              )
+              if (!done) {
+                focusSeatId.current = null
+                return
+              }
+              setStatus(`${seat.role} is back in use.`)
+            }}
           />
         ))}
       </div>

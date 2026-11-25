@@ -1,6 +1,6 @@
 // src/areas/admin/components/AuditLogPanel.tsx
 import { useEffect, useMemo, useState } from 'react'
-import { ShieldAlert, UserCog, CreditCard, Building2, Eye, EyeOff, Trophy, Globe, Trash2, Mail, UserPlus, UserMinus, DollarSign, Pencil, Download, FileText } from 'lucide-react'
+import { ShieldAlert, UserCog, CreditCard, Building2, Eye, EyeOff, Trophy, Globe, Trash2, Mail, UserPlus, UserMinus, DollarSign, Pencil, Download, FileText, RotateCcw } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 import { adminGetAuditLog, type ApiAuditEntry } from '@/lib/api'
@@ -17,7 +17,7 @@ const FILTERS: { value: string; label: string }[] = [
   { value: 'tournament_create,tournament_publish,tournament_unpublish,tournament_delete,round_paired,round_delete,pairing_edit,tournament_complete,announcement_sent,director_assign,director_remove,registration_withdraw,registration_reinstate,waitlist_offer,tournament_submitted,tournament_approved,tournament_changes_asked', label: 'Events' },
   { value: 'payment_change', label: 'Payments' },
   { value: 'club_edit,officer_add,officer_remove', label: 'Club edits' },
-  { value: 'seat_assign,seat_end,seat_regions', label: 'Board seats' },
+  { value: 'seat_assign,seat_end,seat_regions,seat_reactivate', label: 'Board seats' },
   { value: 'members_export', label: 'Member exports' },
   { value: 'document_add,document_edit,document_remove', label: 'Bylaws & minutes' },
   { value: 'group_email_sent,group_email_stopped', label: 'Group email' },
@@ -83,6 +83,7 @@ const ACTION_META: Record<
   members_export: { label: 'Exported members', icon: Download, className: 'bg-lca-gold/20 text-gold-ink-badge' },
   seat_end: { label: 'Board seat ended', icon: UserMinus, className: 'bg-muted text-muted-foreground' },
   seat_regions: { label: 'Seat regions changed', icon: Building2, className: 'bg-info-100 text-info-800' },
+  seat_reactivate: { label: 'Board seat brought back', icon: RotateCcw, className: 'bg-muted text-muted-foreground' },
   ticket_reply: { label: 'Answered ticket', icon: Mail, className: 'bg-muted text-muted-foreground' },
   document_add: { label: 'Added document', icon: FileText, className: 'bg-ok-100 text-ok' },
   document_edit: { label: 'Edited document', icon: Pencil, className: 'bg-info-100 text-info-800' },
@@ -132,6 +133,7 @@ function describeDetail(entry: ApiAuditEntry): string | null {
       return Array.isArray(parsed.fields) ? `Changed ${parsed.fields.join(', ').replace(/_/g, ' ')}` : null
     case 'seat_assign':
     case 'seat_end':
+    case 'seat_reactivate':
       return typeof parsed.seat === 'string' ? parsed.seat : null
     case 'officer_add':
     case 'officer_remove':
