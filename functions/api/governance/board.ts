@@ -44,9 +44,12 @@ function categoryForRole(role: string): 'officer' | 'regional_rep' {
 export const onRequestGet: PagesFunction<Env> = async (ctx) => {
   // Explicit columns, not SELECT *: this route is public, and `email` holds
   // legacy @louisianachess.org addresses that nothing should surface any more.
+  // A seat that is not shown publicly (is_listed = 0) is left out for everyone:
+  // the Board page draws an admin's editor only for seats in the public list.
   const { results } = await ctx.env.DB.prepare(
     `SELECT id, role, name, sort_order, created_at, slug, category, is_active
        FROM board_members
+      WHERE is_listed = 1
       ORDER BY sort_order ASC, created_at ASC`,
   ).all()
   return jsonResponse({ members: results })
