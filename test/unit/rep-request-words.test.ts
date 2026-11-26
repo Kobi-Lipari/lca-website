@@ -47,7 +47,7 @@ function everySentence(): string[] {
   const name = 'Player One'
   out.push(
     words.repRequestTitle(club), words.nameQuestion(name, club), words.declineQuestion(name), words.namedWords(name, club), words.declinedWords(name),
-    words.movesWords(name, other, club), words.replacesWords(name, 'club_rep', other), words.replacesWords(name, 'tournament_director', null),
+    words.movesWords(name, other, club), words.accountClubWords(name, other, club), words.replacesWords(name, 'club_rep', other), words.replacesWords(name, 'tournament_director', null),
     words.adminsDecideWords(name, 'club_rep', other), words.adminsDecideWords(name, 'lca_officer', null), words.adminsDecideRow(name, 'lca_auditor', null),
     words.adminsDecideRow(name, 'club_rep', null), words.neverNamed(name, 'lca_admin') ?? '', words.neverNamed(name, 'guest') ?? '',
     words.repRequestRowHeading({ clubName: club, memberName: name, connection: 'runs_it', sentOn: 'Wed, Nov 25' }),

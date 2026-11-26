@@ -143,7 +143,7 @@ describe('REDESIGN_STATUS.md, WS09 step 24: the new club page in the browser', (
       expect(files, file).toContain(`\`${file}\` (${cases}`)
       expect(existsSync(join(ROOT, file)), file).toBe(true)
     }
-    for (const file of COUNTED) expect(files, file).toContain(`\`${file}\` (${(read(file).match(/^\s*it\(/gm) ?? []).length}: `)
+    for (const file of COUNTED) expect(files, file).toContain(`\`${file}\` (${!latest && file === 'test/unit/a11y-clubs-build.test.ts' ? 8 : (read(file).match(/^\s*it\(/gm) ?? []).length}: `) // Moved by WS09 checkpoint Z's review: that file gains three cases for a tree that ships the line set, so its count at this step, 8, is held once this step is not the latest.
     for (const file of HELD) expect(files, file).toContain(`\`${file}\``)
     expect(files).toContain('No file under `src/`, `functions/`, `domain/`, `workers/` or `migrations/` changes')
     // CI's file is named by its own name, since the folder it sits in is a word the record does not use.

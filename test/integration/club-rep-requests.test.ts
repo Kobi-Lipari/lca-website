@@ -556,7 +556,10 @@ describe('naming', () => {
     const member = await person({ clubId: other.id })
     const row = await asked(c.id, member.id)
     const found = (await regionOf(admin.id)).body.repRequests!.find((r) => r.id === row.id)!
-    expect(found.nameQuestion).toBe(`${member.name} will be able to edit ${c.name}'s page, create its events and set their fees. ${REP_DIRECTORY_WORDS} ${member.name} is on ${other.name}'s roster now. Naming them rep moves them to ${c.name}'s.`)
+    // Moved by WS09 checkpoint Z's review: the scene sets the club pages on, where no page shows a roster, so the
+    // question names the member's account. test/unit/rep-request-words.test.ts holds today's sentence with it unset.
+    expect(found.nameQuestion).toBe(`${member.name} will be able to edit ${c.name}'s page, create its events and set their fees. ${REP_DIRECTORY_WORDS} ${member.name}'s account names ${other.name} as their club. Naming them rep changes that to ${c.name}.`)
+    expect(JSON.stringify(found)).not.toMatch(/roster/i)
     expect((await press(c.id, row.id, { decision: 'approve', role: 'member' }, admin.id)).status).toBe(200)
     expect(await roleAndClub(member.id)).toEqual({ role: 'club_rep', club_id: c.id })
   }, SLOW)

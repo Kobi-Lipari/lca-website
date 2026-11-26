@@ -18,10 +18,10 @@
 //   for nothing;
 // - the file is the same bytes twice, sorted, and holds no clock and no path.
 // Every name, ZIP code and figure below is made up.
-import { mkdtempSync, writeFileSync } from 'node:fs'
+import { mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
-import { describe, expect, it } from 'vitest'
+import { afterAll, describe, expect, it } from 'vitest'
 import { buildPoints } from '../../scripts/data/build-la-places'
 
 const COUNTY_HEADER = 'OID_ZCTA5_20|GEOID_ZCTA5_20|NAMELSAD_ZCTA5_20|AREALAND_ZCTA5_20|AREAWATER_ZCTA5_20|MTFCC_ZCTA5_20|CLASSFP_ZCTA5_20|FUNCSTAT_ZCTA5_20|OID_COUNTY_20|GEOID_COUNTY_20|NAMELSAD_COUNTY_20|AREALAND_COUNTY_20|AREAWATER_COUNTY_20|MTFCC_COUNTY_20|CLASSFP_COUNTY_20|FUNCSTAT_COUNTY_20|AREALAND_PART|AREAWATER_PART'
@@ -78,8 +78,15 @@ const SHARES: Array<[string, string, number]> = [
   ['99999', 'P1', 100],
 ]
 
+/** Every folder the cases make under the system's temporary folder, removed when they are done. */
+const TEMP_FOLDERS: string[] = []
+afterAll(() => {
+  for (const dir of TEMP_FOLDERS.splice(0)) rmSync(dir, { recursive: true, force: true })
+})
+
 function folder(): string {
   const dir = mkdtempSync(join(tmpdir(), 'la-points-rules-'))
+  TEMP_FOLDERS.push(dir)
   const zipRows = [...AREAS.map(([zip, lat, lon]) => `${zip}\t1\t0\t0\t0\t${lat}\t${lon}`), '39466\t1\t0\t0\t0\t30.52\t-89.68']
   writeFileSync(join(dir, '2024_Gaz_zcta_national.txt'), `GEOID\tALAND\tAWATER\tALAND_SQMI\tAWATER_SQMI\tINTPTLAT\tINTPTLONG\n${zipRows.join('\n')}\n`)
   const placeRows = PLACES.map(([code, name, lat, lon]) => `LA\t${code}\t1\t${name}\t25\tA\t1\t0\t0\t0\t${lat}\t${lon}`)

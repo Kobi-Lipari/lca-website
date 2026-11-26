@@ -89,6 +89,9 @@ const statusLine = lines.find((l) => l.startsWith('**Status:**')) ?? ''
 const prLine = lines.find((l) => l.startsWith('**PR:**')) ?? ''
 const checksLine = block.split('\n').find((l) => l.startsWith('- Checks:')) ?? ''
 const headings = lines.filter((l) => l.startsWith('### '))
+const latestStep = Math.max(0, ...[...ws09.matchAll(/^### WS09 step (\d+): /gm)].map((m) => Number(m[1])))
+/** Step 38 is the latest while it is the last step's block and only checkpoint Z's own section stands between it and the four lists. */
+const latest = latestStep === 38 && headings[headings.indexOf(LISTS[0]) - 1] === SECTION && headings[headings.indexOf(LISTS[0]) - 2] === STEP
 const mapItem = (id: string) => entries(map).find((l) => l.startsWith(`- **${id}.**`)) ?? ''
 
 const SELF = 'test/unit/redesign-status-ws09-step38.test.ts'
@@ -130,12 +133,12 @@ describe('REDESIGN_STATUS.md, the thirty-eighth step of WS09: the block and the 
     expect(ws09.split(`\n${SECTION}\n`)).toHaveLength(2)
     expect(headings[headings.indexOf(PREVIOUS) + 1]).toBe(STEP)
     expect(headings[headings.indexOf(STEP) + 1]).toBe(SECTION)
-    expect(headings[headings.indexOf(SECTION) + 1]).toBe(LISTS[0])
+    if (latest) expect(headings[headings.indexOf(SECTION) + 1]).toBe(LISTS[0]) // guarded by WS09 checkpoint Z's review, whose block follows the section
   })
 
   it('gives the Status and PR lines what the step makes true: checkpoint Z built and waiting, step 38 among the built', () => {
     expect(status).toContain('\n## WS09: Clubs as living listings\n')
-    expect(statusLine).toContain('and checkpoint Z, WS09 steps 37 and 38, is built on `redesign/ws09-clubs-z`, cut from checkpoint Y\'s head, `c930b20`, and waits for its review, its own draft pull request and K\'s word, merging after 159: WS09 step 37, players are not tied to clubs, takes')
+    expect(statusLine).toContain('and checkpoint Z, WS09 steps 37 and 38, is built on `redesign/ws09-clubs-z`, cut from checkpoint Y\'s head, `c930b20`, and reviewed there, holds checkpoints Y, X and W and `main` at `85f20ec`, and waits for its own draft pull request, to be opened once its review\'s fixes are in, and K\'s word, merging after 159: WS09 step 37, players are not tied to clubs, takes') // moved by WS09 checkpoint Z's review: the checkpoint is reviewed
     expect(statusLine).toContain('and WS09 step 38, the browser matrix and the switch-on notes, reads both clubs pages in every look')
     expect(statusLine).toContain('while step 36, club photos, waits for K\'s preview bucket as a checkpoint of its own; steps 1 to 14')
     expect(statusLine).not.toContain('checkpoint Z has begun')
@@ -143,9 +146,9 @@ describe('REDESIGN_STATUS.md, the thirty-eighth step of WS09: the block and the 
     expect(statusLine).toContain('waits in draft pull request 158 for K\'s word')
     expect(statusLine).toContain('waits in draft pull request 159 for K\'s word')
     const tail = statusLine.slice(statusLine.lastIndexOf('; ') + 2)
-    expect(tail).toContain('checkpoint Y\'s review and its fixes, step 37, step 38, K\'s answers')
+    if (latest) expect(tail).toContain('checkpoint Y\'s review and its fixes, step 37, step 38, K\'s answers') // guarded by WS09 checkpoint Z's review, whose round the tail names after step 38
     expect(tail).toMatch(/\bbuilt\.$/)
-    expect(prLine).toContain('checkpoint Z, steps 37 and 38, is built on `redesign/ws09-clubs-z`, cut from checkpoint Y\'s head, and waits for its review, its own draft pull request and K\'s word for its merge, after 159, and step 36 waits for K\'s preview bucket as a checkpoint of its own')
+    expect(prLine).toContain('checkpoint Z, steps 37 and 38, is built on `redesign/ws09-clubs-z`, cut from checkpoint Y\'s head, and reviewed there, holds checkpoints Y, X and W and `main` at `85f20ec`, and waits for its own draft pull request and K\'s word for its merge, after 159, and step 36 waits for K\'s preview bucket as a checkpoint of its own') // moved by WS09 checkpoint Z's review: the checkpoint is reviewed
     expect(prLine).not.toContain('checkpoint Z has begun')
     expect(prLine.endsWith('wait in pull request 151 for K\'s word.')).toBe(true)
     const said = bullet(block, '- **The Status and PR lines.**')
@@ -184,6 +187,7 @@ describe('REDESIGN_STATUS.md, the thirty-eighth step of WS09: the block and the 
     expect(writtenCount(files, SELF)).toBe(casesIn(SELF))
     const grown = sub(files, '  - Grown with no change:')
     for (const piece of ['117 handler files', '`PENDING_COUNT` stays 104', '`test/unit/fixtures/api-added-since-split.json` does not move', 'keeps its 11 cases', 'its 9']) expect(grown, piece).toContain(piece)
+    expect(grown).toContain('`test/unit/chrome-reads.test.ts` goes from 59 to 60') // added by WS09 checkpoint Z's review
     const beyond = sub(files, '  - Files beyond the step\'s list:')
     for (const file of UNTOUCHED) {
       expect(beyond, file).toContain(`\`${file}\``)
@@ -217,7 +221,7 @@ describe('REDESIGN_STATUS.md, the thirty-eighth step of WS09: the parts against 
     expect(page).toContain('<div className={clubPagesOn() ? \'grid gap-4\' : \'grid gap-4 sm:grid-cols-3\'}>')
     const tile = bullet(block, '- **The tile row.**')
     for (const piece of ['`grid gap-4`', '`grid gap-4 sm:grid-cols-3`', 'from 13,800 bytes to']) expect(tile, piece).toContain(piece)
-    expect(tile).toContain(`to ${Buffer.byteLength(page).toLocaleString('en-US')} bytes`)
+    if (latest) expect(tile).toContain(`to ${Buffer.byteLength(page).toLocaleString('en-US')} bytes`) // guarded by WS09 checkpoint Z's review: the page is a live one that later work changes
     const said = bullet(block, '- **The map.**')
     for (const piece of ['16 criteria', 'D17, D24, D26 and D29', 'eight items', '`test/unit/listing-rule.test.ts`']) expect(said, piece).toContain(piece)
   })
@@ -297,12 +301,12 @@ describe('REDESIGN_STATUS.md, checkpoint Z\'s section: K\'s note for newClubs', 
     const note = bullet(zone, '- **K\'s switch-on note for newClubs.**')
     const first = between(note, '  - What must be true first, in this order:', '  - What turning it on does at once:')
     const steps = first.split('\n').filter((l) => /^ {4}\d+\. /.test(l))
-    expect(steps.map((l) => Number(/(\d+)\./.exec(l)?.[1]))).toEqual([1, 2, 3, 4, 5, 6])
-    for (const [i, piece] of ['Checkpoints W, X and Y merged', '`newLook`', 'choice 26', '`TURNSTILE_SECRET_KEY`', 'a maps key', 'each checkpoint\'s choices'].entries()) expect(steps[i], piece).toContain(piece)
+    expect(steps.map((l) => Number(/(\d+)\./.exec(l)?.[1]))).toEqual([1, 2, 3, 4, 5, 6, 7]) // moved by WS09 checkpoint Z's review, whose item 4 names three more owed things
+    for (const [i, piece] of ['Checkpoints W, X and Y merged', '`newLook`', 'choice 26', 'the daily worker\'s two held lines', '`TURNSTILE_SECRET_KEY`', 'a maps key', 'each checkpoint\'s choices'].entries()) expect(steps[i], piece).toContain(piece) // moved by WS09 checkpoint Z's review
     expect(steps[0]).toContain('each with its migrations seen green in Apply database migrations before its live check')
     expect(steps[0]).toContain('`0071_rate_limits.sql`')
-    expect(steps[3]).toContain('`VITE_TURNSTILE_SITE_KEY`')
-    expect(steps[3]).toContain('`SIGNING_SECRET`')
+    expect(steps[4]).toContain('`VITE_TURNSTILE_SITE_KEY`') // moved by WS09 checkpoint Z's review
+    expect(steps[4]).toContain('`SIGNING_SECRET`') // moved by WS09 checkpoint Z's review
     const now = sub(note, '  - What turning it on does at once:')
     for (const piece of ['`/clubs`', '`/clubs/<short address>`', '301', 'before any script', '`/sitemap.xml`', 'the Contact form', 'Reply through LCA', 'Suggest an update', 'Suggest a club or start one', 'Ask to be its named rep', 'The keepers\' rows', 'no officers', '"Family members and players from the same club"', 'five minutes']) {
       expect(now, piece).toContain(piece)
@@ -320,7 +324,7 @@ describe('REDESIGN_STATUS.md, checkpoint Z\'s section: K\'s note for newClubs', 
   it('asks K in one numbered list, the built way first, with step 37\'s four', () => {
     const asked = bullet(zone, '- **What K is asked.**')
     const numbered = asked.split('\n').filter((l) => /^ {2}\d+\. /.test(l))
-    expect(numbered.map((l) => Number(/(\d+)\./.exec(l)?.[1]))).toEqual([1, 2, 3, 4, 5, 6])
+    expect(numbered.map((l) => Number(/(\d+)\./.exec(l)?.[1]))).toEqual([1, 2, 3, 4, 5, 6, 7]) // moved by WS09 checkpoint Z's review, whose ruling B4 made a choice on K's behalf
     for (const l of numbered) expect(l).toMatch(/built/)
     for (const [i, piece] of ['The roster and officers tools', '"Family members and players from the same club"', 'no officers', 'the mail work\'s files', 'events tile', 'The switch-on'].entries()) expect(numbered[i], piece).toContain(piece)
     expect(asked).toContain('The choices of checkpoints W, X and Y stand in their sections')

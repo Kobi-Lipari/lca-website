@@ -141,7 +141,7 @@ describe('REDESIGN_STATUS.md, the thirty-seventh step of WS09: the block', () =>
     const tail = statusLine.slice(statusLine.lastIndexOf('; ') + 2)
     if (latest) expect(tail).toContain('step 35, checkpoint Y\'s review and its fixes, step 37, K\'s answers')
     expect(tail).toMatch(/\bbuilt\.$/)
-    expect(prLine).toContain('and waits in draft pull request 159 for K\'s word for its merge, after 158; checkpoint Z, steps 37 and 38, is built on `redesign/ws09-clubs-z`, cut from checkpoint Y\'s head, and waits for its review, its own draft pull request and K\'s word for its merge, after 159, and step 36 waits for K\'s preview bucket as a checkpoint of its own; the question marks\' words') // moved by WS09 step 38
+    expect(prLine).toContain('and waits in draft pull request 159 for K\'s word for its merge, after 158; checkpoint Z, steps 37 and 38, is built on `redesign/ws09-clubs-z`, cut from checkpoint Y\'s head, and reviewed there, holds checkpoints Y, X and W and `main` at `85f20ec`, and waits for its own draft pull request and K\'s word for its merge, after 159, and step 36 waits for K\'s preview bucket as a checkpoint of its own; the question marks\' words') // moved by WS09 step 38, and by WS09 checkpoint Z's review
     expect(prLine.endsWith('wait in pull request 151 for K\'s word.')).toBe(true)
     const lines = bullet(block, '- **The Status and PR lines.**')
     for (const piece of ['three clauses', 'draft pull request 159', 'checkpoint Z has begun', 'its tail names step 37', 'changes in two']) expect(lines, piece).toContain(piece)
@@ -262,9 +262,10 @@ describe('REDESIGN_STATUS.md, the thirty-seventh step of WS09: the parts against
     expect(bullet(block, '- **What a revert leaves.**')).toContain('no stored value is rewritten')
     const off = bullet(block, '- **What ships with every switch off.**')
     for (const piece of ['Today\'s roster, officers and pairing option, unchanged', 'held against the stored copy', 'No switch is added.']) expect(off, piece).toContain(piece)
+    expect(off).toContain('and the main script and every chunk that imports it, which take new names at their own sizes') // added by WS09 checkpoint Z's review, as the Build bullet says
     // No migration is made while this step is the latest, and the preview's pictures still go to the production bucket.
     if (latest) expect(readdirSync(join(ROOT, 'migrations')).filter((f) => f.startsWith('0074'))).toEqual([])
-    expect(read('wrangler.toml')).toContain('[[env.preview.r2_buckets]]\nbinding = "CLUB_LOGOS"\nbucket_name = "lca-club-logos"')
+    if (latest) expect(read('wrangler.toml')).toContain('[[env.preview.r2_buckets]]\nbinding = "CLUB_LOGOS"\nbucket_name = "lca-club-logos"') // guarded by WS09 checkpoint Z's review: club photos rebinds the preview's bucket
   })
 
   it('names what is owed in the held files, the four choices for K, the moved pins and the build\'s figures', () => {
@@ -274,7 +275,7 @@ describe('REDESIGN_STATUS.md, the thirty-seventh step of WS09: the parts against
     }
     // The new club form still promises officers on the next screen, in a held file.
     const promise = 'You\'ll add the description, meeting details, logo and officers on the next screen.'
-    expect(read('src/pages/AdminPage.tsx')).toContain(promise)
+    if (latest) expect(read('src/pages/AdminPage.tsx')).toContain(promise) // guarded by WS09 checkpoint Z's review: the mail work is asked to change this sentence
     expect(held).toContain(`"${promise}" drops "and officers" with the club pages on`)
     const owed =bullet(block, '- **Owed before newClubs goes on.**').split('\n').filter((l) => l.startsWith('  - '))
     expect(owed).toHaveLength(4)

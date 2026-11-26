@@ -33,8 +33,9 @@ import { sendEmail, type EmailEnv } from '../email'
 import { isRegionalRepFor } from '../admin/permissions'
 import { resolveSiteUrl } from '../site'
 import { clubRepsOf, lcaAdmins, regionRepresentativesOf, repRequestKeeperEmail, repRequestLink, type Keeper, type RepRequestReason } from './emails'
+import { CLUB_PAGES_ON } from './pages'
 import {
-  adminsDecideRow, connectionWords, movesWords, nameQuestion, neverNamed, replacesWords, type RepConnection,
+  accountClubWords, adminsDecideRow, connectionWords, movesWords, nameQuestion, neverNamed, replacesWords, type RepConnection,
 } from '../../../domain/clubs/repRequest'
 import { formatDate } from '../../../domain/format/date'
 import type { RepRequestRow } from '../../../domain/contracts/clubRepRequests'
@@ -199,7 +200,9 @@ export async function openRepRequests(db: D1Database, reader: RepRequestReader):
     const name = row.full_name
     const otherClub = row.member_club && row.member_club !== row.club_id ? row.member_club_name : null
     let question = nameQuestion(name, row.club_name)
-    if (row.role === 'member' && otherClub) question = `${question} ${movesWords(name, otherClub, row.club_name)}`
+    // With the club pages on no page shows a roster, so the sentence names the member's account instead.
+    const moves = CLUB_PAGES_ON ? accountClubWords : movesWords
+    if (row.role === 'member' && otherClub) question = `${question} ${moves(name, otherClub, row.club_name)}`
     else if (row.role !== 'member' && isAdmin) question = `${question} ${replacesWords(name, row.role, otherClub)}`
     const noName = neverNamed(name, row.role) ?? (row.role !== 'member' && !isAdmin ? adminsDecideRow(name, row.role, otherClub) : null)
     return {

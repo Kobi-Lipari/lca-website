@@ -17,10 +17,10 @@
 // - how a typed place is read, case by case.
 // The ZIP codes and town names of Louisiana are the data under test; the
 // small files hold made-up places.
-import { mkdtempSync, readFileSync, writeFileSync } from 'node:fs'
+import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join, resolve } from 'node:path'
-import { describe, expect, it } from 'vitest'
+import { afterAll, describe, expect, it } from 'vitest'
 import { REGIONS } from '../../domain/clubs/regions'
 import { PARISH_REGIONS } from '../../domain/clubs/parishRegions'
 import { TOWNS_BY_REGION, ZIPS_BY_REGION } from '../../domain/clubs/laPlaces'
@@ -46,9 +46,16 @@ interface Made {
   parts: Array<[zip: string, county: string, land: number, water: number]>
 }
 
+/** Every folder the cases make under the system's temporary folder, removed when they are done. */
+const TEMP_FOLDERS: string[] = []
+afterAll(() => {
+  for (const dir of TEMP_FOLDERS.splice(0)) rmSync(dir, { recursive: true, force: true })
+})
+
 /** Writes a folder of the three files from what a case names, the rows in the order given. */
 function folderOf(made: Made): string {
   const dir = mkdtempSync(join(tmpdir(), 'la-places-edges-'))
+  TEMP_FOLDERS.push(dir)
   writeFileSync(join(dir, '2024_Gaz_zcta_national.txt'), `${ZIP_HEAD}\n${made.zips.map(([z, lat, lon]) => `${z}\t1\t0\t0\t0\t${lat}\t${lon}`).join('\n')}\n`)
   writeFileSync(join(dir, '2024_gaz_place_22.txt'), `${PLACE_HEAD}\n${made.places.map(([n, lat, lon], i) => `LA\t${i + 1}\t${i + 1}\t${n}\t25\tA\t1\t0\t0\t0\t${lat}\t${lon}`).join('\n')}\n`)
   const part = ([zip, county, land, water]: Made['parts'][number]) => `1|${zip}|ZCTA5 ${zip}|0|0|G6350|B5|S|1|${county}|Example County|0|0|G4020|H1|A|${land}|${water}`

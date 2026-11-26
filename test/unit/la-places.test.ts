@@ -26,10 +26,10 @@
 // suite, that one case checks the headers alone.
 // The ZIP codes and town names are Louisiana's own, the data under test.
 import { createHash } from 'node:crypto'
-import { mkdtempSync, readFileSync, readdirSync, statSync, writeFileSync } from 'node:fs'
+import { mkdtempSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join, resolve } from 'node:path'
-import { describe, expect, it } from 'vitest'
+import { afterAll, describe, expect, it } from 'vitest'
 import { REGIONS } from '../../domain/clubs/regions'
 import { PARISH_REGIONS, PICAYUNE_COUNTY, PICAYUNE_ZIP } from '../../domain/clubs/parishRegions'
 import { TOWNS_BY_REGION, ZIPS_BY_REGION } from '../../domain/clubs/laPlaces'
@@ -40,6 +40,11 @@ import { build, buildPoints } from '../../scripts/data/build-la-places'
 
 const ROOT = resolve(__dirname, '../..')
 const read = (path: string) => readFileSync(join(ROOT, path), 'utf8')
+/** Every folder the cases make under the system's temporary folder, removed when they are done. */
+const TEMP_FOLDERS: string[] = []
+afterAll(() => {
+  for (const dir of TEMP_FOLDERS.splice(0)) rmSync(dir, { recursive: true, force: true })
+})
 const [NEW_ORLEANS, BATON_ROUGE, LAFAYETTE, LAKE_CHARLES, NORTH] = REGIONS
 
 function filesUnder(dir: string): string[] {
@@ -154,6 +159,7 @@ describe('the server\'s lookup', () => {
 describe('the script', () => {
   it('writes the same bytes twice from the same files, with a region for each made-up area', () => {
     const dir = mkdtempSync(join(tmpdir(), 'la-places-'))
+    TEMP_FOLDERS.push(dir)
     writeFileSync(join(dir, '2024_Gaz_zcta_national.txt'), 'GEOID\tALAND\tAWATER\tALAND_SQMI\tAWATER_SQMI\tINTPTLAT\tINTPTLONG\n70001\t1\t0\t0\t0\t29.98\t-90.17\n71101\t1\t0\t0\t0\t32.50\t-93.75\n39466\t1\t0\t0\t0\t30.52\t-89.68\n')
     writeFileSync(join(dir, '2024_gaz_place_22.txt'), 'USPS\tGEOID\tANSICODE\tNAME\tLSAD\tFUNCSTAT\tALAND\tAWATER\tALAND_SQMI\tAWATER_SQMI\tINTPTLAT\tINTPTLONG\nLA\t1\t1\tExample City city\t25\tA\t1\t0\t0\t0\t32.51\t-93.74\nLA\t2\t2\tSt. Example town\t43\tA\t1\t0\t0\t0\t29.99\t-90.16\n')
     const header = 'OID_ZCTA5_20|GEOID_ZCTA5_20|NAMELSAD_ZCTA5_20|AREALAND_ZCTA5_20|AREAWATER_ZCTA5_20|MTFCC_ZCTA5_20|CLASSFP_ZCTA5_20|FUNCSTAT_ZCTA5_20|OID_COUNTY_20|GEOID_COUNTY_20|NAMELSAD_COUNTY_20|AREALAND_COUNTY_20|AREAWATER_COUNTY_20|MTFCC_COUNTY_20|CLASSFP_COUNTY_20|FUNCSTAT_COUNTY_20|AREALAND_PART|AREAWATER_PART'
@@ -209,6 +215,7 @@ describe('the points file', () => {
 
   it('is written by the script from the same files, the same bytes twice, the place file unchanged beside it', () => {
     const dir = mkdtempSync(join(tmpdir(), 'la-points-'))
+    TEMP_FOLDERS.push(dir)
     writeFileSync(join(dir, '2024_Gaz_zcta_national.txt'), 'GEOID\tALAND\tAWATER\tALAND_SQMI\tAWATER_SQMI\tINTPTLAT\tINTPTLONG\n70001\t1\t0\t0\t0\t29.98049\t-90.17\n39466\t1\t0\t0\t0\t30.52\t-89.68\n')
     writeFileSync(join(dir, '2024_gaz_place_22.txt'), 'USPS\tGEOID\tANSICODE\tNAME\tLSAD\tFUNCSTAT\tALAND\tAWATER\tALAND_SQMI\tAWATER_SQMI\tINTPTLAT\tINTPTLONG\nLA\t1\t1\tExample City city\t25\tA\t1\t0\t0\t0\t29.9911\t-90.1604\n')
     const header = 'OID_ZCTA5_20|GEOID_ZCTA5_20|NAMELSAD_ZCTA5_20|AREALAND_ZCTA5_20|AREAWATER_ZCTA5_20|MTFCC_ZCTA5_20|CLASSFP_ZCTA5_20|FUNCSTAT_ZCTA5_20|OID_COUNTY_20|GEOID_COUNTY_20|NAMELSAD_COUNTY_20|AREALAND_COUNTY_20|AREAWATER_COUNTY_20|MTFCC_COUNTY_20|CLASSFP_COUNTY_20|FUNCSTAT_COUNTY_20|AREALAND_PART|AREAWATER_PART'

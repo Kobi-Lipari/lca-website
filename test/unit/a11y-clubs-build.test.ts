@@ -6,7 +6,9 @@
 // with the one CLUB_PAGES_ON line set. The setup refuses to go on when that
 // line is not there exactly once, when the copy differs from functions/ by
 // anything but that line, or when the functions import from a folder the
-// copy does not link; these cases make each of those copies by hand, in a
+// copy does not link; once the tree itself holds the line set, the copy is
+// the tree's unchanged and may differ from it in nothing (WS09 checkpoint
+// Z's review). These cases make each of those copies by hand, in a
 // folder of their own under the system's temporary folder, and never touch
 // functions/ itself.
 import { cpSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
@@ -15,7 +17,7 @@ import { join, resolve } from 'node:path'
 import { afterEach, describe, expect, it } from 'vitest'
 import {
   A11Y_ALL_VARIANTS, A11Y_CLUBS_LINKS, A11Y_CLUBS_SERVER, A11Y_CLUBS_VARIANT, A11Y_PERSIST, A11Y_VARIANTS, CLUB_PAGES_FILE, CLUB_PAGES_LINE,
-  copyDifferences, reachedOutside, setClubPagesLine,
+  clubPagesLineSet, copyDifferences, reachedOutside, setClubPagesLine,
 } from '../a11y/global-setup'
 
 const ROOT = resolve(__dirname, '../..')
@@ -98,6 +100,44 @@ describe('the clubs server\'s copy of functions/', () => {
     made.push(folder)
     cpSync(FUNCTIONS, join(folder, 'functions'), { recursive: true })
     expect(copyDifferences(FUNCTIONS, join(folder, 'functions'))).toEqual([`${CLUB_PAGES_FILE} differs in 0 lines, not in the one CLUB_PAGES_ON line alone`])
+  })
+
+  // Once the club pages ship on, the tree's file holds the line set: the setup then makes the server from an
+  // unchanged copy. These cases make such a tree by hand, from a copy of functions/ with the line set.
+  it('takes a functions/ whose line is already set, and makes its copy unchanged with no problem', () => {
+    const tree = join(copyOfFunctions(), 'functions')
+    const text = readFileSync(join(tree, CLUB_PAGES_FILE), 'utf8')
+    expect(clubPagesLineSet(text)).toBe(true)
+    expect(setClubPagesLine(text)).toBe(text)
+    const folder = mkdtempSync(join(tmpdir(), 'a11y-clubs-'))
+    made.push(folder)
+    cpSync(tree, join(folder, 'functions'), { recursive: true })
+    const file = join(folder, 'functions', CLUB_PAGES_FILE)
+    writeFileSync(file, setClubPagesLine(readFileSync(file, 'utf8')))
+    expect(copyDifferences(tree, join(folder, 'functions'))).toEqual([])
+  })
+
+  it('refuses a copy of a tree whose line is already set when the copy differs in any line', () => {
+    const tree = join(copyOfFunctions(), 'functions')
+    for (const change of [
+      (text: string) => text.replace(CLUB_PAGES_LINE.copy, CLUB_PAGES_LINE.tree),
+      (text: string) => text.replace(/^[^\n]*/, '// changed'),
+    ]) {
+      const folder = mkdtempSync(join(tmpdir(), 'a11y-clubs-'))
+      made.push(folder)
+      cpSync(tree, join(folder, 'functions'), { recursive: true })
+      const file = join(folder, 'functions', CLUB_PAGES_FILE)
+      writeFileSync(file, change(readFileSync(file, 'utf8')))
+      expect(copyDifferences(tree, join(folder, 'functions'))).toEqual([`${CLUB_PAGES_FILE} differs in 1 lines, though functions/ already holds the CLUB_PAGES_ON line set`])
+    }
+  })
+
+  it('refuses a file that holds the line in both forms, or in neither, or the set form twice', () => {
+    expect(() => setClubPagesLine(`${CLUB_PAGES_LINE.tree}\n${CLUB_PAGES_LINE.copy}\n`)).toThrow(/1 times and the line "export const CLUB_PAGES_ON = true" 1 times, not one of them once/)
+    expect(() => setClubPagesLine(`${CLUB_PAGES_LINE.copy}\n${CLUB_PAGES_LINE.tree}\n${CLUB_PAGES_LINE.tree}\n`)).toThrow(/not one of them once/)
+    expect(() => setClubPagesLine('export const SOME_OTHER_LINE = 1\n')).toThrow(/"export const CLUB_PAGES_ON = false" 0 times, not once/)
+    expect(() => setClubPagesLine(`${CLUB_PAGES_LINE.copy}\n${CLUB_PAGES_LINE.copy}\n`)).toThrow(/"export const CLUB_PAGES_ON = true" 2 times, not once/)
+    expect(() => setClubPagesLine(`// ${CLUB_PAGES_LINE.copy}\n`)).toThrow(/0 times, not once/)
   })
 
   it('links every folder the functions import from outside functions/, and finds one it does not', () => {

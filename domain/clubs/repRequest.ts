@@ -178,6 +178,14 @@ export function movesWords(name: string, otherClub: string, clubName: string): s
   return `${name} is on ${otherClub}'s roster now. Naming them rep moves them to ${clubName}'s.`
 }
 
+/**
+ * The same, once the club pages are on and no page shows a roster: the member's account names the other club, and
+ * naming changes it. The caller chooses between the two by CLUB_PAGES_ON, read where the row is built.
+ */
+export function accountClubWords(name: string, otherClub: string, clubName: string): string {
+  return `${name}'s account names ${otherClub} as their club. Naming them rep changes that to ${clubName}.`
+}
+
 /** The question Decline asks first. */
 export function declineQuestion(name: string): string {
   return `Decline ${name}'s request? They are told by email.`

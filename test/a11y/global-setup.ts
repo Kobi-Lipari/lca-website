@@ -312,24 +312,45 @@ function filesUnder(dir: string, inside = ''): string[] {
   return out.sort()
 }
 
-/** The file's text with the one CLUB_PAGES_ON line set; throws unless the line is there exactly once. */
-export function setClubPagesLine(text: string): string {
+/**
+ * Whether the tree's file holds the CLUB_PAGES_ON line unset, so the copy
+ * sets it, or already set, as it will once the club pages ship on, so the
+ * copy is the tree's unchanged. Each form counts only as a whole line.
+ * Throws for any other state: the line in neither form, in both, or in one
+ * form more than once.
+ */
+export function clubPagesLineSet(text: string): boolean {
   const lines = text.split('\n')
-  const at = lines.flatMap((line, i) => (line === CLUB_PAGES_LINE.tree ? [i] : []))
-  if (at.length !== 1) {
-    throw new Error(
-      `[a11y setup] functions/${CLUB_PAGES_FILE} holds the line "${CLUB_PAGES_LINE.tree}" ${at.length} times, not once, so the clubs server cannot be made. Stopping.`,
-    )
-  }
-  lines[at[0]] = CLUB_PAGES_LINE.copy
+  const unset = lines.filter((line) => line === CLUB_PAGES_LINE.tree).length
+  const set = lines.filter((line) => line === CLUB_PAGES_LINE.copy).length
+  if (unset === 1 && set === 0) return false
+  if (unset === 0 && set === 1) return true
+  const stop = 'so the clubs server cannot be made. Stopping.'
+  if (set === 0) throw new Error(`[a11y setup] functions/${CLUB_PAGES_FILE} holds the line "${CLUB_PAGES_LINE.tree}" ${unset} times, not once, ${stop}`)
+  if (unset === 0) throw new Error(`[a11y setup] functions/${CLUB_PAGES_FILE} holds the line "${CLUB_PAGES_LINE.copy}" ${set} times, not once, ${stop}`)
+  throw new Error(
+    `[a11y setup] functions/${CLUB_PAGES_FILE} holds the line "${CLUB_PAGES_LINE.tree}" ${unset} times and the line "${CLUB_PAGES_LINE.copy}" ${set} times, not one of them once, ${stop}`,
+  )
+}
+
+/**
+ * The file's text with the one CLUB_PAGES_ON line set: changed when the tree
+ * holds it unset, and as it is when the tree already holds it set. Throws
+ * for any other state, as clubPagesLineSet says.
+ */
+export function setClubPagesLine(text: string): string {
+  if (clubPagesLineSet(text)) return text
+  const lines = text.split('\n')
+  lines[lines.indexOf(CLUB_PAGES_LINE.tree)] = CLUB_PAGES_LINE.copy
   return lines.join('\n')
 }
 
 /**
  * How the copy differs from the tree's functions/ other than by the one
  * line: a file one has and the other has not, a file whose bytes differ, or
- * in CLUB_PAGES_FILE any line but that one. An empty list is the copy as it
- * must be.
+ * in CLUB_PAGES_FILE any line but that one. When the tree's CLUB_PAGES_FILE
+ * already holds the line set (and not unset), the copy must differ from the
+ * tree in nothing at all. An empty list is the copy as it must be.
  */
 export function copyDifferences(treeDir: string, copyDir: string): string[] {
   const problems: string[] = []
@@ -351,6 +372,11 @@ export function copyDifferences(treeDir: string, copyDir: string): string[] {
       continue
     }
     const changed = before.flatMap((line, i) => (line !== after[i] ? [i] : []))
+    const alreadySet = before.filter((line) => line === CLUB_PAGES_LINE.copy).length === 1 && !before.includes(CLUB_PAGES_LINE.tree)
+    if (alreadySet) {
+      if (!a.equals(b)) problems.push(`${path} differs in ${changed.length} lines, though functions/ already holds the CLUB_PAGES_ON line set`)
+      continue
+    }
     const one = changed.length === 1 && before[changed[0]] === CLUB_PAGES_LINE.tree && after[changed[0]] === CLUB_PAGES_LINE.copy
     if (!one) problems.push(`${path} differs in ${changed.length} lines, not in the one CLUB_PAGES_ON line alone`)
   }
@@ -377,7 +403,9 @@ export function reachedOutside(folder: string): string[] {
  * A11Y_CLUBS_LINKS. Stops with a plain error unless exactly that one line
  * was found and changed, the copy differs from functions/ by that line
  * alone, and every folder the functions import from outside functions/ is
- * linked. The tree's functions/ is only read.
+ * linked. Once the tree itself holds the line set, the copy is the tree's
+ * unchanged and must differ from it in nothing. The tree's functions/ is
+ * only read.
  */
 export function makeClubsServer(): void {
   if (!A11Y_CLUBS_SERVER.startsWith(`${A11Y_PERSIST}/`)) throw new Error(`[a11y setup] ${A11Y_CLUBS_SERVER} is not inside ${A11Y_PERSIST}.`)
