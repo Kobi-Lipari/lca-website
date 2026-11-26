@@ -17,10 +17,15 @@
 //                 no maps key, for nothing in the map's place. Today's club
 //                 page passes none of these and draws as it always has.
 //
+//   mode="directory" the Clubs directory (WS09 step 33), and only it: its
+//                 pins as buttons in the list's order, drawn by
+//                 DirectoryMap.tsx, a chunk of its own that today's pages
+//                 never fetch. Today's two uses above draw as they always have.
+//
 // The map's style, the whole-state view, finding a club's spot, the
 // directions link and the script loader are in src/areas/clubs/clubMap.ts,
 // shared with ClubLocationPicker.
-import { useEffect, useEffectEvent, useRef, useState } from 'react'
+import { Suspense, lazy, useEffect, useEffectEvent, useRef, useState } from 'react'
 import {
   LOUISIANA_CENTER,
   MAP_STYLES,
@@ -32,7 +37,11 @@ import {
   type MapPoint,
   type PlacePoint,
 } from '@/areas/clubs/clubMap'
+import type { DirectoryMapProps } from '@/areas/clubs/directoryPins'
 import { LCA } from '@/lib/brand'
+
+/** The directory's map, fetched only when the directory draws it. */
+const DirectoryMap = lazy(() => import('@/areas/clubs/components/DirectoryMap'))
 
 // Map styling takes the palette as raw hex; Google Maps has no idea what
 // a Tailwind class is.
@@ -121,7 +130,7 @@ interface SingleClubProps {
   quietWithoutKey?: boolean
 }
 
-type Props = AllClubsProps | SingleClubProps
+type Props = AllClubsProps | SingleClubProps | DirectoryMapProps
 
 type PinState = 'normal' | 'hover' | 'selected'
 
@@ -154,6 +163,18 @@ function infoContent(club: MapClub, pin: MapPoint): string {
 }
 
 export function LCAMap(props: Props) {
+  if (props.mode === 'directory') {
+    return (
+      <Suspense fallback={<div style={{ height: props.height ?? 480 }} />}>
+        <DirectoryMap {...props} />
+      </Suspense>
+    )
+  }
+  return <ClubsMap {...props} />
+}
+
+/** Today's two uses, as they always were. */
+function ClubsMap(props: AllClubsProps | SingleClubProps) {
   const mapRef = useRef<HTMLDivElement>(null)
   const mapObj = useRef<google.maps.Map | null>(null)
   const infoRef = useRef<google.maps.InfoWindow | null>(null)

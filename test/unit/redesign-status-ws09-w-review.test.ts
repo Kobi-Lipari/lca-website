@@ -253,7 +253,9 @@ describe('REDESIGN_STATUS.md, checkpoint W\'s review: the Status and PR lines', 
 describe('REDESIGN_STATUS.md, checkpoint W\'s review: the map, the deviations, the follow-ups and the one corrected sentence', () => {
   it('ends each step 21 entry of criteria 1 and 6 with its one sentence, before the next entry', () => {
     const one = mapItem('Criterion 1')
-    expect(one).toContain('held by `test/unit/club-pages-no-dates.test.tsx`. K\'s decision 12, in checkpoint W, changed it: the told line now reads "Last checked" with its month and year. Planned: WS09 step 33.')
+    // WS09 step 33 adds its own sentence before the planned step, so the step 21 entry is held to its last sentence and the item to its end.
+    expect(one).toContain('held by `test/unit/club-pages-no-dates.test.tsx`. K\'s decision 12, in checkpoint W, changed it: the told line now reads "Last checked" with its month and year. ')
+    expect(one.endsWith('Planned: WS09 step 33.')).toBe(true)
     const six = mapItem('Criterion 6')
     expect(six).toContain('Contact comes with its form. K\'s decision 12, in checkpoint W, took the author line away. Built in WS09 step 22:')
   })

@@ -212,7 +212,7 @@ describe('REDESIGN_STATUS.md, the thirty-second step of WS09: the block', () => 
     const beyond = bullet(files, '  - Files beyond the step\'s list:')
     for (const file of UNTOUCHED) expect(beyond, file).toContain(`\`${file}\``)
     for (const file of UNTOUCHED) expect(read(file), file).not.toMatch(OURS)
-    for (const file of [...codeFiles('workers'), ...codeFiles('functions/utils/mail'), ...codeFiles('domain/mail'), ...codeFiles('src')]) expect(read(file), file).not.toMatch(/nearZip|laPoints|directoryAddress|clubs\/order|answerDirectory/)
+    for (const file of [...codeFiles('workers'), ...codeFiles('functions/utils/mail'), ...codeFiles('domain/mail'), ...codeFiles('src')]) expect(read(file), file).not.toMatch(['src/areas/clubs/components/ClubDirectory.tsx', 'src/areas/clubs/directoryWords.ts'].includes(file) ? /nearZip|laPoints|answerDirectory/ : /nearZip|laPoints|directoryAddress|clubs\/order|answerDirectory/)
     expect(readdirSync(join(ROOT, 'migrations')).filter((f) => /^\d{4}_/.test(f)).sort().at(-1)).toBe(/expect\(sql\.at\(-1\)\)\.toBe\('(\d{4}_\w+\.sql)'\)/.exec(read('test/unit/drizzle-baseline.test.ts'))?.[1])
   })
 })

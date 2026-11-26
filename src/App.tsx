@@ -29,6 +29,7 @@ const ClubListingPage = lazy(() => import('@/pages/ClubListingPage').then(m => (
 const ClubConfirmPage = lazy(() => import('@/pages/ClubConfirmPage').then(m => ({ default: m.ClubConfirmPage })))
 const ClubReplyPage = lazy(() => import('@/pages/ClubReplyPage').then(m => ({ default: m.ClubReplyPage })))
 const ClubsPage = lazy(() => import('@/pages/ClubsPage').then(m => ({ default: m.ClubsPage })))
+const ClubsIndexPage = lazy(() => import('@/pages/ClubsIndexPage').then(m => ({ default: m.ClubsIndexPage })))
 const ContactPage = lazy(() => import('@/pages/ContactPage').then(m => ({ default: m.ContactPage })))
 const DashboardPage = lazy(() => import('@/pages/DashboardPage').then(m => ({ default: m.DashboardPage })))
 const AccountSecurityPage = lazy(() => import('@/pages/AccountSecurityPage').then(m => ({ default: m.AccountSecurityPage })))
@@ -199,7 +200,8 @@ function App() {
             <Route path="/tournaments/:id/pairings" element={<TournamentPairingsPage />} />
             <Route path="/tournaments/:id/print" element={<TournamentPrintPage />} />
             <Route path="/scholastic" element={<ScholasticPage />} />
-            <Route path="/clubs" element={<ClubsPage />} />
+            {/* The new directory with clubPagesOn, when the list's answer has its shape (WS09 step 33); otherwise today's Clubs page, as it always was. */}
+            <Route path="/clubs" element={clubPagesOn() ? <ClubsIndexPage /> : <ClubsPage />} />
             {/* The page a Still accurate link in the monthly check opens, with no sign-in (WS09 step 14); routed only while clubKeepers is on, so with it off the address draws what it draws today. */}
             {FEATURES.clubKeepers && <Route path="/clubs/confirm/:token" element={<ClubConfirmPage />} />}
             {/* Suggest a club and Start a club, which the menus open with newClubs on (WS09 step 30); with newClubs off there is no such route, and the address draws today's "Club not found". */}
