@@ -10,7 +10,7 @@ import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 import { FAILED, LOADING, NO_CLUBS, TRY_AGAIN } from '@/areas/clubs/directoryWords'
 
-const api = vi.hoisted(() => ({ getClubs: vi.fn() }))
+const api = vi.hoisted(() => ({ getClubsFromOrigin: vi.fn() }))
 vi.mock('@/lib/supabase', () => ({
   supabase: { auth: { getSession: async () => ({ data: { session: null } }) } },
 }))
@@ -26,7 +26,7 @@ beforeAll(() => {
   Element.prototype.scrollIntoView = () => {}
 })
 beforeEach(() => {
-  api.getClubs.mockReset()
+  api.getClubsFromOrigin.mockReset()
   vi.stubEnv('VITE_GOOGLE_MAPS_API_KEY', '')
 })
 afterEach(() => {
@@ -45,7 +45,7 @@ function draw() {
 
 describe('what /clubs draws for an answer that is not the usual one', () => {
   it('draws the directory\'s one sentence for an empty answer, with the one heading', async () => {
-    api.getClubs.mockResolvedValue([])
+    api.getClubsFromOrigin.mockResolvedValue([])
     draw()
     expect(await screen.findByText(NO_CLUBS)).toBeTruthy()
     expect(screen.getAllByRole('heading', { level: 1 })).toHaveLength(1)
@@ -53,7 +53,7 @@ describe('what /clubs draws for an answer that is not the usual one', () => {
   })
 
   it('draws today\'s Clubs page whole when even one row is today\'s, never a directory with a gap in it', async () => {
-    api.getClubs.mockResolvedValue([WIDE, TODAY])
+    api.getClubsFromOrigin.mockResolvedValue([WIDE, TODAY])
     draw()
     expect(await screen.findByRole('heading', { level: 1, name: 'Find your chess community' })).toBeTruthy()
     expect(screen.queryByText('Chess clubs in Louisiana')).toBeNull()
@@ -63,7 +63,7 @@ describe('what /clubs draws for an answer that is not the usual one', () => {
 describe('the words while the list is on its way', () => {
   it('says "Loading the clubs..." in words as a status, with no button, and then replaces it with the page', async () => {
     let answer: (rows: unknown[]) => void = () => {}
-    api.getClubs.mockReturnValue(new Promise((done) => { answer = done }))
+    api.getClubsFromOrigin.mockReturnValue(new Promise((done) => { answer = done }))
     draw()
     const status = screen.getByRole('status')
     expect(status.textContent).toBe(LOADING)
@@ -74,14 +74,14 @@ describe('the words while the list is on its way', () => {
   })
 
   it('names the failure in words with the one heading and Try again, and keeps asking in words when the list fails again', async () => {
-    api.getClubs.mockRejectedValue(new Error('Example failure'))
+    api.getClubsFromOrigin.mockRejectedValue(new Error('Example failure'))
     draw()
     expect(await screen.findByText(FAILED)).toBeTruthy()
     expect(screen.getAllByRole('heading', { level: 1 })).toHaveLength(1)
     fireEvent.click(screen.getByRole('button', { name: TRY_AGAIN }))
     expect(screen.getByRole('status').textContent).toBe(LOADING)
     expect(await screen.findByText(FAILED)).toBeTruthy()
-    expect(api.getClubs).toHaveBeenCalledTimes(2)
+    expect(api.getClubsFromOrigin).toHaveBeenCalledTimes(2)
     expect(screen.queryByText('Example failure')).toBeNull()
   })
 })
@@ -91,7 +91,7 @@ describe('a visitor who leaves before the answer comes', () => {
     const errors = vi.spyOn(console, 'error').mockImplementation(() => {})
     let answer: (rows: unknown[]) => void = () => {}
     let fail: (e: Error) => void = () => {}
-    api.getClubs.mockReturnValueOnce(new Promise((done) => { answer = done })).mockReturnValueOnce(new Promise((_, reject) => { fail = reject }))
+    api.getClubsFromOrigin.mockReturnValueOnce(new Promise((done) => { answer = done })).mockReturnValueOnce(new Promise((_, reject) => { fail = reject }))
     const first = draw()
     first.unmount()
     await act(async () => { answer([WIDE]) })

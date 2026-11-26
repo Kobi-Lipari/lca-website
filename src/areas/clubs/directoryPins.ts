@@ -9,9 +9,16 @@
 //   - A pin is solid where the club states how it meets and hollow where it
 //     does not. No pin carries a number.
 //   - Clubs that share a point or a town are drawn as one count circle until
-//     it is opened; an opened circle draws each of its clubs, and those whose
-//     pins would touch where the map puts them are spread round the middle of
-//     their points, so each can be pressed.
+//     it is opened; an opened circle draws each of its clubs, and it stays
+//     open while any club it held is drawn.
+//   - Marks whose boxes would touch where the map puts them, pins and circles
+//     alike, are spread round the middle of their points, so no mark covers
+//     another and each can be pressed (since checkpoint Y's review: before it,
+//     only an opened circle's pins), and kept inside the map's frame and
+//     from under All of Louisiana, laid in rows where a ring would not fit,
+//     so each can be seen. A mark that touches none is drawn on its
+//     point, and as the map zooms in and the points part, each mark goes back
+//     to its own point.
 //   - The marks come in the list's order, so the pins, which are buttons,
 //     are met in the same order as the cards.
 // No clock and no random source: the same clubs always give the same marks.
@@ -112,9 +119,10 @@ export function groupsOf(pins: readonly MapPin[]): PinGroup[] {
 /**
  * What the map draws, in the list's order: each pin on its own, and each
  * group of two or more as one count circle where its first pin would be,
- * unless the group's key is among the opened, when each of its pins is
- * drawn with that key, so the map can spread the ones that would touch
- * (spreadPlaced).
+ * unless one of its clubs is among the opened (the clubs of each circle the
+ * visitor opened, by id), when each of its pins is drawn with the group's
+ * key. A circle is known by its clubs, not its key, so it stays open while a
+ * filter takes away the club that came first in it.
  */
 export function marksFor(pins: readonly MapPin[], opened: ReadonlySet<string>): MapMark[] {
   const groupOf = new Map<string, PinGroup>()
@@ -123,7 +131,7 @@ export function marksFor(pins: readonly MapPin[], opened: ReadonlySet<string>): 
   const drawn = new Set<string>()
   for (const pin of pins) {
     const group = groupOf.get(pin.id)!
-    if (group.pins.length > 1 && !opened.has(group.key)) {
+    if (group.pins.length > 1 && !group.pins.some((member) => opened.has(member.id))) {
       if (!drawn.has(group.key)) marks.push({ kind: 'group', group })
       drawn.add(group.key)
       continue
@@ -148,16 +156,22 @@ export function circleHolding(marks: readonly MapMark[], id: string | null): str
 /** A pin at rest, in pixels, wide by tall: its box stands up from its point. */
 export const PIN_BOX = { width: 26, height: 34 } as const
 
-/** The room, in pixels, kept between the boxes of two pins of an opened circle. */
+/** A count circle at rest, in pixels, wide by tall: its box is round its point. */
+export const CIRCLE_BOX = { width: 34, height: 34 } as const
+
+/** The room, in pixels, kept between the boxes of two marks drawn near each other. */
 export const PIN_GAP = 2
 
-/** The least distance, in pixels, a spread pin is drawn from the middle of its points. */
+/** The least distance, in pixels, a spread mark is drawn from the middle of its points. */
 export const SPREAD_PX = 22
 
-/** How far from the middle the pins of a spread are drawn: far enough that two next to each other, on any slant, keep PIN_GAP between their boxes. */
-export function spreadRadius(count: number): number {
+/**
+ * How far from the middle the marks of a spread are drawn: far enough that two next to each other, on any slant, keep
+ * PIN_GAP between their boxes; boxes the size of a pin's unless a larger box is given.
+ */
+export function spreadRadius(count: number, box: { width: number; height: number } = PIN_BOX): number {
   if (count < 2) return 0
-  const slant = Math.hypot(PIN_BOX.width + PIN_GAP, PIN_BOX.height + PIN_GAP)
+  const slant = Math.hypot(box.width + PIN_GAP, box.height + PIN_GAP)
   return Math.max(SPREAD_PX, Math.ceil(slant / (2 * Math.sin(Math.PI / count))))
 }
 
@@ -169,56 +183,199 @@ export function spreadOffset(spread: Spread | null): { dx: number; dy: number } 
   return { dx: Math.round(radius * Math.cos(angle)), dy: Math.round(radius * Math.sin(angle)) }
 }
 
-/** A pin's point where the map puts it, in pixels from the map's top left corner, with the opened circle it was drawn from (null for a pin on its own). */
+/**
+ * A mark's point where the map puts it, in pixels from the map's top left corner: a pin's (its box stands up from it)
+ * or, with `circle`, a count circle's (its box is round it). `opened` is the opened circle a pin was drawn from, or null.
+ */
 export interface PlacedPin {
   id: string
   opened: string | null
   x: number
   y: number
+  circle?: boolean
 }
 
-/** Whether two pins drawn at these points would touch: their boxes at rest closer than PIN_GAP. */
-function touch(a: { x: number; y: number }, b: { x: number; y: number }): boolean {
-  return Math.abs(a.x - b.x) < PIN_BOX.width + PIN_GAP && Math.abs(a.y - b.y) < PIN_BOX.height + PIN_GAP
+/** A mark's box: its middle and its size, in pixels, from its point. */
+function boxOf(mark: { x: number; y: number; circle?: boolean }) {
+  const size = mark.circle ? CIRCLE_BOX : PIN_BOX
+  return { cx: mark.x, cy: mark.circle ? mark.y : mark.y - size.height / 2, ...size }
+}
+
+/** Whether two boxes would touch: closer than PIN_GAP on both axes. */
+function touch(a: ReturnType<typeof boxOf>, b: ReturnType<typeof boxOf>): boolean {
+  return Math.abs(a.cx - b.cx) < (a.width + b.width) / 2 + PIN_GAP && Math.abs(a.cy - b.cy) < (a.height + b.height) / 2 + PIN_GAP
+}
+
+const byId = (a: { id: string }, b: { id: string }) => (a.id < b.id ? -1 : a.id > b.id ? 1 : 0)
+
+/**
+ * The map's frame the marks are kept inside, in pixels from its top left
+ * corner: its size, and the box of All of Louisiana in its top left corner
+ * with PIN_GAP round it (its right and bottom edges), which no mark is drawn
+ * under, or null before it has been measured.
+ */
+export interface MarkFrame {
+  width: number
+  height: number
+  clear: { right: number; bottom: number } | null
+}
+
+/** How far to move a run from lo to hi so it lies between min and max: into it from whichever side it leaves, or to the middle when it is the longer. */
+function shiftInto(lo: number, hi: number, min: number, max: number): number {
+  if (hi - lo > max - min) return Math.round((min + max - lo - hi) / 2)
+  if (lo < min) return Math.ceil(min - lo)
+  if (hi > max) return Math.floor(max - hi)
+  return 0
 }
 
 /**
- * Where each placed pin is drawn, in pixels. Pins of one opened circle whose
- * boxes would touch are drawn round the middle of their points, in the list's
- * order and the first above, whether they share one point or sit a little
- * apart in one town; the spread is looked at again, and any pin of the circle
- * it now touches joins it, until no two pins of the circle touch. A pin that
- * touches none, and a pin on its own, is drawn on its point.
+ * Where each placed mark is drawn, in pixels. Marks whose boxes would touch,
+ * pins and circles alike, are drawn round the middle of their boxes, at the
+ * least distance that keeps PIN_GAP between neighbours, the first place
+ * above the middle: each takes the place round the ring nearest its own, in
+ * the order of their slant from the middle (by id where they share one
+ * point), so the answer never depends on the order the marks came in. With
+ * the map's frame given, a ring that would reach past its edge, or under All
+ * of Louisiana, is moved in the least way that clears both; one too large for
+ * the frame is laid instead in rows round the same middle, each mark in the
+ * row and the place nearest its own; and a mark on its own that would reach
+ * past the edge or under All of Louisiana is moved in the same way. The
+ * marks are looked at again, and any mark a spread now touches joins it,
+ * until no two marks touch. A mark that touches none, inside the frame, is
+ * drawn on its point.
  */
-export function spreadPlaced(placed: readonly PlacedPin[]): Map<string, { x: number; y: number }> {
-  // Which spread each pin is in, by the index of the spread's first pin; each pin starts in its own.
-  const spreadOf = placed.map((_, i) => i)
+export function spreadPlaced(placed: readonly PlacedPin[], frame: MarkFrame | null = null): Map<string, { x: number; y: number }> {
+  // The marks in one order, by id, whatever order they came in.
+  const marks = [...placed].sort(byId)
+  const boxes = marks.map(boxOf)
+  const sidesOf = (ids: number[], places: Map<number, { cx: number; cy: number }>) => {
+    const sides = ids.map((i) => {
+      const p = places.get(i)!
+      return { left: p.cx - boxes[i].width / 2, right: p.cx + boxes[i].width / 2, top: p.cy - boxes[i].height / 2, bottom: p.cy + boxes[i].height / 2 }
+    })
+    return { sides, left: Math.min(...sides.map((s) => s.left)), right: Math.max(...sides.map((s) => s.right)), top: Math.min(...sides.map((s) => s.top)), bottom: Math.max(...sides.map((s) => s.bottom)) }
+  }
+  // The marks' boxes at these middles, moved as one into the frame where one is given, and then from under All of
+  // Louisiana, down or across, whichever is the shorter move that stays in the frame (down where they tie).
+  const intoFrame = (ids: number[], places: Map<number, { cx: number; cy: number }>) => {
+    if (!frame) return places
+    const all = sidesOf(ids, places)
+    let dx = shiftInto(all.left, all.right, 0, frame.width)
+    let dy = shiftInto(all.top, all.bottom, 0, frame.height)
+    const clear = frame.clear
+    if (clear) {
+      const under = all.sides.some((s) => s.left + dx < clear.right && s.top + dy < clear.bottom)
+      if (under) {
+        const down = Math.ceil(clear.bottom - (all.top + dy))
+        const across = Math.ceil(clear.right - (all.left + dx))
+        const downFits = all.bottom + dy + down <= frame.height
+        const acrossFits = all.right + dx + across <= frame.width
+        if (downFits && (!acrossFits || down <= across)) dy += down
+        else if (acrossFits) dx += across
+        else dy += down
+      }
+    }
+    return new Map([...places].map(([i, p]) => [i, { cx: p.cx + dx, cy: p.cy + dy }]))
+  }
+  // Whether the boxes at these middles lie wholly inside the frame and none under All of Louisiana.
+  const inside = (ids: number[], places: Map<number, { cx: number; cy: number }>) => {
+    if (!frame) return true
+    return sidesOf(ids, places).sides.every((s) => s.left >= 0 && s.right <= frame.width && s.top >= 0 && s.bottom <= frame.height
+      && !(frame.clear && s.left < frame.clear.right && s.top < frame.clear.bottom))
+  }
+  // Which spread each mark is in, by the index of the spread's first mark; each mark starts in its own.
+  const spreadOf = marks.map((_, i) => i)
   const drawnAt = () => {
     const members = new Map<number, number[]>()
     spreadOf.forEach((s, i) => members.set(s, [...(members.get(s) ?? []), i]))
-    const at = placed.map((p) => ({ x: p.x, y: p.y }))
+    const at = boxes.map((b) => ({ ...b }))
     for (const ids of members.values()) {
-      if (ids.length < 2) continue
-      const mx = ids.reduce((sum, i) => sum + placed[i].x, 0) / ids.length
-      const my = ids.reduce((sum, i) => sum + placed[i].y, 0) / ids.length
-      ids.forEach((i, index) => {
-        const { dx, dy } = spreadOffset({ index, count: ids.length })
-        at[i] = { x: mx + dx, y: my + dy }
-      })
+      if (ids.length < 2) {
+        // A mark on its own: on its point, unless that would put it past the frame's edge or under All of Louisiana.
+        const own = new Map([[ids[0], { cx: boxes[ids[0]].cx, cy: boxes[ids[0]].cy }]])
+        if (!inside(ids, own)) at[ids[0]] = { ...boxes[ids[0]], ...intoFrame(ids, own).get(ids[0])! }
+        continue
+      }
+      const n = ids.length
+      const mx = ids.reduce((sum, i) => sum + boxes[i].cx, 0) / n
+      const my = ids.reduce((sum, i) => sum + boxes[i].cy, 0) / n
+      const width = Math.max(...ids.map((i) => boxes[i].width))
+      const height = Math.max(...ids.map((i) => boxes[i].height))
+      const radius = spreadRadius(n, { width, height })
+      // The slant of each from the middle, from straight up and round as a clock goes; none for a mark at the middle.
+      const slant = (i: number) => {
+        const dx = boxes[i].cx - mx
+        const dy = boxes[i].cy - my
+        return Math.hypot(dx, dy) < 0.5 ? -1 : (Math.atan2(dy, dx) + Math.PI / 2 + 2 * Math.PI) % (2 * Math.PI)
+      }
+      const round = [...ids].sort((a, b) => slant(a) - slant(b) || byId(marks[a], marks[b]))
+      const place = (k: number) => {
+        const angle = (2 * Math.PI * k) / n - Math.PI / 2
+        return { cx: mx + Math.round(radius * Math.cos(angle)), cy: my + Math.round(radius * Math.sin(angle)) }
+      }
+      // The turn of the ring that keeps the marks nearest their own boxes; the least turn of those that tie.
+      let best = 0
+      let bestCost = Infinity
+      for (let turn = 0; turn < n; turn++) {
+        const cost = round.reduce((sum, i, k) => {
+          const p = place((k + turn) % n)
+          return sum + (p.cx - boxes[i].cx) ** 2 + (p.cy - boxes[i].cy) ** 2
+        }, 0)
+        if (cost < bestCost - 1e-9) {
+          best = turn
+          bestCost = cost
+        }
+      }
+      let places = intoFrame(ids, new Map(round.map((i, k) => [i, place((k + best) % n)])))
+      if (!inside(ids, places)) places = intoFrame(ids, rowsFor(ids, mx, my, width, height))
+      for (const [i, p] of places) at[i] = { ...boxes[i], ...p }
     }
     return at
   }
-  // Each pass joins two spreads, so there are fewer than as many passes as pins.
+  // A spread too large for the frame as a ring, laid in rows round its middle, in the shape that fits the frame below
+  // All of Louisiana with the most room to spare (where none fits, the one that reaches least past it), the marks taken
+  // by their own height into rows and by their own place across each row.
+  const rowsFor = (ids: number[], mx: number, my: number, width: number, height: number) => {
+    const n = ids.length
+    const across = width + PIN_GAP
+    const down = height + PIN_GAP
+    const room = { width: frame!.width, height: frame!.height - (frame!.clear?.bottom ?? 0) }
+    let cols = n
+    let best = Infinity
+    for (let c = 1; c <= n; c++) {
+      const w = c * across - PIN_GAP
+      const h = Math.ceil(n / c) * down - PIN_GAP
+      const over = Math.max(0, w - room.width) + Math.max(0, h - room.height)
+      const cost = over > 0 ? 1e6 + over : Math.max(w / room.width, h / room.height)
+      if (cost < best - 1e-9) {
+        best = cost
+        cols = c
+      }
+    }
+    const lines = Math.ceil(n / cols)
+    const byHeight = [...ids].sort((a, b) => boxes[a].cy - boxes[b].cy || boxes[a].cx - boxes[b].cx || byId(marks[a], marks[b]))
+    const places = new Map<number, { cx: number; cy: number }>()
+    for (let r = 0; r < lines; r++) {
+      const row = byHeight.slice(r * cols, (r + 1) * cols).sort((a, b) => boxes[a].cx - boxes[b].cx || byId(marks[a], marks[b]))
+      const left = Math.round(mx - ((row.length - 1) * across) / 2)
+      const top = Math.round(my - ((lines - 1) * down) / 2)
+      row.forEach((i, k) => places.set(i, { cx: left + k * across, cy: top + r * down }))
+    }
+    return places
+  }
+  // Each pass joins two spreads, so there are fewer than as many passes as marks.
   for (;;) {
     const at = drawnAt()
     let pair: [number, number] | null = null
-    for (let i = 0; i < placed.length && !pair; i++) {
-      for (let j = i + 1; j < placed.length && !pair; j++) {
-        const sameCircle = placed[i].opened !== null && placed[i].opened === placed[j].opened
-        if (sameCircle && spreadOf[i] !== spreadOf[j] && touch(at[i], at[j])) pair = [i, j]
+    for (let i = 0; i < marks.length && !pair; i++) {
+      for (let j = i + 1; j < marks.length && !pair; j++) {
+        if (spreadOf[i] !== spreadOf[j] && touch(at[i], at[j])) pair = [i, j]
       }
     }
-    if (!pair) return new Map(placed.map((p, i) => [p.id, at[i]]))
+    if (!pair) {
+      // Back from each box's middle to the mark's own point.
+      return new Map(marks.map((m, i) => [m.id, { x: at[i].cx, y: m.circle ? at[i].cy : at[i].cy + PIN_BOX.height / 2 }]))
+    }
     const [keep, gone] = [Math.min(spreadOf[pair[0]], spreadOf[pair[1]]), Math.max(spreadOf[pair[0]], spreadOf[pair[1]])]
     spreadOf.forEach((s, i) => { if (s === gone) spreadOf[i] = keep })
   }

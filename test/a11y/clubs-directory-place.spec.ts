@@ -173,7 +173,7 @@ test('a granted location, a made-up point, orders the list nearest first with bo
   await noAxe(page)
   // Clear location goes back to A to Z and the whole state, and the focus to the field.
   await page.getByRole('button', { name: 'Clear location' }).click()
-  expect(await names(page)).toEqual(A_TO_Z)
+  await expect.poll(() => names(page)).toEqual(A_TO_Z)
   await expect(map(page)).toHaveAttribute('data-view', 'state')
   await expect(field(page)).toBeFocused()
   expect(search(page)).toBe('')
@@ -262,7 +262,8 @@ test('a typed name, a place outside Louisiana and a town with no club each say s
   await field(page).press('Enter')
   await expect(status(page)).toContainText('No club in Natchitoches yet. The nearest are listed first.')
   await expect(status(page).getByRole('link', { name: 'Start a club?' })).toHaveAttribute('href', '/clubs/suggest?kind=start')
-  expect(search(page)).toBe('?near=71457')
+  // Since checkpoint Y's review a typed town stands for its own densest ZIP code area, by the Census Bureau's relationship file.
+  expect(search(page)).toBe('?near=71497')
   expect(await names(page)).toHaveLength(6)
   await noAxe(page)
 })
@@ -288,7 +289,8 @@ test('the filters narrow the list and the pins together, live in the address and
   expect(await names(page)).toEqual(['Example Delta Club', 'Example Pine Club'])
   await expect(page.getByRole('button', { name: 'Filters · 2 on' })).toBeVisible()
   await status(page).getByRole('button', { name: 'Clear filters' }).click()
-  expect(await names(page)).toEqual(A_TO_Z)
+  // The list is drawn again after the click, so its names are read once it has been.
+  await expect.poll(() => names(page)).toEqual(A_TO_Z)
   expect(search(page)).toBe('')
 })
 

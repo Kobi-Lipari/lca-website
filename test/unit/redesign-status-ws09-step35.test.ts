@@ -114,6 +114,21 @@ function casesIn(file: string): number {
   return (read(file).match(/^\s*(?:it|test)\(/gm) ?? []).length
 }
 
+/**
+ * The cases WS09 checkpoint Y's review added to the directory's test files, each held to a fix of that review; the
+ * block keeps the count each file had at its step.
+ */
+const Y_REVIEW_ADDED: Record<string, number> = {
+  'test/unit/club-directory-phone.test.tsx': 2,
+  'test/unit/club-directory.test.tsx': 5,
+  'test/unit/club-list-callers.test.ts': 2,
+  'test/unit/club-map-pins.test.ts': 11,
+  'test/unit/la-places.test.ts': 1,
+  'test/unit/near-town-words.test.ts': 2,
+  'test/unit/place-field-edges.test.tsx': 3,
+  'test/a11y/clubs-directory-keys.spec.ts': 2,
+}
+
 describe('REDESIGN_STATUS.md, the thirty-fifth step of WS09: the block', () => {
   it('sits once, right after step 34\'s block, and before the four lists while it is the latest', () => {
     expect(block).not.toBe('')
@@ -159,15 +174,15 @@ describe('REDESIGN_STATUS.md, the thirty-fifth step of WS09: the block', () => {
     for (const file of [...NEW_FILES, ...Object.keys(NEW_TESTS)]) expect(existsSync(join(ROOT, file)), file).toBe(true)
     for (const [file, count] of Object.entries(NEW_TESTS)) {
       expect(writtenCount(files, file), file).toBe(count)
-      expect(casesIn(file), file).toBe(count)
+      expect(casesIn(file), file).toBe(count + (Y_REVIEW_ADDED[file] ?? 0))
     }
     for (const [file, [from, to]] of Object.entries(GROWN_TESTS)) {
       expect(files, file).toContain(`\`${file}\` (${from} to ${to}: `)
-      expect(casesIn(file), file).toBe(to)
+      expect(casesIn(file), file).toBe(to + (Y_REVIEW_ADDED[file] ?? 0))
     }
     expect(writtenCount(files, SELF)).toBe(casesIn(SELF))
     // The pins moved in place: the closed tests keep their counts.
-    expect(casesIn('test/unit/club-directory.test.tsx')).toBe(16)
+    expect(casesIn('test/unit/club-directory.test.tsx')).toBe(16 + Y_REVIEW_ADDED['test/unit/club-directory.test.tsx'])
     expect(casesIn('test/unit/club-directory-edges.test.tsx')).toBe(17)
     expect(casesIn('test/a11y/clubs-directory.spec.ts')).toBe(9)
     expect(casesIn('test/a11y/clubs-directory-place.spec.ts')).toBe(6)

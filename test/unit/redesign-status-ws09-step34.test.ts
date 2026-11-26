@@ -111,6 +111,21 @@ function casesIn(file: string): number {
   return (read(file).match(/^\s*(?:it|test)\(/gm) ?? []).length
 }
 
+/**
+ * The cases WS09 checkpoint Y's review added to the directory's test files, each held to a fix of that review; the
+ * block keeps the count each file had at its step.
+ */
+const Y_REVIEW_ADDED: Record<string, number> = {
+  'test/unit/club-directory-phone.test.tsx': 2,
+  'test/unit/club-directory.test.tsx': 5,
+  'test/unit/club-list-callers.test.ts': 2,
+  'test/unit/club-map-pins.test.ts': 11,
+  'test/unit/la-places.test.ts': 1,
+  'test/unit/near-town-words.test.ts': 2,
+  'test/unit/place-field-edges.test.tsx': 3,
+  'test/a11y/clubs-directory-keys.spec.ts': 2,
+}
+
 describe('REDESIGN_STATUS.md, the thirty-fourth step of WS09: the block', () => {
   it('sits once, right after step 33\'s block, and before the four lists while it is the latest', () => {
     expect(block).not.toBe('')
@@ -158,11 +173,11 @@ describe('REDESIGN_STATUS.md, the thirty-fourth step of WS09: the block', () => 
     for (const file of [...NEW_FILES, ...Object.keys(NEW_TESTS)]) expect(existsSync(join(ROOT, file)), file).toBe(true)
     for (const [file, count] of Object.entries(NEW_TESTS)) {
       expect(writtenCount(files, file), file).toBe(count)
-      expect(casesIn(file), file).toBe(count)
+      expect(casesIn(file), file).toBe(count + (Y_REVIEW_ADDED[file] ?? 0))
     }
     expect(writtenCount(files, SELF)).toBe(casesIn(SELF))
     // The pins moved in place: the step 33 tests keep their counts.
-    expect(casesIn('test/unit/club-directory.test.tsx')).toBe(16)
+    expect(casesIn('test/unit/club-directory.test.tsx')).toBe(16 + Y_REVIEW_ADDED['test/unit/club-directory.test.tsx'])
     expect(casesIn('test/unit/club-directory-edges.test.tsx')).toBe(17)
     expect(casesIn('test/unit/near-zip.test.ts')).toBe(12)
     const grown = bullet(files, '  - Grown with no change:')
@@ -204,7 +219,8 @@ describe('REDESIGN_STATUS.md, the thirty-fourth step of WS09: the parts against 
     expect(bullet(block, '- **The keepers.**')).toContain('No keeper is named, by K\'s decision 12')
     expect(bullet(block, '- **Branch.**')).toContain('`redesign/ws09-clubs-y` at `5121e82`, "WS09 step 33: The directory and its map"')
     const merge = bullet(block, '- **What the merge does.**')
-    for (const piece of ['117 handler files', '58 of the 162 methods', '`PENDING_COUNT` still 104', '`deploy-worker.yml` does not run']) expect(merge, piece).toContain(piece)
+    // Since checkpoint Y's review: `domain/**` sends the worker's deploy, with its bundle unchanged (ruling A2).
+    for (const piece of ['117 handler files', '58 of the 162 methods', '`PENDING_COUNT` still 104', '`deploy-worker.yml` redeploys the daily-emails worker with its bundle unchanged']) expect(merge, piece).toContain(piece)
     const off = bullet(block, '- **What ships with every switch off.**')
     for (const piece of ['Today\'s `/clubs`, unchanged', '`test/unit/clubs-page-base-markup.test.tsx`', 'run what they ran', 'No switch is added.']) expect(off, piece).toContain(piece)
   })
@@ -218,8 +234,9 @@ describe('REDESIGN_STATUS.md, the thirty-fourth step of WS09: the parts against 
     expect(read(MOVED[4])).toContain('\'src/areas/clubs/components/ClubFilters.tsx\', \'src/areas/clubs/components/RepRequestSheet.tsx\'')
     expect(read(MOVED[3])).toContain('reads[file] ?? ([\'src/areas/clubs/components/ClubDirectory.tsx\', \'src/areas/clubs/directoryWords.ts\'].includes(file) ? /nearZip|laPoints|answerDirectory/')
     const owed = bullet(block, '- **Owed before newClubs goes on.**').split('\n').filter((l) => l.startsWith('  - '))
-    expect(owed).toHaveLength(3)
-    for (const [i, piece] of ['the outside sentence without Picayune', 'the reason beside Nearest', `"${NO_DISTANCE}"`].entries()) expect(owed[i], piece).toContain(piece)
+    // Since checkpoint Y's review the list carries the 25 mile rule as its fourth (ruling D2).
+    expect(owed).toHaveLength(4)
+    for (const [i, piece] of ['the outside sentence without Picayune', 'the reason beside Nearest', `"${NO_DISTANCE}"`, 'the 25 mile rule at the state line'].entries()) expect(owed[i], piece).toContain(piece)
     expect(bullet(block, '- **Lint.**')).toContain('13 errors and 11 warnings, as on the base `5121e82`')
     const build = bullet(block, '- **Build.**')
     for (const piece of ['a local production build', '`VITE_`', '`index-BCAQ-6Nr.js` at 524,031 bytes', '`index-Cl4hRNEd.css` at 174,428 bytes', '`features-BFUKrFdH.js`']) expect(build, piece).toContain(piece)

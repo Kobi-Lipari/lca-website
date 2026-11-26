@@ -1,15 +1,19 @@
 // domain/clubs/nearZip.ts
 //
 // The place the Clubs page orders its list from (WS09 step 32), worked out
-// in the browser and never sent anywhere: the nearest ZIP code area to the
+// in the browser with no request of its own: the nearest ZIP code area to the
 // point the device gives once, on tap of Near me, and the point of a place a
 // person types into "City, ZIP or club name". Only a ZIP code goes into the
 // page's address (domain/clubs/directoryAddress.ts), never the device's own
 // point and never what was typed.
 //
 // The points are domain/clubs/laPoints.ts's: each ZIP code area of
-// Louisiana's, and Picayune's, and each Louisiana town the place file of
-// Suggest a club holds. What was typed is read by readTypedPlace
+// Louisiana's, and Picayune's, with the town of the area where it has one,
+// and for each Louisiana town the place file of Suggest a club holds the ZIP
+// code area it stands for (the town's densest area, or else its nearest own
+// area, or else the area that shares the most land with it, by the Census
+// Bureau's relationship file; the points file's header says how). What was
+// typed is read by readTypedPlace
 // (domain/clubs/placeNames.ts), as the server reads a place typed into
 // Suggest a club, so the browser and the server read a typed place one way.
 // A typed place answers one of these:
@@ -17,9 +21,9 @@
 //   - a ZIP code of Louisiana's own range (700 to 714) that no area holds, a
 //     post office box's or a mistyped one: "not found", with no point;
 //   - any other ZIP code: outside Louisiana;
-//   - a Louisiana town's name, with or without ", LA": the town's point, and
-//     the ZIP code area nearest it, for the address; Picayune, Mississippi,
-//     the one club over the line, is a town here too;
+//   - a Louisiana town's name, with or without ", LA": the ZIP code area the
+//     town stands for, and that area's point; Picayune, Mississippi, the one
+//     club over the line, is a town here too;
 //   - a name with another state after it (", TX", "Mississippi"), or the
 //     name of a state alone: outside Louisiana;
 //   - anything else: a name, which the page matches against the clubs'
@@ -28,7 +32,7 @@
 // Pure code with no zod: the site's bundle can carry it once a page reads
 // it, and nothing here reads a device, a clock or a random source.
 import { milesBetween, type MapPoint } from './distance'
-import { TOWN_POINTS, ZIP_POINTS } from './laPoints'
+import { TOWN_ZIPS, ZIP_POINTS } from './laPoints'
 import { readTypedPlace } from './placeNames'
 
 /** A ZIP code area, its point and the straight-line miles to it. */
@@ -74,23 +78,25 @@ const STATE_NAMES = [
 /** A state written after a name: two letters after a comma, or a state's name after a comma or a space. */
 const OTHER_STATE = new RegExp(`^(.*?)(?:,\\s*(${STATE_CODES.join('|')})|(?:^|[\\s,]+)(${STATE_NAMES.join('|')}))$`)
 
-let tables: { zips: Map<string, MapPoint>; towns: Map<string, MapPoint> } | null = null
+let tables: { zips: Map<string, MapPoint>; zipTowns: Map<string, string>; towns: Map<string, string> } | null = null
 
-/** Each entry of the points file, "key:north:west", as a point in degrees. */
-function entries(lines: readonly string[]): Map<string, MapPoint> {
-  const out = new Map<string, MapPoint>()
-  for (const line of lines) {
-    for (const entry of line.split('|')) {
-      const [key, north, west] = entry.split(':')
-      out.set(key, { latitude: Number(north) / 1000, longitude: -Number(west) / 1000 })
-    }
-  }
-  return out
+/** Each entry of a table of the points file, its parts split at the colons. */
+function entries(lines: readonly string[]): string[][] {
+  return lines.flatMap((line) => line.split('|')).map((entry) => entry.split(':'))
 }
 
 /** The points file read once and kept, since it never changes while a page runs. */
 function pointTables() {
-  tables ??= { zips: entries(ZIP_POINTS), towns: entries(TOWN_POINTS) }
+  if (tables) return tables
+  const towns = entries(TOWN_ZIPS)
+  const zips = new Map<string, MapPoint>()
+  const zipTowns = new Map<string, string>()
+  // "zip:north:west", then the town's place in TOWN_ZIPS where the area has one.
+  for (const [zip, north, west, town] of entries(ZIP_POINTS)) {
+    zips.set(zip, { latitude: Number(north) / 1000, longitude: -Number(west) / 1000 })
+    if (town !== undefined) zipTowns.set(zip, towns[Number(town)][0])
+  }
+  tables = { zips, zipTowns, towns: new Map(towns.map(([town, zip]) => [town, zip])) }
   return tables
 }
 
@@ -116,24 +122,20 @@ export function nearestZip(point: MapPoint): NearestZip {
 }
 
 /**
- * The town of the points file whose point lies nearest a point, by its name
- * as placeKey writes it ("baton rouge"), for the words beside a ZIP code the
- * page found (WS09 step 34). Two towns the same distance away go by name.
+ * The town of a ZIP code area, by its name as placeKey writes it ("baton
+ * rouge"), for the words beside a ZIP code the page shows: the town that holds
+ * the largest share of the area's land. Null for an area that shares no land
+ * with a town of the points file, and for a ZIP code it does not hold.
  */
-export function nearestTown(point: MapPoint): string {
-  let best: { town: string; miles: number } | null = null
-  for (const [town, at] of pointTables().towns) {
-    const miles = milesBetween(point, at)
-    if (best === null || miles < best.miles || (miles === best.miles && town < best.town)) best = { town, miles }
-  }
-  if (best === null) throw new Error('The points file holds no town')
-  return best.town
+export function townOfZip(zip: string): string | null {
+  return pointTables().zipTowns.get(zip) ?? null
 }
 
-/** A town of the points file by its name as placeKey writes it, with the ZIP code area nearest it; null when there is none. */
+/** A town of the points file by its name as placeKey writes it, with the ZIP code area it stands for and that area's point; null when there is none. */
 function townAnswer(town: string): TypedPlaceAnswer | null {
-  const point = pointTables().towns.get(town)
-  return point ? { kind: 'town', town, zip: nearestZip(point).zip, point } : null
+  const zip = pointTables().towns.get(town)
+  const point = zip === undefined ? null : zipPoint(zip)
+  return zip !== undefined && point ? { kind: 'town', town, zip, point } : null
 }
 
 /** What a person typed into "City, ZIP or club name", read as the list above says; null when nothing was typed. */

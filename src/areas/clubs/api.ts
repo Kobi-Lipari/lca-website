@@ -89,6 +89,19 @@ export async function getClubs(): Promise<ApiClubListItem[]> {
   return data.clubs
 }
 
+/**
+ * The same list as getClubs(), asked by the Clubs page that chooses between
+ * the directory and today's page, with this site's origin alone as the
+ * referrer: the page's address can hold a ZIP code (near=), which the call
+ * then never carries on. Every other caller asks through getClubs(), as it
+ * always has.
+ */
+export async function getClubsFromOrigin(): Promise<ApiClubListItem[]> {
+  const response = await fetch('/api/clubs', { referrerPolicy: 'strict-origin' })
+  const data = await handleResponse<{ clubs: ApiClubListItem[] }>(response)
+  return data.clubs
+}
+
 export async function getClub(id: string): Promise<{
   club: ApiClubDetail
   officers: ApiClubOfficer[]

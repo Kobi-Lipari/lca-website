@@ -10,7 +10,11 @@
 //     and no number on any pin;
 //   - a count circle where clubs share a point or a town; pressing it opens
 //     it one step (one zoom step on Google's map) and draws each of its pins,
-//     those that would touch spread round the middle of their points;
+//     with the focus on the first of them in the list's order (on All of
+//     Louisiana when none of them is in the frame);
+//   - marks that would touch, pins and circles alike, spread round the middle
+//     of their points, inside the frame and never under All of Louisiana, so
+//     none covers another and each can be seen (directoryPins.ts);
 //   - the pressed pin is selected: larger, with a ring in the light look's
 //     gold ink, and aria-pressed; the pin of the card under the pointer or
 //     the focus is lifted, a little larger and above the others;
@@ -46,8 +50,10 @@ import {
   type DirectoryMapProps,
   type MapMark,
   type MapPin,
+  type MarkFrame,
   type PinGroup,
   type PlacedPin,
+  PIN_GAP,
   PIN_RING,
 } from '@/areas/clubs/directoryPins'
 import { MAP_NAME, WHOLE_STATE } from '@/areas/clubs/directoryWords'
@@ -93,27 +99,29 @@ function PinShape({ listed, state }: { listed: boolean; state: PinState }) {
 const MARK_BUTTON = 'pointer-events-auto absolute block rounded-full outline-none focus-visible:ring-3 focus-visible:ring-brand-navy'
 
 /** The pins and circles, as buttons in the list's order. */
-function MapMarks({ marks, placeOf, selectedId, liftedId, onPin, onCircle }: {
+function MapMarks({ marks, placeOf, frame, selectedId, liftedId, onPin, onCircle }: {
   marks: MapMark[]
   placeOf: PlaceOf
+  /** The map's frame, which a spread is kept inside, or null while it has no size. */
+  frame: MarkFrame | null
   selectedId: string | null
   liftedId: string | null
   onPin: (pin: MapPin) => void
   onCircle: (group: PinGroup) => void
 }) {
   const liftedCircle = circleHolding(marks, liftedId)
-  // The pins of an opened circle that would touch where the map puts them are spread apart, so each can be pressed.
+  // Marks that would touch where the map puts them, pins and circles alike, are spread apart inside the frame, so each can be seen and pressed.
   const placed: PlacedPin[] = marks.flatMap((mark) => {
-    if (mark.kind !== 'pin') return []
-    const at = placeOf(mark.pin.lat, mark.pin.lng)
-    return at ? [{ id: mark.pin.id, opened: mark.opened, ...at }] : []
+    const at = mark.kind === 'pin' ? placeOf(mark.pin.lat, mark.pin.lng) : placeOf(mark.group.lat, mark.group.lng)
+    if (!at) return []
+    return mark.kind === 'pin' ? [{ id: `pin ${mark.pin.id}`, opened: mark.opened, ...at }] : [{ id: `circle ${mark.group.key}`, opened: null, circle: true, ...at }]
   })
-  const drawnAt = spreadPlaced(placed)
+  const drawnAt = spreadPlaced(placed, frame)
   return (
     <div data-slot="map-pins" className="pointer-events-none absolute inset-0">
       {marks.map((mark) => {
         if (mark.kind === 'group') {
-          const at = placeOf(mark.group.lat, mark.group.lng)
+          const at = drawnAt.get(`circle ${mark.group.key}`)
           if (!at) return null
           const lifted = liftedCircle === mark.group.key
           const size = lifted ? 40 : 34
@@ -137,7 +145,7 @@ function MapMarks({ marks, placeOf, selectedId, liftedId, onPin, onCircle }: {
           )
         }
         const { pin } = mark
-        const at = drawnAt.get(pin.id)
+        const at = drawnAt.get(`pin ${pin.id}`)
         if (!at) return null
         const state: PinState = pin.id === selectedId ? 'selected' : pin.id === liftedId ? 'lifted' : 'normal'
         const style: CSSProperties = {
@@ -167,20 +175,48 @@ function MapMarks({ marks, placeOf, selectedId, liftedId, onPin, onCircle }: {
   )
 }
 
+/** The room All of Louisiana takes in the map's top left corner, with PIN_GAP round it, once it is drawn and has a size. */
+function clearOf(button: HTMLElement | null): MarkFrame['clear'] {
+  if (!button || button.offsetWidth === 0 || button.offsetHeight === 0) return null
+  return { right: button.offsetLeft + button.offsetWidth + PIN_GAP, bottom: button.offsetTop + button.offsetHeight + PIN_GAP }
+}
+
 const WHOLE_BUTTON = 'pointer-events-auto absolute left-2.5 top-2.5 z-[1100] inline-flex min-h-11 items-center rounded-md bg-surface px-3 text-sm font-semibold text-ink shadow-md ring-1 ring-black/5 outline-none transition-colors hover:bg-muted focus-visible:ring-3 focus-visible:ring-brand-navy'
 
-/** What the two maps share: the circles opened, what a press does, and whether the map shows the whole state or the page's place. */
+/**
+ * What the two maps share: the circles opened (by the clubs each held, so a circle stays open while any of them is
+ * drawn), what a press does, where the focus goes once a circle opens, and whether the map shows the whole state or the
+ * page's place.
+ */
 function useMarks(props: DirectoryMapProps) {
   const [opened, setOpened] = useState<ReadonlySet<string>>(new Set())
   // The place whose view "All of Louisiana" left, so a new place moves the map again and the same one does not.
   const [left, setLeft] = useState<string | null>(null)
   const marks = marksFor(props.pins, opened)
   const focus = props.focus ?? null
+  // The map's frame and its All of Louisiana; and the clubs of a circle just opened, in the list's order, whose first
+  // drawn pin takes the focus once it is drawn, since the circle's own button is gone.
+  const frame = useRef<HTMLDivElement>(null)
+  const whole = useRef<HTMLButtonElement>(null)
+  const focusTo = useRef<string[] | null>(null)
+  useEffect(() => {
+    const ids = focusTo.current
+    if (ids === null) return
+    focusTo.current = null
+    const drawn = [...(frame.current?.querySelectorAll<HTMLElement>('[data-pin]') ?? [])]
+    const first = ids.map((id) => drawn.find((el) => el.getAttribute('data-pin') === id)).find((el) => el !== undefined)
+    ;(first ?? whole.current)?.focus()
+  })
   return {
     marks,
+    frame,
+    whole,
     view: (focus && focus.key !== left ? 'place' : 'state') as 'place' | 'state',
     onPin: (pin: MapPin) => props.onSelect(pin.id === props.selectedId ? null : pin.id),
-    open: (group: PinGroup) => setOpened((now) => new Set([...now, group.key])),
+    open: (group: PinGroup) => {
+      focusTo.current = group.pins.map((pin) => pin.id)
+      setOpened((now) => new Set([...now, ...group.pins.map((pin) => pin.id)]))
+    },
     closeAll: () => {
       setOpened(new Set())
       setLeft(focus?.key ?? null)
@@ -191,20 +227,26 @@ function useMarks(props: DirectoryMapProps) {
 
 /** The stand-in: the pins over a plain sheet of the map's paper, for the accessibility test build. */
 function StandInMap(props: DirectoryMapProps) {
-  const { marks, view, onPin, open, closeAll } = useMarks(props)
-  const box = useRef<HTMLDivElement>(null)
-  // The sheet's size in pixels, measured before it is painted and again when it changes, so a spread is worked out in pixels as on Google's map.
-  const [size, setSize] = useState({ width: 0, height: 0 })
+  const { marks, frame: box, whole, view, onPin, open, closeAll } = useMarks(props)
+  // The sheet's size in pixels and the room All of Louisiana takes, measured before it is painted and again when either
+  // changes, so a spread is worked out in pixels as on Google's map.
+  const [size, setSize] = useState<{ width: number; height: number; clear: MarkFrame['clear'] }>({ width: 0, height: 0, clear: null })
   useLayoutEffect(() => {
     const el = box.current
     if (!el) return
-    const measure = () => setSize((now) => (now.width === el.clientWidth && now.height === el.clientHeight ? now : { width: el.clientWidth, height: el.clientHeight }))
+    const measure = () => {
+      const clear = clearOf(whole.current)
+      setSize((now) => (now.width === el.clientWidth && now.height === el.clientHeight && now.clear?.right === clear?.right && now.clear?.bottom === clear?.bottom
+        ? now
+        : { width: el.clientWidth, height: el.clientHeight, clear }))
+    }
     measure()
     if (typeof ResizeObserver === 'undefined') return
     const watch = new ResizeObserver(measure)
     watch.observe(el)
+    if (whole.current) watch.observe(whole.current)
     return () => watch.disconnect()
-  }, [])
+  }, [box, whole])
   const placeOf: PlaceOf = (lat, lng) => {
     // The points are laid inside the sheet, below the band that holds All of Louisiana, so no pin sits under it.
     const { x, y } = standInPlace(lat, lng)
@@ -215,15 +257,15 @@ function StandInMap(props: DirectoryMapProps) {
       <svg aria-hidden="true" className="absolute inset-0 size-full" preserveAspectRatio="none" viewBox="0 0 100 100" focusable="false">
         <rect data-map-paper="true" width="100" height="100" fill={PAPER} />
       </svg>
-      <MapMarks marks={marks} placeOf={placeOf} selectedId={props.selectedId} liftedId={props.liftedId} onPin={onPin} onCircle={open} />
-      <button type="button" onClick={closeAll} className={WHOLE_BUTTON}>{WHOLE_STATE}</button>
+      <MapMarks marks={marks} placeOf={placeOf} frame={size.width > 0 && size.height > 0 ? size : null} selectedId={props.selectedId} liftedId={props.liftedId} onPin={onPin} onCircle={open} />
+      <button ref={whole} type="button" onClick={closeAll} className={WHOLE_BUTTON}>{WHOLE_STATE}</button>
     </div>
   )
 }
 
 /** Google's map, with the pins laid over it where the map puts their points. */
 function GoogleMap(props: DirectoryMapProps) {
-  const { marks, view, onPin, open, closeAll } = useMarks(props)
+  const { marks, frame, whole, view, onPin, open, closeAll } = useMarks(props)
   const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY as string
   const mapRef = useRef<HTMLDivElement>(null)
   const mapObj = useRef<google.maps.Map | null>(null)
@@ -303,6 +345,12 @@ function GoogleMap(props: DirectoryMapProps) {
     return { x: at.x, y: at.y }
   }
 
+  // The frame the marks are kept inside: the map's own size, and the room of All of Louisiana.
+  const markFrame = (): MarkFrame | null => {
+    const el = mapRef.current
+    return el && el.clientWidth > 0 && el.clientHeight > 0 ? { width: el.clientWidth, height: el.clientHeight, clear: clearOf(whole.current) } : null
+  }
+
   function openCircle(group: PinGroup) {
     open(group)
     const map = mapObj.current
@@ -318,12 +366,12 @@ function GoogleMap(props: DirectoryMapProps) {
   }
 
   return (
-    <div role="group" aria-label={MAP_NAME} data-map="maps" data-view={view} className="relative isolate overflow-clip rounded-xl border bg-muted" style={{ height: props.height ?? 480 }}>
+    <div ref={frame} role="group" aria-label={MAP_NAME} data-map="maps" data-view={view} className="relative isolate overflow-clip rounded-xl border bg-muted" style={{ height: props.height ?? 480 }}>
       <div ref={mapRef} style={{ width: '100%', height: '100%' }} />
       {loaded && (
         <>
-          <MapMarks marks={marks} placeOf={placeOf} selectedId={props.selectedId} liftedId={props.liftedId} onPin={onPin} onCircle={openCircle} />
-          <button type="button" onClick={wholeState} className={WHOLE_BUTTON}>{WHOLE_STATE}</button>
+          <MapMarks marks={marks} placeOf={placeOf} frame={markFrame()} selectedId={props.selectedId} liftedId={props.liftedId} onPin={onPin} onCircle={openCircle} />
+          <button ref={whole} type="button" onClick={wholeState} className={WHOLE_BUTTON}>{WHOLE_STATE}</button>
         </>
       )}
       {!loaded && (

@@ -82,9 +82,9 @@ export const NEAR_ME = 'Near me'
 /** While the device is asked. */
 export const FINDING = 'Finding the nearest ZIP...'
 
-/** The pill once a place is known: "Near you: Baton Rouge 70808". */
-export function nearYou(town: string, zip: string): string {
-  return `Near you: ${town} ${zip}`
+/** The pill once a place is known: "Near you: Baton Rouge 70808", or "Near you: 70352" for a ZIP code area with no town. */
+export function nearYou(town: string | null, zip: string): string {
+  return town ? `Near you: ${town} ${zip}` : `Near you: ${zip}`
 }
 
 /** The pill's button, which goes back to A to Z and the whole state. */

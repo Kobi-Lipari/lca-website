@@ -3,7 +3,8 @@
 // Which page /clubs draws (WS09 step 33). src/App.tsx routes /clubs to
 // src/pages/ClubsIndexPage.tsx only while clubPagesOn() is true, and to
 // today's ClubsPage otherwise; the choosing page asks for the list once,
-// through getClubs(), and draws the directory only when the answer has the
+// through getClubsFromOrigin() (getClubs() with only the site's origin as
+// the referrer, since checkpoint Y's review), and draws the directory only when the answer has the
 // directory's shape (the server's CLUB_PAGES_ON set), and today's ClubsPage,
 // whole, when it is today's. A list that fails or is slow says so in words
 // with a way to try again. The directory and the choosing page are reached
@@ -17,7 +18,7 @@ import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vite
 import { FAILED, LOADING, SLOW, SLOW_AFTER_MS, TRY_AGAIN } from '@/areas/clubs/directoryWords'
 import { directoryRowsOf, isDirectoryRow } from '@/areas/clubs/directoryRows'
 
-const api = vi.hoisted(() => ({ getClubs: vi.fn() }))
+const api = vi.hoisted(() => ({ getClubsFromOrigin: vi.fn(), getClubs: vi.fn() }))
 vi.mock('@/lib/supabase', () => ({
   supabase: { auth: { getSession: async () => ({ data: { session: null } }) } },
 }))
@@ -37,6 +38,7 @@ beforeAll(() => {
   Element.prototype.scrollIntoView = () => {}
 })
 beforeEach(() => {
+  api.getClubsFromOrigin.mockReset()
   api.getClubs.mockReset()
   vi.stubEnv('VITE_GOOGLE_MAPS_API_KEY', '')
 })
@@ -56,14 +58,16 @@ function draw() {
 
 describe('the page /clubs draws while the new club pages are on', () => {
   it('draws the directory when the answer has the directory\'s shape, asking for the list once', async () => {
-    api.getClubs.mockResolvedValue([WIDE])
+    api.getClubsFromOrigin.mockResolvedValue([WIDE])
     draw()
     expect(await screen.findByRole('heading', { level: 1, name: 'Chess clubs in Louisiana' })).toBeTruthy()
     expect(screen.queryByText('Find your chess community')).toBeNull()
-    expect(api.getClubs).toHaveBeenCalledTimes(1)
+    expect(api.getClubsFromOrigin).toHaveBeenCalledTimes(1)
   })
 
   it('draws today\'s Clubs page whole when the answer is today\'s, as with the client\'s switches on and the server\'s unset', async () => {
+    api.getClubsFromOrigin.mockResolvedValue([TODAY])
+    // Today's page asks for the list itself, through getClubs(), as it always has.
     api.getClubs.mockResolvedValue([TODAY])
     draw()
     expect(await screen.findByRole('heading', { level: 1, name: 'Find your chess community' })).toBeTruthy()
@@ -73,19 +77,19 @@ describe('the page /clubs draws while the new club pages are on', () => {
   })
 
   it('says in words when the list fails, and asks again on Try again', async () => {
-    api.getClubs.mockRejectedValueOnce(new Error('Example failure')).mockResolvedValue([WIDE])
+    api.getClubsFromOrigin.mockRejectedValueOnce(new Error('Example failure')).mockResolvedValue([WIDE])
     draw()
     expect(await screen.findByText(FAILED)).toBeTruthy()
     expect(screen.queryByText('Example failure')).toBeNull()
     fireEvent.click(screen.getByRole('button', { name: TRY_AGAIN }))
     expect(await screen.findByRole('heading', { level: 1, name: 'Chess clubs in Louisiana' })).toBeTruthy()
-    expect(api.getClubs).toHaveBeenCalledTimes(2)
+    expect(api.getClubsFromOrigin).toHaveBeenCalledTimes(2)
   })
 
   it('says in words when the list is slow, with the same way to ask again, and never only a spinner', async () => {
     vi.useFakeTimers()
     let answer: (rows: unknown[]) => void = () => {}
-    api.getClubs.mockReturnValueOnce(new Promise((done) => { answer = done })).mockResolvedValue([WIDE])
+    api.getClubsFromOrigin.mockReturnValueOnce(new Promise((done) => { answer = done })).mockResolvedValue([WIDE])
     draw()
     expect(screen.getByRole('status').textContent).toBe(LOADING)
     await act(async () => { vi.advanceTimersByTime(SLOW_AFTER_MS - 1) })

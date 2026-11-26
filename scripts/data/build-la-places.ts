@@ -33,13 +33,29 @@
 //     word (city, town, village or CDP). Two places of one name in different
 //     regions leave that name out, so it is not found.
 // The place file holds no point. The same run writes a second file when it
-// is given a second name, domain/clubs/laPoints.ts (WS09 step 32), with the
-// point of each ZIP code area and each town the place file holds, for the
+// is given a second name, domain/clubs/laPoints.ts (WS09 step 32), for the
 // nearest ZIP code the Clubs page finds in the browser
 // (domain/clubs/nearZip.ts): each ZIP code area's point from the gazetteer
-// of ZIP code areas, each town's from the gazetteer of places, and
-// Picayune's, which that gazetteer cannot hold, from its ZIP code area's.
-// Each point is kept to three decimal places, about a hundred metres.
+// of ZIP code areas, kept to three decimal places (about a hundred metres),
+// with the town of the area, and for each town the place file holds the ZIP
+// code area it stands for. These two come from a fourth public file, read
+// for the points file alone:
+//   - tab20_zcta520_place20_natl.txt, the 2020 relationship file that says
+//     how much of each ZIP code area's land lies in each place (town).
+// The places counted are the towns the points file names, each by the place
+// whose point it kept before (the first of its name in the gazetteer of
+// places). By that file:
+//   - the town of a ZIP code area is the town that holds the largest share of
+//     the area's land; an area that shares no land with such a town has none;
+//   - the area a town stands for is, among the areas whose town it is, the one
+//     with the least land of those at least half inside the town (the densest
+//     part, where a city's centre is); where none is half inside, the one of
+//     them whose point lies nearest the town's own point; where the town is no
+//     area's town, the area that shares the most land with it; and for a town
+//     the file does not hold, the area whose point lies nearest the town's;
+//   - Picayune, whose place the gazetteer of Louisiana's places cannot hold,
+//     stands for its own ZIP code area and is that area's town.
+// Ties go by the lower ZIP code, and between towns by name.
 //
 // Usage, from the repository's root:
 //   node --no-warnings --experimental-strip-types --import ./scanner/sandbox/register.mjs \
@@ -56,6 +72,7 @@ const ZCTA_POINTS = '2024_Gaz_zcta_national.txt'
 const ZCTA_ZIP = '2024_Gaz_zcta_national.zip'
 const PLACES = '2024_gaz_place_22.txt'
 const ZCTA_COUNTIES = 'tab20_zcta520_county20_natl.txt'
+const ZCTA_PLACES = 'tab20_zcta520_place20_natl.txt'
 
 /** Picayune's own name, which the gazetteer of Louisiana's places cannot hold. */
 const PICAYUNE_TOWN = 'Picayune'
@@ -117,6 +134,8 @@ interface Worked {
   townRegions: Map<string, Set<number>>
   /** Each town's point: the first place of its name in the gazetteer, and Picayune's area's for Picayune. */
   townPoints: Map<string, Point>
+  /** The place whose point each town keeps, by the Census Bureau's code of it; Picayune has none. */
+  townPlaces: Map<string, string>
   /** The header's lines naming the files read, with their sizes and sha256. */
   sources: string[]
 }
@@ -160,12 +179,16 @@ function work(folder: string): Worked {
 
   const townRegions = new Map<string, Set<number>>()
   const townPoints = new Map<string, Point>()
-  const addTown = (name: string, region: number, point: Point) => {
+  const townPlaces = new Map<string, string>()
+  const addTown = (name: string, region: number, point: Point, place?: string) => {
     const key = placeKey(name)
     const set = townRegions.get(key) ?? new Set<number>()
     set.add(region)
     townRegions.set(key, set)
-    if (!townPoints.has(key)) townPoints.set(key, point)
+    if (!townPoints.has(key)) {
+      townPoints.set(key, point)
+      if (place) townPlaces.set(key, place)
+    }
   }
   for (const cells of rows(join(folder, PLACES), '\t')) {
     const name = cells[3].replace(PLACE_KIND, '')
@@ -179,14 +202,14 @@ function work(folder: string): Worked {
         bestMiles = d
       }
     }
-    addTown(name, zipRegion.get(best.zip)!, point)
+    addTown(name, zipRegion.get(best.zip)!, point, cells[1])
   }
   const picayune = zipPoints.find((area) => area.zip === PICAYUNE_ZIP)
   if (!picayune) throw new Error('Picayune\'s ZIP code area has no point')
   addTown(PICAYUNE_TOWN, zipRegion.get(PICAYUNE_ZIP)!, picayune.point)
 
   const sources = [ZCTA_ZIP, ZCTA_POINTS, PLACES, ZCTA_COUNTIES].filter((name) => existsSync(join(folder, name))).map((name) => `//   ${described(join(folder, name))}`)
-  return { zipRegion, zipPoints, townRegions, townPoints, sources }
+  return { zipRegion, zipPoints, townRegions, townPoints, townPlaces, sources }
 }
 
 const quoted = (lines: string[]) => lines.map((line) => `    '${line.replace(/\\/g, '\\\\').replace(/'/g, '\\\'')}',`).join('\n')
@@ -248,38 +271,139 @@ function pointText(point: Point): string {
   return `${north}:${west}`
 }
 
-/** The points file, domain/clubs/laPoints.ts: the point of every ZIP code area and every town the place file holds. */
+/** One row of the place relationship file: how much of a ZIP code area's land lies in a town, and the area's own land. */
+interface Share {
+  zip: string
+  town: string
+  part: number
+  zipLand: number
+}
+
+/** The lower ZIP code first. */
+const byZip = (a: Share, b: Share) => byText(a.zip, b.zip)
+
+/**
+ * The town of each ZIP code area and the area each town stands for, by the place relationship file, as the header of
+ * this script says; `towns` are the towns the points file names, and `zipPoints` its areas.
+ */
+function townsAndZips(folder: string, zipPoints: Worked['zipPoints'], towns: string[], townPoints: Map<string, Point>, townPlaces: Map<string, string>) {
+  const kept = new Set(zipPoints.map(({ zip }) => zip))
+  const townOfPlace = new Map<string, string>()
+  for (const town of towns) {
+    const place = townPlaces.get(town)
+    if (place) townOfPlace.set(place, town)
+  }
+  const shares: Share[] = []
+  for (const cells of rows(join(folder, ZCTA_PLACES), '|')) {
+    const zip = cells[1]
+    const town = townOfPlace.get(cells[9] ?? '')
+    const part = Number(cells[16]) || 0
+    if (!/^\d{5}$/.test(zip ?? '') || !kept.has(zip) || town === undefined || part <= 0) continue
+    shares.push({ zip, town, part, zipLand: Number(cells[3]) || 0 })
+  }
+
+  const zipTown = new Map<string, string>()
+  const best = new Map<string, Share>()
+  for (const share of shares) {
+    const now = best.get(share.zip)
+    if (!now || share.part > now.part || (share.part === now.part && byText(share.town, now.town) < 0)) best.set(share.zip, share)
+  }
+  for (const [zip, share] of best) zipTown.set(zip, share.town)
+  zipTown.set(PICAYUNE_ZIP, placeKey(PICAYUNE_TOWN))
+
+  const sharesOf = new Map<string, Share[]>()
+  for (const share of shares) sharesOf.set(share.town, [...(sharesOf.get(share.town) ?? []), share])
+  const mostShared = (list: Share[]) => [...list].sort((a, b) => b.part - a.part || byZip(a, b))[0]
+  const pointOf = new Map(zipPoints.map(({ zip, point }) => [zip, point]))
+  // The one whose point lies nearest the town's own point; two the same distance apart, the lower ZIP code.
+  const nearestOwn = (list: Share[], point: Point) =>
+    [...list].sort((a, b) => miles(point, pointOf.get(a.zip)!) - miles(point, pointOf.get(b.zip)!) || byZip(a, b))[0]
+  const townZip = new Map<string, string>()
+  let nearest = 0
+  for (const town of towns) {
+    if (town === placeKey(PICAYUNE_TOWN)) {
+      townZip.set(town, PICAYUNE_ZIP)
+      continue
+    }
+    const list = sharesOf.get(town) ?? []
+    if (list.length === 0) {
+      // A town the relationship file does not hold: the area whose point lies nearest the town's.
+      const point = townPoints.get(town)!
+      let pick = zipPoints[0]
+      let pickMiles = Infinity
+      for (const area of zipPoints) {
+        const d = miles(point, area.point)
+        if (d < pickMiles) {
+          pick = area
+          pickMiles = d
+        }
+      }
+      townZip.set(town, pick.zip)
+      nearest += 1
+      continue
+    }
+    const own = list.filter((share) => zipTown.get(share.zip) === town)
+    if (own.length === 0) {
+      townZip.set(town, mostShared(list).zip)
+      continue
+    }
+    const half = own.filter((share) => share.zipLand > 0 && share.part * 2 >= share.zipLand).sort((a, b) => a.zipLand - b.zipLand || byZip(a, b))
+    townZip.set(town, half.length > 0 ? half[0].zip : nearestOwn(own, townPoints.get(town)!).zip)
+  }
+  return { zipTown, townZip, nearest }
+}
+
+/**
+ * The points file, domain/clubs/laPoints.ts: the point of every ZIP code area the place file holds, with its town, and
+ * for every town the place file holds the ZIP code area it stands for.
+ */
 export function buildPoints(folder: string): string {
-  const { zipPoints, townRegions, townPoints, sources } = work(folder)
-  const zips = zipPoints.map(({ zip, point }) => `${zip}:${pointText(point)}`)
+  const { zipPoints, townRegions, townPoints, townPlaces, sources } = work(folder)
+  if (!existsSync(join(folder, ZCTA_PLACES))) throw new Error(`${ZCTA_PLACES} is not in ${folder}`)
   const towns = [...townRegions].filter(([, set]) => set.size === 1).map(([key]) => key).sort(byText)
-  const townEntries = towns.map((key) => `${key}:${pointText(townPoints.get(key)!)}`)
+  const { zipTown, townZip, nearest } = townsAndZips(folder, zipPoints, towns, townPoints, townPlaces)
+  const townIndex = new Map(towns.map((town, i) => [town, i]))
+  const zips = zipPoints.map(({ zip, point }) => {
+    const town = zipTown.get(zip)
+    return town === undefined ? `${zip}:${pointText(point)}` : `${zip}:${pointText(point)}:${townIndex.get(town)}`
+  })
+  const townEntries = towns.map((town) => `${town}:${townZip.get(town)}`)
+  const withTown = zipPoints.filter(({ zip }) => zipTown.has(zip)).length
+  const someAreas = new Set(zipTown.values()).size
   return [
     '// domain/clubs/laPoints.ts',
     '//',
     '// Made by scripts/data/build-la-places.ts and committed; not to be edited by',
     '// hand. The points of the places domain/clubs/laPlaces.ts holds, for the',
     '// nearest ZIP code the Clubs page finds in the browser (domain/clubs/nearZip.ts,',
-    `// WS09 step 32): ${zips.length} ZIP code areas' points and ${townEntries.length} towns' points, and no region.`,
-    '// A place typed or read from the device is looked up here, in the browser, and',
-    '// never sent anywhere.',
+    `// WS09 step 32): ${zips.length} ZIP code areas' points, ${withTown} of them with a town and`,
+    `// ${zips.length - withTown} with none, and the ZIP code area each of ${townEntries.length} towns stands for. Of the`,
+    `// towns, ${someAreas} are some area's town, and ${nearest} the relationship file does not hold`,
+    '// stands for the area whose point lies nearest its own. No region. A place',
+    '// typed or read from the device is looked up here, in the browser.',
     '//',
-    '// Each entry is a ZIP code or a town\'s name (as placeKey writes it), then the',
-    '// latitude north and the longitude west, each in thousandths of a degree',
-    '// (about a hundred metres), joined by colons; the entries are joined by a bar.',
-    '// A ZIP code area\'s point and a town\'s are the Census Bureau\'s point inside',
-    '// it; Picayune\'s is its ZIP code area\'s.',
+    '// Each ZIP code area\'s entry is its code, then the latitude north and the',
+    '// longitude west of the Census Bureau\'s point inside it, each in thousandths',
+    '// of a degree (about a hundred metres), then, where it has a town, the',
+    '// town\'s place in TOWN_ZIPS counted from 0, joined by colons. Each town\'s',
+    '// entry is its name (as placeKey writes it) and the ZIP code area it stands',
+    '// for, joined by a colon. The entries are joined by a bar. The town of an',
+    '// area holds the largest share of its land; the area a town stands for is',
+    '// the smallest of its own areas at least half inside it, else the nearest of',
+    '// its own areas, else the area that shares the most land with it, as the',
+    '// script says.',
     '//',
     '// Made from these public files of the Census Bureau, from www2.census.gov:',
     ...sources,
+    `//   ${described(join(folder, ZCTA_PLACES))}`,
     '',
-    '/** Each ZIP code area\'s point, "70001:29983:90169", entries joined by a bar. */',
+    '/** Each ZIP code area\'s point and town, "70112:29956:90077:322", entries joined by a bar. */',
     'export const ZIP_POINTS: readonly string[] = [',
     quoted(wrap(zips, '|', 96)).replace(/^ {2}/gm, ''),
     ']',
     '',
-    '/** Each town\'s point, "baton rouge:30440:91133", entries joined by a bar. */',
-    'export const TOWN_POINTS: readonly string[] = [',
+    '/** The ZIP code area each town stands for, "baton rouge:70825", in order of the names, entries joined by a bar. */',
+    'export const TOWN_ZIPS: readonly string[] = [',
     quoted(wrap(townEntries, '|', 96)).replace(/^ {2}/gm, ''),
     ']',
     '',

@@ -15,8 +15,12 @@
 // It carries no keeper, no seat, no person's name and no address of any
 // kind: who keeps a club is not public (K's decision 12). It reads no part
 // of the request but its origin, the site's own: no query parameter, no
-// header and no cookie, so the answer is the same for every reader and a
-// place a visitor types never reaches the server. It writes no log line.
+// header and no cookie, so the answer is the same for every reader, and
+// nothing a visitor types or the device's position is read here. The ZIP
+// code the directory keeps in its own address (near=) does reach this site
+// whenever that address is loaded (a reload, a shared link), but this list
+// reads none of it, and the directory asks for it with the site's origin
+// alone as the referrer. It writes no log line.
 //
 // The answer is kept in the edge's cache for five minutes, under one key,
 // the list's plain address on the site's origin, so a caller cannot fill the

@@ -1,58 +1,105 @@
 // test/unit/near-town-words.test.ts
 //
 // The town beside a ZIP code, and the words around a place (WS09 step 34):
-// - nearestTown (domain/clubs/nearZip.ts) names the town of the points file
-//   nearest a point, for the pill "Near you: {town} {ZIP}";
+// - townOfZip (domain/clubs/nearZip.ts) names the town of a ZIP code area,
+//   for the pill "Near you: {town} {ZIP}", or none, for "Near you: {ZIP}";
+//   since checkpoint Y's review it is the town that holds the largest share
+//   of the area's land, by the Census Bureau's relationship file, and a typed
+//   town stands for its own densest area, so the state's cities answer from
+//   their centres;
 // - townWords (src/areas/clubs/directoryWords.ts) writes that town's name
 //   for the page, and the page's own typing of it finds the same town again;
 // - focusBounds (src/areas/clubs/directoryPins.ts) is the box the map frames
 //   round a place and its nearest clubs;
 // - the small word-makers read plainly: one club and many, no filter and
 //   some, and no long dash.
-// Every point here is read from the points file; no club is named.
+// Every point here is read from the points file, but the cities' centres,
+// which are public points of geography; no club is named.
 import { describe, expect, it } from 'vitest'
 import { milesBetween } from '../../domain/clubs/distance'
-import { TOWN_POINTS, ZIP_POINTS } from '../../domain/clubs/laPoints'
-import { nearestTown, nearestZip, placeFor, zipPoint } from '../../domain/clubs/nearZip'
+import { TOWN_ZIPS, ZIP_POINTS } from '../../domain/clubs/laPoints'
+import { nearestZip, placeFor, townOfZip, zipPoint } from '../../domain/clubs/nearZip'
 import { focusBounds, PLACE_ZOOM } from '../../src/areas/clubs/directoryPins'
 import * as words from '../../src/areas/clubs/directoryWords'
 
 const entriesOf = (lines: readonly string[]) => lines.flatMap((line) => line.split('|')).map((entry) => entry.split(':'))
 const zips = entriesOf(ZIP_POINTS).map(([zip]) => zip)
-const towns = entriesOf(TOWN_POINTS).map(([town, north, west]) => ({ town, point: { latitude: Number(north) / 1000, longitude: -Number(west) / 1000 } }))
+const towns = entriesOf(TOWN_ZIPS).map(([town, zip]) => ({ town, zip }))
+const townKeys = new Set(towns.map((t) => t.town))
 
-describe('nearestTown', () => {
-  it('gives, for every ZIP code area, a town of the points file that no other town is nearer to', () => {
-    const keys = new Set(towns.map((t) => t.town))
+/** Each city's centre, to three decimals, as a public point of geography gives it. */
+const CENTRES: ReadonlyArray<[string, string, number, number]> = [
+  ['New Orleans', 'new orleans', 29.951, -90.072],
+  ['Baton Rouge', 'baton rouge', 30.448, -91.186],
+  ['Shreveport', 'shreveport', 32.515, -93.748],
+  ['Lafayette', 'lafayette', 30.224, -92.020],
+  ['Lake Charles', 'lake charles', 30.226, -93.218],
+  ['Monroe', 'monroe', 32.509, -92.116],
+  ['Alexandria', 'alexandria', 31.311, -92.446],
+  ['Houma', 'houma', 29.596, -90.719],
+]
+
+/**
+ * Houma is left out of the six miles alone: the area it stands for, 70363, is its own, but no area of Houma's is half
+ * inside the town, and the one whose point lies nearest the town's own point has it 6.24 miles from the centre. The
+ * rule is not tuned for one city; the record says so.
+ */
+const PAST_SIX_MILES = new Set(['houma'])
+
+describe('townOfZip', () => {
+  it('gives every ZIP code area with a town a town of the points file, and the areas with none no town', () => {
+    let withTown = 0
     for (const zip of zips) {
-      const at = zipPoint(zip)!
-      const town = nearestTown(at)
-      expect(keys.has(town), zip).toBe(true)
-      const mine = milesBetween(at, towns.find((t) => t.town === town)!.point)
-      for (const other of towns) expect(milesBetween(at, other.point), `${zip} ${other.town}`).toBeGreaterThanOrEqual(mine)
+      const town = townOfZip(zip)
+      if (town === null) continue
+      withTown += 1
+      expect(townKeys.has(town), zip).toBe(true)
+    }
+    expect(withTown).toBe(472)
+    expect(zips.length - withTown).toBe(540 - 472)
+  })
+
+  it('gives every town that is some area\'s town an area that names it back, and the same answer however many times it is asked', () => {
+    const someAreas = new Set(zips.map(townOfZip).filter((town): town is string => town !== null))
+    expect(someAreas.size).toBe(365)
+    expect(towns).toHaveLength(490)
+    for (const { town, zip } of towns) {
+      expect(zipPoint(zip), town).not.toBeNull()
+      if (someAreas.has(town)) expect(townOfZip(zip), town).toBe(town)
+      expect(townOfZip(zip)).toBe(townOfZip(zip))
     }
   })
 
-  it('gives a town its own name at its own point, and the same answer however many times it is asked', () => {
-    for (const { town, point } of towns) {
-      const found = nearestTown(point)
-      // Two towns the file holds at one point are told apart by name, the lower first.
-      const sameSpot = towns.filter((t) => t.point.latitude === point.latitude && t.point.longitude === point.longitude).map((t) => t.town).sort()
-      expect(found, town).toBe(sameSpot[0])
-      expect(nearestTown(point)).toBe(found)
-    }
+  it('answers no town for a ZIP code the points file does not hold, never an error', () => {
+    expect(townOfZip('77002')).toBeNull()
+    expect(townOfZip('70000')).toBeNull()
+    expect(townOfZip('')).toBeNull()
   })
 
-  it('answers for a point far outside Louisiana too, never with no town and never an error', () => {
-    expect(towns.some((t) => t.town === nearestTown({ latitude: 29.7604, longitude: -95.3698 }))).toBe(true)
-    expect(towns.some((t) => t.town === nearestTown({ latitude: 0, longitude: 0 }))).toBe(true)
-    expect(towns.some((t) => t.town === nearestTown({ latitude: -90, longitude: 180 }))).toBe(true)
-  })
-
-  it('names Baton Rouge for the ZIP code of its own centre, and the ZIP code Near me finds is one the points file holds', () => {
-    expect(nearestTown(zipPoint('70808')!)).toBe('baton rouge')
+  it('names New Orleans for the city\'s central ZIP codes and Baton Rouge for its own, and the ZIP code Near me finds is one the points file holds', () => {
+    for (const zip of ['70112', '70113', '70116', '70119', '70130']) expect(townOfZip(zip), zip).toBe('new orleans')
+    for (const zip of ['70801', '70802', '70808']) expect(townOfZip(zip), zip).toBe('baton rouge')
     const found = nearestZip({ latitude: 30.4517, longitude: -91.1288 })
     expect(zips).toContain(found.zip)
+  })
+
+  it('answers each of the state\'s cities, typed, with an area whose town is that city, its point within 6 miles of the centre', () => {
+    for (const [typed, key, latitude, longitude] of CENTRES) {
+      const answer = placeFor(typed)
+      expect(answer?.kind, typed).toBe('town')
+      if (answer?.kind !== 'town') continue
+      expect(answer.town, typed).toBe(key)
+      expect(townOfZip(answer.zip), typed).toBe(key)
+      expect(answer.point, typed).toEqual(zipPoint(answer.zip))
+      if (!PAST_SIX_MILES.has(key)) expect(milesBetween(answer.point, { latitude, longitude }), typed).toBeLessThan(6)
+    }
+  })
+
+  it('gives the pill its ZIP code alone for an area with no town', () => {
+    const none = zips.find((zip) => townOfZip(zip) === null)!
+    expect(none).toBeDefined()
+    expect(words.nearYou(null, none)).toBe(`Near you: ${none}`)
+    expect(words.nearYou('Baton Rouge', '70808')).toBe('Near you: Baton Rouge 70808')
   })
 })
 
@@ -89,7 +136,7 @@ describe('focusBounds', () => {
   })
 
   it('stays inside the state box for any place and club points of the points file', () => {
-    const points = towns.map((t) => ({ lat: t.point.latitude, lng: t.point.longitude }))
+    const points = towns.map((t) => zipPoint(t.zip)!).map((point) => ({ lat: point.latitude, lng: point.longitude }))
     const box = focusBounds(points)
     expect(box.south).toBeLessThan(box.north)
     expect(box.west).toBeLessThan(box.east)

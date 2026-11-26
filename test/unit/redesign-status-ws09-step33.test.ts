@@ -114,6 +114,21 @@ function casesIn(file: string): number {
   return (read(file).match(/^\s*(?:it|test)\(/gm) ?? []).length
 }
 
+/**
+ * The cases WS09 checkpoint Y's review added to the directory's test files, each held to a fix of that review; the
+ * block keeps the count each file had at its step.
+ */
+const Y_REVIEW_ADDED: Record<string, number> = {
+  'test/unit/club-directory-phone.test.tsx': 2,
+  'test/unit/club-directory.test.tsx': 5,
+  'test/unit/club-list-callers.test.ts': 2,
+  'test/unit/club-map-pins.test.ts': 11,
+  'test/unit/la-places.test.ts': 1,
+  'test/unit/near-town-words.test.ts': 2,
+  'test/unit/place-field-edges.test.tsx': 3,
+  'test/a11y/clubs-directory-keys.spec.ts': 2,
+}
+
 describe('REDESIGN_STATUS.md, the thirty-third step of WS09: the block', () => {
   it('sits once, right after step 32\'s block, and before the four lists while it is the latest', () => {
     expect(block).not.toBe('')
@@ -169,12 +184,12 @@ describe('REDESIGN_STATUS.md, the thirty-third step of WS09: the block', () => {
     for (const name of [...NEW_FILES, ...Object.keys(NEW_TESTS), SELF, ...CHANGED, 'REDESIGN_STATUS.md']) expect(files, name).toContain(`\`${name}\``)
     for (const file of [...NEW_FILES, ...Object.keys(NEW_TESTS)]) expect(existsSync(join(ROOT, file)), file).toBe(true)
     for (const [file, count] of Object.entries(NEW_TESTS)) expect(writtenCount(files, file), file).toBe(count)
-    for (const file of Object.keys(NEW_TESTS).filter((f) => f.startsWith('test/unit/'))) expect(casesIn(file), file).toBe(NEW_TESTS[file])
+    for (const file of Object.keys(NEW_TESTS).filter((f) => f.startsWith('test/unit/'))) expect(casesIn(file), file).toBe(NEW_TESTS[file] + (Y_REVIEW_ADDED[file] ?? 0))
     // The browser spec writes four of its cases in a loop of two sizes and two looks, and two in a loop of two sizes.
     expect(casesIn('test/a11y/clubs-directory.spec.ts') + 3 + 1).toBe(NEW_TESTS['test/a11y/clubs-directory.spec.ts'])
     for (const [file, [from, to]] of Object.entries(GROWN_TESTS)) {
       expect(files, file).toContain(`\`${file}\` (${from} to ${to}: `)
-      expect(casesIn(file), file).toBe(to)
+      expect(casesIn(file), file).toBe(to + (Y_REVIEW_ADDED[file] ?? 0))
     }
     expect(writtenCount(files, SELF)).toBe(casesIn(SELF))
     const grown = bullet(files, '  - Grown with no change:')

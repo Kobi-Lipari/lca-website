@@ -14,6 +14,10 @@
 //   selecting it and bringing its card into view (at once with less
 //   motion), a count circle opening, and All of Louisiana going back;
 // - an empty answer as one sentence.
+// Since checkpoint Y's review: the focus after a circle is opened, Skip to
+// the map writing nothing in the history, a circle that stays open and a
+// mark let go when a filter changes the list, and the referrer policy the
+// directory sets while it is drawn.
 // Every club and name here is made up.
 import { readFileSync } from 'node:fs'
 import { join, resolve } from 'node:path'
@@ -237,6 +241,68 @@ describe('the map', () => {
   })
 })
 
+describe('since checkpoint Y\'s review', () => {
+  it('gives the focus to the first of an opened circle\'s pins in the list\'s order, as its own button is gone', async () => {
+    const { map } = await drawWithStandIn()
+    const circle = within(map).getByRole('button', { name: '2 clubs in Example City, show each' })
+    act(() => circle.focus())
+    fireEvent.click(circle)
+    expect(document.activeElement).toBe(map.querySelector('[data-pin="c-bishops"]'))
+  })
+
+  it('takes Skip to the map to the map with nothing written in the history, so a filter after it leaves the history as long as before', async () => {
+    const { map } = await drawWithStandIn()
+    const before = window.history.length
+    const skip = screen.getByRole('link', { name: 'Skip to the map' })
+    // The link's own going to #map is held back.
+    expect(fireEvent.click(skip)).toBe(false)
+    expect(document.activeElement).toBe(map.closest('#map'))
+    fireEvent.click(screen.getByRole('button', { name: /^Filters/ }))
+    fireEvent.click(screen.getByRole('button', { name: /^North Louisiana/ }))
+    expect(window.history.length).toBe(before)
+    expect(window.location.hash).toBe('')
+  })
+
+  it('keeps an opened circle open and its pressed pin pressed when a filter takes the circle\'s first club, and lets a mark go with its club', async () => {
+    const three = [
+      row('t-a', 'Example A Club', 'Example City', 'North Louisiana', [30.45, -91.18], 'Mondays at 7:00 PM.'),
+      row('t-b', 'Example B Club', 'Example City', 'Baton Rouge / East Central', [30.41, -91.1], 'Tuesdays at 7:00 PM.'),
+      row('t-c', 'Example C Club', 'Example City', 'Baton Rouge / East Central', [30.43, -91.14], 'Fridays at 7:00 PM.'),
+      row('t-far', 'Example Far Club', 'Example Port', 'North Louisiana', [32.5, -93.75], 'Fridays at 6:00 PM.'),
+    ]
+    vi.stubEnv('MODE', 'a11y')
+    ;(window as unknown as Record<string, unknown>)[STAND_IN_FLAG] = true
+    draw(three)
+    const map = await screen.findByRole('group', { name: 'Map of the clubs' })
+    fireEvent.click(within(map).getByRole('button', { name: '3 clubs in Example City, show each' }))
+    fireEvent.click(within(map).getByRole('button', { name: 'Example B Club, Example City' }))
+    const marked = () => document.querySelector('[data-card="t-b"]')?.getAttribute('data-selected')
+    expect(marked()).toBe('true')
+    // A region that takes away the circle's first club: the circle stays open, its pressed pin pressed, its card marked.
+    fireEvent.click(screen.getByRole('button', { name: /^Filters/ }))
+    fireEvent.click(screen.getByRole('button', { name: /^Baton Rouge/ }))
+    expect(map.querySelector('[data-pin="t-a"]')).toBeNull()
+    expect(map.querySelector('[data-pin="t-b"]')?.getAttribute('aria-pressed')).toBe('true')
+    expect(map.querySelector('[data-circle]')).toBeNull()
+    expect(marked()).toBe('true')
+    // A region that takes away the marked club, then cleared: nothing comes back marked.
+    fireEvent.click(screen.getByRole('button', { name: /^North Louisiana/ }))
+    expect(document.querySelector('[data-card="t-b"]')).toBeNull()
+    fireEvent.click(screen.getByRole('button', { name: /^North Louisiana/ }))
+    expect(document.querySelector('[data-card="t-b"]')).not.toBeNull()
+    expect(document.querySelectorAll('[data-selected]')).toHaveLength(0)
+    expect(map.querySelector('[aria-pressed="true"]')).toBeNull()
+  })
+
+  it('sets the page\'s referrer policy to the site\'s origin alone while it is drawn, and puts back what was there when it goes', () => {
+    const view = draw()
+    const metas = () => [...document.head.querySelectorAll<HTMLMetaElement>('meta[name="referrer"]')]
+    expect(metas().map((m) => m.content)).toEqual(['strict-origin'])
+    view.unmount()
+    expect(metas()).toEqual([])
+  })
+})
+
 describe('the map with a maps key', () => {
   /** What the stand-in for Google's script was asked. */
   const asked = { maps: 0, zooms: [] as number[], pans: 0, fits: 0 }
@@ -308,6 +374,15 @@ describe('the map with a maps key', () => {
     expect(map.querySelectorAll('[data-pin], [data-circle]')).toHaveLength(2)
     expect(map.className).toContain('isolate')
     expect(map.className).toContain('overflow-clip')
+  })
+
+  it('gives the focus to the first of an opened circle\'s pins on the provider\'s map too', async () => {
+    draw()
+    const map = await screen.findByRole('group', { name: 'Map of the clubs' })
+    const circle = await within(map).findByRole('button', { name: '2 clubs in Example City, show each' })
+    act(() => circle.focus())
+    fireEvent.click(circle)
+    expect(document.activeElement).toBe(map.querySelector('[data-pin="c-bishops"]'))
   })
 })
 

@@ -60,7 +60,7 @@ import { Check, Map as MapIcon, PanelBottomOpen } from 'lucide-react'
 
 import { CLEAR_FILTERS, DIVIDER_WORDS, NO_FILTER_MATCH, SHOW_ALL, directoryView, nearestFirst, type DirectoryFilters } from '@domain/clubs/order'
 import { readDirectoryAddress, writeDirectoryAddress, type DirectoryAddress } from '@domain/clubs/directoryAddress'
-import { nearestTown, placeFor, zipPoint } from '@domain/clubs/nearZip'
+import { placeFor, townOfZip, zipPoint } from '@domain/clubs/nearZip'
 import type { ApiClubDirectoryItem } from '@/areas/clubs/api'
 import { ClubCard } from '@/areas/clubs/components/ClubCard'
 import { ClubFilters } from '@/areas/clubs/components/ClubFilters'
@@ -108,6 +108,21 @@ const headerHeight = () => parseFloat(getComputedStyle(document.documentElement)
  * page.
  */
 const CLEAR_OF_SHEET = '[&_:is(a,button,input)]:scroll-mb-[min(var(--sheet-low,16rem),50dvh)]'
+
+/** The room, in pixels, kept between a control that has the focus and the low sheet's top. */
+const CLEAR_GAP = 8
+
+/** The same room for "Skip to the list", which sits between the controls and the map, on a link of its own. */
+const SKIP_LINK_CLEAR = 'scroll-mb-[min(var(--sheet-low,16rem),50dvh)]'
+
+/** A link that skips to the map or the list: out of sight until it takes the focus. */
+const SKIP_LINK = 'sr-only rounded-md text-sm font-semibold text-ink underline underline-offset-2 outline-none focus:not-sr-only focus:mt-2 focus:inline-flex focus:min-h-11 focus:items-center focus-visible:ring-3 focus-visible:ring-focus'
+
+/** The referrer policy while the directory is drawn: the site's origin alone, on this site and off it. */
+const REFERRER = 'strict-origin'
+
+/** The policy a browser keeps when a page names none. */
+const BROWSERS_OWN_REFERRER = 'strict-origin-when-cross-origin'
 
 /** How many of the nearest clubs the map frames beside a place. */
 const FRAMED_CLUBS = 3
@@ -222,7 +237,13 @@ export function ClubDirectory({ clubs }: { clubs: ApiClubDirectoryItem[] }) {
   const narrow = useNarrowScreen()
   const phone = narrow && source !== null && clubs.length > 0
   const [rest, setRest] = useState<Rest>('low')
-  const phoneWrap = useRef<HTMLDivElement>(null)
+  // The sheet starts at its low rest each time the phone layout is drawn, a crossing of the width among them.
+  const [phoneBefore, setPhoneBefore] = useState(phone)
+  if (phoneBefore !== phone) {
+    setPhoneBefore(phone)
+    setRest('low')
+  }
+  const layout = useRef<HTMLDivElement>(null)
   const band = useRef<HTMLDivElement>(null)
   const sheet = useRef<HTMLElement>(null)
   const sheetRow = useRef<HTMLDivElement>(null)
@@ -231,14 +252,18 @@ export function ClubDirectory({ clubs }: { clubs: ApiClubDirectoryItem[] }) {
   const raiseTo = useRef<string | null>(null)
   const measure = useRef<() => void>(() => {})
 
-  // The place the address holds: its ZIP code's point and the town nearest it, or none for a ZIP code the points file does not hold.
+  // The place the address holds: its ZIP code's point and the area's town (none for an area with no town), or no place for a
+  // ZIP code the points file does not hold.
   const near = address.near
   const nearPoint = near ? zipPoint(near) : null
-  const place = near && nearPoint ? { zip: near, point: nearPoint, town: townWords(nearestTown(nearPoint)) } : null
+  const nearTown = near ? townOfZip(near) : null
+  const place = near && nearPoint ? { zip: near, point: nearPoint, town: nearTown === null ? null : townWords(nearTown) } : null
   const nearestOn = place !== null && address.sort === 'nearest'
   const filters: DirectoryFilters = { region: address.region, weekends: address.weekends, scholastic: address.scholastic }
 
   const view = directoryView(clubs, { from: nearestOn ? place.point : null, name, filters })
+  // A club that a filter or a name takes out of the list is let go of, so it does not come back marked when they are cleared.
+  if (selectedId !== null && !view.rows.some((row) => row.club.id === selectedId)) setSelectedId(null)
   const pins = pinsInOrder(view.pins)
   // After the last club with a distance, the clubs with no point, under their own divider, when some have a point and some do not.
   const firstUnknown = nearestOn ? view.rows.findIndex((row) => row.miles === null) : -1
@@ -262,6 +287,19 @@ export function ClubDirectory({ clubs }: { clubs: ApiClubDirectoryItem[] }) {
 
   useEffect(() => () => window.clearTimeout(pause.current), [])
 
+  // While the directory is drawn, the page's own requests carry this site's origin alone as their referrer, never the
+  // address with its ZIP code (near=); on leaving, the policy that was there is put back.
+  useEffect(() => {
+    const before = document.querySelector<HTMLMetaElement>('meta[name="referrer"]')?.content ?? ''
+    const meta = Object.assign(document.createElement('meta'), { name: 'referrer', content: REFERRER })
+    document.head.appendChild(meta)
+    return () => {
+      // A policy once set stays until another is set, so the one before, or the browser's own, is set again as it goes.
+      meta.content = before || BROWSERS_OWN_REFERRER
+      meta.remove()
+    }
+  }, [])
+
   // The address as the page's last choice left it. An answer that comes later than the press it answers (the device's, or the
   // typing pause's) builds on this, not on the address of the render it was asked in, so a filter or a place chosen in the
   // meantime is kept.
@@ -269,8 +307,10 @@ export function ClubDirectory({ clubs }: { clubs: ApiClubDirectoryItem[] }) {
   useEffect(() => {
     latest.current = knownAddress(search)
   }, [search])
-  // True from the press of Near me until its answer, or until a place is typed or cleared, after which the answer is let go.
-  const asking = useRef(false)
+  // Whether the page waits on the device: from the press of Near me until its answer ('asking'); after the ten seconds, still
+  // for a position that comes late ('late'); and not at all once a place is typed, chosen or cleared, after which an answer
+  // is let go ('no').
+  const asking = useRef<'no' | 'asking' | 'late'>('no')
 
   function select(id: string | null) {
     setSelectedId(id)
@@ -308,10 +348,11 @@ export function ClubDirectory({ clubs }: { clubs: ApiClubDirectoryItem[] }) {
   useEffect(() => {
     if (!phone) return
     const root = document.documentElement
+    const wrapper = layout.current
     let frame = 0
     const write = () => {
       frame = 0
-      const wrap = phoneWrap.current
+      const wrap = layout.current
       const row = sheetRow.current
       const inner = scroller.current
       if (!wrap || !row || !inner) return
@@ -341,6 +382,9 @@ export function ClubDirectory({ clubs }: { clubs: ApiClubDirectoryItem[] }) {
       window.removeEventListener('resize', soon)
       window.removeEventListener('scroll', soon)
       measure.current = () => {}
+      // The wrapper stays when the window widens; the sheet's measures go with the sheet.
+      wrapper?.style.removeProperty('--sheet-low')
+      wrapper?.style.removeProperty('--sheet-top')
     }
   }, [phone])
 
@@ -373,10 +417,33 @@ export function ClubDirectory({ clubs }: { clubs: ApiClubDirectoryItem[] }) {
     return () => document.removeEventListener('focusin', away)
   }, [phone, rest])
 
+  // The low sheet keeps to the window's foot, and a browser counts no sticky box when it brings the focus into sight: a
+  // control, a link or a pin of the page that takes the focus under the low sheet is scrolled up clear of it, so the focus
+  // is never hidden. The sheet's own controls and a dialog's move nothing.
+  useEffect(() => {
+    if (!phone || rest !== 'low') return
+    const clear = (event: FocusEvent) => {
+      const at = event.target
+      const low = sheet.current
+      if (!(at instanceof Element) || !low || low.contains(at) || at.closest('[role="dialog"]') || !layout.current?.contains(at)) return
+      const over = at.getBoundingClientRect().bottom + CLEAR_GAP - low.getBoundingClientRect().top
+      if (over > 0) window.scrollBy({ top: over, behavior: 'instant' })
+    }
+    document.addEventListener('focusin', clear)
+    return () => document.removeEventListener('focusin', clear)
+  }, [phone, rest])
+
   /** "Skip to the list": the focus goes to the sheet, at whichever rest it is, and the address keeps no mark of it. */
   function skipToList(event: MouseEvent<HTMLAnchorElement>) {
     event.preventDefault()
     sheet.current?.focus()
+  }
+
+  /** "Skip to the map", at wide widths: the focus goes to the map, and nothing is written in the address or the history. */
+  function skipToMap(event: MouseEvent<HTMLAnchorElement>) {
+    event.preventDefault()
+    mapWrap.current?.focus({ preventScroll: true })
+    mapWrap.current?.scrollIntoView({ block: 'start', behavior: lessMotion() ? 'auto' : 'smooth' })
   }
 
   /**
@@ -424,12 +491,12 @@ export function ClubDirectory({ clubs }: { clubs: ApiClubDirectoryItem[] }) {
         return at?.kind === 'town' && at.town === answer.town
       })
       setText('')
-      asking.current = false
+      asking.current = 'no'
       takePlace(answer.zip, hasClub ? null : { kind: 'no_club', town: townWords(answer.town) }, true)
       return
     }
     if (answer.kind === 'outside') {
-      asking.current = false
+      asking.current = 'no'
       setName('')
       setNote({ kind: 'outside' })
       return
@@ -452,7 +519,7 @@ export function ClubDirectory({ clubs }: { clubs: ApiClubDirectoryItem[] }) {
 
   function device(answer: DeviceAnswer) {
     if (answer.kind === 'asking') {
-      asking.current = true
+      asking.current = 'asking'
       setNote({ kind: 'finding' })
       return
     }
@@ -460,9 +527,11 @@ export function ClubDirectory({ clubs }: { clubs: ApiClubDirectoryItem[] }) {
       setNote({ kind: 'no_support' })
       return
     }
-    // An answer to an ask that a typed or cleared place has overtaken is let go.
-    if (!asking.current) return
-    asking.current = false
+    // An answer to an ask that a typed, chosen or cleared place has overtaken is let go; after the ten seconds, a position alone
+    // is still taken, as if it had come in time, and takes the words for a slow device away.
+    const waited = asking.current
+    if (waited === 'no' || (waited === 'late' && answer.kind !== 'zip' && answer.kind !== 'outside')) return
+    asking.current = answer.kind === 'slow' ? 'late' : 'no'
     if (answer.kind === 'zip') takePlace(answer.zip, null, false)
     else if (answer.kind === 'outside') setNote({ kind: 'outside' })
     else if (answer.kind === 'slow') setNote({ kind: 'too_long' })
@@ -470,7 +539,7 @@ export function ClubDirectory({ clubs }: { clubs: ApiClubDirectoryItem[] }) {
   }
 
   function clearPlace() {
-    asking.current = false
+    asking.current = 'no'
     go({ near: null, sort: 'az' }, () => setNote(null))
     field.current?.focus()
   }
@@ -586,18 +655,6 @@ export function ClubDirectory({ clubs }: { clubs: ApiClubDirectoryItem[] }) {
     </>
   )
 
-  const list = (
-    <div className="min-w-0">
-      {controls}
-      {source !== null && (
-        <a href="#map" className="sr-only rounded-md text-sm font-semibold text-ink underline underline-offset-2 outline-none focus:not-sr-only focus:mt-2 focus:inline-flex focus:min-h-11 focus:items-center focus-visible:ring-3 focus-visible:ring-focus">
-          {SKIP_TO_MAP}
-        </a>
-      )}
-      {listBody}
-    </div>
-  )
-
   const theMap = <LCAMap mode="directory" height="100%" pins={pins} selectedId={selectedId} liftedId={liftedId} onSelect={select} focus={focus} />
 
   /**
@@ -612,31 +669,50 @@ export function ClubDirectory({ clubs }: { clubs: ApiClubDirectoryItem[] }) {
     ? { position: 'sticky', bottom: 'var(--bottom-chrome-h, 0px)', height: LOW_HEIGHT, overflowAnchor: 'none' }
     : { position: 'fixed', left: 0, right: 0, top: 'var(--sheet-top, var(--header-h, 0px))', bottom: 'var(--bottom-chrome-h, 0px)', margin: 0, overflowAnchor: 'none' }
 
+  // The three layouts are one tree (checkpoint Y's review): the controls, Near me's ask in flight, an open Filters and the map
+  // keep their place and their elements when the window crosses the wide layout's width, whichever way, and only the list's
+  // wrapper changes, from the wide layout's column to the phone's sheet. The order the keyboard and a screen reader meet
+  // things is each layout's own: wide, the controls, Skip to the map, the list, the map; phone, the controls, Skip to the
+  // list, the map, the sheet.
+  const wide = !phone && source !== null
   return (
     <div data-slot="club-directory" data-address={writeDirectoryAddress(address)}>
       <TitleStrip line={stripLine(clubs.length, regionsWithClubs(clubs))} />
       <div className="mx-auto max-w-[1480px] px-4 py-6 sm:px-6">
-        {phone ? (
-          <div ref={phoneWrap} data-layout="phone">
-            <div ref={band} className={cn('min-w-0', CLEAR_OF_SHEET)}>{controls}</div>
-            <a
-              href="#club-list"
-              onClick={skipToList}
-              className="sr-only rounded-md text-sm font-semibold text-ink underline underline-offset-2 outline-none focus:not-sr-only focus:mt-2 focus:inline-flex focus:min-h-11 focus:items-center focus-visible:ring-3 focus-visible:ring-focus"
-            >
+        <div ref={layout} data-layout={phone ? 'phone' : undefined} className={wide ? 'grid grid-cols-1 gap-6 lg:grid-cols-[460px_minmax(0,1fr)]' : undefined}>
+          <div className={phone ? undefined : 'min-w-0'}>
+            <div ref={band} className={phone ? cn('min-w-0', CLEAR_OF_SHEET) : undefined}>{controls}</div>
+            {wide && (
+              <a href="#map" onClick={skipToMap} className={SKIP_LINK}>
+                {SKIP_TO_MAP}
+              </a>
+            )}
+            {!phone && listBody}
+          </div>
+          {phone && (
+            <a href="#club-list" onClick={skipToList} className={cn(SKIP_LINK, SKIP_LINK_CLEAR)}>
               {SKIP_TO_LIST}
             </a>
+          )}
+          {source !== null && (
             <div
               id="map"
               ref={mapWrap}
               tabIndex={-1}
-              className={cn('-mx-4 mt-3 min-w-0 scroll-mt-20 outline-none sm:-mx-6', CLEAR_OF_SHEET)}
-              style={{ height: `calc(100dvh - var(--header-h, 0px) - var(--bottom-chrome-h, 0px) - ${LOW_HEIGHT})`, minHeight: '14rem' }}
+              className={phone ? cn('-mx-4 mt-3 min-w-0 scroll-mt-20 outline-none sm:-mx-6', CLEAR_OF_SHEET) : 'min-w-0 scroll-mt-20 outline-none'}
+              style={phone ? { height: `calc(100dvh - var(--header-h, 0px) - var(--bottom-chrome-h, 0px) - ${LOW_HEIGHT})`, minHeight: '14rem' } : undefined}
             >
-              {theMap}
+              <div className={phone ? 'h-full' : 'lg:sticky lg:top-20'}>
+                <div className={phone ? 'h-full' : 'h-[420px] lg:h-[min(780px,calc(100vh-7rem))]'}>
+                  {theMap}
+                </div>
+                {!phone && <p className="mt-2 text-xs text-muted-foreground">{MAP_KEY}</p>}
+              </div>
             </div>
-            <p className="mt-2 text-xs text-muted-foreground">{MAP_KEY}</p>
-            {rest === 'full' && <div aria-hidden="true" data-sheet-room="true" style={{ height: LOW_HEIGHT }} />}
+          )}
+          {phone && <p className="mt-2 text-xs text-muted-foreground">{MAP_KEY}</p>}
+          {phone && rest === 'full' && <div aria-hidden="true" data-sheet-room="true" style={{ height: LOW_HEIGHT }} />}
+          {phone && (
             <section
               id="club-list"
               ref={sheet}
@@ -659,28 +735,9 @@ export function ClubDirectory({ clubs }: { clubs: ApiClubDirectoryItem[] }) {
                 </div>
               </div>
             </section>
-          </div>
-        ) : source === null ? (
-          <>
-            {list}
-            <NotHere />
-          </>
-        ) : (
-          <>
-            <div className="grid grid-cols-1 gap-6 lg:grid-cols-[460px_minmax(0,1fr)]">
-              {list}
-              <div id="map" ref={mapWrap} tabIndex={-1} className="min-w-0 scroll-mt-20 outline-none">
-                <div className="lg:sticky lg:top-20">
-                  <div className="h-[420px] lg:h-[min(780px,calc(100vh-7rem))]">
-                    {theMap}
-                  </div>
-                  <p className="mt-2 text-xs text-muted-foreground">{MAP_KEY}</p>
-                </div>
-              </div>
-            </div>
-            <NotHere />
-          </>
-        )}
+          )}
+        </div>
+        {!phone && <NotHere />}
       </div>
     </div>
   )

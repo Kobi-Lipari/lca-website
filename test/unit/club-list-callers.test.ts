@@ -14,7 +14,7 @@
 import { readFileSync, readdirSync, statSync } from 'node:fs'
 import { join, resolve } from 'node:path'
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { getClubs } from '../../src/areas/clubs/api'
+import { getClubs, getClubsFromOrigin } from '../../src/areas/clubs/api'
 
 const ROOT = resolve(__dirname, '../..')
 const read = (path: string) => readFileSync(join(ROOT, path), 'utf8')
@@ -60,6 +60,29 @@ describe('the one call to the list', () => {
     expect([club.id, club.name, club.city, club.meeting_schedule, club.color, club.image_url, club.region, club.latitude, club.longitude]).toEqual(
       ['example-chess-club', 'Example Chess Club', 'Example City', 'Tuesdays, 7:00 PM', '#1f3a5f', null, 'North Louisiana', 30.45, -91.15],
     )
+  })
+
+  it('asks as on the base for every caller of getClubs(): the one address and nothing beside it, so no referrer policy or header of the page that chooses reaches them', async () => {
+    const asked: unknown[][] = []
+    vi.stubGlobal('fetch', async (...args: unknown[]) => {
+      asked.push(args)
+      return new Response(JSON.stringify(WIDE), { status: 200, headers: { 'Content-Type': 'application/json' } })
+    })
+    await getClubs()
+    expect(asked).toEqual([['/api/clubs']])
+  })
+
+  it('asks the same address with only the site\'s origin as the referrer for the Clubs page that chooses, and hands on the same rows', async () => {
+    const asked: unknown[][] = []
+    vi.stubGlobal('fetch', async (...args: unknown[]) => {
+      asked.push(args)
+      return new Response(JSON.stringify(WIDE), { status: 200, headers: { 'Content-Type': 'application/json' } })
+    })
+    expect(await getClubsFromOrigin()).toEqual(WIDE.clubs)
+    expect(asked).toEqual([['/api/clubs', { referrerPolicy: 'strict-origin' }]])
+    expect(read('src/pages/ClubsIndexPage.tsx')).toMatch(/\bgetClubsFromOrigin\(\)/)
+    expect(read('src/pages/ClubsIndexPage.tsx').replace(/\/\/.*$/gm, '')).not.toMatch(/\bgetClubs\(\)/)
+    for (const file of CALLERS) expect(read(file), file).not.toMatch(/getClubsFromOrigin/)
   })
 
   it('keeps today\'s type, ApiClubListItem, as it was, and types getClubs() by it', () => {

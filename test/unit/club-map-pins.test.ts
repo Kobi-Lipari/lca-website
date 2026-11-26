@@ -4,16 +4,18 @@
 // WS09 step 33): one pin for each club with a point, as the list's answer
 // gives it and never found by the club's name; solid where the club states
 // how it meets and hollow where it does not; count circles where clubs share
-// a point or a town, which open into their pins; the pins of an opened
-// circle that would touch, spread until none does; the marks in the list's
+// a point or a town, which open into their pins and stay open while any of
+// their clubs is drawn; marks that would touch, pins and circles alike,
+// spread until none does, inside the map's frame (since checkpoint Y's review); the marks in the list's
 // order; where the stand-in puts a point; which map draws; and the selected
 // ring against the map's paper and water. Every club here is made up.
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import {
-  PIN_BOX, PIN_RING, STAND_IN_FLAG, circleHolding, groupName, groupsOf, mapSource, marksFor, pinName, pinsInOrder, spreadOffset, spreadPlaced, standInPlace,
-  type MapMark, type PinClub, type PlacedPin,
+  CIRCLE_BOX, PIN_BOX, PIN_GAP, PIN_RING, STAND_IN_FLAG, circleHolding, groupName, groupsOf, mapSource, marksFor, pinName, pinsInOrder, spreadOffset, spreadPlaced, standInPlace,
+  type MapMark, type MarkFrame, type PinClub, type PlacedPin,
 } from '@/areas/clubs/directoryPins'
 import { LOUISIANA_BOUNDS, MAP_STYLES } from '@/areas/clubs/clubMap'
+import { CLUB_MAP_PINS } from '@/areas/clubs/clubMapData'
 import { LCA } from '@/lib/brand'
 
 const club = (id: string, name: string, city: string, point: [number, number] | null, statement: string | null = 'Tuesdays at 7:00 PM.'): PinClub => ({
@@ -43,6 +45,13 @@ const styleColour = (feature: string | undefined, element: string) =>
 
 const shape = (marks: MapMark[]) => marks.map((m) => (m.kind === 'pin' ? `pin:${m.pin.id}${m.opened ? ` from ${m.opened}` : ''}` : `circle:${m.group.pins.map((p) => p.id).join('+')}`))
 
+/** A mark's box at rest, from its point: a pin's stands up from it, a circle's is round it. */
+const boxAt = (p: { x: number; y: number }, circle = false) => (circle
+  ? { left: p.x - CIRCLE_BOX.width / 2, right: p.x + CIRCLE_BOX.width / 2, top: p.y - CIRCLE_BOX.height / 2, bottom: p.y + CIRCLE_BOX.height / 2 }
+  : { left: p.x - PIN_BOX.width / 2, right: p.x + PIN_BOX.width / 2, top: p.y - PIN_BOX.height, bottom: p.y })
+/** The room between two boxes: the larger of the gaps across and down, negative where they overlap on both. */
+const room = (a: ReturnType<typeof boxAt>, b: ReturnType<typeof boxAt>) => Math.max(Math.max(a.left, b.left) - Math.min(a.right, b.right), Math.max(a.top, b.top) - Math.min(a.bottom, b.bottom))
+
 /** Whether two pins at rest drawn at these points would overlap. */
 const overlap = (a: { x: number; y: number }, b: { x: number; y: number }) => Math.abs(a.x - b.x) < PIN_BOX.width && Math.abs(a.y - b.y) < PIN_BOX.height
 
@@ -57,7 +66,7 @@ describe('the pins', () => {
     expect(pins.map((p) => p.id)).toEqual(['a', 'b', 'c', 'd'])
     expect(pins[0]).toMatchObject({ lat: 30.45, lng: -91.18, town: 'Example City' })
     // A club with no point gets none, even with a name like one of the original club list's.
-    expect(pinsInOrder([club('x', 'Baton Rouge Chess Club', 'Example City', null)])).toEqual([])
+    expect(pinsInOrder([club('x', CLUB_MAP_PINS[0].name, 'Example City', null)])).toEqual([])
   })
 
   it('is solid where the club states how it meets and hollow where it does not, white space counting as nothing', () => {
@@ -88,8 +97,10 @@ describe('the count circles', () => {
   it('draw a closed circle where its first club would be, and each of its pins once opened, with the circle it came from', () => {
     const pins = pinsInOrder(CLUBS)
     expect(shape(marksFor(pins, new Set()))).toEqual(['circle:a+b', 'circle:c+d'])
-    expect(shape(marksFor(pins, new Set(['group:a'])))).toEqual(['pin:a from group:a', 'pin:b from group:a', 'circle:c+d'])
-    expect(shape(marksFor(pins, new Set(['group:a', 'group:c'])))).toEqual(['pin:a from group:a', 'pin:b from group:a', 'pin:c from group:c', 'pin:d from group:c'])
+    // Since checkpoint Y's review a circle is opened by its clubs, not its key.
+    expect(shape(marksFor(pins, new Set(['a', 'b'])))).toEqual(['pin:a from group:a', 'pin:b from group:a', 'circle:c+d'])
+    expect(shape(marksFor(pins, new Set(['a', 'b', 'c', 'd'])))).toEqual(['pin:a from group:a', 'pin:b from group:a', 'pin:c from group:c', 'pin:d from group:c'])
+    expect(shape(marksFor(pins, new Set(['group:a'])))).toEqual(['circle:a+b', 'circle:c+d'])
     const alone = [club('a', 'A Club', 'Example City', [30, -91]), club('b', 'B Club', 'Example Town', [31, -92])]
     expect(shape(marksFor(pinsInOrder(alone), new Set()))).toEqual(['pin:a', 'pin:b'])
   })
@@ -97,7 +108,7 @@ describe('the count circles', () => {
   it('say which closed circle holds a club, and none for a pin drawn on its own', () => {
     const pins = pinsInOrder(CLUBS)
     expect(circleHolding(marksFor(pins, new Set()), 'b')).toBe('group:a')
-    expect(circleHolding(marksFor(pins, new Set(['group:a'])), 'b')).toBeNull()
+    expect(circleHolding(marksFor(pins, new Set(['a', 'b'])), 'b')).toBeNull()
     expect(circleHolding(marksFor(pins, new Set()), null)).toBeNull()
   })
 
@@ -128,9 +139,121 @@ describe('the count circles', () => {
     const chain = spreadPlaced([placed('a', 'group:a', 300, 300), placed('b', 'group:a', 304, 300), placed('c', 'group:a', 300, 336)])
     const points = [...chain.values()]
     for (const [i, p] of points.entries()) for (const q of points.slice(i + 1)) expect(overlap(p, q)).toBe(false)
-    // Pins on their own, and pins of two different circles, stay where the map puts them.
-    expect([...spreadPlaced([placed('a', null, 300, 300), placed('b', null, 304, 300)]).values()]).toEqual([{ x: 300, y: 300 }, { x: 304, y: 300 }])
-    expect([...spreadPlaced([placed('a', 'group:a', 300, 300), placed('b', 'group:b', 304, 300)]).values()]).toEqual([{ x: 300, y: 300 }, { x: 304, y: 300 }])
+    // Since checkpoint Y's review pins on their own, and pins of two different circles, spread too when they would touch;
+    // far apart, they stay where the map puts them.
+    for (const pair of [[placed('a', null, 300, 300), placed('b', null, 304, 300)], [placed('a', 'group:a', 300, 300), placed('b', 'group:b', 304, 300)]]) {
+      const apart = spreadPlaced(pair)
+      expect(overlap(apart.get('a')!, apart.get('b')!)).toBe(false)
+    }
+    expect([...spreadPlaced([placed('a', null, 100, 100), placed('b', null, 300, 300)]).values()]).toEqual([{ x: 100, y: 100 }, { x: 300, y: 300 }])
+  })
+})
+
+describe('marks that would touch, pins and circles alike', () => {
+  const lone = (id: string, x: number, y: number): PlacedPin => ({ id, opened: null, x, y })
+  const circle = (id: string, x: number, y: number): PlacedPin => ({ id, opened: null, x, y, circle: true })
+
+  it('moves two lone pins 4 pixels apart until PIN_GAP stands between their boxes', () => {
+    const drawn = spreadPlaced([lone('a', 300, 300), lone('b', 304, 300)])
+    expect(room(boxAt(drawn.get('a')!), boxAt(drawn.get('b')!))).toBeGreaterThanOrEqual(PIN_GAP)
+    // Each stays on its own side: the one to the west is drawn to the west.
+    expect(drawn.get('a')!.x).toBeLessThanOrEqual(drawn.get('b')!.x)
+  })
+
+  it('moves a lone pin beside a circle apart from it, the circle\'s box round its point', () => {
+    const drawn = spreadPlaced([lone('a', 300, 300), circle('c', 306, 290)])
+    expect(room(boxAt(drawn.get('a')!), boxAt(drawn.get('c')!, true))).toBeGreaterThanOrEqual(PIN_GAP)
+  })
+
+  it('moves three in a row apart, so no two of them touch', () => {
+    const drawn = spreadPlaced([lone('a', 300, 300), lone('b', 310, 300), lone('c', 320, 300)])
+    const boxes = ['a', 'b', 'c'].map((id) => boxAt(drawn.get(id)!))
+    for (const [i, a] of boxes.entries()) for (const b of boxes.slice(i + 1)) expect(room(a, b)).toBeGreaterThanOrEqual(PIN_GAP)
+  })
+
+  it('leaves two far apart where they were, and a mark that touches none on its point beside a spread', () => {
+    expect([...spreadPlaced([lone('a', 100, 100), circle('c', 300, 300)]).entries()]).toEqual([['a', { x: 100, y: 100 }], ['c', { x: 300, y: 300 }]])
+    const drawn = spreadPlaced([lone('a', 300, 300), lone('b', 304, 300), lone('far', 600, 100)])
+    expect(drawn.get('far')).toEqual({ x: 600, y: 100 })
+  })
+
+  it('gives the same answer for the marks in either order', () => {
+    const marks = [lone('a', 300, 300), circle('c', 306, 290), lone('b', 310, 304), lone('far', 600, 100)]
+    const one = spreadPlaced(marks)
+    const other = spreadPlaced([...marks].reverse())
+    for (const id of ['a', 'b', 'c', 'far']) expect(other.get(id), id).toEqual(one.get(id))
+  })
+
+  it('draws each mark at its own point again once the points part, as when the map zooms in', () => {
+    const close = spreadPlaced([lone('a', 300, 300), lone('b', 304, 300)])
+    expect(close.get('a')).not.toEqual({ x: 300, y: 300 })
+    const zoomed = spreadPlaced([lone('a', 300, 300), lone('b', 340, 300)])
+    expect([...zoomed.values()]).toEqual([{ x: 300, y: 300 }, { x: 340, y: 300 }])
+  })
+})
+
+describe('marks spread inside the map\'s frame', () => {
+  const lone = (id: string, x: number, y: number): PlacedPin => ({ id, opened: null, x, y })
+  const circle = (id: string, x: number, y: number): PlacedPin => ({ id, opened: null, x, y, circle: true })
+  /** All of Louisiana's room in the top left corner, as the maps measure it: 10 pixels in, 126 wide and 44 tall, and PIN_GAP round it. */
+  const clear = { right: 10 + 126 + PIN_GAP, bottom: 10 + 44 + PIN_GAP }
+  /** Every mark's box drawn wholly inside the frame, none under All of Louisiana, and no two touching. */
+  function holds(placed: PlacedPin[], frame: MarkFrame, label: string) {
+    const drawn = spreadPlaced(placed, frame)
+    const boxes = placed.map((m) => boxAt(drawn.get(m.id)!, m.circle))
+    for (const [i, box] of boxes.entries()) {
+      expect(box.left, `${label} ${placed[i].id} left`).toBeGreaterThanOrEqual(0)
+      expect(box.right, `${label} ${placed[i].id} right`).toBeLessThanOrEqual(frame.width)
+      expect(box.top, `${label} ${placed[i].id} top`).toBeGreaterThanOrEqual(0)
+      expect(box.bottom, `${label} ${placed[i].id} bottom`).toBeLessThanOrEqual(frame.height)
+      expect(box.left >= clear.right || box.top >= clear.bottom, `${label} ${placed[i].id} under All of Louisiana`).toBe(true)
+    }
+    for (const [i, a] of boxes.entries()) for (const [j, b] of boxes.slice(i + 1).entries()) expect(room(a, b), `${label} ${placed[i].id} and ${placed[i + 1 + j].id}`).toBeGreaterThanOrEqual(PIN_GAP)
+    return drawn
+  }
+
+  it('moves the ring of marks near one edge of a small frame in, past no edge and from under All of Louisiana', () => {
+    const frame = { width: 320, height: 224, clear }
+    // Six pins and a circle crowded into the top left corner, and the same at the bottom right.
+    holds([...['a', 'b', 'c', 'd', 'e', 'f'].map((id, i) => lone(id, 6 + i * 3, 60 + i)), circle('g', 12, 70)], frame, 'top left')
+    holds([...['a', 'b', 'c', 'd', 'e', 'f'].map((id, i) => lone(id, 314 - i * 3, 222 - i)), circle('g', 300, 210)], frame, 'bottom right')
+  })
+
+  it('lays a spread too large for a ring in the frame in rows instead, all of it inside', () => {
+    // Twenty pins on one point: as a ring they would need a frame more than 300 pixels tall.
+    holds(Array.from({ length: 20 }, (_, i) => lone(`p${String(i).padStart(2, '0')}`, 160, 150)), { width: 320, height: 224, clear }, 'twenty')
+  })
+
+  it('keeps the original club list\'s points inside the stand-in\'s frame at a phone\'s sizes and a laptop\'s, none touching', () => {
+    for (const [width, height] of [[390, 420], [358, 300], [320, 224], [780, 780]]) {
+      // Laid as the stand-in lays them, across the whole-state view: at the shortest, a northern pin reaches up beside All of Louisiana.
+      const placed = CLUB_MAP_PINS.map((pin, i) => {
+        const at = standInPlace(pin.lat, pin.lng)
+        return lone(`p${String(i).padStart(2, '0')}`, 16 + (at.x / 100) * (width - 32), 64 + (at.y / 100) * (height - 76))
+      })
+      holds(placed, { width, height, clear }, `${width} by ${height}`)
+    }
+  })
+
+  it('moves a mark on its own from under All of Louisiana the shorter way, leaves one that touches none on its point, and gives the same answer in either order', () => {
+    expect(spreadPlaced([lone('a', 100, 60)], { width: 320, height: 224, clear }).get('a')).toEqual({ x: 100, y: 90 })
+    expect(spreadPlaced([lone('a', 130, 40)], { width: 320, height: 224, clear }).get('a')).toEqual({ x: 151, y: 40 })
+    const frame = { width: 320, height: 224, clear }
+    const marks = [lone('a', 8, 62), lone('b', 12, 64), circle('c', 20, 70), lone('far', 250, 200)]
+    const one = spreadPlaced(marks, frame)
+    expect(one.get('far')).toEqual({ x: 250, y: 200 })
+    const other = spreadPlaced([...marks].reverse(), frame)
+    for (const id of ['a', 'b', 'c', 'far']) expect(other.get(id), id).toEqual(one.get(id))
+  })
+})
+
+describe('a circle that a filter changes', () => {
+  it('stays open while any of its clubs is drawn: a circle of three opened, then drawn again without its first club, is still the two pins', () => {
+    const three = pinsInOrder([club('a', 'A Club', 'Example City', [30, -91]), club('b', 'B Club', 'Example City', [30.01, -91]), club('c', 'C Club', 'Example City', [30.02, -91])])
+    const [group] = groupsOf(three)
+    const opened = new Set(group.pins.map((p) => p.id))
+    expect(shape(marksFor(three, opened))).toEqual(['pin:a from group:a', 'pin:b from group:a', 'pin:c from group:a'])
+    expect(shape(marksFor(three.slice(1), opened))).toEqual(['pin:b from group:b', 'pin:c from group:b'])
   })
 })
 

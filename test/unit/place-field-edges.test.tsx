@@ -146,7 +146,7 @@ describe('whatever is typed', () => {
 
   it('reads a ZIP code or a town however it is padded, cased or followed by the state', () => {
     draw()
-    for (const [text, zip] of [[' 70808 ', '70808'], ['70808-1234', '70808'], ['BATON ROUGE', '70806'], ['baton rouge, la', '70806'], ['Baton Rouge, Louisiana', '70806'], ['  lafayette ', '70503']] as const) {
+    for (const [text, zip] of [[' 70808 ', '70808'], ['70808-1234', '70808'], ['BATON ROUGE', '70825'], ['baton rouge, la', '70825'], ['Baton Rouge, Louisiana', '70825'], ['  lafayette ', '70503']] as const) {
       type(text)
       expect(address(), text).toBe(`?near=${zip}`)
       expect(names().length).toBe(6)
@@ -508,6 +508,57 @@ describe('Near me at its edges', () => {
     act(() => asked[0].ok(position(DEVICE)))
     expect(address()).toBe('?weekends=1')
     expect(status().textContent).not.toContain(words.FINDING)
+  })
+  // Checkpoint Y's review: the page's ten seconds also time the person's own answer to the browser's question.
+  it('leaves the focus where it is when the ten seconds run out, and says the words in the live region', () => {
+    standInLocation()
+    draw()
+    const nearMe = screen.getByRole('button', { name: words.NEAR_ME })
+    nearMe.focus()
+    fireEvent.click(nearMe)
+    act(() => { vi.advanceTimersByTime(words.DEVICE_WAIT_MS) })
+    expect(status().textContent).toContain(words.TOO_LONG)
+    expect(document.activeElement).toBe(nearMe)
+    expect(document.activeElement).not.toBe(field())
+  })
+
+  it('lets a late position go when a place was typed after the ten seconds, and a late refusal changes nothing said', () => {
+    const { asked } = standInLocation()
+    draw()
+    fireEvent.click(screen.getByRole('button', { name: words.NEAR_ME }))
+    act(() => { vi.advanceTimersByTime(words.DEVICE_WAIT_MS) })
+    expect(status().textContent).toContain(words.TOO_LONG)
+    fireEvent.change(field(), { target: { value: '71101' } })
+    enter()
+    expect(address()).toBe('?near=71101')
+    act(() => asked[0].ok(position(DEVICE)))
+    expect(address()).toBe('?near=71101')
+    cleanup()
+
+    const again = standInLocation()
+    draw()
+    const nearMe = screen.getByRole('button', { name: words.NEAR_ME })
+    nearMe.focus()
+    fireEvent.click(nearMe)
+    act(() => { vi.advanceTimersByTime(words.DEVICE_WAIT_MS) })
+    const said = status().textContent
+    act(() => again.asked[0].fail?.(failure(1)))
+    expect(status().textContent).toBe(said)
+    expect(document.activeElement).toBe(nearMe)
+    expect(address()).toBe('')
+    // A press of Near me after the words asks again, and the first ask's late position is let go.
+    fireEvent.click(nearMe)
+    act(() => again.asked[0].ok(position(DEVICE)))
+    expect(address()).toBe('')
+    expect(status().textContent).toContain(words.FINDING)
+    act(() => again.asked[1].ok(position(DEVICE)))
+    expect(address()).toMatch(/^\?near=\d{5}$/)
+  })
+
+  it('gives the pill its ZIP code alone for a ZIP code area with no town', () => {
+    draw('/clubs?near=70352&sort=nearest')
+    expect(screen.getByText(words.nearYou(null, '70352'))).toBeTruthy()
+    expect(screen.getByText('Near you: 70352')).toBeTruthy()
   })
 })
 

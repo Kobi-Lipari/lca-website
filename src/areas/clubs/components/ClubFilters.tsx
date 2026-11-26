@@ -21,7 +21,14 @@
 // the focus kept inside it, with a Close of its own, and Escape, Close and
 // Done each closing it with the focus back on the Filters button. It sits
 // over the page but never over the site's dock at the window's foot.
-import { useId, useRef, useState, type KeyboardEvent } from 'react'
+//
+// When the window crosses the wide layout's width while the choices are open
+// (a tablet turned, a window zoomed), they close: a panel half in the page and
+// a sheet that holds the focus are not one thing to carry across. The Filters
+// button stays the same button, and the focus goes to it when it was in the
+// choices; when it was anywhere else (the wide panel stays open while the
+// visitor types in the field), it stays where it was.
+import { useEffect, useId, useRef, useState, type KeyboardEvent } from 'react'
 import { ChevronDown } from 'lucide-react'
 
 import { NO_FILTERS, regionChoices, type DirectoryFilters, type FilteredClub } from '@domain/clubs/order'
@@ -60,6 +67,21 @@ export function ClubFilters({ clubs, filters, onChange, sheet = false }: {
   const id = useId()
   const [open, setOpen] = useState(false)
   const button = useRef<HTMLButtonElement>(null)
+  // A crossing of the width while open closes the choices, and the focus goes back to the Filters button once it is drawn
+  // when it went with them; focus anywhere else on the page is left where it is.
+  const [sheetBefore, setSheetBefore] = useState(sheet)
+  const [closedByCrossing, setClosedByCrossing] = useState(0)
+  if (sheetBefore !== sheet) {
+    setSheetBefore(sheet)
+    if (open) {
+      setOpen(false)
+      setClosedByCrossing((n) => n + 1)
+    }
+  }
+  useEffect(() => {
+    const active = document.activeElement
+    if (closedByCrossing > 0 && (active === null || active === document.body)) button.current?.focus()
+  }, [closedByCrossing])
   // The regions that have a club, and a region chosen by the address that has none, so its chip can be let go.
   const regions = regionChoices(clubs).filter((choice) => choice.count > 0 || choice.region === filters.region)
   const weekends = clubs.filter((club) => club.weekend_play).length

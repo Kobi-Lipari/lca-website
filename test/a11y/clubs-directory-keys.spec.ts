@@ -25,7 +25,12 @@
 //   covered at either rest nor at the page's end; with no map, the list
 //   alone and no sheet;
 // - "Not here?" under the list at 390 and 1280, its two links leading to the
-//   forms they name.
+//   forms they name;
+// - since checkpoint Y's review: Enter on a circle gives the focus to the
+//   first of its pins; at 320 by 568, Skip to the list and each control
+//   before it take the focus clear of the low sheet; and the pins of two
+//   neighbouring towns stand apart at the whole state's view, so the middle
+//   of each pin's box is that pin's own button.
 import type { Page, TestInfo } from '@playwright/test'
 import { expect, openDrawn, test } from './support'
 import { SITE, dock, siteFooter } from './chrome'
@@ -56,9 +61,15 @@ const CLUBS = [
   row('example-kings-club', 'Example Kings Club', 'Example Port', [30.23, -93.22], 'Mondays at 6:00 PM.'),
 ]
 
+/** Two made-up clubs in two real towns a mile or so apart, whose pins would touch at the whole state's view. */
+const NEIGHBOURS = [
+  row('example-pine-club', 'Example Pine Club', 'Shreveport', [32.525, -93.75], 'Mondays at 7:00 PM.'),
+  row('example-oak-club', 'Example Oak Club', 'Bossier City', [32.516, -93.732], 'Thursdays at 7:00 PM.'),
+]
+
 /** Opens the directory with the made-up clubs, and with the stand-in map unless `withMap` is false. */
-async function openDirectory(page: Page, withMap = true) {
-  await page.route('**/api/clubs', (route) => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ clubs: CLUBS }) }))
+async function openDirectory(page: Page, withMap = true, clubs: ReadonlyArray<ReturnType<typeof row>> = CLUBS) {
+  await page.route('**/api/clubs', (route) => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ clubs }) }))
   if (withMap) await page.addInitScript((flag) => { (window as unknown as Record<string, unknown>)[flag] = true }, STAND_IN_FLAG)
   await openDrawn(page, '/clubs', [
     page.getByRole('heading', { level: 1, name: 'Chess clubs in Louisiana', exact: true }),
@@ -112,6 +123,8 @@ test.describe('the keyboard alone', () => {
     await page.keyboard.press('Enter')
     await expect(map(page).locator('[data-pin="example-knights-club"]')).toHaveCount(1)
     await expect(map(page).locator('[data-circle]')).toHaveCount(0)
+    // The circle's own button is gone, and the focus is on the first of its pins in the list's order, not on the page.
+    await expect(map(page).locator('[data-pin="example-bishops-club"]')).toBeFocused()
     // Escape from the map is not needed: All of Louisiana is a button like the rest.
     await map(page).getByRole('button', { name: 'All of Louisiana' }).focus()
     await page.keyboard.press('Enter')
@@ -274,6 +287,26 @@ test.describe('on a phone (WS09 step 35)', () => {
     expect(new URL(page.url()).hash).toBe('')
     await page.keyboard.press('Tab')
     await expect(page.getByRole('button', { name: 'Show the list' })).toBeFocused()
+  })
+
+  test('at 320 by 568, Tab from the field to Skip to the list keeps each control and the link clear of the low sheet', async ({ page }, testInfo) => {
+    onlyClubs(testInfo)
+    await page.setViewportSize({ width: 320, height: 568 })
+    await openDirectory(page)
+    await page.getByRole('textbox', { name: 'City, ZIP or club name' }).focus()
+    const sheet = page.getByRole('region', { name: 'List of clubs' })
+    await expect(sheet).toHaveAttribute('data-sheet', 'low')
+    for (const name of ['Near me', 'A to Z', 'Nearest', 'Filters', 'Skip to the list']) {
+      await page.keyboard.press('Tab')
+      const clear = await page.evaluate(() => {
+        const el = document.activeElement as HTMLElement
+        const low = document.querySelector('[data-sheet="low"]')!.getBoundingClientRect()
+        return { name: el.textContent?.trim() ?? '', bottom: el.getBoundingClientRect().bottom, top: low.top }
+      })
+      expect(clear.name, name).toBe(name)
+      expect(clear.bottom, name).toBeLessThanOrEqual(clear.top)
+    }
+    await expect(sheet).toHaveAttribute('data-sheet', 'low')
   })
 
   test('the Filters sheet is named, keeps the focus inside it, and Escape and Done give it back to the Filters button', async ({ page }, testInfo) => {
@@ -450,3 +483,23 @@ for (const size of [{ width: 390, height: 844 }, { width: 1280, height: 800 }] a
     }
   })
 }
+
+test.describe('two neighbouring towns at the whole state\'s view', () => {
+  for (const size of [{ width: 1280, height: 800 }, { width: 390, height: 844 }]) {
+    test(`at ${size.width}: their pins stand apart, the middle of each pin's box its own button`, async ({ page }, testInfo) => {
+      onlyClubs(testInfo)
+      await page.setViewportSize(size)
+      await openDirectory(page, true, [...CLUBS, ...NEIGHBOURS])
+      await expect(map(page)).toHaveAttribute('data-view', 'state')
+      for (const id of ['example-pine-club', 'example-oak-club']) {
+        const own = await page.evaluate((pin) => {
+          const button = document.querySelector<HTMLElement>(`[data-pin="${pin}"]`)!
+          const box = button.getBoundingClientRect()
+          const at = document.elementFromPoint(box.left + box.width / 2, box.top + box.height / 2)
+          return at?.closest('[data-pin]')?.getAttribute('data-pin') ?? null
+        }, id)
+        expect(own, id).toBe(id)
+      }
+    })
+  }
+})

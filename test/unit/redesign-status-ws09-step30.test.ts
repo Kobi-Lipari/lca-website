@@ -159,6 +159,21 @@ function casesIn(file: string): number {
   count += (text.match(/^for \(const size of SIZES\) \{\n\s+test\(/gm) ?? []).length
   return count
 }
+
+/**
+ * The cases WS09 checkpoint Y's review added to the directory's test files, each held to a fix of that review; the
+ * block keeps the count each file had at its step.
+ */
+const Y_REVIEW_ADDED: Record<string, number> = {
+  'test/unit/club-directory-phone.test.tsx': 2,
+  'test/unit/club-directory.test.tsx': 5,
+  'test/unit/club-list-callers.test.ts': 2,
+  'test/unit/club-map-pins.test.ts': 11,
+  'test/unit/la-places.test.ts': 1,
+  'test/unit/near-town-words.test.ts': 2,
+  'test/unit/place-field-edges.test.tsx': 3,
+  'test/a11y/clubs-directory-keys.spec.ts': 2,
+}
 /** A file's code with its comments taken out. */
 const codeOf = (file: string) => read(file).replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '')
 /** A quoted constant's words in a file's code. */
@@ -233,7 +248,7 @@ describe('REDESIGN_STATUS.md, the thirtieth step of WS09: the block', () => {
     for (const [file, count] of Object.entries(NEW_TESTS)) {
       expect(writtenCount(files, file), file).toBe(count)
       // WS09 step 32 added four cases to the place file's test, for the points file; the block keeps this step's count.
-      expect(casesIn(file), file).toBe(count + (X_REVIEW_ADDED[file] ?? 0) + (file === 'test/unit/la-places.test.ts' ? 4 : 0))
+      expect(casesIn(file), file).toBe(count + (X_REVIEW_ADDED[file] ?? 0) + (file === 'test/unit/la-places.test.ts' ? 4 : 0) + (Y_REVIEW_ADDED[file] ?? 0))
     }
     expect(writtenCount(files, SELF)).toBe((read(SELF).match(/^\s*it\(/gm) ?? []).length)
     const grown = bullet(files, '  - Grown with no change:')

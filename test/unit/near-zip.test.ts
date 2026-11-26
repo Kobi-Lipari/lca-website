@@ -16,7 +16,7 @@ import { readFileSync, readdirSync, statSync } from 'node:fs'
 import { join, resolve } from 'node:path'
 import { describe, expect, it } from 'vitest'
 import { milesBetween } from '../../domain/clubs/distance'
-import { TOWN_POINTS, ZIP_POINTS } from '../../domain/clubs/laPoints'
+import { TOWN_ZIPS, ZIP_POINTS } from '../../domain/clubs/laPoints'
 import { nearestZip, placeFor, zipPoint } from '../../domain/clubs/nearZip'
 import { readTypedPlace } from '../../domain/clubs/placeNames'
 
@@ -65,12 +65,13 @@ describe('a typed place', () => {
     }
   })
 
-  it('reads a Louisiana town as its point, with the ZIP code area nearest it for the address', () => {
+  it('reads a Louisiana town as the ZIP code area it stands for, with that area\'s point, for the address', () => {
     for (const typed of ['Zachary', '  zachary  ', 'Zachary, LA', 'Zachary, Louisiana']) {
       const answer = placeFor(typed)
       expect(answer?.kind, typed).toBe('town')
       if (answer?.kind !== 'town') continue
       expect(answer.town).toBe('zachary')
+      expect(answer.point).toEqual(zipPoint(answer.zip))
       expect(answer.zip).toBe(nearestZip(answer.point).zip)
       expect(milesBetween(answer.point, zipPoint('70791')!)).toBeLessThan(5)
     }
@@ -121,7 +122,7 @@ describe('the place stays on the device', () => {
     const imports = [...source.matchAll(/^import .* from '([^']+)'$/gm)].map((m) => m[1]).sort()
     expect(imports).toEqual(['./distance', './laPoints', './placeNames'])
     expect(source.replace(/^\s*\/\/.*$/gm, '')).not.toMatch(/fetch\(|XMLHttpRequest|navigator|localStorage|Date\.now|Math\.random/)
-    expect(TOWN_POINTS.length).toBeGreaterThan(0)
+    expect(TOWN_ZIPS.length).toBeGreaterThan(0)
   })
 
   it('no file under src/ imports the points file, and only the directory\'s field and page import the nearest ZIP code, both in its lazy chunks', () => {

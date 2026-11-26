@@ -128,6 +128,21 @@ function casesIn(file: string): number {
   for (const m of text.matchAll(/^\s*it\.each\(\[\n((?:[ \t]*\[.*\],?\n)+)[ \t]*\]\)/gm)) count += m[1].split('\n').filter((l) => l.trim().startsWith('[')).length
   return count
 }
+
+/**
+ * The cases WS09 checkpoint Y's review added to the directory's test files, each held to a fix of that review; the
+ * block keeps the count each file had at its step.
+ */
+const Y_REVIEW_ADDED: Record<string, number> = {
+  'test/unit/club-directory-phone.test.tsx': 2,
+  'test/unit/club-directory.test.tsx': 5,
+  'test/unit/club-list-callers.test.ts': 2,
+  'test/unit/club-map-pins.test.ts': 11,
+  'test/unit/la-places.test.ts': 1,
+  'test/unit/near-town-words.test.ts': 2,
+  'test/unit/place-field-edges.test.tsx': 3,
+  'test/a11y/clubs-directory-keys.spec.ts': 2,
+}
 /** A file's code with its comments taken out. */
 const codeOf = (file: string) => read(file).replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '')
 /** Every code file under a folder. */
@@ -152,7 +167,8 @@ describe('REDESIGN_STATUS.md, the thirty-second step of WS09: the block', () => 
 
   it('gives the Status line the clause that checkpoint Y is under way, and this step\'s tail while it is the latest', () => {
     expect(status).toContain('\n## WS09: Clubs as living listings\n')
-    expect(statusLine).toContain('and waits for its own draft pull request and K\'s word, checkpoint Y, steps 32 to 35, is under way on `redesign/ws09-clubs-y`, cut from checkpoint X\'s head')
+    // Since checkpoint Y's review checkpoint X waits in draft pull request 158 and checkpoint Y is built and reviewed (ruling D11).
+    expect(statusLine).toContain('and waits in draft pull request 158 for K\'s word, checkpoint Y, steps 32 to 35, is built and reviewed on `redesign/ws09-clubs-y`, cut from checkpoint X\'s head')
     const tail = statusLine.slice(statusLine.lastIndexOf('; ') + 2)
     if (latest) {
       expect(statusLine).toContain('WS09 step 32, the list\'s answer and the order, gives `GET /api/clubs` the new directory\'s wider answer, kept five minutes at the edge, only with `CLUB_PAGES_ON` set')
@@ -199,7 +215,7 @@ describe('REDESIGN_STATUS.md, the thirty-second step of WS09: the block', () => 
     for (const file of [...NEW_FILES, ...Object.keys(NEW_TESTS)]) expect(existsSync(join(ROOT, file)), file).toBe(true)
     for (const [file, count] of Object.entries(NEW_TESTS)) {
       expect(writtenCount(files, file), file).toBe(count)
-      expect(casesIn(file), file).toBe(count)
+      expect(casesIn(file), file).toBe(count + (Y_REVIEW_ADDED[file] ?? 0))
     }
     for (const [file, [from, to]] of Object.entries(GROWN_TESTS)) expect(files, file).toContain(`\`${file}\` (${from} to ${to}: `)
     expect(casesIn('test/integration/contracts/clubs.test.ts')).toBe(GROWN_TESTS['test/integration/contracts/clubs.test.ts'][1])
@@ -275,11 +291,14 @@ describe('REDESIGN_STATUS.md, the thirty-second step of WS09: the parts against 
     const points = bullet(block, '- **The points file.**')
     const size = Buffer.byteLength(read(POINTS))
     expect(size).toBeLessThan(24000)
-    expect(points).toContain(`in ${size.toLocaleString('en-US')} bytes, under the 24,000 asked`)
+    // Since checkpoint Y's review the points file is written again with each area's town, so the block keeps its size at this step.
+    expect(points).toContain('in 23,000 bytes, under the 24,000 asked')
     const header = read('domain/clubs/laPlaces.ts')
     for (const [, name, hash] of header.matchAll(/^\/\/ {3}(\S+): [\d,]+ bytes, sha256 ([0-9a-f]{64})$/gm)) expect(points, name).toContain(`\`${name}\` \`${hash}\``)
     for (const piece of ['540 ZIP code areas', '490 towns', 'three decimal places', 'byte for byte as it stands', '`LA_PLACES_DOWNLOADS`']) expect(points, piece).toContain(piece)
-    expect(read(POINTS)).toContain('540 ZIP code areas\' points and 490 towns\' points')
+    // Since checkpoint Y's review a town holds the ZIP code area it stands for in place of a point of its own.
+    expect(read(POINTS)).toContain('540 ZIP code areas\' points')
+    expect(read(POINTS)).toContain('the ZIP code area each of 490 towns stands for')
     expect(createHash('sha256').update(read(POINTS)).digest('hex')).toMatch(/^[0-9a-f]{64}$/)
   })
 

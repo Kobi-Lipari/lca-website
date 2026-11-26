@@ -158,11 +158,11 @@ describe('a place typed', () => {
     expect(screen.getByRole('button', { name: words.NEAREST }).getAttribute('aria-pressed')).toBe('true')
   })
 
-  it('keeps a Louisiana town in the address only as its nearest ZIP code, and says when the town has no club, with Start a club?', () => {
+  it('keeps a Louisiana town in the address only as the ZIP code it stands for, and says when the town has no club, with Start a club?', () => {
     draw()
     fireEvent.change(field(), { target: { value: 'Natchitoches, LA' } })
     fireEvent.submit(field().closest('form')!)
-    expect(address()).toBe('?near=71457')
+    expect(address()).toBe('?near=71497')
     expect(address()).not.toMatch(/natchitoches|%20|\+/i)
     expect(names()).toHaveLength(6)
     expect(status().textContent).toContain(words.noClubIn('Natchitoches'))
@@ -170,9 +170,9 @@ describe('a place typed', () => {
     expect(start.getAttribute('href')).toBe('/clubs/suggest?kind=start')
     // A town with a club of its own says nothing of the kind.
     type('baton rouge')
-    expect(address()).toBe('?near=70806')
+    expect(address()).toBe('?near=70825')
     expect(status().querySelector('[data-note]')).toBeNull()
-    expect(screen.getByText(words.nearYou('Baton Rouge', '70806'))).toBeTruthy()
+    expect(screen.getByText(words.nearYou('Baton Rouge', '70825'))).toBeTruthy()
   })
 
   it('narrows by a name once the typing pauses, saying the count once and never on each key, and Show all brings back every club', () => {
@@ -331,7 +331,7 @@ describe('Near me', () => {
     expect(address()).toBe('')
   })
 
-  it('says in words when the browser cannot ask, when the device takes more than ten seconds, and when it is outside Louisiana, and lets a late answer go', () => {
+  it('says in words when the browser cannot ask, when the device takes more than ten seconds, and when it is outside Louisiana, and takes a late position as if it had come in time', () => {
     Object.defineProperty(navigator, 'geolocation', { value: undefined, configurable: true })
     draw()
     fireEvent.click(screen.getByRole('button', { name: words.NEAR_ME }))
@@ -341,20 +341,25 @@ describe('Near me', () => {
 
     const { asked } = standInLocation()
     draw()
-    fireEvent.click(screen.getByRole('button', { name: words.NEAR_ME }))
+    const nearMe = screen.getByRole('button', { name: words.NEAR_ME })
+    nearMe.focus()
+    fireEvent.click(nearMe)
     act(() => { vi.advanceTimersByTime(words.DEVICE_WAIT_MS - 1) })
     expect(status().textContent).toContain(words.FINDING)
     act(() => { vi.advanceTimersByTime(1) })
     expect(status().textContent).toContain(words.TOO_LONG)
-    expect(document.activeElement).toBe(field())
+    // Since checkpoint Y's review the focus stays where it was, as the person may still be answering the browser.
+    expect(document.activeElement).toBe(nearMe)
     act(() => asked[0].ok(position(DEVICE)))
-    expect(address()).toBe('')
-    expect(names()).toEqual(A_TO_Z)
+    expect(address()).toBe(`?near=${nearestZip(DEVICE).zip}`)
+    expect(names()).toEqual(FROM_70808)
+    expect(status().textContent).not.toContain(words.TOO_LONG)
+    expect(document.activeElement).toBe(nearMe)
 
     fireEvent.click(screen.getByRole('button', { name: words.NEAR_ME }))
     act(() => asked[1].ok(position(TEXAS)))
     expect(status().textContent).toContain(words.OUTSIDE)
-    expect(address()).toBe('')
+    expect(address()).toBe(`?near=${nearestZip(DEVICE).zip}`)
     expect(document.activeElement).toBe(field())
   })
 })

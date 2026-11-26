@@ -15,19 +15,19 @@
 import { describe, expect, it } from 'vitest'
 import { readDirectoryAddress, regionKey, writeDirectoryAddress, type DirectoryAddress } from '../../domain/clubs/directoryAddress'
 import { TOWNS_BY_REGION, ZIPS_BY_REGION } from '../../domain/clubs/laPlaces'
-import { TOWN_POINTS, ZIP_POINTS } from '../../domain/clubs/laPoints'
+import { TOWN_ZIPS, ZIP_POINTS } from '../../domain/clubs/laPoints'
 import { nearestZip, placeFor, zipPoint } from '../../domain/clubs/nearZip'
 import { placeKey } from '../../domain/clubs/placeNames'
 import { REGIONS } from '../../domain/clubs/regions'
 
 const entriesOf = (lines: readonly string[]) => lines.flatMap((line) => line.split('|')).map((entry) => entry.split(':'))
 const zipEntries = entriesOf(ZIP_POINTS)
-const townEntries = entriesOf(TOWN_POINTS)
+const townEntries = entriesOf(TOWN_ZIPS)
 const placeZips = ZIPS_BY_REGION.flat().flatMap((line) => line.split(' '))
 const placeTowns = TOWNS_BY_REGION.flat().flatMap((line) => line.split('|'))
 
 describe('the points file beside the place file', () => {
-  it('holds a point for every ZIP code area and every town the place file holds, and for nothing else', () => {
+  it('holds a point for every ZIP code area and an area for every town the place file holds, and for nothing else', () => {
     expect(new Set(zipEntries.map(([zip]) => zip))).toEqual(new Set([...placeZips, '39466']))
     expect(new Set(townEntries.map(([town]) => town))).toEqual(new Set([...placeTowns.map(placeKey), 'picayune']))
     expect(zipEntries.length).toBe(new Set(zipEntries.map(([zip]) => zip)).size)
@@ -35,7 +35,10 @@ describe('the points file beside the place file', () => {
   })
 
   it('holds every point inside Louisiana\'s own box at three decimal places, the one over the line aside', () => {
-    for (const [key, north, west] of [...zipEntries, ...townEntries]) {
+    // A town holds no point of its own since the checkpoint's review: the ZIP code area it stands for, which is one of the file's.
+    const held = new Set(zipEntries.map(([zip]) => zip))
+    for (const [town, zip] of townEntries) expect(held.has(zip), town).toBe(true)
+    for (const [key, north, west] of zipEntries) {
       expect(north, key).toMatch(/^\d{5}$/)
       expect(west, key).toMatch(/^\d{5}$/)
       const latitude = Number(north) / 1000

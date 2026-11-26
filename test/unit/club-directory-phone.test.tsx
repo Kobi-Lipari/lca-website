@@ -137,10 +137,51 @@ describe('the phone layout with a map', () => {
     const { map } = await drawWithMap()
     fireEvent.click(within(sheet()).getByRole('button', { name: words.SHOW_LIST }))
     act(() => card('c').focus())
-    act(() => screen.getByRole('button', { name: words.A_TO_Z }).focus())
+    // Real boxes, since checkpoint Y's review, so the case tells a control above the sheet from one it covers: the sheet's
+    // top at 400, A to Z's foot at 300, above it, and then at 500, under it.
+    const box = (top: number, bottom: number) => ({ top, bottom, left: 0, right: 0, width: 0, height: bottom - top, x: 0, y: top, toJSON() {} }) as DOMRect
+    vi.spyOn(sheet(), 'getBoundingClientRect').mockReturnValue(box(400, 800))
+    const aToZ = screen.getByRole('button', { name: words.A_TO_Z })
+    const aToZBox = vi.spyOn(aToZ, 'getBoundingClientRect').mockReturnValue(box(256, 300))
+    act(() => aToZ.focus())
+    expect(sheet().getAttribute('data-sheet')).toBe('full')
+    act(() => card('c').focus())
+    aToZBox.mockReturnValue(box(456, 500))
+    act(() => aToZ.focus())
+    expect(sheet().getAttribute('data-sheet')).toBe('low')
+    fireEvent.click(within(sheet()).getByRole('button', { name: words.SHOW_LIST }))
     expect(sheet().getAttribute('data-sheet')).toBe('full')
     act(() => within(map).getByRole('button', { name: 'Example A Club, Example City' }).focus())
     expect(sheet().getAttribute('data-sheet')).toBe('low')
+  })
+
+  it('scrolls a control that takes the focus under the low sheet up clear of it, and moves nothing for the sheet\'s own', async () => {
+    await drawWithMap()
+    const box = (top: number, bottom: number) => ({ top, bottom, left: 0, right: 0, width: 0, height: bottom - top, x: 0, y: top, toJSON() {} }) as DOMRect
+    vi.spyOn(sheet(), 'getBoundingClientRect').mockReturnValue(box(400, 600))
+    const scrolledBy = vi.spyOn(window, 'scrollBy').mockImplementation(() => {})
+    const skip = screen.getByRole('link', { name: words.SKIP_TO_LIST })
+    vi.spyOn(skip, 'getBoundingClientRect').mockReturnValue(box(456, 500))
+    act(() => skip.focus())
+    expect(scrolledBy).toHaveBeenLastCalledWith({ top: 108, behavior: 'instant' })
+    scrolledBy.mockClear()
+    const aToZ = screen.getByRole('button', { name: words.A_TO_Z })
+    vi.spyOn(aToZ, 'getBoundingClientRect').mockReturnValue(box(300, 344))
+    act(() => aToZ.focus())
+    expect(scrolledBy).not.toHaveBeenCalled()
+    act(() => within(sheet()).getByRole('button', { name: words.SHOW_LIST }).focus())
+    expect(scrolledBy).not.toHaveBeenCalled()
+  })
+
+  it('brings its list back to the top when the focus moving to something the full sheet covers lowers it', async () => {
+    const { map } = await drawWithMap()
+    fireEvent.click(within(sheet()).getByRole('button', { name: words.SHOW_LIST }))
+    const scroller = sheet().querySelector<HTMLElement>('[class*="overflow-y-auto"]')!
+    scroller.scrollTop = 120
+    expect(scroller.scrollTop).toBe(120)
+    act(() => within(map).getByRole('button', { name: 'Example A Club, Example City' }).focus())
+    expect(sheet().getAttribute('data-sheet')).toBe('low')
+    expect(scroller.scrollTop).toBe(0)
   })
 
   it('Skip to the list gives the focus to the sheet and leaves the address and the rest as they are', async () => {

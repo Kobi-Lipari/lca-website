@@ -5,8 +5,9 @@
 // with either switch off it draws today's ClubsPage, as it always has, and
 // never fetches this page or the directory.
 //
-// This page asks for the list once, through getClubs(), the one call to the
-// list, and chooses by its answer (src/areas/clubs/directoryRows.ts): the Clubs
+// This page asks for the list once, through getClubsFromOrigin(), the same
+// call to the list as getClubs() with only the site's origin as the referrer
+// (the address can hold a ZIP code), and chooses by its answer (src/areas/clubs/directoryRows.ts): the Clubs
 // directory (src/areas/clubs/components/ClubDirectory.tsx) when the answer
 // has the directory's shape, which the server sends only with CLUB_PAGES_ON
 // set, and today's ClubsPage, whole, when it is today's, so the site never
@@ -14,7 +15,7 @@
 // fetched only when it is drawn. Today's page asks for the list itself, as
 // it always has.
 //
-// It takes getClubs() through '@/lib/api', as today's Clubs page does: so
+// It takes the call through '@/lib/api', as today's Clubs page does: so
 // the sign-in library stays in the main script, where a direct import of
 // the clubs module put it in a file of its own in a local build.
 //
@@ -23,7 +24,7 @@
 // an endless spinner.
 import { Suspense, lazy, useEffect, useState } from 'react'
 
-import { getClubs, type ApiClubDirectoryItem } from '@/lib/api'
+import { getClubsFromOrigin, type ApiClubDirectoryItem } from '@/lib/api'
 import { directoryRowsOf } from '@/areas/clubs/directoryRows'
 import { DIRECTORY_TITLE, FAILED, LOADING, SLOW, SLOW_AFTER_MS, TRY_AGAIN } from '@/areas/clubs/directoryWords'
 import { usePageTitle } from '@/hooks/usePageTitle'
@@ -68,7 +69,7 @@ export function ClubsIndexPage() {
     const slow = window.setTimeout(() => {
       if (current) setState((now) => (now.kind === 'loading' ? { kind: 'loading', slow: true } : now))
     }, SLOW_AFTER_MS)
-    getClubs()
+    getClubsFromOrigin()
       .then((rows) => {
         const clubs = directoryRowsOf(rows)
         if (current) setState(clubs ? { kind: 'directory', clubs } : { kind: 'today' })

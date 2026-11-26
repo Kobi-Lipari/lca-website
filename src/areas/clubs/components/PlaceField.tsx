@@ -13,11 +13,17 @@
 //     value of the answer's callback, kept in no state, no storage and no log
 //     line, and sent in no request. A second press while the device is asked
 //     does nothing more. A device that will not say, a browser that cannot
-//     ask, a device slower than ten seconds and a point outside Louisiana are
-//     each passed on as words, and the focus comes back to the field, so no
-//     one waits on a spinner.
-//   - Once a place is known, the pill "Near you: {town} {ZIP}" with its
-//     button "Clear location".
+//     ask and a point outside Louisiana are each passed on as words, and the
+//     focus comes back to the field, so no one waits on a spinner. Ten
+//     seconds without an answer are passed on as words too, with the focus
+//     left where it is, since the person may still be answering the
+//     browser's own question; the ask stays open, and a position that comes
+//     after them is passed on as if it had come in time (the directory lets
+//     it go once a place has been typed, chosen or cleared since), while a
+//     late refusal or failure passes on nothing.
+//   - Once a place is known, the pill "Near you: {town} {ZIP}", or "Near you:
+//     {ZIP}" for a ZIP code area with no town, with its button "Clear
+//     location".
 import { useEffect, useId, useRef, type RefObject } from 'react'
 import { Navigation, X } from 'lucide-react'
 
@@ -45,8 +51,8 @@ export function PlaceField({ text, onText, onEnter, place, onClearPlace, onDevic
   onText: (text: string) => void
   /** Enter was pressed in the field: read it now, without waiting for the pause. */
   onEnter: () => void
-  /** The place the list is ordered from, as the pill words it, or null. */
-  place: { town: string; zip: string } | null
+  /** The place the list is ordered from, as the pill words it (its town null for a ZIP code area with none), or null. */
+  place: { town: string | null; zip: string } | null
   onClearPlace: () => void
   /** What Near me found. */
   onDevice: (answer: DeviceAnswer) => void
@@ -58,6 +64,8 @@ export function PlaceField({ text, onText, onEnter, place, onClearPlace, onDevic
   // The ask that is on its way, by its number, so a late answer to an earlier ask is let go; and the timer that stops the wait.
   const asks = useRef(0)
   const waiting = useRef(false)
+  // True once the ten seconds have run out on the ask that is on its way, which a position may still answer.
+  const late = useRef(false)
   const timer = useRef<number | undefined>(undefined)
 
   useEffect(() => () => {
@@ -73,12 +81,23 @@ export function PlaceField({ text, onText, onEnter, place, onClearPlace, onDevic
     window.clearTimeout(timer.current)
   }, [asking])
 
-  function finish(ask: number, answer: DeviceAnswer) {
-    if (ask !== asks.current || !waiting.current) return
+  /** The answer to an ask, passed on once; `byClock` when it is the page's own ten seconds that ran out. */
+  function finish(ask: number, answer: DeviceAnswer, byClock = false) {
+    if (ask !== asks.current) return
+    if (!waiting.current) {
+      // After the ten seconds, a position is passed on as if it had come in time; a late refusal or failure, nothing.
+      if (!late.current || (answer.kind !== 'zip' && answer.kind !== 'outside')) return
+      late.current = false
+      onDevice(answer)
+      if (answer.kind === 'outside') fieldRef.current?.focus()
+      return
+    }
     waiting.current = false
     window.clearTimeout(timer.current)
+    late.current = byClock
     onDevice(answer)
-    if (answer.kind !== 'zip') fieldRef.current?.focus()
+    // The page's own ten seconds leave the focus where it is: the person may still be answering the browser's question.
+    if (answer.kind !== 'zip' && !byClock) fieldRef.current?.focus()
   }
 
   function nearMe() {
@@ -92,9 +111,10 @@ export function PlaceField({ text, onText, onEnter, place, onClearPlace, onDevic
     asks.current += 1
     const ask = asks.current
     waiting.current = true
+    late.current = false
     onDevice({ kind: 'asking' })
     // The browser's own timeout starts only once the person has allowed the ask, so the page keeps a clock of its own as well.
-    timer.current = window.setTimeout(() => finish(ask, { kind: 'slow' }), DEVICE_WAIT_MS)
+    timer.current = window.setTimeout(() => finish(ask, { kind: 'slow' }, true), DEVICE_WAIT_MS)
     try {
       geolocation.getCurrentPosition(
         (position) => {

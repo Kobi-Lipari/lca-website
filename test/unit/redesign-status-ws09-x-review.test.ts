@@ -284,14 +284,15 @@ describe('the sentences the review showed false, each corrected in its own block
 
 describe('the Status and PR lines', () => {
   it('say what is true on the day: checkpoint X built and reviewed and waiting for its own pull request, checkpoint W in draft pull request 154, and the question marks\' words in pull request 151', () => {
-    expect(statusLine).toContain('checkpoint X, steps 25 to 31, is built and reviewed on `redesign/ws09-clubs-x`, cut from checkpoint W\'s head, holds checkpoint W and `main` as it stands, at `85f20ec`, and waits for its own draft pull request and K\'s word')
+    // Since checkpoint Y's review checkpoint X waits in draft pull request 158 (ruling D11).
+    expect(statusLine).toContain('checkpoint X, steps 25 to 31, is built and reviewed on `redesign/ws09-clubs-x`, cut from checkpoint W\'s head, holds checkpoint W and `main` as it stands, at `85f20ec`, and waits in draft pull request 158 for K\'s word')
     expect(statusLine).not.toContain('checkpoint X is under way')
     const tail = statusLine.slice(statusLine.lastIndexOf('; ') + 2)
     if (latest) expect(tail).toContain('checkpoint W taken into checkpoint X a third time, after the board seats, checkpoint X\'s review and its fixes, K\'s answers')
     expect(tail).toMatch(/\bbuilt\.$/)
     expect(statusLine).toContain('waits in draft pull request 154 for K\'s word')
     expect(prLine).toContain('checkpoint W, steps 20 to 24, is built and reviewed on `redesign/ws09-clubs-w` and waits in draft pull request 154 for K\'s word for its merge')
-    expect(prLine).toContain('checkpoint X, steps 25 to 31, is built and reviewed on `redesign/ws09-clubs-x`, holds checkpoint W and `main` at `85f20ec`, and waits for its own draft pull request and K\'s word for its merge')
+    expect(prLine).toContain('checkpoint X, steps 25 to 31, is built and reviewed on `redesign/ws09-clubs-x`, holds checkpoint W and `main` at `85f20ec`, and waits in draft pull request 158 for K\'s word for its merge')
     expect(prLine).toContain('the question marks\' words, K\'s note on the bubbles, wait in pull request 151 for K\'s word.')
     expect(prLine.endsWith('.')).toBe(true)
   })
