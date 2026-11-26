@@ -232,7 +232,8 @@ describe('REDESIGN_STATUS.md, the thirtieth step of WS09: the block', () => {
     for (const file of [...NEW_FILES, ...Object.keys(NEW_TESTS), FIXTURE]) expect(existsSync(join(ROOT, file)), file).toBe(true)
     for (const [file, count] of Object.entries(NEW_TESTS)) {
       expect(writtenCount(files, file), file).toBe(count)
-      expect(casesIn(file), file).toBe(count + (X_REVIEW_ADDED[file] ?? 0))
+      // WS09 step 32 added four cases to the place file's test, for the points file; the block keeps this step's count.
+      expect(casesIn(file), file).toBe(count + (X_REVIEW_ADDED[file] ?? 0) + (file === 'test/unit/la-places.test.ts' ? 4 : 0))
     }
     expect(writtenCount(files, SELF)).toBe((read(SELF).match(/^\s*it\(/gm) ?? []).length)
     const grown = bullet(files, '  - Grown with no change:')

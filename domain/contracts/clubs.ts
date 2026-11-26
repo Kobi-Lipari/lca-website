@@ -49,10 +49,38 @@ export const clubListItemSchema = z.strictObject({
   longitude: z.number().nullable(),
 })
 
-/** GET /api/clubs (getClubs). Public; every club, whoever asks. */
+/** GET /api/clubs (getClubs) with CLUB_PAGES_ON unset, as it ships. Public; every club, whoever asks. */
 export const clubListResponseSchema = z.strictObject({
   clubs: z.array(clubListItemSchema),
 })
+
+/**
+ * One club in GET /api/clubs while CLUB_PAGES_ON is set (WS09 step 32), what
+ * the new directory reads: the nine columns above, unchanged and in their
+ * order, then the address part of the club's page (its slug, or its id while
+ * it has none), how the club meets in its own words or null, the club's
+ * description for a club with no statement (null for one with a statement),
+ * the club's point (its first place's, or today's pin while it has no place,
+ * or null) and the two ticks of Who is welcome. No keeper, no seat, no
+ * person's name and no address of any kind (K's decision 12).
+ */
+export const clubDirectoryItemSchema = z.strictObject({
+  ...clubListItemSchema.shape,
+  slug: z.string(),
+  statement: z.string().nullable(),
+  description: z.string().nullable(),
+  point: z.strictObject({ latitude: z.number(), longitude: z.number() }).nullable(),
+  weekend_play: z.boolean(),
+  scholastic_friendly: z.boolean(),
+})
+
+/** GET /api/clubs while CLUB_PAGES_ON is set: the same clubs, A to Z by name, each with the directory's keys. */
+export const clubDirectoryResponseSchema = z.strictObject({
+  clubs: z.array(clubDirectoryItemSchema),
+})
+
+/** GET /api/clubs in either of its two shapes: today's, or the directory's while CLUB_PAGES_ON is set. */
+export const clubsAnswerSchema = z.union([clubListResponseSchema, clubDirectoryResponseSchema])
 
 /**
  * One of the club's visible events on its page, newest first: the columns
@@ -93,6 +121,8 @@ export const clubDetailResponseSchema = z.strictObject({
 })
 
 export type ClubListResponse = z.infer<typeof clubListResponseSchema>
+export type ClubDirectoryItem = z.infer<typeof clubDirectoryItemSchema>
+export type ClubDirectoryResponse = z.infer<typeof clubDirectoryResponseSchema>
 export type ClubDetailResponse = z.infer<typeof clubDetailResponseSchema>
 
 // ── The admin club endpoints: GET and PATCH /api/admin/clubs/[id] and PUT

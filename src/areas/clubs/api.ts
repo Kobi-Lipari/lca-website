@@ -17,6 +17,7 @@ import type {
   ClubReportActionRequest, ClubReportActionResponse, ClubSuggestionRequest, ClubSuggestionResponse, OpenSuggestion,
   ClubRequest, ClubRequestHandledResponse, ClubRequestResponse,
   RepDecisionRequest, RepDecisionResponse, RepRequest, RepRequestResponse, RepRequestRow,
+  ClubDirectoryItem,
 } from '@domain/contracts'
 
 export interface ApiClubDetail {
@@ -73,6 +74,14 @@ export interface ApiClubListItem {
   latitude?: number | null
   longitude?: number | null
 }
+
+/**
+ * One club of GET /api/clubs while CLUB_PAGES_ON is set on the server (WS09
+ * step 32): today's fields and the directory's after them. No call reads it
+ * yet: getClubs() keeps today's type, ApiClubListItem, so every caller of
+ * the list reads today's fields alone and the directory's keys pass them by.
+ */
+export type ApiClubDirectoryItem = ClubDirectoryItem
 
 export async function getClubs(): Promise<ApiClubListItem[]> {
   const response = await fetch('/api/clubs')

@@ -14,6 +14,13 @@
 // - and no file under src/ or workers/ imports the place file, the parish
 //   table or the lookup, so neither the site's scripts nor the daily-emails
 //   worker carry them.
+// Since WS09 step 32 the script writes the points file too,
+// domain/clubs/laPoints.ts, from the same files: a point for exactly the
+// places the place file holds, kept to three decimal places, the same four
+// files named in its header. With LA_PLACES_DOWNLOADS naming a folder of the
+// Census Bureau's files, the script is run on them and must write both
+// committed files byte for byte; with it unset, as in every run of the
+// suite, that one case checks the headers alone.
 // The ZIP codes and town names are Louisiana's own, the data under test.
 import { mkdtempSync, readFileSync, readdirSync, statSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
@@ -22,9 +29,10 @@ import { describe, expect, it } from 'vitest'
 import { REGIONS } from '../../domain/clubs/regions'
 import { PARISH_REGIONS, PICAYUNE_COUNTY, PICAYUNE_ZIP } from '../../domain/clubs/parishRegions'
 import { TOWNS_BY_REGION, ZIPS_BY_REGION } from '../../domain/clubs/laPlaces'
+import { TOWN_POINTS, ZIP_POINTS } from '../../domain/clubs/laPoints'
 import { placeKey, readTypedPlace } from '../../domain/clubs/placeNames'
 import { regionOfPlace } from '../../functions/utils/clubs/places'
-import { build } from '../../scripts/data/build-la-places'
+import { build, buildPoints } from '../../scripts/data/build-la-places'
 
 const ROOT = resolve(__dirname, '../..')
 const read = (path: string) => readFileSync(join(ROOT, path), 'utf8')
@@ -154,6 +162,64 @@ describe('the script', () => {
     expect(once).not.toContain('39470')
     expect(once).toContain('\'example city\'')
     expect(once).toContain('\'picayune|st example\'')
+  })
+})
+
+describe('the points file', () => {
+  const entries = (lines: readonly string[]) => lines.flatMap((line) => line.split('|')).map((entry) => entry.split(':'))
+  const sourceLines = (text: string) => text.split('\n').filter((line) => /^\/\/ {3}\S+: [\d,]+ bytes, sha256 [0-9a-f]{64}$/.test(line))
+
+  it('holds a point for exactly the ZIP code areas and the towns the place file holds, each once, to three decimal places', () => {
+    const zipEntries = entries(ZIP_POINTS)
+    const townEntries = entries(TOWN_POINTS)
+    expect(zipEntries.map(([zip]) => zip).sort()).toEqual(zips.flat().sort())
+    expect(townEntries.map(([town]) => town).sort()).toEqual(towns.flat().sort())
+    for (const [key, north, west] of [...zipEntries, ...townEntries]) {
+      expect(north, key).toMatch(/^\d{5}$/)
+      expect(west, key).toMatch(/^\d{5}$/)
+      // Louisiana, and Picayune over the line: between 28 and 34 degrees north and 88 and 95 west.
+      expect(Number(north) / 1000, key).toBeGreaterThan(28)
+      expect(Number(north) / 1000, key).toBeLessThan(34)
+      expect(Number(west) / 1000, key).toBeGreaterThan(88)
+      expect(Number(west) / 1000, key).toBeLessThan(95)
+    }
+    // Picayune's town lies at its ZIP code area's point, as the gazetteer of places cannot hold it.
+    const picayuneZip = zipEntries.find(([zip]) => zip === PICAYUNE_ZIP)!
+    expect(townEntries.find(([town]) => town === 'picayune')!.slice(1)).toEqual(picayuneZip.slice(1))
+  })
+
+  it('names the same four files, sizes and sha256 as the place file, stays under 24,000 bytes and imports nothing', () => {
+    const points = read('domain/clubs/laPoints.ts')
+    expect(sourceLines(points)).toHaveLength(4)
+    expect(sourceLines(points)).toEqual(sourceLines(read('domain/clubs/laPlaces.ts')))
+    expect(Buffer.byteLength(points)).toBeLessThan(24000)
+    expect(points).not.toMatch(/^\s*import\s/m)
+    for (const region of REGIONS) expect(points).not.toContain(region)
+  })
+
+  it('is written by the script from the same files, the same bytes twice, the place file unchanged beside it', () => {
+    const dir = mkdtempSync(join(tmpdir(), 'la-points-'))
+    writeFileSync(join(dir, '2024_Gaz_zcta_national.txt'), 'GEOID\tALAND\tAWATER\tALAND_SQMI\tAWATER_SQMI\tINTPTLAT\tINTPTLONG\n70001\t1\t0\t0\t0\t29.98049\t-90.17\n39466\t1\t0\t0\t0\t30.52\t-89.68\n')
+    writeFileSync(join(dir, '2024_gaz_place_22.txt'), 'USPS\tGEOID\tANSICODE\tNAME\tLSAD\tFUNCSTAT\tALAND\tAWATER\tALAND_SQMI\tAWATER_SQMI\tINTPTLAT\tINTPTLONG\nLA\t1\t1\tExample City city\t25\tA\t1\t0\t0\t0\t29.9911\t-90.1604\n')
+    const header = 'OID_ZCTA5_20|GEOID_ZCTA5_20|NAMELSAD_ZCTA5_20|AREALAND_ZCTA5_20|AREAWATER_ZCTA5_20|MTFCC_ZCTA5_20|CLASSFP_ZCTA5_20|FUNCSTAT_ZCTA5_20|OID_COUNTY_20|GEOID_COUNTY_20|NAMELSAD_COUNTY_20|AREALAND_COUNTY_20|AREAWATER_COUNTY_20|MTFCC_COUNTY_20|CLASSFP_COUNTY_20|FUNCSTAT_COUNTY_20|AREALAND_PART|AREAWATER_PART'
+    const part = (zip: string, county: string) => `1|${zip}|ZCTA5 ${zip}|0|0|G6350|B5|S|1|${county}|Example County|0|0|G4020|H1|A|10|0`
+    writeFileSync(join(dir, 'tab20_zcta520_county20_natl.txt'), `${header}\n${[part('70001', '22051'), part('39466', '28109')].join('\n')}\n`)
+    const places = build(dir)
+    const once = buildPoints(dir)
+    expect(buildPoints(dir)).toBe(once)
+    expect(build(dir)).toBe(places)
+    expect(once).toContain('\'39466:30520:89680|70001:29980:90170\'')
+    expect(once).toContain('\'example city:29991:90160|picayune:30520:89680\'')
+    expect(sourceLines(once)).toEqual(sourceLines(places))
+  })
+
+  it('writes both committed files byte for byte from the downloads, when LA_PLACES_DOWNLOADS names their folder', () => {
+    const folder = process.env.LA_PLACES_DOWNLOADS
+    if (folder) {
+      expect(build(folder)).toBe(read('domain/clubs/laPlaces.ts'))
+      expect(buildPoints(folder)).toBe(read('domain/clubs/laPoints.ts'))
+    }
+    expect(sourceLines(read('domain/clubs/laPoints.ts'))).toEqual(sourceLines(read('domain/clubs/laPlaces.ts')))
   })
 })
 

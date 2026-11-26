@@ -32,11 +32,18 @@
 //     case, no full stops, St. for Saint), without the Census Bureau's last
 //     word (city, town, village or CDP). Two places of one name in different
 //     regions leave that name out, so it is not found.
-// No point is written: nothing reads one yet.
+// The place file holds no point. The same run writes a second file when it
+// is given a second name, domain/clubs/laPoints.ts (WS09 step 32), with the
+// point of each ZIP code area and each town the place file holds, for the
+// nearest ZIP code the Clubs page finds in the browser
+// (domain/clubs/nearZip.ts): each ZIP code area's point from the gazetteer
+// of ZIP code areas, each town's from the gazetteer of places, and
+// Picayune's, which that gazetteer cannot hold, from its ZIP code area's.
+// Each point is kept to three decimal places, about a hundred metres.
 //
 // Usage, from the repository's root:
 //   node --no-warnings --experimental-strip-types --import ./scanner/sandbox/register.mjs \
-//     scripts/data/build-la-places.ts <folder of the downloads> <file to write>
+//     scripts/data/build-la-places.ts <folder of the downloads> <file to write> [<points file to write>]
 // It writes the same bytes each time it is run on the same files.
 import { createHash } from 'node:crypto'
 import { existsSync, readFileSync, statSync, writeFileSync } from 'node:fs'
@@ -100,7 +107,21 @@ function wrap(words: string[], joiner: string, width: number): string[] {
   return lines
 }
 
-export function build(folder: string): string {
+/** What the three files give, worked out once for both of the files the script writes. */
+interface Worked {
+  /** Each kept ZIP code area's region, by its index in REGIONS. */
+  zipRegion: Map<string, number>
+  /** The points of the kept areas, by ZIP code. */
+  zipPoints: Array<{ zip: string; point: Point }>
+  /** Each town's name, as placeKey writes it, with the regions of the places of that name. */
+  townRegions: Map<string, Set<number>>
+  /** Each town's point: the first place of its name in the gazetteer, and Picayune's area's for Picayune. */
+  townPoints: Map<string, Point>
+  /** The header's lines naming the files read, with their sizes and sha256. */
+  sources: string[]
+}
+
+function work(folder: string): Worked {
   const regionOf = new Map<string, number>()
   for (const parish of [...PARISH_REGIONS, PICAYUNE_COUNTY]) regionOf.set(parish.fips, REGIONS.indexOf(parish.region))
 
@@ -138,11 +159,13 @@ export function build(folder: string): string {
   zipPoints.sort((a, b) => byText(a.zip, b.zip))
 
   const townRegions = new Map<string, Set<number>>()
-  const addTown = (name: string, region: number) => {
+  const townPoints = new Map<string, Point>()
+  const addTown = (name: string, region: number, point: Point) => {
     const key = placeKey(name)
     const set = townRegions.get(key) ?? new Set<number>()
     set.add(region)
     townRegions.set(key, set)
+    if (!townPoints.has(key)) townPoints.set(key, point)
   }
   for (const cells of rows(join(folder, PLACES), '\t')) {
     const name = cells[3].replace(PLACE_KIND, '')
@@ -156,10 +179,21 @@ export function build(folder: string): string {
         bestMiles = d
       }
     }
-    addTown(name, zipRegion.get(best.zip)!)
+    addTown(name, zipRegion.get(best.zip)!, point)
   }
-  addTown(PICAYUNE_TOWN, zipRegion.get(PICAYUNE_ZIP)!)
+  const picayune = zipPoints.find((area) => area.zip === PICAYUNE_ZIP)
+  if (!picayune) throw new Error('Picayune\'s ZIP code area has no point')
+  addTown(PICAYUNE_TOWN, zipRegion.get(PICAYUNE_ZIP)!, picayune.point)
 
+  const sources = [ZCTA_ZIP, ZCTA_POINTS, PLACES, ZCTA_COUNTIES].filter((name) => existsSync(join(folder, name))).map((name) => `//   ${described(join(folder, name))}`)
+  return { zipRegion, zipPoints, townRegions, townPoints, sources }
+}
+
+const quoted = (lines: string[]) => lines.map((line) => `    '${line.replace(/\\/g, '\\\\').replace(/'/g, '\\\'')}',`).join('\n')
+
+/** The place file, domain/clubs/laPlaces.ts. */
+export function build(folder: string): string {
+  const { zipRegion, townRegions, sources } = work(folder)
   const shared = [...townRegions].filter(([, set]) => set.size > 1).map(([key]) => key).sort(byText)
   const zipsBy = REGIONS.map(() => [] as string[])
   for (const [zip, region] of zipRegion) zipsBy[region].push(zip)
@@ -167,8 +201,6 @@ export function build(folder: string): string {
   for (const [key, set] of townRegions) if (set.size === 1) townsBy[[...set][0]].push(key)
   for (const list of [...zipsBy, ...townsBy]) list.sort(byText)
 
-  const sources = [ZCTA_ZIP, ZCTA_POINTS, PLACES, ZCTA_COUNTIES].filter((name) => existsSync(join(folder, name))).map((name) => `//   ${described(join(folder, name))}`)
-  const quoted = (lines: string[]) => lines.map((line) => `    '${line.replace(/\\/g, '\\\\').replace(/'/g, '\\\'')}',`).join('\n')
   const zipCount = zipRegion.size
   const townCount = townsBy.reduce((sum, list) => sum + list.length, 0)
   return [
@@ -203,13 +235,68 @@ export function build(folder: string): string {
   ].join('\n')
 }
 
+/** A coordinate in thousandths of a degree, rounded: about a hundred metres. */
+function thousandths(degrees: number): number {
+  return Math.round(degrees * 1000)
+}
+
+/** A point as the points file writes it: the latitude north and the longitude west, each in thousandths of a degree. */
+function pointText(point: Point): string {
+  const north = thousandths(point.lat)
+  const west = -thousandths(point.lon)
+  if (!(north > 0 && west > 0)) throw new Error(`A point outside the north and west of the map: ${point.lat}, ${point.lon}`)
+  return `${north}:${west}`
+}
+
+/** The points file, domain/clubs/laPoints.ts: the point of every ZIP code area and every town the place file holds. */
+export function buildPoints(folder: string): string {
+  const { zipPoints, townRegions, townPoints, sources } = work(folder)
+  const zips = zipPoints.map(({ zip, point }) => `${zip}:${pointText(point)}`)
+  const towns = [...townRegions].filter(([, set]) => set.size === 1).map(([key]) => key).sort(byText)
+  const townEntries = towns.map((key) => `${key}:${pointText(townPoints.get(key)!)}`)
+  return [
+    '// domain/clubs/laPoints.ts',
+    '//',
+    '// Made by scripts/data/build-la-places.ts and committed; not to be edited by',
+    '// hand. The points of the places domain/clubs/laPlaces.ts holds, for the',
+    '// nearest ZIP code the Clubs page finds in the browser (domain/clubs/nearZip.ts,',
+    `// WS09 step 32): ${zips.length} ZIP code areas' points and ${townEntries.length} towns' points, and no region.`,
+    '// A place typed or read from the device is looked up here, in the browser, and',
+    '// never sent anywhere.',
+    '//',
+    '// Each entry is a ZIP code or a town\'s name (as placeKey writes it), then the',
+    '// latitude north and the longitude west, each in thousandths of a degree',
+    '// (about a hundred metres), joined by colons; the entries are joined by a bar.',
+    '// A ZIP code area\'s point and a town\'s are the Census Bureau\'s point inside',
+    '// it; Picayune\'s is its ZIP code area\'s.',
+    '//',
+    '// Made from these public files of the Census Bureau, from www2.census.gov:',
+    ...sources,
+    '',
+    '/** Each ZIP code area\'s point, "70001:29983:90169", entries joined by a bar. */',
+    'export const ZIP_POINTS: readonly string[] = [',
+    quoted(wrap(zips, '|', 96)).replace(/^ {2}/gm, ''),
+    ']',
+    '',
+    '/** Each town\'s point, "baton rouge:30440:91133", entries joined by a bar. */',
+    'export const TOWN_POINTS: readonly string[] = [',
+    quoted(wrap(townEntries, '|', 96)).replace(/^ {2}/gm, ''),
+    ']',
+    '',
+  ].join('\n')
+}
+
 const isMain = process.argv[1] && import.meta.url.endsWith(basename(process.argv[1]))
 if (isMain) {
-  const [folder, out] = process.argv.slice(2)
+  const [folder, out, pointsOut] = process.argv.slice(2)
   if (!folder || !out) {
-    console.error('Usage: build-la-places.ts <folder of the downloads> <file to write>')
+    console.error('Usage: build-la-places.ts <folder of the downloads> <file to write> [<points file to write>]')
     process.exit(1)
   }
   writeFileSync(out, build(folder))
   console.log(`Wrote ${out}`)
+  if (pointsOut) {
+    writeFileSync(pointsOut, buildPoints(folder))
+    console.log(`Wrote ${pointsOut}`)
+  }
 }

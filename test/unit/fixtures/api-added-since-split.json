@@ -28,6 +28,7 @@
     "/api/workspace/region"
   ],
   "exports": {
+    "ApiClubDirectoryItem": "clubs",
     "ApiClubListing": "clubs",
     "ApiClubPlace": "clubs",
     "ApiEmailChoices": "membership",

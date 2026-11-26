@@ -31,17 +31,35 @@ export interface NearbyClub {
   distance: string
 }
 
-interface PointRow {
+interface PointRow extends FirstPlaceColumns {
   id: string
   name: string
   city: string
   slug: string | null
   how_we_meet_text: string | null
+}
+
+/**
+ * The join that reads each club's first place beside it, as p, in the
+ * editor's order; the club is c. The directory's list (functions/utils/clubs/directory.ts,
+ * WS09 step 32) reads its points through it too, so a club's card and its
+ * page put the club at one point.
+ */
+export const FIRST_PLACE_JOIN = `LEFT JOIN club_places p
+           ON p.id = (SELECT q.id FROM club_places q WHERE q.club_id = c.id ORDER BY q.sort, q.id LIMIT 1)`
+
+/** The columns of a row read through FIRST_PLACE_JOIN that firstPlacePoint reads. */
+export interface FirstPlaceColumns {
   place_id: number | null
   place_latitude: number | null
   place_longitude: number | null
   latitude: number | null
   longitude: number | null
+}
+
+/** A club's point by the rule above: its first place's, or today's pin while it has no place at all; null when that has none. */
+export function firstPlacePoint(row: FirstPlaceColumns): MapPoint | null {
+  return row.place_id === null ? pointOf(row.latitude, row.longitude) : pointOf(row.place_latitude, row.place_longitude)
 }
 
 /** Each club's point by the rule above, read once for every club. */
@@ -52,14 +70,10 @@ async function clubPoints(db: D1Database): Promise<Array<{ row: PointRow; point:
               p.id AS place_id, p.latitude AS place_latitude, p.longitude AS place_longitude,
               c.latitude, c.longitude
          FROM clubs c
-         LEFT JOIN club_places p
-           ON p.id = (SELECT q.id FROM club_places q WHERE q.club_id = c.id ORDER BY q.sort, q.id LIMIT 1)`,
+         ${FIRST_PLACE_JOIN}`,
     )
     .all<PointRow>()
-  return (results ?? []).map((row) => ({
-    row,
-    point: row.place_id === null ? pointOf(row.latitude, row.longitude) : pointOf(row.place_latitude, row.place_longitude),
-  }))
+  return (results ?? []).map((row) => ({ row, point: firstPlacePoint(row) }))
 }
 
 /** The clubs nearest the club, nearest first; none when the club itself has no point. */

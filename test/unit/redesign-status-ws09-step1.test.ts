@@ -395,9 +395,11 @@ describe('REDESIGN_STATUS.md, WS09 step 1: its claims against the files', () => 
   it('lists as new only files that exist, each with as many cases as the Files bullet gives it and free of a dash, a tool\'s name, the two letters on their own and the old initials', () => {
     const files = bullet(block, '- **Files.**')
     for (const file of [...NEW_FILES, ...CHANGED, ...CHANGED_TESTS]) expect(existsSync(join(ROOT, file)), file).toBe(true)
+    // WS09 step 32 added two cases to the contract test, for the list's second branch; the block keeps this step's count.
+    const step32Added: Record<string, number> = { 'test/integration/contracts/clubs.test.ts': 2 }
     for (const file of NEW_FILES) {
       const written = Number(new RegExp(`\`${escape(file)}\` \\((\\d+): `).exec(files)?.[1])
-      expect(written, file).toBe((read(file).match(/^\s*it\(/gm) ?? []).length)
+      expect(written, file).toBe((read(file).match(/^\s*it\(/gm) ?? []).length - (step32Added[file] ?? 0))
     }
     for (const file of NEW_FILES) {
       const text = read(file)

@@ -29,10 +29,11 @@
 // the app's page gives them (PAGE_SECTION_IDS there), so a shared section
 // link names its section before any script, and how the club meets keeps the
 // club's single line breaks as <br> (checkpoint W's review).
-import { clubPageDescription, clubPageTitle, SITE_NAME } from '../../../domain/clubs/pageMeta'
+import { clubPageTitle, SITE_NAME } from '../../../domain/clubs/pageMeta'
 import {
   ABOUT_LABELS, ABOUT_TICKS, CONTACT_HEADING, CONTACT_WRITTEN_LINE, EVENTS_HEADING, PAGE_SECTION_IDS, aboutHeading, cityLine, eventDates, whenAndWhereHeading,
 } from '../../../domain/clubs/pageWords'
+import { clubDescription } from '../../../domain/clubs/description'
 import { isFacebookAddress } from '../../../domain/clubs/facebook'
 import type { ClubPageResponse } from '../../../domain/contracts/clubPage'
 
@@ -109,8 +110,7 @@ export function pageTitle(answer: ClubPageResponse): string {
  * has written neither, the line under its name, cut by the same rule.
  */
 export function pageDescription(answer: ClubPageResponse): string {
-  const own = clubPageDescription(answer.about.text, answer.statement.text)
-  return own || clubPageDescription(cityLine(answer.club.city, answer.club.region), null)
+  return clubDescription(answer.about.text, answer.statement.text, answer.club.city, answer.club.region)
 }
 
 /** A value written into a JSON-LD block: JSON with every "<", ">", "&" and line separator escaped. */

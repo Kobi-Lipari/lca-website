@@ -20,7 +20,7 @@ import {
   clubLinkConfirmRequestSchema,
   clubLinkConfirmResponseSchema,
   clubLinkResponseSchema,
-  clubListResponseSchema,
+  clubsAnswerSchema,
   clubPlacesRequestSchema,
   clubPlacesResponseSchema,
   monthlyCheckAnswerSchema,
@@ -203,7 +203,7 @@ export const contracts = {
     GET: { query: clearinghouseQuerySchema, response: clearinghouseResponseSchema },
   },
   clubs: {
-    GET: { response: clubListResponseSchema },
+    GET: { response: clubsAnswerSchema },
   },
   'clubs/[id]': {
     GET: { response: clubDetailResponseSchema },
