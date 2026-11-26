@@ -23,7 +23,7 @@ import { cn } from '@/lib/utils'
 import { usePageTitle } from '@/hooks/usePageTitle'
 import { LCA } from '@/lib/brand'
 import { ViewOnlyFieldset, ViewOnlyNote } from '@/lib/viewOnly'
-import { keepersOn, regionEventsOn } from '@/areas/clubs/switches'
+import { clubPagesOn, keepersOn, regionEventsOn } from '@/areas/clubs/switches'
 import { ClubSuggestionsBanner, type OpenSuggestion } from '@/areas/clubs/components/SuggestionRows'
 // The one club editor, fetched only when the Details tab draws it, with clubKeepers on.
 const ClubEditor = lazy(() => import('@/areas/clubs/components/ClubEditor').then((m) => ({ default: m.ClubEditor })))
@@ -63,7 +63,7 @@ export function AdminClubPage() {
   const [saving, setSaving] = useState(false)
   const [newsSaving, setNewsSaving] = useState(false)
   const tabParam = params.get('tab') as ClubTab | null
-  const tab: ClubTab = tabParam && ['details', 'news', 'roster', 'tournaments'].includes(tabParam) && (tabParam !== 'tournaments' || showTournaments) ? tabParam : 'details'
+  const tab: ClubTab = tabParam && ['details', 'news', ...(clubPagesOn() ? [] : ['roster']), 'tournaments'].includes(tabParam) && (tabParam !== 'tournaments' || showTournaments) ? tabParam : 'details' // With the club pages on there is no roster tab (WS09 step 37).
   const setTab = (next: ClubTab) => setParams(next === 'details' ? {} : { tab: next }, { replace: true })
 
   const [logoUploading, setLogoUploading] = useState(false)
@@ -270,7 +270,7 @@ export function AdminClubPage() {
   const tabs: { id: ClubTab; label: string; icon: typeof Users }[] = [
     { id: 'details',     label: 'Club details',  icon: Building2  },
     { id: 'news',        label: 'News',           icon: Newspaper  },
-    { id: 'roster',      label: roster === null ? 'Roster & officers' : `Roster & officers (${roster.length})`, icon: Users },
+    ...(clubPagesOn() ? [] : [{ id: 'roster' as const, label: roster === null ? 'Roster & officers' : `Roster & officers (${roster.length})`, icon: Users }]),
     ...(showTournaments ? [{ id: 'tournaments' as const, label: 'Tournaments', icon: Trophy }] : []),
   ]
 
@@ -546,7 +546,7 @@ export function AdminClubPage() {
         {/* The server keeps the roster and the officers' emails from them, and
             they add and remove no officer, so the tab says so in words in
             place of an empty roster, and lists the officers by name and role. */}
-        {tab === 'roster' && roster === null && (
+        {!clubPagesOn() && tab === 'roster' && roster === null && (
           <div className="space-y-6">
             <div className="rounded-xl border bg-card p-6 shadow-sm">
               <div className="mb-1 flex items-center gap-2">
@@ -582,7 +582,7 @@ export function AdminClubPage() {
         )}
 
         {/* ── Roster & officers tab ── */}
-        {tab === 'roster' && roster !== null && (
+        {!clubPagesOn() && tab === 'roster' && roster !== null && (
           <ViewOnlyFieldset>
           <div className="space-y-6">
             <div className="rounded-xl border bg-card p-6 shadow-sm">

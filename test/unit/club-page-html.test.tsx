@@ -163,6 +163,6 @@ describe('the files', () => {
     for (const file of [SHARED, HTML, 'domain/clubs/pageWords.ts']) expect(codeOf(file), file).not.toMatch(/onRequest/)
     // The route keeps today's code for the switch-off, line for line.
     expect(route).toContain('`SELECT name, city, meeting_schedule, location, description, image_url FROM clubs WHERE id = ?`')
-    expect(codeOf('functions/api/clubs/[id].ts')).not.toMatch(/clubs\/pages|CLUB_PAGES_ON/)
+    expect(codeOf('functions/api/clubs/[id].ts').replace(/^import \{ CLUB_PAGES_ON \} from .*$/m, '').replace('CLUB_PAGES_ON ? { results: [] } : ', '')).not.toMatch(/clubs\/pages|CLUB_PAGES_ON/) // WS09 step 37 reads it for the officers alone.
   })
 })

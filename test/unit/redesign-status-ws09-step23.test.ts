@@ -231,7 +231,7 @@ describe('REDESIGN_STATUS.md, WS09 step 23: the parts against the files', () => 
     const code = codeOf(TODAY)
     expect(code).toContain('return errorResponse(\'Club not found\', 404)')
     expect(code).toContain('club: publicClubAnswer(club, CLUB_EMAIL_HIDDEN),')
-    expect(code).not.toMatch(/clubs\/pages|CLUB_PAGES_ON/)
+    expect(code.replace(/^import \{ CLUB_PAGES_ON \} from .*$/m, '').replace('CLUB_PAGES_ON ? { results: [] } : ', '')).not.toMatch(/clubs\/pages|CLUB_PAGES_ON/) // WS09 step 37 reads it for the officers alone.
   })
 
   it('names the look, the branch, the merge, the database, a revert, what ships and what is owed', () => {

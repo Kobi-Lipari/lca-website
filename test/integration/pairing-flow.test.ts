@@ -2,17 +2,33 @@
 // A whole event through the real endpoints: pair every round, enter results,
 // read standings with tiebreaks. The old engine crashed or hung from round 3
 // in events like these.
-import { beforeEach, describe, expect, it } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { env } from 'cloudflare:test'
 import { invoke, resetHarness } from './harness'
-import { seedAdmin, seedMember, seedRegistration, seedTournament } from './factories'
+import { seedAdmin, seedClub, seedMember, seedRegistration, seedTournament } from './factories'
 
 import { onRequestPost as generatePost } from '../../functions/api/admin/tournaments/[id]/generate-pairings'
 import { onRequestPatch as resultPatch } from '../../functions/api/admin/tournaments/[id]/games/[gameId]'
 import { onRequestGet as manageGet } from '../../functions/api/admin/tournaments/[id]/manage'
 import { onRequestPatch as tournamentPatch } from '../../functions/api/admin/tournaments/[id]'
 
+// CLUB_PAGES_ON is held unset but in the cases of WS09 step 37 that set it,
+// through a getter on the mocked module.
+const flags = vi.hoisted(() => ({ pagesOn: false }))
+vi.mock('../../functions/utils/clubs/pages', async (importOriginal) => {
+  const real = await importOriginal<typeof import('../../functions/utils/clubs/pages')>()
+  return {
+    ...real,
+    get CLUB_PAGES_ON() {
+      return flags.pagesOn
+    },
+  }
+})
+
 beforeEach(resetHarness)
+afterEach(() => {
+  flags.pagesOn = false
+})
 
 async function pendingGames(tournamentId: string, round: number) {
   const { results } = await env.DB.prepare(
@@ -179,6 +195,71 @@ describe('pairing options', () => {
     await invoke(generatePost, { method: 'POST', as: admin, params: { id: tournamentId }, body: { round: 2, section: 'Open' } })
     for (const g of await pendingGames(tournamentId, 2)) {
       expect([g.white_member_id, g.black_member_id].sort().join()).not.toBe([ids[0], ids[2]].sort().join())
+    }
+  })
+})
+
+// WS09 step 37: with CLUB_PAGES_ON set a player is no longer tied to a club,
+// so an event set to keep families and clubmates apart pairs as one set to
+// keep families apart, and its stored rule is kept for when the constant is
+// unset. Four players, 1600 to 1300: round 1 pairs the top half with the
+// bottom, so 1600 meets 1400 unless the two are kept apart.
+describe('keeping clubmates apart, with CLUB_PAGES_ON unset and set (WS09 step 37)', () => {
+  /** An event with the rule given and four players; the first and third share a club and are not family, or are family when asked. */
+  async function eventWith(keepApart: 'family' | 'family_club' | 'none', bond: 'club' | 'family') {
+    const admin = await seedAdmin()
+    const tournamentId = await seedTournament({ rounds: 3, sections: [{ name: 'Open', entryFee: 0 }] })
+    const set = await invoke(tournamentPatch, { method: 'PATCH', as: admin, params: { id: tournamentId }, body: { keepApart } })
+    expect(set.status).toBe(200)
+    const clubId = await seedClub({ name: 'Example Chess Club' })
+    const ids: string[] = []
+    for (let i = 0; i < 4; i++) {
+      const id = await seedMember({ uscfRating: 1600 - i * 100, ...(bond === 'club' && (i === 0 || i === 2) ? { clubId } : {}) })
+      ids.push(id)
+      await seedRegistration({ tournamentId, memberId: id, section: 'Open' })
+    }
+    if (bond === 'family') await env.DB.prepare('UPDATE members SET guardian_id = ? WHERE id = ?').bind(ids[0], ids[2]).run()
+    return { admin, tournamentId, pair: [ids[0], ids[2]].sort().join() }
+  }
+
+  /** Whether round 1 paired the first and third players together. */
+  async function pairedTogether(admin: string, tournamentId: string, pair: string): Promise<boolean> {
+    const res = await invoke(generatePost, { method: 'POST', as: admin, params: { id: tournamentId }, body: { round: 1, section: 'Open' } })
+    expect(res.status).toBe(201)
+    return (await pendingGames(tournamentId, 1)).some((g) => [g.white_member_id, g.black_member_id].sort().join() === pair)
+  }
+
+  const storedRule = async (tournamentId: string) =>
+    (await env.DB.prepare('SELECT keep_apart FROM tournaments WHERE id = ?').bind(tournamentId).first<{ keep_apart: string }>())?.keep_apart
+
+  it('unset: an event set to family_club keeps two clubmates who are not family apart, as today', async () => {
+    const { admin, tournamentId, pair } = await eventWith('family_club', 'club')
+    expect(await pairedTogether(admin, tournamentId, pair)).toBe(false)
+    expect(await storedRule(tournamentId)).toBe('family_club')
+  })
+
+  it('set: an event set to family_club pairs the two clubmates as families only, and keeps family_club stored', async () => {
+    flags.pagesOn = true
+    const { admin, tournamentId, pair } = await eventWith('family_club', 'club')
+    expect(await storedRule(tournamentId)).toBe('family_club')
+    expect(await pairedTogether(admin, tournamentId, pair)).toBe(true)
+    expect(await storedRule(tournamentId)).toBe('family_club')
+  })
+
+  it('set: an event set to family_club still keeps a parent and child apart', async () => {
+    flags.pagesOn = true
+    const { admin, tournamentId, pair } = await eventWith('family_club', 'family')
+    expect(await pairedTogether(admin, tournamentId, pair)).toBe(false)
+  })
+
+  it('an event set to family or to none pairs the same with the constant unset and set', async () => {
+    for (const on of [false, true]) {
+      flags.pagesOn = on
+      for (const [rule, bond, together] of [['family', 'club', true], ['family', 'family', false], ['none', 'club', true], ['none', 'family', true]] as const) {
+        const { admin, tournamentId, pair } = await eventWith(rule, bond)
+        expect(await pairedTogether(admin, tournamentId, pair), `${on} ${rule} ${bond}`).toBe(together)
+        expect(await storedRule(tournamentId), `${on} ${rule} ${bond}`).toBe(rule)
+      }
     }
   })
 })

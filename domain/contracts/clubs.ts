@@ -457,6 +457,19 @@ export const adminClubResponseSchema = z.strictObject({
 })
 
 /**
+ * GET /api/admin/clubs/[id] while CLUB_PAGES_ON is set (WS09 step 37): the
+ * same answer with neither the officers nor the roster, since a player is no
+ * longer tied to a club. `rosterKeptBack` is still said to a person admitted
+ * by the region alone, as true, and to no one else.
+ */
+export const adminClubWithoutRosterResponseSchema = z.strictObject(
+  adminClubResponseSchema.omit({ officers: true, roster: true }).shape,
+)
+
+/** GET /api/admin/clubs/[id] in either of its two shapes: today's, or the one without the roster and officers while CLUB_PAGES_ON is set. */
+export const adminClubAnswerSchema = z.union([adminClubResponseSchema, adminClubWithoutRosterResponseSchema])
+
+/**
  * PATCH /api/admin/clubs/[id] (adminUpdateClub, and the club editor's
  * saveClubListing): the club as saved, and its places as saved when the
  * body carried `places`.

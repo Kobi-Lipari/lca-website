@@ -78,7 +78,7 @@ describe('GET /api/clubs/[id] by a club\'s short address', () => {
       const byId = await ask(club.id)
       expect(byId.status).toBe(200)
       const body = JSON.parse(byId.body) as { club: { id: string }; officers: unknown[]; tournaments: unknown[]; news: unknown[] }
-      expect([body.club.id, body.officers.length, body.tournaments.length, body.news.length]).toEqual([club.id, 1, 1, 1])
+      expect([body.club.id, body.officers.length, body.tournaments.length, body.news.length]).toEqual([club.id, pagesOn ? 0 : 1, 1, 1]) // WS09 step 37: no officers with CLUB_PAGES_ON set.
       for (const address of [club.slug, club.old, club.slug.toUpperCase(), encodeURIComponent(` ${club.slug} `)]) {
         expect(await ask(address), `${address} ${pagesOn} ${emailHidden}`).toEqual(byId)
       }

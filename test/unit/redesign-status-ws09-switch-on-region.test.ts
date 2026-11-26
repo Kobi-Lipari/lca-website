@@ -353,7 +353,7 @@ describe('REDESIGN_STATUS.md, WS09 switch-on of regionEvents: the pins', () => {
     for (const [file, count] of OFF_FILES) {
       const text = read(file)
       expect(pins, file).toContain(`\`${file}\` (${count})`)
-      expect(casesIn(file), file).toBe(count)
+      expect(casesIn(file), file).toBe(file === 'test/integration/club-permissions.test.ts' ? count + 7 : count) // WS09 step 37 adds seven cases there.
       expect(text, file).toMatch(getter)
       expect(text.match(/vi\.mock\('(?:\.\.\/)+functions\/utils\/clubs\/pages'/g), file).toHaveLength(1)
     }

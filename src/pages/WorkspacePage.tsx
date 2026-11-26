@@ -32,7 +32,7 @@ import {
 } from '@/lib/api'
 import { ROLE_LABELS, WORKSPACE_ROLES } from '@/areas/admin/roles'
 import { FEATURES } from '@/lib/features'
-import { keepersOn } from '@/areas/clubs/switches'
+import { clubPagesOn, keepersOn } from '@/areas/clubs/switches'
 import { cn } from '@/lib/utils'
 import { usePageTitle } from '@/hooks/usePageTitle'
 import { GOLD_BUTTON as GOLD } from '@/lib/brand'
@@ -186,8 +186,14 @@ function MyClubPanel({ clubId, onShowEvents }: { clubId: string; onShowEvents: (
       </div>
 
       <div className="grid gap-4 sm:grid-cols-3">
-        <Stat label="Members on roster" value={roster.length} to={`/admin/clubs/${club.id}?tab=roster`} />
-        <Stat label="Officers listed" value={officers.length} to={`/admin/clubs/${club.id}?tab=roster`} />
+        {/* With the club pages on a player is no longer tied to a club: the answer carries no roster and no
+            officers, and the admin club page has no tab for them, so neither count is drawn. */}
+        {!clubPagesOn() && (
+          <>
+            <Stat label="Members on roster" value={roster?.length ?? 0} to={`/admin/clubs/${club.id}?tab=roster`} />
+            <Stat label="Officers listed" value={officers?.length ?? 0} to={`/admin/clubs/${club.id}?tab=roster`} />
+          </>
+        )}
         <Stat
           label={drafts.length ? `Upcoming events · ${drafts.length} draft` : 'Upcoming events'}
           value={upcoming.length}

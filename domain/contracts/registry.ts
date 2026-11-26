@@ -13,7 +13,7 @@
 // of that list and lower the count pinned there.
 import type { ZodType } from 'zod'
 import {
-  adminClubResponseSchema,
+  adminClubAnswerSchema,
   clubConfirmRequestSchema,
   clubConfirmResponseSchema,
   clubDetailResponseSchema,
@@ -122,7 +122,7 @@ export const contracts = {
     POST: { request: clubRequestHandledRequestSchema, response: clubRequestHandledResponseSchema },
   },
   'admin/clubs/[id]': {
-    GET: { response: adminClubResponseSchema },
+    GET: { response: adminClubAnswerSchema },
     PATCH: { request: updateClubRequestSchema, response: updateClubResponseSchema },
   },
   'admin/clubs/[id]/confirm': {

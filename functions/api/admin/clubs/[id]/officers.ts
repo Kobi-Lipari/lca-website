@@ -4,7 +4,10 @@
 // is published on the club page, so a rep can list only people who are
 // actually on their roster. A person admitted by a regional seat alone gets
 // the officers without their emails, and adds or removes none: 403 in
-// words (functions/utils/clubs/memberView.ts).
+// words (functions/utils/clubs/memberView.ts). With CLUB_PAGES_ON set
+// (functions/utils/clubs/pages.ts) LCA keeps no list of officers for a club,
+// so the GET and the POST answer 410 in words after the same checks, and
+// read and write nothing; the rows stay in club_officers.
 import type { Env } from '../../../../types'
 import { isResponse, requireClubRep, requireClubView } from '../../../../utils/auth'
 import {
@@ -15,6 +18,10 @@ import {
 } from '../../../../utils/response'
 import { recordAdminAction } from '../../../../utils/admin/audit'
 import { admittedByRegionAlone, officersWithoutEmail, ROSTER_KEPT_BACK } from '../../../../utils/clubs/memberView'
+import { CLUB_PAGES_ON } from '../../../../utils/clubs/pages'
+
+/** The 410 for the officers while CLUB_PAGES_ON is set: a player is no longer tied to a club. */
+export const OFFICERS_NOT_KEPT = 'LCA no longer keeps a list of officers for each club. Reload the page.'
 
 interface AddOfficerBody {
   memberId?: string
@@ -41,6 +48,7 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
   const clubId = context.params.id as string
   const authResult = await requireClubView(context.request, context.env, clubId)
   if (isResponse(authResult)) return authResult
+  if (CLUB_PAGES_ON) return errorResponse(OFFICERS_NOT_KEPT, 410)
 
   const officers = await listOfficers(context.env.DB, clubId)
   return jsonResponse({ officers: admittedByRegionAlone(authResult.member, clubId) ? officersWithoutEmail(officers) : officers })
@@ -54,6 +62,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
   // is the roster's to tell, so a person admitted by the region alone adds
   // none. Member ids are public on the tournament pages.
   if (admittedByRegionAlone(authResult.member, clubId)) return errorResponse(ROSTER_KEPT_BACK, 403)
+  if (CLUB_PAGES_ON) return errorResponse(OFFICERS_NOT_KEPT, 410)
 
   const body = await parseJsonBody<AddOfficerBody>(context.request)
   const title = body?.title?.trim()

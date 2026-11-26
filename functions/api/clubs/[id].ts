@@ -2,12 +2,18 @@
 // Public, read-only. The club PATCH lives at /api/admin/clubs/[id] —
 // the duplicate PATCH that used to live here has been removed so there is
 // exactly one write path per operation.
+//
+// With CLUB_PAGES_ON set (functions/utils/clubs/pages.ts) a player is no
+// longer tied to a club, so the answer carries an empty officers list and
+// club_officers is not read; the rows stay in the table. With it unset the
+// answer is what it was.
 import type { Env } from '../../types'
 import { errorResponse, handleOptions, jsonResponse } from '../../utils/response'
 import { getDb } from '../../db/client'
 import { sectionResponsesFor } from '../../utils/events/sectionsRepo'
 import { CLUB_EMAIL_HIDDEN, publicClubAnswer } from '../../utils/clubs/publicAnswer'
 import { clubIdByShortAddress } from '../../utils/clubs/pageAnswer'
+import { CLUB_PAGES_ON } from '../../utils/clubs/pages'
 
 export const onRequestOptions: PagesFunction<Env> = async () => handleOptions()
 
@@ -43,8 +49,9 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
   }
   const clubId = club.id as string
 
-  // Each officer by role and name: the public answer carries no officer's email.
-  const officers = await context.env.DB.prepare(
+  // Each officer by role and name: the public answer carries no officer's
+  // email. None at all while CLUB_PAGES_ON is set, and nothing is read.
+  const officers = CLUB_PAGES_ON ? { results: [] } : await context.env.DB.prepare(
     `SELECT co.id, co.role, m.full_name
      FROM club_officers co
      JOIN members m ON co.member_id = m.id

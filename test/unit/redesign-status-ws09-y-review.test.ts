@@ -304,12 +304,12 @@ describe('the sentences the review showed false, each corrected in its own block
 describe('the Status and PR lines', () => {
   it('say what is true on the day: W in draft pull request 154, X in 158, and Y built and reviewed, waiting for its own (D11)', () => {
     expect(statusLine).toContain('waits in draft pull request 154 for K\'s word')
-    expect(statusLine).toContain('holds checkpoint W and `main` as it stands, at `85f20ec`, and waits in draft pull request 158 for K\'s word, checkpoint Y, steps 32 to 35, is built and reviewed on `redesign/ws09-clubs-y`, cut from checkpoint X\'s head, holds checkpoints X and W and `main` at `85f20ec`, and waits for its own draft pull request, which is opened after its review\'s fixes, and K\'s word, merging after 158, which merges after 154')
+    expect(statusLine).toContain('holds checkpoint W and `main` as it stands, at `85f20ec`, and waits in draft pull request 158 for K\'s word, checkpoint Y, steps 32 to 35, is built and reviewed on `redesign/ws09-clubs-y`, cut from checkpoint X\'s head, holds checkpoints X and W and `main` at `85f20ec`, and waits in draft pull request 159 for K\'s word, merging after 158, which merges after 154') // WS09 step 37: pull request 159 is open.
     expect(statusLine).not.toContain('checkpoint Y, steps 32 to 35, is under way')
     const tail = statusLine.slice(statusLine.lastIndexOf('; ') + 2)
     if (latest) expect(tail).toContain('step 35, checkpoint Y\'s review and its fixes, K\'s answers')
     expect(tail).toMatch(/\bbuilt\.$/)
-    expect(prLine).toContain('checkpoint X, steps 25 to 31, is built and reviewed on `redesign/ws09-clubs-x`, holds checkpoint W and `main` at `85f20ec`, and waits in draft pull request 158 for K\'s word for its merge, after 154; checkpoint Y, steps 32 to 35, is built and reviewed on `redesign/ws09-clubs-y`, cut from checkpoint X\'s head, holds checkpoints X and W and `main` at `85f20ec`, and waits for its own draft pull request, opened after its review\'s fixes, and K\'s word for its merge, after 158; the question marks\' words')
+    expect(prLine).toContain('checkpoint X, steps 25 to 31, is built and reviewed on `redesign/ws09-clubs-x`, holds checkpoint W and `main` at `85f20ec`, and waits in draft pull request 158 for K\'s word for its merge, after 154; checkpoint Y, steps 32 to 35, is built and reviewed on `redesign/ws09-clubs-y`, cut from checkpoint X\'s head, holds checkpoints X and W and `main` at `85f20ec`, and waits in draft pull request 159 for K\'s word for its merge, after 158; checkpoint Z has begun') // WS09 step 37: pull request 159 is open.
     expect(prLine.endsWith('wait in pull request 151 for K\'s word.')).toBe(true)
   })
 })

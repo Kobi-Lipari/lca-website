@@ -59,7 +59,7 @@ import { FEES_NEED_PAYOUT_ACCOUNT, feesRaised } from '@domain/events/creation'
 import { tierFees } from '@domain/events/sections'
 import { approvalState, WAITING_FOR_APPROVAL } from '@domain/events/approval'
 import { ApprovalWait, type WaitingEvent } from '@/areas/clubs/components/ApprovalWait'
-import { regionEventsOn } from '@/areas/clubs/switches'
+import { clubPagesOn, regionEventsOn } from '@/areas/clubs/switches'
 
 const goldButtonClass = 'bg-lca-gold font-semibold text-brand-navy hover:bg-lca-gold/90'
 
@@ -1506,7 +1506,7 @@ export function TournamentManagePage() {
                     <summary className="cursor-pointer select-none">
                       Pairing rules: {pairingSystem === 'fide' ? 'FIDE-style' : 'US Chess'}
                       {accelerated ? ' · accelerated' : ''}
-                      {keepApart === 'none' ? '' : keepApart === 'family_club' ? ' · keep families and clubmates apart' : ' · keep families apart'}
+                      {keepApart === 'none' ? '' : keepApart === 'family_club' && !clubPagesOn() ? ' · keep families and clubmates apart' : ' · keep families apart'}
                     </summary>
                     <div className="mt-2 space-y-1.5">
                       <label className="flex items-center gap-2">
@@ -1529,9 +1529,17 @@ export function TournamentManagePage() {
                       </label>
                       <div className="mt-3">
                         <p className="mb-1">Try to keep apart:</p>
-                        {([['family', 'Family members (parents, children, siblings on one account)'], ['family_club', 'Family members and players from the same club'], ['none', 'Nobody']] as const).map(([v, label]) => (
+                        {/* With the club pages on a player is no longer tied to a club: the middle choice is not
+                            drawn, an event stored as family_club shows Family members and pairs as one, and the
+                            stored value is written over only when the director picks Nobody. */}
+                        {([['family', 'Family members (parents, children, siblings on one account)'], ['family_club', 'Family members and players from the same club'], ['none', 'Nobody']] as const).filter(([v]) => v !== 'family_club' || !clubPagesOn()).map(([v, label]) => (
                           <label key={v} className="flex items-center gap-2">
-                            <input type="radio" name="keep-apart" checked={keepApart === v} onChange={() => setKeepApart(v)} />
+                            <input
+                              type="radio"
+                              name="keep-apart"
+                              checked={keepApart === v || (v === 'family' && keepApart === 'family_club' && clubPagesOn())}
+                              onChange={() => setKeepApart(v === 'family' && clubPagesOn() && snapshot?.keepApart === 'family_club' ? 'family_club' : v)}
+                            />
                             {label}
                           </label>
                         ))}

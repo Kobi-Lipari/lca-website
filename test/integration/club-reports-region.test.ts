@@ -149,7 +149,7 @@ describe('the open items', () => {
     const viewed = await (await adminClub(observer, club.id)).json<Record<string, unknown>>()
     expect(Object.keys(viewed)).not.toContain('openSuggestions')
     expect((await dismiss(club.rep, club.id, open.id)).status).toBe(200)
-    expect(Object.keys(await (await adminClub(club.rep, club.id)).json<Record<string, unknown>>())).toEqual(Object.keys(before))
+    expect(Object.keys(await (await adminClub(club.rep, club.id)).json<Record<string, unknown>>())).toEqual(Object.keys(before).filter((k) => k !== 'officers' && k !== 'roster')) // WS09 step 37: CLUB_PAGES_ON is set since the suggestion, so neither list is answered.
   })
 })
 

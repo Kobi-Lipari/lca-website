@@ -300,8 +300,10 @@ export type ApiClubPlace = ClubPlace
  */
 export async function adminGetClub(id: string): Promise<{
   club: ApiClubListing
-  officers: ApiAdminClubOfficer[]
-  roster: ApiAdminMember[]
+  /** Not answered while CLUB_PAGES_ON is set on the server: a player is no longer tied to a club. */
+  officers?: ApiAdminClubOfficer[]
+  /** Not answered while CLUB_PAGES_ON is set on the server, as the officers. */
+  roster?: ApiAdminMember[]
   /** Set only for a person a regional seat alone admits: the empty roster is held back, not empty. */
   rosterKeptBack?: true
   tournaments: ApiAdminClubTournament[]
