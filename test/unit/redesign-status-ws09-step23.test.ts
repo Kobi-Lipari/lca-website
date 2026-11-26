@@ -334,7 +334,7 @@ describe('REDESIGN_STATUS.md, WS09 step 23: the map and the lists', () => {
   })
 
   it('records the step\'s deviations, verify items and follow-ups, each tagged, and adds no decision', () => {
-    expect(tagged(part(LISTS[0]))).toEqual([])
+    expect(tagged(part(LISTS[0])).filter((l) => !l.endsWith(' Recorded at the close, in WS09 step 38.'))).toEqual([]) // moved by WS09 step 38: the close records the step's decisions under its own tag
     expect(tagged(deviations).map(head)).toEqual([
       'The route keeps its name (WS09 step 23).', 'The share card with no logo (WS09 step 23).', 'No Contact in the written body yet (WS09 step 23).',
       'The tests in files of their own (WS09 step 23).',

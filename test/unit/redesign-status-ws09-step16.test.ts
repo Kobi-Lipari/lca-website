@@ -425,7 +425,7 @@ describe('REDESIGN_STATUS.md, WS09 step 16: the map and the lists', () => {
   })
 
   it('records the step\'s deviations, verify items and follow-ups, each tagged, and no decision of its own', () => {
-    expect(tagged(part(LISTS[0]))).toEqual([])
+    expect(tagged(part(LISTS[0])).filter((l) => !l.endsWith(' Recorded at the close, in WS09 step 38.'))).toEqual([]) // moved by WS09 step 38: the close records the step's decisions under its own tag
     expect(tagged(deviations).map(head)).toEqual([
       'The number 0070 (WS09 step 16).', 'The grant\'s name in the creation answer (WS09 step 16).', 'The cells in a file of their own (WS09 step 16).', 'More tests move than the entry names (WS09 step 16).',
     ])

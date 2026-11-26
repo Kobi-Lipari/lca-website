@@ -379,7 +379,7 @@ describe('REDESIGN_STATUS.md, the twenty-eighth step of WS09: the map and the li
   })
 
   it('records the step\'s deviations, verify items and follow-ups, each tagged, and adds no decision', () => {
-    expect(tagged(part(LISTS[0]))).toEqual([])
+    expect(tagged(part(LISTS[0])).filter((l) => !l.endsWith(' Recorded at the close, in WS09 step 38.'))).toEqual([]) // moved by WS09 step 38: the close records the step's decisions under its own tag
     expect(tagged(deviations).map(head)).toEqual([
       'The way in at the told line (WS09 step 28).', 'The address\'s label (WS09 step 28).', 'The rows of one club (WS09 step 28).', 'No line of the 14 days (WS09 step 28).',
     ])

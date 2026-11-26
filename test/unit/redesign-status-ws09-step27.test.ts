@@ -374,7 +374,7 @@ describe('REDESIGN_STATUS.md, WS09 step 27: the map and the lists', () => {
   })
 
   it('records the step\'s deviations, verify items and follow-ups, each tagged, and adds no decision', () => {
-    expect(tagged(part(LISTS[0]))).toEqual([])
+    expect(tagged(part(LISTS[0])).filter((l) => !l.endsWith(' Recorded at the close, in WS09 step 38.'))).toEqual([]) // moved by WS09 step 38: the close records the step's decisions under its own tag
     expect(tagged(deviations).map(head)).toEqual([
       'The sign-off by the role alone (WS09 step 27).', 'The reply\'s cases in a file of their own (WS09 step 27).', 'One set of words for a refused link (WS09 step 27).',
     ])

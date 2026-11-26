@@ -415,7 +415,7 @@ describe('REDESIGN_STATUS.md, WS09 step 25: the map and the lists', () => {
   })
 
   it('records the step\'s deviations, verify items and follow-ups, each tagged, adds no decision, and leaves step 14\'s line on the limit as it was', () => {
-    expect(tagged(part(LISTS[0]))).toEqual([])
+    expect(tagged(part(LISTS[0])).filter((l) => !l.endsWith(' Recorded at the close, in WS09 step 38.'))).toEqual([]) // moved by WS09 step 38: the close records the step's decisions under its own tag
     expect(tagged(deviations).map(head)).toEqual(['The migration\'s number (WS09 step 25).', 'No address sent to the provider (WS09 step 25).', 'The test secret in the browser builds (WS09 step 25).', 'The harness\'s catch point (WS09 step 25).'])
     expect(tagged(verify).map(head)).toEqual([
       'Neither exists (WS09 step 25).', 'The provider\'s check (WS09 step 25).', 'The brief\'s table (WS09 step 25).', 'The harness refuses unknown hosts (WS09 step 25).',

@@ -358,7 +358,7 @@ describe('REDESIGN_STATUS.md, WS09 step 20: the map and the lists', () => {
   })
 
   it('records the step\'s deviations, verify items and follow-ups, each tagged, and adds no decision', () => {
-    expect(tagged(part(LISTS[0]))).toEqual([])
+    expect(tagged(part(LISTS[0])).filter((l) => !l.endsWith(' Recorded at the close, in WS09 step 38.'))).toEqual([]) // moved by WS09 step 38: the close records the step's decisions under its own tag
     expect(tagged(deviations).map(head)).toEqual(['Straight-line miles on the club page (WS09 step 20).', 'No Photos section yet (WS09 step 20).'])
     expect(tagged(verify).map(head)).toEqual([
       'listedWhere today (WS09 step 20).', 'Two names for one address part (WS09 step 20).', 'A partner event (WS09 step 20).', 'The representative\'s name (WS09 step 20).',

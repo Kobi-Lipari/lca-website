@@ -367,7 +367,7 @@ describe('REDESIGN_STATUS.md, WS09 step 21: the map and the lists', () => {
   })
 
   it('records the step\'s deviations, verify items and follow-ups, each tagged, and adds no decision', () => {
-    expect(tagged(part(LISTS[0]))).toEqual([])
+    expect(tagged(part(LISTS[0])).filter((l) => !l.endsWith(' Recorded at the close, in WS09 step 38.'))).toEqual([]) // moved by WS09 step 38: the close records the step's decisions under its own tag
     expect(tagged(deviations).map(head)).toEqual([
       'The page\'s preview waits with the public pages (WS09 step 21).', 'The choice of page made in the route (WS09 step 21).',
       'Plain pins on the club page\'s map (WS09 step 21).', 'The name off the club\'s colour (WS09 step 21).',

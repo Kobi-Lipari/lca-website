@@ -185,7 +185,9 @@ function MyClubPanel({ clubId, onShowEvents }: { clubId: string; onShowEvents: (
         )}
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-3">
+      {/* With the club pages on only the events tile is drawn, so the grid keeps one column and the tile
+          takes the row's whole width; with them off the three tiles share the row as before. */}
+      <div className={clubPagesOn() ? 'grid gap-4' : 'grid gap-4 sm:grid-cols-3'}>
         {/* With the club pages on a player is no longer tied to a club: the answer carries no roster and no
             officers, and the admin club page has no tab for them, so neither count is drawn. */}
         {!clubPagesOn() && (

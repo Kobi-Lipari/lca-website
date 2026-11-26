@@ -459,7 +459,7 @@ describe('REDESIGN_STATUS.md, WS09 step 18: the map and the lists', () => {
   })
 
   it('records the step\'s deviations, verify items and follow-ups, each tagged, and no decision of its own', () => {
-    expect(tagged(part(LISTS[0]))).toEqual([])
+    expect(tagged(part(LISTS[0])).filter((l) => !l.endsWith(' Recorded at the close, in WS09 step 38.'))).toEqual([]) // moved by WS09 step 38: the close records the step's decisions under its own tag
     expect(tagged(deviations).map(head)).toEqual([
       'The approval request is strict (WS09 step 18).', 'The D22 notice\'s file changes (WS09 step 18).', 'The Activity page\'s three labels (WS09 step 18).',
     ])

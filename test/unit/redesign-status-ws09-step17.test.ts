@@ -433,7 +433,7 @@ describe('REDESIGN_STATUS.md, WS09 step 17: the map and the lists', () => {
   })
 
   it('records the step\'s deviations, verify items and follow-ups, each tagged, and no decision of its own', () => {
-    expect(tagged(part(LISTS[0]))).toEqual([])
+    expect(tagged(part(LISTS[0])).filter((l) => !l.endsWith(' Recorded at the close, in WS09 step 38.'))).toEqual([]) // moved by WS09 step 38: the close records the step's decisions under its own tag
     expect(tagged(deviations).map(head)).toEqual([
       'A refund stays an LCA admin\'s (WS09 step 17).', 'The publish date half of criterion 14 (WS09 step 17).', 'The list\'s own manager rule (WS09 step 17).',
       'The directors\' request passes unknown keys (WS09 step 17).',

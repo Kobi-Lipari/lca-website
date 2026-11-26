@@ -136,12 +136,12 @@ describe('REDESIGN_STATUS.md, the thirty-seventh step of WS09: the block', () =>
     expect(status).toContain('\n## WS09: Clubs as living listings\n')
     expect(statusLine).toContain('holds checkpoints X and W and `main` at `85f20ec`, and waits in draft pull request 159 for K\'s word, merging after 158, which merges after 154')
     expect(statusLine).not.toContain('waits for its own draft pull request, which is opened after its review\'s fixes')
-    expect(statusLine).toContain('and checkpoint Z has begun with WS09 step 37, players are not tied to clubs, on `redesign/ws09-clubs-z`, cut from checkpoint Y\'s head, `c930b20`')
+    expect(statusLine).toContain('and checkpoint Z, WS09 steps 37 and 38, is built on `redesign/ws09-clubs-z`, cut from checkpoint Y\'s head, `c930b20`') // moved by WS09 step 38, which builds the checkpoint's last step
     expect(statusLine).toContain('while step 36, club photos, waits for K\'s preview bucket as a checkpoint of its own; steps 1 to 14')
     const tail = statusLine.slice(statusLine.lastIndexOf('; ') + 2)
     if (latest) expect(tail).toContain('step 35, checkpoint Y\'s review and its fixes, step 37, K\'s answers')
     expect(tail).toMatch(/\bbuilt\.$/)
-    expect(prLine).toContain('and waits in draft pull request 159 for K\'s word for its merge, after 158; checkpoint Z has begun with step 37 on `redesign/ws09-clubs-z`, cut from checkpoint Y\'s head, and step 36 waits for K\'s preview bucket as a checkpoint of its own; the question marks\' words')
+    expect(prLine).toContain('and waits in draft pull request 159 for K\'s word for its merge, after 158; checkpoint Z, steps 37 and 38, is built on `redesign/ws09-clubs-z`, cut from checkpoint Y\'s head, and waits for its review, its own draft pull request and K\'s word for its merge, after 159, and step 36 waits for K\'s preview bucket as a checkpoint of its own; the question marks\' words') // moved by WS09 step 38
     expect(prLine.endsWith('wait in pull request 151 for K\'s word.')).toBe(true)
     const lines = bullet(block, '- **The Status and PR lines.**')
     for (const piece of ['three clauses', 'draft pull request 159', 'checkpoint Z has begun', 'its tail names step 37', 'changes in two']) expect(lines, piece).toContain(piece)
