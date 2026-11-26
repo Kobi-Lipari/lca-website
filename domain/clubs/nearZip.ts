@@ -115,6 +115,21 @@ export function nearestZip(point: MapPoint): NearestZip {
   return best
 }
 
+/**
+ * The town of the points file whose point lies nearest a point, by its name
+ * as placeKey writes it ("baton rouge"), for the words beside a ZIP code the
+ * page found (WS09 step 34). Two towns the same distance away go by name.
+ */
+export function nearestTown(point: MapPoint): string {
+  let best: { town: string; miles: number } | null = null
+  for (const [town, at] of pointTables().towns) {
+    const miles = milesBetween(point, at)
+    if (best === null || miles < best.miles || (miles === best.miles && town < best.town)) best = { town, miles }
+  }
+  if (best === null) throw new Error('The points file holds no town')
+  return best.town
+}
+
 /** A town of the points file by its name as placeKey writes it, with the ZIP code area nearest it; null when there is none. */
 function townAnswer(town: string): TypedPlaceAnswer | null {
   const point = pointTables().towns.get(town)

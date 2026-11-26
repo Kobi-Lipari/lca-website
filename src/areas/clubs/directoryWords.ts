@@ -65,3 +65,93 @@ export const TRY_AGAIN = 'Try again'
 
 /** How long the list may take before the page says it is slow, in milliseconds. */
 export const SLOW_AFTER_MS = 8000
+
+// The place, Near me, the two orders and the filters (WS09 step 34).
+
+/** The one field's label. */
+export const FIELD_LABEL = 'City, ZIP or club name'
+
+/** What the field's small question mark says: how the field is used, and what becomes of a place. */
+export const FIELD_HELP = 'Type a city or ZIP to list the nearest clubs first, or part of a club\'s name to find it. Near me finds the nearest ZIP on this device: your device\'s exact position never leaves it, and only that ZIP is kept in the page\'s address.'
+
+/** The button that asks the device where it is, once, on its press. */
+export const NEAR_ME = 'Near me'
+
+/** While the device is asked. */
+export const FINDING = 'Finding the nearest ZIP...'
+
+/** The pill once a place is known: "Near you: Baton Rouge 70808". */
+export function nearYou(town: string, zip: string): string {
+  return `Near you: ${town} ${zip}`
+}
+
+/** The pill's button, which goes back to A to Z and the whole state. */
+export const CLEAR_PLACE = 'Clear location'
+
+/** When the device would not say, or could not. */
+export const NOT_FOUND = 'We couldn\'t get your location. Type a city or ZIP.'
+
+/** When the browser has no way to ask the device. */
+export const NO_SUPPORT = 'This browser can\'t share a location. Type a city or ZIP.'
+
+/** When the device has not answered in time. */
+export const TOO_LONG = 'Finding your location took too long. Type a city or ZIP.'
+
+/** How long the page waits for the device, in milliseconds, before it says so. */
+export const DEVICE_WAIT_MS = 10000
+
+/** A place typed or found outside Louisiana. */
+export const OUTSIDE = 'That\'s outside Louisiana. Type a Louisiana city or ZIP.'
+
+/** A typed town with no club of its own: "No club in Natchitoches yet. The nearest are listed first." */
+export function noClubIn(town: string): string {
+  return `No club in ${town} yet. The nearest are listed first.`
+}
+
+/** The link after it, to the form that starts a club. */
+export const START_A_CLUB = 'Start a club?'
+
+/** The two orders' group, and each order's button. */
+export const ORDER_LABEL = 'Order'
+export const A_TO_Z = 'A to Z'
+export const NEAREST = 'Nearest'
+
+/** Beside Nearest while no place is known: why it cannot be chosen yet. */
+export const NEAREST_WHY = 'Press Near me, or type a place'
+
+/** The thin divider before the clubs with no point, after the last club with a distance. */
+export const NO_DISTANCE = 'Distance not known'
+
+/** The list's name in each order. */
+export const LIST_A_TO_Z = 'Clubs, A to Z'
+export const LIST_NEAREST = 'Clubs, nearest first'
+
+/** The caption over the whole list, nearest first: "All 25 clubs, nearest first. Meeting times are as each club states them; confirm before a first visit." */
+export function nearestCaption(clubs: number): string {
+  return `${clubs === 1 ? 'The 1 club' : `All ${clubs} clubs`}, nearest first. ${CONFIRM_FIRST}`
+}
+
+/** The Filters button, with how many filters are on: "Filters" or "Filters · 2 on". */
+export function filtersButton(on: number): string {
+  return on === 0 ? 'Filters' : `Filters · ${on} on`
+}
+
+/** The panel's parts. */
+export const REGION = 'Region'
+export const OWN_WORD = 'Only clubs that say so themselves'
+export const WEEKENDS = 'Plays on weekends'
+export const SCHOLASTIC = 'Scholastic friendly'
+export const CLEAR = 'Clear'
+export const DONE = 'Done'
+
+/** How long the field waits for the typing to pause before it reads what was typed, in milliseconds. */
+export const TYPING_PAUSE_MS = 600
+
+/** A town's name as the points file keeps it ("st francisville") written for the page ("St. Francisville"). */
+export function townWords(key: string): string {
+  return key
+    .split(' ')
+    .filter(Boolean)
+    .map((word) => (word === 'st' ? 'St.' : word.replace(/(^|[-'])(\p{L})/gu, (_, before: string, letter: string) => before + letter.toUpperCase())))
+    .join(' ')
+}

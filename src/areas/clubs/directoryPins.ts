@@ -243,6 +243,29 @@ export interface DirectoryMapProps {
   /** A pin was pressed (its club's id), or the map went back to the whole state (null). */
   onSelect: (id: string | null) => void
   height?: number | string
+  /** Where the map looks once the page knows a place (WS09 step 34), or null for the whole state. */
+  focus?: MapFocus | null
+}
+
+/**
+ * A place the map moves to: the place's point first, then the points of the
+ * clubs nearest it, which the map frames together, so the nearest clubs are
+ * in sight. The key changes each time a place is taken, even the same one
+ * again, so the map moves once for each.
+ */
+export interface MapFocus {
+  key: string
+  points: ReadonlyArray<{ lat: number; lng: number }>
+}
+
+/** The closest the map comes in on a place, so a place with one club near it is not drawn street by street. */
+export const PLACE_ZOOM = 11
+
+/** The box round a place and its nearest clubs, as the map frames it. */
+export function focusBounds(points: MapFocus['points']): { south: number; west: number; north: number; east: number } {
+  const lats = points.map((p) => p.lat)
+  const lngs = points.map((p) => p.lng)
+  return { south: Math.min(...lats), west: Math.min(...lngs), north: Math.max(...lats), east: Math.max(...lngs) }
 }
 
 /** What draws the directory's map: Google's map with a maps key, the stand-in in the accessibility test build when a page asks for it, or nothing. */

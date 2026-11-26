@@ -86,14 +86,15 @@ describe('the directory on first paint', () => {
     expect(cards().map((li) => li.querySelector('a > span > span')?.textContent)).toEqual(A_TO_Z)
     expect(geolocation.getCurrentPosition).not.toHaveBeenCalled()
     expect(geolocation.watchPosition).not.toHaveBeenCalled()
-    expect(screen.queryByRole('textbox')).toBeNull()
+    // The field is there and empty, and no filter is on (WS09 step 34); its chips are buttons, never boxes to tick.
+    expect((screen.getByRole('textbox', { name: 'City, ZIP or club name' }) as HTMLInputElement).value).toBe('')
     expect(screen.queryByRole('checkbox')).toBeNull()
   })
 
-  it('reads the address on load and still lists every club, since this step draws no field and no filter', () => {
-    const { container } = draw(CLUBS, '/clubs?region=north-louisiana&weekends=1&near=70808&sort=az&junk=1')
-    expect(container.querySelector('[data-slot="club-directory"]')?.getAttribute('data-address')).toBe('?near=70808&sort=az&region=north-louisiana&weekends=1')
-    expect(cards()).toHaveLength(5)
+  it('reads the address on load and applies it, the filters narrowing the list, and writes it back canonical', () => {
+    const { container } = draw(CLUBS, '/clubs?region=north-louisiana&near=70808&sort=az&junk=1')
+    expect(container.querySelector('[data-slot="club-directory"]')?.getAttribute('data-address')).toBe('?near=70808&sort=az&region=north-louisiana')
+    expect(cards().map((li) => li.querySelector('a > span > span')?.textContent)).toEqual(['Example Rooks Club'])
   })
 
   it('the caption counts: the strip and the caption count the clubs and the regions with a club, from the answer', () => {

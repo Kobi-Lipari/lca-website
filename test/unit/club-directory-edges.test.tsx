@@ -170,7 +170,8 @@ describe('the tab order', () => {
       row('b', 'Example B Club', 'Example Village', [32, -93], 'Fridays at 6:00 PM.'),
     ])
     const order = [...view.container.querySelectorAll<HTMLElement>('a, button')].map((el) => el.getAttribute('data-card') ?? el.getAttribute('data-pin') ?? el.textContent)
-    expect(order).toEqual(['Skip to the map', 'a', 'b', 'c', 'a', 'b', 'c', words.WHOLE_STATE])
+    // The field's question mark, Near me, the two orders and Filters (WS09 step 34) come before the skip link, which goes straight before the list.
+    expect(order).toEqual(['', words.NEAR_ME, words.A_TO_Z, words.NEAREST, 'Filters', 'Skip to the map', 'a', 'b', 'c', 'a', 'b', 'c', words.WHOLE_STATE])
     expect(view.container.querySelectorAll('[tabindex]:not([tabindex="-1"])')).toHaveLength(0)
   })
 })

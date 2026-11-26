@@ -15,7 +15,12 @@
 //     gold ink, and aria-pressed; the pin of the card under the pointer or
 //     the focus is lifted, a little larger and above the others;
 //   - "All of Louisiana" goes back to the whole state, with nothing selected
-//     and every circle closed.
+//     and every circle closed;
+//   - once the page knows a place (WS09 step 34), the map moves to it and its
+//     nearest clubs, framed together, no closer than PLACE_ZOOM; "All of
+//     Louisiana" still goes back to the whole state, and the place's going
+//     does too. The frame says which it shows, the whole state or a place, by
+//     data-view, so the stand-in, which has no zoom, says it as well.
 // With a maps key the pins sit over Google's map. The accessibility test
 // build has no key and draws the stand-in instead when a page asks for it
 // (directoryPins.ts, mapSource): the same pins over a plain sheet of the
@@ -29,7 +34,9 @@ import {
   loadMapsScript,
 } from '@/areas/clubs/clubMap'
 import {
+  PLACE_ZOOM,
   circleHolding,
+  focusBounds,
   groupName,
   marksFor,
   mapSource,
@@ -162,16 +169,21 @@ function MapMarks({ marks, placeOf, selectedId, liftedId, onPin, onCircle }: {
 
 const WHOLE_BUTTON = 'pointer-events-auto absolute left-2.5 top-2.5 z-[1100] inline-flex min-h-11 items-center rounded-md bg-surface px-3 text-sm font-semibold text-ink shadow-md ring-1 ring-black/5 outline-none transition-colors hover:bg-muted focus-visible:ring-3 focus-visible:ring-brand-navy'
 
-/** What the two maps share: the circles opened, and what a press does. */
+/** What the two maps share: the circles opened, what a press does, and whether the map shows the whole state or the page's place. */
 function useMarks(props: DirectoryMapProps) {
   const [opened, setOpened] = useState<ReadonlySet<string>>(new Set())
+  // The place whose view "All of Louisiana" left, so a new place moves the map again and the same one does not.
+  const [left, setLeft] = useState<string | null>(null)
   const marks = marksFor(props.pins, opened)
+  const focus = props.focus ?? null
   return {
     marks,
+    view: (focus && focus.key !== left ? 'place' : 'state') as 'place' | 'state',
     onPin: (pin: MapPin) => props.onSelect(pin.id === props.selectedId ? null : pin.id),
     open: (group: PinGroup) => setOpened((now) => new Set([...now, group.key])),
     closeAll: () => {
       setOpened(new Set())
+      setLeft(focus?.key ?? null)
       props.onSelect(null)
     },
   }
@@ -179,7 +191,7 @@ function useMarks(props: DirectoryMapProps) {
 
 /** The stand-in: the pins over a plain sheet of the map's paper, for the accessibility test build. */
 function StandInMap(props: DirectoryMapProps) {
-  const { marks, onPin, open, closeAll } = useMarks(props)
+  const { marks, view, onPin, open, closeAll } = useMarks(props)
   const box = useRef<HTMLDivElement>(null)
   // The sheet's size in pixels, measured before it is painted and again when it changes, so a spread is worked out in pixels as on Google's map.
   const [size, setSize] = useState({ width: 0, height: 0 })
@@ -199,7 +211,7 @@ function StandInMap(props: DirectoryMapProps) {
     return { x: 16 + (x / 100) * (size.width - 32), y: 64 + (y / 100) * (size.height - 76) }
   }
   return (
-    <div ref={box} role="group" aria-label={MAP_NAME} data-map="stand-in" className="relative isolate overflow-hidden rounded-xl border" style={{ height: props.height ?? 480 }}>
+    <div ref={box} role="group" aria-label={MAP_NAME} data-map="stand-in" data-view={view} className="relative isolate overflow-hidden rounded-xl border" style={{ height: props.height ?? 480 }}>
       <svg aria-hidden="true" className="absolute inset-0 size-full" preserveAspectRatio="none" viewBox="0 0 100 100" focusable="false">
         <rect data-map-paper="true" width="100" height="100" fill={PAPER} />
       </svg>
@@ -211,7 +223,7 @@ function StandInMap(props: DirectoryMapProps) {
 
 /** Google's map, with the pins laid over it where the map puts their points. */
 function GoogleMap(props: DirectoryMapProps) {
-  const { marks, onPin, open, closeAll } = useMarks(props)
+  const { marks, view, onPin, open, closeAll } = useMarks(props)
   const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY as string
   const mapRef = useRef<HTMLDivElement>(null)
   const mapObj = useRef<google.maps.Map | null>(null)
@@ -219,6 +231,10 @@ function GoogleMap(props: DirectoryMapProps) {
   const [loaded, setLoaded] = useState(false)
   // Each move of the map draws the pins again where it now puts them.
   const [, setMoves] = useState(0)
+  // What the map was last framed on: the whole state, or a place by its key; and the place as the page now gives it.
+  const framed = useRef<string>('state')
+  const focus = useRef(props.focus ?? null)
+  focus.current = props.focus ?? null
 
   useEffect(() => {
     loadMapsScript(apiKey, () => setLoaded(true))
@@ -251,7 +267,29 @@ function GoogleMap(props: DirectoryMapProps) {
     layer.current = overlay
     map.addListener('bounds_changed', moved)
     fitLouisiana(map)
+    framed.current = 'state'
   }, [loaded])
+
+  // A place the page takes moves the map to it and its nearest clubs; its going, or All of Louisiana, back to the whole state.
+  const target = view === 'place' && props.focus ? props.focus.key : 'state'
+  useEffect(() => {
+    const map = mapObj.current
+    if (!loaded || !map || target === framed.current) return
+    framed.current = target
+    const place = focus.current
+    if (target === 'state' || !place || place.points.length === 0) {
+      fitLouisiana(map)
+      return
+    }
+    const listener = google.maps.event.addListenerOnce(map, 'idle', () => {
+      if ((map.getZoom() ?? 0) > PLACE_ZOOM) map.setZoom(PLACE_ZOOM)
+    })
+    // As in fitLouisiana: when the view is already there no 'idle' comes, so
+    // the listener goes after two seconds rather than wait to undo the
+    // visitor's own next zoom.
+    window.setTimeout(() => listener.remove(), 2000)
+    map.fitBounds(focusBounds(place.points), 48)
+  }, [loaded, target])
 
   // A point the map puts outside its frame (after a circle zooms in, say) has
   // no mark drawn, so the focus never lands on a pin nobody can see.
@@ -275,11 +313,12 @@ function GoogleMap(props: DirectoryMapProps) {
 
   function wholeState() {
     closeAll()
+    framed.current = 'state'
     if (mapObj.current) fitLouisiana(mapObj.current)
   }
 
   return (
-    <div role="group" aria-label={MAP_NAME} data-map="maps" className="relative isolate overflow-clip rounded-xl border bg-muted" style={{ height: props.height ?? 480 }}>
+    <div role="group" aria-label={MAP_NAME} data-map="maps" data-view={view} className="relative isolate overflow-clip rounded-xl border bg-muted" style={{ height: props.height ?? 480 }}>
       <div ref={mapRef} style={{ width: '100%', height: '100%' }} />
       {loaded && (
         <>

@@ -124,8 +124,11 @@ describe('the place stays on the device', () => {
     expect(TOWN_POINTS.length).toBeGreaterThan(0)
   })
 
-  it('no file under src/ imports the points file or the nearest ZIP code yet, so the site\'s bundle is unchanged', () => {
+  it('no file under src/ imports the points file, and only the directory\'s field and page import the nearest ZIP code, both in its lazy chunks', () => {
     const banned = /from\s+['"][^'"]*(laPoints|nearZip)['"]|import\(\s*['"][^'"]*(laPoints|nearZip)['"]/
-    for (const file of filesUnder('src')) expect(banned.test(read(file)), file).toBe(false)
+    // WS09 step 34: the field and the page that draws it, both fetched only with the directory.
+    const readers = ['src/areas/clubs/components/PlaceField.tsx', 'src/areas/clubs/components/ClubDirectory.tsx']
+    for (const file of filesUnder('src')) expect(banned.test(read(file).replace(/from\s+'@domain\/clubs\/nearZip'/g, readers.includes(file) ? '' : '$&')), file).toBe(false)
+    for (const file of readers) expect(read(file), file).not.toMatch(/laPoints/)
   })
 })
