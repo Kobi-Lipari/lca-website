@@ -15,12 +15,19 @@
 // Each choice is one of the site's own filter chips, whose state is told by
 // aria-pressed and a check mark, never by colour alone. The page keeps the
 // filters in its address; this panel only offers them.
+//
+// On a phone (WS09 step 35, `sheet`), the same choices are a sheet of their
+// own along the window's foot, drawn as the site's dialog: named "Filters",
+// the focus kept inside it, with a Close of its own, and Escape, Close and
+// Done each closing it with the focus back on the Filters button. It sits
+// over the page but never over the site's dock at the window's foot.
 import { useId, useRef, useState, type KeyboardEvent } from 'react'
 import { ChevronDown } from 'lucide-react'
 
 import { NO_FILTERS, regionChoices, type DirectoryFilters, type FilteredClub } from '@domain/clubs/order'
+import { Dialog, DialogClose, DialogContent, DialogTitle } from '@/components/ui/dialog'
 import { FilterChip } from '@/components/ui/filter-chip'
-import { CLEAR, DONE, OWN_WORD, REGION, SCHOLASTIC, WEEKENDS, filtersButton } from '@/areas/clubs/directoryWords'
+import { CLEAR, CLOSE, DONE, FILTERS_TITLE, OWN_WORD, REGION, SCHOLASTIC, WEEKENDS, filtersButton } from '@/areas/clubs/directoryWords'
 import { cn } from '@/lib/utils'
 
 /** How many filters are on: the region and each tick. */
@@ -30,10 +37,25 @@ function filtersOn(filters: DirectoryFilters): number {
 
 const BUTTON = 'inline-flex min-h-11 items-center gap-2 rounded-md border border-hairline bg-surface px-3 text-sm font-semibold text-ink outline-none transition-colors hover:bg-muted focus-visible:ring-3 focus-visible:ring-focus'
 
-export function ClubFilters({ clubs, filters, onChange }: {
+/**
+ * The Filters sheet's box: the full width along the window's foot, above the
+ * dock (whose height the dock writes; unset where there is none), with its
+ * top corners rounded, scrolling inside when it is taller than the room. It
+ * rises straight up, with none of the centred dialog's sideways slide or zoom.
+ */
+const SHEET_BOX = cn(
+  'inset-x-0 top-auto bottom-[var(--bottom-chrome-h,0px)] left-0 max-h-[85dvh] max-w-none translate-x-0 translate-y-0 gap-0 overflow-y-auto overflow-x-hidden rounded-t-xl rounded-b-none border-hairline bg-surface p-0 text-ink',
+  // Drawn below 1024 pixels alone, so the motion is set for those widths, as the media query puts it after the dialog's own.
+  'max-lg:data-[state=open]:slide-in-from-left-0 max-lg:data-[state=open]:slide-in-from-top-0 max-lg:data-[state=open]:zoom-in-100 max-lg:data-[state=open]:slide-in-from-bottom',
+  'max-lg:data-[state=closed]:slide-out-to-left-0 max-lg:data-[state=closed]:slide-out-to-top-0 max-lg:data-[state=closed]:zoom-out-100 max-lg:data-[state=closed]:slide-out-to-bottom',
+)
+
+export function ClubFilters({ clubs, filters, onChange, sheet = false }: {
   clubs: ReadonlyArray<FilteredClub>
   filters: DirectoryFilters
   onChange: (filters: DirectoryFilters) => void
+  /** Draws the choices as a sheet of their own, as on a phone. */
+  sheet?: boolean
 }) {
   const id = useId()
   const [open, setOpen] = useState(false)
@@ -54,50 +76,84 @@ export function ClubFilters({ clubs, filters, onChange }: {
     }
   }
 
+  const choices = (
+    <>
+      <fieldset>
+        <legend className="text-sm font-semibold text-ink">{REGION}</legend>
+        <div className="mt-2 flex flex-wrap gap-2">
+          {regions.map(({ region, count }) => (
+            <FilterChip
+              key={region}
+              label={region}
+              count={count}
+              pressed={filters.region === region}
+              onPressedChange={(on) => onChange({ ...filters, region: on ? region : null })}
+              className="max-w-full"
+            />
+          ))}
+        </div>
+      </fieldset>
+      <fieldset className="mt-3">
+        <legend className="text-sm font-semibold text-ink">{OWN_WORD}</legend>
+        <div className="mt-2 flex flex-wrap gap-2">
+          <FilterChip label={WEEKENDS} count={weekends} pressed={filters.weekends} onPressedChange={(on) => onChange({ ...filters, weekends: on })} />
+          <FilterChip label={SCHOLASTIC} count={scholastic} pressed={filters.scholastic} onPressedChange={(on) => onChange({ ...filters, scholastic: on })} />
+        </div>
+      </fieldset>
+      <div className="mt-3 flex flex-wrap justify-end gap-2">
+        <button type="button" onClick={() => onChange(NO_FILTERS)} className={BUTTON}>{CLEAR}</button>
+        <button type="button" onClick={close} className={BUTTON}>{DONE}</button>
+      </div>
+    </>
+  )
+
+  const trigger = (
+    <button
+      ref={button}
+      type="button"
+      aria-expanded={open}
+      aria-controls={sheet ? undefined : id}
+      aria-haspopup={sheet ? 'dialog' : undefined}
+      onClick={() => setOpen((now) => !now)}
+      className={cn(BUTTON, 'ml-auto')}
+    >
+      {filtersButton(filtersOn(filters))}
+      <ChevronDown className={cn('size-4 transition-transform motion-reduce:transition-none', open && !sheet && 'rotate-180')} aria-hidden="true" />
+    </button>
+  )
+
+  if (sheet) {
+    return (
+      <>
+        {trigger}
+        <Dialog open={open} onOpenChange={(next) => { if (!next) setOpen(false) }}>
+          <DialogContent
+            hideClose
+            aria-describedby={undefined}
+            data-slot="club-filters"
+            className={SHEET_BOX}
+            // The focus goes back to the Filters button, however the sheet was closed.
+            onCloseAutoFocus={(event) => {
+              event.preventDefault()
+              button.current?.focus()
+            }}
+          >
+            <div className="flex items-center justify-between gap-3 border-b border-hairline px-4 pt-3 pb-2">
+              <DialogTitle className="text-lg font-bold text-ink">{FILTERS_TITLE}</DialogTitle>
+              <DialogClose className={cn(BUTTON, '-mr-1 shrink-0')}>{CLOSE}</DialogClose>
+            </div>
+            <div className="px-4 pt-3 pb-4">{choices}</div>
+          </DialogContent>
+        </Dialog>
+      </>
+    )
+  }
+
   return (
     <>
-      <button
-        ref={button}
-        type="button"
-        aria-expanded={open}
-        aria-controls={id}
-        onClick={() => setOpen((now) => !now)}
-        className={cn(BUTTON, 'ml-auto')}
-      >
-        {filtersButton(filtersOn(filters))}
-        <ChevronDown className={cn('size-4 transition-transform motion-reduce:transition-none', open && 'rotate-180')} aria-hidden="true" />
-      </button>
+      {trigger}
       <div id={id} hidden={!open} onKeyDown={keyDown} data-slot="club-filters" className="w-full basis-full rounded-lg border border-hairline bg-card p-3">
-        {open && (
-          <>
-            <fieldset>
-              <legend className="text-sm font-semibold text-ink">{REGION}</legend>
-              <div className="mt-2 flex flex-wrap gap-2">
-                {regions.map(({ region, count }) => (
-                  <FilterChip
-                    key={region}
-                    label={region}
-                    count={count}
-                    pressed={filters.region === region}
-                    onPressedChange={(on) => onChange({ ...filters, region: on ? region : null })}
-                    className="max-w-full"
-                  />
-                ))}
-              </div>
-            </fieldset>
-            <fieldset className="mt-3">
-              <legend className="text-sm font-semibold text-ink">{OWN_WORD}</legend>
-              <div className="mt-2 flex flex-wrap gap-2">
-                <FilterChip label={WEEKENDS} count={weekends} pressed={filters.weekends} onPressedChange={(on) => onChange({ ...filters, weekends: on })} />
-                <FilterChip label={SCHOLASTIC} count={scholastic} pressed={filters.scholastic} onPressedChange={(on) => onChange({ ...filters, scholastic: on })} />
-              </div>
-            </fieldset>
-            <div className="mt-3 flex flex-wrap justify-end gap-2">
-              <button type="button" onClick={() => onChange(NO_FILTERS)} className={BUTTON}>{CLEAR}</button>
-              <button type="button" onClick={close} className={BUTTON}>{DONE}</button>
-            </div>
-          </>
-        )}
+        {open && choices}
       </div>
     </>
   )

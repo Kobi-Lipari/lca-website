@@ -10,9 +10,10 @@
 // stand-in map (src/areas/clubs/directoryPins.ts, mapSource) before the page
 // loads, which lays the same pin buttons over a sheet of the map's paper and
 // asks nothing of the map's provider. Checked here:
-// - the directory draws every club A to Z beside the map at 1440 and with
-//   the map under the list at 390, one h1, in the light and dark looks, with
-//   nothing for axe; and nothing scrolls sideways at 320 and 390;
+// - the directory draws every club A to Z beside the map at 1440 and, at
+//   390, with the map over the list's sheet (WS09 step 35), one h1, in the
+//   light and dark looks, with nothing for axe at either rest of the sheet;
+//   and nothing scrolls sideways at 320 and 390;
 // - each card is one link; a card's pointer or focus lifts its pin; a pin's
 //   press selects it and brings its card into view; no pin carries a number;
 //   the pins come in the list's order; an opened circle's pins sit apart,
@@ -22,6 +23,7 @@
 // - with no map asked for, the list stands alone with one line;
 // - today's answer draws today's Clubs page whole, and the server's own
 //   answer draws the directory with its count.
+// The phone layout's own cases are in test/a11y/clubs-directory-keys.spec.ts.
 import AxeBuilder from '@axe-core/playwright'
 import type { Page, TestInfo } from '@playwright/test'
 import { expect, openDrawn, test } from './support'
@@ -34,6 +36,9 @@ const THIN_CARD = 'Schedule not listed · Know when they meet? Suggest an update
 const WHOLE_STATE = 'All of Louisiana'
 /** The flag that asks the build for the stand-in map, as src/areas/clubs/directoryPins.ts names it. */
 const STAND_IN_FLAG = 'lcaMapStandIn'
+/** The phone layout's words (WS09 step 35). */
+const LIST_SHEET = 'List of clubs'
+const SHOW_LIST = 'Show the list'
 
 const AXE_TAGS = ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa']
 
@@ -82,6 +87,8 @@ async function openDirectory(page: Page) {
 
 const cards = (page: Page) => page.getByRole('list', { name: 'Clubs, A to Z' }).getByRole('listitem')
 const map = (page: Page) => page.getByRole('group', { name: 'Map of the clubs' })
+/** The list's sheet on a phone (WS09 step 35). */
+const sheet = (page: Page) => page.getByRole('region', { name: LIST_SHEET })
 
 /** The contrast of an element's colour (or an SVG part's stroke) against a ground, both as the page draws them. */
 function contrastIn(page: Page, what: { selector: string; prop: 'color' | 'stroke'; ground: string | null }) {
@@ -153,11 +160,19 @@ for (const size of [{ width: 1440, height: 900 }, { width: 390, height: 844 }] a
         expect(Math.round(list!.width)).toBe(460)
         expect(drawn!.x).toBeGreaterThan(list!.x + list!.width)
       } else {
-        expect(drawn!.y).toBeGreaterThan(list!.y + list!.height)
+        // On a phone the list is in the sheet, which rises from the window's foot over the map (WS09 step 35).
+        expect((await sheet(page).boundingBox())!.y).toBeGreaterThan(drawn!.y)
       }
       expect(await page.evaluate(() => document.documentElement.classList.contains('dark'))).toBe(scheme === 'dark')
       const results = await new AxeBuilder({ page }).withTags(AXE_TAGS).analyze()
       expect(results.violations.flatMap((v) => v.nodes.map((n) => `${v.id} (${v.impact}) at ${n.target.join(' ')}`))).toEqual([])
+      if (size.width < 1024) {
+        // And with the sheet at its full rest.
+        await sheet(page).getByRole('button', { name: SHOW_LIST }).click()
+        await expect(sheet(page)).toHaveAttribute('data-sheet', 'full')
+        const full = await new AxeBuilder({ page }).withTags(AXE_TAGS).analyze()
+        expect(full.violations.flatMap((v) => v.nodes.map((n) => `${v.id} (${v.impact}) at ${n.target.join(' ')}`))).toEqual([])
+      }
       expect(external).toEqual([])
     })
   }

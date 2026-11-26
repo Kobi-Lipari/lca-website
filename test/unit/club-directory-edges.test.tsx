@@ -118,7 +118,7 @@ describe('a card\'s words', () => {
     const statement = cardLinks()[0].querySelector('span.line-clamp-2')!
     expect(statement.textContent).toBe(long.trim())
     expect(statement.className).toContain('break-words')
-    expect(screen.getAllByRole('link')).toHaveLength(1)
+    expect(within(screen.getByRole('list', { name: 'Clubs, A to Z' })).getAllByRole('link')).toHaveLength(1)
   })
 })
 
@@ -171,7 +171,7 @@ describe('the tab order', () => {
     ])
     const order = [...view.container.querySelectorAll<HTMLElement>('a, button')].map((el) => el.getAttribute('data-card') ?? el.getAttribute('data-pin') ?? el.textContent)
     // The field's question mark, Near me, the two orders and Filters (WS09 step 34) come before the skip link, which goes straight before the list.
-    expect(order).toEqual(['', words.NEAR_ME, words.A_TO_Z, words.NEAREST, 'Filters', 'Skip to the map', 'a', 'b', 'c', 'a', 'b', 'c', words.WHOLE_STATE])
+    expect(order).toEqual(['', words.NEAR_ME, words.A_TO_Z, words.NEAREST, 'Filters', 'Skip to the map', 'a', 'b', 'c', 'a', 'b', 'c', words.WHOLE_STATE, words.SUGGEST_A_CLUB, words.START_ONE])
     expect(view.container.querySelectorAll('[tabindex]:not([tabindex="-1"])')).toHaveLength(0)
   })
 })

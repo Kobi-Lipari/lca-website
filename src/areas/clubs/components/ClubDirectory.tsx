@@ -26,19 +26,37 @@
 //   - The caption, then the cards, one link each (ClubCard).
 //   - At wide widths the list is a drawer 460 pixels wide beside the map,
 //     which is 780 pixels tall at most and stays in view as the list
-//     scrolls; below that the page is one column, the list and then the map
-//     under it. The list comes first in the reading and the tab order, with a
-//     link before it that skips to the map.
+//     scrolls. The list comes first in the reading and the tab order, with a
+//     link before it that skips to the map. Below that width, see the phone
+//     layout further down.
 //   - The map's pins (LCAMap's mode "directory"): a card's pointer or focus
 //     lifts its pin; a pin's press selects it and brings its card into view,
 //     at once where the visitor asks for less motion. A place moves the map
 //     to it and its nearest clubs.
 //   - With no map (no maps key), the list stands alone with one line saying so.
+//   - On a phone (WS09 step 35), below the 1024 pixels at which the list is a
+//     drawer beside the map, and only with a map to draw: the field, Near me,
+//     the orders and Filters at the top, then a link that skips to the list,
+//     then the map, filling the room under the site's header, and the list in
+//     a sheet along the window's foot. The sheet has two rests, low (its
+//     button, the caption and the first card) and full (the whole list), and
+//     is moved between them by its one button, "Show the list" at the low
+//     rest and "Map" at the full one, never by a drag. A pin's press raises
+//     the sheet to its card, marks it and moves the focus to it. The sheet is
+//     not a dialog and holds no focus: when the focus leaves it at the full
+//     rest for something the sheet would cover, it goes back to its low rest.
+//     It sits above the site's dock at the window's foot, whose height the
+//     dock writes, and never under or over it. It moves without animation.
+//     The Filters panel is a sheet of its own there (ClubFilters, `sheet`).
+//     With no map, the list stands alone as at wide widths.
+//   - Under the list at every width, "Not here?": three tiles, to Suggest a
+//     club, to Start a club, and one sentence on how a club's own page takes
+//     an update.
 // Nothing here names who keeps a club, a region's representative or a seat,
 // and no address of a club is shown (K's decision 12).
-import { startTransition, useEffect, useId, useRef, useState } from 'react'
+import { startTransition, useEffect, useId, useRef, useState, type CSSProperties, type MouseEvent } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { Check } from 'lucide-react'
+import { Check, Map as MapIcon, PanelBottomOpen } from 'lucide-react'
 
 import { CLEAR_FILTERS, DIVIDER_WORDS, NO_FILTER_MATCH, SHOW_ALL, directoryView, nearestFirst, type DirectoryFilters } from '@domain/clubs/order'
 import { readDirectoryAddress, writeDirectoryAddress, type DirectoryAddress } from '@domain/clubs/directoryAddress'
@@ -50,16 +68,46 @@ import { LCAMap } from '@/areas/clubs/components/LCAMap'
 import { PlaceField, type DeviceAnswer } from '@/areas/clubs/components/PlaceField'
 import { mapSource, pinsInOrder, type MapFocus } from '@/areas/clubs/directoryPins'
 import {
-  A_TO_Z, DIRECTORY_TITLE, FINDING, LIST_A_TO_Z, LIST_NEAREST, MAP_KEY, NEAREST, NEAREST_WHY, NO_CLUBS, NO_DISTANCE, NO_MAP, NO_SUPPORT, NOT_FOUND,
-  ORDER_LABEL, OUTSIDE, SKIP_TO_MAP, START_A_CLUB, TOO_LONG, TYPING_PAUSE_MS, listCaption, nearestCaption, noClubIn, regionsWithClubs, stripLine, townWords,
+  A_TO_Z, DIRECTORY_TITLE, FINDING, LIST_A_TO_Z, LIST_NEAREST, LIST_SHEET, MAP_KEY, MISSING_CLUB, NEAREST, NEAREST_WHY, NO_CLUB_NEAR, NO_CLUBS, NO_DISTANCE, NO_MAP,
+  NO_SUPPORT, NOT_FOUND, NOT_HERE, ORDER_LABEL, OUT_OF_DATE, OUT_OF_DATE_HOW, OUTSIDE, SHOW_LIST, SHOW_MAP, SKIP_TO_LIST, SKIP_TO_MAP, START_A_CLUB, START_ONE,
+  SUGGEST_A_CLUB, TOO_LONG, TYPING_PAUSE_MS, listCaption, nearestCaption, noClubIn, regionsWithClubs, stripLine, townWords,
 } from '@/areas/clubs/directoryWords'
+import { useNarrowScreen } from '@/areas/clubs/narrowScreen'
 import { START_QUERY } from '@/areas/clubs/suggestClub'
 import { cn } from '@/lib/utils'
 
 const lessMotion = () => typeof window !== 'undefined' && typeof window.matchMedia === 'function' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
+/** The form that suggests a club, as step 30 addresses it: the address with no kind. */
+const SUGGEST_A_CLUB_HREF = '/clubs/suggest'
+
 /** The form that starts a club, as step 30 addresses it. */
-const START_A_CLUB_HREF = `/clubs/suggest?kind=${START_QUERY}`
+const START_A_CLUB_HREF = `${SUGGEST_A_CLUB_HREF}?kind=${START_QUERY}`
+
+/** The sheet's two rests on a phone: low, its button, the caption and the first card; full, the whole list. */
+type Rest = 'low' | 'full'
+
+/** The low rest's height: as measured (16rem until it is), and never more than half the window. */
+const LOW_HEIGHT = 'min(var(--sheet-low, 16rem), 50dvh)'
+
+/** The room kept under the first card at the low rest, in pixels. */
+const LOW_ROOM = 12
+
+/** The least share of the room between the site's header and its dock that the full sheet holds. */
+const FULL_SHARE = 0.6
+
+/** The height of the site's sticky header, as the header writes it; none in the reflow fallback, where it scrolls away. */
+const headerHeight = () => parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--header-h')) || 0
+
+/**
+ * Over the low sheet, a control the keyboard moves to (in the controls, a
+ * pin, All of Louisiana) is scrolled clear of the sheet as well as of the
+ * dock: the page keeps the dock's height as room at its foot (src/index.css),
+ * and each such control the low sheet's height as a margin of its own. The
+ * sheet's own controls keep none, so moving into the sheet never scrolls the
+ * page.
+ */
+const CLEAR_OF_SHEET = '[&_:is(a,button,input)]:scroll-mb-[min(var(--sheet-low,16rem),50dvh)]'
 
 /** How many of the nearest clubs the map frames beside a place. */
 const FRAMED_CLUBS = 3
@@ -91,6 +139,33 @@ function TitleStrip({ line }: { line: string }) {
 
 const ORDER_BUTTON = 'inline-flex min-h-11 items-center gap-1.5 rounded-md border px-3 text-sm outline-none transition-colors focus-visible:ring-3 focus-visible:ring-focus'
 const LINK_BUTTON = 'inline rounded-sm font-semibold text-ink underline underline-offset-2 outline-none hover:no-underline focus-visible:ring-3 focus-visible:ring-focus'
+const SHEET_BUTTON = 'inline-flex min-h-11 items-center gap-2 rounded-full border border-hairline bg-surface px-4 text-sm font-semibold text-ink outline-none transition-colors hover:bg-muted focus-visible:ring-3 focus-visible:ring-focus'
+const TILE = 'min-w-0 rounded-lg border border-hairline bg-card p-4'
+const TILE_LINK = cn(LINK_BUTTON, 'mt-1 inline-flex min-h-11 items-center text-sm')
+
+/** "Not here?": three plain tiles under the list, each one link or one sentence, naming no one and showing no address. */
+function NotHere() {
+  const id = useId()
+  return (
+    <section aria-labelledby={id} data-slot="not-here" className="mt-8">
+      <h2 id={id} className="text-lg font-semibold text-ink">{NOT_HERE}</h2>
+      <ul className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-3">
+        <li className={TILE}>
+          <h3 className="text-sm font-semibold text-ink">{MISSING_CLUB}</h3>
+          <Link to={SUGGEST_A_CLUB_HREF} className={TILE_LINK}>{SUGGEST_A_CLUB}</Link>
+        </li>
+        <li className={TILE}>
+          <h3 className="text-sm font-semibold text-ink">{NO_CLUB_NEAR}</h3>
+          <Link to={START_A_CLUB_HREF} className={TILE_LINK}>{START_ONE}</Link>
+        </li>
+        <li className={TILE}>
+          <h3 className="text-sm font-semibold text-ink">{OUT_OF_DATE}</h3>
+          <p className="mt-1 text-sm text-ink">{OUT_OF_DATE_HOW}</p>
+        </li>
+      </ul>
+    </section>
+  )
+}
 
 /** One of the two orders: pressed is told by aria-pressed and a check mark; one that cannot be chosen yet says why, beside it. */
 function OrderButton({ label, pressed, unavailable, why, onPress }: { label: string; pressed: boolean; unavailable?: boolean; why?: string; onPress: () => void }) {
@@ -143,6 +218,18 @@ export function ClubDirectory({ clubs }: { clubs: ApiClubDirectoryItem[] }) {
   const whyId = useId()
   const orderId = useId()
   const source = mapSource()
+  // The phone layout (WS09 step 35): below the wide layout's width, with a map to draw.
+  const narrow = useNarrowScreen()
+  const phone = narrow && source !== null && clubs.length > 0
+  const [rest, setRest] = useState<Rest>('low')
+  const phoneWrap = useRef<HTMLDivElement>(null)
+  const band = useRef<HTMLDivElement>(null)
+  const sheet = useRef<HTMLElement>(null)
+  const sheetRow = useRef<HTMLDivElement>(null)
+  const scroller = useRef<HTMLDivElement>(null)
+  // The club whose pin was pressed, whose card takes the focus once the sheet is up.
+  const raiseTo = useRef<string | null>(null)
+  const measure = useRef<() => void>(() => {})
 
   // The place the address holds: its ZIP code's point and the town nearest it, or none for a ZIP code the points file does not hold.
   const near = address.near
@@ -187,7 +274,109 @@ export function ClubDirectory({ clubs }: { clubs: ApiClubDirectoryItem[] }) {
 
   function select(id: string | null) {
     setSelectedId(id)
-    if (id) cards.current.get(id)?.scrollIntoView({ block: 'nearest', behavior: lessMotion() ? 'auto' : 'smooth' })
+    if (!id) return
+    // On a phone a pin's press raises the sheet to its card, and the card takes the focus once it is drawn there.
+    if (phone) {
+      raiseTo.current = id
+      raise()
+      return
+    }
+    cards.current.get(id)?.scrollIntoView({ block: 'nearest', behavior: lessMotion() ? 'auto' : 'smooth' })
+  }
+
+  /**
+   * Raises the sheet to its full rest. The title strip scrolls away first, as far as the page goes, so the full sheet
+   * has the room under the field, the orders and Filters; the focus stays where it is.
+   */
+  function raise() {
+    const at = band.current?.getBoundingClientRect().top
+    const header = headerHeight()
+    if (at !== undefined && at > header) window.scrollBy({ top: at - header, behavior: 'instant' })
+    setRest('full')
+  }
+
+  /** Lowers the sheet to its low rest, the list back at its top, so the low rest shows the caption and the first card. */
+  function lower() {
+    if (scroller.current) scroller.current.scrollTop = 0
+    setRest('low')
+  }
+
+  // The sheet's measures on a phone, written on the elements, not through React, so a scroll draws nothing again: the low
+  // rest's height (the sheet's button, the caption and the first card), and the full rest's top: under the field, the
+  // orders and Filters, or under the site's header once they have scrolled away, and never so low that the full sheet
+  // holds less than FULL_SHARE of the room between the header and the dock, nor less than the low one.
+  useEffect(() => {
+    if (!phone) return
+    const root = document.documentElement
+    let frame = 0
+    const write = () => {
+      frame = 0
+      const wrap = phoneWrap.current
+      const row = sheetRow.current
+      const inner = scroller.current
+      if (!wrap || !row || !inner) return
+      const list = inner.querySelector<HTMLElement>('[data-cards]')
+      const first = list?.firstElementChild as HTMLElement | null | undefined
+      const end = first ? first.offsetTop + first.offsetHeight : (list?.offsetTop ?? inner.scrollHeight)
+      const low = Math.ceil(row.offsetHeight + end + LOW_ROOM)
+      wrap.style.setProperty('--sheet-low', `${low}px`)
+      const header = headerHeight()
+      const foot = window.innerHeight - (parseFloat(getComputedStyle(root).getPropertyValue('--bottom-chrome-h')) || 0)
+      const lowest = foot - Math.max(Math.min(low, window.innerHeight / 2), (foot - header) * FULL_SHARE)
+      const under = band.current ? band.current.getBoundingClientRect().bottom : 0
+      wrap.style.setProperty('--sheet-top', `${Math.round(Math.max(header, Math.min(under, lowest)))}px`)
+    }
+    const soon = () => {
+      if (!frame) frame = window.requestAnimationFrame(write)
+    }
+    measure.current = write
+    write()
+    const watch = typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(soon)
+    for (const el of [scroller.current?.firstElementChild, band.current]) if (el) watch?.observe(el)
+    window.addEventListener('resize', soon)
+    window.addEventListener('scroll', soon, { passive: true })
+    return () => {
+      window.cancelAnimationFrame(frame)
+      watch?.disconnect()
+      window.removeEventListener('resize', soon)
+      window.removeEventListener('scroll', soon)
+      measure.current = () => {}
+    }
+  }, [phone])
+
+  // After each drawing: the measures again, and a pressed pin's card, once the sheet is up, scrolled to and given the focus.
+  useEffect(() => {
+    measure.current()
+    const id = raiseTo.current
+    if (id === null || !phone || rest !== 'full') return
+    raiseTo.current = null
+    const li = cards.current.get(id)
+    li?.querySelector('a')?.focus({ preventScroll: true })
+    li?.scrollIntoView({ block: 'start', behavior: lessMotion() ? 'auto' : 'smooth' })
+  })
+
+  // The full sheet covers the map: when the focus moves to something it covers (a pin, a control it reaches over, the page
+  // under it), it goes back to its low rest. A control in sight above it, or in a dialog, leaves it where it is.
+  useEffect(() => {
+    if (!phone || rest !== 'full') return
+    const away = (event: FocusEvent) => {
+      const at = event.target
+      if (!(at instanceof Element)) return
+      if (sheet.current?.contains(at) || at.closest('[role="dialog"]')) return
+      const top = sheet.current?.getBoundingClientRect().top ?? 0
+      if (band.current?.contains(at) && at.getBoundingClientRect().bottom <= top) return
+      // As the sheet's own button lowers it: the list back at its top, the caption and the first card in sight.
+      if (scroller.current) scroller.current.scrollTop = 0
+      setRest('low')
+    }
+    document.addEventListener('focusin', away)
+    return () => document.removeEventListener('focusin', away)
+  }, [phone, rest])
+
+  /** "Skip to the list": the focus goes to the sheet, at whichever rest it is, and the address keeps no mark of it. */
+  function skipToList(event: MouseEvent<HTMLAnchorElement>) {
+    event.preventDefault()
+    sheet.current?.focus()
   }
 
   /**
@@ -332,8 +521,9 @@ export function ClubDirectory({ clubs }: { clubs: ApiClubDirectoryItem[] }) {
     )
   }
 
-  const list = (
-    <div className="min-w-0">
+  // The field, Near me, the two orders and Filters: over the list at wide widths, and at the top of the phone layout.
+  const controls = (
+    <>
       <PlaceField
         text={text}
         onText={typed}
@@ -351,13 +541,14 @@ export function ClubDirectory({ clubs }: { clubs: ApiClubDirectoryItem[] }) {
           <OrderButton label={NEAREST} pressed={nearestOn} unavailable={place === null} why={whyId} onPress={() => go({ sort: 'nearest' }, dropNote)} />
           {place === null && <span id={whyId} className="text-sm text-muted-foreground">{NEAREST_WHY}</span>}
         </div>
-        <ClubFilters clubs={clubs} filters={filters} onChange={setFilters} />
+        <ClubFilters clubs={clubs} filters={filters} onChange={setFilters} sheet={narrow} />
       </div>
-      {source !== null && (
-        <a href="#map" className="sr-only rounded-md text-sm font-semibold text-ink underline underline-offset-2 outline-none focus:not-sr-only focus:mt-2 focus:inline-flex focus:min-h-11 focus:items-center focus-visible:ring-3 focus-visible:ring-focus">
-          {SKIP_TO_MAP}
-        </a>
-      )}
+    </>
+  )
+
+  // The live caption, the one line where there is no map, and the cards: under the controls, or in the phone's sheet.
+  const listBody = (
+    <>
       <div role="status" className="mt-3 space-y-1">
         {note && (
           <p className="text-sm font-semibold text-ink" data-note={note.kind}>
@@ -372,7 +563,7 @@ export function ClubDirectory({ clubs }: { clubs: ApiClubDirectoryItem[] }) {
         {captionLine()}
       </div>
       {source === null && <p className="mt-1 text-sm text-muted-foreground">{NO_MAP}</p>}
-      <ul aria-label={nearestOn ? LIST_NEAREST : LIST_A_TO_Z} className="mt-3 space-y-2">
+      <ul aria-label={nearestOn ? LIST_NEAREST : LIST_A_TO_Z} data-cards="true" className="mt-3 space-y-2">
         {view.rows.map(({ club, distance }, index) => (
           <li
             key={club.id}
@@ -392,25 +583,103 @@ export function ClubDirectory({ clubs }: { clubs: ApiClubDirectoryItem[] }) {
           </li>
         ))}
       </ul>
+    </>
+  )
+
+  const list = (
+    <div className="min-w-0">
+      {controls}
+      {source !== null && (
+        <a href="#map" className="sr-only rounded-md text-sm font-semibold text-ink underline underline-offset-2 outline-none focus:not-sr-only focus:mt-2 focus:inline-flex focus:min-h-11 focus:items-center focus-visible:ring-3 focus-visible:ring-focus">
+          {SKIP_TO_MAP}
+        </a>
+      )}
+      {listBody}
     </div>
   )
+
+  const theMap = <LCAMap mode="directory" height="100%" pins={pins} selectedId={selectedId} liftedId={liftedId} onSelect={select} focus={focus} />
+
+  /**
+   * The sheet on a phone. At the low rest it keeps to the window's foot while
+   * the map is in view and comes to rest under the map at the page's end, so
+   * it never covers the footer; at the full rest it is fixed from under the
+   * controls down to the dock. Neither rest reaches under the dock. The
+   * browser never holds the page's scroll by the sheet, which would move the
+   * page when the sheet changes rest.
+   */
+  const sheetPlace: CSSProperties = rest === 'low'
+    ? { position: 'sticky', bottom: 'var(--bottom-chrome-h, 0px)', height: LOW_HEIGHT, overflowAnchor: 'none' }
+    : { position: 'fixed', left: 0, right: 0, top: 'var(--sheet-top, var(--header-h, 0px))', bottom: 'var(--bottom-chrome-h, 0px)', margin: 0, overflowAnchor: 'none' }
 
   return (
     <div data-slot="club-directory" data-address={writeDirectoryAddress(address)}>
       <TitleStrip line={stripLine(clubs.length, regionsWithClubs(clubs))} />
       <div className="mx-auto max-w-[1480px] px-4 py-6 sm:px-6">
-        {source === null ? list : (
-          <div className="grid grid-cols-1 gap-6 lg:grid-cols-[460px_minmax(0,1fr)]">
-            {list}
-            <div id="map" ref={mapWrap} tabIndex={-1} className="min-w-0 scroll-mt-20 outline-none">
-              <div className="lg:sticky lg:top-20">
-                <div className="h-[420px] lg:h-[min(780px,calc(100vh-7rem))]">
-                  <LCAMap mode="directory" height="100%" pins={pins} selectedId={selectedId} liftedId={liftedId} onSelect={select} focus={focus} />
+        {phone ? (
+          <div ref={phoneWrap} data-layout="phone">
+            <div ref={band} className={cn('min-w-0', CLEAR_OF_SHEET)}>{controls}</div>
+            <a
+              href="#club-list"
+              onClick={skipToList}
+              className="sr-only rounded-md text-sm font-semibold text-ink underline underline-offset-2 outline-none focus:not-sr-only focus:mt-2 focus:inline-flex focus:min-h-11 focus:items-center focus-visible:ring-3 focus-visible:ring-focus"
+            >
+              {SKIP_TO_LIST}
+            </a>
+            <div
+              id="map"
+              ref={mapWrap}
+              tabIndex={-1}
+              className={cn('-mx-4 mt-3 min-w-0 scroll-mt-20 outline-none sm:-mx-6', CLEAR_OF_SHEET)}
+              style={{ height: `calc(100dvh - var(--header-h, 0px) - var(--bottom-chrome-h, 0px) - ${LOW_HEIGHT})`, minHeight: '14rem' }}
+            >
+              {theMap}
+            </div>
+            <p className="mt-2 text-xs text-muted-foreground">{MAP_KEY}</p>
+            {rest === 'full' && <div aria-hidden="true" data-sheet-room="true" style={{ height: LOW_HEIGHT }} />}
+            <section
+              id="club-list"
+              ref={sheet}
+              tabIndex={-1}
+              aria-label={LIST_SHEET}
+              data-sheet={rest}
+              className="z-30 -mx-4 mt-3 flex flex-col rounded-t-xl border border-b-0 border-hairline bg-surface shadow-[0_-4px_16px_rgba(0,0,0,0.12)] outline-none sm:-mx-6"
+              style={sheetPlace}
+            >
+              <div ref={sheetRow} className="flex shrink-0 justify-end px-4 pt-2 sm:px-6">
+                <button type="button" data-sheet-button="true" onClick={() => (rest === 'low' ? raise() : lower())} className={SHEET_BUTTON}>
+                  {rest === 'low' ? <PanelBottomOpen className="size-4" aria-hidden="true" /> : <MapIcon className="size-4" aria-hidden="true" />}
+                  {rest === 'low' ? SHOW_LIST : SHOW_MAP}
+                </button>
+              </div>
+              <div ref={scroller} className="relative min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 pb-4 sm:px-6">
+                <div>
+                  {listBody}
+                  <NotHere />
                 </div>
-                <p className="mt-2 text-xs text-muted-foreground">{MAP_KEY}</p>
+              </div>
+            </section>
+          </div>
+        ) : source === null ? (
+          <>
+            {list}
+            <NotHere />
+          </>
+        ) : (
+          <>
+            <div className="grid grid-cols-1 gap-6 lg:grid-cols-[460px_minmax(0,1fr)]">
+              {list}
+              <div id="map" ref={mapWrap} tabIndex={-1} className="min-w-0 scroll-mt-20 outline-none">
+                <div className="lg:sticky lg:top-20">
+                  <div className="h-[420px] lg:h-[min(780px,calc(100vh-7rem))]">
+                    {theMap}
+                  </div>
+                  <p className="mt-2 text-xs text-muted-foreground">{MAP_KEY}</p>
+                </div>
               </div>
             </div>
-          </div>
+            <NotHere />
+          </>
         )}
       </div>
     </div>

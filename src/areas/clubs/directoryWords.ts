@@ -4,7 +4,9 @@
 // and its tests read one wording. Every count is counted from the clubs
 // given, never typed in: the regions are those of REGIONS (five, by K's
 // decision 14) that have a club in the answer.
+import { CLUB_REQUEST_TITLES } from '@domain/clubs/newClub'
 import { regionChoices } from '@domain/clubs/order'
+import { SUGGEST_LINK } from '@domain/clubs/suggestion'
 
 /** The page's one heading. */
 export const DIRECTORY_TITLE = 'Chess clubs in Louisiana'
@@ -143,6 +145,33 @@ export const WEEKENDS = 'Plays on weekends'
 export const SCHOLASTIC = 'Scholastic friendly'
 export const CLEAR = 'Clear'
 export const DONE = 'Done'
+
+// Phones and what sits under the list (WS09 step 35).
+
+/** The link before the map, on a phone, that goes straight to the list. */
+export const SKIP_TO_LIST = 'Skip to the list'
+
+/** The sheet's name, for a screen reader. */
+export const LIST_SHEET = 'List of clubs'
+
+/** The sheet's button at its low rest, which raises it to the whole list. */
+export const SHOW_LIST = 'Show the list'
+
+/** The sheet's button at its full rest, which lowers it to show the map. */
+export const SHOW_MAP = 'Map'
+
+/** The Filters sheet's title and its own Close. */
+export const FILTERS_TITLE = 'Filters'
+export const CLOSE = 'Close'
+
+/** The three tiles under the list. */
+export const NOT_HERE = 'Not here?'
+export const MISSING_CLUB = 'Missing a club?'
+export const SUGGEST_A_CLUB = CLUB_REQUEST_TITLES.new_club
+export const NO_CLUB_NEAR = 'No club near you?'
+export const START_ONE = CLUB_REQUEST_TITLES.start_club
+export const OUT_OF_DATE = 'Something out of date?'
+export const OUT_OF_DATE_HOW = `Open the club's own page and press ${SUGGEST_LINK}.`
 
 /** How long the field waits for the typing to pause before it reads what was typed, in milliseconds. */
 export const TYPING_PAUSE_MS = 600
