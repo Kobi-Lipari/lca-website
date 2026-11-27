@@ -746,7 +746,7 @@ describe('the database adapter', () => {
 
 describe('the command line', () => {
   const work = mkdtempSync(join(tmpdir(), 'apply-memberships-'))
-  afterAll(() => rmSync(work, { recursive: true, force: true }))
+  afterAll(() => rmSync(work, { recursive: true, force: true }), 60_000)
   const planFile = join(work, 'plan.json')
   writeFileSync(planFile, JSON.stringify(plan(ENTRIES.slice(0, 1))))
 
@@ -1169,7 +1169,7 @@ describe('nothing printed holds a credential', () => {
 
 describe('--apply with a variable missing', () => {
   const work = mkdtempSync(join(tmpdir(), 'apply-memberships-env-'))
-  afterAll(() => rmSync(work, { recursive: true, force: true }))
+  afterAll(() => rmSync(work, { recursive: true, force: true }), 60_000)
   const planFile = join(work, 'plan.json')
   writeFileSync(planFile, JSON.stringify(plan(ENTRIES.slice(0, 1))))
   const FULL = {

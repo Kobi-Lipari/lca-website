@@ -17,11 +17,11 @@
 //   (wrangler is swapped for an echo, and the script runs with a PATH whose
 //   only wrangler is a stub that exits 99, so nothing reaches any database)
 import { spawnSync } from 'node:child_process'
-import { mkdtempSync, readFileSync, writeFileSync } from 'node:fs'
+import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join, resolve } from 'node:path'
 import type { DatabaseSync } from 'node:sqlite'
-import { describe, expect, it } from 'vitest'
+import { afterAll, describe, expect, it } from 'vitest'
 import { splitSql } from '../shared/splitSql'
 import { migrationFiles, openMigratedDb, userTables } from './helpers/sqlite'
 
@@ -215,7 +215,12 @@ describe('db:seed:preview', () => {
     { mode: 0o755 },
   )
   writeFileSync(join(bin, 'wrangler'), '#!/bin/sh\necho "the real wrangler would have run" >&2\nexit 99\n', { mode: 0o755 })
-  const run = (script: string) => spawnSync('/bin/sh', ['-c', script], { cwd: ROOT, encoding: 'utf8', env: { PATH: bin } })
+  /** Every folder these cases make under the system's temporary folder, removed when they are done. */
+  const TEMP_FOLDERS: string[] = [dir, bin]
+  afterAll(() => {
+    for (const made of TEMP_FOLDERS.splice(0)) rmSync(made, { recursive: true, force: true })
+  }, 60_000)
+  const run =(script: string) => spawnSync('/bin/sh', ['-c', script], { cwd: ROOT, encoding: 'utf8', env: { PATH: bin } })
 
   /** The script with wrangler swapped for an echo, so nothing can reach a database. */
   const dryRun = (config?: string) => {

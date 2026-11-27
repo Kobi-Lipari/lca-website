@@ -47,7 +47,7 @@ import { ROOT } from './helpers/cssTokens'
 const c = (...parts: string[]) => parts.join('')
 
 const work = mkdtempSync(join(tmpdir(), 'semantic-colours-edges-'))
-afterAll(() => rmSync(work, { recursive: true, force: true }))
+afterAll(() => rmSync(work, { recursive: true, force: true }), 60_000)
 let n = 0
 
 const MAP: ColourMap = {

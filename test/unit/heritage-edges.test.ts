@@ -129,7 +129,7 @@ const textOf = (file: Emitted) => bytesOf(file).toString('utf8')
 const isFont = (file: Emitted) => /\.(woff2?|ttf|otf|eot)$/.test(file.fileName)
 
 const outDir = mkdtempSync(join(tmpdir(), 'lca-heritage-'))
-afterAll(() => rmSync(outDir, { recursive: true, force: true }))
+afterAll(() => rmSync(outDir, { recursive: true, force: true }), 60_000)
 
 /**
  * Builds one file of the site as the input, with the site's own Vite config
@@ -444,7 +444,7 @@ describe('the whole site, built as it is deployed and as the browser tests build
   }, 180_000)
   afterAll(() => {
     for (const dir of [production, a11y]) if (dir) rmSync(dir, { recursive: true, force: true })
-  })
+  }, 60_000)
 
   /** The loader's own code: the query it writes on a fresh link (the template literal survives minifying). */
   const LOADER_CODE = 'retry=${'

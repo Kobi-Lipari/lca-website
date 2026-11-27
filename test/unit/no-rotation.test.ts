@@ -484,7 +484,7 @@ describe('the timers in src', () => {
 
 describe('the rules on a planted tree', () => {
   const work = mkdtempSync(join(tmpdir(), 'no-rotation-'))
-  afterAll(() => rmSync(work, { recursive: true, force: true }))
+  afterAll(() => rmSync(work, { recursive: true, force: true }), 60_000)
   let n = 0
 
   function plant(files: Record<string, string>): string {

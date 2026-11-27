@@ -38,7 +38,7 @@ beforeAll(() => {
 }, BUILD_TIME)
 afterAll(() => {
   rmSync(dir, { recursive: true, force: true })
-})
+}, 60_000)
 
 const entriesOf = (text: string) => text.split(/\n(?=\d+\. )/).slice(1).map((e) => e.trimEnd())
 const hash = (path: string) => createHash('sha256').update(readFileSync(path)).digest('hex')

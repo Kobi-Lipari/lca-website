@@ -924,7 +924,7 @@ describe('the gold guard on the tree', () => {
 
 describe('the gold guard on a planted tree', () => {
   const work = mkdtempSync(join(tmpdir(), 'gold-guard-'))
-  afterAll(() => rmSync(work, { recursive: true, force: true }))
+  afterAll(() => rmSync(work, { recursive: true, force: true }), 60_000)
   let n = 0
 
   function tree(files: Record<string, string>): string {
@@ -1125,7 +1125,7 @@ describe('the gold guard on the tree without its allowlist, and on a copy of the
   // ground by its on, and the rows that read a listed badge moved onto navy.
   // The planted class names are put together when the test runs.
   const work = mkdtempSync(join(tmpdir(), 'gold-guard-copy-'))
-  afterAll(() => rmSync(work, { recursive: true, force: true }))
+  afterAll(() => rmSync(work, { recursive: true, force: true }), 60_000)
   const files = tsxFiles(ROOT)
   const GOLD_TEXT = c('text-lca', '-gold')
   const HEX_GOLD = c('text-[#', 'c8a94a]')
@@ -1276,7 +1276,7 @@ describe('the gold guard on more planted forms', () => {
   // modifier) and the other ways a page can write it, each planted on a light
   // ground in a temporary tree; and the WS02 colours in a style or a comment.
   const work = mkdtempSync(join(tmpdir(), 'gold-guard-more-'))
-  afterAll(() => rmSync(work, { recursive: true, force: true }))
+  afterAll(() => rmSync(work, { recursive: true, force: true }), 60_000)
   let n = 0
   function tree(files: Record<string, string>): string {
     const root = join(work, `t${n++}`)
@@ -1448,7 +1448,7 @@ describe('the gold guard on an icon\'s paint, the token variables, and the gold 
   // component told its ground by on, drawn with an on that does not name its
   // ground, and in an object of strings with and without an entry.
   const work = mkdtempSync(join(tmpdir(), 'gold-guard-paint-'))
-  afterAll(() => rmSync(work, { recursive: true, force: true }))
+  afterAll(() => rmSync(work, { recursive: true, force: true }), 60_000)
   let n = 0
   function tree(files: Record<string, string>): string {
     const root = join(work, `t${n++}`)

@@ -23,12 +23,12 @@
 //   header, and ApiError for a failed or unreadable answer
 // - a bundle of the barrel has no circular-import warning and no zod
 //   (npm run check:bundle proves the same on the whole site build)
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, writeFileSync } from 'node:fs'
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
 import ts from 'typescript'
 import { build } from 'vite'
-import { afterEach, describe, expect, it, vi } from 'vitest'
+import { afterAll, afterEach, describe, expect, it, vi } from 'vitest'
 import { findZod } from '../../scripts/check-bundle'
 
 const session = vi.hoisted(() => ({ token: null as string | null }))
@@ -451,8 +451,15 @@ describe('calls through the barrel send what they sent before', () => {
 })
 
 describe('a bundle of the barrel', () => {
+  /** Every folder the case makes under the system's temporary folder, removed when it is done. */
+  const TEMP_FOLDERS: string[] = []
+  afterAll(() => {
+    for (const dir of TEMP_FOLDERS.splice(0)) rmSync(dir, { recursive: true, force: true })
+  }, 60_000)
+
   it('has no circular-import warning, no zod, and carries the calls of all eight areas', async () => {
     const work = mkdtempSync(join(tmpdir(), 'api-bundle-'))
+    TEMP_FOLDERS.push(work)
     const src = join(work, 'src')
     const out = join(work, 'assets')
     mkdirSync(src, { recursive: true })

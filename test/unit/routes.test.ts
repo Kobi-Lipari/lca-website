@@ -10,7 +10,7 @@ import { afterAll, describe, expect, it } from 'vitest'
 import { collectRouteFiles, collectRoutes, exportedMethods, fileMethods } from './routes'
 
 const base = mkdtempSync(join(tmpdir(), 'routes-scan-'))
-afterAll(() => rmSync(base, { recursive: true, force: true }))
+afterAll(() => rmSync(base, { recursive: true, force: true }), 60_000)
 
 function put(rel: string, text = 'export const x = 1') {
   mkdirSync(join(base, rel, '..'), { recursive: true })

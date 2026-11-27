@@ -61,7 +61,7 @@ function without(key: string): string {
 const dirs: string[] = []
 afterAll(() => {
   for (const dir of dirs) rmSync(dir, { recursive: true, force: true })
-})
+}, 60_000)
 
 describe('migration 0067 after checkpoint S\'s review: the slugs', () => {
   it('writes each typed slug against the name 0013 stored, and a club of the six renamed since takes its id with no old address', () => {

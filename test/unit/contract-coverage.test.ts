@@ -184,7 +184,7 @@ describe('contract coverage fails when it should', () => {
   // new endpoint nobody has written a contract for.
   const base = mkdtempSync(join(tmpdir(), 'contract-coverage-'))
   const scratch = join(base, 'functions')
-  afterAll(() => rmSync(base, { recursive: true, force: true }))
+  afterAll(() => rmSync(base, { recursive: true, force: true }), 60_000)
 
   const write = (dir: string, rel: string, text: string) => {
     mkdirSync(join(dir, rel, '..'), { recursive: true })

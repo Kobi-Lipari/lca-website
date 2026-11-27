@@ -12,9 +12,9 @@
 // - REDESIGN_STATUS.md: both ordering rules, one block per workstream, the
 //   AC1-AC14 / K1a-K6 table, this slice's row and its verify items
 // - README.md: the Safe previews section
-import { describe, expect, it } from 'vitest'
+import { afterAll, describe, expect, it } from 'vitest'
 import { spawnSync } from 'node:child_process'
-import { mkdtempSync, readFileSync, writeFileSync } from 'node:fs'
+import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { findPreviewProblems } from '../../scripts/db/preview-guard'
@@ -33,6 +33,11 @@ const PREVIEW_ID = '28e13174-3a06-47a7-ab0f-b4ac7f24af6f'
 const GUARD = 'scripts/db/preview-guard.ts'
 
 const dir = mkdtempSync(join(tmpdir(), 'preview-db-'))
+/** Every folder the cases make under the system's temporary folder, removed when they are done. */
+const TEMP_FOLDERS: string[] = [dir]
+afterAll(() => {
+  for (const made of TEMP_FOLDERS.splice(0)) rmSync(made, { recursive: true, force: true })
+}, 60_000)
 const fixture = (name: string, body: string) => {
   const path = join(dir, name)
   writeFileSync(path, body)

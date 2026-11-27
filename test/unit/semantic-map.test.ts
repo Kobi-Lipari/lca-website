@@ -298,7 +298,7 @@ describe('the TSX files match the map', () => {
 
 describe('scripts/codemods/semantic-colours.ts', () => {
   const work = mkdtempSync(join(tmpdir(), 'semantic-colours-'))
-  afterAll(() => rmSync(work, { recursive: true, force: true }))
+  afterAll(() => rmSync(work, { recursive: true, force: true }), 60_000)
   let n = 0
 
   const FIXTURE_MAP: ColourMap = {
