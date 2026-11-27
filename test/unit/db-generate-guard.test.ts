@@ -13,8 +13,8 @@
 // and a journal entry), using real drizzle-kit output from
 // test/unit/fixtures/drizzle-sql. Nothing here touches the real drizzle/ or
 // migrations/ folders.
-import { describe, expect, it } from 'vitest'
-import { cpSync, existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, writeFileSync } from 'node:fs'
+import { afterAll, describe, expect, it } from 'vitest'
+import { cpSync, existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import {
@@ -47,9 +47,16 @@ const CASCADE_SNAPSHOT = {
   },
 }
 
+/** Every folder the cases make under the system's temporary folder, removed when they are done. */
+const TEMP_FOLDERS: string[] = []
+afterAll(() => {
+  for (const dir of TEMP_FOLDERS.splice(0)) rmSync(dir, { recursive: true, force: true })
+}, 60_000)
+
 /** A temporary repo: migrations/ with three files, drizzle/meta with the real baseline. */
 function sandbox() {
   const root = mkdtempSync(join(tmpdir(), 'db-generate-'))
+  TEMP_FOLDERS.push(root)
   const migrationsDir = join(root, 'migrations')
   const stagingDir = join(root, 'drizzle')
   mkdirSync(migrationsDir)

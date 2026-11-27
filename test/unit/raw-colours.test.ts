@@ -247,7 +247,7 @@ describe('the raw colour ratchet on the tree', () => {
 
 describe('the ratchet on a planted tree', () => {
   const work = mkdtempSync(join(tmpdir(), 'raw-colours-'))
-  afterAll(() => rmSync(work, { recursive: true, force: true }))
+  afterAll(() => rmSync(work, { recursive: true, force: true }), 60_000)
   let n = 0
 
   /** A class name no page uses, put together when the test runs, so Tailwind, which reads this file, builds no CSS for it. */
@@ -470,7 +470,7 @@ describe('the gold hex text classes are raw to the ratchet again (step 25)', () 
   // raw. The class names are put together when the test runs, so Tailwind,
   // which reads this file, builds no CSS for them.
   const work = mkdtempSync(join(tmpdir(), 'raw-colours-gold-'))
-  afterAll(() => rmSync(work, { recursive: true, force: true }))
+  afterAll(() => rmSync(work, { recursive: true, force: true }), 60_000)
   let n = 0
   const c = (...parts: string[]) => parts.join('')
   function tree(files: Record<string, string>): string {

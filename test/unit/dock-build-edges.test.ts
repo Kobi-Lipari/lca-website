@@ -63,7 +63,7 @@ describe('the viewport plugin\'s hooks, called as vite calls them', () => {
   const dirs: string[] = []
   afterAll(() => {
     for (const dir of dirs) rmSync(dir, { recursive: true, force: true })
-  })
+  }, 60_000)
   // Each build works out its own instant once; here its clock is held at NOW.
   beforeEach(() => {
     vi.useFakeTimers({ toFake: ['Date'] })

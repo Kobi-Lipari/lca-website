@@ -52,7 +52,7 @@ const c = (...parts: string[]) => parts.join('')
 const GOLD = c('text-lca', '-gold')
 
 const work = mkdtempSync(join(tmpdir(), 'gold-ink-'))
-afterAll(() => rmSync(work, { recursive: true, force: true }))
+afterAll(() => rmSync(work, { recursive: true, force: true }), 60_000)
 let n = 0
 
 function tree(files: Record<string, string>): string {

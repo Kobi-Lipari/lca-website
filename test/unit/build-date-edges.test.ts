@@ -53,7 +53,7 @@ interface Hooks {
 const dirs: string[] = []
 afterAll(() => {
   for (const dir of dirs) rmSync(dir, { recursive: true, force: true })
-})
+}, 60_000)
 afterEach(() => {
   vi.useRealTimers()
   vi.unstubAllGlobals()

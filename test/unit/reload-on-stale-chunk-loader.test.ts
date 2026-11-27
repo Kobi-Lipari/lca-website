@@ -46,7 +46,7 @@ const ROOT = resolve(__dirname, '../..')
 const work = mkdtempSync(join(tmpdir(), 'lca-stale-tab-'))
 const source = join(work, 'source')
 const built = join(work, 'built')
-afterAll(() => rmSync(work, { recursive: true, force: true }))
+afterAll(() => rmSync(work, { recursive: true, force: true }), 60_000)
 
 /** The small site: the guard as src/main.tsx imports it, two pages that share a file, and a stylesheet on demand. */
 const FIXTURE: Record<string, string> = {

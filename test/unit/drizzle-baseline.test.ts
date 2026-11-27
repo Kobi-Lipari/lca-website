@@ -28,7 +28,7 @@ const scratch = () => {
 }
 afterAll(() => {
   for (const d of dirs) rmSync(d, { recursive: true, force: true })
-})
+}, 60_000)
 
 describe('the generate guard reads every spelling', () => {
   it.each([

@@ -11,9 +11,9 @@
 //   environment, so every one of them is repeated under [env.preview]
 // - scripts/db/preview-guard.ts refuses a placeholder id, production's id
 //   and production's name, and every preview npm script runs it first
-import { describe, expect, it } from 'vitest'
+import { afterAll, describe, expect, it } from 'vitest'
 import { spawnSync } from 'node:child_process'
-import { mkdtempSync, readFileSync, writeFileSync } from 'node:fs'
+import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { parse } from 'smol-toml'
@@ -159,6 +159,11 @@ describe('preview-guard', () => {
 
 describe('preview-guard as a command', () => {
   const dir = mkdtempSync(join(tmpdir(), 'preview-guard-'))
+  /** Every folder these cases make under the system's temporary folder, removed when they are done. */
+  const TEMP_FOLDERS: string[] = [dir]
+  afterAll(() => {
+    for (const made of TEMP_FOLDERS.splice(0)) rmSync(made, { recursive: true, force: true })
+  }, 60_000)
   const run = (args: string[]) =>
     spawnSync(process.execPath, ['--no-warnings', '--experimental-strip-types', GUARD, ...args], {
       cwd: ROOT,

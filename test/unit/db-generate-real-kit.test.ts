@@ -66,7 +66,7 @@ function tree(dir: string): Record<string, string> {
 
 afterAll(() => {
   for (const r of roots) rmSync(r, { recursive: true, force: true })
-})
+}, 60_000)
 
 /** The last line of the clubs table in functions/db/schema.ts, where a sandbox adds a column to it. */
 const CLUBS_END = "  confirmedBy: text('confirmed_by').references((): AnySQLiteColumn => members.id),\n},"

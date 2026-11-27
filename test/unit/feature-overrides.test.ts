@@ -125,7 +125,7 @@ function fixtureTraces(dir: string) {
 const built: string[] = []
 afterAll(() => {
   for (const dir of built) rmSync(dir, { recursive: true, force: true })
-})
+}, 60_000)
 
 describe('the site build', () => {
   it('carries no fixture route, no fixture chunk and no VITE_FLAGS value', () => {

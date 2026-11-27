@@ -7,9 +7,9 @@
 // domain/registration/pricing, as the tournament page does. The first must
 // fail the check and the second must pass. The script is also run as npm
 // runs it, on both folders and on a folder that does not exist.
-import { describe, expect, it } from 'vitest'
+import { afterAll, describe, expect, it } from 'vitest'
 import { spawnSync } from 'node:child_process'
-import { mkdirSync, mkdtempSync, readFileSync, readdirSync, writeFileSync } from 'node:fs'
+import { mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { build } from 'vite'
@@ -18,6 +18,12 @@ import { findZod, ZOD_MARKERS } from '../../scripts/check-bundle'
 const ROOT = join(__dirname, '../..')
 const SCRIPT = 'scripts/check-bundle.ts'
 const work = mkdtempSync(join(tmpdir(), 'check-bundle-'))
+
+/** Every folder the cases make under the system's temporary folder, removed when they are done. */
+const TEMP_FOLDERS: string[] = [work]
+afterAll(() => {
+  for (const dir of TEMP_FOLDERS.splice(0)) rmSync(dir, { recursive: true, force: true })
+}, 60_000)
 
 /** Builds `source` as a one-file page into its own assets folder and returns that folder. */
 async function buildPage(name: string, source: string): Promise<string> {

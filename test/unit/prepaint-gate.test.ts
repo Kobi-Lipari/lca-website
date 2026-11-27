@@ -167,7 +167,7 @@ describe('prepaintPlugin in a real vite build', () => {
   const dirs: string[] = []
   afterAll(() => {
     for (const dir of dirs) rmSync(dir, { recursive: true, force: true })
-  })
+  }, 60_000)
   afterEach(() => vi.unstubAllEnvs())
 
   /** A one-page site's page, the default for buildPage. */

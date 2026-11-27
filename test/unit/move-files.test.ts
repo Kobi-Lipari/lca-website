@@ -19,7 +19,7 @@ import { compareFile, mentionPairs, replaceMentions } from '../../scripts/verify
 
 const ROOT = join(__dirname, '../..')
 const work = mkdtempSync(join(tmpdir(), 'move-files-'))
-afterAll(() => rmSync(work, { recursive: true, force: true }))
+afterAll(() => rmSync(work, { recursive: true, force: true }), 60_000)
 
 const cleanEnv = () => {
   const env = { ...process.env }
