@@ -7,10 +7,13 @@
 // - an LCA admin with a second factor, by today's path: no seat read, two
 //   sign-in calls on a campaign method and one on the newsletter;
 // - the holder of the President seat, whatever their role, read at each
-//   request, with a second factor while PRESIDENT_NEEDS_SECOND_FACTOR is set
-//   (turned through a getter on the mocked domain/mail/senders);
-// - on the newsletter's methods alone, the holder of the Media manager seat
-//   with a second factor;
+//   request, with a second factor while PRESIDENT_NEEDS_SECOND_FACTOR is set;
+// - on the newsletter's methods alone, the holder of the Media manager seat,
+//   with a second factor while MEDIA_MANAGER_NEEDS_SECOND_FACTOR is set;
+// - both constants turned through getters on the mocked domain/mail/senders:
+//   set for most cases, so the rule as it was is held to the byte, each set
+//   and unset apart, and, in the last block, read from the real module, where
+//   both ship unset (the owner's decision 82) and only an LCA admin is asked;
 // - everyone else refused, an LCA Observer or Officer without either seat
 //   among them, with LIST_MAILERS_ONLY, and nothing written or sent.
 // MAIL_LISTS_ON, MAIL_PAGE_ON and MAIL_SENDER are read through getters on the
@@ -41,7 +44,7 @@ import { seedAdmin, seedMember, seedPresident, seedSeat } from './factories'
 import { emailOutbox, fetchCount, invoke, resetHarness, type Aal, type InvokeOptions } from './harness'
 import { countingDb } from './mailRuns'
 
-const flags = vi.hoisted(() => ({ listsOn: true, pageOn: true, sender: 'resend', presidentNeedsSecondFactor: true }))
+const flags = vi.hoisted(() => ({ listsOn: true, pageOn: true, sender: 'resend', presidentNeedsSecondFactor: true, mediaManagerNeedsSecondFactor: true }))
 vi.mock('../../functions/utils/mail/switches', async (importOriginal) => {
   const real = await importOriginal<typeof import('../../functions/utils/mail/switches')>()
   return {
@@ -63,6 +66,9 @@ vi.mock('../../domain/mail/senders', async (importOriginal) => {
     ...real,
     get PRESIDENT_NEEDS_SECOND_FACTOR() {
       return flags.presidentNeedsSecondFactor
+    },
+    get MEDIA_MANAGER_NEEDS_SECOND_FACTOR() {
+      return flags.mediaManagerNeedsSecondFactor
     },
   }
 })
@@ -165,7 +171,9 @@ beforeEach(async () => {
   flags.listsOn = true
   flags.pageOn = true
   flags.sender = 'resend'
+  // Both constants set, so the cases below hold the rule as it was to the byte; the cases at the foot turn them.
   flags.presidentNeedsSecondFactor = true
+  flags.mediaManagerNeedsSecondFactor = true
   // The seats a case made, with their terms, and every term on the President seat the migrations made, which is
   // active again for the next case.
   await env.DB.prepare(`DELETE FROM board_members WHERE id LIKE 'seat-%'`).run()
@@ -336,5 +344,89 @@ describe('who may send, on Group email\'s five campaign methods and every newsle
     await expectAdmitted(NEWSLETTER, seated)
     await expectRefused(NEWSLETTER, await person('lca_observer'), 'aal2', 403, { error: LIST_MAILERS_ONLY })
     await expectRefused(NEWSLETTER, await person(), 'aal2', 403, { error: 'Forbidden' })
+  })
+
+  it.each(['lca_observer', 'lca_officer', 'member'])('with MEDIA_MANAGER_NEEDS_SECOND_FACTOR unset, admits a %s who holds the Media manager seat to the newsletter alone without a second factor', async (role) => {
+    flags.mediaManagerNeedsSecondFactor = false
+    const holder = await person(role)
+    await seedSeat({ slug: MEDIA_MANAGER_SEAT, role: 'Media manager' }, [holder.id])
+    await expectAdmitted(NEWSLETTER, holder, 'aal1')
+    await expectAdmitted(NEWSLETTER, holder, 'aal2')
+    await expectRefused(CAMPAIGNS, holder, 'aal1', 403, { error: role === 'member' ? 'Forbidden' : LIST_MAILERS_ONLY })
+  })
+
+  it('reads each constant apart: one set asks its own holder alone', async () => {
+    const seated = await president('lca_observer')
+    const holder = await person('lca_officer')
+    await seedSeat({ slug: MEDIA_MANAGER_SEAT, role: 'Media manager' }, [holder.id])
+
+    flags.presidentNeedsSecondFactor = false
+    await expectAdmitted(CAMPAIGNS, seated, 'aal1')
+    await expectAdmitted(NEWSLETTER, seated, 'aal1')
+    await expectRefused(NEWSLETTER, holder, 'aal1', 403, MFA)
+
+    flags.presidentNeedsSecondFactor = true
+    flags.mediaManagerNeedsSecondFactor = false
+    await expectRefused(CAMPAIGNS, seated, 'aal1', 403, MFA)
+    await expectRefused(NEWSLETTER, seated, 'aal1', 403, MFA)
+    await expectAdmitted(NEWSLETTER, holder, 'aal1')
+  })
+
+  it.each([
+    [true, true],
+    [true, false],
+    [false, true],
+    [false, false],
+  ])('refuses an LCA admin without a second factor with the admin\'s 403 on both, president constant %s, media manager constant %s', async (president, mediaManager) => {
+    flags.presidentNeedsSecondFactor = president
+    flags.mediaManagerNeedsSecondFactor = mediaManager
+    const admin = { id: await seedAdmin(), email: '' }
+    await expectRefused(CAMPAIGNS, admin, 'aal1', 403, { error: ADMIN_SECOND_FACTOR, mfaRequired: true })
+    await expectRefused(NEWSLETTER, admin, 'aal1', 403, { error: ADMIN_SECOND_FACTOR, mfaRequired: true })
+  })
+})
+
+describe('who may send as the rule ships: both constants read from domain/mail/senders.ts itself', () => {
+  beforeEach(async () => {
+    const real = await vi.importActual<typeof import('../../domain/mail/senders')>('../../domain/mail/senders')
+    flags.presidentNeedsSecondFactor = real.PRESIDENT_NEEDS_SECOND_FACTOR
+    flags.mediaManagerNeedsSecondFactor = real.MEDIA_MANAGER_NEEDS_SECOND_FACTOR
+  })
+
+  it('ships with both constants unset', () => {
+    expect(flags.presidentNeedsSecondFactor).toBe(false)
+    expect(flags.mediaManagerNeedsSecondFactor).toBe(false)
+  })
+
+  it('admits the president without a second factor on both, whatever their role', async () => {
+    for (const role of ['lca_observer', 'lca_officer', undefined]) {
+      const seated = await president(role)
+      await expectAdmitted(CAMPAIGNS, seated, 'aal1')
+      await expectAdmitted(NEWSLETTER, seated, 'aal1')
+    }
+  })
+
+  it('admits the media manager without a second factor to the newsletter alone', async () => {
+    const holder = await person('lca_officer')
+    await seedSeat({ slug: MEDIA_MANAGER_SEAT, role: 'Media manager' }, [holder.id])
+    await expectAdmitted(NEWSLETTER, holder, 'aal1')
+    await expectRefused(CAMPAIGNS, holder, 'aal1', 403, { error: LIST_MAILERS_ONLY })
+  })
+
+  it('still asks an LCA admin for a second factor on both, in the admin\'s words', async () => {
+    const admin = { id: await seedAdmin(), email: '' }
+    await expectRefused(CAMPAIGNS, admin, 'aal1', 403, { error: ADMIN_SECOND_FACTOR, mfaRequired: true })
+    await expectRefused(NEWSLETTER, admin, 'aal1', 403, { error: ADMIN_SECOND_FACTOR, mfaRequired: true })
+  })
+
+  it('still refuses everyone else: an observer or officer without either seat, a plain member, and anyone signed out', async () => {
+    for (const aal of ['aal1', 'aal2'] as const) {
+      await expectRefused(CAMPAIGNS, await person('lca_observer'), aal, 403, { error: LIST_MAILERS_ONLY })
+      await expectRefused(NEWSLETTER, await person('lca_officer'), aal, 403, { error: LIST_MAILERS_ONLY })
+      await expectRefused(CAMPAIGNS, await person(), aal, 403, { error: 'Forbidden' })
+      await expectRefused(NEWSLETTER, await person(), aal, 403, { error: LIST_MAILERS_ONLY })
+    }
+    await expectRefused(CAMPAIGNS, null, 'aal1', 401, { error: 'Unauthorized' })
+    await expectRefused(NEWSLETTER, null, 'aal1', 401, { error: 'Unauthorized' })
   })
 })

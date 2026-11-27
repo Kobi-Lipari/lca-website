@@ -1,8 +1,11 @@
 // test/integration/observer.test.ts
 // LCA Observer: sees what an admin sees, can email entrants and answer
 // tickets, and cannot change anything else. No 2FA. Group email is for the
-// observer who holds the President seat alone, with a second factor.
-import { beforeEach, describe, expect, it } from 'vitest'
+// observer who holds the President seat alone, with or without a second
+// factor as the rule ships; PRESIDENT_NEEDS_SECOND_FACTOR is read through a
+// getter on the mocked domain/mail/senders, so one case holds the refusal
+// while it is set.
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { env } from 'cloudflare:test'
 import { invoke, resetHarness } from './harness'
 import { seedClub, seedMember, seedPresident, seedRegistration, seedTournament } from './factories'
@@ -27,7 +30,22 @@ import {
 } from '../../functions/api/admin/support/[id]'
 import { onRequestPost as impersonate } from '../../functions/api/admin/impersonate/[memberId]'
 
-beforeEach(resetHarness)
+/** The president's second-factor constant: null reads the real one (it ships unset); the case that holds the old refusal sets it. */
+const turned = vi.hoisted(() => ({ president: null as boolean | null }))
+vi.mock('../../domain/mail/senders', async (importOriginal) => {
+  const real = await importOriginal<typeof import('../../domain/mail/senders')>()
+  return {
+    ...real,
+    get PRESIDENT_NEEDS_SECOND_FACTOR() {
+      return turned.president ?? real.PRESIDENT_NEEDS_SECOND_FACTOR
+    },
+  }
+})
+
+beforeEach(() => {
+  resetHarness()
+  turned.president = null
+})
 
 const observer = () => seedMember({ role: 'lca_observer' })
 
@@ -106,7 +124,24 @@ describe('LCA Observer can use the communication tools', () => {
     expect(log?.actor_id).toBe(who)
   })
 
-  it('holding the President seat without a second factor is asked for one, and nothing is logged', async () => {
+  it('sends group email while holding the President seat without a second factor, as the rule ships (logged under their name)', async () => {
+    const who = await observer()
+    await seedPresident(who)
+    await seedMember({ email: 'someone@example.org' })
+    const res = await invoke(campaignsPost, {
+      method: 'POST', as: who, aal: 'aal1',
+      body: { subject: 'Hello', bodyHtml: '<p>Hi</p>', filter: { all: true } },
+    })
+    expect(res.status).toBe(201)
+    // The log is not cleared between cases, so the row is read by this case's own sender.
+    const log = await env.DB.prepare(
+      `SELECT COUNT(*) AS n FROM admin_audit_log WHERE action = 'group_email_sent' AND actor_id = ?`,
+    ).bind(who).first<{ n: number }>()
+    expect(log?.n).toBe(1)
+  })
+
+  it('with PRESIDENT_NEEDS_SECOND_FACTOR set, holding the President seat without a second factor is asked for one, and nothing is logged', async () => {
+    turned.president = true
     const who = await observer()
     await seedPresident(who)
     await seedMember({ email: 'someone@example.org' })
