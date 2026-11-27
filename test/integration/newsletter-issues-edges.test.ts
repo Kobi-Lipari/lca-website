@@ -21,7 +21,10 @@
 //   midnight and the two Central time changes of a year, in order and
 //   unmoved, with ties in a fixed order;
 // - (e) each kind of person against a letter that holds words: nothing of it
-//   is read and nothing of it is changed;
+//   is read and nothing of it is changed; the seat holder without a second
+//   factor is among the refused only while MEDIA_MANAGER_NEEDS_SECOND_FACTOR
+//   is set (a getter on the mocked domain/mail/senders), and as the rule
+//   ships does all four;
 // - (f) the plain-language rules over the words of every refusal the methods
 //   give.
 // Every name, address and word here is made up.
@@ -70,6 +73,17 @@ vi.mock('../../functions/utils/mail/switches', async (importOriginal) => {
     },
     get COMPLAINT_STOPS_OTHER_SENDERS() {
       return flags.complaintStops
+    },
+  }
+})
+/** The media manager's second-factor constant: null reads the real one (it ships unset); the case that holds the old refusal sets it. */
+const turned = vi.hoisted(() => ({ mediaManager: null as boolean | null }))
+vi.mock('../../domain/mail/senders', async (importOriginal) => {
+  const real = await importOriginal<typeof import('../../domain/mail/senders')>()
+  return {
+    ...real,
+    get MEDIA_MANAGER_NEEDS_SECOND_FACTOR() {
+      return turned.mediaManager ?? real.MEDIA_MANAGER_NEEDS_SECOND_FACTOR
     },
   }
 })
@@ -187,6 +201,7 @@ beforeEach(async () => {
   resetHarness()
   flags.pageOn = true
   flags.listsOn = true
+  turned.mediaManager = null
   await env.DB.prepare(`DELETE FROM board_members WHERE id LIKE 'seat-%'`).run()
   for (const table of ['newsletter_issues', 'email_campaign_recipients', 'email_campaigns', 'mail_list_choices', 'mail_contacts']) {
     await env.DB.prepare(`DELETE FROM ${table}`).run()
@@ -751,6 +766,7 @@ describe('(e) each kind of person against a letter that holds words', () => {
   const SECRET = 'Sample words that only a sender may read'
 
   it('shows nothing of the letter to anyone the guard refuses, and lets none of them change it, start over it or list it', async () => {
+    turned.mediaManager = true
     const admin = await seedAdmin()
     const made = await (await save(admin, { bodyHtml: `${LETTER}<p>${SECRET}.</p>`, preheader: 'Sample private preview' })).json<{ id: string }>()
     await seedSend({ id: 'campaign-sample-one', by: admin, subject: 'Sample private subject' })
@@ -781,6 +797,41 @@ describe('(e) each kind of person against a letter that holds words', () => {
       }
     }
     expect({ rows: await rows(), counts: await counts() }).toEqual(before)
+  })
+
+  it('as the rule ships refuses the same people but the seat holder, who does all four without a second factor', async () => {
+    const admin = await seedAdmin()
+    const made = await (await save(admin, { bodyHtml: `${LETTER}<p>${SECRET}.</p>`, preheader: 'Sample private preview' })).json<{ id: string }>()
+    await seedSend({ id: 'campaign-sample-one', by: admin, subject: 'Sample private subject' })
+    const seated = await seedMember({ fullName: 'Player Three', role: 'lca_officer' })
+    await seedSeat({ slug: MEDIA_MANAGER_SEAT, role: 'Media manager' }, [seated])
+    const refused: Array<[string, string | undefined, InvokeOptions['aal']]> = [
+      ['nobody', undefined, 'aal2'],
+      ['a plain member', await seedMember({ fullName: 'Player Four', role: 'member' }), 'aal2'],
+      ['an officer', await seedMember({ fullName: 'Player Five', role: 'lca_officer' }), 'aal2'],
+      ['the admin without a second factor', admin, 'aal1'],
+    ]
+    const before = { rows: await rows(), counts: await counts() }
+    for (const [who, as, aal] of refused) {
+      const answers = [
+        await invoke(issueGet, { as, aal }),
+        await invoke(issuePut, { method: 'PUT', as, aal, body: saveBody({ id: made.id, version: 1, bodyHtml: '<p>Sample intrusion.</p>' }) }),
+        await invoke(startPost, { method: 'POST', as, aal, body: { from: 'monthly', monthLabel: MONTH } }),
+        await invoke(issuesGet, { as, aal }),
+      ]
+      for (const res of answers) {
+        expect([401, 403], who).toContain(res.status)
+        const text = await res.response.clone().text()
+        for (const leaked of [SECRET, 'Sample private', 'Sample heading one', made.id, 'campaign-sample-one']) expect(text, `${who}: ${leaked}`).not.toContain(leaked)
+      }
+    }
+    expect({ rows: await rows(), counts: await counts() }).toEqual(before)
+    const opts: InvokeOptions = { as: seated, aal: 'aal1' }
+    expect((await invoke(issueGet, opts)).status).toBe(200)
+    expect([200, 409]).toContain((await invoke(issuePut, { method: 'PUT', ...opts, body: saveBody({ id: made.id, version: 1 }) })).status)
+    expect((await invoke(startPost, { method: 'POST', ...opts, body: { from: 'monthly', monthLabel: MONTH } })).status).toBe(201)
+    expect((await invoke(issuesGet, opts)).status).toBe(200)
+    expect(emailOutbox).toEqual([])
   })
 
   it('lets the people the guard admits do all four, and writes no audit row and sends nothing by any of them', async () => {
