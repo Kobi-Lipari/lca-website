@@ -13,7 +13,11 @@
 // but the stamp of its last check, read against the time the page opened
 // in My region's own words; every full date it shows is an event's or a
 // news post's, as the server gave it, with its weekday through the site's
-// own helper. The club pages' own parts join this file with WS09 step 21.
+// own helper. The club pages' own parts join this file with WS09 step 21:
+// the new club page shows how the club meets as the club's own words, in a
+// quote, and the told line as the server words it, and works out nothing:
+// no meeting date, no Tonight, no "Checked" month of its own, with the clock set years
+// away as with it today; and the files that draw it hold no clock.
 // Every name and club here is made up.
 import { readFileSync } from 'node:fs'
 import { join, resolve } from 'node:path'
@@ -22,7 +26,7 @@ import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { AuthContext } from '@/contexts/auth-context'
 import type { AuthContextValue } from '@/contexts/AuthContext'
-import type { RegionClub, WorkspaceRegionResponse } from '@domain/contracts'
+import type { ClubPageResponse, RegionClub, WorkspaceRegionResponse } from '@domain/contracts'
 
 vi.mock('@/lib/supabase', () => ({
   supabase: { auth: { getSession: async () => ({ data: { session: { access_token: 'tok-example' } } }) } },
@@ -32,6 +36,7 @@ vi.mock('@/areas/clubs/components/ClubLocationPicker', () => ({ ClubLocationPick
 
 const { MyRegionPage } = await import('@/pages/MyRegionPage')
 const { MyRegionClubPage } = await import('@/pages/MyRegionClubPage')
+const { ClubPageView } = await import('@/areas/clubs/components/ClubPage')
 
 const ROOT = resolve(__dirname, '../..')
 const read = (path: string) => readFileSync(join(ROOT, path), 'utf8')
@@ -239,5 +244,117 @@ describe('a club in My region draws no weekly claims', () => {
       expect(text, file).not.toMatch(/\b(?:Tonight|Meets today|calendar|timetable)\b/i)
     }
     for (const file of CLUB_FILES.slice(1)) expect(code(file), file).toContain('formatDate(')
+  })
+})
+
+/** The files that draw the new club page (WS09 step 21). */
+const PAGE_FILES = [
+  'src/areas/clubs/components/ClubPage.tsx', 'src/areas/clubs/components/ClubCover.tsx', 'src/areas/clubs/components/AuthorLine.tsx',
+  'src/areas/clubs/components/SectionNav.tsx', 'src/areas/clubs/components/ClubAbout.tsx', 'src/areas/clubs/components/WhenAndWhere.tsx',
+  'src/areas/clubs/components/PagePreview.tsx', 'src/areas/clubs/clubPage.ts', 'src/pages/ClubListingPage.tsx',
+]
+const PAGE_STATEMENT = 'Every Tuesday at 7:00 PM, and tonight too'
+const PAGE_TOLD = 'Last checked November 2026'
+const PAGE_ANSWER: ClubPageResponse = {
+  club: { id: 'c-two', slug: 'example-chess-club', name: 'Example Chess Club', city: 'Example City', region: 'Bayou Region', color: '#1a2744', logo: null },
+  sections: ['about', 'when_and_where', 'contact'],
+  about: { text: 'A made-up club.', cost: null, welcome: null, facebook: null, website: null, other: null, weekend_play: true, scholastic_friendly: false },
+  statement: { text: PAGE_STATEMENT, told: PAGE_TOLD },
+  places: [{ name: 'Example Library', street: null, note: 'Come at 6:45 PM on a first visit.', latitude: null, longitude: null }],
+  contact: { name: 'Player One' },
+  suggestion: { goes_to: 'club_rep' },
+  events: [], news: [], nearest: [],
+}
+
+describe('the new club page draws no weekly claims', () => {
+  /** The page drawn from its answer, and its words but the club's own and the server's told line. */
+  function drawPage() {
+    render(<MemoryRouter><ClubPageView answer={PAGE_ANSWER} keeper={null} /></MemoryRouter>)
+    const own = new Set([PAGE_STATEMENT, PAGE_ANSWER.about.text, PAGE_ANSWER.places[0].note, PAGE_TOLD])
+    const texts: string[] = []
+    const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT)
+    for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+      const text = node.textContent ?? ''
+      if (text.trim() && !own.has(text)) texts.push(text)
+    }
+    return texts.join('\n')
+  }
+
+  it('shows the statement as the club\'s words in a quote and the told line as given, and no meeting date, Tonight or "Checked" month of its own', () => {
+    for (const at of ['2026-11-17T18:00:00Z', '2031-03-04T15:00:00Z']) {
+      vi.useFakeTimers({ toFake: ['Date'] })
+      vi.setSystemTime(new Date(at))
+      const words = drawPage()
+      expect(document.querySelector('blockquote')?.textContent, at).toBe(PAGE_STATEMENT)
+      expect(screen.getByText(PAGE_TOLD)).toBeTruthy()
+      // The club's own words stay as it wrote them, on the cover and in the quote, and its note too.
+      expect(screen.getAllByText(PAGE_STATEMENT)).toHaveLength(2)
+      expect(screen.getByText('Come at 6:45 PM on a first visit.')).toBeTruthy()
+      expect(words, at).not.toMatch(/\b(?:tonight|meets today|meeting today|meeting tonight|next meeting|meets next|this week|next week)\b/i)
+      expect(words, at).not.toMatch(/\bChecked\b|\b(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]* \d{4}\b/)
+      expect(words, at).not.toMatch(/\b(?:Mon|Tue|Wed|Thu|Fri|Sat|Sun)[a-z]*, [A-Z][a-z]{2} \d{1,2}\b/)
+      expect(words, at).not.toMatch(/\b(?:calendar|timetable)\b|2031/i)
+      expect(document.querySelector('table, [role="grid"], [role="table"], time')).toBeNull()
+      cleanup()
+      vi.useRealTimers()
+    }
+  })
+
+  it('makes no date in the files that draw it: no clock, no date helper, no weekday or Checked month of its own', () => {
+    for (const file of PAGE_FILES) {
+      const code = read(file).replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '')
+      expect(code, file).not.toMatch(/new Date\(|Date\.now\(|Intl\.DateTimeFormat|toLocale(?:Date|Time)?String|getDay\(|from '@\/lib\/format'|formatDate|formatTime/)
+      expect(code, file).not.toMatch(/\b(?:Tonight|Meets today|calendar|timetable)\b|Checked /i)
+    }
+  })
+})
+
+/** The files that draw the Clubs directory (WS09 step 33). */
+const DIRECTORY_FILES = [
+  'src/pages/ClubsIndexPage.tsx', 'src/areas/clubs/components/ClubDirectory.tsx', 'src/areas/clubs/components/ClubCard.tsx',
+  'src/areas/clubs/components/DirectoryMap.tsx', 'src/areas/clubs/directoryPins.ts', 'src/areas/clubs/directoryWords.ts', 'src/areas/clubs/directoryRows.ts',
+]
+
+describe('the Clubs directory draws no weekly claims', () => {
+  const STATEMENTS = ['Every Tuesday at 7:00 PM, and tonight too', 'First and third Saturdays at the Example Library']
+  const CLUBS = [
+    { id: 'c-one', name: 'Example Knights Club', statement: STATEMENTS[0], description: null },
+    { id: 'c-two', name: 'Example Chess Club', statement: STATEMENTS[1], description: null },
+    { id: 'c-three', name: 'Example Rooks Club', statement: null, description: 'A made-up club.' },
+  ].map((c) => ({
+    ...c, city: 'Example City', meeting_schedule: c.statement ?? '', color: null, image_url: null, region: 'North Louisiana', latitude: null, longitude: null,
+    slug: c.id, point: null, weekend_play: false, scholastic_friendly: false,
+  }))
+
+  it('shows each club\'s meeting in its own words and works out no meeting, Tonight or date, with the clock set years away as with it today', async () => {
+    const { ClubDirectory } = await import('@/areas/clubs/components/ClubDirectory')
+    for (const at of ['2026-11-26T18:00:00Z', '2031-03-04T15:00:00Z']) {
+      vi.useFakeTimers({ toFake: ['Date'] })
+      vi.setSystemTime(new Date(at))
+      render(<MemoryRouter initialEntries={['/clubs']}><ClubDirectory clubs={CLUBS} /></MemoryRouter>)
+      for (const statement of STATEMENTS) expect(screen.getByText(statement)).toBeTruthy()
+      const texts: string[] = []
+      const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT)
+      for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+        const text = node.textContent ?? ''
+        if (text.trim() && !STATEMENTS.includes(text)) texts.push(text)
+      }
+      const words = texts.join('\n')
+      expect(words, at).not.toMatch(/\b(?:tonight|meets today|meeting today|meeting tonight|next meeting|meets next|this week|next week)\b/i)
+      expect(words, at).not.toMatch(/\b\d+ (?:clubs? )?(?:meet|meets|meeting)\b/i)
+      expect(words, at).not.toMatch(/\bChecked\b|\b(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]* \d{4}\b|\b(?:Mon|Tue|Wed|Thu|Fri|Sat|Sun)[a-z]*, [A-Z][a-z]{2} \d{1,2}\b/)
+      expect(words, at).not.toMatch(/\b(?:calendar|timetable)\b|2031/i)
+      expect(document.querySelector('table, [role="grid"], [role="table"], time')).toBeNull()
+      cleanup()
+      vi.useRealTimers()
+    }
+  })
+
+  it('makes no date in the files that draw it: no clock, no date helper, no weekday or Checked month of its own', () => {
+    for (const file of DIRECTORY_FILES) {
+      const code = read(file).replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '')
+      expect(code, file).not.toMatch(/new Date\(|Date\.now\(|Intl\.DateTimeFormat|toLocale(?:Date|Time)?String|getDay\(|from '@\/lib\/format'|formatDate|formatTime/)
+      expect(code, file).not.toMatch(/\b(?:Tonight|Meets today|calendar|timetable)\b|Checked /i)
+    }
   })
 })

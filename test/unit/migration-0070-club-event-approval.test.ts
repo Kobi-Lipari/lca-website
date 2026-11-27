@@ -109,6 +109,8 @@ describe('0070_club_event_approval.sql on a database that holds rows', () => {
   it('runs straight after 0069, with foreign keys on and every reference whole', () => {
     expect(BEFORE.at(-1)).toBe('0069_club_check_marks.sql')
     expect(migrationFiles().filter((f) => f < '0071').at(-1)).toBe(FILE)
+    // Changed at WS09 step 25: 0071 follows it now, so it is the file straight after 0069 rather than the last.
+    expect(migrationFiles()[migrationFiles().indexOf(FILE) - 1]).toBe(BEFORE.at(-1))
     expect(foreignKeysOn(db)).toBe(1)
     expect(all(db, 'PRAGMA foreign_key_check')).toEqual([])
   })
@@ -235,6 +237,9 @@ describe('drizzle/meta', () => {
   it('records the change as the journal\'s sixteenth entry, with its snapshot, and the file\'s header names the staged file', () => {
     const journal = JSON.parse(readFileSync(join(ROOT, 'drizzle/meta/_journal.json'), 'utf8')) as { entries: Array<{ idx: number; tag: string }> }
     // Read by its place, not as the last: the newsletter's table is staged after it, as idx 16.
+    // Changed at WS09 step 25: the rate limits entry follows it as well, as idx 17, so the journal holds 18 and this one is the sixteenth.
+    // Since checkpoint X took checkpoint W in a third time, the length is read from the real kit's test, which holds the journal as it stands.
+    expect(journal.entries).toHaveLength(Number(/expect\(journal\.entries\)\.toHaveLength\((\d+)\)/.exec(readFileSync(join(ROOT, 'test/unit/db-generate-real-kit.test.ts'), 'utf8'))?.[1]))
     expect(journal.entries[15]).toMatchObject({ idx: 15, tag: '0015_club_event_approval' })
     expect(existsSync(join(ROOT, 'drizzle/meta/0015_snapshot.json'))).toBe(true)
     const header = readFileSync(join(MIGRATIONS_DIR, FILE), 'utf8')

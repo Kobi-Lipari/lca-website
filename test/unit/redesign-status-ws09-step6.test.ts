@@ -248,7 +248,7 @@ describe('REDESIGN_STATUS.md, WS09 step 6: the parts', () => {
       '`CLUB_TEXT_LIMITS`', '`CLUB_PLACE_LIMITS`', 'an http or https address', '`src/pages/AdminClubPage.tsx` lines 134 and 472',
     ]) expect(contracts, piece).toContain(piece)
     const registry = read('domain/contracts/registry.ts')
-    expect(registry).toContain('\'admin/clubs/[id]\': {\n    GET: { response: adminClubResponseSchema },\n    PATCH: { request: updateClubRequestSchema, response: updateClubResponseSchema },\n  },')
+    expect(registry).toContain('\'admin/clubs/[id]\': {\n    GET: { response: adminClubAnswerSchema },\n    PATCH: { request: updateClubRequestSchema, response: updateClubResponseSchema },\n  },') // WS09 step 37: today's shape or the one without the roster.
     expect(registry).toContain('\'admin/clubs/[id]/places\': {\n    PUT: { request: clubPlacesRequestSchema, response: clubPlacesResponseSchema },\n  },')
     const pending = read('test/unit/contracts-pending.ts')
     for (const line of ['\'GET admin/clubs/[id]\',', '\'PATCH admin/clubs/[id]\',', '\'PUT admin/clubs/[id]/places\',']) expect(pending, line).not.toContain(line)

@@ -1,7 +1,7 @@
 // src/areas/clubs/components/LCAMap.tsx
 /// <reference types="google.maps" />
 // TypeScript 6 dropped the automatic inclusion of every @types package, so
-// this reference is what makes @types/google.maps load at all — without it
+// this reference is what makes @types/google.maps load at all; without it
 // the dependency sits in package.json doing nothing and every handle below
 // falls back to `any`.
 //
@@ -10,11 +10,22 @@
 //                 hovered; the map follows it (pans, zooms, opens the club's
 //                 card) and reports marker clicks back with onSelect.
 //   mode="single" one club's page: a small fixed map with directions.
+//                 The new club page (WS09 step 21) also passes the club's
+//                 places, up to two, each drawn as a plain pin with no
+//                 number, and asks for no directions link on the map, since
+//                 each place's row carries its own; and, where the site has
+//                 no maps key, for nothing in the map's place. Today's club
+//                 page passes none of these and draws as it always has.
+//
+//   mode="directory" the Clubs directory (WS09 step 33), and only it: its
+//                 pins as buttons in the list's order, drawn by
+//                 DirectoryMap.tsx, a chunk of its own that today's pages
+//                 never fetch. Today's two uses above draw as they always have.
 //
 // The map's style, the whole-state view, finding a club's spot, the
 // directions link and the script loader are in src/areas/clubs/clubMap.ts,
 // shared with ClubLocationPicker.
-import { useEffect, useRef, useState } from 'react'
+import { Suspense, lazy, useEffect, useEffectEvent, useRef, useState } from 'react'
 import {
   LOUISIANA_CENTER,
   MAP_STYLES,
@@ -24,13 +35,18 @@ import {
   fitLouisiana,
   loadMapsScript,
   type MapPoint,
+  type PlacePoint,
 } from '@/areas/clubs/clubMap'
+import type { DirectoryMapProps } from '@/areas/clubs/directoryPins'
 import { LCA } from '@/lib/brand'
+
+/** The directory's map, fetched only when the directory draws it. */
+const DirectoryMap = lazy(() => import('@/areas/clubs/components/DirectoryMap'))
 
 // Map styling takes the palette as raw hex; Google Maps has no idea what
 // a Tailwind class is.
 /** Gold is 2.28:1 on the white info window, so map links use a darker one.
- *  4.86:1 — the info window is Google's markup, outside the Tailwind theme. */
+ *  4.86:1, since the info window is Google's markup, outside the Tailwind theme. */
 const GOLD_ON_LIGHT = '#8a6d1f'
 const NAVY = LCA.navy
 const GOLD = LCA.gold
@@ -102,9 +118,19 @@ interface SingleClubProps {
   /** The club's saved map location; falls back to the original club list. */
   location?: { lat: number; lng: number } | null
   height?: number
+  /**
+   * The club's places with a point, at most two, each drawn as a plain pin
+   * named by its place; with any here, `location` and the original club
+   * list are not read. Only the new club page passes them.
+   */
+  places?: ReadonlyArray<PlacePoint>
+  /** False draws no directions link on the map. Only the new club page passes it. */
+  directions?: boolean
+  /** With no maps key, draw nothing in the map's place rather than the setup hint. Only the new club page passes it. */
+  quietWithoutKey?: boolean
 }
 
-type Props = AllClubsProps | SingleClubProps
+type Props = AllClubsProps | SingleClubProps | DirectoryMapProps
 
 type PinState = 'normal' | 'hover' | 'selected'
 
@@ -137,6 +163,18 @@ function infoContent(club: MapClub, pin: MapPoint): string {
 }
 
 export function LCAMap(props: Props) {
+  if (props.mode === 'directory') {
+    return (
+      <Suspense fallback={<div style={{ height: props.height ?? 480 }} />}>
+        <DirectoryMap {...props} />
+      </Suspense>
+    )
+  }
+  return <ClubsMap {...props} />
+}
+
+/** Today's two uses, as they always were. */
+function ClubsMap(props: AllClubsProps | SingleClubProps) {
   const mapRef = useRef<HTMLDivElement>(null)
   const mapObj = useRef<google.maps.Map | null>(null)
   const infoRef = useRef<google.maps.InfoWindow | null>(null)
@@ -149,8 +187,10 @@ export function LCAMap(props: Props) {
   const isAll = props.mode === 'all'
   const height = props.height ?? (isAll ? 480 : 240)
   const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY as string | undefined
+  // The places the new club page passes, when it passes any.
+  const places = props.mode === 'single' && props.places && props.places.length > 0 ? props.places : null
   const singlePin: MapPoint | undefined = props.mode === 'single'
-    ? (props.location ?? findPinByName(props.clubName))
+    ? (places ? places[0] : (props.location ?? findPinByName(props.clubName)))
     : undefined
   const frame = isAll ? (props.frame ?? 'clubs') : 'clubs'
   const clubs = isAll ? props.clubs : []
@@ -176,9 +216,11 @@ export function LCAMap(props: Props) {
     loadMapsScript(apiKey, () => setLoaded(true))
   }, [apiKey])
 
-  // Create the map ONCE per mount.
-  useEffect(() => {
-    if (!loaded || !mapRef.current || mapObj.current) return
+  // Create the map ONCE per mount. The effect runs when the script has
+  // loaded, as it always has; what it draws it reads through an effect
+  // event, which sees the props of the render that loaded it.
+  const makeMap = useEffectEvent(() => {
+    if (!mapRef.current || mapObj.current) return
     const g = google.maps
     mapObj.current = new g.Map(mapRef.current, {
       center: !isAll && singlePin ? { lat: singlePin.lat, lng: singlePin.lng } : LOUISIANA_CENTER,
@@ -198,6 +240,24 @@ export function LCAMap(props: Props) {
       const info = new g.InfoWindow({ maxWidth: 270 })
       info.addListener('closeclick', () => onSelectRef.current?.(null))
       infoRef.current = info
+    } else if (places) {
+      // The new club page's places: one plain pin each, named by its place, and both in view.
+      const bounds = new g.LatLngBounds()
+      for (const place of places) {
+        new g.Marker({
+          optimized: false,
+          position: { lat: place.lat, lng: place.lng },
+          map: mapObj.current,
+          title: place.name,
+          icon: {
+            url: markerSvg(NAVY, GOLD, 30),
+            scaledSize: new g.Size(30, 40),
+            anchor: new g.Point(15, 40),
+          },
+        })
+        bounds.extend({ lat: place.lat, lng: place.lng })
+      }
+      if (places.length > 1) mapObj.current.fitBounds(bounds, 48)
     } else if (singlePin) {
       singleMarkerRef.current = new g.Marker({
         optimized: false,
@@ -211,12 +271,16 @@ export function LCAMap(props: Props) {
         },
       })
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+  })
+  useEffect(() => {
+    if (loaded) makeMap()
   }, [loaded])
 
-  // Rebuild markers when the shown clubs change, and frame them all.
-  useEffect(() => {
-    if (!isAll || !loaded || !mapObj.current) return
+  // Rebuild markers when the shown clubs change, and frame them all: when
+  // the set of clubs or the frame changes, as before, reading the clubs of
+  // that render through an effect event.
+  const drawMarkers = useEffectEvent(() => {
+    if (!isAll || !mapObj.current) return
     const g = google.maps
     const map = mapObj.current
 
@@ -256,7 +320,9 @@ export function LCAMap(props: Props) {
       map.panTo(LOUISIANA_CENTER)
       map.setZoom(7)
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+  })
+  useEffect(() => {
+    if (loaded) drawMarkers()
   }, [loaded, clubsKey, frame])
 
   // Selection and hover: restyle pins, and bring the selected club into view.
@@ -269,8 +335,9 @@ export function LCAMap(props: Props) {
     })
   }, [loaded, selectedId, hoveredId, clubsKey, isAll])
 
-  useEffect(() => {
-    if (!isAll || !loaded || !mapObj.current) return
+  // The selected club's card: when the selection or the set of clubs changes, as before.
+  const openSelected = useEffectEvent(() => {
+    if (!isAll || !mapObj.current) return
     const map = mapObj.current
     const info = infoRef.current
     const entry = selectedId ? markersRef.current.get(selectedId) : undefined
@@ -284,19 +351,25 @@ export function LCAMap(props: Props) {
       info.setContent(infoContent(entry.club, entry.pin))
       info.open({ map, anchor: entry.marker, shouldFocus: false })
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+  })
+  useEffect(() => {
+    if (loaded) openSelected()
   }, [loaded, selectedId, clubsKey])
 
-  // "You are here", once the visitor asks for clubs near them.
+  // "You are here", once the visitor asks for clubs near them. The effect
+  // reads the two numbers of the place, which are what it has always run on.
+  const userLat = userLocation?.lat
+  const userLng = userLocation?.lng
   useEffect(() => {
     if (!isAll || !loaded || !mapObj.current) return
     const g = google.maps
     userMarkerRef.current?.setMap(null)
     userMarkerRef.current = null
-    if (!userLocation) return
+    if (userLat === undefined || userLng === undefined) return
+    const here = { lat: userLat, lng: userLng }
     userMarkerRef.current = new g.Marker({
       optimized: false,
-      position: userLocation,
+      position: here,
       map: mapObj.current,
       title: 'You are here',
       icon: { url: USER_DOT, scaledSize: new g.Size(22, 22), anchor: new g.Point(11, 11) },
@@ -305,13 +378,13 @@ export function LCAMap(props: Props) {
     })
     // Frame the visitor and the three closest clubs.
     const nearest = [...markersRef.current.values()]
-      .map((e) => ({ e, d: (e.pin.lat - userLocation.lat) ** 2 + (e.pin.lng - userLocation.lng) ** 2 }))
+      .map((e) => ({ e, d: (e.pin.lat - here.lat) ** 2 + (e.pin.lng - here.lng) ** 2 }))
       .sort((a, b) => a.d - b.d)
       .slice(0, 3)
-    const bounds = new g.LatLngBounds(userLocation, userLocation)
+    const bounds = new g.LatLngBounds(here, here)
     nearest.forEach(({ e }) => bounds.extend(e.marker.getPosition()!))
     mapObj.current.fitBounds(bounds, 64)
-  }, [loaded, userLocation?.lat, userLocation?.lng, isAll])
+  }, [loaded, userLat, userLng, isAll])
 
   /** Back to every shown club, nothing selected. */
   function showAll() {
@@ -331,6 +404,7 @@ export function LCAMap(props: Props) {
   }
 
   if (!apiKey) {
+    if (props.mode === 'single' && props.quietWithoutKey) return null
     return (
       <div
         className="flex items-center justify-center rounded-xl border border-dashed bg-muted/30 text-sm text-muted-foreground"
@@ -346,7 +420,7 @@ export function LCAMap(props: Props) {
   return (
     <div className="relative overflow-hidden rounded-xl border bg-[#f2efe6]" style={{ height }}>
       <div ref={mapRef} style={{ width: '100%', height: '100%' }} />
-      {props.mode === 'single' && singlePin && (
+      {props.mode === 'single' && singlePin && props.directions !== false && (
         <a
           href={directionsUrl(singlePin)}
           target="_blank"

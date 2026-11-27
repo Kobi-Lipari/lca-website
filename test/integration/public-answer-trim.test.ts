@@ -30,7 +30,17 @@ import type { MemberRow } from '../../functions/types'
 import { seedAdmin, seedClub, seedDirector, seedMember, seedRegistration, seedTournament, seedTournamentDirector } from './factories'
 import { expectContract, invoke, resetHarness } from './harness'
 
-const flags = vi.hoisted(() => ({ clubEmailHidden: false, rosterShortNames: false }))
+const flags = vi.hoisted(() => ({ clubEmailHidden: false, rosterShortNames: false, pagesOn: false }))
+// CLUB_PAGES_ON is held unset but in the cases of WS09 step 37 that set it.
+vi.mock('../../functions/utils/clubs/pages', async (importOriginal) => {
+  const real = await importOriginal<typeof import('../../functions/utils/clubs/pages')>()
+  return {
+    ...real,
+    get CLUB_PAGES_ON() {
+      return flags.pagesOn
+    },
+  }
+})
 vi.mock('../../functions/utils/clubs/publicAnswer', async (importOriginal) => {
   const real = await importOriginal<typeof import('../../functions/utils/clubs/publicAnswer')>()
   return {
@@ -54,6 +64,7 @@ beforeEach(resetHarness)
 afterEach(() => {
   flags.clubEmailHidden = false
   flags.rosterShortNames = false
+  flags.pagesOn = false
   vi.restoreAllMocks()
 })
 
@@ -108,6 +119,66 @@ describe('GET /api/clubs/[id] with CLUB_EMAIL_HIDDEN unset and set', () => {
     flags.clubEmailHidden = true
     const body = await expectContract(await invoke(clubGet, { params: { id: clubId } }), clubContract.response)
     expect(Object.hasOwn(body.club, 'contact_email')).toBe(false)
+  })
+})
+
+describe('GET /api/clubs/[id]\'s officers with CLUB_PAGES_ON unset and set (WS09 step 37)', () => {
+  /** A made up club with two officers. */
+  async function seedOfficers() {
+    const clubId = await seedClub({ name: 'Example Chess Club' })
+    for (const [i, role] of ['President', 'Treasurer'].entries()) {
+      const member = await seedMember({ fullName: `Player ${i === 0 ? 'One' : 'Two'}`, email: `player.${i + 1}@example.org`, clubId })
+      await env.DB.prepare('INSERT INTO club_officers (id, club_id, member_id, role) VALUES (?, ?, ?, ?)').bind(`off-${i}-${clubId}`, clubId, member, role).run()
+    }
+    const askers = [undefined, await seedMember(), await seedMember({ role: 'club_rep', clubId }), await seedAdmin()]
+    return { clubId, askers }
+  }
+  /** The officers as today's query reads them. */
+  async function todaysOfficers(clubId: string) {
+    return (await env.DB.prepare(
+      `SELECT co.id, co.role, m.full_name
+     FROM club_officers co
+     JOIN members m ON co.member_id = m.id
+     WHERE co.club_id = ?
+     ORDER BY co.role`,
+    ).bind(clubId).all()).results
+  }
+  /** The answer's text and how many of its statements name club_officers. */
+  async function asked(clubId: string, as?: string) {
+    const spy = vi.spyOn(env.DB, 'prepare')
+    const result = await invoke(clubGet, { as, params: { id: clubId } })
+    const reads = spy.mock.calls.filter((c) => /\bclub_officers\b/.test(String(c[0]))).length
+    spy.mockRestore()
+    return { result, reads }
+  }
+
+  it('unset: everyone is answered the officers by role and name from today\'s query, as today', async () => {
+    const { clubId, askers } = await seedOfficers()
+    for (const as of askers) {
+      const { result, reads } = await asked(clubId, as)
+      const body = await expectContract(result, clubContract.response)
+      expect(body.officers, label(as)).toEqual(await todaysOfficers(clubId))
+      expect(body.officers.map((o) => o.role), label(as)).toEqual(['President', 'Treasurer'])
+      expect(reads, label(as)).toBe(1)
+    }
+  })
+
+  it('set: everyone is answered an empty officers list, club_officers is not read, and the rest of the answer is today\'s bytes', async () => {
+    const { clubId, askers } = await seedOfficers()
+    for (const as of askers) {
+      const today = JSON.parse(await (await invoke(clubGet, { as, params: { id: clubId } })).response.text()) as Record<string, unknown>
+      flags.pagesOn = true
+      const { result, reads } = await asked(clubId, as)
+      const text = await result.response.clone().text()
+      const body = await expectContract(result, clubContract.response)
+      expect(body.officers, label(as)).toEqual([])
+      expect(reads, label(as)).toBe(0)
+      expect(text, label(as)).toBe(JSON.stringify({ ...today, officers: [] }))
+      expect(text, label(as)).not.toContain('Player One')
+      flags.pagesOn = false
+    }
+    // The rows stay in the table.
+    expect(await todaysOfficers(clubId)).toHaveLength(2)
   })
 })
 

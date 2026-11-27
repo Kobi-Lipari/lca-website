@@ -15,6 +15,11 @@
 // REGION_EVENTS_ON set (WS09 step 19) the GET gives every person it admits
 // the club's events with the approval wait's columns, and `eventRights`,
 // what the person may do with them; with it unset the answer is as before.
+// With CLUB_PAGES_ON set (WS09 step 37) a player is no longer tied to a
+// club: the GET answers neither the officers nor the roster and reads
+// neither, and still tells a person admitted by a regional seat alone that
+// the roster is kept back, as the pages read that for the club's events. The
+// DELETE clears the club's officer rows whatever the constant says.
 import type { Env, MemberRow } from '../../../types'
 import { isResponse, requireClubRep, requireAdmin, requireClubView } from '../../../utils/auth'
 import {
@@ -29,6 +34,7 @@ import { ADMIN_CLUB_COLUMNS } from '../../../utils/clubs/adminAnswer'
 import { isMissingTableOrColumn } from '../../../utils/clubs/migrationLag'
 import { CLUB_KEEPERS_ON } from '../../../utils/clubs/pages'
 import { REGION_EVENTS_ON } from '../../../utils/clubs/pages'
+import { CLUB_PAGES_ON } from '../../../utils/clubs/pages'
 import { clubEventRights } from '../../../utils/clubs/eventRights'
 import {
   KEEPER_FLAG_FIELDS,
@@ -42,6 +48,9 @@ import {
   type SavedChange,
 } from '../../../utils/clubs/save'
 import { sendClubSaveNotice } from '../../../utils/clubs/emails'
+import { openSuggestionsOf } from '../../../utils/clubs/suggestions'
+import { repRequestsFor } from '../../../utils/clubs/repRequests'
+import { canManageClub } from '../../../utils/admin/permissions'
 import { isReservedSlug } from '../../../../domain/clubs/slug'
 import {
   todaysClubSaveRequestSchema,
@@ -127,15 +136,17 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
   // A person admitted by a regional seat alone gets the club, its officers
   // without their emails and an empty roster (functions/utils/clubs/memberView.ts).
   const regionAlone = admittedByRegionAlone(authResult.member, clubId)
+  // While CLUB_PAGES_ON is set neither list is read or answered.
+  const pagesOn = CLUB_PAGES_ON
 
-  const officers = await context.env.DB.prepare(
+  const officers = pagesOn ? { results: [] } : await context.env.DB.prepare(
     `SELECT co.id, co.member_id, co.role, m.full_name, m.email
      FROM club_officers co
      JOIN members m ON co.member_id = m.id
      WHERE co.club_id = ? ORDER BY co.created_at`,
   ).bind(clubId).all()
 
-  const roster = regionAlone
+  const roster = regionAlone || pagesOn
     ? { results: [] }
     : await context.env.DB.prepare(
       `SELECT m.id, m.full_name, m.email, m.uscf_id, m.uscf_rating, m.membership_status
@@ -163,8 +174,10 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
 
   const answer = {
     club,
-    officers: regionAlone ? officersWithoutEmail(officers.results) : officers.results,
-    roster: roster.results,
+    ...(pagesOn ? {} : {
+      officers: regionAlone ? officersWithoutEmail(officers.results) : officers.results,
+      roster: roster.results,
+    }),
     // Says the empty roster above is held back, not empty, so the admin club page can say so.
     ...(regionAlone ? { rosterKeptBack: true } : {}),
     tournaments: tournaments.results,
@@ -175,11 +188,31 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
 
   // With CLUB_KEEPERS_ON set the club's fifteen new columns join it (two of
   // them member ids, never an email) and its places follow, for each person
-  // admitted; the roster rule above stays as it is.
+  // admitted; the roster rule above stays as it is. A keeper of the club
+  // (canManageClub, so not an observer who only views it) is also answered
+  // its open suggestions (WS09 step 28), only while one is open, so the
+  // answer with none is as before; never an address.
+  const keeperColumns = await readKeeperColumns(context.env.DB, clubId)
+  const places = await readPlaces(context.env.DB, clubId)
+  const waiting = (await openSuggestionsOf(context.env.DB, [clubId], Date.now())).get(clubId) ?? []
+  const open = waiting.length > 0 && await canManageClub(context.env.DB, authResult.member, clubId) ? waiting : []
+  // The club's open requests of Ask to be its named rep (WS09 step 31), only to a keeper who may decide them, only
+  // when one is open, and then kept by no cache, since the member's name and address are in each.
+  const repRequests = await repRequestsFor(context.env.DB, authResult.member, clubId)
+  if (repRequests.length > 0) {
+    return jsonResponse({
+      ...answer,
+      club: { ...club, ...keeperColumns },
+      places,
+      ...(open.length > 0 ? { openSuggestions: open } : {}),
+      repRequests,
+    }, 200, { 'Cache-Control': 'no-store' })
+  }
   return jsonResponse({
     ...answer,
-    club: { ...club, ...(await readKeeperColumns(context.env.DB, clubId)) },
-    places: await readPlaces(context.env.DB, clubId),
+    club: { ...club, ...keeperColumns },
+    places,
+    ...(open.length > 0 ? { openSuggestions: open } : {}),
   })
 }
 

@@ -14,6 +14,7 @@ import { ImpersonationBanner } from '@/components/ImpersonationBanner'
 import { PasswordRecoveryRedirect } from '@/components/auth/PasswordRecoveryRedirect'
 import { FEATURES } from '@/lib/features'
 import { chromeOn } from '@/lib/nav'
+import { clubPagesOn } from '@/areas/clubs/switches'
 const AboutPage = lazy(() => import('@/pages/AboutPage').then(m => ({ default: m.AboutPage })))
 const AnnualMeetingPage = lazy(() => import('@/pages/AnnualMeetingPage').then(m => ({ default: m.AnnualMeetingPage })))
 const AdminClubPage = lazy(() => import('@/pages/AdminClubPage').then(m => ({ default: m.AdminClubPage })))
@@ -24,8 +25,11 @@ const BoardPage = lazy(() => import('@/pages/BoardPage').then(m => ({ default: m
 const ChampionsPage = lazy(() => import('@/pages/ChampionsPage').then(m => ({ default: m.ChampionsPage })))
 const BylawsPage = lazy(() => import('@/pages/BylawsPage').then(m => ({ default: m.BylawsPage })))
 const ClubDetailPage = lazy(() => import('@/pages/ClubDetailPage').then(m => ({ default: m.ClubDetailPage })))
+const ClubListingPage = lazy(() => import('@/pages/ClubListingPage').then(m => ({ default: m.ClubListingPage })))
 const ClubConfirmPage = lazy(() => import('@/pages/ClubConfirmPage').then(m => ({ default: m.ClubConfirmPage })))
+const ClubReplyPage = lazy(() => import('@/pages/ClubReplyPage').then(m => ({ default: m.ClubReplyPage })))
 const ClubsPage = lazy(() => import('@/pages/ClubsPage').then(m => ({ default: m.ClubsPage })))
+const ClubsIndexPage = lazy(() => import('@/pages/ClubsIndexPage').then(m => ({ default: m.ClubsIndexPage })))
 const ContactPage = lazy(() => import('@/pages/ContactPage').then(m => ({ default: m.ContactPage })))
 const DashboardPage = lazy(() => import('@/pages/DashboardPage').then(m => ({ default: m.DashboardPage })))
 const AccountSecurityPage = lazy(() => import('@/pages/AccountSecurityPage').then(m => ({ default: m.AccountSecurityPage })))
@@ -44,6 +48,7 @@ const ScannerPage = lazy(() => import('@/pages/ScannerPage').then(m => ({ defaul
 const RegisterPage = lazy(() => import('@/pages/RegisterPage').then(m => ({ default: m.RegisterPage })))
 const ResetPasswordPage = lazy(() => import('@/pages/ResetPasswordPage').then(m => ({ default: m.ResetPasswordPage })))
 const ScholasticPage = lazy(() => import('@/pages/ScholasticPage').then(m => ({ default: m.ScholasticPage })))
+const SuggestClubPage = lazy(() => import('@/pages/SuggestClubPage').then(m => ({ default: m.SuggestClubPage })))
 const SupportPage = lazy(() => import('@/pages/SupportPage').then(m => ({ default: m.SupportPage })))
 const TournamentDetailPage = lazy(() => import('@/pages/TournamentDetailPage').then(m => ({ default: m.TournamentDetailPage })))
 const TournamentManagePage = lazy(() => import('@/pages/TournamentManagePage').then(m => ({ default: m.TournamentManagePage })))
@@ -195,10 +200,18 @@ function App() {
             <Route path="/tournaments/:id/pairings" element={<TournamentPairingsPage />} />
             <Route path="/tournaments/:id/print" element={<TournamentPrintPage />} />
             <Route path="/scholastic" element={<ScholasticPage />} />
-            <Route path="/clubs" element={<ClubsPage />} />
+            {/* The new directory with clubPagesOn, when the list's answer has its shape (WS09 step 33); otherwise today's Clubs page, as it always was. */}
+            <Route path="/clubs" element={clubPagesOn() ? <ClubsIndexPage /> : <ClubsPage />} />
             {/* The page a Still accurate link in the monthly check opens, with no sign-in (WS09 step 14); routed only while clubKeepers is on, so with it off the address draws what it draws today. */}
             {FEATURES.clubKeepers && <Route path="/clubs/confirm/:token" element={<ClubConfirmPage />} />}
-            <Route path="/clubs/:id" element={<ClubDetailPage />} />
+            {/* Suggest a club and Start a club, which the menus open with newClubs on (WS09 step 30); with newClubs off there is no such route, and the address draws today's "Club not found". */}
+            {FEATURES.newClubs && <Route path="/clubs/suggest" element={<SuggestClubPage />} />}
+            {/* Reply through LCA, behind sign-in on the page itself (WS09 step 27); routed only with clubPagesOn, before the club page's address. */}
+            {clubPagesOn() && <Route path="/clubs/reply/:token" element={<ClubReplyPage />} />}
+            {/* The new club page with clubPagesOn (newClubs and newLook, WS09 step 21); otherwise today's club page, as it always was. */}
+            {clubPagesOn()
+              ? <Route path="/clubs/:id" element={<ClubListingPage />} />
+              : <Route path="/clubs/:id" element={<ClubDetailPage />} />}
             <Route path="/news" element={<NewsPage />} />
             <Route path="/news/:slug" element={<NewsPostPage />} />
             {/* Public on purpose: signed-out visitors see what it does and a

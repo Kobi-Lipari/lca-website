@@ -5,6 +5,8 @@ interface ImportMetaEnv {
   readonly VITE_SUPABASE_ANON_KEY: string
   readonly VITE_GOOGLE_MAPS_API_KEY: string
   readonly VITE_FORMSPREE_FORM_ID?: string
+  /** The spam check's site key, public by design; its secret is the server's TURNSTILE_SECRET_KEY. */
+  readonly VITE_TURNSTILE_SITE_KEY?: string
   /** Optional: labels the email preview. See functions/utils/site.ts. */
   readonly VITE_SITE_URL?: string
   /**

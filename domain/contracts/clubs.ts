@@ -7,6 +7,9 @@
 import { z } from 'zod'
 import { dollarsSchema, flagSchema, idSchema, isoDateSchema, storedTimestampSchema } from './common'
 import { registrationStatusSchema, savedSectionSchema, tournamentStatusSchema } from './events'
+import { openSuggestionSchema } from './clubReports'
+import { clubRequestRowSchema } from './clubRequests'
+import { repRequestRowSchema } from './clubRepRequests'
 
 /**
  * The club's public row: today's 13 columns of clubs, in the table's own
@@ -46,10 +49,38 @@ export const clubListItemSchema = z.strictObject({
   longitude: z.number().nullable(),
 })
 
-/** GET /api/clubs (getClubs). Public; every club, whoever asks. */
+/** GET /api/clubs (getClubs) with CLUB_PAGES_ON unset, as it ships. Public; every club, whoever asks. */
 export const clubListResponseSchema = z.strictObject({
   clubs: z.array(clubListItemSchema),
 })
+
+/**
+ * One club in GET /api/clubs while CLUB_PAGES_ON is set (WS09 step 32), what
+ * the new directory reads: the nine columns above, unchanged and in their
+ * order, then the address part of the club's page (its slug, or its id while
+ * it has none), how the club meets in its own words or null, the club's
+ * description for a club with no statement (null for one with a statement),
+ * the club's point (its first place's, or today's pin while it has no place,
+ * or null) and the two ticks of Who is welcome. No keeper, no seat, no
+ * person's name and no address of any kind (K's decision 12).
+ */
+export const clubDirectoryItemSchema = z.strictObject({
+  ...clubListItemSchema.shape,
+  slug: z.string(),
+  statement: z.string().nullable(),
+  description: z.string().nullable(),
+  point: z.strictObject({ latitude: z.number(), longitude: z.number() }).nullable(),
+  weekend_play: z.boolean(),
+  scholastic_friendly: z.boolean(),
+})
+
+/** GET /api/clubs while CLUB_PAGES_ON is set: the same clubs, A to Z by name, each with the directory's keys. */
+export const clubDirectoryResponseSchema = z.strictObject({
+  clubs: z.array(clubDirectoryItemSchema),
+})
+
+/** GET /api/clubs in either of its two shapes: today's, or the directory's while CLUB_PAGES_ON is set. */
+export const clubsAnswerSchema = z.union([clubListResponseSchema, clubDirectoryResponseSchema])
 
 /**
  * One of the club's visible events on its page, newest first: the columns
@@ -90,6 +121,8 @@ export const clubDetailResponseSchema = z.strictObject({
 })
 
 export type ClubListResponse = z.infer<typeof clubListResponseSchema>
+export type ClubDirectoryItem = z.infer<typeof clubDirectoryItemSchema>
+export type ClubDirectoryResponse = z.infer<typeof clubDirectoryResponseSchema>
 export type ClubDetailResponse = z.infer<typeof clubDetailResponseSchema>
 
 // ── The admin club endpoints: GET and PATCH /api/admin/clubs/[id] and PUT
@@ -410,7 +443,31 @@ export const adminClubResponseSchema = z.strictObject({
   places: z.array(clubPlaceSchema).optional(),
   /** What the person may do with the club's events, answered only while REGION_EVENTS_ON is set (WS09 step 19). */
   eventRights: clubEventRightsSchema.optional(),
+  /**
+   * The club's open suggestions (WS09 step 28), answered only while CLUB_KEEPERS_ON is set, only to a keeper of the
+   * club (canManageClub), and only when at least one is open; never an address.
+   */
+  openSuggestions: z.array(openSuggestionSchema).optional(),
+  /**
+   * The club's open requests of Ask to be its named rep (WS09 step 31), answered only while CLUB_KEEPERS_ON is set,
+   * only to a keeper who may decide them (an LCA admin, or a holder of the club's regional seat who is not the club's
+   * own rep), and only when at least one is open.
+   */
+  repRequests: z.array(repRequestRowSchema).optional(),
 })
+
+/**
+ * GET /api/admin/clubs/[id] while CLUB_PAGES_ON is set (WS09 step 37): the
+ * same answer with neither the officers nor the roster, since a player is no
+ * longer tied to a club. `rosterKeptBack` is still said to a person admitted
+ * by the region alone, as true, and to no one else.
+ */
+export const adminClubWithoutRosterResponseSchema = z.strictObject(
+  adminClubResponseSchema.omit({ officers: true, roster: true }).shape,
+)
+
+/** GET /api/admin/clubs/[id] in either of its two shapes: today's, or the one without the roster and officers while CLUB_PAGES_ON is set. */
+export const adminClubAnswerSchema = z.union([adminClubResponseSchema, adminClubWithoutRosterResponseSchema])
 
 /**
  * PATCH /api/admin/clubs/[id] (adminUpdateClub, and the club editor's
@@ -444,7 +501,7 @@ export const clubConfirmResponseSchema = z.strictObject({
  * logo address and statement (how the club meets, in its own words), the
  * last check (null for a club never checked) with its words and whether it
  * needs a check, the count of the club's events the person is shown, and
- * its open items, empty until WS09 steps 19 and 28 give them their rows.
+ * its open items: its open suggestions (WS09 step 28), the one kind there is.
  * No email of any kind, no roster and no member.
  */
 export const regionClubSchema = z.strictObject({
@@ -459,7 +516,8 @@ export const regionClubSchema = z.strictObject({
   lastCheckWords: z.string(),
   needsCheck: z.boolean(),
   events: z.number().int().nonnegative(),
-  openItems: z.array(z.never()),
+  /** The club's open suggestions (WS09 step 28), the one kind of open item; never an address. */
+  openItems: z.array(openSuggestionSchema),
   /** How many of the club's events wait in LCA review (marked, sent and not approved), answered only while REGION_EVENTS_ON is set (WS09 step 19). */
   inReview: z.number().int().nonnegative().optional(),
 })
@@ -487,6 +545,18 @@ export const workspaceRegionResponseSchema = z.strictObject({
     inReview: z.number().int().nonnegative().optional(),
   }),
   regions: z.array(regionKeepersSchema),
+  /**
+   * The open rows of Suggest a club and Start a club (WS09 step 30) the person keeps: for a holder of a seat, those of
+   * the regions the seat covers; for an LCA admin, every one, those with no region among them. Absent when there is
+   * none, so the answer with none is as before.
+   */
+  clubRequests: z.array(clubRequestRowSchema).optional(),
+  /**
+   * The open requests of Ask to be its named rep (WS09 step 31) the person may decide: for a holder of a seat, those of
+   * the clubs in the regions the seat covers; for an LCA admin, every one; never the person's own. Absent when there is
+   * none, so the answer with none is as before.
+   */
+  repRequests: z.array(repRequestRowSchema).optional(),
 })
 
 /**
@@ -520,13 +590,23 @@ export const clubLinkConfirmResponseSchema = z.strictObject({
   month: z.string(),
 })
 
+/** The second action of POST /api/admin/clubs/monthly-check (WS09 step 29): the suggestions with no answer in 14 days. */
+export const REPORT_CLOCK_ACTION = 'run_report_clock'
+
 /**
  * POST /api/admin/clubs/monthly-check, the LCA admin's button: `send`
  * false asks only how many people the check goes to, for the button's one
  * question, and sends nothing; `send` true sends it to every one of them.
+ *
+ * With `action` set to run_report_clock (WS09 step 29) the same two ask
+ * about the suggestions no one has answered in 14 days instead: `send`
+ * false asks how many there are, and `send` true passes them on. With no
+ * `action` the body is the monthly check's, as it always was, so every
+ * request the endpoint took before parses as before.
  */
 export const monthlyCheckRequestSchema = z.looseObject({
   send: z.boolean(),
+  action: z.literal(REPORT_CLOCK_ACTION, 'Leave the action out for the monthly check, or name run_report_clock.').optional(),
 })
 
 /**
@@ -542,6 +622,25 @@ export const monthlyCheckResponseSchema = z.strictObject({
   notReached: z.number().int().nonnegative(),
 })
 
+/**
+ * POST /api/admin/clubs/monthly-check with `action` run_report_clock (WS09
+ * step 29): how many suggestions have had no answer in 14 days and not been
+ * passed on, and, once sent, how many were passed on, how many emails went
+ * and how many did not, and how many suggestions wait for the next run.
+ * Numbers only: no person, no address and none of the visitor's words.
+ */
+export const reportClockResponseSchema = z.strictObject({
+  due: z.number().int().nonnegative(),
+  passedOn: z.number().int().nonnegative(),
+  sent: z.number().int().nonnegative(),
+  notSent: z.number().int().nonnegative(),
+  notReached: z.number().int().nonnegative(),
+})
+
+/** Every answer of POST /api/admin/clubs/monthly-check: the monthly check's, or the second action's. */
+export const monthlyCheckAnswerSchema = z.union([monthlyCheckResponseSchema, reportClockResponseSchema])
+
+export type ReportClockResponse = z.infer<typeof reportClockResponseSchema>
 export type ClubLinkResponse = z.infer<typeof clubLinkResponseSchema>
 export type ClubLinkConfirmResponse = z.infer<typeof clubLinkConfirmResponseSchema>
 export type MonthlyCheckResponse = z.infer<typeof monthlyCheckResponseSchema>

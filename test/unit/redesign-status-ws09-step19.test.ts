@@ -274,7 +274,8 @@ describe('REDESIGN_STATUS.md, WS09 step 19: the parts against the files', () => 
   it('names its pins, and the moved checks hold', () => {
     const pins = bullet(block, '- **Pins moved.**')
     for (const file of MOVED) expect(pins, file).toContain(`\`${file}\``)
-    expect(read('test/unit/api-split-modules.test.ts')).toContain('\'/api/admin/tournaments/*/approval\', \'/api/clubs/confirm/*\',')
+    // WS09 step 20 adds its own path between the two.
+    expect(read('test/unit/api-split-modules.test.ts')).toMatch(/'\/api\/admin\/tournaments\/\*\/approval', (?:'\/api\/clubs\/\*\/page', )?'\/api\/clubs\/confirm\/\*',/)
     expect(read('test/unit/redesign-status-ws09-step10.test.ts')).toContain('if (latestStep <= 18 || file !== INTEGRATION) expect(writtenCount(files, file), file).toBe(casesIn(file))')
     expect(read('test/integration/club-events-edges.test.ts')).toContain('expect(await events(representative)).toEqual(regionOn ? [mine, theirs, listed].sort() : [listed])')
     expect(read('src/pages/AdminClubPage.tsx').split('\n')[427]).toContain('color: clubTextColor(color),')
@@ -347,7 +348,7 @@ describe('REDESIGN_STATUS.md, WS09 step 19: the map and the lists', () => {
   })
 
   it('records the step\'s deviations, verify items and follow-ups, each tagged, closes step 18\'s follow-up in place, and adds no decision', () => {
-    expect(tagged(part(LISTS[0]))).toEqual([])
+    expect(tagged(part(LISTS[0])).filter((l) => !l.endsWith(' Recorded at the close, in WS09 step 38.'))).toEqual([]) // moved by WS09 step 38: the close records the step's decisions under its own tag
     expect(tagged(deviations).map(head)).toEqual([
       'No Publish button (WS09 step 19).', 'No Help hook (WS09 step 19).', 'The guard asks the server (WS09 step 19).', 'The approval call\'s file (WS09 step 19).',
     ])

@@ -19,8 +19,14 @@
 // link onward, told by the answer's status: where logging in lets the person
 // do the same from My region (410, 400 and 503), "Log in to My region",
 // which sends them on to /workspace/region once signed in; where it would
-// not help (403 and 404), "Go to the home page". Its two calls live in
+// not help (403 and 404), "Go to the home page". A link opened too often in
+// an hour from one place (429, WS09 step 25) is said in the server's words
+// too, with "Go to the home page". Its two calls live in
 // src/areas/clubs/api.ts.
+//
+// A press while a visitor's suggestion for the club waits (409, WS09 step
+// 28) is said in the server's words, which say the suggestion is answered in
+// My region after logging in, with "Log in to My region".
 //
 // The token rides in the address, so the page keeps it there alone: it is
 // never in the title or in a link's address, the page asks browsers to send
@@ -34,7 +40,10 @@ import { ApiError, confirmClubByLink, getClubLink } from '@/lib/api'
 import { NO_STATEMENT } from '@domain/clubs/monthlyCheck'
 
 /** The statuses the server refuses a link with, each said in the server's own words. */
-const REFUSALS = new Set([400, 403, 404, 410, 503])
+const REFUSALS = new Set([400, 403, 404, 410, 429, 503])
+
+/** The answer to a press while a visitor's suggestion for the club waits to be answered in My region (WS09 step 28). */
+const WAITS = 409
 
 /** The refusals where logging in lets the person mark the club from My region: an expired link, one that cannot be read, no key. */
 const LOG_IN_HELPS = new Set([400, 410, 503])
@@ -59,7 +68,7 @@ const PRESS_FAILED = 'Not marked: the request did not go through. Nothing change
 
 /** A refusal in the server's words, or null for a failure to try again. */
 function refusalOf(err: unknown): { text: string; status: number } | null {
-  if (err instanceof ApiError && REFUSALS.has(err.status)) return { text: err.message, status: err.status }
+  if (err instanceof ApiError && (REFUSALS.has(err.status) || err.status === WAITS)) return { text: err.message, status: err.status }
   return null
 }
 
@@ -165,7 +174,7 @@ export function ClubConfirmPage() {
       {/* One way onward from a refusal, told by its status. The login page sends the person on to My region; the token goes with neither. */}
       {view.kind === 'refused' && (
         <p className="mt-4">
-          {LOG_IN_HELPS.has(view.status)
+          {LOG_IN_HELPS.has(view.status) || view.status === WAITS
             ? <Link to="/login" state={{ from: '/workspace/region' }} className={LINK}>Log in to My region</Link>
             : <Link to="/" className={LINK}>Go to the home page</Link>}
         </p>

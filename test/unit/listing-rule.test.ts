@@ -14,7 +14,13 @@
 // them, WS03 adds its shared event query and /api/home, WS04 GET
 // /api/clearinghouse, GET /api/events, the list feed, the saved-search email
 // and every branch of GET /api/tournaments, and WS09 its sitemap, each moving
-// its query to listedWhere as it joins the list.
+// its query to listedWhere as it joins the list. WS09 step 20 adds the new
+// club page's answer, whose club events are read through listedWhere('t')
+// from the start; WS09 step 23 moved its reads from
+// functions/api/clubs/[id]/page.ts into functions/utils/clubs/pageAnswer.ts,
+// which the page's endpoint and the server-written page both call. WS09
+// step 24 adds functions/sitemap.xml.ts, whose list of listed events reads
+// tournaments through listedWhere('t') from the start.
 import { existsSync, readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import ts from 'typescript'
@@ -25,7 +31,7 @@ const ROOT = join(__dirname, '../..')
 const read = (path: string) => readFileSync(join(ROOT, path), 'utf8')
 
 /** The files whose public queries of tournaments take the listing condition from listedWhere. */
-const LISTED = ['functions/api/search.ts', 'functions/utils/search.ts']
+const LISTED = ['functions/api/search.ts', 'functions/utils/search.ts', 'functions/sitemap.xml.ts', 'functions/utils/clubs/pageAnswer.ts']
 
 /** The rule's one home, which names the column. */
 const HOME = 'functions/utils/events/listing.ts'

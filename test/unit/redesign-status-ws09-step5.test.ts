@@ -317,7 +317,8 @@ describe('REDESIGN_STATUS.md, WS09 step 5: the parts', () => {
     ]) expect(ships, piece).toContain(piece)
     // The answers the block names read neither a new field nor a new table.
     const NEW_FIELDS = /\b(?:slug|about_text|how_we_meet_text|told_updated_at|told_by|club_places|club_slug_history)\b/
-    for (const file of ['functions/api/clubs.ts', 'functions/api/clubs/[id].ts', 'functions/clubs/[id].ts', 'functions/utils/clubs/adminAnswer.ts']) {
+    // WS09 step 23's route reads the new club page's answer, behind CLUB_PAGES_ON, so functions/clubs/[id].ts left this list.
+    for (const file of ['functions/api/clubs.ts', 'functions/api/clubs/[id].ts', 'functions/utils/clubs/adminAnswer.ts']) {
       expect(read(file), file).not.toMatch(NEW_FIELDS)
     }
     // The search reads a news post's slug; its clubs read four columns of their own.

@@ -2,11 +2,15 @@
 // Removes one of a club's officers. A rep removes their own club's; an admin
 // any. A person admitted by a regional seat alone removes none, as they add
 // none: the same 403 in the same words (functions/utils/clubs/memberView.ts).
+// With CLUB_PAGES_ON set (functions/utils/clubs/pages.ts) it answers 410 in
+// the officers' words after the same checks, and reads and removes nothing.
 import type { Env } from '../../../../../types'
 import { isResponse, requireClubRep } from '../../../../../utils/auth'
 import { errorResponse, handleOptions, jsonResponse } from '../../../../../utils/response'
 import { recordAdminAction } from '../../../../../utils/admin/audit'
 import { admittedByRegionAlone, ROSTER_KEPT_BACK } from '../../../../../utils/clubs/memberView'
+import { CLUB_PAGES_ON } from '../../../../../utils/clubs/pages'
+import { OFFICERS_NOT_KEPT } from '../officers'
 
 export const onRequestOptions: PagesFunction<Env> = async () => handleOptions()
 
@@ -17,6 +21,7 @@ export const onRequestDelete: PagesFunction<Env> = async (context) => {
   if (isResponse(authResult)) return authResult
   // Before the officer is read, so nothing is removed and nothing is told of it.
   if (admittedByRegionAlone(authResult.member, clubId)) return errorResponse(ROSTER_KEPT_BACK, 403)
+  if (CLUB_PAGES_ON) return errorResponse(OFFICERS_NOT_KEPT, 410)
 
   const officer = await context.env.DB.prepare(
     `SELECT co.member_id, co.role, m.full_name FROM club_officers co

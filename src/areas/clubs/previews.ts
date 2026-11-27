@@ -37,16 +37,11 @@ export function ownLogo(imageUrl: string | null | undefined): string | null {
 
 /**
  * A club's initials, for the card a shared link shows when the club has no
- * logo: the first letter of each of the first two words of its name, or the
- * first two letters of a name of one word, in capitals (Example Chess Club
- * gives EC, as the board draws a club's two letters).
+ * logo. It lives with the new club page's plain code since WS09 step 21,
+ * whose cover draws the same two letters, so the page's own chunk need not
+ * take this file.
  */
-export function clubInitials(name: string): string {
-  const words = name.split(/[^\p{L}\p{N}]+/u).filter(Boolean)
-  if (words.length === 0) return '?'
-  const letters = words.length === 1 ? [...words[0]].slice(0, 2).join('') : words.slice(0, 2).map((w) => [...w][0]).join('')
-  return letters.toUpperCase()
-}
+export { clubInitials } from '@/areas/clubs/clubPage'
 
 /** One line of the page's checklist: what it is and whether the page has it. */
 export interface ChecklistItem {

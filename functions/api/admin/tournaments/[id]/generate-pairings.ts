@@ -14,6 +14,7 @@ import {
   jsonResponse,
   parseJsonBody,
 } from '../../../../utils/response'
+import { CLUB_PAGES_ON } from '../../../../utils/clubs/pages'
 
 interface GenerateBody {
   round?: number
@@ -137,8 +138,12 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     : []
 
   // Keep apart: a family is a parent and their children (and so siblings);
-  // a club is the club on each player's account.
-  const keepApart = tournament.keep_apart ?? 'family'
+  // a club is the club on each player's account. While CLUB_PAGES_ON is set
+  // (functions/utils/clubs/pages.ts) a player is no longer tied to a club, so
+  // an event set to 'family_club' pairs as one set to 'family'; the stored
+  // value is kept, so the rule comes back if the constant is unset.
+  const stored = tournament.keep_apart ?? 'family'
+  const keepApart = CLUB_PAGES_ON && stored === 'family_club' ? 'family' : stored
   const avoid: Array<[string, string]> = []
   if (keepApart !== 'none') {
     const familyOf = (r: typeof rows[number]) => r.guardian_id ?? r.member_id

@@ -155,7 +155,8 @@ describe('REDESIGN_STATUS.md, Checkpoint U: what it is and what it asks of K', (
       expect(sql.match(/CREATE TABLE/g), file).toHaveLength(1)
       expect(sql, file).not.toMatch(/^\s*(?:DROP|ALTER|UPDATE|DELETE|INSERT)\b/m)
     }
-    expect(read('public/_headers').split('\n').filter((l) => l.startsWith('/'))).toEqual(['/clubs/confirm/*'])
+    // The headers file named one address at checkpoint U; WS09 step 27 adds the Reply through LCA page's, after it.
+    expect(read('public/_headers').split('\n').filter((l) => l.startsWith('/'))).toEqual(['/clubs/confirm/*', '/clubs/reply/*'])
   })
 
   it('names what is owed before clubKeepers goes on as K\'s own, step 15 by agreement, and the days for the merge', () => {
@@ -227,7 +228,7 @@ describe('REDESIGN_STATUS.md, WS09 checkpoint U: the review of the whole and its
     expect(send).toBeGreaterThan(check.indexOf('if (!body.send) {'))
     expect(row).toBeGreaterThan(send)
     expect(check).toContain('      action: \'club_monthly_check_sent\',\n      targetLabel: done.month,\n      detail: { sent: done.sent, notSent: done.notSent, notReached: done.notReached },')
-    expect(check.match(/recordAdminAction\(/g)).toHaveLength(1)
+    expect(check.match(/recordAdminAction\(/g)).toHaveLength(2)
     expect(read('functions/utils/admin/audit.ts')).toContain('  | \'club_monthly_check_sent\'\n')
     expect(read('src/areas/admin/components/AuditLogPanel.tsx')).toContain('club_monthly_check_sent: { label: \'Sent the monthly check\', icon: Mail, className: \'bg-info-100 text-info-800\' },')
     expect(read('functions/utils/clubs/monthlyCheck.ts')).not.toMatch(/admin\/audit|recordAdminAction/)

@@ -25,18 +25,32 @@
 // and no query is made. With no signing secret the admin is told why and
 // nothing is sent or written.
 //
+// A second action (WS09 step 29): with `action` run_report_clock the same
+// button's two questions ask about the visitors' suggestions no keeper has
+// answered in 14 days (functions/utils/clubs/reportClock.ts). `send` false
+// answers how many are due and sends nothing; `send` true passes them on,
+// at most MAX_SENDS emails a press, recorded as club_report_clock and marked
+// manual, and a press that tried to send writes one row to the activity log,
+// club_report_clock_sent, naming the LCA admin who pressed it, with the
+// counts alone. It needs no signing key, so it is answered before the key
+// is looked at. A body with no `action` is the monthly check's, as it always
+// was. Who may is the same for both: an LCA admin with a second factor, and
+// while CLUB_KEEPERS_ON is unset everyone gets the same 403 before anything
+// is read.
+//
 // This static file sits beside functions/api/admin/clubs/[id].ts. Pages
 // routes the more specific address first, a static segment before a
 // dynamic one, so /api/admin/clubs/monthly-check reaches this file and not
 // the club handler with the id "monthly-check".
 import type { Env } from '../../../types'
-import { isResponse, requireAdmin } from '../../../utils/auth'
+import { isResponse, requireAdmin, type AuthedMember } from '../../../utils/auth'
 import { errorResponse, handleOptions, jsonResponse, parseBody } from '../../../utils/response'
 import { CLUB_KEEPERS_ON } from '../../../utils/clubs/pages'
 import { monthlyCheckPeople, runMonthlyCheck, signingKeyReady } from '../../../utils/clubs/monthlyCheck'
+import { overdueSuggestionCount, runReportClock } from '../../../utils/clubs/reportClock'
 import { recordAdminAction } from '../../../utils/admin/audit'
 import { monthInWords } from '../../../../domain/clubs/monthlyCheck'
-import { monthlyCheckRequestSchema, type MonthlyCheckResponse } from '../../../../domain/contracts/clubs'
+import { REPORT_CLOCK_ACTION, monthlyCheckRequestSchema, type MonthlyCheckResponse, type ReportClockResponse } from '../../../../domain/contracts/clubs'
 
 /** The 403 everyone gets while CLUB_KEEPERS_ON is unset. */
 export const CHECK_CLOSED = 'The monthly check cannot be sent yet.'
@@ -54,6 +68,8 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
 
   const body = await parseBody(context.request, monthlyCheckRequestSchema)
   if (isResponse(body)) return body
+
+  if (body.action === REPORT_CLOCK_ACTION) return reportClock(context, authResult.member, body.send)
 
   if (!signingKeyReady(context.env)) return errorResponse(CHECK_NO_KEY, 503)
 
@@ -77,5 +93,31 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     })
   }
   const sent: MonthlyCheckResponse = { month: done.month, people: done.people, sent: done.sent, notSent: done.notSent, notReached: done.notReached }
+  return jsonResponse(sent)
+}
+
+/**
+ * The second action: how many suggestions have had no answer in 14 days, or, with `send`, passing them on. Numbers
+ * only. The activity log's row is written only when the run tried to send, as the monthly check's is.
+ */
+async function reportClock(context: Parameters<PagesFunction<Env>>[0], member: AuthedMember['member'], send: boolean): Promise<Response> {
+  const now = new Date()
+  if (!send) {
+    const asked: ReportClockResponse = { due: await overdueSuggestionCount(context.env.DB, now), passedOn: 0, sent: 0, notSent: 0, notReached: 0 }
+    return jsonResponse(asked)
+  }
+  // The run is handed to waitUntil as well as awaited, so a press the admin leaves (a tab closed while it sends)
+  // still finishes, and its claims with no email taken are still given back.
+  const run = runReportClock(context.env, now, { manual: true })
+  context.waitUntil(run)
+  const done = await run
+  if (done.stopped === null) {
+    await recordAdminAction(context.env.DB, member, {
+      action: 'club_report_clock_sent',
+      targetLabel: 'Overdue suggestions',
+      detail: { passedOn: done.passedOn, sent: done.sent, notSent: done.notSent, notReached: done.notReached },
+    })
+  }
+  const sent: ReportClockResponse = { due: done.due, passedOn: done.passedOn, sent: done.sent, notSent: done.notSent, notReached: done.notReached }
   return jsonResponse(sent)
 }

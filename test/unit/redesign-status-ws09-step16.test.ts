@@ -349,6 +349,7 @@ describe('REDESIGN_STATUS.md, WS09 step 16: the parts against the files', () => 
     expect(pins).toContain('Not moved: `test/unit/routes.test.ts`, 103 handler files; `test/unit/contracts-pending.ts`, `PENDING_COUNT` 107')
     expect(read('test/unit/redesign-status-ws08-step2-claims.test.ts')).toContain('    expect([...keys.slice(0, 4)].sort()).toEqual(keys.slice(0, 4))\n')
     expect(read('test/unit/automation-runs-lagging-run.test.ts')).toContain('.toEqual([RUN_MARKS_UNCLEARED_LOG, APPROVALS_UNCLEARED_LOG])')
+    // Changed at WS09 step 25, whose 0071 was the last file then, as the seat listing's 0073 is now; this step's 0070 stands in the migrations folder.
     expect(read('test/unit/drizzle-baseline.test.ts')).toContain("expect(sql.at(-1)).toBe('0073_seat_listing.sql')")
   })
 
@@ -424,7 +425,7 @@ describe('REDESIGN_STATUS.md, WS09 step 16: the map and the lists', () => {
   })
 
   it('records the step\'s deviations, verify items and follow-ups, each tagged, and no decision of its own', () => {
-    expect(tagged(part(LISTS[0]))).toEqual([])
+    expect(tagged(part(LISTS[0])).filter((l) => !l.endsWith(' Recorded at the close, in WS09 step 38.'))).toEqual([]) // moved by WS09 step 38: the close records the step's decisions under its own tag
     expect(tagged(deviations).map(head)).toEqual([
       'The number 0070 (WS09 step 16).', 'The grant\'s name in the creation answer (WS09 step 16).', 'The cells in a file of their own (WS09 step 16).', 'More tests move than the entry names (WS09 step 16).',
     ])

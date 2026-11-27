@@ -42,6 +42,26 @@ export type AdminAction =
   // A press of "Send this month's check now" that sent (WS09): who pressed
   // it, the month in words and the counts, never an address or a link.
   | 'club_monthly_check_sent'
+  // A keeper's answer to a visitor's suggestion for a club's listing (WS09
+  // step 28): applied, answered or dismissed. It names the club, the row and
+  // the action, never the visitor's words, an address or the keeper's reply.
+  | 'club_suggestion_resolved'
+  // A press of "Send overdue suggestions on" that tried to send (WS09 step 29):
+  // who pressed it and the counts alone, never a club, the visitor's words or
+  // an address.
+  | 'club_report_clock_sent'
+  // Mark as handled on a row of Suggest a club or Start a club (WS09 step 30):
+  // it names the row's id and kind alone, never the person, their address or
+  // anyone's words.
+  | 'club_request_handled'
+  // Ask to be its named rep (WS09 step 31): a keeper named the member the
+  // club's rep. It names the member as role_change does, with the club's id,
+  // the request's id and the role and club before; never the member's note.
+  | 'club_rep_named'
+  // Ask to be its named rep (WS09 step 31): a keeper declined the request.
+  // It names the club and the request's id, never the member, so it never
+  // stands in the way of the member delete; nothing changed of the member.
+  | 'club_rep_request_declined'
   // A representative's club event in the LCA admins' wait (WS09 step 18): sent
   // for review, approved and listed, or sent back with changes asked. Each
   // names the event and its id, never the note an LCA admin wrote.

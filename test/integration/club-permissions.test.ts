@@ -8,7 +8,7 @@
 // observer and the club's own rep get today's answer, byte for byte.
 import { afterEach, describe, it, expect, vi } from 'vitest'
 import { env } from 'cloudflare:test'
-import { flushWaitUntil, invoke } from './harness'
+import { expectContract, flushWaitUntil, invoke } from './harness'
 import {
   seedAdmin,
   seedClub,
@@ -19,17 +19,11 @@ import {
 
 import { onRequestGet as tournamentsGet } from '../../functions/api/tournaments'
 import { onRequestPatch as tournamentPatch } from '../../functions/api/admin/tournaments/[id]'
-import {
-  onRequestGet as adminClubGet,
-  onRequestPatch as adminClubPatch,
-} from '../../functions/api/admin/clubs/[id]'
+import { onRequestDelete as adminClubDelete, onRequestGet as adminClubGet, onRequestPatch as adminClubPatch } from '../../functions/api/admin/clubs/[id]'
 import { onRequestPost as clubCreate } from '../../functions/api/admin/clubs'
-import {
-  onRequestGet as officersGet,
-  onRequestPost as officersPost,
-} from '../../functions/api/admin/clubs/[id]/officers'
-import { onRequestDelete as officerDelete } from '../../functions/api/admin/clubs/[id]/officers/[officerId]'
-import { onRequestGet as rosterGet } from '../../functions/api/admin/clubs/[id]/roster'
+import { OFFICERS_NOT_KEPT, onRequestGet as officersGet, onRequestOptions as officersOptions, onRequestPost as officersPost } from '../../functions/api/admin/clubs/[id]/officers'
+import { onRequestDelete as officerDelete, onRequestOptions as officerOptions } from '../../functions/api/admin/clubs/[id]/officers/[officerId]'
+import { onRequestGet as rosterGet, onRequestOptions as rosterOptions, ROSTER_NOT_KEPT } from '../../functions/api/admin/clubs/[id]/roster'
 import { onRequestGet as newsGet } from '../../functions/api/admin/clubs/[id]/news'
 import { ROSTER_KEPT_BACK } from '../../functions/utils/clubs/memberView'
 import { onRequestPut as placesPut, PLACES_CLOSED } from '../../functions/api/admin/clubs/[id]/places'
@@ -37,13 +31,18 @@ import { onRequestPut as placesPut, PLACES_CLOSED } from '../../functions/api/ad
 // CLUB_KEEPERS_ON is false in the tree, and every case above the keepers'
 // save runs with it unset; the cases of criterion 9 at the end set it through
 // a getter on the mocked module, as functions/utils/clubs/pages.ts describes.
-const flags = vi.hoisted(() => ({ keepersOn: false }))
+// CLUB_PAGES_ON is held unset for every case but those of WS09 step 37 at the
+// end, which set it through a getter in the same way.
+const flags = vi.hoisted(() => ({ keepersOn: false, pagesOn: false }))
 vi.mock('../../functions/utils/clubs/pages', async (importOriginal) => {
   const real = await importOriginal<typeof import('../../functions/utils/clubs/pages')>()
   return {
     ...real,
     get CLUB_KEEPERS_ON() {
       return flags.keepersOn
+    },
+    get CLUB_PAGES_ON() {
+      return flags.pagesOn
     },
     // These cases were written with REGION_EVENTS_ON unset, so it is held unset here;
     // test/integration/region-events-answers.test.ts holds the answers with it set.
@@ -54,6 +53,7 @@ vi.mock('../../functions/utils/clubs/pages', async (importOriginal) => {
 })
 afterEach(() => {
   flags.keepersOn = false
+  flags.pagesOn = false
 })
 
 async function listIds(as?: string): Promise<string[]> {
@@ -886,5 +886,179 @@ describe('Your club\'s page asks for a club by its page address (WS09 step 9)', 
         expect(asked.body, `${on} ${value}`).not.toContain(clubId)
       }
     }
+  })
+})
+
+// WS09 step 37: with CLUB_PAGES_ON set a player is no longer tied to a club.
+// The roster and officers endpoints answer 410 in words after the same
+// checks as today, so a person refused before is refused the same way, and
+// read and write nothing of a roster or an officer; the admin club answer
+// carries neither list. Every case above holds today's answers with the
+// constant unset. exampleClub() adds its officer through today's POST, so
+// each case sets the constant once the club is built.
+
+/** How many of the statements a call prepares name club_officers, or read members by their club as a roster does. */
+async function rosterStatements<T>(call: () => Promise<T>): Promise<{ result: T; statements: number }> {
+  const spy = vi.spyOn(env.DB, 'prepare')
+  try {
+    const result = await call()
+    return { result, statements: spy.mock.calls.filter((c) => /\bclub_officers\b|\bm\.club_id\s*=|\bAND club_id = \?/.test(String(c[0]))).length }
+  } finally {
+    spy.mockRestore()
+  }
+}
+
+describe('with CLUB_PAGES_ON set, no roster and no officers (WS09 step 37)', () => {
+  it('the words of the two refusals are the ones ruled', () => {
+    expect(ROSTER_NOT_KEPT).toBe('LCA no longer keeps a roster for each club. Reload the page.')
+    expect(OFFICERS_NOT_KEPT).toBe('LCA no longer keeps a list of officers for each club. Reload the page.')
+  })
+
+  it('the roster answers 410 in words to everyone it admits today, and the region\'s representative keeps today\'s 403', async () => {
+    const { clubId, rep, admin } = await exampleClub()
+    const holder = await seedMember()
+    await regionalSeat(holder)
+    flags.pagesOn = true
+    const people: Array<[string, 'aal1' | 'aal2']> = [[admin, 'aal2'], [rep, 'aal2'], [await seedMember({ role: 'lca_observer' }), 'aal1'], [await seedMember({ role: 'lca_officer' }), 'aal1']]
+    for (const [who, aal] of people) {
+      const { result, statements } = await rosterStatements(() => invoke(rosterGet, { as: who, aal, params: { id: clubId } }))
+      expect(result.status, who).toBe(410)
+      expect(await text(result), who).toBe(JSON.stringify({ error: ROSTER_NOT_KEPT }))
+      expect(statements, who).toBe(0)
+    }
+    const refused = await invoke(rosterGet, { as: holder, aal: 'aal1', params: { id: clubId } })
+    expect(refused.status).toBe(403)
+    expect(await text(refused)).toBe(JSON.stringify({ error: ROSTER_KEPT_BACK }))
+  })
+
+  it('the officers list answers 410 in words to everyone it admits today, the region\'s representative among them', async () => {
+    const { clubId, rep, admin } = await exampleClub()
+    const holder = await seedMember()
+    await regionalSeat(holder)
+    flags.pagesOn = true
+    const people: Array<[string, 'aal1' | 'aal2']> = [[admin, 'aal2'], [rep, 'aal2'], [await seedMember({ role: 'lca_observer' }), 'aal1'], [holder, 'aal1']]
+    for (const [who, aal] of people) {
+      const { result, statements } = await rosterStatements(() => invoke(officersGet, { as: who, aal, params: { id: clubId } }))
+      expect(result.status, who).toBe(410)
+      expect(await text(result), who).toBe(JSON.stringify({ error: OFFICERS_NOT_KEPT }))
+      expect(statements, who).toBe(0)
+    }
+  })
+
+  it('adding and removing an officer answer 410 to an admin and the club\'s rep, write nothing, and keep today\'s refusals for the rest', async () => {
+    const { clubId, rep, admin, two } = await exampleClub()
+    const foreign = await exampleClub(null)
+    const holder = await seedMember()
+    await regionalSeat(holder)
+    const rows = async () => (await env.DB.prepare('SELECT id, member_id, role FROM club_officers WHERE club_id = ? ORDER BY id').bind(clubId).all()).results
+    const before = await rows()
+    const [officer] = before as Array<{ id: string }>
+    flags.pagesOn = true
+
+    for (const who of [admin, rep]) {
+      const added = await rosterStatements(() => invoke(officersPost, { method: 'POST', as: who, params: { id: clubId }, body: { memberId: two, title: 'Secretary' } }))
+      expect(added.result.status, who).toBe(410)
+      expect(await text(added.result), who).toBe(JSON.stringify({ error: OFFICERS_NOT_KEPT }))
+      expect(added.statements, who).toBe(0)
+      const removed = await rosterStatements(() => invoke(officerDelete, { method: 'DELETE', as: who, params: { id: clubId, officerId: officer.id } }))
+      expect(removed.result.status, who).toBe(410)
+      expect(await text(removed.result), who).toBe(JSON.stringify({ error: OFFICERS_NOT_KEPT }))
+      expect(removed.statements, who).toBe(0)
+    }
+    // A body that today's POST refuses 400 is answered 410 as well: nothing of it is read.
+    const empty = await invoke(officersPost, { method: 'POST', as: admin, params: { id: clubId }, body: {} })
+    expect(empty.status).toBe(410)
+
+    // The region's representative is refused 403 in today's words, as today.
+    const heldAdd = await invoke(officersPost, { method: 'POST', as: holder, aal: 'aal1', params: { id: clubId }, body: { memberId: two, title: 'Secretary' } })
+    expect([heldAdd.status, await text(heldAdd)]).toEqual([403, JSON.stringify({ error: ROSTER_KEPT_BACK })])
+    const heldRemove = await invoke(officerDelete, { method: 'DELETE', as: holder, aal: 'aal1', params: { id: clubId, officerId: officer.id } })
+    expect([heldRemove.status, await text(heldRemove)]).toEqual([403, JSON.stringify({ error: ROSTER_KEPT_BACK })])
+    // Another club's rep is refused here as today; through their own club's address they are admitted, and answered 410 in place of today's 404.
+    for (const [res, status] of [
+      [await invoke(officersPost, { method: 'POST', as: foreign.rep, params: { id: clubId }, body: { memberId: two, title: 'Secretary' } }), 403],
+      [await invoke(officerDelete, { method: 'DELETE', as: foreign.rep, params: { id: clubId, officerId: officer.id } }), 403],
+      [await invoke(officerDelete, { method: 'DELETE', as: foreign.rep, params: { id: foreign.clubId, officerId: officer.id } }), 410],
+    ] as const) expect(res.status).toBe(status)
+    expect(await rows()).toEqual(before)
+  })
+
+  it('role safety: signed out, a member with no seat and another region\'s representative get today\'s refusals from every method', async () => {
+    const { clubId, two } = await exampleClub()
+    flags.pagesOn = true
+    const officerId = ((await env.DB.prepare('SELECT id FROM club_officers WHERE club_id = ?').bind(clubId).first<{ id: string }>())?.id) as string
+    const member = await seedMember()
+    const elsewhere = await seedMember()
+    await regionalSeat(elsewhere, ['North Louisiana'])
+    const asks = [
+      (as?: string) => invoke(rosterGet, { as, aal: 'aal1', params: { id: clubId } }),
+      (as?: string) => invoke(officersGet, { as, aal: 'aal1', params: { id: clubId } }),
+      (as?: string) => invoke(officersPost, { method: 'POST', as, aal: 'aal1', params: { id: clubId }, body: { memberId: two, title: 'Secretary' } }),
+      (as?: string) => invoke(officerDelete, { method: 'DELETE', as, aal: 'aal1', params: { id: clubId, officerId } }),
+    ]
+    for (const [i, ask] of asks.entries()) {
+      expect((await ask()).status, String(i)).toBe(401)
+      for (const who of [member, elsewhere]) {
+        const res = await ask(who)
+        expect(res.status, `${i} ${who}`).toBe(403)
+        expect(await res.json(), `${i} ${who}`).toEqual({ error: 'Forbidden' })
+      }
+    }
+    // OPTIONS answers as today, whatever the constant.
+    for (const options of [rosterOptions, officersOptions, officerOptions]) {
+      const on = await (await invoke(options, { method: 'OPTIONS', params: { id: clubId, officerId } })).response.text()
+      flags.pagesOn = false
+      const off = await (await invoke(options, { method: 'OPTIONS', params: { id: clubId, officerId } })).response.text()
+      flags.pagesOn = true
+      expect(on).toBe(off)
+    }
+  })
+
+  it('the admin club answer carries neither list, and reads neither, for everyone it admits; the region\'s representative is still told the roster is kept back', async () => {
+    const { adminClubResponseSchema, adminClubWithoutRosterResponseSchema, adminClubAnswerSchema, contracts } = await import('../../domain/contracts')
+    const { clubId, rep, admin } = await exampleClub()
+    const holder = await seedMember()
+    await regionalSeat(holder)
+    const people: Array<[string, 'aal1' | 'aal2']> = [[admin, 'aal2'], [rep, 'aal2'], [await seedMember({ role: 'lca_observer' }), 'aal1'], [holder, 'aal1']]
+    for (const on of [false, true]) {
+      flags.pagesOn = on
+      for (const [who, aal] of people) {
+        const { result, statements } = await rosterStatements(() => invoke(adminClubGet, { as: who, aal, params: { id: clubId } }))
+        expect(result.status, `${who} ${on}`).toBe(200)
+        const answer = JSON.parse(await text(result)) as Record<string, unknown>
+        // The registry's contract takes both answers, strictly.
+        await expectContract({ status: result.status, json: async <T>() => answer as T }, contracts['admin/clubs/[id]'].GET.response)
+        const keys = who === holder ? ['club', 'officers', 'roster', 'rosterKeptBack', 'tournaments'] : ['club', 'officers', 'roster', 'tournaments']
+        expect(Object.keys(answer), `${who} ${on}`).toEqual(on ? keys.filter((k) => k !== 'officers' && k !== 'roster') : keys)
+        expect(adminClubAnswerSchema.safeParse(answer).success, `${who} ${on}`).toBe(true)
+        // Today's answer still passes today's shape strictly; the answer with the constant set passes only the second.
+        expect(adminClubResponseSchema.safeParse(answer).success, `${who} ${on}`).toBe(!on)
+        expect(adminClubWithoutRosterResponseSchema.safeParse(answer).success, `${who} ${on}`).toBe(on)
+        if (on) {
+          expect(statements, who).toBe(0)
+          holdsNoMemberData(JSON.stringify(answer))
+        } else {
+          // The count sees today's reads, so the zero above is a true one.
+          expect(statements, who).toBe(who === holder ? 1 : 2)
+          if (who !== holder) expect(JSON.stringify(answer), who).toBe(await todaysClubAnswer(clubId))
+        }
+      }
+    }
+    // The second shape is strict and still takes rosterKeptBack only as true.
+    flags.pagesOn = true
+    const held = JSON.parse(await text(await invoke(adminClubGet, { as: holder, aal: 'aal1', params: { id: clubId } }))) as Record<string, unknown>
+    expect(adminClubWithoutRosterResponseSchema.safeParse({ ...held, extra: 1 }).success).toBe(false)
+    expect(adminClubWithoutRosterResponseSchema.safeParse({ ...held, rosterKeptBack: false }).success).toBe(false)
+    expect(adminClubWithoutRosterResponseSchema.safeParse({ ...held, officers: [] }).success).toBe(false)
+  })
+
+  it('deleting a club still clears its officer rows and its members\' club, with the constant set', async () => {
+    const { clubId, admin } = await exampleClub()
+    flags.pagesOn = true
+    expect((await env.DB.prepare('SELECT COUNT(*) AS n FROM club_officers WHERE club_id = ?').bind(clubId).first<{ n: number }>())?.n).toBe(1)
+    const res = await invoke(adminClubDelete, { method: 'DELETE', as: admin, params: { id: clubId } })
+    expect(res.status).toBe(200)
+    expect((await env.DB.prepare('SELECT COUNT(*) AS n FROM club_officers WHERE club_id = ?').bind(clubId).first<{ n: number }>())?.n).toBe(0)
+    expect((await env.DB.prepare('SELECT COUNT(*) AS n FROM members WHERE club_id = ?').bind(clubId).first<{ n: number }>())?.n).toBe(0)
   })
 })
