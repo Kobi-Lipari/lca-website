@@ -170,8 +170,9 @@ describe('migration 0067: the seed on today\'s clubs', () => {
       expect(slug === id || slug === TYPED_SLUGS[id], id).toBe(true)
     }
     expect(rows.filter((r) => r.slug !== r.id).map((r) => [r.id, r.slug])).toEqual(Object.entries(TYPED_SLUGS))
-    // The words the file keeps out of a slug are the slug rule's.
-    expect(/id NOT IN \(([^)]*)\)/.exec(TEXT)?.[1]).toBe(RESERVED_SLUGS.map((w) => `'${w}'`).join(', '))
+    // The words the file keeps out of a slug are the slug rule's. Moved at WS09 step 31: the rule's eighth word,
+    // 'rep-requests', came after the migration, which no club's slug of the seed takes either.
+    expect(/id NOT IN \(([^)]*)\)/.exec(TEXT)?.[1]).toBe(RESERVED_SLUGS.filter((w) => w !== 'rep-requests').map((w) => `'${w}'`).join(', '))
   })
 
   it('six history rows and none pointing at itself', () => {

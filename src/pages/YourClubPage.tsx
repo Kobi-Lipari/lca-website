@@ -25,6 +25,12 @@
 // club and the editor alone: never the roster, an officer or an event, so a
 // person admitted by the region alone meets nothing the server keeps back.
 // While an answer is on the way nothing of any club is drawn.
+//
+// While a visitor's suggestion for the club is open (WS09 step 28) a banner
+// above the editor shows each, with Fix the listing, Reply to visitor (only
+// when the visitor left an address) and Not an issue (SuggestionRows.tsx).
+// It is where a club's rep's email about a suggestion leads. With none open
+// the page is as before.
 import { lazy, Suspense, useEffect, useRef, useState } from 'react'
 import { Link, Navigate, useNavigate, useParams } from 'react-router-dom'
 import { ArrowLeft } from 'lucide-react'
@@ -35,6 +41,7 @@ import { canManageClub, toolsHomeFor, type MemberRole } from '@/areas/admin/role
 import { adminGetClub, ApiError, type ApiClubListing } from '@/lib/api'
 import { formatDate, formatTime } from '@/lib/format'
 import { usePageTitle } from '@/hooks/usePageTitle'
+import { ClubSuggestionsBanner } from '@/areas/clubs/components/SuggestionRows'
 // The one club editor, fetched only when this page draws it.
 const ClubEditor = lazy(() => import('@/areas/clubs/components/ClubEditor').then((m) => ({ default: m.ClubEditor })))
 
@@ -219,6 +226,7 @@ export function YourClubPage() {
                 <ArrowLeft className="size-4" aria-hidden="true" /> {back.label}
               </Link>
             </div>
+            <ClubSuggestionsBanner key={club.id} suggestions={data.openSuggestions ?? []} clubId={club.id} clubName={club.name} onApplied={() => {}} />
             <Suspense fallback={<p className="text-muted-foreground" role="status">Loading the editor…</p>}>
               <ClubEditor
                 key={club.id}

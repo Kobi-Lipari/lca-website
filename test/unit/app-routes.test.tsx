@@ -32,7 +32,10 @@ describe('every lazy route in src/App.tsx resolves', () => {
     // A lazy() call in another shape would be missed, so the counts must agree.
     expect(routes.length).toBe((APP.match(/\blazy\(/g) ?? []).length)
     const pages = routes.filter((r) => r.specifier !== FIXTURE && r.specifier !== LAYOUT)
-    expect(pages.length).toBe(40)
+    // 42 since WS09 step 27: src/pages/ClubReplyPage.tsx, the Reply through LCA page, is the 42nd.
+    // 43 since WS09 step 30: src/pages/SuggestClubPage.tsx, Suggest a club and Start a club, is the 43rd.
+    // 44 since WS09 step 33: src/pages/ClubsIndexPage.tsx, the page that chooses the Clubs directory or today's Clubs page, is the 44th.
+    expect(pages.length).toBe(44)
     for (const r of pages) expect(r.specifier, r.name).toMatch(/^@\/pages\/\w+$/)
     // The fixture page is loaded only in that build (see feature-overrides.test.ts).
     expect(routes.filter((r) => r.specifier === FIXTURE)).toEqual([{ specifier: FIXTURE, name: 'ScopeFixturePage' }])

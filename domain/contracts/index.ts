@@ -3,6 +3,12 @@
 // The server and the tests import the schemas; the site imports only their
 // types (`import type`), so zod never reaches the site bundle.
 export * from './clubs'
+export * from './clubContact'
+export * from './clubPage'
+export * from './clubRepRequests'
+export * from './clubReply'
+export * from './clubReports'
+export * from './clubRequests'
 export * from './common'
 export * from './events'
 export * from './mail'

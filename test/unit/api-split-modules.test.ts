@@ -340,10 +340,19 @@ describe('calls through the barrel send what they sent before', () => {
 
   it('asks what the member may create and sends a payout request, signed in, to the two paths added since the split', async () => {
     const { getTournamentCreation, requestPayoutAccount, ApiError } = await import('@/lib/api')
-    expect([...ADDED.paths].sort()).toEqual([
+    // The contact relay's path (WS09 step 26) and Reply through LCA's (WS09 step 27) are held on their own, so the list
+    // of the paths before them reads as it did.
+    expect(ADDED.paths).toContain('/api/clubs/*/contact')
+    expect(ADDED.paths).toContain('/api/clubs/reply/*')
+    // Moved at WS09 step 28: Suggest an update's two paths are held on their own the same way.
+    expect(ADDED.paths).toEqual(expect.arrayContaining(['/api/clubs/*/reports', '/api/admin/clubs/*/reports/*']))
+    // Moved at WS09 step 30: Mark as handled's path is held on its own too, with Suggest a club's, which ends in /reports.
+    // Moved at WS09 step 31: Ask to be its named rep's two paths are held on their own the same way.
+    expect(ADDED.paths).toEqual(expect.arrayContaining(['/api/clubs/*/rep-requests', '/api/admin/clubs/*/rep-requests/*']))
+    expect([...ADDED.paths].filter((p) => p !== '/api/clubs/*/contact' && p !== '/api/clubs/reply/*' && !p.endsWith('/reports') && !p.endsWith('/reports/*') && p !== '/api/admin/club-reports/*' && !p.includes('/rep-requests')).sort()).toEqual([
       '/api/admin/clubs/*/confirm', '/api/admin/clubs/monthly-check', '/api/admin/mail/newsletter', '/api/admin/mail/newsletter/issue',
       '/api/admin/mail/newsletter/issue/start', '/api/admin/mail/newsletter/issues', '/api/admin/mail/newsletter/stop', '/api/admin/mail/newsletter/templates', '/api/admin/mail/newsletter/test',
-      '/api/admin/tournaments/*/approval', '/api/clubs/confirm/*', '/api/mail/preferences/*', '/api/mail/unsubscribe/*', '/api/me/media-manager', '/api/me/payout-request', '/api/me/tournament-creation', '/api/workspace/region',
+      '/api/admin/tournaments/*/approval', '/api/clubs/*/page', '/api/clubs/confirm/*', '/api/mail/preferences/*', '/api/mail/unsubscribe/*', '/api/me/media-manager', '/api/me/payout-request', '/api/me/tournament-creation', '/api/workspace/region',
     ])
     session.token = 'tok-5'
     const grant = { grant: 'standing_director', canCreate: true, canChargeFees: true, clubId: null }

@@ -7,27 +7,41 @@ import { errorResponse, handleOptions, jsonResponse } from '../../utils/response
 import { getDb } from '../../db/client'
 import { sectionResponsesFor } from '../../utils/events/sectionsRepo'
 import { CLUB_EMAIL_HIDDEN, publicClubAnswer } from '../../utils/clubs/publicAnswer'
+import { clubIdByShortAddress } from '../../utils/clubs/pageAnswer'
 
 export const onRequestOptions: PagesFunction<Env> = async () => handleOptions()
 
 export const onRequestGet: PagesFunction<Env> = async (context) => {
-  const clubId = context.params.id as string
+  const part = context.params.id as string
 
   // Today's 13 columns by name, in the table's own order, the ones
   // PUBLIC_CLUB_COLUMNS lists, so a column added to clubs later is not
   // answered by accident.
-  const club = await context.env.DB.prepare(
+  const clubById = (id: string) => context.env.DB.prepare(
     `SELECT id, name, city, location, description, meeting_schedule, contact_email,
             created_at, color, image_url, region, latitude, longitude
      FROM clubs
      WHERE id = ?`,
   )
-    .bind(clubId)
+    .bind(id)
     .first()
+
+  // The address part names a club by its id first, as it always has, so
+  // every address that found a club finds the same one; then by the club's
+  // short address, its current one or an old one, as the new club page
+  // finds it (K's choice 8 (a)), whatever the switches say. Everything
+  // after is read by the found club's id, so a club's answer is the same
+  // bytes at either address.
+  let club = await clubById(part)
+  if (!club) {
+    const found = await clubIdByShortAddress(context.env.DB, part)
+    if (found) club = await clubById(found)
+  }
 
   if (!club) {
     return errorResponse('Club not found', 404)
   }
+  const clubId = club.id as string
 
   // Each officer by role and name: the public answer carries no officer's email.
   const officers = await context.env.DB.prepare(

@@ -3,15 +3,38 @@
 // handler, the clubs the migrations seed and two made up clubs, one with
 // every column filled and one with only its name and city. The site's
 // getClubs() in src/areas/clubs/api.ts sends no body and no sign-in; the
-// signed-in views are checked too, because the handler serves them.
+// signed-in views are checked too, because the handler serves them. Since
+// WS09 step 32 the contract has two branches, today's nine keys and the
+// directory's wider row while CLUB_PAGES_ON is set, each strict; the
+// constant is turned on through a getter on the mocked module.
 import { env } from 'cloudflare:test'
-import { beforeEach, describe, expect, it } from 'vitest'
-import { clubListItemSchema, contracts } from '../../../domain/contracts'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { clubDirectoryItemSchema, clubListItemSchema, contracts } from '../../../domain/contracts'
 import { onRequestGet as clubsGet, onRequestOptions as clubsOptions } from '../../../functions/api/clubs'
+import { directoryCacheKey } from '../../../functions/utils/clubs/directory'
 import { seedAdmin, seedClub, seedMember } from '../factories'
-import { expectContract, invoke, resetHarness } from '../harness'
+import { expectContract, flushWaitUntil, invoke, resetHarness } from '../harness'
+
+const flags = vi.hoisted(() => ({ pagesOn: false }))
+vi.mock('../../../functions/utils/clubs/pages', async (importOriginal) => {
+  const real = await importOriginal<typeof import('../../../functions/utils/clubs/pages')>()
+  return {
+    ...real,
+    get CLUB_PAGES_ON() {
+      return flags.pagesOn
+    },
+  }
+})
+
+/** The one key the directory's list is kept under, on the harness's origin. */
+const KEY = directoryCacheKey('https://lca-website.pages.dev')
 
 beforeEach(resetHarness)
+afterEach(async () => {
+  flags.pagesOn = false
+  await flushWaitUntil()
+  await caches.default.delete(KEY)
+})
 
 const contract = contracts['clubs'].GET
 
@@ -124,5 +147,38 @@ describe('GET /api/clubs keeps its contract', () => {
     expect(contract.response.safeParse({ clubs: [{ ...club, region: undefined }] }).success).toBe(false)
     expect(contract.response.safeParse({ clubs: [{ ...club, name: null }] }).success).toBe(false)
     expect(contract.response.safeParse({ clubs: [], extra: 1 }).success).toBe(false)
+  })
+
+  it('with CLUB_PAGES_ON set, every row, the seeded clubs and the two made up ones, passes the wider branch', async () => {
+    const { full, bare } = await seedExampleClubs()
+    flags.pagesOn = true
+    const result = await invoke(clubsGet, { path: '/api/clubs' })
+    expect(result.status).toBe(200)
+    const body = await expectContract(result, contract.response)
+    const { results } = await env.DB.prepare('SELECT id FROM clubs').all<{ id: string }>()
+    expect(body.clubs).toHaveLength(results.length)
+    for (const club of body.clubs) expect(clubDirectoryItemSchema.safeParse(club).success, club.id).toBe(true)
+    expect(body.clubs.map((c) => c.id)).toEqual(expect.arrayContaining([full, bare]))
+    expect(await result.response.clone().text()).not.toContain('club@example.org')
+  })
+
+  it('the wider branch is strict too: a keeper, an address, a key short or a row of the other shape is refused', () => {
+    const club = { id: 'c1', name: 'Example Chess Club', city: 'Example City', meeting_schedule: null, color: null, image_url: null, region: null, latitude: null, longitude: null }
+    const wide = {
+      ...club, slug: 'example-chess-club', statement: null, description: 'Chess club in Example City, Louisiana', point: { latitude: 30.45, longitude: -91.15 },
+      weekend_play: false, scholastic_friendly: true,
+    }
+    expect(clubDirectoryItemSchema.safeParse(wide).success).toBe(true)
+    expect(contract.response.safeParse({ clubs: [wide] }).success).toBe(true)
+    expect(contract.response.safeParse({ clubs: [{ ...wide, point: null, statement: 'Tuesdays at 7:00 PM.', description: null }] }).success).toBe(true)
+    expect(contract.response.safeParse({ clubs: [club, wide] }).success).toBe(false)
+    expect(contract.response.safeParse({ clubs: [{ ...wide, keeper: 'LCA admins' }] }).success).toBe(false)
+    expect(contract.response.safeParse({ clubs: [{ ...wide, contact_email: 'club@example.org' }] }).success).toBe(false)
+    expect(contract.response.safeParse({ clubs: [{ ...wide, point: { latitude: 30.45, longitude: -91.15, zip: '70808' } }] }).success).toBe(false)
+    expect(contract.response.safeParse({ clubs: [{ ...wide, weekend_play: 1 }] }).success).toBe(false)
+    const noSlug: Record<string, unknown> = { ...wide }
+    delete noSlug.slug
+    expect(contract.response.safeParse({ clubs: [noSlug] }).success).toBe(false)
+    expect(contract.response.safeParse({ clubs: [wide], keepers: [] }).success).toBe(false)
   })
 })

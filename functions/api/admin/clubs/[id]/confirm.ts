@@ -12,7 +12,10 @@
 // admin, the club's own rep and a holder of a regional seat over the club's
 // region. Anyone else, and anyone at all for a club that does not exist but
 // an LCA admin, gets the same 403, so no answer tells whether a club exists.
-// WS09 step 28 adds the wait while a report or suggestion is open.
+// While a visitor's suggestion for the club is open (WS09 step 28) it waits:
+// 409 in words, "Answer it, then confirm", and nothing is written, since a
+// listing a visitor says is wrong is not to be stamped as right before a
+// keeper has looked. Confirm all, on My region's page, skips those clubs.
 //
 // While CLUB_KEEPERS_ON is unset everyone gets 403 in words before anything
 // is read: no sign in is checked and no query is made.
@@ -21,6 +24,8 @@ import { isResponse, requireClubRep } from '../../../../utils/auth'
 import { errorResponse, handleOptions, jsonResponse, parseBody } from '../../../../utils/response'
 import { CLUB_KEEPERS_ON } from '../../../../utils/clubs/pages'
 import { markStillAccurate } from '../../../../utils/clubs/stillAccurate'
+import { hasOpenSuggestion } from '../../../../utils/clubs/suggestions'
+import { CONFIRM_WAITS } from '../../../../../domain/clubs/suggestion'
 import { checkWords } from '../../../../../domain/clubs/regionCards'
 import { clubConfirmRequestSchema } from '../../../../../domain/contracts/clubs'
 
@@ -38,6 +43,9 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
 
   const body = await parseBody(context.request, clubConfirmRequestSchema)
   if (isResponse(body)) return body
+
+  // A suggestion no keeper has answered yet: Still accurate waits for it.
+  if (await hasOpenSuggestion(context.env.DB, clubId)) return errorResponse(CONFIRM_WAITS, 409)
 
   // The one write the monthly check's link makes too (functions/utils/clubs/stillAccurate.ts).
   const row = await markStillAccurate(context.env.DB, clubId, authResult.member.id)

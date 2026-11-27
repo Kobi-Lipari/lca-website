@@ -43,6 +43,27 @@ export function withConfirmed(answer: WorkspaceRegionResponse, confirmed: ClubCo
 }
 
 /**
+ * The clubs Confirm all passes over because a visitor's suggestion for each
+ * is open (WS09 step 28): each that needs a check and has an open item.
+ */
+export function waitingForAnswer(clubs: readonly RegionClub[]): RegionClub[] {
+  return clubs.filter((club) => club.needsCheck && club.openItems.length > 0)
+}
+
+/** What a run of Confirm all adds when it passed over clubs with a suggestion open: how many. */
+export function skippedWords(skipped: number): string {
+  return `${clubsWord(skipped)} with a suggestion waiting ${skipped === 1 ? 'was' : 'were'} skipped: answer it, then confirm.`
+}
+
+/** The answer once a keeper has answered one suggestion: it leaves its club's open items, and every other card is as it was. */
+export function withoutSuggestion(answer: WorkspaceRegionResponse, clubId: string, reportId: number): WorkspaceRegionResponse {
+  return {
+    ...answer,
+    clubs: answer.clubs.map((club) => (club.id === clubId ? { ...club, openItems: club.openItems.filter((item) => item.id !== reportId) } : club)),
+  }
+}
+
+/**
  * A club's initials for its card when it has no logo, by the rule the
  * editor's share preview keeps (clubInitials in previews.ts, which only the
  * editor's own chunk may load): the first letter of each of the first two
@@ -110,7 +131,7 @@ export const SEND_UNSURE = 'The send may not have finished, so some people may a
  * of its own (the fetch helper's "Request failed (404)") could not be read,
  * so it is not one.
  */
-function refusedBeforeSending(err: unknown): err is ApiError {
+export function refusedBeforeSending(err: unknown): err is ApiError {
   return err instanceof ApiError && err.status >= 400 && err.status < 500 && err.message !== `Request failed (${err.status})`
 }
 

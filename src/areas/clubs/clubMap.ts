@@ -98,6 +98,27 @@ export interface MapPoint {
   description?: string
 }
 
+/** One of a club's places with its point, as the new club page draws it on the map. */
+export interface PlacePoint {
+  name: string
+  lat: number
+  lng: number
+}
+
+/**
+ * The places of a club page's answer that have a point, in their order, as
+ * plain points for the map and the directions link. A place with no point
+ * stays a row on the page with no pin and no Directions. Only the new club
+ * page (WS09 step 21) reads it; today's pages never do.
+ */
+export function placePoints(places: ReadonlyArray<{ name: string; latitude: number | null; longitude: number | null }>): PlacePoint[] {
+  return places.flatMap((place) => (
+    typeof place.latitude === 'number' && typeof place.longitude === 'number'
+      ? [{ name: place.name, lat: place.latitude, lng: place.longitude }]
+      : []
+  ))
+}
+
 /**
  * Where a club goes on the map: the location set on its admin page, or
  * failing that, its entry in the original club list (matched on name).

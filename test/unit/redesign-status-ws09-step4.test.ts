@@ -221,7 +221,7 @@ describe('REDESIGN_STATUS.md, WS09 step 4: the parts', () => {
       'written in the same insert', 'never fails on the unique slug index with a 500', '"Slidell Chess Club"', '`slidell-chess-club`',
       '`test/unit/club-slug.test.ts`', '`test/integration/club-create-slug.test.ts`',
     ]) expect(rule, piece).toContain(piece)
-    expect(rule).toContain(`\`RESERVED_SLUGS\` is ${RESERVED_SLUGS.slice(0, -1).map((w) => `\`${w}\``).join(', ')} and \`${RESERVED_SLUGS.at(-1)}\``)
+    expect(rule).toContain(`\`RESERVED_SLUGS\` is ${RESERVED_SLUGS.slice(0, 6).map((w) => `\`${w}\``).join(', ')} and \`${RESERVED_SLUGS[6]}\``) // Moved at WS09 step 31: the seven words the rule held then; 'rep-requests' came after.
     const create = read('functions/api/admin/clubs.ts')
     expect(create).toContain('const id = uniqueSlug(slugFor(name), taken)')
     expect(create).toContain('INSERT INTO clubs (id, name, city, region, contact_email, slug) VALUES (?, ?, ?, ?, ?, ?)')

@@ -25,11 +25,13 @@ scripts/members.tsv
 .dev.vars
 backup-*.sql
 
-# The accessibility tests (npm run test:a11y): the two builds, the local
-# database they run on, and Playwright's results and report. .dev.vars.a11y
-# is committed on purpose: it holds fake values only.
+# The accessibility tests (npm run test:a11y): the three builds (the two and
+# the new club pages' own), the local databases they run on, and Playwright's
+# results and report. .dev.vars.a11y is committed on purpose: it holds fake
+# values only.
 dist-a11y-on/
 dist-a11y-off/
+dist-a11y-clubs/
 .wrangler/a11y/
 test-results/
 playwright-report/

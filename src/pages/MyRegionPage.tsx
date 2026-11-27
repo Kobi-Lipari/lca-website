@@ -30,8 +30,33 @@
 // Confirm all still accurate and the Clubs heading; no club's card carries
 // one, nothing opens by itself and nothing is kept in the browser. Nothing
 // here shows an email address: the answer carries none.
+//
+// A visitor's suggestion that no keeper has answered yet (WS09 step 28) is
+// an open item of its club's card: the card says how many and the oldest's
+// age, and its button reads "Answer it, then confirm", which takes the
+// focus to the club's first row in the to-do list under the cards. Each row
+// has Reply (only when the visitor left an address), Apply this and Not an
+// issue (SuggestionRows.tsx); Apply this marks the row and opens the club's
+// page in My region at its listing. Confirm all skips a club with one open
+// and says how many it skipped. With none open the page is as before.
+//
+// An LCA admin also gets "Send overdue suggestions on" (WS09 step 29) under
+// the to-do list's heading, only while a row there has waited 14 days or
+// more with no answer and has not been passed on yet, by the rule of
+// domain/clubs/regionCards.ts. It asks one question naming how many, then
+// says how many were passed on and how many emails went; the page then reads
+// its answer again, so each row passed on says when. With no row overdue the
+// page is as before.
+//
+// The rows of Suggest a club and Start a club (WS09 step 30) come after the
+// to-do list, under their own heading, "New clubs to check"
+// (ClubRequestRows.tsx): for a holder of a seat the rows of the regions it
+// covers, for an LCA admin every row, those whose place was not found among
+// them. Each shows the person's name and address, with Email {first name}
+// and Mark as handled, and for an LCA admin Add the club. With none the page
+// is as before.
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { ArrowLeft } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
@@ -42,9 +67,15 @@ import { RegionClubCard } from '@/areas/clubs/components/RegionClubCard'
 import { RegionHelpMark } from '@/areas/clubs/components/RegionHelp'
 import { ThisMonthBar } from '@/areas/clubs/components/ThisMonthBar'
 import { MonthlyCheckButton } from '@/areas/clubs/components/MonthlyCheckButton'
+import { OverdueSuggestionsButton } from '@/areas/clubs/components/OverdueSuggestionsButton'
+import { SuggestionRows } from '@/areas/clubs/components/SuggestionRows'
+import { ClubRequestRows } from '@/areas/clubs/components/ClubRequestRows'
+import { RepRequestRows } from '@/areas/clubs/components/RepRequestRows'
+import { useRowsShown, type SuggestionRow } from '@/areas/clubs/suggestionRows'
 import {
-  clubsToConfirm, clubsWord, confirmAllWords, errorWords, namesInWords, withConfirmed,
+  clubsToConfirm, clubsWord, confirmAllWords, errorWords, namesInWords, skippedWords, waitingForAnswer, withConfirmed, withoutSuggestion,
 } from '@/areas/clubs/region'
+import { isSuggestionOverdue } from '@domain/clubs/regionCards'
 import type { RegionClub, WorkspaceRegionResponse } from '@domain/contracts'
 
 /**
@@ -79,6 +110,7 @@ function settleError(err: unknown): Load {
 export function MyRegionPage() {
   const { role } = useAuth()
   const isAdmin = role === 'lca_admin'
+  const navigate = useNavigate()
   usePageTitle('My region')
 
   const [load, setLoad] = useState<Load>({ kind: 'loading' })
@@ -196,8 +228,45 @@ export function MyRegionPage() {
     }
     if (!live.current) return
     setRunning(false)
-    setSaid(confirmAllWords(marked, failed))
+    // A club with a suggestion open waits for its answer, and the run says how many it passed over.
+    const skipped = waitingForAnswer(answer.clubs).length
+    setSaid(skipped > 0 ? `${confirmAllWords(marked, failed)} ${skippedWords(skipped)}` : confirmAllWords(marked, failed))
     setRunsDone((n) => n + 1)
+  }
+
+  // The to-do list: every open suggestion, the oldest first, each with its club.
+  const todo: SuggestionRow[] = (answer?.clubs ?? [])
+    .flatMap((club) => club.openItems.map((item) => ({ ...item, clubId: club.id, clubName: club.name })))
+    .sort((a, b) => b.ageDays - a.ageDays || a.id - b.id)
+  const todoShown = useRowsShown(todo.length > 0)
+  // The LCA admin's button for the rows no one has answered in 14 days: drawn from the first draw that has one, and on
+  // after a press has sent them, so its status, and the focus on it, stay on the page.
+  const overdue = isAdmin && todo.some((row) => isSuggestionOverdue({ status: 'open', passedOnAt: row.passedOnAt, ageDays: row.ageDays }))
+  const overdueShown = useRowsShown(overdue)
+  // The rows of Suggest a club and Start a club, oldest first as the server sends them: drawn from the first draw that
+  // has one, and on after the last has gone, so the list's status and heading stay on the page.
+  const requests = answer?.clubRequests ?? []
+  const requestsShown = useRowsShown(requests.length > 0)
+  // The requests of Ask to be its named rep (WS09 step 31), drawn the same way under a heading of their own.
+  const repRequests = answer?.repRequests ?? []
+  const repRequestsShown = useRowsShown(repRequests.length > 0)
+
+  /**
+   * After a press of Send on, or a rep request whose member has another role now: the answer again, quietly, so each
+   * row says what is true now; a failure leaves the page as it is.
+   */
+  function readAgain() {
+    getWorkspaceRegion()
+      .then((fresh) => { if (live.current) setLoad((now) => (now.kind === 'ready' ? { kind: 'ready', answer: fresh } : now)) })
+      .catch(() => {})
+  }
+
+  /** The card's "Answer it, then confirm": the focus goes to the club's first row in the to-do list. */
+  function answerFirst(club: RegionClub) {
+    const first = todo.find((row) => row.clubId === club.id)
+    const target = first ? document.getElementById(`suggestion-${first.id}-title`) : null
+    target?.scrollIntoView?.({ block: 'center' })
+    target?.focus()
   }
 
   const regions = answer?.regions.map((r) => r.region) ?? []
@@ -279,12 +348,39 @@ export function MyRegionPage() {
               <ul className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 {answer.clubs.map((club) => (
                   <li key={club.id} className="min-w-0">
-                    <RegionClubCard club={club} busy={busy.has(club.id)} error={errors[club.id] ?? null} onConfirm={(c) => { void stillAccurate(c) }} />
+                    <RegionClubCard club={club} busy={busy.has(club.id)} error={errors[club.id] ?? null} onConfirm={(c) => { void stillAccurate(c) }} onAnswer={answerFirst} />
                   </li>
                 ))}
               </ul>
             )}
           </section>
+        )}
+
+        {answer && todoShown && (
+          <SuggestionRows
+            kind="todo"
+            rows={todo}
+            headingId="region-suggestions-title"
+            tools={overdueShown ? <OverdueSuggestionsButton onSent={readAgain} /> : undefined}
+            onResolved={(row) => setAnswer((a) => withoutSuggestion(a, row.clubId, row.id))}
+            onApplied={(row) => navigate(`/workspace/region/clubs/${encodeURIComponent(row.clubId)}`, { state: { suggestionApplied: true } })}
+          />
+        )}
+
+        {answer && requestsShown && (
+          <ClubRequestRows
+            rows={requests}
+            isAdmin={isAdmin}
+            onHandled={(row) => setAnswer((a) => ({ ...a, clubRequests: (a.clubRequests ?? []).filter((r) => r.id !== row.id) }))}
+          />
+        )}
+
+        {answer && repRequestsShown && (
+          <RepRequestRows
+            rows={repRequests}
+            onDecided={(row) => setAnswer((a) => ({ ...a, repRequests: (a.repRequests ?? []).filter((r) => r.id !== row.id) }))}
+            onStale={readAgain}
+          />
         )}
       </section>
     </div>

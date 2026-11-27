@@ -180,6 +180,16 @@ export const anthropicBehavior: {
 
 export const anthropicRequests: AnthropicRequest[] = []
 
+/**
+ * The spam check's provider, at its siteverify address (functions/utils/spamCheck.ts, WS09 step 25). answer 'pass'
+ * says success, 'fail' says no with the provider's code for a bad token, and 'none' gives no answer at all, as a
+ * provider that does not answer within the check's five seconds would. Every request is kept in spamCheckRequests
+ * as the form fields it sent, so a case can check what went out and what did not.
+ */
+export const spamCheckBehavior: { answer: 'pass' | 'fail' | 'none' } = { answer: 'pass' }
+
+export const spamCheckRequests: Array<Record<string, string>> = []
+
 export const DEFAULT_SCAN_REPLY = JSON.stringify({
   header: { whiteName: 'White Player', blackName: 'Black Player', result: '1-0', legibility: 'clear' },
   rows: [
@@ -237,6 +247,8 @@ export function resetHarness(): void {
   anthropicBehavior.status = 200
   anthropicBehavior.throws = false
   anthropicRequests.length = 0
+  spamCheckBehavior.answer = 'pass'
+  spamCheckRequests.length = 0
 }
 
 // ── Fetch interceptor ────────────────────────────────────────────
@@ -576,6 +588,23 @@ export function installFetchInterceptor(): void {
         return new Response('<ConfirmSubscriptionResponse><ConfirmSubscriptionResult/></ConfirmSubscriptionResponse>', { headers: { 'Content-Type': 'text/xml' } })
       }
       return new Response('harness: no such path on Amazon SNS', { status: 404 })
+    }
+
+    // The spam check's provider, at its siteverify address (WS09 step 25): a form-encoded POST of the secret and the
+    // token, answered from spamCheckBehavior. 'none' waits until the caller gives up, as a provider that never answers;
+    // a caller that passes no signal could never give up, so it is refused at once rather than left waiting (WS09 step 26).
+    if (url.hostname === 'challenges.cloudflare.com' && url.pathname === '/turnstile/v0/siteverify') {
+      spamCheckRequests.push(Object.fromEntries(new URLSearchParams(await request.text())))
+      if (spamCheckBehavior.answer === 'none') {
+        const signal = init?.signal
+        // Thrown, not a returned rejection, as the scanner's catch point below explains.
+        if (!signal || signal.aborted) throw new Error('harness: the spam check gave up waiting')
+        return new Promise<Response>((_, reject) => {
+          signal.addEventListener('abort', () => reject(new Error('harness: the spam check gave up waiting')))
+        })
+      }
+      if (spamCheckBehavior.answer === 'fail') return Response.json({ success: false, 'error-codes': ['invalid-input-response'] })
+      return Response.json({ success: true, 'error-codes': [], challenge_ts: new Date().toISOString(), hostname: 'example.org' })
     }
 
     // Anthropic: the scanner's vision model.

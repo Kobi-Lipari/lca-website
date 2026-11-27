@@ -236,7 +236,8 @@ describe('REDESIGN_STATUS.md, WS09 step 1: the step block', () => {
     const headings = sectionLines.filter((l) => l.startsWith('### '))
     const FIXED = [MAP, STEP, ...LISTS]
     for (const fixed of FIXED) expect(headings.filter((h) => h === fixed), fixed).toHaveLength(1)
-    for (const h of headings.filter((l) => !FIXED.includes(l))) expect(/^### (?:WS09 step (?:[1-9]|[1-3]\d): \S|Checkpoint [S-Z]: WS09 |WS09 checkpoint T: \S|WS09 checkpoint U: \S|WS09 checkpoint V: \S|WS09 checkpoint S, after K's second answer: \S|WS09 aside: \S|WS09 switch-on: \S|WS09 checkpoint S, after K's answers: \S)/.test(h), h).toBe(true)
+    // Checkpoint X's review adds the heading form `WS09 checkpoint X: `, as checkpoint W's did before it; checkpoint Y's review adds `WS09 checkpoint Y: `.
+    for (const h of headings.filter((l) => !FIXED.includes(l))) expect(/^### (?:WS09 step (?:[1-9]|[1-3]\d): \S|Checkpoint [S-Z]: WS09 |WS09 checkpoint T: \S|WS09 checkpoint U: \S|WS09 checkpoint V: \S|WS09 checkpoint S, after K's second answer: \S|WS09 checkpoint W: \S|WS09 checkpoint X: \S|WS09 checkpoint Y: \S|WS09 aside: \S|WS09 switch-on: \S|WS09 checkpoint S, after K's answers: \S)/.test(h), h).toBe(true)
   })
 
   it('has every part, in order', () => {
@@ -319,7 +320,9 @@ describe('REDESIGN_STATUS.md, WS09 step 1: the lists', () => {
   it('tags every entry of the four lists in the form the record keeps', () => {
     for (const list of [decisions, verify, followUps]) {
       expect(entries(list).length).toBeGreaterThan(0)
-      for (const entry of entries(list)) expect(entry).toMatch(/^- \*\*[^*]+ \(WS09 checkpoint V\)\.\*\* \S|^- \*\*[^*]+ \(WS09 (?:step (?:[1-9]|[1-3]\d)|checkpoint S)\)\.\*\* \S|^- \*\*[^*]+ \(WS09 checkpoint U\)\.\*\* \S/)
+      // The follow-ups tagged for checkpoint W are held in their form by test/unit/redesign-status-ws09-w-review.test.ts,
+      // and the one tagged for checkpoint X by test/unit/redesign-status-ws09-x-takes-w-2.test.ts.
+      for (const entry of entries(list).filter((e) => !/^- \*\*[^*]+ \(WS09 checkpoint [WX]\)\.\*\* \S/.test(e))) expect(entry).toMatch(/^- \*\*[^*]+ \(WS09 checkpoint V\)\.\*\* \S|^- \*\*[^*]+ \(WS09 (?:step (?:[1-9]|[1-3]\d)|checkpoint S)\)\.\*\* \S|^- \*\*[^*]+ \(WS09 checkpoint U\)\.\*\* \S/)
     }
     expect(deviations).toContain('None in WS09 step 1.')
   })
@@ -392,9 +395,11 @@ describe('REDESIGN_STATUS.md, WS09 step 1: its claims against the files', () => 
   it('lists as new only files that exist, each with as many cases as the Files bullet gives it and free of a dash, a tool\'s name, the two letters on their own and the old initials', () => {
     const files = bullet(block, '- **Files.**')
     for (const file of [...NEW_FILES, ...CHANGED, ...CHANGED_TESTS]) expect(existsSync(join(ROOT, file)), file).toBe(true)
+    // WS09 step 32 added two cases to the contract test, for the list's second branch; the block keeps this step's count.
+    const step32Added: Record<string, number> = { 'test/integration/contracts/clubs.test.ts': 2 }
     for (const file of NEW_FILES) {
       const written = Number(new RegExp(`\`${escape(file)}\` \\((\\d+): `).exec(files)?.[1])
-      expect(written, file).toBe((read(file).match(/^\s*it\(/gm) ?? []).length)
+      expect(written, file).toBe((read(file).match(/^\s*it\(/gm) ?? []).length - (step32Added[file] ?? 0))
     }
     for (const file of NEW_FILES) {
       const text = read(file)
