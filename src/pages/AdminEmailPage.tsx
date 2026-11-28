@@ -15,6 +15,7 @@ import { cn } from '@/lib/utils'
 import { usePageTitle } from '@/hooks/usePageTitle'
 import { useAuth } from '@/contexts/auth-context'
 import { FEATURES } from '@/lib/features'
+import { mediaManagerMayCall } from '@/areas/admin/roles'
 import { formatDate, formatTime } from '@/lib/format'
 import { ADMIN_SCROLL, LCA, GOLD_BUTTON as GOLD } from '@/lib/brand'
 import { LIST_FOOTER_WORDS, PREFERENCES_LABEL, type ListFooterWords } from '@domain/mail/footer'
@@ -75,7 +76,7 @@ const NO_NEWSLETTER_YET = 'No newsletter sent yet.'
 /** The note under the test box with mailLists on, on both tabs: today's words made two sentences, without a dash.
  *  With the switch off the page keeps today's line, where it was. */
 const TEST_NOTE = 'Test emails are marked [TEST] in the subject. They do not count toward send history and do not appear in it.'
-/** In place of the send buttons for the media manager signed in without a second factor, linked to where it is set up. */
+/** In place of the send buttons for a sender asked for a second factor (only while a constant is set), linked to where it is set up. */
 const SECOND_FACTOR_LINE = 'Set up two-factor sign-in to send group email.'
 /** K's guardrails for an issue (decision 23) and the simple way of writing one (decision 24), behind Help. */
 const GUARDRAILS = "Name the newsletter in the subject, put member news first, and paste links by hand, a tournament's King Registration link included. A renewal reminder is a separate email."
@@ -317,15 +318,14 @@ function SesTestChoice({ checked, onChange }: { checked: boolean; onChange: (on:
  * step 6), draws their form of the page: the newsletter's tab alone, with no
  * Specific people and no Send history column; no call but the newsletter's
  * own, so nothing of today's history, members or clubs is asked for; and,
- * while the session carries no second factor, one line linked to where it is
- * set up in place of the send buttons, the newsletter's calls being refused
- * until then.
+ * while mediaManagerMayCall says no (its constant set, no second factor), one
+ * line linked to where it is set up in place of the send buttons.
  */
 export function AdminEmailPage({ embedded = false, mediaManager, noSecondFactor = false }: { embedded?: boolean; mediaManager?: { secondFactor: boolean }; noSecondFactor?: boolean } = {}) {
   usePageTitle(embedded ? 'Admin · Group email' : 'Group Email')
   const forMediaManager = FEATURES.mailLists && mediaManager !== undefined
-  // noSecondFactor: the President seat's holder whose session has no second factor, whom both mail guards refuse.
-  const canSend = !noSecondFactor && (!forMediaManager || mediaManager?.secondFactor === true)
+  // noSecondFactor: the president whom presidentMayCall refuses, or an LCA admin seat holder without a second factor.
+  const canSend = !noSecondFactor && (!forMediaManager || mediaManagerMayCall(mediaManager?.secondFactor === true))
   // The media manager's test goes to their own account's address alone, which the page shows whole, as the dashboard
   // and the support page show a person their own address (checkpoint M's review).
   const { member, user } = useAuth()
@@ -400,7 +400,7 @@ export function AdminEmailPage({ embedded = false, mediaManager, noSecondFactor 
     getClubs().then((c) => { if (!cancelled) setClubs(c) }).catch(() => {})
     // A refusal (the President seat's holder whose role may not read the member list) is said where the search answers.
     adminGetMembers().then((m) => { if (!cancelled) setMemberPool(m) }).catch(() => { if (!cancelled) setMemberPoolFailed(true) })
-    // The president without a second factor is refused the history, so it is not asked for (and never shown loading).
+    // The president marked noSecondFactor is refused the history, so it is not asked for (and never shown loading).
     if (!noSecondFactor) {
       getCampaigns()
         .then((c) => { if (!cancelled) setCampaigns(c) })
@@ -411,8 +411,8 @@ export function AdminEmailPage({ embedded = false, mediaManager, noSecondFactor 
   }, [forMediaManager, noSecondFactor])
 
   // With mailLists on the page opens on the newsletter tab: its answer is read, and Help, open by itself, is remembered
-  // as shown. With the switch off nothing here runs, so no key is read or written. The media manager without a second
-  // factor is refused the newsletter's calls, so the page asks it nothing, as it opens or on a click of its tab.
+  // as shown. With the switch off nothing here runs, so no key is read or written. The media manager whom
+  // mediaManagerMayCall refuses is refused the newsletter's calls, so the page asks nothing, as it opens or on a click.
   useEffect(() => {
     if (!FEATURES.mailLists) return
     let cancelled = false
@@ -433,7 +433,7 @@ export function AdminEmailPage({ embedded = false, mediaManager, noSecondFactor 
   const newsletterSending = newsletter?.summary.recent.some((s) => s.status === 'sending') ?? false
   useEffect(() => {
     if (!campaigns.some((c) => c.status === 'sending') && !newsletterSending) return
-    // The president without a second factor reads neither, so nothing is polled for them.
+    // The president marked noSecondFactor reads neither, so nothing is polled for them.
     if (noSecondFactor) return
     const timer = setInterval(() => {
       if (!forMediaManager) void loadHistory()
@@ -836,7 +836,7 @@ export function AdminEmailPage({ embedded = false, mediaManager, noSecondFactor 
               ) : error && <p className="text-sm text-destructive">{error}</p>}
 
               {!canSend ? (
-                // The media manager signed in without a second factor, or the president: in place of the send buttons,
+                // The sender refused by mediaManagerMayCall or marked noSecondFactor: in place of the send buttons,
                 // one line to where it is set up, since the newsletter's every call is refused until then.
                 <p className="text-sm text-ink">
                   <Link to="/account/security" className="rounded-sm font-medium underline underline-offset-2 outline-none hover:no-underline focus-visible:ring-3 focus-visible:ring-focus">
@@ -1028,7 +1028,7 @@ export function AdminEmailPage({ embedded = false, mediaManager, noSecondFactor 
             )}
           </div>
 
-          {/* ── History ── (none for a sender without a second factor: nothing was read to show) */}
+          {/* ── History ── (none for a president marked noSecondFactor: nothing was read to show) */}
           {!forMediaManager && !noSecondFactor && (
           <div>
             <h2 className="mb-4 text-xl font-bold text-ink">Send history</h2>

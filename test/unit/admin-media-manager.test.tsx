@@ -55,6 +55,20 @@ import type { AuthContextValue } from '@/contexts/AuthContext'
 import type { ApiNewsletter } from '@/lib/api'
 
 const flags = vi.hoisted(() => ({ mailLists: false }))
+/** The two second-factor constants: null reads the real one (both ship unset); a case that holds the line sets one. */
+const asked = vi.hoisted(() => ({ president: null as boolean | null, mediaManager: null as boolean | null }))
+vi.mock('@domain/mail/senders', async (importOriginal) => {
+  const real = await importOriginal<typeof import('@domain/mail/senders')>()
+  return {
+    ...real,
+    get PRESIDENT_NEEDS_SECOND_FACTOR() {
+      return asked.president ?? real.PRESIDENT_NEEDS_SECOND_FACTOR
+    },
+    get MEDIA_MANAGER_NEEDS_SECOND_FACTOR() {
+      return asked.mediaManager ?? real.MEDIA_MANAGER_NEEDS_SECOND_FACTOR
+    },
+  }
+})
 vi.mock('@/lib/features', async (importOriginal) => {
   const real = await importOriginal<typeof import('@/lib/features')>()
   return {
@@ -203,6 +217,8 @@ function accountMenu(): string[] {
 
 beforeEach(() => {
   flags.mailLists = false
+  asked.president = null
+  asked.mediaManager = null
   calls = []
   answers = {}
   failures = {}
@@ -293,8 +309,19 @@ describe('the media manager, with mailLists on', () => {
     }
   }, 60_000)
 
-  it('without a second factor, draws one line linked to where it is set up, in place of the send buttons, and makes no newsletter call', async () => {
+  it('without a second factor, as the rule ships, draws the send buttons and makes the newsletter call', async () => {
     flags.mailLists = true
+    on('GET', ASK_URL, { status: 200, body: { mediaManager: true, secondFactor: false } })
+    await site('/admin/email', person({ seats: [MEDIA_MANAGER], aal: 'aal1' }))
+    await groupEmail()
+    expect(await screen.findByRole('button', { name: 'Send test' }, { timeout: 10_000 })).toBeTruthy()
+    expect(screen.queryByRole('link', { name: SECOND_FACTOR_LINE })).toBeNull()
+    expect(urls()).toContain(NEWSLETTER_URL)
+  }, 30_000)
+
+  it('with MEDIA_MANAGER_NEEDS_SECOND_FACTOR set and no second factor, draws one line linked to where it is set up, in place of the send buttons, and makes no newsletter call', async () => {
+    flags.mailLists = true
+    asked.mediaManager = true
     on('GET', ASK_URL, { status: 200, body: { mediaManager: true, secondFactor: false } })
     await site('/admin/email', person({ seats: [MEDIA_MANAGER], aal: 'aal1' }))
     await groupEmail()
@@ -524,8 +551,9 @@ describe('an LCA officer who holds the Media manager seat (checkpoint M\'s revie
     expect(asks()).toHaveLength(1)
   }, 30_000)
 
-  it('draws the line about two-factor sign-in in place of the send buttons when the session has no second factor', async () => {
+  it('draws the line about two-factor sign-in in place of the send buttons when the session has no second factor and MEDIA_MANAGER_NEEDS_SECOND_FACTOR is set', async () => {
     flags.mailLists = true
+    asked.mediaManager = true
     on('GET', ASK_URL, { status: 200, body: { mediaManager: true, secondFactor: false } })
     await site('/admin/email', person({ role: 'lca_officer', seats: [MEDIA_MANAGER], aal: 'aal1' }))
     expect(await screen.findByRole('link', { name: SECOND_FACTOR_LINE }, { timeout: 10_000 })).toBeTruthy()
@@ -847,8 +875,21 @@ describe('who sends from Admin since decision 79: an LCA admin, the President se
     expect((await drawnAdmin(AdminPage, '/admin/email', who)).markup).toContain(switchOn ? 'Sample newsletter one' : 'Sample group message')
   }, 120_000)
 
-  it.each([false, true])('the same without a second factor: the line to set one up in place of the send buttons, and no call for the history or the newsletter, with mailLists %s', async (switchOn) => {
+  it.each([false, true])('the same without a second factor, as the rule ships: the send buttons drawn, with mailLists %s', async (switchOn) => {
     flags.mailLists = switchOn
+    const who = person({ role: 'lca_observer', seats: [PRESIDENT], aal: 'aal1' })
+    const email = await drawnAdmin(AdminPage, '/admin/email', who)
+    expect(email.where).toBe('/admin/email')
+    expect(email.markup).not.toContain(SECOND_FACTOR_LINE)
+    expect(email.markup).toContain('Send test')
+    // What the server now accepts is read: the history, and with mailLists on, the newsletter.
+    expect(mailCalls(email).some((c) => c.includes('/api/admin/campaigns'))).toBe(true)
+    if (switchOn) expect(mailCalls(email).some((c) => c.includes(NEWSLETTER_URL))).toBe(true)
+  }, 60_000)
+
+  it.each([false, true])('the same without a second factor and PRESIDENT_NEEDS_SECOND_FACTOR set: the line to set one up in place of the send buttons, and no call for the history or the newsletter, with mailLists %s', async (switchOn) => {
+    flags.mailLists = switchOn
+    asked.president = true
     const who = person({ role: 'lca_observer', seats: [PRESIDENT], aal: 'aal1' })
     const email = await drawnAdmin(AdminPage, '/admin/email', who)
     expect(email.where).toBe('/admin/email')
@@ -859,6 +900,15 @@ describe('who sends from Admin since decision 79: an LCA admin, the President se
     expect(email.markup).not.toContain('Send history')
     expect(email.markup).not.toContain('Loading')
     expect(email.markup).not.toContain('No campaigns sent yet.')
+    expect(mailCalls(email)).toEqual([])
+  }, 60_000)
+
+  it.each([null, 'aal1'] as const)('an LCA admin who holds the President seat, with the assurance level %s: the line to set up a second factor and no mail call, as before the rule changed', async (aal) => {
+    const who = { ...person({ role: 'lca_admin', seats: [PRESIDENT] }), assuranceLevel: aal } as AuthContextValue
+    const email = await drawnAdmin(AdminPage, '/admin/email', who)
+    expect(email.markup).toContain(SECOND_FACTOR_LINE)
+    expect(email.markup).not.toContain('Send test')
+    expect(email.markup).not.toContain('Send history')
     expect(mailCalls(email)).toEqual([])
   }, 60_000)
 

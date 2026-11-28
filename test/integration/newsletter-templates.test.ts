@@ -13,7 +13,9 @@
 // - (b) who may: GET, POST, PUT and DELETE .../templates answer 404 before the
 //   session while MAIL_PAGE_ON is unset, and let in exactly the people
 //   requireListMailer lets send the newsletter, refusing everyone else as part
-//   one's newsletter does, byte for byte, with no row written.
+//   one's newsletter does, byte for byte, with no row written; as the rule
+//   ships and with both second-factor constants set (getters on the mocked
+//   domain/mail/senders).
 // - (c) the endpoint: a save from the open letter and from a past newsletter,
 //   the name's refusals, the limit, rename, remove, a start from a saved
 //   template, the last newsletters without template rows, and another writer
@@ -65,6 +67,20 @@ vi.mock('../../functions/utils/mail/switches', async (importOriginal) => {
     },
   }
 })
+/** The two second-factor constants: null reads the real one (both ship unset); the case that holds the old rule sets both. */
+const turned = vi.hoisted(() => ({ president: null as boolean | null, mediaManager: null as boolean | null }))
+vi.mock('../../domain/mail/senders', async (importOriginal) => {
+  const real = await importOriginal<typeof import('../../domain/mail/senders')>()
+  return {
+    ...real,
+    get PRESIDENT_NEEDS_SECOND_FACTOR() {
+      return turned.president ?? real.PRESIDENT_NEEDS_SECOND_FACTOR
+    },
+    get MEDIA_MANAGER_NEEDS_SECOND_FACTOR() {
+      return turned.mediaManager ?? real.MEDIA_MANAGER_NEEDS_SECOND_FACTOR
+    },
+  }
+})
 
 type Handler = Parameters<typeof invoke>[0]
 type Row = Record<string, unknown>
@@ -90,6 +106,8 @@ beforeEach(async () => {
   resetHarness()
   flags.pageOn = true
   flags.listsOn = true
+  turned.president = null
+  turned.mediaManager = null
   await env.DB.prepare(`DELETE FROM board_members WHERE id LIKE 'seat-%'`).run()
   for (const table of ['newsletter_issues', 'email_campaign_recipients', 'email_campaigns']) {
     await env.DB.prepare(`DELETE FROM ${table}`).run()
@@ -257,7 +275,19 @@ describe('(b) who may use the saved templates', () => {
     }
   })
 
-  it('lets in exactly the people who may send the newsletter, and refuses everyone else as part one\'s newsletter does, byte for byte, writing nothing', async () => {
+  const SECOND_FACTOR_ASKED = [
+    'an LCA admin with a second factor', 'the president', 'the media manager with a second factor', 'an officer who holds the seat, with a second factor',
+  ]
+  const AS_SHIPPED = [
+    'the president without a second factor', 'the media manager without a second factor', 'an officer who holds the seat, without a second factor',
+    ...SECOND_FACTOR_ASKED,
+  ]
+  it.each([
+    ['as the rule ships', null, AS_SHIPPED],
+    ['with both second-factor constants set', true, SECOND_FACTOR_ASKED],
+  ] as const)('lets in exactly the people who may send the newsletter, and refuses everyone else as part one\'s newsletter does, byte for byte, writing nothing, %s', async (_state, asked, admitted) => {
+    turned.president = asked
+    turned.mediaManager = asked
     const seated = await person('Player Three')
     const seatedOfficer = await person('Player Four', 'lca_officer')
     await seedSeat({ slug: MEDIA_MANAGER_SEAT, role: 'Media manager' }, [seated, seatedOfficer])
@@ -297,9 +327,7 @@ describe('(b) who may use the saved templates', () => {
       }
       if (plain.status !== 200) expect(await rows(), who).toEqual([])
     }
-    expect([...new Set(answered)]).toEqual([
-      'an LCA admin with a second factor', 'the president', 'the media manager with a second factor', 'an officer who holds the seat, with a second factor',
-    ])
+    expect([...new Set(answered)]).toEqual(admitted)
   })
 })
 

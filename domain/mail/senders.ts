@@ -11,11 +11,20 @@
 // nothing.
 
 /**
- * Set: the President seat's holder needs a second factor to send, as an LCA
- * admin and the media manager do. The one line to change if the owner says
- * otherwise.
+ * Unset: the President seat's holder is not asked for a second factor to
+ * send; a password alone sends (the owner's decision 82: only an LCA admin
+ * is asked). Set, the president needs one, as an LCA admin always does. The
+ * one line to change if the owner says otherwise.
  */
-export const PRESIDENT_NEEDS_SECOND_FACTOR = true
+export const PRESIDENT_NEEDS_SECOND_FACTOR = false
+
+/**
+ * Unset: the Media manager seat's holder is not asked for a second factor to
+ * send the newsletter; a password alone sends (the owner's decision 82).
+ * Set, the media manager needs one, as an LCA admin always does. The one
+ * line to change if the owner says otherwise.
+ */
+export const MEDIA_MANAGER_NEEDS_SECOND_FACTOR = false
 
 /** The 403 for anyone the mail guards refuse but the second factor's: an LCA Observer or Officer without either seat among them. */
 export const LIST_MAILERS_ONLY = 'Group email is limited to LCA admins, the president and the media manager.'
