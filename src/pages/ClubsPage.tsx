@@ -438,7 +438,7 @@ export function ClubsPage() {
                     {activeRegion && <span className="font-normal text-muted-foreground"> in {activeRegion}</span>}
                   </h2>
                   <p className="text-[11px] text-muted-foreground">
-                    {userLocation ? 'Closest first' : 'Sorted A–Z'}
+                    {userLocation ? 'Closest first' : 'Sorted A to Z'}
                     {isFiltered && (
                       <>
                         {' · '}
@@ -479,7 +479,7 @@ export function ClubsPage() {
                   <p className="mt-1 text-sm text-muted-foreground">
                     {isSearching
                       ? 'Try a different club name or city.'
-                      : 'Check back soon — new clubs are added regularly.'}
+                      : 'Check back soon. New clubs are added regularly.'}
                   </p>
                 </div>
               ) : (
