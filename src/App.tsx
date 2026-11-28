@@ -14,6 +14,7 @@ import { ImpersonationBanner } from '@/components/ImpersonationBanner'
 import { PasswordRecoveryRedirect } from '@/components/auth/PasswordRecoveryRedirect'
 import { FEATURES } from '@/lib/features'
 import { chromeOn } from '@/lib/nav'
+import { clubPagesOn } from '@/areas/clubs/switches'
 const AboutPage = lazy(() => import('@/pages/AboutPage').then(m => ({ default: m.AboutPage })))
 const AnnualMeetingPage = lazy(() => import('@/pages/AnnualMeetingPage').then(m => ({ default: m.AnnualMeetingPage })))
 const AdminClubPage = lazy(() => import('@/pages/AdminClubPage').then(m => ({ default: m.AdminClubPage })))
@@ -24,6 +25,7 @@ const BoardPage = lazy(() => import('@/pages/BoardPage').then(m => ({ default: m
 const ChampionsPage = lazy(() => import('@/pages/ChampionsPage').then(m => ({ default: m.ChampionsPage })))
 const BylawsPage = lazy(() => import('@/pages/BylawsPage').then(m => ({ default: m.BylawsPage })))
 const ClubDetailPage = lazy(() => import('@/pages/ClubDetailPage').then(m => ({ default: m.ClubDetailPage })))
+const ClubListingPage = lazy(() => import('@/pages/ClubListingPage').then(m => ({ default: m.ClubListingPage })))
 const ClubConfirmPage = lazy(() => import('@/pages/ClubConfirmPage').then(m => ({ default: m.ClubConfirmPage })))
 const ClubsPage = lazy(() => import('@/pages/ClubsPage').then(m => ({ default: m.ClubsPage })))
 const ContactPage = lazy(() => import('@/pages/ContactPage').then(m => ({ default: m.ContactPage })))
@@ -198,7 +200,12 @@ function App() {
             <Route path="/clubs" element={<ClubsPage />} />
             {/* The page a Still accurate link in the monthly check opens, with no sign-in (WS09 step 14); routed only while clubKeepers is on, so with it off the address draws what it draws today. */}
             {FEATURES.clubKeepers && <Route path="/clubs/confirm/:token" element={<ClubConfirmPage />} />}
-            <Route path="/clubs/:id" element={<ClubDetailPage />} />
+            {/* Suggest a club, which the menus open with newClubs on, goes to today's contact page until its own form is built (WS09 step 21, until step 30); with newClubs off there is no such route, and the address draws today's "Club not found". */}
+            {FEATURES.newClubs && <Route path="/clubs/suggest" element={<Navigate to="/contact?subject=club" replace />} />}
+            {/* The new club page with clubPagesOn (newClubs and newLook, WS09 step 21); otherwise today's club page, as it always was. */}
+            {clubPagesOn()
+              ? <Route path="/clubs/:id" element={<ClubListingPage />} />
+              : <Route path="/clubs/:id" element={<ClubDetailPage />} />}
             <Route path="/news" element={<NewsPage />} />
             <Route path="/news/:slug" element={<NewsPostPage />} />
             {/* Public on purpose: signed-out visitors see what it does and a
