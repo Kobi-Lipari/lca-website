@@ -12,9 +12,9 @@
 // Admin's roles, the President seat's holder, and the media manager on the
 // server's answer, which it hands down; an LCA Observer without either seat
 // reads why here, and an officer without the seat is sent to Admin. Nobody here sees a "View only" badge. A media
-// manager signed in without a second factor, whom the server would refuse,
-// is told so in the newsletter tab's own words, with the way to set it up,
-// and no call is made.
+// manager or president whom mediaManagerMayCall or presidentMayCall refuses
+// (only while their constant is set; both ship unset) is told so in the
+// newsletter tab's own words, with the way to set it up, and no call is made.
 //
 // The page: the head with the saved line (NewsletterHead), From and
 // Subject, the tools and the letter (LetterEditor), the size controls, at
@@ -64,7 +64,7 @@ import { defaultSubject } from '@domain/mail/letter'
 import { TEST_NO_WORDS, WAITS_FOR_SES } from '@domain/mail/newsletterWords'
 import { LIST_MAILERS_ONLY } from '@domain/mail/senders'
 import { useAuth } from '@/contexts/auth-context'
-import { holdsPresidentSeat, presidentMayCall } from '@/areas/admin/roles'
+import { holdsPresidentSeat, mediaManagerMayCall, presidentMayCall } from '@/areas/admin/roles'
 import { useMediaManagerAnswer } from '@/areas/admin/mediaManagerAnswer'
 import { CountCard } from '@/areas/admin/newsletter/CountCard'
 import { FootBar, type BarSaid, type FocusCarry, type FocusHold } from '@/areas/admin/newsletter/FootBar'
@@ -81,7 +81,7 @@ import { HelpWalkthrough } from '@/areas/admin/newsletter/HelpWalkthrough'
 import { getNewsletter } from '@/lib/api'
 import { cn } from '@/lib/utils'
 
-/** The newsletter tab's own words for a media manager signed in without a second factor (src/pages/AdminEmailPage.tsx). */
+/** The newsletter tab's own words for a sender asked for a second factor, read only while a constant is set (src/pages/AdminEmailPage.tsx). */
 const SECOND_FACTOR_LINE = 'Set up two-factor sign-in to send group email.'
 
 /** How long the side preview waits after the last change before it draws the letter again. */
@@ -365,7 +365,7 @@ export function AdminNewsletterPage() {
     )
   }
   if (!asThemselves && !answer.mediaManager) return <Navigate to="/admin" replace />
-  const mayCall = role === 'lca_admin' || (president ? presidentMayCall(assuranceLevel) : answer.secondFactor)
+  const mayCall = role === 'lca_admin' || (president ? presidentMayCall(assuranceLevel) : mediaManagerMayCall(answer.secondFactor))
   return <NewsletterDesk mayCall={mayCall} />
 }
 

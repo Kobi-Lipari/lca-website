@@ -14,7 +14,10 @@
 //   sign-in call, and a body that is not JSON is not read.
 // - (b) Who may: each method lets in exactly the people requireListMailer
 //   lets send the newsletter, answering everyone else as part one's GET
-//   /api/admin/mail/newsletter answers them, byte for byte, writing nothing.
+//   /api/admin/mail/newsletter answers them, byte for byte, writing nothing;
+//   as the rule ships (PRESIDENT_NEEDS_SECOND_FACTOR and
+//   MEDIA_MANAGER_NEEDS_SECOND_FACTOR unset, read through getters on the
+//   mocked domain/mail/senders) and with both set.
 // - (c) Saving: the stored letter is the cleaner's own output, never the
 //   input; each refusal in words, in the order of the checks, with nothing
 //   written; an old version, a letter sent or set aside meanwhile, and two
@@ -77,6 +80,20 @@ vi.mock('../../functions/utils/mail/switches', async (importOriginal) => {
     },
     get COMPLAINT_STOPS_OTHER_SENDERS() {
       return flags.complaintStops
+    },
+  }
+})
+/** The two second-factor constants: null reads the real one (both ship unset); a case that holds the old refusal sets them. */
+const turned = vi.hoisted(() => ({ president: null as boolean | null, mediaManager: null as boolean | null }))
+vi.mock('../../domain/mail/senders', async (importOriginal) => {
+  const real = await importOriginal<typeof import('../../domain/mail/senders')>()
+  return {
+    ...real,
+    get PRESIDENT_NEEDS_SECOND_FACTOR() {
+      return turned.president ?? real.PRESIDENT_NEEDS_SECOND_FACTOR
+    },
+    get MEDIA_MANAGER_NEEDS_SECOND_FACTOR() {
+      return turned.mediaManager ?? real.MEDIA_MANAGER_NEEDS_SECOND_FACTOR
     },
   }
 })
@@ -149,6 +166,8 @@ beforeEach(async () => {
   flags.sender = 'resend'
   flags.plan = 'free'
   flags.complaintStops = true
+  turned.president = null
+  turned.mediaManager = null
   await env.DB.prepare(`DELETE FROM board_members WHERE id LIKE 'seat-%'`).run()
   for (const table of ['newsletter_issues', 'email_campaign_recipients', 'email_campaigns', 'mail_list_choices', 'mail_contacts']) {
     await env.DB.prepare(`DELETE FROM ${table}`).run()
@@ -252,7 +271,20 @@ describe('(b) who may: the people requireListMailer lets send the newsletter, an
     ] as const
   }
 
-  it('answers each person on each method as part one\'s newsletter answers them: refused alike, byte for byte, or let in', async () => {
+  /** Who is let in, as the rule ships (both second-factor constants unset) and with both set. */
+  const LET_IN = {
+    shipped: [
+      'the media manager without a second factor', 'an officer who holds the seat, without a second factor', 'an LCA admin with a second factor',
+      'the president without a second factor', 'the president', 'the media manager with a second factor', 'an officer who holds the seat, with a second factor',
+    ],
+    asked: ['an LCA admin with a second factor', 'the president', 'the media manager with a second factor', 'an officer who holds the seat, with a second factor'],
+  }
+
+  it.each(['shipped', 'asked'] as const)('answers each person on each method as part one\'s newsletter answers them: refused alike, byte for byte, or let in, with the second factor %s', async (rule) => {
+    if (rule === 'asked') {
+      turned.president = true
+      turned.mediaManager = true
+    }
     const answered: string[] = []
     for (const [who, as, aal] of await people()) {
       const plain = await invoke(newsletterGet, { as, aal })
@@ -270,12 +302,25 @@ describe('(b) who may: the people requireListMailer lets send the newsletter, an
       }
       if (plain.status !== 200) expect({ rows: await rows(), traces: await traces() }, who).toEqual(before)
     }
-    expect([...new Set(answered)]).toEqual([
-      'an LCA admin with a second factor', 'the president', 'the media manager with a second factor', 'an officer who holds the seat, with a second factor',
-    ])
+    expect([...new Set(answered)]).toEqual(LET_IN[rule])
   })
 
-  it('gives the refusals their own words: 401 signed out, LIST_MAILERS_ONLY, and the second factor\'s 403 with mfaRequired', async () => {
+  it('lets in, as the rule ships, the media manager, an officer who holds the seat and the president without a second factor, and still asks an LCA admin for one', async () => {
+    const list = await people()
+    const answer = async (who: string) => {
+      const found = list.find(([w]) => w === who)!
+      const res = await invoke(issueGet, { as: found[1], aal: found[2] })
+      return { status: res.status, body: await res.json<Record<string, unknown>>() }
+    }
+    for (const who of ['the media manager without a second factor', 'an officer who holds the seat, without a second factor', 'the president without a second factor']) {
+      expect((await answer(who)).status, who).toBe(200)
+    }
+    expect(await answer('an LCA admin without a second factor')).toMatchObject({ status: 403, body: { mfaRequired: true } })
+  })
+
+  it('with both second-factor constants set, gives the refusals their own words: 401 signed out, LIST_MAILERS_ONLY, and the second factor\'s 403 with mfaRequired', async () => {
+    turned.president = true
+    turned.mediaManager = true
     const list = await people()
     const answer = async (who: string) => {
       const found = list.find(([w]) => w === who)!

@@ -108,7 +108,7 @@ describe('the editor with the page preview and the small question marks together
     fireEvent.click(preview)
     expect(preview.getAttribute('aria-expanded')).toBe('true')
     const bubble = document.getElementById(preview.getAttribute('aria-controls') ?? '')!
-    expect(bubble.textContent).toMatch(/shows up in a search/)
+    expect(bubble.textContent).toMatch(/looks in a search result/)
     fireEvent.click(preview)
     expect(preview.getAttribute('aria-expanded')).toBe('false')
   })

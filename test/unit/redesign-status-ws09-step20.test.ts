@@ -123,7 +123,8 @@ describe('REDESIGN_STATUS.md, WS09 step 20: the block', () => {
     expect(block).not.toBe('')
     expect(ws09.split(`\n${STEP}\n`)).toHaveLength(2)
     // Written straight after checkpoint V's review; with main taken in it stands after main's blocks of Thursday's changes, the aside on how they reached main last.
-    expect([PREVIOUS, '### WS09 aside: how Thursday\'s changes reached main']).toContain(headings[headings.indexOf(STEP) - 1])
+    // Once the question marks' words are on main too, that aside's block stands between them and this one.
+    expect([PREVIOUS, '### WS09 aside: how Thursday\'s changes reached main', '### WS09 aside: the question marks\' words']).toContain(headings[headings.indexOf(STEP) - 1])
     if (latest) expect(headings[headings.indexOf(STEP) + 1]).toBe(LISTS[0])
   })
 

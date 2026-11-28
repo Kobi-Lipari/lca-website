@@ -397,7 +397,7 @@ describe('the words say "your" only to the club\'s own rep', () => {
       await open('rep')
       const words = editorWords()
       for (const piece of OWN) expect(words, `${open.name} ${piece}`).toContain(piece)
-      expect(words, open.name).toContain('It is shown as About on your club\'s page')
+      expect(words, open.name).toContain('It shows as About on your club\'s page')
       cleanup()
     }
   })
@@ -417,9 +417,8 @@ describe('the words say "your" only to the club\'s own rep', () => {
         expect(words, at).not.toMatch(YOURS)
         for (const piece of OTHERS) expect(words, `${at}: ${piece}`).toContain(piece)
         if (!settings.clubEmailHidden) expect(screen.getByLabelText('Email for messages, shown on the club\'s page today'), at).toBeTruthy()
-        // Help names the card by the name the reader sees.
-        if (!settings.newClubs) expect(words, at).toContain('keeps the address shown under "Address of the club\'s page"')
-        else expect(words, at).toContain('The address of the club\'s page is made from the club\'s name')
+        // Help no longer names the address's card (K's note); its line on the name and address says "the club's" to this reader.
+        expect(words, at).toContain('The city shows under the club\'s name and helps people find a club near them.')
         cleanup()
       }
     }

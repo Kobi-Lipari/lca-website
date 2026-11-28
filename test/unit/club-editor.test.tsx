@@ -204,8 +204,8 @@ function wordsOutsideHelp(form: HTMLElement): string[] {
 
 /** The explaining sentences of the boards, as Help gives them: none may appear outside it. */
 const EXPLAINING = [
-  /shown as About/, /never turns them into dates/, /nothing is looked up/, /come from LCA's club list/, /visitors see/, /never shown on your club's page/,
-  /emailed what changed/, /Search results/, /old address keeps working/, /older form/, /characters ·/, /Drag the pin/, /geocoded/, /These stay off the public page/,
+  /shows as About/, /Keep it short/, /Set the pin yourself/, /come from LCA's club list/, /a visitor should ask for/, /Visitors never see it/,
+  /gets an email saying what changed/, /Search results/, /old links keep working/, /Saving puts this box's words/, /characters ·/, /Drag the pin/, /geocoded/, /These stay off the public page/,
 ]
 
 describe('the club editor: the five basics', () => {
@@ -650,7 +650,7 @@ describe('the club editor: Help', () => {
     // Nothing explains in a placeholder or a title either.
     expect(form.querySelectorAll('[placeholder], [title]')).toHaveLength(0)
     // Help holds the boards' sentences.
-    for (const words of [/shown as About/, /never turns them into dates/, /nothing is looked up/, /emailed what changed/, /never shown on your club's page/]) {
+    for (const words of [/shows as About/, /Keep it short/, /Set the pin yourself/, /gets an email saying what changed/, /Visitors never see it/]) {
       expect(help().textContent, String(words)).toMatch(words)
     }
     // One press sends one email, so Help no longer warns of two.
@@ -664,33 +664,32 @@ describe('the club editor: Help', () => {
     expect(adminWords).toContain('Page address')
     expect(adminWords).not.toContain('Kept by LCA admins')
     for (const words of EXPLAINING) expect(wordsOutsideHelp(admin).join('\n'), String(words)).not.toMatch(words)
-    // With the new club pages off, today's page keeps its own address, so Help says so (checkpoint T's review, P6).
-    expect(help().textContent).toMatch(/today's club page keeps its own address, which does not change/)
+    // Help no longer speaks of today's page's own address (K's note); the admin's fields' entry says what the region decides.
+    expect(help().textContent).toContain('Only LCA admins can change these. The region decides which regional representative manages the club.')
   })
 
   it('the email\'s label and Help say never shown only while clubEmailHidden is on', async () => {
     await openEditor()
     expect(screen.getByLabelText('Email for messages, never shown')).toBeTruthy()
-    expect(help().textContent).toContain('It is never shown on your club\'s page or to visitors.')
+    expect(help().textContent).toContain('LCA can reach the club at this address. Visitors never see it.')
     cleanup()
     flags.clubEmailHidden = false
     const form = await openEditor()
     expect(screen.getByLabelText('Email for messages, shown on your club\'s page today')).toBeTruthy()
     expect(form.textContent).not.toMatch(/never shown/i)
-    expect(help().textContent).toContain('Today\'s club page shows this address to visitors.')
+    expect(help().textContent).toContain('Messages for the club are sent to this address. Visitors can see it on your club\'s page.')
     // The order the switches go on in keeps clubKeepers off until clubEmailHidden is on.
     expect(read('src/areas/clubs/switches.ts')).toContain('if (features.clubKeepers && !features.clubEmailHidden) {')
   })
 
-  it('the contact name\'s label and Help promise a page shows the contact name and the note only once the new club pages are on', async () => {
+  it('the contact name\'s label promises a page shows the contact name only once the new club pages are on, and Help\'s mark is named as the label is', async () => {
     const form = await openEditor()
     expect(screen.getByLabelText(CONTACT)).toBeTruthy()
     expect(screen.queryByLabelText('Contact name shown on the page')).toBeNull()
     const off = help().textContent ?? ''
-    expect(off).toContain('Today\'s club page does not show it.')
-    expect(off).toContain('the note shows once the new club pages open.')
-    expect(off).toContain('the contact name and the place\'s note show once the new club pages open.')
-    expect(off).not.toContain('Your changes go live on your club\'s page at once.')
+    // Help no longer says when the contact name and the note show (K's note); its words are one in both states, and the mark's name follows the label.
+    expect(bubbleOf(mark('Contact name')).textContent).toBe('The person a visitor should ask for.')
+    expect(off).toContain('Your changes show on your club\'s page right away.')
     expect(off).not.toMatch(/visitors see beside Contact/)
     expect(form.textContent).not.toMatch(/visitors see/)
     cleanup()
@@ -699,8 +698,8 @@ describe('the club editor: Help', () => {
     await openEditor()
     expect(screen.getByLabelText('Contact name shown on the page')).toBeTruthy()
     const on = help().textContent ?? ''
-    expect(on).toContain('The name visitors see beside Contact on your club\'s page.')
-    expect(on).toContain('Your changes go live on your club\'s page at once.')
+    expect(bubbleOf(mark('Contact name shown on the page')).textContent).toBe('The person a visitor should ask for.')
+    expect(on).toContain('Your changes show on your club\'s page right away.')
     expect(on).not.toMatch(/once the new club pages open|does not show it/)
   })
 })
@@ -811,10 +810,9 @@ describe('the club editor: the rest of the listing, in the one call (WS09 step 8
     await saved()
     expect(calls()).toEqual([`PATCH ${CLUB_URL}`])
     expect(patches()[0].aboutText).toBe(long)
-    // Help names the meeting's box by its label, and says both fit only while it is short.
-    expect(help().textContent).toContain(
-      'A search result shows the start of About and then How the club meets, in words, about 155 characters in all. Keep that box short so both fit.',
-    )
+    // Help no longer gives a search result's 155 characters (K's note): it gives the box's 2,000 and asks the meeting's words to be kept short.
+    expect(help().textContent).toContain('You can write up to 2,000 characters.')
+    expect(bubbleOf(mark('How the club meets, in words')).textContent).toContain('Keep it short.')
     expect(screen.getByLabelText('How the club meets, in words')).toBeTruthy()
     // The count's meaning sits in Help alone.
     expect(wordsOutsideHelp(screen.getByRole('button', { name: 'Save and publish' }).closest('form')!).join('\n')).not.toMatch(/search results|155/)

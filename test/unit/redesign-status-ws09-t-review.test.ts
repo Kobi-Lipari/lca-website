@@ -484,7 +484,8 @@ describe('REDESIGN_STATUS.md, WS09 checkpoint T: the review of the whole and its
     expect(editor).toContain('if (!(el instanceof HTMLTextAreaElement) || typeof window.matchMedia !== \'function\' || window.matchMedia(SIDE_BY_SIDE).matches) return')
     expect(read('src/pages/YourClubPage.tsx')).toContain('max-lg:[&_a]:scroll-mt-24')
     // M3: the card's name in quotation marks, in both forms of the sentence.
-    expect(read('src/areas/clubs/components/EditorHelp.tsx')).toContain('Today\'s club page keeps the address shown under "${addressCardName(own)}", which stays')
+    // From K's note of Thursday, November 19, 2026, Help no longer names the address's card; its one sentence says the address stays.
+    expect(read('src/areas/clubs/components/EditorHelp.tsx')).toContain('The page\'s web address stays the same if the club is renamed, so old links keep working.')
     // M4, taken back: nothing moves the box or the page once a save is done.
     expect(editor).not.toMatch(/saves > 0|ref=\{form\}|scrollTop = 0[^\n]*\n[^\n]*\}, \[saves\]/)
     expect(editor).not.toMatch(/scrollTop = 0/)

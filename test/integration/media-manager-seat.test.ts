@@ -10,8 +10,10 @@
 //   addresses and on GET /api/me/media-manager answers 204 with no guard and
 //   reads no seat, with the constant set and unset;
 // - GET /api/me/media-manager says secondFactor true only for a claim that is
-//   exactly 'aal2', as the guard reads it, and the newsletter agrees with it
-//   for each claim.
+//   exactly 'aal2', as the guard reads it; while
+//   MEDIA_MANAGER_NEEDS_SECOND_FACTOR is set (a getter on the mocked
+//   domain/mail/senders) the newsletter agrees with it for each claim, and as
+//   the rule ships, the constant unset, it lets the holder in for every claim.
 // MAIL_LISTS_ON and the module's other constants are read through getters on
 // the mocked functions/utils/mail/switches, set before every case. Every name
 // here is made up but the seat's own title, "Media manager".
@@ -45,6 +47,17 @@ vi.mock('../../functions/utils/mail/switches', async (importOriginal) => {
     },
   }
 })
+/** The media manager's second-factor constant: null reads the real one (it ships unset); the case that holds the old refusal sets it. */
+const turned = vi.hoisted(() => ({ mediaManager: null as boolean | null }))
+vi.mock('../../domain/mail/senders', async (importOriginal) => {
+  const real = await importOriginal<typeof import('../../domain/mail/senders')>()
+  return {
+    ...real,
+    get MEDIA_MANAGER_NEEDS_SECOND_FACTOR() {
+      return turned.mediaManager ?? real.MEDIA_MANAGER_NEEDS_SECOND_FACTOR
+    },
+  }
+})
 
 const ended = (seat: string, member: string) =>
   env.DB.prepare(`UPDATE board_seat_assignments SET ended_at = datetime('now') WHERE seat_id = ? AND member_id = ?`).bind(seat, member).run()
@@ -61,6 +74,7 @@ beforeEach(async () => {
   flags.sender = 'resend'
   flags.plan = 'free'
   flags.complaintStops = true
+  turned.mediaManager = null
   await env.DB.prepare(`DELETE FROM board_members WHERE id LIKE 'seat-%'`).run()
 })
 
@@ -137,6 +151,7 @@ describe('the browser\'s check before a call', () => {
 
 describe('the second factor as the answer and the guard read it', () => {
   it('says secondFactor true only for a claim of exactly aal2, and the newsletter lets the holder in for the same claims', async () => {
+    turned.mediaManager = true
     const holder = await seedMember({ fullName: 'Player One' })
     await seedSeat({ slug: MEDIA_MANAGER_SEAT, role: 'Media manager' }, [holder])
     for (const claim of [undefined, 'aal1', 'AAL2', 'aal2 ', 'aal3', true, 2, ['aal2'], null, 'aal2']) {
@@ -148,6 +163,20 @@ describe('the second factor as the answer and the guard read it', () => {
       expect(await told.json(), JSON.stringify(claim)).toEqual({ mediaManager: true, secondFactor: exact })
       const read = await invoke(newsletterGet, { headers })
       expect(read.status, JSON.stringify(claim)).toBe(exact ? 200 : 403)
+    }
+  })
+
+  it('as the rule ships still says secondFactor true only for exactly aal2, and the newsletter lets the holder in for every claim', async () => {
+    const holder = await seedMember({ fullName: 'Player One' })
+    await seedSeat({ slug: MEDIA_MANAGER_SEAT, role: 'Media manager' }, [holder])
+    for (const claim of [undefined, 'aal1', 'AAL2', 'aal2 ', 'aal3', true, 2, ['aal2'], null, 'aal2']) {
+      const claims: Record<string, unknown> = { sub: holder, role: 'authenticated' }
+      if (claim !== undefined) claims.aal = claim
+      const headers = { Authorization: `Bearer ${tokenWith(claims)}` }
+      const told = await invoke(mediaManagerGet, { headers, path: '/api/me/media-manager' })
+      expect(await told.json(), JSON.stringify(claim)).toEqual({ mediaManager: true, secondFactor: claim === 'aal2' })
+      const read = await invoke(newsletterGet, { headers })
+      expect(read.status, JSON.stringify(claim)).toBe(200)
     }
   })
 })

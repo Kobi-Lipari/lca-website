@@ -45,6 +45,17 @@ vi.mock('../../functions/utils/mail/switches', async (importOriginal) => {
     },
   }
 })
+/** The media manager's second-factor constant: null reads the real one (it ships unset); the case that holds the old refusal sets it. */
+const turned = vi.hoisted(() => ({ mediaManager: null as boolean | null }))
+vi.mock('../../domain/mail/senders', async (importOriginal) => {
+  const real = await importOriginal<typeof import('../../domain/mail/senders')>()
+  return {
+    ...real,
+    get MEDIA_MANAGER_NEEDS_SECOND_FACTOR() {
+      return turned.mediaManager ?? real.MEDIA_MANAGER_NEEDS_SECOND_FACTOR
+    },
+  }
+})
 
 const SAMPLE = { subject: 'Sample newsletter one', bodyHtml: '<p>Example words for a sample newsletter.</p>' }
 let seq = 0
@@ -71,6 +82,7 @@ beforeEach(async () => {
   resetHarness()
   flags.listsOn = true
   flags.sender = 'resend'
+  turned.mediaManager = null
   await env.DB.prepare(`DELETE FROM board_members WHERE id LIKE 'seat-%'`).run()
   for (const table of ['email_campaign_recipients', 'email_campaigns', 'mail_list_choices', 'mail_contacts']) {
     await env.DB.prepare(`DELETE FROM ${table}`).run()
@@ -239,7 +251,17 @@ describe('whoever the seat does not admit never reads the own-address words', ()
     expect(await traces()).toEqual(before)
   })
 
-  it('gives the seat holder without a second factor the media manager\'s 403 before it reads the address, whatever they type', async () => {
+  it('holds the seat holder without a second factor, as the rule ships, to their own address: theirs sent, any other refused in words', async () => {
+    const seated = await holder()
+    const own = await invoke(testPost, { as: seated.id, aal: 'aal1', method: 'POST', body: { to: seated.email, ...SAMPLE } })
+    expect(own.status).toBe(200)
+    const other = await invoke(testPost, { as: seated.id, aal: 'aal1', method: 'POST', body: { to: address('other'), ...SAMPLE } })
+    expect(await other.json()).toEqual({ error: TEST_TO_OWN_ADDRESS })
+    expect(emailOutbox.map((e) => e.to)).toEqual([seated.email])
+  })
+
+  it('with MEDIA_MANAGER_NEEDS_SECOND_FACTOR set, gives the seat holder without a second factor the media manager\'s 403 before it reads the address, whatever they type', async () => {
+    turned.mediaManager = true
     const seated = await holder()
     const before = await traces()
     for (const to of [seated.email, address('other')]) {

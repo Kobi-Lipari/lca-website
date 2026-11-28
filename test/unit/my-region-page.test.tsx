@@ -484,10 +484,11 @@ describe('My region with clubKeepers on: the page', () => {
     expect(window.localStorage.length).toBe(0)
     // Nothing runs the monthly check until a later step, so Help names the day it is due and no hour.
     const words = bubbles.map((b) => b.textContent).join('\n')
-    expect(words).toContain('The bar names the day the next monthly check is due.')
+    expect(words).toContain('The day the next monthly check is due.')
     expect(words).not.toMatch(/\b\d{1,2}:\d{2} [AP]M\b/)
     // The sentences on the 90 days and on Confirm all sit behind the marks alone, never beside a control.
-    for (const piece of ['in the last 90 days.', 'one club after another']) {
+    // Help no longer says Confirm all marks one club after another (K's note); the page's own cases hold that it does.
+    for (const piece of ['in the last 90 days.', 'after asking you once']) {
       const found = [...document.querySelectorAll('p, dd, span, div')].filter((el) => el.textContent?.includes(piece) && el.children.length === 0)
       expect(found.length, piece).toBeGreaterThan(0)
       for (const el of found) expect(bubbles.some((b) => b.contains(el)), piece).toBe(true)

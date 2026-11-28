@@ -242,12 +242,14 @@ describe('REDESIGN_STATUS.md, WS09 step 8: the parts', () => {
       expect(help, piece).toContain(piece)
     }
     const sentences = read(HELP)
-    expect(sentences).toContain('A search result shows the start of About and then How the club meets, in words, about 155 characters in all. Keep that box short so both fit.')
+    // Help's words were made shorter by K's note of Thursday, November 19, 2026: About's sentence still says its beginning shows in search results.
+    expect(sentences).toContain('and its beginning shows in search results')
     expect(sentences).not.toContain('then when the club meets')
     expect(read(BASICS)).toContain('field="howWeMeetText" label="How the club meets, in words"')
     expect(read(META)).toContain('only while the statement leaves ABOUT_ROOM_MIN (60) or more')
     expect(sentences).not.toContain('the first 155 characters show in search results')
-    expect(sentences).toContain('Google shows about the first 60 characters of a title')
+    // By the same note Preview's sentence no longer counts a title's characters; it says what the previews show.
+    expect(sentences).toContain('How the club looks in a search result, when its link is shared, and on its card in the club directory.')
     expect(sentences).not.toContain('come from LCA\\\'s club list')
   })
 
