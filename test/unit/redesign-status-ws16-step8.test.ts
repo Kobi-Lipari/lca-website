@@ -655,6 +655,19 @@ describe('REDESIGN_STATUS.md, WS16 step 8: checkpoint M\'s section', () => {
     expect(cut).toContain('`npm run lint`, `npm run build`, `npm run typecheck:functions`, `npm run check:bundle` and `npm run test:all`')
   })
 
+  it('holds the cutover change\'s one line, once, right after the switch-on\'s, with its day and what it carries', () => {
+    const lines = checkpoint.split('\n')
+    const cutover = lines.filter((l) => l.startsWith('- **Amazon SES sends (WS16 step 8).**'))
+    expect(cutover).toHaveLength(1)
+    const line = cutover[0]
+    expect(lines[lines.indexOf(line) - 1].startsWith('- **Switched on (WS16 step 8).**')).toBe(true)
+    expect(line).toMatch(/^- \*\*Amazon SES sends \(WS16 step 8\)\.\*\* On (?:Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday), [A-Z][a-z]+ \d{1,2}, 2026, /)
+    for (const piece of [
+      'the cutover change, a pull request of its own', '`MAIL_SENDER` to `\'ses\'`', '`WORKERS_PLAN` `\'paid\'`', 'its merge is K\'s',
+      '"Sending to members from this page is not available yet."', 'The way back is the same line back to `\'resend\'`.',
+    ]) expect(line, piece).toContain(piece)
+  })
+
   it('gives the pull request\'s text: plain, what the checkpoint is, what the merge does with every switch off, what K runs before the preview and what comes after, with no tool and no line on how it was written', () => {
     expect(pullRequest.length).toBeGreaterThanOrEqual(9)
     const text = pullRequest.join('\n')

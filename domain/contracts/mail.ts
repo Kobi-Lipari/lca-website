@@ -71,10 +71,11 @@ const newsletterSendSchema = z.strictObject({
 
 /**
  * GET /api/admin/mail/newsletter: the list, its From line ("Louisiana Chess Association <newsletter@...>"), the
- * service that sends now ('resend' until the cutover, while the newsletter waits for Amazon SES), and the summary: every
- * address in the audience, those who turned it off, stopped all optional mail or no longer receive mail (which may
- * overlap), those who will get the next send, the last 10 sends, and why the newsletter that is sending waits (WS16
- * step 5): the words on its next untried row, or null when none is sending or that row holds none.
+ * service that sends now ('ses' since the cutover; 'resend' only after a move back, and while it is 'resend' the
+ * newsletter waits for Amazon SES), and the summary: every address in the audience, those who turned it off, stopped
+ * all optional mail or no longer receive mail (which may overlap), those who will get the next send, the last 10
+ * sends, and why the newsletter that is sending waits (WS16 step 5): the words on its next untried row, or null when
+ * none is sending or that row holds none.
  */
 export const newsletterSummaryResponseSchema = z.strictObject({
   list: z.strictObject({ id: z.string(), name: z.string() }),

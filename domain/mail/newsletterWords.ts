@@ -10,13 +10,14 @@
 // functions/utils/mail/newsletterAnswers.ts gives them to the server under
 // the same names.
 //
-// Since WS16 part two's page step 6, the newsletter's own page reads them
-// too: the reason Send waits, said when its Send, drawn and not yet
-// available, is pressed; and the refusals of a test of the stored letter,
-// which the server answers and the page says for a letter it holds no row
-// for yet.
+// Since WS16 part two's page step 6, the newsletter's own page reads the
+// refusals of a test of the stored letter, which the server answers and the
+// page says for a letter it holds no row for yet.
 
-/** The send's refusal while the site sends through Resend, and the reason beside Send on the page, word for word. */
+/**
+ * The send's refusal while the site sends through Resend, and the reason beside Send on Group email's newsletter tab,
+ * word for word.
+ */
 export const WAITS_FOR_SES = 'The newsletter goes out through Amazon SES, which this site does not send through yet. You can write it and send yourself a test.'
 
 /** The send's refusal while a newsletter is sending, and the reason beside Send on the page while one is. */

@@ -57,13 +57,13 @@
 // politely where the person is. The phone's bar draws no second step, as the
 // board draws none there: a phone held on its side has the wider bar.
 //
-// Step 3, Send, is drawn and not yet available: the real Send comes with the
-// move to Amazon SES. It is a button a screen reader says is not available
+// Step 3, Send, is drawn and not yet available: the real Send comes in a
+// later change. It is a button a screen reader says is not available
 // (aria-disabled), which Tab still reaches, drawn quiet with its words kept
 // readable, Send in its gold with the colour drawn out of it, and in forced
 // colours in the system's colour for a control that cannot be used. A press,
 // a key or a touch on it opens nothing and sends nothing: it says why in the
-// bar's status line, in the newsletter tab's own words for its Send. Send
+// bar's status line, in Help's own words for it. Send
 // counts the people the newsletter would go to, read once as the page opens;
 // while that count is not known, or could not be read, it says "Send".
 
