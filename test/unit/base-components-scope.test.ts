@@ -19,13 +19,18 @@
 //   is WS06's and WS08's, as REDESIGN_STATUS.md records).
 //
 // A later workstream that draws one of these on a page changes the list here
-// in the same change, so each new place is a decision someone made.
+// in the same change, so each new place is a decision someone made: since
+// WS09 step 22 the new club page's events draw DateBlock and a status tag
+// (src/areas/clubs/components/ClubEvents.tsx), whose words
+// src/areas/clubs/clubPageRows.ts reads, behind newClubs with newLook.
 import { readdirSync, readFileSync, statSync } from 'node:fs'
 import { join, relative } from 'node:path'
 import { describe, expect, it } from 'vitest'
 
 const ROOT = join(__dirname, '../..')
 const FIXTURE = 'src/pages/fixtures/ScopeFixturePage.tsx'
+/** The new club page's events, which draw DateBlock and a status tag (WS09 step 22). */
+const CLUB_EVENTS = 'src/areas/clubs/components/ClubEvents.tsx'
 
 /** Every source file under a folder, as a path from the repository root. */
 function sourceFiles(dir: string): string[] {
@@ -51,8 +56,8 @@ function drawnIn(pattern: RegExp): string[] {
 }
 
 describe('the new components are drawn on the fixture page only', () => {
-  it.each(['filter-chip', 'DateBlock'])('%s is imported by the fixture page and nothing else under src', (name) => {
-    expect(importersOf(name)).toEqual([FIXTURE])
+  it.each(['filter-chip', 'DateBlock'])('%s is imported by the fixture page, and DateBlock by the new club page\'s events too, and nothing else under src', (name) => {
+    expect(importersOf(name)).toEqual(name === 'DateBlock' ? [CLUB_EVENTS, FIXTURE].sort() : [FIXTURE])
   })
 
   it('ScrollPanel is imported by the fixture page, the Menu sheet and the club editor, and nothing else under src', () => {
@@ -61,12 +66,12 @@ describe('the new components are drawn on the fixture page only', () => {
     expect(importersOf('ScrollPanel')).toEqual(['src/areas/clubs/components/ClubEditor.tsx', 'src/components/layout/MobileMenu.tsx', FIXTURE].sort())
   })
 
-  it('the statuses and their words are read by StatusBadge and the fixture page only', () => {
-    expect(importersOf('badgeStatus')).toEqual(['src/components/StatusBadge.tsx', FIXTURE].sort())
+  it('the statuses and their words are read by StatusBadge, the fixture page and the new club page\'s rows only', () => {
+    expect(importersOf('badgeStatus')).toEqual(['src/areas/clubs/clubPageRows.ts', 'src/components/StatusBadge.tsx', FIXTURE].sort())
   })
 
-  it('only the fixture page draws a status tag', () => {
-    expect(drawnIn(/<StatusBadge\b[^>]*\bstatus=/)).toEqual([FIXTURE])
+  it('only the fixture page and the new club page\'s events draw a status tag', () => {
+    expect(drawnIn(/<StatusBadge\b[^>]*\bstatus=/)).toEqual([CLUB_EVENTS, FIXTURE].sort())
   })
 
   it('only the fixture page, the new header, the Menu sheet, the new footer, the fee notice and the two email choice pages draw the gold Button', () => {

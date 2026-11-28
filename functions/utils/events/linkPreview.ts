@@ -18,6 +18,12 @@ export interface LinkPreview {
   /** Square logos preview better as a small card than a stretched banner. */
   imageIsSquare?: boolean
   type?: 'website' | 'article'
+  /**
+   * HTML written inside the shell's root element, for a reader that runs no
+   * script; the app replaces it when it draws. The caller escapes every word
+   * in it. With none, the root element is left as the shell has it.
+   */
+  root?: string
 }
 
 const SITE_NAME = 'Louisiana Chess Association'
@@ -30,9 +36,19 @@ function escapeAttr(value: string): string {
     .replace(/>/g, '&gt;')
 }
 
-function clip(text: string, max: number): string {
+export function clip(text: string, max: number): string {
   const flat = text.replace(/\s+/g, ' ').trim()
   return flat.length > max ? `${flat.slice(0, max - 1).trimEnd()}…` : flat
+}
+
+/**
+ * A page's address on this site, as its canonical link and og:url give it:
+ * the site's own origin, by resolveSiteUrl, and the path the request names,
+ * as a URL writes it. The sitemap (functions/sitemap.xml.ts) gives each page
+ * by this same function, so its addresses are the canonical links.
+ */
+export function pageAddress(env: SiteEnv, request: Request): string {
+  return `${resolveSiteUrl(env, request)}${new URL(request.url).pathname}`
 }
 
 export function withLinkPreview(
@@ -45,7 +61,7 @@ export function withLinkPreview(
   if (!shell.ok || !contentType.includes('text/html')) return shell
 
   const site = resolveSiteUrl(env, request)
-  const pageUrl = `${site}${new URL(request.url).pathname}`
+  const pageUrl = pageAddress(env, request)
   const title = clip(preview.title, 90)
   const description = clip(preview.description, 200)
   const image = preview.image
@@ -69,7 +85,16 @@ export function withLinkPreview(
     `<meta name="twitter:image" content="${escapeAttr(image)}" />`,
   ].join('\n    ')
 
-  return new HTMLRewriter()
+  const rewriter = new HTMLRewriter()
+  const root = preview.root
+  if (root !== undefined) {
+    rewriter.on('#root', {
+      element(el) {
+        el.setInnerContent(root, { html: true })
+      },
+    })
+  }
+  return rewriter
     .on('title', {
       element(el) {
         el.setInnerContent(`${title} | ${SITE_NAME}`)

@@ -814,7 +814,11 @@ describe('the gold guard on the tree', () => {
     expect(sheet).toBeGreaterThan(0)
     const newFooter = read('src/components/layout/SiteFooter.tsx').split('\n').findIndex((l) => l.includes('<AppearanceControl')) + 1
     expect(newFooter).toBeGreaterThan(0)
+    // Since WS09 step 22 the new club page's events draw a status tag each, on the page's light ground.
+    const clubEvents = read('src/areas/clubs/components/ClubEvents.tsx').split('\n').findIndex((l) => l.includes('<StatusBadge')) + 1
+    expect(clubEvents).toBeGreaterThan(0)
     expect([...result.onPlaces].sort()).toEqual([
+      `src/areas/clubs/components/ClubEvents.tsx:${clubEvents} <StatusBadge> on=light -> light`,
       'src/areas/governance/components/GovLayout.tsx:93 <ThickThinRule> on=light (its default) -> light',
       'src/components/layout/Footer.tsx:116 <AppearanceControl> on=navy (its default) -> navy',
       `src/components/layout/MobileMenu.tsx:${sheet} <AppearanceControl> on=light -> light`,

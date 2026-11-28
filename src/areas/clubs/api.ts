@@ -12,7 +12,7 @@
 import { authHeaders, handleResponse } from '@/lib/http'
 import type { ApiAdminMember } from '@/areas/membership/api'
 import type { AdminClubResponse, ClubConfirmResponse, ClubPlace, UpdateClubRequest, WorkspaceRegionResponse } from '@domain/contracts'
-import type { ClubLinkConfirmResponse, ClubLinkResponse, MonthlyCheckResponse } from '@domain/contracts'
+import type { ClubLinkConfirmResponse, ClubLinkResponse, ClubPageResponse, MonthlyCheckResponse } from '@domain/contracts'
 
 export interface ApiClubDetail {
   id: string
@@ -83,6 +83,19 @@ export async function getClub(id: string): Promise<{
 }> {
   const response = await fetch(`/api/clubs/${id}`)
   return handleResponse(response)
+}
+
+/**
+ * The new club page's answer, GET /api/clubs/:address/page, by the club's
+ * slug, an old slug or its id. Sent signed in when there is a session, since
+ * a club's keepers see the page before the public does; anyone the server
+ * does not let read it gets 404, as for a club that does not exist.
+ */
+export async function getClubPage(address: string): Promise<ClubPageResponse> {
+  const response = await fetch(`/api/clubs/${encodeURIComponent(address)}/page`, {
+    headers: await authHeaders(),
+  })
+  return handleResponse<ClubPageResponse>(response)
 }
 
 export async function adminUpdateClub(

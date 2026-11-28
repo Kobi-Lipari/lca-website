@@ -1,6 +1,6 @@
 // playwright.config.ts
 //
-// The browser tests. Three projects, none of them part of npm test or CI's
+// The browser tests. Four projects, none of them part of npm test or CI's
 // build-and-test job:
 //
 // a11y-on and a11y-off (npm run test:a11y)
@@ -21,7 +21,18 @@
 //   .dev.vars, .env or shell. So no test can sign in or use a real service
 //   (a checkout or an email may still send a request, which is refused for
 //   want of a key; see A11Y_EMPTY_SECRETS).
-//   The specs stub the Facebook feed in the browser.
+//   The specs stub the Facebook feed in the browser. Neither project runs
+//   the clubs pages' own spec files (test/a11y/clubs-*.spec.ts).
+//
+// a11y-clubs (npm run test:a11y)
+//   The new club pages (WS09 step 24): the a11y-on build's switches and
+//   newClubs, nothing else (dist-a11y-clubs), on its own port and its own
+//   local database (.wrangler/a11y/clubs), with the same bindings and the
+//   same seed. Its server runs from .wrangler/a11y/clubs-server, the copy of
+//   functions/ the setup makes with CLUB_PAGES_ON set, so it alone answers
+//   as the server will once the club pages are on; the tree's constant stays
+//   false. It runs only the clubs pages' own spec files, and its server is
+//   started only when the project is asked for.
 //
 // e2e-preview (npm run test:e2e)
 //   Runs against a branch preview deployment named by E2E_BASE_URL. This
@@ -36,7 +47,11 @@
 // --with-deps chromium). Where another Chromium is already installed, set
 // PW_CHROMIUM_PATH to its executable to use that one instead.
 import { defineConfig, devices } from '@playwright/test'
-import { A11Y_SERVER_ENV, A11Y_VARIANTS, ROOT, a11yServerArgs } from './test/a11y/global-setup.ts'
+import { join } from 'node:path'
+import { A11Y_ALL_VARIANTS, A11Y_CLUBS_VARIANT, A11Y_SERVER_ENV, ROOT, a11yServerArgs } from './test/a11y/global-setup.ts'
+
+/** The clubs pages' own spec files, which only the a11y-clubs project runs. */
+const CLUBS_SPECS = /(^|[\\/])clubs-[^\\/]*\.spec\.ts$/
 
 /** Hosts the end-to-end tests must never run against: the live site. */
 const PRODUCTION_HOSTS = ['louisianachess.org', 'lca-website.pages.dev', 'main.lca-website.pages.dev']
@@ -114,12 +129,15 @@ export default defineConfig({
     trace: 'retain-on-failure',
   },
   projects: [
-    ...A11Y_VARIANTS.map((variant) => ({
+    ...A11Y_ALL_VARIANTS.map((variant) => ({
       name: variant.name,
       testDir: 'test/a11y',
       // The baseline is recorded from the site as it is today, so only the
-      // build with no switches on runs it.
-      testMatch: variant.name === 'a11y-off' ? [/\.spec\.ts$/, /baseline\.ts$/] : [/\.spec\.ts$/],
+      // build with no switches on runs it. The clubs build runs the clubs
+      // pages' own specs and nothing else; the two builds run every spec but
+      // those.
+      testMatch: variant.name === A11Y_CLUBS_VARIANT.name ? [CLUBS_SPECS] : variant.name === 'a11y-off' ? [/\.spec\.ts$/, /baseline\.ts$/] : [/\.spec\.ts$/],
+      testIgnore: variant.name === A11Y_CLUBS_VARIANT.name ? [] : [CLUBS_SPECS],
       use: { baseURL: `http://127.0.0.1:${variant.port}` },
     })),
     {
@@ -133,18 +151,23 @@ export default defineConfig({
     },
   ],
   webServer: wants('a11y')
-    ? A11Y_VARIANTS.map((variant) => ({
+    ? A11Y_ALL_VARIANTS.filter((variant) => variant.name !== A11Y_CLUBS_VARIANT.name || wants(A11Y_CLUBS_VARIANT.name)).map((variant) => {
+      // The clubs server runs from its copy of functions/, so it reaches the
+      // build and its database by their full paths.
+      const from = 'serveFrom' in variant ? variant.serveFrom : null
+      const at = (path: string) => (from ? join(ROOT, path) : path)
+      return {
         command: [
-          'node node_modules/wrangler/bin/wrangler.js pages dev',
-          variant.dist,
+          `node ${at('node_modules/wrangler/bin/wrangler.js')} pages dev`,
+          at(variant.dist),
           `--ip 127.0.0.1 --port ${variant.port} --inspector-port ${variant.inspectorPort}`,
           // Each server on its own database, never the other's.
-          `--persist-to ${variant.persist}`,
+          `--persist-to ${at(variant.persist)}`,
           '--show-interactive-dev-session=false --log-level warn',
           ...a11yServerArgs(),
         ].join(' '),
         url: `http://127.0.0.1:${variant.port}/`,
-        cwd: ROOT,
+        cwd: from ? join(ROOT, from) : ROOT,
         env: A11Y_SERVER_ENV,
         // Compiling the functions and starting the runtime takes a while.
         timeout: 180_000,
@@ -153,6 +176,7 @@ export default defineConfig({
         reuseExistingServer: false,
         stdout: 'ignore' as const,
         stderr: 'pipe' as const,
-      }))
+      }
+    })
     : [],
 })

@@ -45,7 +45,7 @@ describe('REDESIGN_STATUS.md, step 7', () => {
       .filter((r) => r.segments[0] !== 'api' && r.segments[0] !== 'utils' && r.segments[0] !== 'db')
       .map((r) => r.file.slice(ROOT.length + 1).split('\\').join('/'))
       .filter((f) => exportedMethods(readFileSync(join(ROOT, f), 'utf8')).length > 0)
-    expect(pageFiles.sort()).toEqual(['functions/clubs/[id].ts', 'functions/news/[slug].ts', 'functions/tournaments/[id].ts'])
+    expect(pageFiles.sort()).toEqual(['functions/clubs/[id].ts', 'functions/news/[slug].ts', 'functions/robots.txt.ts', 'functions/sitemap.xml.ts', 'functions/tournaments/[id].ts'])
     for (const f of pageFiles) expect(status, f).toContain(`\`${f}\``)
   })
 

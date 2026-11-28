@@ -791,6 +791,12 @@ describe('the guard on the five switches that point rows at later pages', () => 
     expect(missing, `${name} is on, but src/App.tsx has no route for ${missing.join(', ')}. The five switches newAbout, newNews, newMembership, newClubs and myLcaRail stay off until their part ships: leave ${name} off until the pages it opens exist.`).toEqual([])
   })
 
+  it('has a route for Suggest a club once newClubs is on: the paths newClubs opens and src/App.tsx lacks are none (WS09 step 21)', () => {
+    expect(missingRoutes('newClubs', APP_ROUTES)).toEqual([])
+    // The route is written behind the switch, so with newClubs off the address is today's club page's, which says "Club not found".
+    expect(read('src/App.tsx')).toContain('{FEATURES.newClubs && <Route path="/clubs/suggest" element={<Navigate to="/contact?subject=club" replace />} />}')
+  })
+
   it.each(EARLY)('can fail: with %s on before its part ships, it names each path that has no route', (name) => {
     // Today's routes with every path of the five taken out stand for a tree in
     // which none of their parts has shipped, as is the case today; the case

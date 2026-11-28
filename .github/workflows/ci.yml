@@ -57,9 +57,9 @@ jobs:
       - name: Integration tests
         run: npm run test:integration
 
-  # The browser accessibility suite (npm run test:a11y): builds the site twice
-  # in the accessibility test mode, serves both builds with wrangler pages dev
-  # on a local database built from the migrations and the synthetic seed, and
+  # The browser accessibility suite (npm run test:a11y): builds the site three
+  # times in the accessibility test mode, serves each build with wrangler pages
+  # dev on a local database built from the migrations and the synthetic seed, and
   # runs axe and the colour baseline in Chromium. Pull requests only, and a
   # job of its own, so the build-and-test job above is unchanged. Nothing here
   # reaches a remote database or the Cloudflare account: every wrangler

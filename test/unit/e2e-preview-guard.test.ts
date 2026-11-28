@@ -158,7 +158,7 @@ describe('playwright.config.ts as Playwright loads it', () => {
   it('does not need an address for the accessibility projects, and does not point the e2e project anywhere', async () => {
     const { default: config } = await loadConfig({ LCA_PW_PROJECTS: 'a11y-on,a11y-off', E2E_BASE_URL: '' })
     const names = (config.projects ?? []).map((p) => p.name)
-    expect(names).toEqual(['a11y-on', 'a11y-off', 'e2e-preview'])
+    expect(names).toEqual(['a11y-on', 'a11y-off', 'a11y-clubs', 'e2e-preview'])
     expect(config.projects?.find((p) => p.name === 'e2e-preview')?.use?.baseURL).toBeUndefined()
   })
 
@@ -203,7 +203,7 @@ describe('playwright.config.ts as Playwright loads it', () => {
   it('maps the projects to their own folders', async () => {
     const { default: config } = await loadConfig({ LCA_PW_PROJECTS: 'a11y-on,a11y-off' })
     const dirs = Object.fromEntries((config.projects ?? []).map((p) => [p.name, p.testDir]))
-    expect(dirs).toEqual({ 'a11y-on': 'test/a11y', 'a11y-off': 'test/a11y', 'e2e-preview': 'test/e2e' })
+    expect(dirs).toEqual({ 'a11y-on': 'test/a11y', 'a11y-off': 'test/a11y', 'a11y-clubs': 'test/a11y', 'e2e-preview': 'test/e2e' })
     const match = (name: string, file: string) =>
       [config.projects?.find((p) => p.name === name)?.testMatch ?? []].flat().some((m) => (m as RegExp).test(file))
     // The baseline is recorded from the site as it is today only.
