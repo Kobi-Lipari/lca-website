@@ -2,7 +2,7 @@
 //
 // The club page's Contact form (src/areas/clubs/components/ContactRelayForm.tsx,
 // the contact relay of WS09): the one line saying where the message goes, in three plain
-// forms that never name a volunteer; two question marks, which hold the rest; three fields
+// forms that never name a volunteer; Help, one button and one panel, which holds the rest; three fields
 // with visible labels and the browser's autocomplete; errors in words beside
 // the field, tied to it for a screen reader; one send at a time, its button
 // saying so; "Sent." with the focus on it and the fields emptied; the words
@@ -77,37 +77,36 @@ async function fill(values: { name?: string; email?: string; message?: string } 
 const submit = async () => { await act(async () => { fireEvent.click(sendButton()) }) }
 
 describe('where the message goes, said before it is sent', () => {
-  it('says it in one of three plain lines, never naming a volunteer or showing an address, and keeps the rest behind two question marks', async () => {
-    const lines: Array<['club' | 'region' | 'lca', string | null, string]> = [
-      ['club', 'Bayou Region', 'Your message goes to the club\'s contact by email. Their address stays private.'],
-      ['region', 'Bayou Region', 'No club address on file, so your message goes to the Bayou Region representative by email.'],
-      ['region', null, 'No club address on file, so your message goes to the region\'s representative by email.'],
-      ['lca', 'Bayou Region', 'No club address on file, so your message goes to the Louisiana Chess Association by email.'],
+  it('says it in one of three plain lines, never naming a volunteer or showing an address, and keeps the rest behind Help', async () => {
+    const lines: Array<['club' | 'region' | 'lca', string | null, string, string]> = [
+      ['club', 'Bayou Region', 'Your message goes to the club\'s contact by email. Their address stays private.', 'The club\'s contact'],
+      ['region', 'Bayou Region', 'No club address on file, so your message goes to the Bayou Region representative by email.', 'The Bayou Region representative'],
+      ['region', null, 'No club address on file, so your message goes to the region\'s representative by email.', 'The region\'s representative'],
+      ['lca', 'Bayou Region', 'No club address on file, so your message goes to the Louisiana Chess Association by email.', 'Someone at LCA'],
     ]
-    for (const [goesTo, region, line] of lines) {
+    for (const [goesTo, region, line, who] of lines) {
       const view = draw(goesTo, region)
       expect(screen.getByText(line)).toBeTruthy()
-      // No Help button or panel (WS09 checkpoint X's review): two question marks, each shut until pressed, each
-      // opened by a press and closed by Escape with the focus back on it; the line's says the address is not shown,
-      // the email's who answers and where.
-      expect(screen.queryByRole('button', { name: 'Help' })).toBeNull()
-      expect(screen.queryByRole('button', { name: 'Close help' })).toBeNull()
-      expect(screen.queryByRole('region', { name: 'Help with Contact' })).toBeNull()
-      const marks = [screen.getByRole('button', { name: 'Help: Where your message goes' }), screen.getByRole('button', { name: 'Help: Your email' })]
-      const words = [/The club's address is not shown on its page\. Your message is sent by email\./, /answers by email, to the address you give here/]
-      for (const [i, mark] of marks.entries()) {
-        expect(mark.getAttribute('aria-expanded')).toBe('false')
-        const bubble = document.getElementById(mark.getAttribute('aria-controls')!)!
-        expect(bubble.hidden).toBe(true)
-        expect(bubble.textContent).toMatch(words[i])
-        expect(bubble.textContent).not.toMatch(/spam|keeps no copy/)
-        mark.focus()
-        await act(async () => { fireEvent.click(mark) })
-        expect(bubble.hidden).toBe(false)
-        fireEvent.keyDown(window, { key: 'Escape' })
-        expect(bubble.hidden).toBe(true)
-        expect(document.activeElement).toBe(mark)
-      }
+      // Help is shut until asked, and holds that the address is not shown and how answers come back (since K's answer
+      // to checkpoint X's choice 5 one button and one panel again, with the words of WS09 checkpoint X's review).
+      const help = screen.getByRole('button', { name: 'Help' })
+      expect(help.getAttribute('aria-expanded')).toBe('false')
+      const part = document.getElementById(help.getAttribute('aria-controls')!)!
+      expect(part.hidden).toBe(true)
+      await act(async () => { fireEvent.click(help) })
+      await waitFor(() => expect(document.activeElement).toBe(part))
+      expect(part.hidden).toBe(false)
+      expect(help.getAttribute('aria-expanded')).toBe('true')
+      // Every sentence, word for word, in the order a person reads the form: the line's, then the email's.
+      expect([...part.querySelectorAll('p')].map((p) => p.textContent)).toEqual([
+        'The club\'s address is not shown on its page. Your message is sent by email.',
+        `${who} answers by email, to the address you give here.`,
+      ])
+      expect(part.textContent).not.toMatch(/spam|keeps no copy/)
+      fireEvent.keyDown(part, { key: 'Escape' })
+      expect(part.hidden).toBe(true)
+      expect(help.getAttribute('aria-expanded')).toBe('false')
+      expect(document.activeElement).toBe(help)
       expect(view.container.textContent).not.toMatch(/@|Contact P\.|Rita|Example Rep|Example Admin/)
       view.unmount()
     }
@@ -123,7 +122,7 @@ describe('the fields', () => {
     expect(field('Message').tagName).toBe('TEXTAREA')
     for (const label of ['Your name', 'Your email', 'Message']) expect(screen.getByText(label).tagName).toBe('LABEL')
     expect(sendButton().textContent).toBe('Send message')
-    for (const control of [sendButton()]) {
+    for (const control of [sendButton(), screen.getByRole('button', { name: 'Help' })]) {
       expect(control.className).toMatch(/\bmin-h-11\b/)
       expect(control.className).toMatch(/focus-visible:ring-3 focus-visible:ring-focus/)
     }

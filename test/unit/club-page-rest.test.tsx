@@ -236,8 +236,8 @@ describe('the bare club', () => {
     expect(page.querySelector('[data-slot="club-foot"]')).not.toBeNull()
     const controls = [...page.querySelectorAll('a, button')].map((c) => c.getAttribute('aria-label') ?? c.textContent?.trim())
     expect(controls.at(-1)).toBe('Copy link')
-    // Contact (WS09 step 26) adds its nav link, Help, Close help and Send message; since WS09 checkpoint X's review
-    // its two question marks stand where Help and Close help stood.
+    // Contact (WS09 step 26) adds its nav link, Help, Close help and Send message; WS09 checkpoint X's review put two
+    // question marks where Help and Close help stood, and K's answer to its choice 5 brought Help and Close help back.
     // Moved at WS09 step 28: Suggest an update adds its two ways in, under the told line and beside Contact.
     expect(controls).toHaveLength(13)
     expect(wordsOf(page)).not.toMatch(/No events|No news|not listed|Schedule/i)

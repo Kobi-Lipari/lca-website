@@ -95,11 +95,11 @@ describe('a club with only the five basics', () => {
     expect(where.querySelector('blockquote')?.textContent).toBe(STATEMENT)
     expect(within(where).getByText(TOLD)).toBeTruthy()
     expect(within(where).getByText('Example Library')).toBeTruthy()
-    // No Follow button and no other control: the crumb, the two cover buttons, the nav's three, Directions, Contact's two question marks and Send message, and the foot line's Copy link; no Edit for a visitor.
+    // No Follow button and no other control: the crumb, the two cover buttons, the nav's three, Directions, Contact's Help, Close help and Send message, and the foot line's Copy link; no Edit for a visitor.
     expect(screen.queryByText(/Follow/)).toBeNull()
     // Moved at WS09 step 28: Suggest an update stands under the told line and beside Contact's heading, and nowhere else.
     expect([...page.querySelectorAll('a, button')].map((c) => c.getAttribute('aria-label') ?? c.textContent?.trim())).toEqual([
-      'Clubs', 'Contact the club', 'Share', 'About', 'When and where', 'Contact', 'Suggest an update', 'Directions to Example Library (opens in a new tab)', 'Suggest an update', 'Help: Where your message goes', 'Help: Your email', 'Send message', 'Copy link',
+      'Clubs', 'Contact the club', 'Share', 'About', 'When and where', 'Contact', 'Suggest an update', 'Directions to Example Library (opens in a new tab)', 'Suggest an update', 'Help', 'Close help', 'Send message', 'Copy link',
     ])
     expect(screen.getByRole('link', { name: 'Directions to Example Library (opens in a new tab)' }).textContent).toBe('Directions')
   })

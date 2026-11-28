@@ -24,7 +24,7 @@ vi.mock('@/lib/supabase', () => ({
   },
 }))
 
-const { ClubReplyPage, SIGN_IN_ENDED } = await import('@/pages/ClubReplyPage')
+const { ClubReplyPage, REPLY_HELP_SHOWN_KEY, SIGN_IN_ENDED } = await import('@/pages/ClubReplyPage')
 
 const TOKEN = 'v1.x.example-made-up-header.example-made-up-iv.example-made-up-body'
 const LINK = `/api/clubs/reply/${encodeURIComponent(TOKEN)}`
@@ -38,6 +38,7 @@ let answers: Record<string, () => Response | Promise<Response>> = {}
 beforeEach(() => {
   window.localStorage.clear()
   window.sessionStorage.clear()
+  window.localStorage.setItem(REPLY_HELP_SHOWN_KEY, 'shown')
   asked = []
   answers = {
     [`GET ${LINK}`]: () => json(MESSAGE),
@@ -151,7 +152,7 @@ describe('what the browser keeps', () => {
     await screen.findByText(replySentWords('Player'))
     const kept = [window.localStorage, window.sessionStorage].flatMap((store) => Object.keys(store).map((key) => `${key}=${store.getItem(key)}`)).join('\n')
     for (const secret of ['distinctive words', 'Player', 'Example Chess Club', 'Saturdays', TOKEN, 'example-made-up-iv']) expect(kept).not.toContain(secret)
-    expect(Object.keys(window.localStorage)).toEqual([])
+    expect(Object.keys(window.localStorage)).toEqual([REPLY_HELP_SHOWN_KEY])
     expect(Object.keys(window.sessionStorage)).toEqual([])
     expect(document.cookie).toBe('')
   })
@@ -161,6 +162,8 @@ describe('what the browser keeps', () => {
     vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => { throw new Error('storage is blocked') })
     openPage()
     await ready()
+    // Storage that cannot be read reads as Help shown before, so it stays shut until pressed.
+    expect(screen.getByRole('button', { name: 'Help' }).getAttribute('aria-expanded')).toBe('false')
     fireEvent.change(box(), { target: { value: 'Example answer.' } })
     fireEvent.click(screen.getByRole('button', { name: 'Send reply' }))
     expect(await screen.findByText(replySentWords('Player'))).toBeTruthy()

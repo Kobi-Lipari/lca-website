@@ -10,11 +10,12 @@
 // a person must know before sending: to the club's contact, to the region's
 // representative (named by the region alone), or to LCA. It never names a
 // volunteer and never shows an address: the page's answer carries only which
-// of the three it is (contact.goes_to). How an answer comes back, and that
-// the club's address is not shown, sit behind small question marks beside the
-// line and the email's label (K's decision 16, applied to this form in WS09
-// checkpoint X's review): each opens only when pressed, nothing opens by
-// itself, and the words say only what helps a person send the message.
+// of the three it is (contact.goes_to). That the club's address is not shown,
+// and how an answer comes back, sit behind Help, one button and one panel,
+// never beside a control: as step 26 built it, brought back on K's answer to
+// checkpoint X's choice 5, with the words of WS09 checkpoint X's review. Help
+// opens only when pressed, and the words say only what helps a person send
+// the message.
 //
 // Three fields with visible labels and the browser's own autocomplete for a
 // name and an address, the spam check, and Send message. The spam check and
@@ -41,14 +42,14 @@
 // never to wait for it. After any refusal the spam check is drawn afresh for
 // a new token, since a token is good once. Nothing the visitor typed is kept
 // in the browser's storage.
-import { useEffect, useRef, useState, type FormEvent, type ReactNode } from 'react'
+import { useEffect, useRef, useState, type FormEvent, type KeyboardEvent, type ReactNode } from 'react'
+import { CircleHelp } from 'lucide-react'
 
 import { ApiError, sendClubMessage } from '@/lib/api'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { cn } from '@/lib/utils'
 import { CLEAR_OF_BARS, CONTACT_HEADING_ID, CONTROL, bringClearOfBars, keepFocusClearOfBars } from '@/areas/clubs/clubPage'
-import { HelpMark } from '@/areas/clubs/components/HelpMark'
 import { SpamCheck } from '@/areas/clubs/components/SpamCheck'
 import { CONTACT_HEADING } from '@domain/clubs/pageWords'
 import {
@@ -109,6 +110,11 @@ function refusalWords(err: unknown): string {
   return CONTACT_NOT_SENT
 }
 
+/** What Help says, for the place the message goes: the line's words, then the email's, in the order the form is read. */
+function helpWords(goesTo: ContactGoesTo, region: string | null): string[] {
+  return [CONTACT_LINE_HELP, contactEmailHelp(goesTo, region)]
+}
+
 /**
  * The Contact section: its heading, the line saying where the message goes, Help and the form. Beside the heading
  * the page puts Suggest an update (WS09 step 28), one of the sheet's two ways in (`suggest`).
@@ -153,7 +159,7 @@ export function ClubContact({
 export function ContactRelayForm({ address, region, goesTo }: { address: string; region: string | null; goesTo: ContactGoesTo }) {
   // One form on a page, so its ids are fixed: the same markup for every club and every draw.
   const uid = 'club-contact'
-  const idOf = (part: ContactField | 'line' | 'status') => `${uid}-${part}`
+  const idOf = (part: ContactField | 'line' | 'help' | 'status') => `${uid}-${part}`
   const [values, setValues] = useState<Values>(EMPTY)
   const [errors, setErrors] = useState<Errors>({})
   const [token, setToken] = useState<string | null>(null)
@@ -166,6 +172,7 @@ export function ContactRelayForm({ address, region, goesTo }: { address: string;
   // How many times a press of Send message has been answered with why it did not send (a refusal, or the wait
   // for the spam check): each answer, the same words again among them, is brought into sight.
   const [answered, setAnswered] = useState(0)
+  const [helpOpen, setHelpOpen] = useState(false)
   // The visitor has moved into the form: only then are the spam check and the form's status drawn.
   const [engaged, setEngaged] = useState(false)
   // A second press while the first send runs does nothing, before React has drawn the button's new words.
@@ -174,15 +181,18 @@ export function ContactRelayForm({ address, region, goesTo }: { address: string;
   const statusLine = useRef<HTMLParagraphElement>(null)
   const tokenLine = useRef<HTMLParagraphElement>(null)
   const sendButton = useRef<HTMLButtonElement>(null)
+  const helpButton = useRef<HTMLButtonElement>(null)
+  const helpPart = useRef<HTMLDivElement>(null)
   const fieldRefs = useRef<Partial<Record<ContactField, HTMLInputElement | HTMLTextAreaElement | null>>>({})
-  // Where the focus goes once the next draw is on the page: Sent., or the first field.
-  const focusNext = useRef<'sent' | 'name' | null>(null)
+  // Where the focus goes once the next draw is on the page: Sent., the first field, or Help's part.
+  const focusNext = useRef<'sent' | 'name' | 'help' | null>(null)
   useEffect(() => {
     const target = focusNext.current
     if (!target) return
     focusNext.current = null
     if (target === 'sent') sentLine.current?.focus()
-    else fieldRefs.current.name?.focus()
+    else if (target === 'name') fieldRefs.current.name?.focus()
+    else helpPart.current?.focus()
   })
   // The words of why a press did not send, the status's or those under the spam check, push Send message down
   // by their height: the button, when it has the focus, is kept clear of the bars first, then the words are
@@ -252,14 +262,59 @@ export function ContactRelayForm({ address, region, goesTo }: { address: string;
     focusNext.current = 'name'
   }
 
+  function closeHelp() {
+    setHelpOpen(false)
+    helpButton.current?.focus()
+  }
+
+  function toggleHelp() {
+    if (helpOpen) {
+      closeHelp()
+      return
+    }
+    focusNext.current = 'help'
+    setHelpOpen(true)
+  }
+
+  function helpKey(e: KeyboardEvent<HTMLDivElement>) {
+    if (e.key !== 'Escape') return
+    e.preventDefault()
+    e.stopPropagation()
+    closeHelp()
+  }
+
   const errorOf = (field: ContactField | 'token') => `${uid}-${field}-error`
   const describedBy = (field: ContactField | 'token') => (errors[field] ? errorOf(field) : undefined)
 
   return (
     <div className="mt-3 max-w-2xl space-y-4" onFocus={(e) => keepFocusClearOfBars(e.target)}>
-      <div className="relative flex items-baseline">
-        <p id={idOf('line')} className="min-w-0 break-words text-base text-ink">{contactGoesLine(goesTo, region)}</p>
-        <HelpMark name="Where your message goes" entries={[['Where your message goes', CONTACT_LINE_HELP]]} />
+      <div className="flex flex-wrap items-start justify-between gap-x-4 gap-y-1">
+        <p id={idOf('line')} className="min-w-0 flex-1 break-words text-base text-ink">{contactGoesLine(goesTo, region)}</p>
+        <button
+          ref={helpButton}
+          type="button"
+          aria-expanded={helpOpen}
+          aria-controls={idOf('help')}
+          onClick={toggleHelp}
+          className="inline-flex min-h-11 items-center gap-1.5 rounded-md px-2 text-sm font-medium text-ink outline-none hover:underline focus-visible:ring-3 focus-visible:ring-focus"
+        >
+          <CircleHelp aria-hidden="true" className="size-4" /> Help
+        </button>
+      </div>
+      <div
+        ref={helpPart}
+        id={idOf('help')}
+        hidden={!helpOpen}
+        tabIndex={-1}
+        role="region"
+        aria-label="Help with Contact"
+        onKeyDown={helpKey}
+        className="space-y-2 rounded-lg border border-hairline bg-surface p-4 text-sm text-ink outline-none focus-visible:ring-3 focus-visible:ring-focus"
+      >
+        {helpWords(goesTo, region).map((words) => <p key={words}>{words}</p>)}
+        <button type="button" onClick={closeHelp} className="inline-flex min-h-11 items-center rounded-md px-2 text-sm font-medium text-ink outline-none hover:underline focus-visible:ring-3 focus-visible:ring-focus">
+          Close help
+        </button>
       </div>
 
       {sent ? (
@@ -289,11 +344,8 @@ export function ContactRelayForm({ address, region, goesTo }: { address: string;
             />
             {errors.name && <FieldError id={errorOf('name')} words={errors.name} />}
           </div>
-          <div className="relative space-y-1.5">
-            <div className="flex items-baseline">
-              <Label htmlFor={idOf('email')}>Your email</Label>
-              <HelpMark name="Your email" entries={[['Your email', contactEmailHelp(goesTo, region)]]} tight />
-            </div>
+          <div className="space-y-1.5">
+            <Label htmlFor={idOf('email')}>Your email</Label>
             <Input
               ref={(el) => { fieldRefs.current.email = el }}
               id={idOf('email')}

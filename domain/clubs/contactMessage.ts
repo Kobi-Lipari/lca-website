@@ -94,9 +94,9 @@ export function contactGoesLine(goesTo: ContactGoesTo, region: string | null): s
 }
 
 /**
- * The Contact form's question marks (K's decision 16, applied to the form in WS09 checkpoint X's review), split by
- * what each explains: beside the line that says where the message goes, and beside the email's label, who answers
- * and where. Only what helps a person send the message, as K's later word on the marks asks.
+ * The words of the Contact form's Help, its two lines in the order the form is read (written in WS09 checkpoint X's
+ * review, and back in one panel since K's answer to checkpoint X's choice 5): that the club's address is not shown,
+ * then who answers and where. Only what helps a person send the message, as K's later word on help asks.
  */
 export const CONTACT_LINE_HELP = 'The club\'s address is not shown on its page. Your message is sent by email.'
 export function contactEmailHelp(goesTo: ContactGoesTo, region: string | null): string {
