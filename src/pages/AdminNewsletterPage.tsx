@@ -36,8 +36,10 @@
 // Step 2, "Send a test to me" (page step 6), saves the words on the page
 // first by the chooser's own path, then asks for a test of the stored letter
 // to the person's own address, and the bar's status line says what came of
-// it in words. Step 3, Send, is drawn and not yet available, and a press on
-// it says why there. Saving, starting and the test are useIssue's. Help, in
+// it in words. Step 3, Send, sends the saved letter to the newsletter list
+// after one plain question (useSend.ts and SendQuestion.tsx); while it
+// cannot send, it is drawn quiet and a press on it says why there. Saving,
+// starting and the test are useIssue's. Help, in
 // the head once the letter is on the page, opens a walkthrough of the page
 // in six steps (HelpWalkthrough.tsx).
 //
@@ -61,16 +63,25 @@
 import { useCallback, useEffect, useRef, useState, type KeyboardEvent } from 'react'
 import { Link, Navigate } from 'react-router-dom'
 import { defaultSubject } from '@domain/mail/letter'
-import { TEST_NO_WORDS, WAITS_FOR_SES } from '@domain/mail/newsletterWords'
+import {
+  ALREADY_SENDING,
+  NOBODY_ON_THE_LIST,
+  SEND_CHANGED,
+  SEND_NO_SUBJECT,
+  SEND_NO_SUBJECT_OR_WORDS,
+  SEND_NO_WORDS,
+  TEST_NO_WORDS,
+  WAITS_FOR_SES,
+} from '@domain/mail/newsletterWords'
 import { LIST_MAILERS_ONLY } from '@domain/mail/senders'
 import { useAuth } from '@/contexts/auth-context'
 import { holdsPresidentSeat, mediaManagerMayCall, presidentMayCall } from '@/areas/admin/roles'
 import { useMediaManagerAnswer } from '@/areas/admin/mediaManagerAnswer'
 import { CountCard } from '@/areas/admin/newsletter/CountCard'
-import { FootBar, type BarSaid, type FocusCarry, type FocusHold } from '@/areas/admin/newsletter/FootBar'
+import { FootBar, SheetSendRow, type BarSaid, type FocusCarry, type FocusHold } from '@/areas/admin/newsletter/FootBar'
 import { FromSubjectRow } from '@/areas/admin/newsletter/FromSubjectRow'
 import { LetterEditor } from '@/areas/admin/newsletter/LetterEditor'
-import { MoreOptions, type ReachRead } from '@/areas/admin/newsletter/MoreOptions'
+import { MoreOptions } from '@/areas/admin/newsletter/MoreOptions'
 import { NewsletterHead, SavedLineNotice, type SavedLineProps } from '@/areas/admin/newsletter/NewsletterHead'
 import { EmailSheet, SidePreview, type PreviewView } from '@/areas/admin/newsletter/SidePreview'
 import { TemplateChooser, type ChooserBusy, type Choice } from '@/areas/admin/newsletter/TemplateChooser'
@@ -78,11 +89,22 @@ import { holdsWords, useIssue, type Issue, type LetterDraft, type SavedFirst, ty
 import { usePageTitle } from '@/hooks/usePageTitle'
 import { useTabletScreen, useWideScreen } from '@/hooks/useWideScreen'
 import { HelpWalkthrough } from '@/areas/admin/newsletter/HelpWalkthrough'
-import { getNewsletter } from '@/lib/api'
+import { sentWords, useNewsletterSend, type NewsletterSend } from '@/areas/admin/newsletter/useSend'
+import { SendQuestion, type SendAsking, type SendQuestionWords } from '@/areas/admin/newsletter/SendQuestion'
+import { ApiError, stopNewsletter } from '@/lib/api'
 import { cn } from '@/lib/utils'
 
 /** The newsletter tab's own words for a sender asked for a second factor, read only while a constant is set (src/pages/AdminEmailPage.tsx). */
 const SECOND_FACTOR_LINE = 'Set up two-factor sign-in to send group email.'
+
+/** How far the server's clock may stand behind this browser's before a send it made after a press reads as older. */
+const CLOCK_ALLOWANCE_MS = 60_000
+
+/** Whether a send's row, stored as "2026-11-16 08:05:00" in UTC, was made at or after a press, within the allowance. */
+function madeSince(createdAt: string, pressedAt: number) {
+  const made = Date.parse(`${createdAt.replace(' ', 'T')}Z`)
+  return Number.isFinite(made) && made >= pressedAt - CLOCK_ALLOWANCE_MS
+}
 
 /** How long the side preview waits after the last change before it draws the letter again. */
 const PREVIEW_PAUSE_MS = 400
@@ -172,6 +194,9 @@ const TEST_CHANGED = 'No test was sent: someone else has changed, replaced or se
 /** The test's words for a test that could not be asked for, or got no answer the page can read. */
 const TEST_FAILED = 'The test could not be sent. Try again in a moment.'
 
+/** What Send, drawn and not yet available, says on a press: Help's own sentence for card 6, true whichever service sends. */
+const SEND_NOT_HERE_YET = 'Sending to members from this page is not available yet.'
+
 /**
  * Why no test was sent when the words on the page could not be saved first, by saveFirst's answer, in the chooser's
  * own words for the same answers; the saved line says the rest, as it does for any save.
@@ -186,6 +211,40 @@ const TEST_NOT_SAVED: Record<Exclude<SavedFirst, 'saved'>, string> = {
   changed: TEST_CHANGED,
   unchecked: TEST_FAILED,
 }
+
+/** Nothing was sent since someone else moved the letter: the server's own words. The head's line says who and when. */
+const SEND_CHANGED_HERE = SEND_CHANGED
+
+/** The page's Send could not be made, for a reason the page cannot name. */
+const SEND_FAILED = 'The newsletter could not be sent. Try again in a moment.'
+
+/** Why nothing was sent when the words on the page could not be saved first, made as TEST_NOT_SAVED is. */
+const SEND_NOT_SAVED: Record<Exclude<SavedFirst, 'saved'>, string> = {
+  failed: 'Your words could not be saved, so nothing was sent. Try again in a moment.',
+  refused: 'Your words could not be saved, so nothing was sent.',
+  conflict: 'Your words could not be saved, so nothing was sent.',
+  stopped: 'Your words here are not saved, so nothing was sent. Copy anything you want to keep first.',
+  'changed-before': SEND_CHANGED_HERE,
+  waiting: 'Your words are still being saved, so nothing was sent. Try again in a moment.',
+  changed: SEND_CHANGED_HERE,
+  unchecked: SEND_FAILED,
+}
+
+/** What the letter lacks, in the server's own words for the same answer. */
+const SEND_GAP = { subject: SEND_NO_SUBJECT, words: SEND_NO_WORDS, both: SEND_NO_SUBJECT_OR_WORDS } as const
+
+/** The count, read again just before the question, could not be read. */
+const SEND_COUNT_UNREAD = 'The number of people who will get it could not be read, so nothing was sent. Try again in a moment.'
+
+/** Stop's question, in the Group email tab's own words for it (AdminEmailPage.tsx), split into a title and a description. */
+const STOP_QUESTION: SendQuestionWords = {
+  title: 'Stop the newsletter?',
+  description: 'Addresses not yet reached won\'t get it.',
+  no: 'Keep sending',
+  yes: 'Stop sending',
+}
+/** Stop's question is about the send on its way, not a count: it is open while this is not null. */
+const STOP_ASKING: SendAsking = { willGet: 0, subject: '' }
 
 /** What the bar's status line says of a test, in words, or null for a letter that has left the page. */
 function testSaid(outcome: TestOutcome): BarSaid | null {
@@ -372,30 +431,15 @@ export function AdminNewsletterPage() {
 /** The page once the person is let in: the letter's state, the count, and how the side is shown, kept as letters come and go. */
 function NewsletterDesk({ mayCall }: { mayCall: boolean }) {
   const issue = useIssue(mayCall)
-  // The count, read once as the page opens, from the call Group email's newsletter tab makes: the addresses the
-  // newsletter goes to, for the count card and Send, and those left out, for More options.
-  const [reach, setReach] = useState<ReachRead>(null)
+  // The count, from the call Group email's newsletter tab makes: the addresses the newsletter goes to, for the count
+  // card and Send, and those left out, for More options. It is read once as the page opens; with the page's own Send
+  // on, it is read again every few seconds while a newsletter is sending (useSend.ts).
+  const send = useNewsletterSend(mayCall)
   const [view, setView] = useState<PreviewView>('phone')
   const [previewHidden, setPreviewHidden] = useState(false)
   const [replaced, setReplaced] = useState(false)
   /** Takes the focus once, when the line is first drawn, and not again on a later draw. */
   const focusWhenDrawn = useCallback((node: HTMLElement | null) => node?.focus(), [])
-
-  useEffect(() => {
-    if (!mayCall) return
-    let gone = false
-    getNewsletter().then(
-      ({ summary }) => {
-        if (!gone) setReach({ willGet: summary.willGet, addresses: summary.addresses, turnedOff: summary.turnedOff, stoppedAll: summary.stoppedAll, doNotSend: summary.doNotSend })
-      },
-      () => {
-        if (!gone) setReach('failed')
-      },
-    )
-    return () => {
-      gone = true
-    }
-  }, [mayCall])
 
   if (!mayCall || issue.status !== 'ready') {
     return (
@@ -439,7 +483,7 @@ function NewsletterDesk({ mayCall }: { mayCall: boolean }) {
     <NewsletterLetter
       key={issue.letterKey}
       issue={issue}
-      reach={reach}
+      send={send}
       view={view}
       onView={setView}
       previewHidden={previewHidden}
@@ -457,7 +501,8 @@ function NewsletterDesk({ mayCall }: { mayCall: boolean }) {
 
 interface NewsletterLetterProps {
   issue: Issue
-  reach: ReachRead
+  /** The count and the state of the page's own Send (useSend.ts). */
+  send: NewsletterSend
   view: PreviewView
   onView: (view: PreviewView) => void
   previewHidden: boolean
@@ -469,7 +514,10 @@ interface NewsletterLetterProps {
 }
 
 /** One letter on the page, drawn afresh each time a letter takes the place of the one before. */
-function NewsletterLetter({ issue, reach, view, onView, previewHidden, onPreviewHidden, autoFocus, onShowTheirs, onStarting }: NewsletterLetterProps) {
+function NewsletterLetter({ issue, send, view, onView, previewHidden, onPreviewHidden, autoFocus, onShowTheirs, onStarting }: NewsletterLetterProps) {
+  const reach = send.reach
+  // Whether the bar offers Send: switched on and not waiting for the move to Amazon. Help's step 6 says the same.
+  const barSends = send.state !== 'off' && send.state !== 'waits'
   const [month, setMonth] = useState(issue.letter.monthLabel)
   const [subject, setSubject] = useState(issue.letter.subject)
   const [preheader, setPreheader] = useState(issue.letter.preheader)
@@ -489,6 +537,13 @@ function NewsletterLetter({ issue, reach, view, onView, previewHidden, onPreview
   // "Send a test to me" while it is on its way, and what the bar's status line says; empty whenever a letter is drawn.
   const [testing, setTesting] = useState(false)
   const [barSaid, setBarSaid] = useState<BarSaid | null>(null)
+  // Send's question, with the letter it names, and whether a press is being made: one press at a time, however fast
+  // the presses come, and the control it came from, which takes the focus back as the question closes.
+  const [sendAsking, setSendAsking] = useState<(SendAsking & { named: { issueId: string; version: number } }) | null>(null)
+  const pressing = useRef(false)
+  const posting = useRef(false)
+  const askedFrom = useRef<HTMLElement | null>(null)
+  const [stopAsking, setStopAsking] = useState(false)
   // The first step's cue plays once only, as the page opens on its first letter when that letter holds no words, from
   // the moment the letter is drawn until something is written. It is held while Help is open: Help opening by itself
   // turns on in the same update as `drawn`, so the cue first plays as Help closes, if the letter still holds no words
@@ -535,6 +590,27 @@ function NewsletterLetter({ issue, reach, view, onView, previewHidden, onPreview
     const later = window.setTimeout(sayStarted, STARTED_PAUSE_MS)
     return () => window.clearTimeout(later)
   }, [startedFrom, sayStarted, carry])
+
+  // After a send, this letter is drawn afresh with the one the server now holds open: the focus goes at once to Send's
+  // step, and the line the send left (who it goes to) is said STARTED_PAUSE_MS later, once, for the reason given above.
+  // A line said later, as the send ends or stops, goes in the status line with no pause, the focus left where it is. A
+  // line already said, or one this page never saw begin (a second person opening the page while a send is on its way),
+  // is said by no letter.
+  const { said: sendSaid, markSaid } = send
+  const [saidAtDraw] = useState(() => (send.said?.fresh ? send.said.seq : null))
+  useEffect(() => {
+    if (sendSaid === null || !sendSaid.fresh) return
+    const drawnWith = sendSaid.seq === saidAtDraw
+    if (drawnWith) carry.find('send')?.focus()
+    const later = window.setTimeout(
+      () => {
+        setBarSaid({ tone: sendSaid.tone, words: sendSaid.words })
+        markSaid()
+      },
+      drawnWith ? STARTED_PAUSE_MS : 0,
+    )
+    return () => window.clearTimeout(later)
+  }, [sendSaid, saidAtDraw, markSaid, carry])
 
   /** The words on the page changed: the letter saves after its pause, and the side draws it again after a shorter one. */
   function changed(next: Partial<LetterDraft>) {
@@ -679,9 +755,149 @@ function NewsletterLetter({ issue, reach, view, onView, previewHidden, onPreview
     setBarSaid(testSaid(outcome))
   }
 
-  /** Send, drawn and not yet available, says why on a press, in the newsletter tab's own words for its Send. */
+  /** Send drawn quiet says why on a press: switched off, that it is not here yet; on, while the newsletter goes through Resend, why it waits. */
   function sendNotYet() {
-    setBarSaid({ tone: 'note', words: WAITS_FOR_SES })
+    setBarSaid({ tone: 'note', words: send.state === 'waits' ? WAITS_FOR_SES : SEND_NOT_HERE_YET })
+  }
+
+  /** Send did not ask: why, in words, with nothing sent and the focus left on Send. */
+  function sendHeld(words: string, tone: BarSaid['tone'] = 'not-sent') {
+    pressing.current = false
+    send.setLocal(null)
+    setBarSaid({ tone, words })
+  }
+
+  /**
+   * Send, switched on: the letter is saved and checked first, then the count is read again, and only then is the
+   * question asked, with the count just read. Each reason not to ask is said in words, and nothing is sent.
+   */
+  async function sendPress(from?: HTMLElement | null) {
+    if (pressing.current || (send.state !== 'ready' && send.state !== 'unknown')) return
+    pressing.current = true
+    askedFrom.current = from ?? carry.find('send')
+    send.setLocal('preparing')
+    setBarSaid({ tone: 'note', words: 'Checking the letter...' })
+    const ready = await issue.prepareSend(() => setBarSaid({ tone: 'note', words: 'Saving your words first...' }), () => live.current)
+    if (!live.current) return
+    if ('notSaved' in ready) return sendHeld(SEND_NOT_SAVED[ready.notSaved])
+    if ('empty' in ready) return sendHeld(SEND_NO_WORDS)
+    if ('gap' in ready) return sendHeld(SEND_GAP[ready.gap])
+    const fresh = await send.reread()
+    if (!live.current) return
+    if (fresh === null) return sendHeld(SEND_COUNT_UNREAD)
+    if (fresh.sendsThrough === 'resend') return sendHeld(WAITS_FOR_SES, 'note')
+    if (fresh.summary.recent.some((row) => row.status === 'sending')) return sendHeld(ALREADY_SENDING)
+    if (fresh.summary.willGet === 0) return sendHeld(NOBODY_ON_THE_LIST)
+    send.setLocal('asking')
+    setBarSaid(null)
+    setSendAsking({ named: ready.named, subject: ready.subject, willGet: fresh.summary.willGet })
+  }
+
+  /** Send's question answered. "Not now" closes it with nothing sent; "Send" sends the letter it names, once. */
+  function sendAnswer(yes: boolean) {
+    if (!yes) {
+      pressing.current = false
+      setSendAsking(null)
+      send.setLocal(null)
+      return
+    }
+    if (sendAsking === null || posting.current) return
+    posting.current = true
+    void sendNamed(sendAsking)
+  }
+
+  /**
+   * The send is on its way: who it goes to, said once, and the bar follows it from here. Send stays held until the count
+   * is read again, so the next control drawn in its place is Stop sending, never the fresh letter's Send.
+   */
+  function sendStarted(subject: string, total: number, pressedAt: number) {
+    setSendAsking(null)
+    send.setLocal('started')
+    send.say(`“${subject}” is sending to ${total.toLocaleString('en-US')} ${total === 1 ? 'person' : 'people'}. It goes on if you close this page.`, 'note')
+    // A short list can end before any read sees it sending: the first read that answers then says how it ended.
+    send.started((row) => row.subject === subject && madeSince(row.createdAt, pressedAt))
+    // A failed read keeps 'started'; the hook reads again until one answers.
+    void send.reread().then((answer) => {
+      if (answer) send.setLocal(null)
+    })
+  }
+
+  async function sendNamed(asked: SendAsking & { named: { issueId: string; version: number } }) {
+    const pressedAt = Date.now()
+    send.setLocal('posting')
+    const outcome = await issue.sendLetter(asked.named, () => live.current)
+    if (outcome.kind === 'gone') return
+    // A send that went is followed even once its letter has left the page: the send's line is the desk's, not the letter's.
+    if (outcome.kind !== 'sent' && !live.current) return
+    if (outcome.kind === 'sent') {
+      posting.current = false
+      pressing.current = false
+      sendStarted(asked.subject, outcome.total, pressedAt)
+      return
+    }
+    let words = SEND_FAILED
+    if (outcome.kind === 'conflict') words = SEND_CHANGED_HERE
+    else if (outcome.kind === 'moved') words = 'Nothing was sent, since your words changed as it went. Press Send again.'
+    else if (outcome.status !== undefined && outcome.words !== '') words = outcome.words
+    else {
+      // No answer came. The letter moves on when it is sent, but also when someone else starts a fresh one, so it went
+      // only if the count read again shows a send going (none was at the press) or one of its subject made since the
+      // press; else nothing is claimed. A short list goes in one go, so its send may have ended by the read.
+      const moved = await issue.afterNoAnswer()
+      if (moved === true) {
+        const fresh = await send.reread()
+        posting.current = false
+        pressing.current = false
+        send.setLocal(null)
+        const going = fresh?.summary.recent.find((row) => row.status === 'sending') ?? null
+        const ended = going ? null : (fresh?.summary.recent.find((row) => row.subject === asked.subject && madeSince(row.createdAt, pressedAt)) ?? null)
+        if (ended) {
+          setSendAsking(null)
+          send.say(sentWords(ended), ended.sentCount > 0 ? 'sent' : 'not-sent')
+        } else if (going) sendStarted(going.subject, going.totalRecipients, pressedAt)
+        else {
+          setSendAsking(null)
+          setBarSaid(null)
+        }
+        return
+      }
+      if (!live.current) return
+      // Neither answered: nothing is said that claims the letter did or did not go.
+      if (moved === null) words = ''
+    }
+    // Refused: the question closes, its focus going back to Send, and the bar says why.
+    posting.current = false
+    pressing.current = false
+    setSendAsking(null)
+    send.setLocal(null)
+    setBarSaid(words === '' ? null : { tone: 'not-sent', words })
+  }
+
+  /**
+   * Stop's question answered. "Keep sending" or Escape leaves the send going. "Stop sending" stops it, then the count is
+   * read again and the bar says how many were sent; when nothing was sending by then, it says so and the read ends in
+   * the send's own end line. Stop and the Send drawn in its place both hold the carry's 'send', so the focus goes
+   * from one to the other. A phone's bar draws no Send in Stop's place, so there the focus goes to "See the email",
+   * where the email's own Send is, unless the person has put it somewhere else meanwhile.
+   */
+  async function stopAnswer(yes: boolean) {
+    setStopAsking(false)
+    if (!yes || send.state !== 'sending') return
+    send.setLocal('stopping')
+    try {
+      await stopNewsletter()
+      await send.afterStop()
+    } catch (error) {
+      if (error instanceof ApiError && error.message !== '') send.say(error.message, 'note')
+      await send.reread()
+    }
+    send.setLocal(null)
+    if (phone) {
+      setTimeout(() => {
+        const at = document.activeElement
+        if (at === null || at === document.body || !at.isConnected) carry.find('see')?.focus()
+      }, 0)
+    }
   }
 
   const moreOptions = (place: 'bar' | 'end') => (
@@ -790,6 +1006,23 @@ function NewsletterLetter({ issue, reach, view, onView, previewHidden, onPreview
           </>
         }
         returnFocus={() => [opener.current, carry.find('see'), ...(side.current?.querySelectorAll<HTMLElement>('button') ?? [])]}
+        // On a phone with the page's own Send on, the sheet's foot holds the bar's test and Send too; switched off, while
+        // the newsletter goes through Resend, or on a tablet, the foot is "Back to writing" alone, as before.
+        sends={
+          phone && send.state !== 'off' && send.state !== 'waits' ? (
+            <SheetSendRow
+              send={{ state: send.state, sending: send.sending }}
+              count={count}
+              testing={testing}
+              onTest={() => void sendTest()}
+              onSend={() => void sendPress(carry.find('sheet-send'))}
+              onStop={() => {
+                if (send.state === 'sending') setStopAsking(true)
+              }}
+              carry={carry}
+            />
+          ) : undefined
+        }
       />
       <FootBar
         phone={phone}
@@ -805,7 +1038,28 @@ function NewsletterLetter({ issue, reach, view, onView, previewHidden, onPreview
         onTest={() => void sendTest()}
         testing={testing}
         onSendNotYet={sendNotYet}
+        // Switched off, or while the newsletter goes through Resend, Send keeps saying why on a press and sends nothing.
+        onSend={send.state === 'off' || send.state === 'waits' ? undefined : () => void sendPress()}
+        send={{ state: send.state, sending: send.sending }}
+        // Stop is drawn only while switched on and a send is on its way; it asks first.
+        onStop={() => {
+          if (send.state === 'sending') setStopAsking(true)
+        }}
         said={barSaid}
+      />
+      <SendQuestion
+        asking={stopAsking ? STOP_ASKING : null}
+        posting={false}
+        onAnswer={(yes) => void stopAnswer(yes)}
+        // Back to the Stop that asked: the sheet's while the email sheet is open, else the bar's.
+        returnTo={() => (sheetOpen ? carry.find('sheet-send') : null) ?? carry.find('send')}
+        words={STOP_QUESTION}
+      />
+      <SendQuestion
+        asking={sendAsking}
+        posting={send.state === 'posting'}
+        onAnswer={sendAnswer}
+        returnTo={() => (askedFrom.current?.isConnected ? askedFrom.current : carry.find('send'))}
       />
       {/*
         The chooser, drawn in a layer of its own over the page. It comes after the bar here, so that as the window crosses
@@ -826,8 +1080,12 @@ function NewsletterLetter({ issue, reach, view, onView, previewHidden, onPreview
         letterBody={words.bodyHtml}
         letterHasWords={holdsWords({ monthLabel: '', subject: '', preheader: '', bodyHtml: words.bodyHtml })}
       />
-      {/* Help's walkthrough. Send on the bar is drawn quiet and sends nothing yet, so Help does not tell a person to send. */}
-      {helpOpen && <HelpWalkthrough width={wide ? 'desk' : phone ? 'phone' : 'tablet'} sendReady={false} onClose={() => setHelpOpen(false)} opener={() => helpButton.current} notice={<SavedLineNotice line={issue.line} />} />}
+      {/*
+        Help's walkthrough. It tells a person to send whenever the bar offers Send: switched on, and not waiting for the
+        move to Amazon, including while the count is still being read. Switched off, Send is drawn quiet and the phone's
+        sheet holds no Send, so step 6 reads as before.
+      */}
+      {helpOpen && <HelpWalkthrough width={wide ? 'desk' : phone ? 'phone' : 'tablet'} sendReady={barSends} phoneSends={barSends} onClose={() => setHelpOpen(false)} opener={() => helpButton.current} notice={<SavedLineNotice line={issue.line} />} />}
     </div>
   )
 }

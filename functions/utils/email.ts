@@ -26,9 +26,10 @@ export interface EmailMessage {
    * Where replies go. Defaults to DEFAULT_REPLY_TO below.
    *
    * This matters more than it looks: mail is SENT from an @louisianachess.org
-   * address (Resend authenticates that domain via SPF/DKIM), but no mailbox at
-   * that domain exists any more. Without reply_to, every reply to every email
-   * this site sends lands in a black hole.
+   * address (the mail service that sends authenticates that domain with SPF
+   * and DKIM), but no mailbox at that domain exists any more. Without
+   * reply_to, every reply to every email this site sends lands in a black
+   * hole.
    */
   replyTo?: string
 }

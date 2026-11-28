@@ -6,16 +6,17 @@
 // From 768 pixels up, on a computer and a tablet: from the left, More
 // options, a bordered button (MoreOptions.tsx), then the three numbered
 // steps, 1 "Pick a template to start from", 2 "Send a test to me" and
-// 3 "Send to 155 people", the gold one, with its small arrow; the four spread
+// 3 "Send to 155 people", the gold one, with its small arrow while the page's
+// own Send is switched off and none once it is on; the four spread
 // across the bar's width with even gaps, the bar held to the page's own
 // width. Every word stands on one line. As the bar narrows, the first step
 // reads "Pick a template", then More options reads "Options", then the board's
 // narrow form: no marks, More options its small form, its mark over
-// "Options", and Send keeps its arrow; on the narrowest tablets its sides and
+// "Options", and Send keeps its arrow while it has one; on the narrowest tablets its sides and
 // its first step are a little smaller, so the four still stand in one row
 // from 768 pixels up. Where even that does not fit, at a text size a person
 // has raised, the first two steps' words run on and Send's count stands
-// under "Send to", its arrow kept. Each form follows the bar's own width, in
+// under "Send to", any arrow kept. Each form follows the bar's own width, in
 // rem, so it is right at every width and text size, and never chooses a wider
 // form than at 16 pixels of text (each condition is written twice, once in rem
 // and once in pixels, with no math function inside either), since the
@@ -57,21 +58,29 @@
 // politely where the person is. The phone's bar draws no second step, as the
 // board draws none there: a phone held on its side has the wider bar.
 //
-// Step 3, Send, is drawn and not yet available: the real Send comes with the
-// move to Amazon SES. It is a button a screen reader says is not available
+// Step 3, Send, while the page's own Send is switched off (mailPageSend), is
+// drawn and not yet available, with its small arrow, the only form in which the
+// arrow is drawn. It is a button a screen reader says is not available
 // (aria-disabled), which Tab still reaches, drawn quiet with its words kept
 // readable, Send in its gold with the colour drawn out of it, and in forced
 // colours in the system's colour for a control that cannot be used. A press,
 // a key or a touch on it opens nothing and sends nothing: it says why in the
-// bar's status line, in the newsletter tab's own words for its Send. Send
+// bar's status line, in Help's own words for it. Send
 // counts the people the newsletter would go to, read once as the page opens;
 // while that count is not known, or could not be read, it says "Send".
+//
+// Switched on, Send is drawn the same quiet way, with no arrow, while the
+// newsletter still goes through Resend, and a press says why it waits. Through
+// Amazon it is the ready gold Send, which opens the page's question; while a
+// send is on its way the step reads how far it has gone, "Sending, 40 of 155",
+// with "Stop sending" beside it, described by those words (useSend.ts).
 
 import { useEffect, useId, useLayoutEffect, useRef, type RefObject } from 'react'
 import { Bookmark, Check, ChevronDown, ChevronUp, CircleAlert, Eye, Mail, Send } from 'lucide-react'
 import { isTextField, useDock } from '@/components/layout/dockParts'
 import { cn } from '@/lib/utils'
 import type { ReactNode } from 'react'
+import type { SendState } from './useSend'
 
 /** A control's ref that carries the keyboard's focus to the control of the same name drawn in its place. */
 export type FocusHold = (element: HTMLElement | null) => void | (() => void)
@@ -110,6 +119,16 @@ export interface BarSaid {
   tone: 'busy' | 'sent' | 'not-sent' | 'note'
   words: string
 }
+
+/** Step 3 as the page's own Send gives it (useSend.ts): 'off' while mailPageSend is, 'waits' while the newsletter goes through Resend. */
+export interface SendView {
+  state: SendState
+  /** The send on its way, while state is 'sending' or 'stopping': how many have been sent, of how many. */
+  sending?: { sentCount: number; totalRecipients: number } | null
+}
+
+const SEND_OFF: SendView = { state: 'off' }
+const NO_STOP = () => {}
 
 /**
  * The ring shown for a moment in place of the wiggle with reduced motion asked for: a gold band 3 pixels wide with a
@@ -181,6 +200,9 @@ function usePickCue(bar: RefObject<HTMLElement | null>, cue: boolean) {
  * of both by 60 per cent, which keeps their lightness and so the words' contrast, about 6.4 to 1.
  */
 const GOLD_NOT_YET = 'bg-lca-gold text-brand-navy grayscale-60'
+
+/** The board's gold Send, ready (the page's own Send switched on): navy words on the brand gold, about 6.4 to 1. */
+const GOLD_READY = 'bg-lca-gold text-brand-navy outline-none focus-visible:ring-3 focus-visible:ring-focus'
 
 /**
  * A step's number, 32 pixels round, as the board's revision 15 draws it. Not drawn in the narrow form; the number its
@@ -284,11 +306,17 @@ export interface FootBarProps {
   testing: boolean
   /** Send, drawn and not yet available: pressed, it says why in the bar's status line. */
   onSendNotYet: () => void
+  /** Step 3 as the page's own Send gives it; 'off', today's quiet Send, while that is switched off or not given. */
+  send?: SendView
+  /** The ready gold Send, pressed: the page asks its question. Not called while Send is off or waits. */
+  onSend?: () => void
+  /** "Stop sending", pressed while a send is on its way: the page asks before it stops. */
+  onStop?: () => void
   /** What the bar's status line says, or null while it says nothing. */
   said: BarSaid | null
 }
 
-export function FootBar({ phone, bigger, count, moreOptions, onSeeEmail, sheetOpen, onPick, chooserOpen, cue, carry, onTest, testing, onSendNotYet, said }: FootBarProps) {
+export function FootBar({ phone, bigger, count, moreOptions, onSeeEmail, sheetOpen, onPick, chooserOpen, cue, carry, onTest, testing, onSendNotYet, send = SEND_OFF, onSend = onSendNotYet, onStop = NO_STOP, said }: FootBarProps) {
   const bar = useRef<HTMLElement>(null)
   useRoomForTheBar(bar, phone, bigger)
   usePickCue(bar, cue)
@@ -321,10 +349,14 @@ export function FootBar({ phone, bigger, count, moreOptions, onSeeEmail, sheetOp
       )}
     >
       {phone ? (
-        <PhoneBar onSeeEmail={onSeeEmail} sheetOpen={sheetOpen} onPick={onPick} chooserOpen={chooserOpen} carry={carry} />
+        <>
+          {/* Switched off, the phone's bar has no status line, as before; on, its line stands above the row. */}
+          {send.state !== 'off' && <BarLine said={said} phone />}
+          <PhoneBar onSeeEmail={onSeeEmail} sheetOpen={sheetOpen} onPick={onPick} chooserOpen={chooserOpen} carry={carry} send={send} onStop={onStop} />
+        </>
       ) : (
         <>
-          <WideBar count={count} moreOptions={moreOptions} onPick={onPick} chooserOpen={chooserOpen} carry={carry} onTest={onTest} testing={testing} onSendNotYet={onSendNotYet} />
+          <WideBar count={count} moreOptions={moreOptions} onPick={onPick} chooserOpen={chooserOpen} carry={carry} onTest={onTest} testing={testing} onSendNotYet={onSendNotYet} send={send} onSend={onSend} onStop={onStop} />
           <BarLine said={said} />
         </>
       )}
@@ -338,16 +370,17 @@ export function FootBar({ phone, bigger, count, moreOptions, onSeeEmail, sheetOp
  * its usual height and covers nothing of the letter's foot; with words, the bar is a line taller, and the page keeps
  * that room too (useRoomForTheBar). Its words run the bar's width, so an answer is one line on a computer. A test sent
  * has a tick beside its words and nothing sent a mark of its own, each beside words that say it; a test on its way is
- * heard and not drawn, since the step says so itself. The words stay until the next press of either step.
+ * heard and not drawn, since the step says so itself. The words stay until the next press of either step. On a phone,
+ * with the page's own Send switched on, it stands above the bar's row, with the room kept above its words.
  */
-function BarLine({ said }: { said?: BarSaid | null }) {
+function BarLine({ said, phone = false }: { said?: BarSaid | null; phone?: boolean }) {
   return (
-    <p role="status" aria-atomic="true" data-slot="bar-said" className="mx-auto max-w-[1198px] px-6 text-[15px] leading-snug text-ink">
+    <p role="status" aria-atomic="true" data-slot="bar-said" className={cn('mx-auto max-w-[1198px] text-[15px] leading-snug text-ink', phone ? 'px-3.5' : 'px-6')}>
       {said &&
         (said.tone === 'busy' ? (
           <span className="sr-only">{said.words}</span>
         ) : (
-          <span className="ml-auto flex items-start justify-end gap-2 pb-2.5 text-right">
+          <span className={cn('ml-auto flex items-start justify-end gap-2 text-right', phone ? 'pt-2.5' : 'pb-2.5')}>
             {said.tone === 'sent' && <Check className="mt-[3px] size-4 flex-none text-ok-700" aria-hidden="true" />}
             {said.tone === 'not-sent' && <CircleAlert className="mt-[3px] size-4 flex-none text-destructive" aria-hidden="true" />}
             <span>{said.words}</span>
@@ -374,11 +407,17 @@ function BarLine({ said }: { said?: BarSaid | null }) {
  * a browser that cannot read it would drop whole), so a text size set under 16 pixels takes each form where 16 would.
  */
 function WideBar({
-  count, moreOptions, onPick, chooserOpen, carry, onTest, testing, onSendNotYet,
+  count, moreOptions, onPick, chooserOpen, carry, onTest, testing, onSendNotYet, send, onSend, onStop,
 }: {
-  count: number | null | 'failed'; moreOptions?: ReactNode; onPick: () => void; chooserOpen: boolean; carry: FocusCarry; onTest: () => void; testing: boolean; onSendNotYet: () => void
+  count: number | null | 'failed'; moreOptions?: ReactNode; onPick: () => void; chooserOpen: boolean; carry: FocusCarry; onTest: () => void; testing: boolean; onSendNotYet: () => void; send: SendView; onSend: () => void; onStop: () => void
 }) {
   const id = useId()
+  // Send is ready while the count is read or known and nothing else is under way, and while its question is open. While
+  // the letter is checked, the send is on its way to the server, or it has started and the count is not yet read again,
+  // it is drawn the same with its words unchanged, not available, and keeps the focus where it is.
+  const held = send.state === 'preparing' || send.state === 'posting' || send.state === 'started'
+  const ready = send.state === 'unknown' || send.state === 'ready' || send.state === 'asking' || held
+  const going = (send.state === 'sending' || send.state === 'stopping') && send.sending ? send.sending : null
   return (
     <div className="@container mx-auto flex min-h-[75px] max-w-[1198px] items-center justify-between gap-x-3 px-6 py-2 max-[50.625rem]:px-4 max-[810px]:px-4 max-[30rem]:flex-wrap max-[480px]:flex-wrap max-[30rem]:gap-y-2 max-[480px]:gap-y-2">
       {moreOptions}
@@ -439,6 +478,52 @@ function WideBar({
       </div>
       <div className="flex flex-initial items-center gap-2.5">
         <Mark>3</Mark>
+        {going ? (
+          <>
+            {/*
+              How far the send has gone, drawn and never read out by itself: no role and outside every live region, so a
+              count that moves is heard only when Stop sending takes the focus. It does not move by itself between reads.
+            */}
+            <span data-slot="send-progress" id={`${id}-3-progress`} className="text-[15px] font-semibold leading-tight text-ink">
+              Sending,{' '}
+              <span className="@max-[45.5rem]:block @max-[728px]:block">
+                {going.sentCount.toLocaleString('en-US')} of {going.totalRecipients.toLocaleString('en-US')}
+              </span>
+            </span>
+            <button
+              ref={carry.hold('send')}
+              type="button"
+              aria-disabled={send.state === 'stopping' || undefined}
+              aria-labelledby={`${id}-3-words`}
+              aria-describedby={`${id}-3-progress`}
+              onClick={() => {
+                if (send.state !== 'stopping') onStop()
+              }}
+              className={cn(TEST_READY, 'inline-flex min-h-[46px] items-center rounded-lg border px-[15px] text-[15px] font-semibold leading-tight', send.state === 'stopping' && 'cursor-default')}
+            >
+              <span id={`${id}-3-words`}>Stop sending</span>
+            </button>
+          </>
+        ) : ready ? (
+          <button
+            ref={carry.hold('send')}
+            type="button"
+            aria-haspopup="dialog"
+            aria-expanded={send.state === 'asking' || send.state === 'posting'}
+            aria-disabled={held || undefined}
+            aria-labelledby={`${id}-3-words`}
+            onClick={() => {
+              if (!held) onSend()
+            }}
+            className={cn(GOLD_READY, 'inline-flex min-h-[46px] items-center gap-2 rounded-lg border border-transparent px-3.5 text-base font-semibold leading-tight', held && 'cursor-default')}
+          >
+            <Send className="size-[18px] flex-none" aria-hidden="true" />
+            <span id={`${id}-3-words`} className="whitespace-nowrap text-left">
+              <StepNumber>3</StepNumber>
+              <SendWords count={count} />
+            </span>
+          </button>
+        ) : (
         <button
           type="button"
           aria-disabled="true"
@@ -460,12 +545,18 @@ function WideBar({
                 <SendWords count={count} />
               </span>
             </span>
-            {/* The board's small arrow, for the other ways to send, which come with sending later: drawn, part of Send. */}
-            <span className="flex w-[42px] flex-none items-center justify-center border-l border-brand-navy/30 forced-colors:border-[GrayText]" aria-hidden="true">
-              <ChevronDown className="size-[15px]" />
-            </span>
+            {/*
+              The board's small arrow, for the other ways to send, which come with sending later: drawn, part of Send,
+              only while the page's own Send is switched off. With it on, Send has no arrow.
+            */}
+            {send.state === 'off' && (
+              <span className="flex w-[42px] flex-none items-center justify-center border-l border-brand-navy/30 forced-colors:border-[GrayText]" aria-hidden="true">
+                <ChevronDown className="size-[15px]" />
+              </span>
+            )}
           </span>
         </button>
+        )}
       </div>
     </div>
   )
@@ -485,11 +576,35 @@ function WideBar({
  * begins would bring the new look's tab bar back under the bar, which lifts the bar before the press ends, so the press
  * would miss; the chooser and the sheet each take the focus as they open. With no field holding the caret the tab bar
  * is drawn already and the press is the browser's own, so what it opens takes the focus from the button pressed, with
- * no focus ring round it, as after any press. Not from 768 pixels up, where there is no tab bar.
+ * no focus ring round it, as after any press. Not from 768 pixels up, where there is no tab bar. With the page's own
+ * Send switched on, while a send is on its way, a row above the two holds how far it has gone and "Stop sending", at
+ * the same 50 pixels, taking a row of its own under 18rem as they do.
  */
-function PhoneBar({ onSeeEmail, sheetOpen, onPick, chooserOpen, carry }: { onSeeEmail: (opener: HTMLButtonElement) => void; sheetOpen: boolean; onPick: () => void; chooserOpen: boolean; carry: FocusCarry }) {
+function PhoneBar({ onSeeEmail, sheetOpen, onPick, chooserOpen, carry, send, onStop }: { onSeeEmail: (opener: HTMLButtonElement) => void; sheetOpen: boolean; onPick: () => void; chooserOpen: boolean; carry: FocusCarry; send: SendView; onStop: () => void }) {
+  const id = useId()
+  const going = (send.state === 'sending' || send.state === 'stopping') && send.sending ? send.sending : null
   return (
     <div className="@container flex flex-wrap gap-2 px-3.5 py-2.5">
+      {going && (
+        <div className="flex basis-full flex-wrap items-center gap-2">
+          {/* As on the wide bar: drawn and never read out by itself, heard when Stop sending takes the focus. */}
+          <span data-slot="send-progress" id={`${id}-progress`} className="min-w-0 flex-none text-[15px] font-semibold leading-tight text-ink @max-[18rem]:basis-full">
+            Sending, {going.sentCount.toLocaleString('en-US')} of {going.totalRecipients.toLocaleString('en-US')}
+          </span>
+          <button
+            ref={carry.hold('send')}
+            type="button"
+            aria-disabled={send.state === 'stopping' || undefined}
+            aria-describedby={`${id}-progress`}
+            onClick={() => {
+              if (send.state !== 'stopping') onStop()
+            }}
+            className={cn(TEST_READY, 'inline-flex min-h-[50px] min-w-0 flex-1 items-center justify-center rounded-lg border px-3 text-base font-semibold leading-tight @max-[18rem]:basis-full', send.state === 'stopping' && 'cursor-default')}
+          >
+            Stop sending
+          </button>
+        </div>
+      )}
       <button
         ref={carry.hold('pick')}
         type="button"
@@ -520,6 +635,81 @@ function PhoneBar({ onSeeEmail, sheetOpen, onPick, chooserOpen, carry }: { onSee
         <Eye className="size-[18px] flex-none" aria-hidden="true" />
         <span className="text-balance text-left">See the email</span>
       </button>
+    </div>
+  )
+}
+
+/** What the email sheet's row of sends is given: the bar's own test and Send, and Stop while a send is on its way. */
+export interface SheetSendRowProps {
+  send: SendView
+  count: number | null | 'failed'
+  testing: boolean
+  onTest: () => void
+  onSend: () => void
+  onStop: () => void
+  carry: FocusCarry
+}
+
+/**
+ * The row above "Back to writing" in the email sheet on a phone, drawn only while the page's own Send is switched on:
+ * "Send a test to me" and "Send to 155 people", the same two the bar's steps 2 and 3 are, so a person who has read the
+ * email can send it from where they are. While a send is on its way, Send is "Stop sending" with how far it has gone
+ * above the row. Each is 50 pixels high, and the row stacks under 18rem. The question each one asks opens over the sheet.
+ */
+export function SheetSendRow({ send, count, testing, onTest, onSend, onStop, carry }: SheetSendRowProps) {
+  const id = useId()
+  const held = send.state === 'preparing' || send.state === 'posting' || send.state === 'started'
+  const going = (send.state === 'sending' || send.state === 'stopping') && send.sending ? send.sending : null
+  return (
+    <div className="flex flex-col gap-2" data-slot="sheet-send-row">
+      {going && (
+        // How far the send has gone, drawn and never read out by itself, as on the bar.
+        <span data-slot="send-progress" id={`${id}-progress`} className="text-[15px] font-semibold leading-tight text-ink">
+          Sending, {going.sentCount.toLocaleString('en-US')} of {going.totalRecipients.toLocaleString('en-US')}
+        </span>
+      )}
+      <div className="flex gap-2 max-[18rem]:flex-col">
+        <button
+          type="button"
+          aria-disabled={testing || undefined}
+          onClick={() => {
+            if (!testing) onTest()
+          }}
+          className={cn(TEST_READY, 'inline-flex min-h-[50px] min-w-0 flex-1 items-center justify-center gap-2 rounded-lg border px-[11px] text-base font-semibold leading-tight', testing && 'cursor-default')}
+        >
+          <Mail className="size-[18px] flex-none" aria-hidden="true" />
+          {testing ? 'Sending a test' : 'Send a test to me'}
+        </button>
+        {going ? (
+          <button
+            ref={carry.hold('sheet-send')}
+            type="button"
+            aria-disabled={send.state === 'stopping' || undefined}
+            aria-describedby={`${id}-progress`}
+            onClick={() => {
+              if (send.state !== 'stopping') onStop()
+            }}
+            className={cn(TEST_READY, 'inline-flex min-h-[50px] min-w-0 flex-1 items-center justify-center rounded-lg border px-[11px] text-base font-semibold leading-tight', send.state === 'stopping' && 'cursor-default')}
+          >
+            Stop sending
+          </button>
+        ) : (
+          <button
+            ref={carry.hold('sheet-send')}
+            type="button"
+            aria-haspopup="dialog"
+            aria-expanded={send.state === 'asking' || send.state === 'posting'}
+            aria-disabled={held || undefined}
+            onClick={() => {
+              if (!held) onSend()
+            }}
+            className={cn(GOLD_READY, 'inline-flex min-h-[50px] min-w-0 flex-1 items-center justify-center gap-2 rounded-lg border border-transparent px-[11px] text-base font-semibold leading-tight', held && 'cursor-default')}
+          >
+            <Send className="size-[18px] flex-none" aria-hidden="true" />
+            {typeof count === 'number' ? `Send to ${count.toLocaleString('en-US')} ${count === 1 ? 'person' : 'people'}` : 'Send'}
+          </button>
+        )}
+      </div>
     </div>
   )
 }

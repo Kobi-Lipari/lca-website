@@ -70,6 +70,7 @@ vi.mock('@/lib/features', async (importOriginal) => {
       get mailPage() {
         return flags.mailPage
       },
+      mailPageSend: false,
     },
   }
 })

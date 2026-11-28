@@ -14,16 +14,20 @@
 //   contract beside today's form, its 200, its 409 and its refusals;
 // - GET, POST, PUT and DELETE /api/admin/mail/newsletter/templates, the saved
 //   templates: the list, a save's 201, a rename's 200, a remove's 200, the
-//   409 of a write that lost to another, and the refusals.
-// Every refusal answers the shared error bodies, the 409 its own. MAIL_PAGE_ON
-// and MAIL_LISTS_ON are read through getters on the mocked switches module,
+//   409 of a write that lost to another, and the refusals;
+// - POST /api/admin/mail/newsletter/issue/send, the page's real Send: its
+//   request contract, its 201, its 409 for an old version, and its refusals.
+// Every refusal answers the shared error bodies, the 409 its own. MAIL_PAGE_ON,
+// MAIL_PAGE_SEND_ON and MAIL_LISTS_ON are read through getters on the mocked switches module,
 // set before every case, with the module's other constants set beside them.
 // Every name and word here is made up.
 import { env } from 'cloudflare:test'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { contracts, errorBodySchema, fieldErrorBodySchema, newsletterIssueRefusedSchema, newsletterTemplateChangedSchema } from '../../../domain/contracts'
 import { NEWSLETTER_LIST_ID } from '../../../domain/mail/lists'
+import { SEND_CHANGED } from '../../../domain/mail/newsletterWords'
 import { onRequestGet as issueGet, onRequestPut as issuePut } from '../../../functions/api/admin/mail/newsletter/issue'
+import { onRequestPost as sendPost } from '../../../functions/api/admin/mail/newsletter/issue/send'
 import { onRequestPost as startPost } from '../../../functions/api/admin/mail/newsletter/issue/start'
 import { onRequestGet as issuesGet } from '../../../functions/api/admin/mail/newsletter/issues'
 import {
@@ -36,13 +40,16 @@ import { onRequestPost as testPost } from '../../../functions/api/admin/mail/new
 import { seedAdmin, seedMember } from '../factories'
 import { emailOutbox, expectContract, invoke, resetHarness } from '../harness'
 
-const flags = vi.hoisted(() => ({ pageOn: true, listsOn: true, sender: 'resend', plan: 'free', complaintStops: true }))
+const flags = vi.hoisted(() => ({ pageOn: true, sendOn: true, listsOn: true, sender: 'resend', plan: 'free', complaintStops: true }))
 vi.mock('../../../functions/utils/mail/switches', async (importOriginal) => {
   const real = await importOriginal<typeof import('../../../functions/utils/mail/switches')>()
   return {
     ...real,
     get MAIL_PAGE_ON() {
       return flags.pageOn
+    },
+    get MAIL_PAGE_SEND_ON() {
+      return flags.sendOn
     },
     get MAIL_LISTS_ON() {
       return flags.listsOn
@@ -64,6 +71,7 @@ const save = contracts['admin/mail/newsletter/issue'].PUT
 const start = contracts['admin/mail/newsletter/issue/start'].POST
 const last = contracts['admin/mail/newsletter/issues'].GET
 const test = contracts['admin/mail/newsletter/test'].POST
+const send = contracts['admin/mail/newsletter/issue/send'].POST
 const templateList = contracts['admin/mail/newsletter/templates'].GET
 const templateSave = contracts['admin/mail/newsletter/templates'].POST
 const templateRename = contracts['admin/mail/newsletter/templates'].PUT
@@ -92,6 +100,7 @@ function landsFirst(between: D1PreparedStatement): D1Database {
 beforeEach(async () => {
   resetHarness()
   flags.pageOn = true
+  flags.sendOn = true
   flags.listsOn = true
   flags.sender = 'resend'
   flags.plan = 'free'
@@ -265,6 +274,74 @@ describe('POST /api/admin/mail/newsletter/test, the test of the stored letter (p
       await expectContract(refused, errorBodySchema)
     }
     expect(emailOutbox).toEqual([])
+  })
+})
+
+describe('POST /api/admin/mail/newsletter/issue/send, the page\'s real Send', () => {
+  it('takes the stored letter by id and version through its request contract, and nothing typed is needed', () => {
+    expect(send.request.safeParse({ issueId: 'a'.repeat(32), version: 1 }).success).toBe(true)
+    expect(send.request.safeParse({ issueId: 'a'.repeat(32), version: 3, subject: 'Sample subject one', bodyHtml: '<p>Sample words.</p>', to: 'someone@newsletter.test.lca' }).success).toBe(true)
+    const words = (value: unknown) => {
+      const result = send.request.safeParse(value)
+      return result.success ? null : result.error.issues.map((i) => i.message)
+    }
+    expect(words({ issueId: '', version: 1 })).toEqual(['Name the letter to send.'])
+    expect(words({ issueId: 'a'.repeat(65), version: 1 })).toEqual(['Name the letter to send.'])
+    expect(words({ version: 1 })).toEqual(['Name the letter to send.'])
+    expect(words({ issueId: 'a'.repeat(32), version: 0 })).toEqual(['Give the version of the letter you read.'])
+    expect(words({ issueId: 'a'.repeat(32), version: 1.5 })).toEqual(['Give the version of the letter you read.'])
+    expect(words({ issueId: 'a'.repeat(32) })).toEqual(['Give the version of the letter you read.'])
+  })
+
+  it('answers a send started in the newsletter send\'s own 201 body, and a refused letter in the save\'s 409 body', () => {
+    expect(send.response.safeParse({ campaignId: 'campaign-mabc1234-0a1b2c3d', totalRecipients: 155, status: 'sending' }).success).toBe(true)
+    expect(send.response.safeParse({ campaignId: 'campaign-mabc1234-0a1b2c3d', totalRecipients: 155, status: 'sending', issueId: 'x' }).success).toBe(false)
+    expect(send.response.safeParse({ campaignId: 'campaign-mabc1234-0a1b2c3d', totalRecipients: 155, status: 'sent' }).success).toBe(false)
+    expect(newsletterIssueRefusedSchema.safeParse({
+      reason: 'changed',
+      error: 'Nothing was sent: someone else has changed, replaced or sent this letter.',
+      changedBy: 'Player Two',
+      changedAt: '2026-11-24 12:00:00',
+    }).success).toBe(true)
+  })
+
+  it('answers its 201 to its contract, a letter changed since its version with the save\'s 409 body, and every other refusal with the shared error bodies', async () => {
+    flags.sender = 'ses'
+    const one = await seedMember({ fullName: 'Player One', role: 'lca_admin' })
+    const two = await seedMember({ fullName: 'Player Two', role: 'lca_admin' })
+    const saved = await (await invoke(issuePut, { as: one, method: 'PUT', body: SAVE })).json<{ id: string; version: number }>()
+    await invoke(issuePut, { as: two, method: 'PUT', body: { ...SAVE, id: saved.id, version: saved.version } })
+    const stale = await invoke(sendPost, { as: one, method: 'POST', body: { issueId: saved.id, version: saved.version } })
+    expect(stale.status).toBe(409)
+    expect(await expectContract(stale, newsletterIssueRefusedSchema)).toMatchObject({ error: SEND_CHANGED, reason: 'changed', changedBy: 'Player Two' })
+    const field = await invoke(sendPost, { as: one, method: 'POST', body: { issueId: saved.id, version: 0 } })
+    expect(field.status).toBe(400)
+    expect(Object.keys((await expectContract(field, fieldErrorBodySchema)).fields)).toEqual(['version'])
+    for (const [body, status, env] of [
+      [{ issueId: 'issue-nowhere', version: 1 }, 404, undefined],
+      [{ issueId: saved.id, version: saved.version + 1 }, 503, { MAIL_LINK_SECRET: '' }],
+    ] as const) {
+      const refused = await invoke(sendPost, { as: one, method: 'POST', body, ...(env ? { env } : {}) })
+      expect(refused.status).toBe(status)
+      await expectContract(refused, errorBodySchema)
+    }
+    flags.sender = 'resend'
+    const waits = await invoke(sendPost, { as: one, method: 'POST', body: { issueId: saved.id, version: saved.version + 1 } })
+    expect(waits.status).toBe(409)
+    await expectContract(waits, errorBodySchema)
+    flags.sender = 'ses'
+    const made = await invoke(sendPost, { as: one, method: 'POST', body: { issueId: saved.id, version: saved.version + 1 } })
+    expect(made.status).toBe(201)
+    expect(await expectContract(made, send.response)).toMatchObject({ status: 'sending' })
+    expect(emailOutbox).toEqual([])
+  })
+
+  it('answers 404 with the error body while MAIL_PAGE_SEND_ON is unset', async () => {
+    flags.sendOn = false
+    const admin = await seedAdmin()
+    const res = await invoke(sendPost, { as: admin, method: 'POST', body: { issueId: 'issue-nowhere', version: 1 } })
+    expect(res.status).toBe(404)
+    await expectContract(res, errorBodySchema)
   })
 })
 

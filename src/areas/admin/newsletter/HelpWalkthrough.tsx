@@ -9,13 +9,15 @@
 // draws step 3 ("Subject", then "The line people see in their inbox. Click it
 // to change it."). Where a part is drawn differently by the window's width,
 // the card points at what is there: under 1024 pixels there is no side, so
-// step 5 points at "See the email"; under 768 there is no test button, so
-// step 6 does too.
+// step 5 points at "See the email"; under 768 there is no test button on
+// the bar, so step 6 does too.
 //
-// Help never says what the page cannot do today. While Send on the bar is
-// drawn quiet, step 6 does not tell a person to send: it says sending to
-// members from this page is not available yet. "Then send." comes back by
-// the one condition in helpSteps once Send is wired.
+// Help never says what the page cannot do. While Send on the bar is drawn
+// quiet, step 6 does not tell a person to send: it says sending to members
+// from this page is not available yet. "Then send." is said only while a
+// press on Send sends (`sendReady`). On a phone, step 6 says only that a test
+// is sent from a computer or a tablet, unless the email's sheet there holds
+// the test and Send (`phoneSends`): it then says what the computer's says.
 
 import { useId, useLayoutEffect, useRef, useState, type ReactNode } from 'react'
 import * as DialogPrimitive from '@radix-ui/react-dialog'
@@ -42,22 +44,22 @@ function offFront(sentence: string, name: string): string {
 
 /**
  * The six cards, in order, for the page's form at this width. `sendReady` is whether Send on the bar sends: the one
- * place "Then send." is said or left out.
+ * place "Then send." is said or left out. `phoneSends` is whether the email's sheet on a phone holds the test and Send:
+ * step 6 there then says what the computer's says.
  */
-function helpSteps(width: HelpWidth, sendReady: boolean): HelpStep[] {
+function helpSteps(width: HelpWidth, sendReady: boolean, phoneSends: boolean): HelpStep[] {
   const pick = 'Pick a template to start from'
   const side = width === 'desk' ? 'What members will get' : 'See the email'
-  const step6: HelpStep =
-    width === 'phone'
-      ? // Its own title, so Next from step 5, which lights the same button, is seen to move on.
-        { target: 'see', title: 'Send a test', words: ['Send yourself a test from a computer or a tablet.'] }
-      : {
-          target: 'send',
-          title: 'Send a test to me',
-          words: sendReady
-            ? ['Send a test to yourself first. Then send.']
-            : ['Send a test to yourself first.', 'Sending to members from this page is not available yet.'],
-        }
+  // Its own title, so Next from step 5, which lights the same button, is seen to move on.
+  const phoneStep6: HelpStep = { target: 'see', title: 'Send a test', words: ['Send yourself a test from a computer or a tablet.'] }
+  const deskStep6: HelpStep = {
+    target: 'send',
+    title: 'Send a test to me',
+    words: sendReady
+      ? ['Send a test to yourself first. Then send.']
+      : ['Send a test to yourself first.', 'Sending to members from this page is not available yet.'],
+  }
+  const step6: HelpStep = width !== 'phone' ? deskStep6 : phoneSends ? { ...phoneStep6, words: deskStep6.words } : phoneStep6
   return [
     {
       target: 'pick',
@@ -92,6 +94,8 @@ export interface HelpWalkthroughProps {
   width: HelpWidth
   /** Whether Send on the bar sends (helpSteps). */
   sendReady: boolean
+  /** Whether the email's sheet on a phone holds the test and Send (helpSteps); false, as before, when left out. */
+  phoneSends?: boolean
   /** Skip, Escape, a press on the dim and Done on the last step each close it. */
   onClose: () => void
   /** Help, which takes the focus back as it closes, however it was opened. */
@@ -314,11 +318,11 @@ function placeCard(card: HTMLElement, box: Box | null, bring?: (by: number) => b
  * underlined), Back (outlined, from step 2) and Next (navy; "Done" on the last step) are the card's only buttons, as
  * the board draws them: there is no separate Close.
  */
-export function HelpWalkthrough({ width, sendReady, onClose, opener, notice }: HelpWalkthroughProps) {
+export function HelpWalkthrough({ width, sendReady, phoneSends = false, onClose, opener, notice }: HelpWalkthroughProps) {
   const [at, setAt] = useState(0)
   const card = useRef<HTMLDivElement>(null)
   const next = useRef<HTMLButtonElement>(null)
-  const steps = helpSteps(width, sendReady)
+  const steps = helpSteps(width, sendReady, phoneSends)
   const step = steps[at]
   const last = at === steps.length - 1
   const where = `${at + 1} of ${steps.length}`

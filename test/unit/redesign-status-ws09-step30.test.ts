@@ -386,9 +386,10 @@ describe('REDESIGN_STATUS.md, the thirtieth step of WS09: the parts against the 
     for (const file of MOVED) expect(pins, file).toContain(`\`${file}\``)
     expect(pins).toContain('no earlier test file changes its count of cases')
     // Moved at WS09 step 31, whose two routes are the 116th and 117th: 115 before it.
-    expect(read(MOVED[0])).toContain('expect(real.filter((r) => r.startsWith(\'api/\')).length).toBe(117)')
+    // Moved when the newsletter's Send joined main: its route is the 118th, 117 before it.
+    expect(read(MOVED[0])).toContain('expect(real.filter((r) => r.startsWith(\'api/\')).length).toBe(118)')
     // Moved at WS09 step 31, whose two routes are the 116th and 117th: 115 before it.
-    for (const file of MOVED.slice(1, 7)) expect(read(file), file).toContain('expect(read(\'test/unit/routes.test.ts\')).toContain(\'expect(real.filter((r) => r.startsWith(\\\'api/\\\')).length).toBe(117)\')')
+    for (const file of MOVED.slice(1, 7)) expect(read(file), file).toContain('expect(read(\'test/unit/routes.test.ts\')).toContain(\'expect(real.filter((r) => r.startsWith(\\\'api/\\\')).length).toBe(118)\')')
     expect(read('test/unit/nav.test.ts')).toContain('{FEATURES.newClubs && <Route path="/clubs/suggest" element={<SuggestClubPage />} />}')
     for (const file of ['test/unit/redesign-status-step30.test.ts', 'test/unit/club-routing-server-only.test.ts', 'test/unit/club-page-edges.test.tsx', 'test/unit/mail-worker-closure.test.ts']) {
       expect(pins, file).toContain(`\`${file}\``)

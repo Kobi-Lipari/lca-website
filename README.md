@@ -32,7 +32,7 @@ rating reporting, club management, membership, and governance.
 - **Scholastic chess & governance** — K-12 tournament visibility, bylaws/rules/
   meeting-minutes publishing, and board member management.
 - **Transactional email** — registration confirmations, tournament reminders,
-  and support notifications via Resend.
+  and support notifications via Amazon SES.
 
 ## Stack
 
@@ -43,7 +43,7 @@ rating reporting, club management, membership, and governance.
 | Scheduled jobs | Standalone Cloudflare Worker (cron) for reminder emails and auto open/close of registration |
 | Auth | Supabase Auth |
 | Payments | Stripe (Checkout + webhooks) |
-| Email | Resend |
+| Email | Amazon SES (Resend is kept only as the way back until it is removed) |
 | Testing | Vitest, `@cloudflare/vitest-pool-workers` (integration tests run against a real Workers runtime + in-memory D1) |
 
 **Brand:** Navy `#1a2744` / Gold `#c8a94a`, Geist typeface.
@@ -154,11 +154,11 @@ command would act on `lca-db`.
   signing in on a preview uses a real account.
 - **Secrets are separate.** Set preview secrets in the Pages dashboard under
   the Preview environment: Stripe test keys, never the live ones. Leave the
-  Resend key off previews until test mail is wanted; without it every send
-  fails and is logged, and the page that triggered it carries on. Previews
-  existed before this setup and may already hold live keys, so before the
-  first push of a redesign branch K checks the Preview environment's secrets
-  and removes any live Stripe or Resend key.
+  Amazon SES keys and the Resend key off previews until test mail is wanted;
+  without them every send fails and is logged, and the page that triggered it
+  carries on. Previews existed before this setup and may already hold live
+  keys, so before the first push of a redesign branch K checks the Preview
+  environment's secrets and removes any live Stripe, Amazon SES or Resend key.
 - **Club logos are shared.** Previews still use the production
   `lca-club-logos` bucket, so a logo uploaded on a preview shows on the live
   site.

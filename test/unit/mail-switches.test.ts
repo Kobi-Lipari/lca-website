@@ -18,6 +18,9 @@
 // four ways. The page rests on the newsletter list, so MAIL_PAGE_ON is on
 // only while MAIL_LISTS_ON is, as the modules export them and as the file
 // writes them: a change that turns the page on alone turns this file red.
+// mailPageSend, the real Send on that page, has its server half there too,
+// MAIL_PAGE_SEND_ON, held to mailPageSend the same four ways, and on only
+// while MAIL_PAGE_ON is.
 //
 // MAIL_SENDER, the service that sends every email, follows no switch: it
 // changes only in a pull request of its own. It is held here as written
@@ -25,8 +28,8 @@
 // the workers. Since WS16 step 7 that line may name either service, so the
 // cutover's change, the same line with 'ses', leaves this file green; and
 // 'ses' only with WORKERS_PLAN 'paid', since the cutover waits for Workers
-// Paid (Q42, settled by K): on the shipped tree, whose plan is 'free', the
-// sender can only be 'resend'.
+// Paid (Q42, settled by K): on the free plan the sender can only be
+// 'resend'.
 //
 // The two settings of WS16 step 2 follow no switch either: WORKERS_PLAN,
 // the hosting plan the mail engine's budgets are sized for, and
@@ -38,7 +41,7 @@ import { readdirSync, readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
 import { FEATURES } from '@/lib/features'
-import { COMPLAINT_STOPS_OTHER_SENDERS, MAIL_LISTS_ON, MAIL_PAGE_ON, MAIL_SENDER, WORKERS_PLAN } from '../../functions/utils/mail/switches'
+import { COMPLAINT_STOPS_OTHER_SENDERS, MAIL_LISTS_ON, MAIL_PAGE_ON, MAIL_PAGE_SEND_ON, MAIL_SENDER, WORKERS_PLAN } from '../../functions/utils/mail/switches'
 
 const ROOT = join(__dirname, '../..')
 const read = (path: string) => readFileSync(join(ROOT, path), 'utf8')
@@ -73,6 +76,7 @@ const ASSIGNS = /\bMAIL_SENDER\b(?:\s*:\s*[\w|' ]+?)?\s*=(?![=>])/
 const PAIRS = [
   { feature: 'mailLists', constant: 'MAIL_LISTS_ON', file: FILE, value: MAIL_LISTS_ON },
   { feature: 'mailPage', constant: 'MAIL_PAGE_ON', file: FILE, value: MAIL_PAGE_ON },
+  { feature: 'mailPageSend', constant: 'MAIL_PAGE_SEND_ON', file: FILE, value: MAIL_PAGE_SEND_ON },
 ] as const
 
 describe.each(PAIRS)('$constant follows $feature', (pair) => {
@@ -122,6 +126,31 @@ describe('MAIL_PAGE_ON rests on MAIL_LISTS_ON', () => {
     expect(pageFault(at(true, true))).toBeNull()
     expect(pageFault(at(true, false))).toBeNull()
     expect(pageFault(at(false, false))).toBeNull()
+  })
+})
+
+describe('MAIL_PAGE_SEND_ON rests on MAIL_PAGE_ON', () => {
+  /** What is wrong with the two constants as a file writes them: the page's Send on while the page is off. */
+  const sendFault = (text: string): string | null => {
+    const page = /^export const MAIL_PAGE_ON = (true|false)$/m.exec(text)?.[1]
+    const send = /^export const MAIL_PAGE_SEND_ON = (true|false)$/m.exec(text)?.[1]
+    if (page === undefined || send === undefined) return 'each constant is written once'
+    return send === 'true' && page !== 'true' ? 'MAIL_PAGE_SEND_ON is on while MAIL_PAGE_ON is off' : null
+  }
+
+  it('is on only while MAIL_PAGE_ON is, as the module exports them and as the file writes them, and so are the two switches', () => {
+    if (MAIL_PAGE_SEND_ON) expect(MAIL_PAGE_ON).toBe(true)
+    if (FEATURES.mailPageSend) expect(FEATURES.mailPage).toBe(true)
+    expect(sendFault(read(FILE))).toBeNull()
+    // The same file with the Send turned on alone is refused; with the page on as well it passes.
+    const at = (page: boolean, send: boolean) =>
+      read(FILE)
+        .replace(/^export const MAIL_PAGE_ON = (?:true|false)$/m, `export const MAIL_PAGE_ON = ${page}`)
+        .replace(/^export const MAIL_PAGE_SEND_ON = (?:true|false)$/m, `export const MAIL_PAGE_SEND_ON = ${send}`)
+    expect(sendFault(at(false, true))).toBe('MAIL_PAGE_SEND_ON is on while MAIL_PAGE_ON is off')
+    expect(sendFault(at(true, true))).toBeNull()
+    expect(sendFault(at(true, false))).toBeNull()
+    expect(sendFault(at(false, false))).toBeNull()
   })
 })
 

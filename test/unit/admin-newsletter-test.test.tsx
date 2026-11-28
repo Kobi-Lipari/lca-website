@@ -38,6 +38,7 @@ vi.mock('@/lib/features', async (importOriginal) => {
       get mailPage() {
         return flags.mailPage
       },
+      mailPageSend: false,
     },
   }
 })
@@ -443,7 +444,7 @@ describe('step 2, "Send a test to me", from 768 pixels up', () => {
 })
 
 describe('step 3, Send, not yet available', () => {
-  it('stays drawn as it was and marked unavailable, and says why on a press, a key or a touch, in the newsletter tab\'s own words, opening nothing and asking nothing of the server', async () => {
+  it('stays drawn as it was and marked unavailable, and says why on a press, a key or a touch, in Help\'s own words for it, opening nothing and asking nothing of the server', async () => {
     windowAt(1440)
     await thePage()
     const send = sendStep()
@@ -461,15 +462,25 @@ describe('step 3, Send, not yet available', () => {
       act(() => send.focus())
       pressBy(how, send)
       await settle()
-      expect(statusLine().textContent, how).toBe(WAITS_FOR_SES)
+      expect(statusLine().textContent, how).toBe('Sending to members from this page is not available yet.')
       expect(calls.slice(before), how).toEqual([])
       expect(focused(), how).toBe(send)
       expect(send.getAttribute('aria-disabled'), how).toBe('true')
     }
     expect(screen.queryByRole('dialog')).toBeNull()
     expect(screen.queryByRole('menu')).toBeNull()
-    // The words are true under K's decision 73: the real Send waits for the move to Amazon SES, and a test can be sent now.
-    expect(WAITS_FOR_SES).toBe('The newsletter goes out through Amazon SES, which this site does not send through yet. You can write it and send yourself a test.')
+    expect(statusLine().textContent).not.toBe(WAITS_FOR_SES)
+  })
+
+  it('says the same words on a press while the server answers that Amazon SES sends, asking nothing of the server', async () => {
+    windowAt(1440)
+    on('GET', COUNT_URL, { status: 200, body: { ...count().body, sendsThrough: 'ses' } })
+    await thePage()
+    const before = calls.length
+    fireEvent.click(sendStep())
+    await settle()
+    expect(statusLine().textContent).toBe('Sending to members from this page is not available yet.')
+    expect(calls.slice(before)).toEqual([])
   })
 })
 
@@ -492,7 +503,7 @@ describe('the bar\'s status line', () => {
     expect(line.querySelector('svg[aria-hidden="true"]')).not.toBeNull()
     fireEvent.click(sendStep())
     expect(statusLine()).toBe(line)
-    expect(line.textContent).toBe(WAITS_FOR_SES)
+    expect(line.textContent).toBe('Sending to members from this page is not available yet.')
     expect(line.querySelector('svg')).toBeNull()
     // The line adds no button: the bar's buttons are still its four, in their order.
     expect(within(theBar()).getAllByRole('button')).toEqual(

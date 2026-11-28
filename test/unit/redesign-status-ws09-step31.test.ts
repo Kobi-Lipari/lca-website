@@ -357,8 +357,9 @@ describe('REDESIGN_STATUS.md, the thirty-first step of WS09: the parts against t
     const pins = bullet(block, '- **Pins moved.**')
     for (const file of MOVED) expect(pins, file).toContain(`\`${file}\``)
     expect(pins).toContain('no earlier test file changes its count of cases')
-    expect(read(MOVED[0])).toContain('expect(real.filter((r) => r.startsWith(\'api/\')).length).toBe(117)')
-    for (const file of MOVED.slice(1, 7)) expect(read(file), file).toContain('expect(read(\'test/unit/routes.test.ts\')).toContain(\'expect(real.filter((r) => r.startsWith(\\\'api/\\\')).length).toBe(117)\')')
+    // Moved when the newsletter's Send joined main: its route is the 118th, 117 before it.
+    expect(read(MOVED[0])).toContain('expect(real.filter((r) => r.startsWith(\'api/\')).length).toBe(118)')
+    for (const file of MOVED.slice(1, 7)) expect(read(file), file).toContain('expect(read(\'test/unit/routes.test.ts\')).toContain(\'expect(real.filter((r) => r.startsWith(\\\'api/\\\')).length).toBe(118)\')')
     for (const file of ['test/unit/redesign-status-step30.test.ts', 'test/unit/club-routing-server-only.test.ts', 'test/unit/mail-worker-closure.test.ts']) expect(pins, file).toContain(`\`${file}\``)
   })
 

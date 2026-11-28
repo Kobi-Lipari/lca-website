@@ -26,7 +26,7 @@
 //   again by the page itself, while a change to them is.
 // Every name, word and time here is made up.
 import type { ReactNode } from 'react'
-import { act, cleanup, fireEvent, render, renderHook, screen } from '@testing-library/react'
+import { act, cleanup, fireEvent, render, renderHook, screen, within } from '@testing-library/react'
 import { Link, MemoryRouter, Route, Routes } from 'react-router-dom'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { defaultSubject } from '@domain/mail/letter'
@@ -441,7 +441,7 @@ describe('the words in the saved line', () => {
       'Player Two changed this letter at 2:17 PM. Nothing more is saved over their letter. Your words stay here for you to copy.Show their letter',
     )
     expect(draw({ kind: 'conflict', reason: 'sent', by: 'Player Two', at: '2026-11-12 23:05:00', readFailures: 0 })).toBe(
-      'Player Two sent this letter on Thursday, November 12, 2026 at 5:05 PM. Nothing more is saved to it. Your words stay here for you to copy.',
+      'Player Two sent this letter on Thursday, November 12, 2026 at 5:05 PM. Nothing more is saved to it. Your words stay here for you to copy.Start the next letter',
     )
     expect(draw({ kind: 'conflict', reason: 'set_aside', by: null, at: '2026-11-13 20:17:00', readFailures: 1 })).toBe(
       'Someone started a new letter at 2:17 PM. Nothing more is saved over their letter. Your words stay here for you to copy. Their letter could not be read. Press "Show their letter" to try again.Show their letter',
@@ -475,6 +475,31 @@ describe('the words in the saved line', () => {
     const steps = [...saidLine.querySelectorAll('button')].map((b) => b.textContent).join('')
     expect(saidLine.textContent).toBe(`${screen.getByRole('status').textContent}${alert.textContent}${steps}`)
     expect(steps).toBe('Show their letter')
+  })
+
+  it('offers "Start the next letter" once a letter has been sent, and asks first, as "Show their letter" does', async () => {
+    cleanup()
+    const onShowTheirs = vi.fn()
+    render(<SavedLine line={{ kind: 'conflict', reason: 'sent', by: 'Player Two', at: '2026-11-13 20:17:00', readFailures: 0 }} onTryAgain={() => {}} onShowTheirs={onShowTheirs} />)
+    expect(screen.queryByRole('button', { name: 'Show their letter' })).toBeNull()
+    const start = screen.getByRole('button', { name: 'Start the next letter' })
+    expect(start.className).toContain('min-h-11')
+    // Keep my words closes the question, starts nothing, and gives the focus back to the button.
+    act(() => start.focus())
+    fireEvent.click(start)
+    const ask = screen.getByRole('dialog', { name: 'Start the next letter?' })
+    expect(ask.textContent).toContain('The next letter takes the place of your words on this page. Copy anything of yours you want to keep first.')
+    fireEvent.click(within(ask).getByRole('button', { name: 'Keep my words' }))
+    await settle()
+    expect(screen.queryByRole('dialog', { name: 'Start the next letter?' })).toBeNull()
+    expect(onShowTheirs).not.toHaveBeenCalled()
+    expect(document.activeElement).toBe(screen.getByRole('button', { name: 'Start the next letter' }))
+    // Its own Start the next letter reads the open letter, as Show their letter does, once.
+    fireEvent.click(screen.getByRole('button', { name: 'Start the next letter' }))
+    fireEvent.click(within(screen.getByRole('dialog', { name: 'Start the next letter?' })).getByRole('button', { name: 'Start the next letter' }))
+    await settle()
+    expect(screen.queryByRole('dialog', { name: 'Start the next letter?' })).toBeNull()
+    expect(onShowTheirs).toHaveBeenCalledTimes(1)
   })
 })
 

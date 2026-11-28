@@ -147,12 +147,14 @@ export const A11Y_VARS_FILE = '.dev.vars.a11y'
  * holds a key that could charge a card, send mail, read the Facebook page or
  * call the scanning service. With an empty key every such call is refused,
  * but not every function stops before calling out: the Facebook feed and the
- * scanner check for a missing key first, while createCheckoutSession and the
- * Resend helpers still send their request to api.stripe.com or api.resend.com
- * (with no key, so it is refused there). Those requests run in the worker,
- * where page.route cannot stop them. test/unit/browser-test-wiring.test.ts
- * checks that every setting the functions read is either here, in
- * .dev.vars.a11y, or a database or storage binding.
+ * scanner check for a missing key first, while createCheckoutSession, and the
+ * Resend helpers while Resend sends, still send their request to
+ * api.stripe.com or api.resend.com (with no key, so it is refused there).
+ * Those requests run in the worker, where page.route cannot stop them.
+ * Amazon SES's transport stops before any request when its keys are empty.
+ * test/unit/browser-test-wiring.test.ts checks that every setting the
+ * functions read is either here, in .dev.vars.a11y, or a database or storage
+ * binding.
  */
 export const A11Y_EMPTY_SECRETS = [
   'STRIPE_SECRET_KEY',

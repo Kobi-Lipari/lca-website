@@ -301,7 +301,8 @@ describe('REDESIGN_STATUS.md, the twenty-eighth step of WS09: the parts against 
     for (const file of MOVED) expect(pins, file).toContain(`\`${file}\``)
     expect(pins).toContain('no earlier test file changes its count of cases')
     // Moved at WS09 step 31, whose two routes are the 116th and 117th: 115 before it.
-    for (const file of MOVED.slice(1, 7)) expect(read(file), file).toContain('expect(real.filter((r) => r.startsWith(\\\'api/\\\')).length).toBe(117)')
+    // Moved when the newsletter's Send joined main: its route is the 118th, 117 before it.
+    for (const file of MOVED.slice(1, 7)) expect(read(file), file).toContain('expect(real.filter((r) => r.startsWith(\\\'api/\\\')).length).toBe(118)')
     for (const file of ['test/unit/redesign-status-step28.test.ts', 'test/unit/club-routing-server-only.test.ts']) expect(pins, file).toContain(`\`${file}\``)
     // The lines held by number stand where they stood.
     expect(read('src/pages/AdminClubPage.tsx').split('\n')[427]).toContain('color: clubTextColor(color),')

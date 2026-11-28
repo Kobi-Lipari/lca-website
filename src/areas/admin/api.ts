@@ -568,6 +568,25 @@ export async function sendNewsletterIssueTest(payload: { issueId: string; versio
   throw new ApiError(!response.ok && typeof answer?.error === 'string' ? answer.error : '', response.status)
 }
 
+/**
+ * The page's real Send: the stored letter, by the id and version the page holds, to the newsletter list in its look,
+ * through POST /api/admin/mail/newsletter/issue/send, which the server takes only while the page's Send is switched on
+ * there. A 201 answers the send made and how many it goes to. A 409 that names a reason is answered, not thrown, as a
+ * save's is, with who changed, sent or replaced the letter and when; every other refusal throws ApiError with the
+ * server's own words, or with none for an answer that brings none.
+ */
+export async function sendNewsletterIssue(payload: { issueId: string; version: number }): Promise<{ sent: ApiNewsletterSent } | { refused: ApiNewsletterIssueRefused }> {
+  const response = await fetch('/api/admin/mail/newsletter/issue/send', {
+    method: 'POST',
+    headers: await authHeaders(),
+    body: JSON.stringify(payload),
+  })
+  const answer = (await response.clone().json().catch(() => null)) as { error?: unknown; reason?: unknown; campaignId?: unknown } | null
+  if (response.status === 409 && answer && typeof answer.reason === 'string') return { refused: answer as unknown as ApiNewsletterIssueRefused }
+  if (response.status === 201 && answer && typeof answer.campaignId === 'string') return { sent: answer as unknown as ApiNewsletterSent }
+  throw new ApiError(!response.ok && typeof answer?.error === 'string' ? answer.error : '', response.status)
+}
+
 // The media manager (WS16 step 6): whether the signed-in member sends the newsletter as the media manager, which only
 // Admin's pages and the account menu ask, through src/areas/admin/useMediaManager.ts, once a session.
 

@@ -28,7 +28,7 @@ import { A11Y_CLUBS_VARIANT, A11Y_VARIANTS, ROOT } from './global-setup'
 const SWITCHES_ON = ['newLook', 'themeHeritage', 'newNav', 'siteSearch', 'eventStrip', 'eventStripLive', 'liveMarker']
 
 /** The switches src/lib/features.ts itself ships on, and so on in both builds, each since the change that turned it on. */
-const SHIPPED_ON = ['clubEmailHidden', 'mailLists', 'clubKeepers', 'mailPage', 'regionEvents']
+const SHIPPED_ON = ['clubEmailHidden', 'mailLists', 'clubKeepers', 'mailPage', 'regionEvents', 'mailPageSend']
 
 /** The switches the clubs build turns on: the a11y-on build's and newClubs, nothing else. */
 const CLUBS_SWITCHES_ON = [...SWITCHES_ON, 'newClubs']

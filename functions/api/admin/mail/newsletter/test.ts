@@ -13,8 +13,8 @@
 // as a test send, kind 'test', so the gate refuses an address that no
 // longer receives mail or that no list may send to, but reads no choice:
 // someone who turned the newsletter off can still send themselves a test.
-// It goes through the service MAIL_SENDER names, and through Resend from
-// noreply@louisianachess.org, the one address Resend is set up for
+// It goes through the service MAIL_SENDER names, and, while that is Resend,
+// from noreply@louisianachess.org, the one address Resend is set up for
 // (functions/utils/mail/resend.ts). It answers 200 { sent: true }, 502
 // { error } when it was not sent, and 503 without the link key, before
 // anything is written. A 502 for an answer from the mail service carries
@@ -69,9 +69,10 @@
 // carry them, kind 'test', through the service a test goes through by
 // default, and no Amazon SES option; an email over EMAIL_MAX_BYTES as drawn
 // is refused, 413, in words that say by about how much. The email is drawn
-// here rather than by listMessage in functions/utils/admin/campaigns.ts, so
-// the campaign sender and the daily-emails worker that bundles it stay as
-// they are. It writes nothing on the letter and no campaign; it makes the
+// here with renderNewsletter, as listMessage in
+// functions/utils/admin/campaigns.ts draws a list send made from the page in
+// its look; test/integration/newsletter-page-send-edges.test.ts holds the two
+// equal byte for byte. It writes nothing on the letter and no campaign; it makes the
 // person's contact as today's test does, and sends once, as today's does.
 import type { Env } from '../../../../types'
 import { isSendableAddress, normalizeAddress } from '../../../../../domain/mail/address'

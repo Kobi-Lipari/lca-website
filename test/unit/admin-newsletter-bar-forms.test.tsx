@@ -234,6 +234,32 @@ describe('the raised-text form', () => {
     expect(send.querySelector('svg.lucide-chevron-down')?.parentElement?.className).not.toMatch(/:hidden/)
   })
 
+  it('while a send is on its way, puts how many under "Sending," by the same condition as Send\'s count, and keeps Stop sending and mark 3 as the narrow form has them', () => {
+    drawWide()
+    const raised = conditionOf(screen.getByRole('button', { name: '3 Send to 26 people' }).querySelector('[id$="-3-words"] > span:last-child') as HTMLElement, 'block')
+    const narrow = conditionOf(document.querySelector('span.rounded-full[aria-hidden="true"]') as HTMLElement, 'hidden')
+    cleanup()
+    render(
+      <FootBar phone={false} bigger={false} count={26} onSeeEmail={() => {}} sheetOpen={false} onPick={() => {}} chooserOpen={false} cue={false} carry={carry} onTest={() => {}} testing={false} onSendNotYet={() => {}} said={null} send={{ state: 'sending', sending: { sentCount: 12, totalRecipients: 26 } }} />,
+    )
+    const bar = document.querySelector('[data-slot="foot-bar"]') as HTMLElement
+    const progress = bar.querySelector('[data-slot="send-progress"]') as HTMLElement
+    expect(progress.textContent).toBe('Sending, 12 of 26')
+    const many = progress.lastElementChild as HTMLElement
+    expect(many.textContent?.trim()).toBe('12 of 26')
+    expect(conditionOf(many, 'block')).toBe(raised)
+    // No other part of the bar takes a line of its own in this form, and nothing of the send is hidden by any form.
+    expect([...bar.querySelectorAll('[class*=":block"]')].map((span) => span.textContent?.trim())).toEqual(['12 of 26'])
+    const stop = screen.getByRole('button', { name: 'Stop sending' })
+    for (const element of [progress, many, stop, ...stop.querySelectorAll('*')]) {
+      expect([...element.classList].filter((name) => name.endsWith(':hidden') || name === 'hidden'), element.textContent ?? '').toEqual([])
+    }
+    expect(stop.className).toContain('min-h-[46px]')
+    const marks = [...bar.querySelectorAll('span.rounded-full[aria-hidden="true"]')]
+    expect(marks.map((mark) => mark.textContent)).toEqual(['1', '2', '3'])
+    for (const mark of marks) expect(conditionOf(mark, 'hidden')).toBe(narrow)
+  })
+
   it('lets the row wrap, so Send takes a line of its own, only where the window is under 30rem, as text near double size makes a tablet', () => {
     drawWide()
     const row = (document.querySelector('[data-slot="foot-bar"] .\\@container') as HTMLElement)

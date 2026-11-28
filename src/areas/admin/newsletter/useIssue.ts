@@ -80,6 +80,7 @@ import { STARTERS, STARTER_IDS, defaultSubject, monthLabel, type StarterId } fro
 import {
   getNewsletterIssue,
   saveNewsletterIssue,
+  sendNewsletterIssue,
   sendNewsletterIssueTest,
   startNewsletterIssue,
   type ApiNewsletterIssue,
@@ -168,6 +169,30 @@ export type TestOutcome =
   | { kind: 'refused'; words: string }
   | { kind: 'gone' }
 
+/**
+ * What the page's Send finds before it asks its question: the stored letter named, with its subject; nothing to ask,
+ * since the words on the page could not be saved first (`notSaved`, saveFirst's answer), the server holds no letter yet,
+ * or the letter lacks a subject, words a person wrote, or both (`gap`, sendGap's answer).
+ */
+export type SendReady =
+  | { named: { issueId: string; version: number }; subject: string }
+  | { notSaved: Exclude<SavedFirst, 'saved'> }
+  | { empty: true }
+  | { gap: 'subject' | 'words' | 'both' }
+
+/**
+ * What the page's Send came to: sent, with the send's id and the number it goes to; refused with 409, someone else
+ * having changed, replaced or sent the letter ('conflict'), or the page's own save having moved it ('moved'); refused
+ * in the server's own words with its status, '' and no status for no answer; or, the letter having left the page
+ * meanwhile, nothing to say ('gone').
+ */
+export type SendOutcome =
+  | { kind: 'sent'; campaignId: string; total: number }
+  | { kind: 'conflict' }
+  | { kind: 'moved' }
+  | { kind: 'refused'; words: string; status: number | undefined }
+  | { kind: 'gone' }
+
 export interface Issue {
   /** 'loading' until the first read answers, 'failed' when it could not be read, 'ready' after. */
   status: 'loading' | 'failed' | 'ready'
@@ -208,6 +233,15 @@ export interface Issue {
    * the version the page then holds; `onPage` says whether the letter is still on the page, as for saveFirst.
    */
   sendTest: (onPage?: () => boolean) => Promise<TestOutcome>
+  /** Before the page's Send asks its question: saves first, then names the stored letter, or says why it cannot go. */
+  prepareSend: (onSaving?: () => void, onPage?: () => boolean) => Promise<SendReady>
+  /** The page's Send of the letter `named` names, once the question is answered. */
+  sendLetter: (named: { issueId: string; version: number }, onPage?: () => boolean) => Promise<SendOutcome>
+  /**
+   * After a Send that got no answer: puts the open letter on the page when it is no longer the one held, answering true;
+   * false while it is still the one held; null when the letter could not be read, so it is not known whether it went.
+   */
+  afterNoAnswer: () => Promise<boolean | null>
   /** The name of the choice the letter on the page was started from, until the page has drawn it and said so; else null. */
   startedFrom: string | null
   /** Once the letter a start put on the page is drawn: the saved line says which choice it was started from, once. */
@@ -296,13 +330,31 @@ function untouchedStarter(body: string): boolean {
  */
 export function holdsWords(draft: LetterDraft): boolean {
   const letter = trimmed(draft)
-  const words = letter.bodyHtml
+  if (wordsIn(letter.bodyHtml) !== '' && !untouchedStarter(letter.bodyHtml)) return true
+  if (letter.preheader !== '') return true
+  return letter.subject !== '' && letter.subject !== defaultSubject(letter.monthLabel)
+}
+
+/** A body's words once its tags and its spaces that are not words are taken out: the server's bodyHasWords reads the same. */
+function wordsIn(body: string): string {
+  return body
     .replace(/<\/?(?:p|br|strong|em|h2|h3|ul|ol|li|hr|a)(?: [^<>]*)?>/g, ' ')
     .replace(/&nbsp;|&#160;|&#xa0;/gi, ' ')
     .trim()
-  if (words !== '' && !untouchedStarter(letter.bodyHtml)) return true
-  if (letter.preheader !== '') return true
-  return letter.subject !== '' && letter.subject !== defaultSubject(letter.monthLabel)
+}
+
+/**
+ * What a letter lacks before the page's Send asks its question: a subject, words a person wrote, or both; null when it
+ * has both. Words are what holdsWords reads in a body, headings among them, unless the body is one of LCA's starters
+ * untouched, so a starter's headings alone never go to the list. It is the page's copy of the server's sendGap in
+ * functions/utils/mail/issues.ts, which refuses the same letters; test/unit/admin-newsletter-send-gap.test.tsx holds it.
+ */
+export function sendGap(draft: LetterDraft): 'subject' | 'words' | 'both' | null {
+  const noSubject = draft.subject.trim() === ''
+  const noWords = wordsIn(draft.bodyHtml) === '' || untouchedStarter(draft.bodyHtml)
+  if (noSubject && noWords) return 'both'
+  if (noSubject) return 'subject'
+  return noWords ? 'words' : null
 }
 
 /** A stored letter's words, as the page holds them. */
@@ -825,6 +877,68 @@ function createKeeper(report: Report) {
     }
   }
 
+  /**
+   * Before the page's Send asks its question: the words on the page saved first by saveFirst, as for a test; then the
+   * letter the server holds named by its id and version, unless there is none yet ('empty') or it lacks a subject or
+   * words a person wrote (`gap`, by sendGap). Nothing is sent here.
+   */
+  async function prepareSend(onSaving?: () => void, onPage: () => boolean = () => true): Promise<SendReady> {
+    const first = await saveFirst(onSaving, onPage)
+    if (first !== 'saved') return { notSaved: first }
+    if (id === null) return { empty: true }
+    const gap = sendGap(stored)
+    if (gap !== null) return { gap }
+    return { named: { issueId: id, version }, subject: stored.subject }
+  }
+
+  /**
+   * The page's Send, once the question is answered: one request to send the letter `named` names to the newsletter
+   * list. Sent, the letter is the server's sent one, so the letter it now holds open is read and put on the page, a
+   * blank one when that read fails. A 409 is the page's own doing while its save is on its way or moved the letter
+   * ('moved'); else someone else changed, replaced or sent it, and the saving stops, as after a test's 409. Any other
+   * refusal, or none, changes nothing. An answer for a letter that has left the page meanwhile is set aside ('gone').
+   * Words typed since the letter was named and not yet saved send nothing ('moved'), so they are kept for their save.
+   */
+  async function sendLetter(named: { issueId: string; version: number }, onPage: () => boolean = () => true): Promise<SendOutcome> {
+    if (inFlight || pause !== undefined || !same(trimmed(current), stored)) return { kind: 'moved' }
+    const at = era
+    try {
+      const answer = await sendNewsletterIssue(named)
+      if (at !== era || !onPage()) return { kind: 'gone' }
+      if ('refused' in answer) {
+        if (inFlight || id !== named.issueId || version !== named.version) return { kind: 'moved' }
+        if (!stopped) refuse(answer.refused)
+        return { kind: 'conflict' }
+      }
+      try {
+        accept(await getNewsletterIssue())
+      } catch {
+        accept({ issue: null, state: 'none', lastSavedBy: null, lastSavedAt: null })
+      }
+      return { kind: 'sent', campaignId: answer.sent.campaignId, total: answer.sent.totalRecipients }
+    } catch (error) {
+      if (at !== era || !onPage()) return { kind: 'gone' }
+      return { kind: 'refused', words: error instanceof ApiError ? error.message : '', status: error instanceof ApiError ? error.status : undefined }
+    }
+  }
+
+  /**
+   * After a Send that got no answer: reads the open letter, and when it is no longer the one the page holds, as after a
+   * send that went, puts it on the page and answers true; else false, the page's letter left as it is. The letter's mark
+   * is the server's one gate on a send, so this read is what says whether it went; when it fails, null.
+   */
+  async function afterNoAnswer(): Promise<boolean | null> {
+    let answer: Awaited<ReturnType<typeof getNewsletterIssue>>
+    try {
+      answer = await getNewsletterIssue()
+    } catch {
+      return null
+    }
+    if ((answer.issue?.id ?? null) === id) return false
+    accept(answer)
+    return true
+  }
+
   /** Says once on the saved line which choice the letter on the page was started from, unless the line has moved on. */
   function sayStarted() {
     if (startedWords === null) return
@@ -911,7 +1025,7 @@ function createKeeper(report: Report) {
     }
   }
 
-  return { read, edit, startSave, showTheirs, reload, watchLeaving, saveFirst, start, sendTest, sayStarted }
+  return { read, edit, startSave, showTheirs, reload, watchLeaving, saveFirst, start, sendTest, prepareSend, sendLetter, afterNoAnswer, sayStarted }
 }
 
 /**
@@ -949,5 +1063,6 @@ export function useIssue(enabled: boolean): Issue {
     status, loadError, letter, letterKey, state, line,
     edit: keeper.edit, saveNow: keeper.startSave, showTheirs: keeper.showTheirs, reload: keeper.reload,
     saveFirst: keeper.saveFirst, start: keeper.start, sendTest: keeper.sendTest, startedFrom, sayStarted: keeper.sayStarted,
+    prepareSend: keeper.prepareSend, sendLetter: keeper.sendLetter, afterNoAnswer: keeper.afterNoAnswer,
   }
 }

@@ -28,6 +28,8 @@ import {
   newsletterTemplatesResponseSchema,
 } from '../../domain/contracts/newsletter'
 import { defaultSubject, LETTER_MAX_BYTES, STARTER_IDS, STARTERS } from '../../domain/mail/letter'
+import * as words from '../../domain/mail/newsletterWords'
+import * as answers from '../../functions/utils/mail/newsletterAnswers'
 import * as issues from '../../functions/utils/mail/issues'
 import { cleanedLetter, holdsWords, refusalWords, startRefusalWords, startsWithSmallHeading, starterLetter } from '../../functions/utils/mail/issues'
 
@@ -142,6 +144,41 @@ describe('holdsWords, a starter nobody wrote in', () => {
     expect(holdsWords(open({ bodyHtml: monthly, subject: 'Sample subject one' }))).toBe(true)
     expect(holdsWords(open({ bodyHtml: monthly, preheader: 'Sample preview line' }))).toBe(true)
     expect(holdsWords(open({ bodyHtml: monthly, monthLabel: 'January 2027' }))).toBe(true)
+  })
+})
+
+describe('sendGap, what a letter needs before the page\'s real Send', () => {
+  const gap = (subject: string, bodyHtml: string) => issues.sendGap({ subject, bodyHtml })
+
+  it('is null for a subject and words a person wrote', () => {
+    expect(gap('Sample subject one', LETTER)).toBeNull()
+    expect(gap('Sample subject one', '<p>Example words.</p>')).toBeNull()
+    expect(gap('Sample subject one', '<h2>Sample heading one</h2>')).toBeNull()
+  })
+  it('is "subject" for an empty subject or one of spaces only', () => {
+    expect(gap('', LETTER)).toBe('subject')
+    expect(gap('   ', LETTER)).toBe('subject')
+  })
+  it('is "words" for an empty body, an empty paragraph or a hidden space alone', () => {
+    for (const bodyHtml of ['', '<p></p>', '<p>&nbsp;</p>', '<p><br></p>']) expect(gap('Sample subject one', bodyHtml), bodyHtml).toBe('words')
+  })
+  it('is "words" for each of LCA\'s starters untouched, and "both" with no subject either', () => {
+    for (const id of STARTER_IDS) {
+      expect(gap('Sample subject one', starterLetter(id)), id).toBe('words')
+      expect(gap('', starterLetter(id)), id).toBe('both')
+    }
+  })
+  it('is "both" for no subject and no words', () => {
+    expect(gap('', '')).toBe('both')
+    expect(gap(' ', '<p></p>')).toBe('both')
+  })
+  it('is a function, not a word, and gives the send the state read and the refusal of a save', () => {
+    expect(typeof issues.sendGap).toBe('function')
+    expect(typeof issues.letterStateStatement).toBe('function')
+    expect(issues.refusalOf({ version: 3, updated_at: '2026-12-01T10:00:00Z', campaign_id: 'campaign-x', set_aside_at: null, saved_by: 'Player One', sent_at: '2026-12-02T10:00:00Z', sent_by: 'Player Two' }))
+      .toEqual({ reason: 'sent', changedBy: 'Player Two', changedAt: '2026-12-02T10:00:00Z' })
+    expect(issues.refusalOf({ version: 3, updated_at: '2026-12-01T10:00:00Z', campaign_id: null, set_aside_at: null, saved_by: 'Player One', sent_at: null, sent_by: null }))
+      .toEqual({ reason: 'changed', changedBy: 'Player One', changedAt: '2026-12-01T10:00:00Z' })
   })
 })
 
@@ -406,6 +443,38 @@ describe('the responses\' contracts, strict', () => {
   })
 })
 
+/** The refusals of the page's real Send, each as a person reads it, the too-long one with a sample figure. */
+const SEND_WORDS = (): string[] => [
+  words.NOBODY_ON_THE_LIST, words.SEND_NO_SUBJECT, words.SEND_NO_WORDS, words.SEND_NO_SUBJECT_OR_WORDS, words.SEND_CHANGED,
+  words.sendTooLong(1), words.sendTooLong(1201), words.sendTooLong(123456),
+]
+
+describe('the words of the page\'s real Send', () => {
+  it('holds each refusal word for word', () => {
+    expect(words.NOBODY_ON_THE_LIST).toBe('Nobody is on the newsletter list right now.')
+    expect(words.SEND_NO_SUBJECT).toBe('This letter has no subject yet, so nothing was sent. Add a subject first.')
+    expect(words.SEND_NO_WORDS).toBe('This letter has no words yet, so nothing was sent. Write the letter first.')
+    expect(words.SEND_NO_SUBJECT_OR_WORDS).toBe('This letter has no subject and no words yet, so nothing was sent. Add a subject and write the letter first.')
+    expect(words.SEND_CHANGED).toBe('Nothing was sent: someone else has changed, replaced or sent this letter.')
+    expect(words.sendTooLong(1201)).toBe('This email is too long: it is about 1,300 characters over what Gmail shows whole. Make the letter shorter, then send it.')
+    expect(words.sendTooLong(1)).toBe('This email is too long: it is about 100 characters over what Gmail shows whole. Make the letter shorter, then send it.')
+    expect(words.sendTooLong(123456)).toBe('This email is too long: it is about 123,500 characters over what Gmail shows whole. Make the letter shorter, then send it.')
+  })
+  it('leaves the test\'s too-long words as they were, byte for byte', () => {
+    expect(words.testTooLong(1)).toBe('This email is too long: it is about 100 characters over what Gmail shows whole. Make the letter shorter, then send a test again.')
+    expect(words.testTooLong(1201)).toBe('This email is too long: it is about 1,300 characters over what Gmail shows whole. Make the letter shorter, then send a test again.')
+    expect(words.testTooLong(123456)).toBe('This email is too long: it is about 123,500 characters over what Gmail shows whole. Make the letter shorter, then send a test again.')
+  })
+  it('gives the server the same copies under the same names', () => {
+    expect(answers.NOBODY_ON_THE_LIST).toBe(words.NOBODY_ON_THE_LIST)
+    expect(answers.SEND_NO_SUBJECT).toBe(words.SEND_NO_SUBJECT)
+    expect(answers.SEND_NO_WORDS).toBe(words.SEND_NO_WORDS)
+    expect(answers.SEND_NO_SUBJECT_OR_WORDS).toBe(words.SEND_NO_SUBJECT_OR_WORDS)
+    expect(answers.SEND_CHANGED).toBe(words.SEND_CHANGED)
+    expect(answers.sendTooLong).toBe(words.sendTooLong)
+  })
+})
+
 describe('plain language over every word a person could read from the page\'s methods', () => {
   const stringConstants = Object.entries(issues).filter((entry): entry is [string, string] => typeof entry[1] === 'string' && entry[0] === entry[0].toUpperCase() && /[a-z]/i.test(entry[1]) && /\s/.test(entry[1]))
   const contractWords = (() => {
@@ -436,7 +505,7 @@ describe('plain language over every word a person could read from the page\'s me
     expect(contractWords.length).toBeGreaterThan(8)
   })
 
-  const everyWord = () => [...stringConstants.map(([, text]) => text), ...contractWords]
+  const everyWord = () => [...stringConstants.map(([, text]) => text), ...contractWords, ...SEND_WORDS()]
   it('holds no em or en dash, no hyphen used as a dash, no old name for US Chess, no 24-hour time and no "he" or "his" for the owner', () => {
     for (const text of everyWord()) {
       expect(text, text).not.toMatch(/[‒-―−]/)
