@@ -1,19 +1,20 @@
 // @vitest-environment jsdom
 //
 // The one club editor's Help as small question marks (K's decision 16): every
-// sentence of the Help list as it stood before the marks
-// (test/unit/fixtures/help-words-before.json, made from the base's
-// EditorHelp.tsx) is behind the mark beside its own part, word for word, in
-// every variant of the words: the club's own rep or anyone else, the hidden
-// email on or off, the new club pages on or off, the admin fields drawn or
-// not. Each field keeps the name its label gives it, an observer's marks
-// open though the form is shut, nothing opens by itself, nothing is read
-// from or written to the browser's store, and from lg up the box fills the
-// form's column beside the strip. Every name, club and address here is made
-// up.
+// sentence of the Help list K's note of Thursday, November 19, 2026 asked for
+// (test/unit/fixtures/help-words.json, written from that list and not from
+// the code) is behind the mark beside its own part, word for word, in every
+// variant of the words: the club's own rep or anyone else, the hidden email
+// on or off, the new club pages on or off, the admin fields drawn or not. No
+// sentence of the editor's or My region's bubbles speaks of how the pages
+// are made or of what may change behind them. Each field keeps the name its
+// label gives it, an observer's marks open though the form is shut, nothing
+// opens by itself, nothing is read from or written to the browser's store,
+// and from lg up the box fills the form's column beside the strip. Every
+// name, club and address here is made up.
 import { readFileSync } from 'node:fs'
 import { join, resolve } from 'node:path'
-import { cleanup, fireEvent, render, screen, within } from '@testing-library/react'
+import { act, cleanup, fireEvent, render, screen, within } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { AuthContext } from '@/contexts/auth-context'
@@ -34,10 +35,11 @@ vi.mock('@/lib/supabase', () => ({
 }))
 
 const { ClubEditor } = await import('@/areas/clubs/components/ClubEditor')
+const { MyRegionPage } = await import('@/pages/MyRegionPage')
 
 const ROOT = resolve(__dirname, '../..')
 const read = (path: string) => readFileSync(join(ROOT, path), 'utf8')
-const BEFORE = JSON.parse(read('test/unit/fixtures/help-words-before.json')) as { editor: Record<string, Array<[string, string]>> }
+const WORDS = JSON.parse(read('test/unit/fixtures/help-words.json')) as { editor: Record<string, Array<[string, string]>> }
 
 /** A made-up club whose listing's words differ from today's page's, so each notice of today's different words shows. */
 const CLUB = {
@@ -86,15 +88,16 @@ beforeEach(() => {
 afterEach(() => {
   cleanup()
   vi.restoreAllMocks()
+  vi.unstubAllGlobals()
 })
 
 describe('the editor\'s Help, behind a mark beside each part', () => {
-  it('holds every sentence of the list as it stood, word for word, in each of the sixteen variants of the words, and no other', () => {
-    expect(Object.keys(BEFORE.editor)).toEqual(VARIANTS.map(keyOf))
+  it('holds every sentence of K\'s new list, word for word, in each of the sixteen variants of the words, and no other', () => {
+    expect(Object.keys(WORDS.editor)).toEqual(VARIANTS.map(keyOf))
     for (const variant of VARIANTS) {
       draw(variant)
       const key = keyOf(variant)
-      const list = BEFORE.editor[key]
+      const list = WORDS.editor[key]
       const byName = new Map<string, HTMLElement[]>()
       for (const mark of marks()) byName.set(nameOf(mark), [...(byName.get(nameOf(mark)) ?? []), mark])
       const words = (name: string) => {
@@ -107,7 +110,7 @@ describe('the editor\'s Help, behind a mark beside each part', () => {
       const expected: string[] = []
       for (const [term, text] of list) {
         if (term === 'Logo and club color') {
-          // Divided at a sentence's end: the logo's two sentences beside the logo, the color's beside the color.
+          // Divided at a sentence's end: the logo's sentences beside the logo, the color's beside the color.
           expect(`${words('Logo')} ${words('Club color')}`, key).toBe(text)
           expected.push('Logo', 'Club color')
         } else {
@@ -119,6 +122,58 @@ describe('the editor\'s Help, behind a mark beside each part', () => {
       expect([...byName.keys()].sort(), key).toEqual(expected.sort())
       expect(document.querySelectorAll('[data-slot="help-mark-bubble"] dt'), key).toHaveLength(0)
       cleanup()
+    }
+  })
+
+  it('keeps K\'s rule in every sentence of every bubble, the editor\'s sixteen variants and My region\'s two: nothing of how the pages are made or of what may change, and none over 300 characters', async () => {
+    // K's words: "never make references to how the pages are built or may change in the back end." The terms are not read: only the sentences.
+    const REFUSED = ['today\'s', 'once the', 'new club pages', 'older form', 'will show', 'will be', 'not yet', 'switch', 'is drawn', 'is used once']
+    /** Every sentence a bubble draws: its words alone, or the words of each of its entries. */
+    const sentencesOf = (mark: HTMLElement) => {
+      const bubble = bubbleOf(mark)
+      const each = [...bubble.querySelectorAll('dd')]
+      return each.length > 0 ? each.map((dd) => dd.textContent ?? '') : [bubble.textContent ?? '']
+    }
+    const drawn: Array<[string, string]> = []
+    for (const variant of VARIANTS) {
+      draw(variant)
+      for (const mark of marks()) for (const text of sentencesOf(mark)) drawn.push([`${keyOf(variant)} ${nameOf(mark)}`, text])
+      cleanup()
+    }
+    vi.stubGlobal('fetch', vi.fn(async (url: string) => (url === '/api/workspace/region'
+      ? new Response(JSON.stringify({
+          clubs: [{
+            id: 'c-knights', name: 'Example Knights Club', city: 'Example City', region: 'Bayou Region', color: '#1f4e79', logoUrl: null, statement: null,
+            lastConfirmedAt: null, lastCheckWords: 'Not checked since Aug 2026', needsCheck: true, events: 1, openItems: [],
+          }],
+          thisMonth: { nextCheck: { day: '2026-12-07', date: 'Mon, Dec 7, 2026', time: '8:00 AM' }, checked: 0, notChecked: 1 },
+          regions: [{ region: 'Bayou Region', keepers: [] }],
+        }), { status: 200 })
+      : new Response(JSON.stringify({ error: 'Not found' }), { status: 404 }))))
+    for (const role of ['member', 'lca_admin'] as const) {
+      const auth = {
+        user: { id: 'm-one' }, session: null, role, member: { id: 'm-one', role, club_id: null, full_name: 'Player One' }, loading: false, memberLoading: false,
+        seats: role === 'member' ? [{ id: 's1', slug: 'example', role: 'Regional representative', category: 'regional_rep', started_at: '2026-01-01' }] : [],
+        managedClubs: [], isBoardMember: role === 'member', assuranceLevel: 'aal1', mfaRequired: false, directedTournamentIds: [], directedTournaments: [],
+      } as unknown as AuthContextValue
+      render(
+        <AuthContext.Provider value={auth}>
+          <MemoryRouter initialEntries={['/workspace/region']}><MyRegionPage /></MemoryRouter>
+        </AuthContext.Provider>,
+      )
+      await screen.findByRole('heading', { level: 2, name: 'Clubs' }, { timeout: 5000 })
+      await act(async () => {})
+      expect(marks(), role).toHaveLength(3)
+      for (const mark of marks()) for (const text of sentencesOf(mark)) drawn.push([`My region ${role} ${nameOf(mark)}`, text])
+      cleanup()
+    }
+    vi.unstubAllGlobals()
+    // Sixteen variants of fourteen or fifteen marks each, and My region's seven entries twice.
+    expect(drawn.length).toBeGreaterThan(16 * 14 + 14)
+    for (const [where, text] of drawn) {
+      expect(text.length, where).toBeGreaterThan(0)
+      expect(text.length, where).toBeLessThanOrEqual(300)
+      for (const words of REFUSED) expect(text.toLowerCase(), `${where}: ${words}`).not.toContain(words)
     }
   })
 

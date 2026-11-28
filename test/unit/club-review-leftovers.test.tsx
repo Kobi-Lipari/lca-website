@@ -161,14 +161,14 @@ describe('the editor spells color as the site does', () => {
     fireEvent.click(mark)
     const help = document.getElementById(mark.getAttribute('aria-controls')!) as HTMLElement
     expect(help.hidden).toBe(false)
-    expect(within(help).getByText(/The club's color is drawn as a band/)).toBeTruthy()
+    expect(within(help).getByText('The club\'s own color. A club with none shows LCA\'s gold.')).toBeTruthy()
     fireEvent.click(screen.getByRole('button', { name: 'Preview' }))
     expect(within(document.getElementById('club-editor-previews') as HTMLElement).getByText('Club color')).toBeTruthy()
     expect(document.body.textContent).not.toMatch(/colour/i)
   })
 })
 
-describe('Help\'s line on the city follows the new club pages', () => {
+describe('Help\'s line on the city, the same with the new club pages off or on', () => {
   const nameAndAddress = () => {
     const mark = screen.getByRole('button', { name: 'Help: Name and address' })
     return document.getElementById(mark.getAttribute('aria-controls')!)?.textContent ?? ''
@@ -179,19 +179,15 @@ describe('Help\'s line on the city follows the new club pages', () => {
     </EditorHelpWords>
   )
 
-  it('says what today\'s page shows under the name while the new pages are off, and the new line once they are on', () => {
-    render(marks(false))
-    const off = nameAndAddress()
-    expect(off.startsWith('Today\'s club page shows the city under your club\'s name, such as "Baton Rouge, LA", and a shared link to the page starts with a line such as "Chess club in Baton Rouge, Louisiana", which search results may show too.')).toBe(true)
-    expect(off).toContain('That line goes under the name once the new club pages open.')
-    expect(off).not.toContain('The city makes the line under your club\'s name')
-    expect(off).toContain('Today\'s club page keeps the address shown under "Your page\'s address"')
-    cleanup()
-
-    render(marks(true))
-    const on = nameAndAddress()
-    expect(on.startsWith('The city makes the line under your club\'s name, such as "Chess club in Baton Rouge, Louisiana", on your page and in search results, and helps people who search for a chess club near it.')).toBe(true)
-    expect(on).not.toContain('Baton Rouge, LA"')
+  it('says the city shows under the name and helps people find a club near them, in the same words with the new pages off and on', () => {
+    // Help no longer says what today's page shows against the new pages' line (K's note), so both states draw the one sentence.
+    for (const pagesOn of [false, true]) {
+      render(marks(pagesOn))
+      const words = nameAndAddress()
+      expect(words.startsWith('The city shows under your club\'s name and helps people find a club near them.'), String(pagesOn)).toBe(true)
+      expect(words, String(pagesOn)).not.toContain('Baton Rouge')
+      cleanup()
+    }
   })
 })
 

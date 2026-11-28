@@ -167,7 +167,7 @@ describe('REDESIGN_STATUS.md, WS09 aside: Help as small question marks', () => {
     expect(Object.keys(fixture.editor)).toHaveLength(16)
     expect(Object.keys(fixture.region)).toHaveLength(2)
     // The sentences stay in the two Help files, which closed record tests read.
-    expect(read('src/areas/clubs/components/EditorHelp.tsx')).toContain('[\'Logo and club color\', `${LOGO_WORDS} ${COLOUR_WORDS}`]')
+    expect(read('src/areas/clubs/components/EditorHelp.tsx')).toContain('[\'Logo and club color\', `${LOGO_WORDS} ${colorWords(pagesOn)}`]')
   })
 
   it('gives the box\'s classes as ClubEditor.tsx holds them, with ScrollPanel.tsx as it was', () => {

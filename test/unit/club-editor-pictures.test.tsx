@@ -280,7 +280,7 @@ describe('the editor as the pictures showed it', () => {
     expect(marks).toHaveLength(2)
     const words = document.getElementById(marks[1].getAttribute('aria-controls')!) as HTMLElement
     expect(box.parentElement?.contains(marks[1])).toBe(true)
-    expect(words.textContent).toBe('Today\'s club page shows its own, shorter words where this listing holds the words written for the new club pages, or words changed in the older form since. Any save, even of one other field, puts this listing\'s words on today\'s page in place of today\'s, so read both before you save.')
+    expect(words.textContent).toBe('The club\'s page shows different words than this box holds. Saving puts this box\'s words on the page in their place, so read both before you save.')
   })
 
   it('moves no focus and opens no bubble on a first visit, and lets Tab into its box without the page\'s jump', async () => {
@@ -306,7 +306,7 @@ describe('the editor as the pictures showed it', () => {
   })
 })
 
-describe('Help\'s sentences on the page\'s address follow the new club pages', () => {
+describe('Help\'s sentences on the page\'s address, the same with the new club pages off or on', () => {
   /** The words of the mark named for a part, drawn with the editor's four choices. */
   const sentence = (term: string) => {
     const mark = screen.getByRole('button', { name: `Help: ${term}` })
@@ -319,17 +319,16 @@ describe('Help\'s sentences on the page\'s address follow the new club pages', (
     </EditorHelpWords>
   )
 
-  it('says what today\'s site does while the new club pages are off, and what the new pages do once they are on', () => {
-    render(marks(false))
-    const off = `${sentence('Name and address')}\n${sentence('Club name, region and page address')}`
-    for (const untrue of ['made from the club\'s name the first time the page is saved', 'the part after /clubs/', 'the old address keeps working']) expect(off, untrue).not.toContain(untrue)
-    expect(sentence('Name and address')).toContain('Today\'s club page keeps the address shown under "Your page\'s address", which stays the same if the club is renamed, so links and search results keep working.')
-    expect(sentence('Club name, region and page address')).toBe('Only LCA admins change these. The page address is used once the new club pages open; today\'s club page keeps its own address, which does not change.')
-    cleanup()
-
-    render(marks(true))
-    expect(sentence('Name and address')).toContain('Your page\'s address is made from the club\'s name the first time the page is saved')
-    expect(sentence('Club name, region and page address')).toContain('The page address is the part after /clubs/ in the club page\'s address; when it changes, the old address keeps working.')
+  it('says the page\'s web address stays when the club is renamed, and who may change it, in the same words with the new club pages off and on', () => {
+    // Help no longer speaks of today's page against the new club pages (K's note), so both states draw one sentence for each entry.
+    for (const pagesOn of [false, true]) {
+      render(marks(pagesOn))
+      const off = `${sentence('Name and address')}\n${sentence('Club name, region and page address')}`
+      for (const untrue of ['made from the club\'s name the first time the page is saved', 'the part after /clubs/', 'the old address keeps working']) expect(off, untrue).not.toContain(untrue)
+      expect(sentence('Name and address'), String(pagesOn)).toBe('The city shows under your club\'s name and helps people find a club near them. The page\'s web address stays the same if the club is renamed, so old links keep working.')
+      expect(sentence('Club name, region and page address'), String(pagesOn)).toBe('Only LCA admins can change these. The region decides which regional representative manages the club.')
+      cleanup()
+    }
   })
 })
 

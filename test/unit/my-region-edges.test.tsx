@@ -256,15 +256,15 @@ const clubsHelp = () => {
 }
 
 describe('My region: the same words for the person signed in', () => {
-  it('names the seat for a seat holder and every region for an LCA admin, in Help, never "your region" for the admin', async () => {
+  it('names the seat holder\'s region and every region for an LCA admin, in Help, never "your region" for the admin', async () => {
     window.localStorage.clear()
     await page('member')
-    expect(clubsHelp()).toContain('the clubs your seat keeps')
+    expect(clubsHelp()).toContain('A card for each club in your region')
     cleanup()
     window.localStorage.clear()
     await page('lca_admin')
     const help = clubsHelp()
-    expect(help).toContain('every region\'s clubs')
+    expect(help).toContain('A card for each club, in every region')
     expect(document.body.textContent).not.toMatch(/your (?:region|seat)/i)
   })
 

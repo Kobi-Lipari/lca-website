@@ -1,0 +1,899 @@
+{
+  "note": "Help's two lists as K's note of Thursday, November 19, 2026 has them, for every variant of the words.",
+  "editor": {
+    "own=true emailHidden=true pagesOn=true showAdmin=true": [
+      [
+        "One sentence about the club",
+        "Say what the club is in one sentence. It shows as About on your club's page, and its beginning shows in search results. You can write up to 2,000 characters."
+      ],
+      [
+        "How the club meets, in words",
+        "The days, the time and the place, as the club says them, such as \"First and third Tuesdays at 7:00 PM\". Keep it short."
+      ],
+      [
+        "Where",
+        "The place the club meets, its street if you know it, and a note such as the room. Set the pin yourself: click the map, drag the pin, or paste coordinates or a Google Maps link. If the club meets in two places, press Add another place. To take the second place off, press Remove place 2, then save."
+      ],
+      [
+        "Contact name shown on the page",
+        "The person a visitor should ask for."
+      ],
+      [
+        "Email for messages",
+        "LCA can reach the club at this address. Visitors never see it."
+      ],
+      [
+        "Name and address",
+        "The city shows under your club's name and helps people find a club near them. The page's web address stays the same if the club is renamed, so old links keep working."
+      ],
+      [
+        "Club name, region and page address",
+        "Only LCA admins can change these. The region decides which regional representative manages the club."
+      ],
+      [
+        "Cost and who is welcome",
+        "Cost: what a club night costs, such as \"Free\" or \"$5 toward the room\". Who is welcome: who the club is for, and what a first-timer should bring or ask for. Tick a box only when it is true of the club."
+      ],
+      [
+        "Links",
+        "Paste the whole web address, starting with https://, such as your club's Facebook page. Leave a box empty if the club has no such page."
+      ],
+      [
+        "Logo and club color",
+        "Choose a picture. It is fitted and saved right away, without pressing Save and publish. The club's own color. A club with none shows navy."
+      ],
+      [
+        "Today's page shows different words here",
+        "Your club's page shows different words than this box holds. Saving puts this box's words on the page in their place, so read both before you save."
+      ],
+      [
+        "Save and publish",
+        "Your changes show on your club's page right away. If you are not the club's regional representative, the representative gets an email saying what changed. Search results can take a few days to catch up."
+      ],
+      [
+        "Preview",
+        "How the club looks in a search result, when its link is shared, and on its card in the club directory. It changes as you type."
+      ]
+    ],
+    "own=true emailHidden=true pagesOn=true showAdmin=false": [
+      [
+        "One sentence about the club",
+        "Say what the club is in one sentence. It shows as About on your club's page, and its beginning shows in search results. You can write up to 2,000 characters."
+      ],
+      [
+        "How the club meets, in words",
+        "The days, the time and the place, as the club says them, such as \"First and third Tuesdays at 7:00 PM\". Keep it short."
+      ],
+      [
+        "Where",
+        "The place the club meets, its street if you know it, and a note such as the room. Set the pin yourself: click the map, drag the pin, or paste coordinates or a Google Maps link. If the club meets in two places, press Add another place. To take the second place off, press Remove place 2, then save."
+      ],
+      [
+        "Contact name shown on the page",
+        "The person a visitor should ask for."
+      ],
+      [
+        "Email for messages",
+        "LCA can reach the club at this address. Visitors never see it."
+      ],
+      [
+        "Name and address",
+        "The city shows under your club's name and helps people find a club near them. The page's web address stays the same if the club is renamed, so old links keep working. To change the name, the region or the web address, ask an LCA admin."
+      ],
+      [
+        "Cost and who is welcome",
+        "Cost: what a club night costs, such as \"Free\" or \"$5 toward the room\". Who is welcome: who the club is for, and what a first-timer should bring or ask for. Tick a box only when it is true of the club."
+      ],
+      [
+        "Links",
+        "Paste the whole web address, starting with https://, such as your club's Facebook page. Leave a box empty if the club has no such page."
+      ],
+      [
+        "Logo and club color",
+        "Choose a picture. It is fitted and saved right away, without pressing Save and publish. The club's own color. A club with none shows navy."
+      ],
+      [
+        "Today's page shows different words here",
+        "Your club's page shows different words than this box holds. Saving puts this box's words on the page in their place, so read both before you save."
+      ],
+      [
+        "Save and publish",
+        "Your changes show on your club's page right away. If you are not the club's regional representative, the representative gets an email saying what changed. Search results can take a few days to catch up."
+      ],
+      [
+        "Preview",
+        "How the club looks in a search result, when its link is shared, and on its card in the club directory. It changes as you type."
+      ]
+    ],
+    "own=true emailHidden=true pagesOn=false showAdmin=true": [
+      [
+        "One sentence about the club",
+        "Say what the club is in one sentence. It shows as About on your club's page, and its beginning shows in search results. You can write up to 2,000 characters."
+      ],
+      [
+        "How the club meets, in words",
+        "The days, the time and the place, as the club says them, such as \"First and third Tuesdays at 7:00 PM\". Keep it short."
+      ],
+      [
+        "Where",
+        "The place the club meets, its street if you know it, and a note such as the room. Set the pin yourself: click the map, drag the pin, or paste coordinates or a Google Maps link. If the club meets in two places, press Add another place. To take the second place off, press Remove place 2, then save."
+      ],
+      [
+        "Contact name",
+        "The person a visitor should ask for."
+      ],
+      [
+        "Email for messages",
+        "LCA can reach the club at this address. Visitors never see it."
+      ],
+      [
+        "Name and address",
+        "The city shows under your club's name and helps people find a club near them. The page's web address stays the same if the club is renamed, so old links keep working."
+      ],
+      [
+        "Club name, region and page address",
+        "Only LCA admins can change these. The region decides which regional representative manages the club."
+      ],
+      [
+        "Cost and who is welcome",
+        "Cost: what a club night costs, such as \"Free\" or \"$5 toward the room\". Who is welcome: who the club is for, and what a first-timer should bring or ask for. Tick a box only when it is true of the club."
+      ],
+      [
+        "Links",
+        "Paste the whole web address, starting with https://, such as your club's Facebook page. Leave a box empty if the club has no such page."
+      ],
+      [
+        "Logo and club color",
+        "Choose a picture. It is fitted and saved right away, without pressing Save and publish. The club's own color. A club with none shows LCA's gold."
+      ],
+      [
+        "Today's page shows different words here",
+        "Your club's page shows different words than this box holds. Saving puts this box's words on the page in their place, so read both before you save."
+      ],
+      [
+        "Save and publish",
+        "Your changes show on your club's page right away. If you are not the club's regional representative, the representative gets an email saying what changed. Search results can take a few days to catch up."
+      ],
+      [
+        "Preview",
+        "How the club looks in a search result, when its link is shared, and on its card in the club directory. It changes as you type."
+      ]
+    ],
+    "own=true emailHidden=true pagesOn=false showAdmin=false": [
+      [
+        "One sentence about the club",
+        "Say what the club is in one sentence. It shows as About on your club's page, and its beginning shows in search results. You can write up to 2,000 characters."
+      ],
+      [
+        "How the club meets, in words",
+        "The days, the time and the place, as the club says them, such as \"First and third Tuesdays at 7:00 PM\". Keep it short."
+      ],
+      [
+        "Where",
+        "The place the club meets, its street if you know it, and a note such as the room. Set the pin yourself: click the map, drag the pin, or paste coordinates or a Google Maps link. If the club meets in two places, press Add another place. To take the second place off, press Remove place 2, then save."
+      ],
+      [
+        "Contact name",
+        "The person a visitor should ask for."
+      ],
+      [
+        "Email for messages",
+        "LCA can reach the club at this address. Visitors never see it."
+      ],
+      [
+        "Name and address",
+        "The city shows under your club's name and helps people find a club near them. The page's web address stays the same if the club is renamed, so old links keep working. To change the name, the region or the web address, ask an LCA admin."
+      ],
+      [
+        "Cost and who is welcome",
+        "Cost: what a club night costs, such as \"Free\" or \"$5 toward the room\". Who is welcome: who the club is for, and what a first-timer should bring or ask for. Tick a box only when it is true of the club."
+      ],
+      [
+        "Links",
+        "Paste the whole web address, starting with https://, such as your club's Facebook page. Leave a box empty if the club has no such page."
+      ],
+      [
+        "Logo and club color",
+        "Choose a picture. It is fitted and saved right away, without pressing Save and publish. The club's own color. A club with none shows LCA's gold."
+      ],
+      [
+        "Today's page shows different words here",
+        "Your club's page shows different words than this box holds. Saving puts this box's words on the page in their place, so read both before you save."
+      ],
+      [
+        "Save and publish",
+        "Your changes show on your club's page right away. If you are not the club's regional representative, the representative gets an email saying what changed. Search results can take a few days to catch up."
+      ],
+      [
+        "Preview",
+        "How the club looks in a search result, when its link is shared, and on its card in the club directory. It changes as you type."
+      ]
+    ],
+    "own=true emailHidden=false pagesOn=true showAdmin=true": [
+      [
+        "One sentence about the club",
+        "Say what the club is in one sentence. It shows as About on your club's page, and its beginning shows in search results. You can write up to 2,000 characters."
+      ],
+      [
+        "How the club meets, in words",
+        "The days, the time and the place, as the club says them, such as \"First and third Tuesdays at 7:00 PM\". Keep it short."
+      ],
+      [
+        "Where",
+        "The place the club meets, its street if you know it, and a note such as the room. Set the pin yourself: click the map, drag the pin, or paste coordinates or a Google Maps link. If the club meets in two places, press Add another place. To take the second place off, press Remove place 2, then save."
+      ],
+      [
+        "Contact name shown on the page",
+        "The person a visitor should ask for."
+      ],
+      [
+        "Email for messages",
+        "Messages for the club are sent to this address. Visitors can see it on your club's page."
+      ],
+      [
+        "Name and address",
+        "The city shows under your club's name and helps people find a club near them. The page's web address stays the same if the club is renamed, so old links keep working."
+      ],
+      [
+        "Club name, region and page address",
+        "Only LCA admins can change these. The region decides which regional representative manages the club."
+      ],
+      [
+        "Cost and who is welcome",
+        "Cost: what a club night costs, such as \"Free\" or \"$5 toward the room\". Who is welcome: who the club is for, and what a first-timer should bring or ask for. Tick a box only when it is true of the club."
+      ],
+      [
+        "Links",
+        "Paste the whole web address, starting with https://, such as your club's Facebook page. Leave a box empty if the club has no such page."
+      ],
+      [
+        "Logo and club color",
+        "Choose a picture. It is fitted and saved right away, without pressing Save and publish. The club's own color. A club with none shows navy."
+      ],
+      [
+        "Today's page shows different words here",
+        "Your club's page shows different words than this box holds. Saving puts this box's words on the page in their place, so read both before you save."
+      ],
+      [
+        "Save and publish",
+        "Your changes show on your club's page right away. If you are not the club's regional representative, the representative gets an email saying what changed. Search results can take a few days to catch up."
+      ],
+      [
+        "Preview",
+        "How the club looks in a search result, when its link is shared, and on its card in the club directory. It changes as you type."
+      ]
+    ],
+    "own=true emailHidden=false pagesOn=true showAdmin=false": [
+      [
+        "One sentence about the club",
+        "Say what the club is in one sentence. It shows as About on your club's page, and its beginning shows in search results. You can write up to 2,000 characters."
+      ],
+      [
+        "How the club meets, in words",
+        "The days, the time and the place, as the club says them, such as \"First and third Tuesdays at 7:00 PM\". Keep it short."
+      ],
+      [
+        "Where",
+        "The place the club meets, its street if you know it, and a note such as the room. Set the pin yourself: click the map, drag the pin, or paste coordinates or a Google Maps link. If the club meets in two places, press Add another place. To take the second place off, press Remove place 2, then save."
+      ],
+      [
+        "Contact name shown on the page",
+        "The person a visitor should ask for."
+      ],
+      [
+        "Email for messages",
+        "Messages for the club are sent to this address. Visitors can see it on your club's page."
+      ],
+      [
+        "Name and address",
+        "The city shows under your club's name and helps people find a club near them. The page's web address stays the same if the club is renamed, so old links keep working. To change the name, the region or the web address, ask an LCA admin."
+      ],
+      [
+        "Cost and who is welcome",
+        "Cost: what a club night costs, such as \"Free\" or \"$5 toward the room\". Who is welcome: who the club is for, and what a first-timer should bring or ask for. Tick a box only when it is true of the club."
+      ],
+      [
+        "Links",
+        "Paste the whole web address, starting with https://, such as your club's Facebook page. Leave a box empty if the club has no such page."
+      ],
+      [
+        "Logo and club color",
+        "Choose a picture. It is fitted and saved right away, without pressing Save and publish. The club's own color. A club with none shows navy."
+      ],
+      [
+        "Today's page shows different words here",
+        "Your club's page shows different words than this box holds. Saving puts this box's words on the page in their place, so read both before you save."
+      ],
+      [
+        "Save and publish",
+        "Your changes show on your club's page right away. If you are not the club's regional representative, the representative gets an email saying what changed. Search results can take a few days to catch up."
+      ],
+      [
+        "Preview",
+        "How the club looks in a search result, when its link is shared, and on its card in the club directory. It changes as you type."
+      ]
+    ],
+    "own=true emailHidden=false pagesOn=false showAdmin=true": [
+      [
+        "One sentence about the club",
+        "Say what the club is in one sentence. It shows as About on your club's page, and its beginning shows in search results. You can write up to 2,000 characters."
+      ],
+      [
+        "How the club meets, in words",
+        "The days, the time and the place, as the club says them, such as \"First and third Tuesdays at 7:00 PM\". Keep it short."
+      ],
+      [
+        "Where",
+        "The place the club meets, its street if you know it, and a note such as the room. Set the pin yourself: click the map, drag the pin, or paste coordinates or a Google Maps link. If the club meets in two places, press Add another place. To take the second place off, press Remove place 2, then save."
+      ],
+      [
+        "Contact name",
+        "The person a visitor should ask for."
+      ],
+      [
+        "Email for messages",
+        "Messages for the club are sent to this address. Visitors can see it on your club's page."
+      ],
+      [
+        "Name and address",
+        "The city shows under your club's name and helps people find a club near them. The page's web address stays the same if the club is renamed, so old links keep working."
+      ],
+      [
+        "Club name, region and page address",
+        "Only LCA admins can change these. The region decides which regional representative manages the club."
+      ],
+      [
+        "Cost and who is welcome",
+        "Cost: what a club night costs, such as \"Free\" or \"$5 toward the room\". Who is welcome: who the club is for, and what a first-timer should bring or ask for. Tick a box only when it is true of the club."
+      ],
+      [
+        "Links",
+        "Paste the whole web address, starting with https://, such as your club's Facebook page. Leave a box empty if the club has no such page."
+      ],
+      [
+        "Logo and club color",
+        "Choose a picture. It is fitted and saved right away, without pressing Save and publish. The club's own color. A club with none shows LCA's gold."
+      ],
+      [
+        "Today's page shows different words here",
+        "Your club's page shows different words than this box holds. Saving puts this box's words on the page in their place, so read both before you save."
+      ],
+      [
+        "Save and publish",
+        "Your changes show on your club's page right away. If you are not the club's regional representative, the representative gets an email saying what changed. Search results can take a few days to catch up."
+      ],
+      [
+        "Preview",
+        "How the club looks in a search result, when its link is shared, and on its card in the club directory. It changes as you type."
+      ]
+    ],
+    "own=true emailHidden=false pagesOn=false showAdmin=false": [
+      [
+        "One sentence about the club",
+        "Say what the club is in one sentence. It shows as About on your club's page, and its beginning shows in search results. You can write up to 2,000 characters."
+      ],
+      [
+        "How the club meets, in words",
+        "The days, the time and the place, as the club says them, such as \"First and third Tuesdays at 7:00 PM\". Keep it short."
+      ],
+      [
+        "Where",
+        "The place the club meets, its street if you know it, and a note such as the room. Set the pin yourself: click the map, drag the pin, or paste coordinates or a Google Maps link. If the club meets in two places, press Add another place. To take the second place off, press Remove place 2, then save."
+      ],
+      [
+        "Contact name",
+        "The person a visitor should ask for."
+      ],
+      [
+        "Email for messages",
+        "Messages for the club are sent to this address. Visitors can see it on your club's page."
+      ],
+      [
+        "Name and address",
+        "The city shows under your club's name and helps people find a club near them. The page's web address stays the same if the club is renamed, so old links keep working. To change the name, the region or the web address, ask an LCA admin."
+      ],
+      [
+        "Cost and who is welcome",
+        "Cost: what a club night costs, such as \"Free\" or \"$5 toward the room\". Who is welcome: who the club is for, and what a first-timer should bring or ask for. Tick a box only when it is true of the club."
+      ],
+      [
+        "Links",
+        "Paste the whole web address, starting with https://, such as your club's Facebook page. Leave a box empty if the club has no such page."
+      ],
+      [
+        "Logo and club color",
+        "Choose a picture. It is fitted and saved right away, without pressing Save and publish. The club's own color. A club with none shows LCA's gold."
+      ],
+      [
+        "Today's page shows different words here",
+        "Your club's page shows different words than this box holds. Saving puts this box's words on the page in their place, so read both before you save."
+      ],
+      [
+        "Save and publish",
+        "Your changes show on your club's page right away. If you are not the club's regional representative, the representative gets an email saying what changed. Search results can take a few days to catch up."
+      ],
+      [
+        "Preview",
+        "How the club looks in a search result, when its link is shared, and on its card in the club directory. It changes as you type."
+      ]
+    ],
+    "own=false emailHidden=true pagesOn=true showAdmin=true": [
+      [
+        "One sentence about the club",
+        "Say what the club is in one sentence. It shows as About on the club's page, and its beginning shows in search results. You can write up to 2,000 characters."
+      ],
+      [
+        "How the club meets, in words",
+        "The days, the time and the place, as the club says them, such as \"First and third Tuesdays at 7:00 PM\". Keep it short."
+      ],
+      [
+        "Where",
+        "The place the club meets, its street if you know it, and a note such as the room. Set the pin yourself: click the map, drag the pin, or paste coordinates or a Google Maps link. If the club meets in two places, press Add another place. To take the second place off, press Remove place 2, then save."
+      ],
+      [
+        "Contact name shown on the page",
+        "The person a visitor should ask for."
+      ],
+      [
+        "Email for messages",
+        "LCA can reach the club at this address. Visitors never see it."
+      ],
+      [
+        "Name and address",
+        "The city shows under the club's name and helps people find a club near them. The page's web address stays the same if the club is renamed, so old links keep working."
+      ],
+      [
+        "Club name, region and page address",
+        "Only LCA admins can change these. The region decides which regional representative manages the club."
+      ],
+      [
+        "Cost and who is welcome",
+        "Cost: what a club night costs, such as \"Free\" or \"$5 toward the room\". Who is welcome: who the club is for, and what a first-timer should bring or ask for. Tick a box only when it is true of the club."
+      ],
+      [
+        "Links",
+        "Paste the whole web address, starting with https://, such as the club's Facebook page. Leave a box empty if the club has no such page."
+      ],
+      [
+        "Logo and club color",
+        "Choose a picture. It is fitted and saved right away, without pressing Save and publish. The club's own color. A club with none shows navy."
+      ],
+      [
+        "Today's page shows different words here",
+        "The club's page shows different words than this box holds. Saving puts this box's words on the page in their place, so read both before you save."
+      ],
+      [
+        "Save and publish",
+        "Your changes show on the club's page right away. If you are not the club's regional representative, the representative gets an email saying what changed. Search results can take a few days to catch up."
+      ],
+      [
+        "Preview",
+        "How the club looks in a search result, when its link is shared, and on its card in the club directory. It changes as you type."
+      ]
+    ],
+    "own=false emailHidden=true pagesOn=true showAdmin=false": [
+      [
+        "One sentence about the club",
+        "Say what the club is in one sentence. It shows as About on the club's page, and its beginning shows in search results. You can write up to 2,000 characters."
+      ],
+      [
+        "How the club meets, in words",
+        "The days, the time and the place, as the club says them, such as \"First and third Tuesdays at 7:00 PM\". Keep it short."
+      ],
+      [
+        "Where",
+        "The place the club meets, its street if you know it, and a note such as the room. Set the pin yourself: click the map, drag the pin, or paste coordinates or a Google Maps link. If the club meets in two places, press Add another place. To take the second place off, press Remove place 2, then save."
+      ],
+      [
+        "Contact name shown on the page",
+        "The person a visitor should ask for."
+      ],
+      [
+        "Email for messages",
+        "LCA can reach the club at this address. Visitors never see it."
+      ],
+      [
+        "Name and address",
+        "The city shows under the club's name and helps people find a club near them. The page's web address stays the same if the club is renamed, so old links keep working. To change the name, the region or the web address, ask an LCA admin."
+      ],
+      [
+        "Cost and who is welcome",
+        "Cost: what a club night costs, such as \"Free\" or \"$5 toward the room\". Who is welcome: who the club is for, and what a first-timer should bring or ask for. Tick a box only when it is true of the club."
+      ],
+      [
+        "Links",
+        "Paste the whole web address, starting with https://, such as the club's Facebook page. Leave a box empty if the club has no such page."
+      ],
+      [
+        "Logo and club color",
+        "Choose a picture. It is fitted and saved right away, without pressing Save and publish. The club's own color. A club with none shows navy."
+      ],
+      [
+        "Today's page shows different words here",
+        "The club's page shows different words than this box holds. Saving puts this box's words on the page in their place, so read both before you save."
+      ],
+      [
+        "Save and publish",
+        "Your changes show on the club's page right away. If you are not the club's regional representative, the representative gets an email saying what changed. Search results can take a few days to catch up."
+      ],
+      [
+        "Preview",
+        "How the club looks in a search result, when its link is shared, and on its card in the club directory. It changes as you type."
+      ]
+    ],
+    "own=false emailHidden=true pagesOn=false showAdmin=true": [
+      [
+        "One sentence about the club",
+        "Say what the club is in one sentence. It shows as About on the club's page, and its beginning shows in search results. You can write up to 2,000 characters."
+      ],
+      [
+        "How the club meets, in words",
+        "The days, the time and the place, as the club says them, such as \"First and third Tuesdays at 7:00 PM\". Keep it short."
+      ],
+      [
+        "Where",
+        "The place the club meets, its street if you know it, and a note such as the room. Set the pin yourself: click the map, drag the pin, or paste coordinates or a Google Maps link. If the club meets in two places, press Add another place. To take the second place off, press Remove place 2, then save."
+      ],
+      [
+        "Contact name",
+        "The person a visitor should ask for."
+      ],
+      [
+        "Email for messages",
+        "LCA can reach the club at this address. Visitors never see it."
+      ],
+      [
+        "Name and address",
+        "The city shows under the club's name and helps people find a club near them. The page's web address stays the same if the club is renamed, so old links keep working."
+      ],
+      [
+        "Club name, region and page address",
+        "Only LCA admins can change these. The region decides which regional representative manages the club."
+      ],
+      [
+        "Cost and who is welcome",
+        "Cost: what a club night costs, such as \"Free\" or \"$5 toward the room\". Who is welcome: who the club is for, and what a first-timer should bring or ask for. Tick a box only when it is true of the club."
+      ],
+      [
+        "Links",
+        "Paste the whole web address, starting with https://, such as the club's Facebook page. Leave a box empty if the club has no such page."
+      ],
+      [
+        "Logo and club color",
+        "Choose a picture. It is fitted and saved right away, without pressing Save and publish. The club's own color. A club with none shows LCA's gold."
+      ],
+      [
+        "Today's page shows different words here",
+        "The club's page shows different words than this box holds. Saving puts this box's words on the page in their place, so read both before you save."
+      ],
+      [
+        "Save and publish",
+        "Your changes show on the club's page right away. If you are not the club's regional representative, the representative gets an email saying what changed. Search results can take a few days to catch up."
+      ],
+      [
+        "Preview",
+        "How the club looks in a search result, when its link is shared, and on its card in the club directory. It changes as you type."
+      ]
+    ],
+    "own=false emailHidden=true pagesOn=false showAdmin=false": [
+      [
+        "One sentence about the club",
+        "Say what the club is in one sentence. It shows as About on the club's page, and its beginning shows in search results. You can write up to 2,000 characters."
+      ],
+      [
+        "How the club meets, in words",
+        "The days, the time and the place, as the club says them, such as \"First and third Tuesdays at 7:00 PM\". Keep it short."
+      ],
+      [
+        "Where",
+        "The place the club meets, its street if you know it, and a note such as the room. Set the pin yourself: click the map, drag the pin, or paste coordinates or a Google Maps link. If the club meets in two places, press Add another place. To take the second place off, press Remove place 2, then save."
+      ],
+      [
+        "Contact name",
+        "The person a visitor should ask for."
+      ],
+      [
+        "Email for messages",
+        "LCA can reach the club at this address. Visitors never see it."
+      ],
+      [
+        "Name and address",
+        "The city shows under the club's name and helps people find a club near them. The page's web address stays the same if the club is renamed, so old links keep working. To change the name, the region or the web address, ask an LCA admin."
+      ],
+      [
+        "Cost and who is welcome",
+        "Cost: what a club night costs, such as \"Free\" or \"$5 toward the room\". Who is welcome: who the club is for, and what a first-timer should bring or ask for. Tick a box only when it is true of the club."
+      ],
+      [
+        "Links",
+        "Paste the whole web address, starting with https://, such as the club's Facebook page. Leave a box empty if the club has no such page."
+      ],
+      [
+        "Logo and club color",
+        "Choose a picture. It is fitted and saved right away, without pressing Save and publish. The club's own color. A club with none shows LCA's gold."
+      ],
+      [
+        "Today's page shows different words here",
+        "The club's page shows different words than this box holds. Saving puts this box's words on the page in their place, so read both before you save."
+      ],
+      [
+        "Save and publish",
+        "Your changes show on the club's page right away. If you are not the club's regional representative, the representative gets an email saying what changed. Search results can take a few days to catch up."
+      ],
+      [
+        "Preview",
+        "How the club looks in a search result, when its link is shared, and on its card in the club directory. It changes as you type."
+      ]
+    ],
+    "own=false emailHidden=false pagesOn=true showAdmin=true": [
+      [
+        "One sentence about the club",
+        "Say what the club is in one sentence. It shows as About on the club's page, and its beginning shows in search results. You can write up to 2,000 characters."
+      ],
+      [
+        "How the club meets, in words",
+        "The days, the time and the place, as the club says them, such as \"First and third Tuesdays at 7:00 PM\". Keep it short."
+      ],
+      [
+        "Where",
+        "The place the club meets, its street if you know it, and a note such as the room. Set the pin yourself: click the map, drag the pin, or paste coordinates or a Google Maps link. If the club meets in two places, press Add another place. To take the second place off, press Remove place 2, then save."
+      ],
+      [
+        "Contact name shown on the page",
+        "The person a visitor should ask for."
+      ],
+      [
+        "Email for messages",
+        "Messages for the club are sent to this address. Visitors can see it on the club's page."
+      ],
+      [
+        "Name and address",
+        "The city shows under the club's name and helps people find a club near them. The page's web address stays the same if the club is renamed, so old links keep working."
+      ],
+      [
+        "Club name, region and page address",
+        "Only LCA admins can change these. The region decides which regional representative manages the club."
+      ],
+      [
+        "Cost and who is welcome",
+        "Cost: what a club night costs, such as \"Free\" or \"$5 toward the room\". Who is welcome: who the club is for, and what a first-timer should bring or ask for. Tick a box only when it is true of the club."
+      ],
+      [
+        "Links",
+        "Paste the whole web address, starting with https://, such as the club's Facebook page. Leave a box empty if the club has no such page."
+      ],
+      [
+        "Logo and club color",
+        "Choose a picture. It is fitted and saved right away, without pressing Save and publish. The club's own color. A club with none shows navy."
+      ],
+      [
+        "Today's page shows different words here",
+        "The club's page shows different words than this box holds. Saving puts this box's words on the page in their place, so read both before you save."
+      ],
+      [
+        "Save and publish",
+        "Your changes show on the club's page right away. If you are not the club's regional representative, the representative gets an email saying what changed. Search results can take a few days to catch up."
+      ],
+      [
+        "Preview",
+        "How the club looks in a search result, when its link is shared, and on its card in the club directory. It changes as you type."
+      ]
+    ],
+    "own=false emailHidden=false pagesOn=true showAdmin=false": [
+      [
+        "One sentence about the club",
+        "Say what the club is in one sentence. It shows as About on the club's page, and its beginning shows in search results. You can write up to 2,000 characters."
+      ],
+      [
+        "How the club meets, in words",
+        "The days, the time and the place, as the club says them, such as \"First and third Tuesdays at 7:00 PM\". Keep it short."
+      ],
+      [
+        "Where",
+        "The place the club meets, its street if you know it, and a note such as the room. Set the pin yourself: click the map, drag the pin, or paste coordinates or a Google Maps link. If the club meets in two places, press Add another place. To take the second place off, press Remove place 2, then save."
+      ],
+      [
+        "Contact name shown on the page",
+        "The person a visitor should ask for."
+      ],
+      [
+        "Email for messages",
+        "Messages for the club are sent to this address. Visitors can see it on the club's page."
+      ],
+      [
+        "Name and address",
+        "The city shows under the club's name and helps people find a club near them. The page's web address stays the same if the club is renamed, so old links keep working. To change the name, the region or the web address, ask an LCA admin."
+      ],
+      [
+        "Cost and who is welcome",
+        "Cost: what a club night costs, such as \"Free\" or \"$5 toward the room\". Who is welcome: who the club is for, and what a first-timer should bring or ask for. Tick a box only when it is true of the club."
+      ],
+      [
+        "Links",
+        "Paste the whole web address, starting with https://, such as the club's Facebook page. Leave a box empty if the club has no such page."
+      ],
+      [
+        "Logo and club color",
+        "Choose a picture. It is fitted and saved right away, without pressing Save and publish. The club's own color. A club with none shows navy."
+      ],
+      [
+        "Today's page shows different words here",
+        "The club's page shows different words than this box holds. Saving puts this box's words on the page in their place, so read both before you save."
+      ],
+      [
+        "Save and publish",
+        "Your changes show on the club's page right away. If you are not the club's regional representative, the representative gets an email saying what changed. Search results can take a few days to catch up."
+      ],
+      [
+        "Preview",
+        "How the club looks in a search result, when its link is shared, and on its card in the club directory. It changes as you type."
+      ]
+    ],
+    "own=false emailHidden=false pagesOn=false showAdmin=true": [
+      [
+        "One sentence about the club",
+        "Say what the club is in one sentence. It shows as About on the club's page, and its beginning shows in search results. You can write up to 2,000 characters."
+      ],
+      [
+        "How the club meets, in words",
+        "The days, the time and the place, as the club says them, such as \"First and third Tuesdays at 7:00 PM\". Keep it short."
+      ],
+      [
+        "Where",
+        "The place the club meets, its street if you know it, and a note such as the room. Set the pin yourself: click the map, drag the pin, or paste coordinates or a Google Maps link. If the club meets in two places, press Add another place. To take the second place off, press Remove place 2, then save."
+      ],
+      [
+        "Contact name",
+        "The person a visitor should ask for."
+      ],
+      [
+        "Email for messages",
+        "Messages for the club are sent to this address. Visitors can see it on the club's page."
+      ],
+      [
+        "Name and address",
+        "The city shows under the club's name and helps people find a club near them. The page's web address stays the same if the club is renamed, so old links keep working."
+      ],
+      [
+        "Club name, region and page address",
+        "Only LCA admins can change these. The region decides which regional representative manages the club."
+      ],
+      [
+        "Cost and who is welcome",
+        "Cost: what a club night costs, such as \"Free\" or \"$5 toward the room\". Who is welcome: who the club is for, and what a first-timer should bring or ask for. Tick a box only when it is true of the club."
+      ],
+      [
+        "Links",
+        "Paste the whole web address, starting with https://, such as the club's Facebook page. Leave a box empty if the club has no such page."
+      ],
+      [
+        "Logo and club color",
+        "Choose a picture. It is fitted and saved right away, without pressing Save and publish. The club's own color. A club with none shows LCA's gold."
+      ],
+      [
+        "Today's page shows different words here",
+        "The club's page shows different words than this box holds. Saving puts this box's words on the page in their place, so read both before you save."
+      ],
+      [
+        "Save and publish",
+        "Your changes show on the club's page right away. If you are not the club's regional representative, the representative gets an email saying what changed. Search results can take a few days to catch up."
+      ],
+      [
+        "Preview",
+        "How the club looks in a search result, when its link is shared, and on its card in the club directory. It changes as you type."
+      ]
+    ],
+    "own=false emailHidden=false pagesOn=false showAdmin=false": [
+      [
+        "One sentence about the club",
+        "Say what the club is in one sentence. It shows as About on the club's page, and its beginning shows in search results. You can write up to 2,000 characters."
+      ],
+      [
+        "How the club meets, in words",
+        "The days, the time and the place, as the club says them, such as \"First and third Tuesdays at 7:00 PM\". Keep it short."
+      ],
+      [
+        "Where",
+        "The place the club meets, its street if you know it, and a note such as the room. Set the pin yourself: click the map, drag the pin, or paste coordinates or a Google Maps link. If the club meets in two places, press Add another place. To take the second place off, press Remove place 2, then save."
+      ],
+      [
+        "Contact name",
+        "The person a visitor should ask for."
+      ],
+      [
+        "Email for messages",
+        "Messages for the club are sent to this address. Visitors can see it on the club's page."
+      ],
+      [
+        "Name and address",
+        "The city shows under the club's name and helps people find a club near them. The page's web address stays the same if the club is renamed, so old links keep working. To change the name, the region or the web address, ask an LCA admin."
+      ],
+      [
+        "Cost and who is welcome",
+        "Cost: what a club night costs, such as \"Free\" or \"$5 toward the room\". Who is welcome: who the club is for, and what a first-timer should bring or ask for. Tick a box only when it is true of the club."
+      ],
+      [
+        "Links",
+        "Paste the whole web address, starting with https://, such as the club's Facebook page. Leave a box empty if the club has no such page."
+      ],
+      [
+        "Logo and club color",
+        "Choose a picture. It is fitted and saved right away, without pressing Save and publish. The club's own color. A club with none shows LCA's gold."
+      ],
+      [
+        "Today's page shows different words here",
+        "The club's page shows different words than this box holds. Saving puts this box's words on the page in their place, so read both before you save."
+      ],
+      [
+        "Save and publish",
+        "Your changes show on the club's page right away. If you are not the club's regional representative, the representative gets an email saying what changed. Search results can take a few days to catch up."
+      ],
+      [
+        "Preview",
+        "How the club looks in a search result, when its link is shared, and on its card in the club directory. It changes as you type."
+      ]
+    ]
+  },
+  "region": {
+    "isAdmin=true": [
+      [
+        "What this page is",
+        "A card for each club, in every region, with when its listing was last checked."
+      ],
+      [
+        "Still accurate",
+        "Press it when the club's listing is still right. Saving the listing counts as a check too."
+      ],
+      [
+        "The 90 days",
+        "A club needs a check when nobody has pressed Still accurate or saved its listing in the last 90 days. Those clubs come first."
+      ],
+      [
+        "Confirm all still accurate",
+        "Marks every club that needs a check as still accurate, after asking you once. A club that cannot be marked is named and left as it was."
+      ],
+      [
+        "The monthly check",
+        "The day the next monthly check is due."
+      ],
+      [
+        "Open",
+        "Opens the club's listing, where you can change it."
+      ],
+      [
+        "Who sees the stamps",
+        "Only My region shows when a club was checked. No public page does."
+      ]
+    ],
+    "isAdmin=false": [
+      [
+        "What this page is",
+        "A card for each club in your region, with when its listing was last checked."
+      ],
+      [
+        "Still accurate",
+        "Press it when the club's listing is still right. Saving the listing counts as a check too."
+      ],
+      [
+        "The 90 days",
+        "A club needs a check when nobody has pressed Still accurate or saved its listing in the last 90 days. Those clubs come first."
+      ],
+      [
+        "Confirm all still accurate",
+        "Marks every club that needs a check as still accurate, after asking you once. A club that cannot be marked is named and left as it was."
+      ],
+      [
+        "The monthly check",
+        "The day the next monthly check is due."
+      ],
+      [
+        "Open",
+        "Opens the club's listing, where you can change it."
+      ],
+      [
+        "Who sees the stamps",
+        "Only My region shows when a club was checked. No public page does."
+      ]
+    ]
+  }
+}
