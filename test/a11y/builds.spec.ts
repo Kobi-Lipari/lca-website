@@ -15,18 +15,23 @@
 //   and follows the plain-language rules: a weekday on the date, "7:00 PM",
 //   "US Chess" and half points as ½
 // - the page loads with no script error and no request to any other host
+// - the clubs build (the a11y-clubs project) is the a11y-on build's switches
+//   and newClubs, on a port, an inspector port and a database of its own
 //
 // Reads only: nothing here writes to either project's local database.
 import { existsSync, readdirSync } from 'node:fs'
 import { join } from 'node:path'
 import { expect, test } from './support'
-import { A11Y_VARIANTS, ROOT } from './global-setup'
+import { A11Y_CLUBS_VARIANT, A11Y_VARIANTS, ROOT } from './global-setup'
 
 /** The switches the a11y-on build turns on, in the order test/a11y/global-setup.ts gives them. */
 const SWITCHES_ON = ['newLook', 'themeHeritage', 'newNav', 'siteSearch', 'eventStrip', 'eventStripLive', 'liveMarker']
 
 /** The switches src/lib/features.ts itself ships on, and so on in both builds, each since the change that turned it on. */
 const SHIPPED_ON = ['clubEmailHidden', 'mailLists', 'clubKeepers', 'mailPage', 'regionEvents', 'mailPageSend']
+
+/** The switches the clubs build turns on: the a11y-on build's and newClubs, nothing else. */
+const CLUBS_SWITCHES_ON = [...SWITCHES_ON, 'newClubs']
 
 /** The build folder of the project the test is running in. */
 function variantOf(project: string) {
@@ -85,6 +90,17 @@ test.describe('which build is served', () => {
     // The other build's file is not on this server: what comes back (the site's page, for an unknown path) has no switches in it.
     const foreign = await request.get(`/assets/${featuresOf(other.dist)}`)
     expect(await foreign.text()).not.toContain('newLook')
+  })
+
+  test('the clubs build is the a11y-on build\'s switches and newClubs, with a folder, ports and a database of its own', () => {
+    expect(A11Y_CLUBS_VARIANT.flags.split(',')).toEqual(CLUBS_SWITCHES_ON)
+    expect(A11Y_VARIANTS.map((v) => v.name)).not.toContain(A11Y_CLUBS_VARIANT.name)
+    for (const v of A11Y_VARIANTS) {
+      expect(A11Y_CLUBS_VARIANT.dist, v.name).not.toBe(v.dist)
+      expect(A11Y_CLUBS_VARIANT.port, v.name).not.toBe(v.port)
+      expect(A11Y_CLUBS_VARIANT.inspectorPort, v.name).not.toBe(v.inspectorPort)
+      expect(A11Y_CLUBS_VARIANT.persist, v.name).not.toBe(v.persist)
+    }
   })
 })
 

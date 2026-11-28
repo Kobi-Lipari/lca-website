@@ -233,26 +233,26 @@ describe('the club editor after a save that folds the second place away', () => 
 })
 
 describe('Help while the new club pages are off', () => {
-  it('says the cost, who is welcome, the two ticks, the links and the previews wait for the new club pages, and says none of it once they are on', async () => {
+  it('says the cost, who is welcome, the two ticks, the links, Save and publish and the previews in the same words with the new club pages off and on, and says none of them wait for those pages', async () => {
+    // Help no longer says which fields wait for the new club pages (K's note); the page's own tests hold what today's page draws.
+    const SAME = [
+      'Cost: what a club night costs, such as "Free" or "$5 toward the room". Who is welcome: who the club is for, and what a first-timer should bring or ask for. Tick a box only when it is true of the club.',
+      'Paste the whole web address, starting with https://, such as the club\'s Facebook page. Leave a box empty if the club has no such page.',
+      'Your changes show on the club\'s page right away. If you are not the club\'s regional representative, the representative gets an email saying what changed. Search results can take a few days to catch up.',
+      'How the club looks in a search result, when its link is shared, and on its card in the club directory. It changes as you type.',
+    ]
     serve(CLUB, [PLACE_1])
     await openEditor()
     const off = help().textContent ?? ''
-    for (const words of [
-      'Today\'s club page and directory show none of these; they show once the new club pages open, and the new directory\'s filters read the ticks.',
-      'Today\'s club page shows none of these links; they show once the new club pages open, and a box left empty shows no link there.',
-      'the contact name and the place\'s note show once the new club pages open. So do the cost, who is welcome, the two ticks and the links.',
-      'They show the new club pages as they will be once they open, not today\'s page.',
-    ]) expect(off, words).toContain(words)
-    expect(off).not.toContain('the club directory\'s filters read them.')
-    expect(off).not.toContain('Leave a box empty to show no link there.')
+    for (const words of SAME) expect(off, words).toContain(words)
+    expect(off).not.toMatch(/once the new club pages open|once they open|show none of these/)
     cleanup()
     flags.newClubs = true
     flags.newLook = true
     serve(CLUB, [PLACE_1])
     await openEditor()
     const on = help().textContent ?? ''
-    expect(on).toContain('only when it is so; the club directory\'s filters read them.')
-    expect(on).toContain('Leave a box empty to show no link there.')
+    for (const words of SAME) expect(on, words).toContain(words)
     expect(on).not.toMatch(/once the new club pages open|once they open|show none of these/)
   })
 })

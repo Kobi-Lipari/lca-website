@@ -327,7 +327,8 @@ describe('REDESIGN_STATUS.md, WS09 aside on the public event page: the pins, the
     expect(read('src/components/ui/button.tsx')).toContain('outline-none select-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-focus')
     expect(read('src/components/ui/input.tsx')).toContain('focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring')
     const list = ws09.slice(ws09.indexOf(`\n${LISTS[3]}\n`) + 1)
-    expect(list).not.toContain('(WS09 aside: ')
+    // The question marks' words put two follow-ups of their own in the list; the ring is still this block's alone.
+    expect(list).not.toContain('(WS09 aside: the event page)')
   })
 
   it('gives the Status line one clause for the aside, keeps the pull request numbers, and says no merge the record does not hold', () => {

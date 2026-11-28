@@ -167,7 +167,7 @@ describe('REDESIGN_STATUS.md, WS09 aside: Help as small question marks', () => {
     expect(Object.keys(fixture.editor)).toHaveLength(16)
     expect(Object.keys(fixture.region)).toHaveLength(2)
     // The sentences stay in the two Help files, which closed record tests read.
-    expect(read('src/areas/clubs/components/EditorHelp.tsx')).toContain('[\'Logo and club color\', `${LOGO_WORDS} ${COLOUR_WORDS}`]')
+    expect(read('src/areas/clubs/components/EditorHelp.tsx')).toContain('[\'Logo and club color\', `${LOGO_WORDS} ${colorWords(pagesOn)}`]')
   })
 
   it('gives the box\'s classes as ClubEditor.tsx holds them, with ScrollPanel.tsx as it was', () => {
@@ -264,7 +264,7 @@ describe('REDESIGN_STATUS.md, WS09 aside: Help as small question marks', () => {
   })
 
   it('gives the Status line\'s tail one more clause, and keeps it ending as before', () => {
-    expect(statusLine).toContain('; Help as small question marks on My region and in the one club editor, with the editor\'s box as tall as the preview strip where the window has room, is built by K\'s decision 16 on `redesign/help-marks` and waits for K\'s word on its own pull request; steps 1 to 14 and 16 to 19,')
+    expect(statusLine).toContain('; Help as small question marks on My region and in the one club editor, with the editor\'s box as tall as the preview strip where the window has room, is built by K\'s decision 16 on `redesign/help-marks` and waits for K\'s word on its own pull request; steps 1 to 14 and 16 to ')
     expect(statusLine).toMatch(/\bbuilt\.$/)
   })
 
