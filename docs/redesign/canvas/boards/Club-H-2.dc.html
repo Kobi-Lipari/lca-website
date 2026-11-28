@@ -1,0 +1,664 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Club page · H-2 · Club-H-2 · Your club's page, the thin club and a phone (round 3)</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/6107adb451dbab26ee5d89f4189b81f8">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1a2744}
+.ch-root{box-sizing:border-box;padding:20px 0 18px;background:#ecebe6;color:#1a2744}
+.ch-root *{box-sizing:border-box}
+/* board doc strip */
+.ch-doc{margin:0 40px;background:#fbfaf6;border:1px solid #d9d8d1;border-radius:14px;padding:18px 22px 16px}
+.ch-doc-top{display:flex;justify-content:space-between;align-items:flex-start;gap:24px}
+.ch-title{font-size:32px;line-height:1.15;font-weight:700;letter-spacing:-.015em;margin:6px 0 0}
+.ch-ml{font-size:12.5px;line-height:1.42;color:#3d4556;margin:3px 0 0;max-width:770px}
+.ch-ml b{color:#1a2744;font-weight:600}
+.ch-round{display:inline-flex;align-items:center;height:26px;padding:0 10px;border-radius:6px;background:#1a2744;color:#ffffff;font-size:12.5px;font-weight:700;letter-spacing:.04em}
+.ch-grey{flex:none;width:540px;align-self:stretch;background:#efefea;border:1px solid #dfded6;border-radius:10px;padding:12px 14px;display:grid;grid-template-columns:1fr 1fr;gap:10px 16px}
+.ch-grey > div > p + p{margin-top:8px}
+.ch-grey p{font-size:12px;line-height:1.4;color:#2b3446;margin:0}
+.ch-grey b{display:block;font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#555c6b;margin-bottom:2px}
+.ch-grey ol{margin:0;padding-left:16px;font-size:12px;line-height:1.4;color:#2b3446}
+.ch-grey li{margin-bottom:4px}
+.ch-lbox{background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:11px 16px 12px;margin-top:12px}
+.ch-notes{list-style:none;margin:10px 0 0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px 26px}
+.ch-notes li{display:flex;gap:8px;align-items:flex-start;font-size:12px;line-height:1.42;color:#2b3446}
+.ch-notes .k-num-badge{width:22px;height:22px;font-size:11.5px}
+.ch-notes b{font-weight:600;color:#1a2744}
+.ch-prop{display:inline-flex;align-items:center;gap:5px;padding:2px 7px;border-radius:5px;background:#e8edf4;color:#2d3a52;font-size:11px;font-weight:700;letter-spacing:.03em;white-space:nowrap;border:1px solid #c9d3e2}
+.ch-data{margin:12px 0 0;padding-top:10px;border-top:1px solid #ecebe5;font-size:11.5px;line-height:1.45;color:#555c6b}
+.ch-data code,.ch-mono{font-family:"Geist Mono",ui-monospace,monospace;font-size:11.5px;color:#2b3446}
+.ch-flab{display:flex;align-items:center;gap:12px;margin:16px 40px 8px}
+.ch-flab h2{white-space:nowrap;margin:0;font-size:19px;line-height:1.2;font-weight:600;letter-spacing:-.01em}
+.ch-code{display:inline-flex;align-items:center;justify-content:center;min-width:28px;height:28px;padding:0 9px;border-radius:7px;background:#c8a94a;color:#1a2744;font-weight:700;font-size:13px}
+.ch-urlchip{white-space:nowrap;font-family:"Geist Mono",ui-monospace,monospace;font-size:12px;color:#3d4556;background:#ffffff;border:1px solid #d9d8d1;border-radius:7px;padding:4px 10px;margin-left:auto}
+.ch-frame{width:1440px;background:#ffffff;border-top:1px solid #cfcec6;border-bottom:1px solid #cfcec6;box-shadow:0 20px 50px rgba(16,24,43,.10)}
+.ch-frame .k-browser-url{max-width:760px}
+.ch-page{background:#f5f5f2;position:relative}
+.ch-nb{width:24px;height:24px;font-size:12px}
+.ch-nbs{width:20px;height:20px;font-size:10.5px;vertical-align:middle}
+.ch-anno{display:flex;gap:8px;align-items:flex-start;border:1px dashed #9a988d;border-radius:10px;background:#fbfbf8;padding:7px 11px;font-size:12.5px;line-height:1.45;color:#3d4556;margin:0}
+.ch-anno b{color:#1a2744;font-weight:600}
+/* decided header + footer */
+.ch-hd-in{gap:0;position:relative}
+.ch-hd .k-brand{margin-right:16px}
+.ch-rook{width:30px;height:30px;fill:#ffffff;flex:none}
+.ch-rook-sm{width:24px;height:24px}
+.ch-nav{gap:0}
+.ch-nav a{padding:0 10px;white-space:nowrap}
+.ch-navbtn{display:inline-flex;align-items:center;gap:4px;min-height:44px;padding:0 10px;border:0;background:transparent;color:#ffffff;font:inherit;font-size:15px;font-weight:500;cursor:pointer}
+.ch-sbtn{display:inline-flex;align-items:center;gap:8px;width:220px;height:44px;padding:0 8px 0 12px;margin-right:16px;border-radius:8px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.45);color:#ffffff;text-decoration:none;font-size:14.5px;font-weight:500;flex:none}
+.ch-kbd{margin-left:auto;font-family:"Geist Mono",ui-monospace,monospace;font-size:12px;color:#e8ecf4;border:1px solid rgba(255,255,255,.4);border-radius:5px;padding:2px 6px;line-height:1.2}
+.ch-util{gap:12px}
+.ch-util .k-ulink{padding:0 4px}
+.ch-foot-in{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px;padding-top:20px;padding-bottom:22px}
+.ch-foot .k-meta{color:rgba(255,255,255,.78)}
+.ch-foot nav a{font-size:14px}
+/* the sheet */
+.ch-band{height:8px;background:#2f6b4f}
+.ch-sheet{background:#f2f6f4;border-bottom:1px solid #dfe8e2;padding:0 40px 18px}
+.ch-crow{display:flex;justify-content:space-between;align-items:center;gap:20px;padding:14px 0 0}
+.ch-crumbs{display:flex;flex-wrap:wrap;gap:8px;font-size:13px;color:#555c6b}
+.ch-crumbs a{color:#1a2744}
+.ch-sgrid{display:grid;grid-template-columns:420px minmax(0,1fr);gap:32px;padding:12px 0 18px;align-items:stretch}
+.ch-left{display:flex;flex-direction:column;gap:10px}
+.ch-logo{width:96px;height:96px;border-radius:16px;background:#ffffff;border:1px solid #d6e3db;padding:8px;position:relative}
+.ch-logo .k-img{width:100%;height:100%;border-radius:9px;font-size:11px;padding:6px 8px}
+.ch-h1{font-size:38px;line-height:1.05;font-weight:700;letter-spacing:-.02em;margin:0}
+.ch-city{font-size:15px;line-height:1.4;font-weight:500;color:#3d4556;margin:0}
+.ch-one{font-size:18px;line-height:1.5;color:#1a2744;margin:0}
+.ch-btns{display:flex;flex-direction:column;gap:7px}
+.ch-btns .k-btn{min-height:42px}
+.ch-btns .k-btn{width:100%}
+.ch-ghosts{display:flex;align-items:center;gap:4px;flex-wrap:wrap;font-size:14px}
+.ch-ghosts a{display:inline-flex;align-items:center;gap:6px;color:#1a2744;font-weight:600;text-decoration:none;padding:6px 6px;border-radius:6px}
+.ch-ghosts span{color:#9a9fab}
+.ch-author{font-size:13px;line-height:1.5;color:#3d4556;margin:0;padding-top:8px;border-top:1px solid #dbe5df}
+.ch-author b{color:#1a2744;font-weight:600}
+.ch-sug{font-size:13px;font-weight:600;color:#1a2744;text-decoration:underline;text-decoration-color:#c8a94a;text-decoration-thickness:2px;text-underline-offset:3px;white-space:nowrap}
+.ch-cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:auto auto;gap:16px}
+.ch-card{background:#ffffff;border:1px solid #d6e3db;border-top:4px solid #2f6b4f;border-radius:12px;padding:13px 16px 11px;display:flex;flex-direction:column;gap:8px;min-height:230px;position:relative}
+.ch-clab{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:11.5px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:#555c6b;margin:0}
+.ch-ctext{font-size:14.5px;line-height:1.5;color:#1a2744;margin:0}
+.ch-cfoot{margin-top:auto;display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:12px;color:#555c6b;border-top:1px solid #f0efea;padding-top:8px}
+.ch-cfoot .ch-sug{font-size:12px}
+.ch-place{display:flex;gap:9px;align-items:flex-start;font-size:14px;line-height:1.45;color:#1a2744}
+.ch-pno{width:22px;height:22px;border-radius:50%;background:#2f6b4f;color:#ffffff;font-size:11.5px;font-weight:700;display:flex;align-items:center;justify-content:center;flex:none;margin-top:1px}
+.ch-pno-n{background:#1a2744}
+.ch-tbc{color:#555c6b;font-size:12.5px}
+.ch-out{color:#1a2744;font-size:14px;font-weight:600;text-decoration:underline;text-decoration-color:#9aa1b0;text-underline-offset:3px;white-space:nowrap}
+.ch-strip{display:grid;grid-template-columns:repeat(4,330px);justify-content:space-between;gap:10px}
+.ch-ph{height:190px;width:330px;border-radius:10px;font-size:12px}
+.ch-cap{font-size:12.5px;line-height:1.4;color:#3d4556;margin:6px 0 0}
+.ch-striphd{display:flex;align-items:center;gap:10px;margin:0 0 8px}
+/* jump strip */
+.ch-jump{height:50px;background:#ffffff;border-bottom:1px solid #e4e2db;display:flex;align-items:center;justify-content:space-between;padding:0 40px;gap:20px}
+.ch-jump nav{display:flex;align-items:center;gap:4px;font-size:14.5px}
+.ch-jump nav a{color:#1a2744;font-weight:600;text-decoration:none;padding:6px 8px;border-radius:6px}
+.ch-jump nav span.sep{color:#9a9fab}
+/* sections */
+.ch-sec{padding:22px 40px}
+.ch-alt{background:#fbfaf6;border-top:1px solid #ecebe6;border-bottom:1px solid #ecebe6}
+.ch-h{display:flex;align-items:center;gap:10px;margin:0;font-size:24px;line-height:1.2;font-weight:700;letter-spacing:-.01em;color:#1a2744}
+.ch-bar{width:6px;height:24px;border-radius:3px;background:#2f6b4f;flex:none}
+.ch-about{display:grid;grid-template-columns:minmax(0,1fr) 420px;gap:40px;align-items:start}
+.ch-paras{columns:2;column-gap:34px;margin-top:12px}
+.ch-vrow{display:grid;grid-template-columns:1fr 1fr;gap:34px;padding-top:10px;border-top:1px solid #ecebe6}
+.ch-mnote{position:absolute;left:10px;right:10px;bottom:10px;background:rgba(255,255,255,.92);border:1px dashed #9a988d;border-radius:7px;padding:4px 8px;font-size:11.5px;line-height:1.35;color:#3d4556}
+.ch-paras p{font-size:17px;line-height:1.55;color:#1a2744;margin:0 0 12px;break-inside:avoid}
+.ch-map{height:300px;width:420px}
+.ch-mpin{position:absolute;width:26px;height:26px;margin:-13px 0 0 -13px;border-radius:50%;background:#2f6b4f;color:#ffffff;border:2px solid #ffffff;box-shadow:0 2px 6px rgba(26,39,68,.35);font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center}
+.ch-mlab{position:absolute;background:#ffffff;border:1px solid #e4e2db;border-radius:6px;padding:2px 7px;font-size:11.5px;font-weight:600;color:#1a2744;white-space:nowrap}
+.ch-road{position:absolute;background:#ffffff;border:1px solid #dfe3e8}
+.ch-two{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:40px;align-items:start}
+.ch-ev{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:16px;align-items:center;padding:10px 0;border-bottom:1px solid #e4e2db}
+.ch-evt{display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px;margin:0 0 3px}
+.ch-ev b.t{display:block;font-size:16px;color:#1a2744;margin:0;font-weight:600}
+.ch-ev .k-date{width:54px;min-height:54px}
+.ch-ev .k-date b{font-size:21px}
+.ch-fill{display:inline-block;width:100px;height:6px;border-radius:3px;background:#e6e5de;vertical-align:middle;margin-left:8px;overflow:hidden}
+.ch-fill i{display:block;height:100%;background:#2f6b4f}
+.ch-evact{display:flex;flex-direction:column;align-items:flex-end;gap:6px}
+.ch-empty{border:1.5px dashed #b9b7ad;border-radius:10px;background:#fbfbf8;padding:10px 14px;font-size:13px;line-height:1.45;color:#3d4556;margin:12px 0 0}
+.ch-post{padding:8px 0;border-bottom:1px solid #e4e2db;display:flex;flex-direction:column;gap:3px}
+.ch-post:last-of-type{border-bottom:0}
+.ch-post h3{margin:0;font-size:16px;line-height:1.3;font-weight:600}
+.ch-post h3 a{color:#1a2744;text-decoration:none}
+.ch-post p{margin:0}
+.ch-cn{display:grid;grid-template-columns:minmax(0,1fr) 560px;gap:28px;align-items:start}
+.ch-ts{display:flex;align-items:center;gap:12px;width:280px;height:46px;padding:0 14px;border:1px solid #d6d5cd;border-radius:6px;background:#fafaf7;font-size:13.5px;color:#3d4556}
+.ch-ts i{display:block;width:22px;height:22px;border:2px solid #858b99;border-radius:4px;background:#ffffff;flex:none}
+.ch-ts span{margin-left:auto;font-size:11px;color:#555c6b;text-align:right;line-height:1.25}
+.ch-near{display:flex;flex-direction:column;gap:1px;padding:7px 0;border-bottom:1px solid #ecebe6;font-size:13.5px;line-height:1.45}
+.ch-near a.n{font-weight:600;color:#1a2744;font-size:15.5px;text-decoration:none}
+.ch-near q{color:#1a2744}
+.ch-ooc{background:#fbfaf6;border:1px solid #e6e4da;border-radius:10px;padding:10px 12px;font-size:13px;line-height:1.45;color:#3d4556;display:flex;gap:10px;align-items:flex-start}
+/* search and sharing panel */
+.ch-seo{margin:14px 40px 0;background:#ffffff;border:1px solid #d9d8d1;border-radius:14px;padding:14px 20px 16px}
+.ch-seo-hd{display:flex;align-items:center;gap:12px;margin:0 0 4px}
+.ch-seo-hd h2{margin:0;font-size:21px;line-height:1.2;font-weight:700;letter-spacing:-.01em}
+.ch-tiles{display:grid;grid-template-columns:240px 300px 312px minmax(0,1fr) 160px;gap:12px;margin-top:12px}
+.ch-tiles2{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:14px;margin-top:14px}
+.ch-tile{border:1px solid #e1e0d8;border-radius:12px;background:#fbfbf8;padding:11px 12px;display:flex;flex-direction:column;gap:8px}
+.ch-tlab{font-size:11.5px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:#555c6b;margin:0}
+.ch-tp{font-size:12.5px;line-height:1.45;color:#3d4556;margin:0}
+.ch-tp b{color:#1a2744;font-weight:600}
+.ch-codebox{font-family:"Geist Mono",ui-monospace,monospace;font-size:11px;line-height:1.5;color:#1a2744;background:#ffffff;border:1px solid #e1e0d8;border-radius:8px;padding:8px 10px;margin:0;white-space:pre-wrap;word-break:break-word}
+.ch-from{display:inline-flex;align-items:center;gap:6px;align-self:flex-start;padding:3px 9px 3px 6px;border-radius:999px;background:#e5efe9;border:1px solid #b8d2c2;color:#1d4a35;font-size:11.5px;font-weight:600;line-height:1.3}
+.ch-from svg{width:14px;height:14px;fill:none;stroke:#1d4a35;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.ch-g{background:#ffffff;border:1px solid #e1e0d8;border-radius:10px;padding:12px 14px;font-family:Arial,Helvetica,sans-serif}
+.ch-g-site{display:flex;align-items:center;gap:8px}
+.ch-g-fav{width:26px;height:26px;border-radius:50%;background:#1a2744;display:flex;align-items:center;justify-content:center;flex:none}
+.ch-g-fav svg{width:15px;height:15px;fill:#ffffff}
+.ch-g-n{font-size:13px;color:#202124;line-height:1.25}
+.ch-g-u{font-size:12px;color:#4d5156;line-height:1.25}
+.ch-g-t{font-size:15.5px;line-height:1.3;color:#1a0dab;margin:8px 0 3px;font-weight:400}
+.ch-g-d{font-size:12.5px;line-height:1.45;color:#474747;margin:0}
+.ch-share{display:grid;grid-template-columns:230px minmax(0,1fr);gap:14px;align-items:start}
+.ch-fb{border:1px solid #d6d8dc;border-radius:8px;overflow:hidden;background:#ffffff;font-family:Arial,Helvetica,sans-serif}
+.ch-fb .k-img{height:92px;border-radius:0;font-size:11.5px}
+.ch-fb-b{background:#f0f2f5;padding:6px 9px;border-top:1px solid #d6d8dc}
+.ch-fb-b span{display:block;font-size:11px;color:#606770;text-transform:uppercase;letter-spacing:.02em}
+.ch-fb-b b{display:block;font-size:13px;color:#1d2129;margin:2px 0 1px}
+.ch-fb-b i{display:block;font-style:normal;font-size:11px;color:#606770}
+.ch-bub{background:#e9e9eb;border-radius:14px;padding:4px;display:flex;flex-direction:column;gap:0;width:102px;flex:none;overflow:hidden}
+.ch-bub .k-img{height:56px;border-radius:11px 11px 0 0;font-size:10.5px;padding:6px 8px}
+.ch-bub-b{background:#ffffff;padding:5px 7px 6px;border-radius:0 0 11px 11px;font-family:Arial,Helvetica,sans-serif}
+.ch-bub-b b{display:block;font-size:11.5px;color:#111111;line-height:1.3}
+.ch-bub-b span{font-size:9.5px;color:#6b6b6b}
+.ch-fallback{width:156px;min-height:86px;gap:4px;flex:none;border-radius:8px;background:#2f6b4f;color:#ffffff;padding:10px 12px;display:flex;flex-direction:column;justify-content:space-between}
+.ch-fallback b{font-size:11.5px;line-height:1.3;font-weight:600}
+.ch-fallback span{font-size:10.5px;color:#e3efe8}
+.ch-ticks{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:1fr;gap:7px}
+.ch-ticks li{display:flex;gap:8px;align-items:flex-start;font-size:12px;line-height:1.45;color:#2b3446}
+.ch-ticks li b{color:#1a2744;font-weight:600}
+.ch-tk{width:18px;height:18px;border-radius:50%;background:#e1f0e7;color:#145b3a;display:flex;align-items:center;justify-content:center;flex:none;margin-top:1px}
+.ch-tk svg{width:12px;height:12px;fill:none;stroke:#145b3a;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+.ch-print{width:160px;height:207px;align-self:center;background:#ffffff;border:1px solid #c9c8c0;box-shadow:0 4px 12px rgba(16,24,43,.10);padding:9px 9px 8px;display:flex;flex-direction:column;gap:4px;flex:none}
+.ch-print .pt{font-size:9.5px;font-weight:700;line-height:1.1;color:#1a2744}
+.ch-print .pc{font-size:6px;color:#3d4556;line-height:1.2}
+.ch-print .pg{display:grid;grid-template-columns:1fr 1fr;gap:3px;flex:1}
+.ch-print .pg i{display:block;border:1px solid #cfd9d3;border-top:2px solid #2f6b4f;border-radius:2px;background:repeating-linear-gradient(180deg,#ffffff 0 3px,#e8e7e1 3px 4px)}
+.ch-print .pf{display:flex;justify-content:space-between;align-items:flex-end;gap:4px}
+.ch-print .pf span{font-size:5.5px;color:#3d4556;line-height:1.25}
+.ch-qr{width:38px;height:38px;flex:none;display:block}
+.ch-root .ch-title{font-size:28px}
+.ch-root .ch-flab{margin-top:12px}
+.ch-my{display:inline-flex;align-items:center;gap:7px;min-height:44px;padding:0 8px;border:0;border-radius:8px;background:transparent;color:#ffffff;font:inherit;font-size:14px;font-weight:500}
+.ch-av{width:28px;height:28px;border-radius:50%;background:#c8a94a;color:#1a2744;font-size:11.5px;font-weight:700;display:flex;align-items:center;justify-content:center}
+.ch-sug{font-size:13px;font-weight:600;color:#1a2744;text-decoration:underline;text-decoration-color:#c8a94a;text-decoration-thickness:2px;text-underline-offset:3px;white-space:nowrap}
+.ch-out{color:#1a2744;font-size:14px;font-weight:600;text-decoration:underline;text-decoration-color:#9aa1b0;text-underline-offset:3px;white-space:nowrap}
+.ch-blank{color:#555c6b;font-style:italic}
+/* editor */
+.ce-top{display:flex;justify-content:space-between;align-items:center;gap:20px;padding:14px 40px 12px;background:#ffffff;border-bottom:1px solid #e4e2db}
+.ce-h1{font-size:28px;line-height:1.15;font-weight:700;letter-spacing:-.015em;margin:0}
+.ce-sub{font-size:13.5px;line-height:1.5;color:#3d4556;margin:4px 0 0}
+.ce-sub b{color:#1a2744;font-weight:600}
+.ce-toast{display:flex;gap:10px;align-items:center;background:#e1f0e7;border:1px solid #b9dcc6;border-radius:10px;padding:9px 13px;font-size:13px;line-height:1.4;color:#145b3a;flex:none}
+.ce-toast b{color:#145b3a}
+.ce-cols{display:grid;grid-template-columns:820px 540px;gap:0 0;justify-content:space-between;padding:14px 40px 18px;align-items:start}
+.ce-form{background:#ffffff;border:1px solid #dddcd4;border-radius:12px;overflow:hidden}
+.ce-row{display:grid;grid-template-columns:1fr 1fr;gap:18px;padding:10px 16px;border-bottom:1px solid #ecebe6}
+.ce-row-1{grid-template-columns:1fr}
+.ce-sec{display:flex;flex-direction:column;gap:7px;min-width:0}
+.ce-sh{display:flex;align-items:center;gap:8px;margin:0;font-size:14.5px;font-weight:700;color:#1a2744}
+.ce-n{width:18px;height:18px;border-radius:50%;background:#2f6b4f;color:#ffffff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex:none}
+.ce-form .k-field{gap:3px}
+.ce-form .k-field label{font-size:12.5px;font-weight:600;color:#3d4556}
+.ce-form .k-input{min-height:36px;font-size:13.5px;padding:0 10px;border-color:#a5aab5}
+.ce-form textarea.k-input{padding:7px 10px;line-height:1.45;resize:none}
+.ce-g2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.ce-g3{display:grid;grid-template-columns:230px 140px 1fr;gap:10px;align-items:start}
+.ce-form .k-field label{display:flex;align-items:center;gap:6px}
+.ce-lab{display:flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;color:#3d4556}
+.ce-hl{font-weight:400;color:#555c6b;font-size:11.5px}
+.ce-help{font-size:12px;line-height:1.45;color:#555c6b;margin:0}
+.ce-help b{color:#1a2744;font-weight:600}
+.ce-addr{background:#f2f2ee;border:1px solid #e1e0d8;border-radius:8px;padding:7px 10px;font-size:12px;line-height:1.45;color:#3d4556;margin:0}
+.ce-addr code{font-family:"Geist Mono",ui-monospace,monospace;font-size:11.5px;color:#1a2744;font-weight:600}
+.ce-count{font-size:11.5px;color:#555c6b;text-align:right;margin:0}
+.ce-place{display:grid;grid-template-columns:minmax(0,1fr) 200px;gap:12px;align-items:start}
+.ce-form input.k-input{text-overflow:ellipsis}
+.ce-g3.ce-pl{grid-template-columns:minmax(0,1fr) minmax(0,1.2fr) minmax(0,1fr)}
+.ce-g3.ce-pl .k-input{font-size:13px;padding:0 9px}
+.ph-main::after{content:"";position:absolute;left:0;right:0;bottom:0;height:34px;background:linear-gradient(rgba(242,246,244,0),#f2f6f4);pointer-events:none}
+.ce-pmap{height:122px;border-radius:9px;position:relative}
+.ce-pmap .ch-mpin{width:22px;height:22px;margin:-11px 0 0 -11px;font-size:11px}
+.ce-use{position:absolute;left:8px;bottom:8px;background:#ffffff;border:1px solid #c4c3bb;border-radius:6px;padding:3px 8px;font-size:11.5px;font-weight:600;color:#1a2744}
+.ce-p2{display:grid;grid-template-columns:160px 1fr 1fr;gap:10px;align-items:end}
+.ce-add{font-size:12.5px;font-weight:600;color:#1a2744;text-decoration:underline;text-decoration-color:#c8a94a;text-decoration-thickness:2px;text-underline-offset:3px}
+.ce-photos{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:9px}
+.ce-ph{display:flex;flex-direction:column;gap:4px}
+.ce-ph .k-img{height:58px;border-radius:7px;font-size:10px;padding:4px 6px}
+.ce-ph .k-input{min-height:30px;font-size:11px;padding:0 6px}
+.ce-ph-1 .k-img{outline:3px solid #c8a94a;outline-offset:1px}
+.ce-phl{font-size:10.5px;line-height:1.3;color:#3d4556;font-weight:600}
+.ce-empty{height:58px;border:1.5px dashed #b9b7ad;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:11.5px;font-weight:600;color:#3d4556;background:#fbfbf8}
+.ce-sw{display:flex;gap:6px;align-items:center}
+.ce-sw i{display:block;width:24px;height:24px;border-radius:6px}
+.ce-sw i.on{outline:2px solid #1a2744;outline-offset:2px}
+.ce-save{display:flex;align-items:center;gap:12px;padding:10px 16px;background:#fbfaf6;border-top:1px solid #dddcd4;box-shadow:0 -6px 16px rgba(16,24,43,.05)}
+.ce-save p{margin:0 0 0 auto;font-size:12.5px;line-height:1.4;color:#3d4556;max-width:330px;text-align:right}
+.ce-prev{display:flex;flex-direction:column;gap:12px}
+.ce-pc{background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:12px 14px;display:flex;flex-direction:column;gap:8px}
+.ce-pct{font-size:13px;font-weight:700;color:#1a2744;margin:0;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.ce-mini{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
+.ce-mc{border:1px solid #d6e3db;border-top:3px solid #2f6b4f;border-radius:7px;padding:5px 8px;font-size:11px;line-height:1.35;color:#1a2744;min-height:0;background:#ffffff}
+.ce-mc b{display:block;font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:#555c6b;margin-bottom:2px}
+.ce-mc-e{border-top-color:#c4c3bb;background:#fbfbf8}
+.ce-mc-e span{color:#555c6b;font-style:italic}
+.ce-two{display:grid;grid-template-columns:minmax(0,1fr) 170px;gap:12px;align-items:start}
+/* row 2 */
+.c2-row{display:flex;gap:20px;margin:0 40px;align-items:flex-start}
+.c2-col{display:flex;flex-direction:column;gap:8px}
+.c2-lab{display:flex;align-items:center;gap:8px;margin:0}
+.c2-lab h2{margin:0;font-size:16px;line-height:1.2;font-weight:600;white-space:nowrap}
+.c2-lab .ch-code{min-width:24px;height:24px;font-size:12px;padding:0 7px}
+.c2-inset{width:600px;background:#f5f5f2;border:1px solid #cfcec6;border-radius:12px;overflow:hidden;box-shadow:0 14px 34px rgba(16,24,43,.10)}
+.c2-inset .k-browser-bar{height:32px}
+.c2-inset .k-browser-url{height:22px;font-size:11.5px}
+.c2-band{height:6px;background:#1a2744}
+.c2-hero{background:#eef0f4;border-bottom:1px solid #dcdfe6;padding:8px 20px 12px;display:flex;flex-direction:column;gap:7px}
+.c2-gc{width:60px;height:60px;border-radius:14px;background:#1a2744;color:#ffffff;font-size:24px;font-weight:700;display:flex;align-items:center;justify-content:center;flex:none;letter-spacing:.02em}
+.c2-h1{font-size:28px;line-height:1.1;font-weight:700;letter-spacing:-.015em;margin:0}
+.c2-body{padding:12px 20px 14px;display:flex;flex-direction:column;gap:10px}
+.c2-cards{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.c2-card{background:#ffffff;border:1px solid #dcdfe6;border-top:3px solid #1a2744;border-radius:10px;padding:7px 11px;display:flex;flex-direction:column;gap:3px;font-size:12.5px;line-height:1.45;color:#1a2744}
+.c2-card .ch-clab{font-size:10.5px}
+.c2-card .ch-sug{font-size:12px}
+.c2-dmap{height:46px;border-radius:8px;position:relative}
+.c2-circle{position:absolute;left:50%;top:50%;width:64px;height:34px;margin:-17px 0 0 -32px;border-radius:50%;border:2px dashed #555c6b;background:rgba(26,39,68,.05)}
+.c2-sub{font-size:15px;font-weight:700;color:#1a2744;margin:0}
+.c2-li{display:flex;flex-direction:column;gap:0;padding:5px 0;border-bottom:1px solid #e4e2db;font-size:12px;line-height:1.45;color:#1a2744}
+.c2-li:last-child{border-bottom:0}
+.c2-li b{font-size:13.5px;font-weight:600}
+.c2-note{width:600px;font-size:12px;line-height:1.45;color:#3d4556}
+/* phone */
+.ph-phone{width:390px;height:844px;box-sizing:content-box;border:10px solid #10182b;border-radius:52px;background:#10182b;position:relative;box-shadow:0 24px 50px rgba(16,24,43,.2);flex:none}
+.ph-scr{position:absolute;inset:0;border-radius:42px;overflow:hidden;display:flex;flex-direction:column;background:#f5f5f2}
+.ph-status{flex:none;height:47px;background:#1a2744;color:#ffffff;display:flex;align-items:center;justify-content:space-between;padding:4px 30px 0 40px;font-size:15px;font-weight:600;position:relative}
+.ph-island{position:absolute;left:50%;top:11px;width:120px;height:34px;margin-left:-60px;border-radius:20px;background:#000000}
+.ph-statr{display:flex;align-items:center;gap:6px}
+.ph-sig{display:inline-flex;align-items:flex-end;gap:1.5px;height:11px}
+.ph-sig i{display:block;width:3px;background:currentColor;border-radius:1px}
+.ph-sig i:nth-child(1){height:4px}.ph-sig i:nth-child(2){height:6px}.ph-sig i:nth-child(3){height:8.5px}.ph-sig i:nth-child(4){height:11px}
+.ph-batt{display:inline-flex;width:24px;height:12px;border:1.5px solid currentColor;border-radius:4px;padding:1.5px}
+.ph-batt i{display:block;width:70%;background:currentColor;border-radius:1.5px}
+.ph-app{flex:none;height:56px;background:#1a2744;display:flex;align-items:center;gap:8px;padding:0 10px 0 14px;color:#ffffff}
+.ph-brand{display:flex;align-items:center;gap:8px;color:#ffffff;text-decoration:none}
+.ph-mark{width:28px;height:28px;fill:#ffffff;flex:none}
+.ph-bname{display:flex;flex-direction:column;line-height:1.12}
+.ph-bname b{font-size:14px;font-weight:700;white-space:nowrap}
+.ph-bname span{font-size:11px;font-weight:500;color:rgba(255,255,255,.78)}
+.ph-sbtn{display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;border:1.5px solid rgba(255,255,255,.6);border-radius:9px;color:#ffffff;margin-left:auto;flex:none}
+.ph-main{flex:1;min-height:0;overflow:hidden;position:relative}
+.ph-hero{background:#f2f6f4;padding:10px 16px 12px;display:flex;flex-direction:column;gap:8px;border-bottom:1px solid #dfe8e2}
+.ph-logo{width:56px;height:56px;border-radius:12px;background:#ffffff;border:1px solid #d6e3db;padding:5px;flex:none}
+.ph-logo .k-img{width:100%;height:100%;border-radius:7px;padding:3px;font-size:8.5px}
+.ph-h1{font-size:22px;line-height:1.12;font-weight:700;letter-spacing:-.01em;margin:0}
+.ph-half{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.ph-half .k-btn{min-height:44px;padding:0 8px;font-size:14.5px}
+.ph-body{padding:10px 16px;display:flex;flex-direction:column;gap:8px}
+.ph-card{background:#ffffff;border:1px solid #d6e3db;border-top:3px solid #2f6b4f;border-radius:10px;padding:9px 12px;display:flex;flex-direction:column;gap:5px;font-size:14px;line-height:1.45;color:#1a2744}
+.ph-card .ch-clab{font-size:10.5px}
+.ph-col{display:flex;justify-content:space-between;align-items:center;gap:10px;background:#ffffff;border:1px solid #d6e3db;border-left:3px solid #2f6b4f;border-radius:10px;padding:8px 12px;font-size:13.5px;color:#1a2744;min-height:44px}
+.ph-col b{display:block;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:#555c6b}
+.ph-bar{flex:none;background:#ffffff;border-top:1px solid #dddcd4;padding:8px 16px;display:grid;grid-template-columns:1fr 1fr;gap:8px;box-shadow:0 -6px 18px rgba(16,24,43,.08)}
+.ph-bar .k-btn{min-height:44px;font-size:14.5px}
+.ph-tabs{flex:none;background:#ffffff;border-top:1px solid #d9d8d1}
+.ph-tabs-in{display:grid;grid-template-columns:repeat(4,1fr);height:56px}
+.ph-tab{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;min-height:44px;color:#1a2744;font-size:12px;font-weight:500;line-height:1.2;text-decoration:none}
+.ph-tab svg{width:20px;height:20px}
+.ph-tab.on{font-weight:700}
+.ph-tab.on::before{content:"";position:absolute;top:0;left:22%;right:22%;height:3px;border-radius:0 0 3px 3px;background:#866a1e}
+.ph-safe{height:34px;position:relative}
+.ph-homeind{position:absolute;left:50%;bottom:8px;width:134px;height:5px;margin-left:-67px;border-radius:3px;background:#10182b}
+.ph-cap{width:410px;font-size:12.5px;line-height:1.5;color:#3d4556;margin:0}
+.ph-pills{display:flex;gap:6px;flex-wrap:nowrap;overflow:hidden;padding:6px 10px;background:#ffffff;border:1px solid #dddcd4;border-radius:10px;width:410px}
+.ph-pill{display:inline-flex;align-items:center;min-height:32px;padding:0 12px;border-radius:999px;border:1px solid #c4c3bb;background:#ffffff;font-size:13px;font-weight:600;color:#1a2744;flex:none}
+.ph-pill.on{background:#1a2744;border-color:#1a2744;color:#ffffff}
+.ph-strip{display:flex;gap:8px;overflow:hidden;margin-right:-16px}
+.ph-strip .k-img{width:150px;height:92px;flex:none;border-radius:8px;font-size:10px;padding:5px 7px}
+/* states */
+.st-col{width:310px;display:flex;flex-direction:column;gap:8px}
+.st-in{display:block;font-size:10.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;opacity:.85;margin-bottom:1px}
+.st-lab{font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#555c6b;margin:4px 0 0}
+.st-ban{display:flex;justify-content:space-between;align-items:center;gap:10px;border-radius:9px;padding:6px 10px;font-size:12.5px;line-height:1.4}
+.st-me{background:#e1f0e7;border:1px solid #b9dcc6;color:#145b3a}
+.st-me b{color:#145b3a}
+.st-rep{background:#e8edf4;border:1px solid #c9d3e2;color:#2d3a52}
+.st-adm{background:#ffffff;border:1px solid #dddcd4;color:#3d4556}
+.st-ban .k-btn{min-height:30px;padding:0 12px;font-size:13px;flex:none}
+.st-print{width:300px;height:388px;background:#ffffff;border:1px solid #c9c8c0;box-shadow:0 6px 16px rgba(16,24,43,.10);padding:16px 16px 12px;display:flex;flex-direction:column;gap:6px}
+.st-print .pt{font-size:17px;font-weight:700;line-height:1.15;color:#1a2744;margin:0}
+.st-print .pc{font-size:9.5px;color:#3d4556;margin:0}
+.st-print .po{font-size:9.5px;line-height:1.35;color:#1a2744;margin:0}
+.st-pg{display:grid;grid-template-columns:1fr 1fr;gap:5px;flex:1}
+.st-pc{border:1px solid #cfd9d3;border-top:2px solid #2f6b4f;border-radius:3px;padding:4px 5px;font-size:7px;line-height:1.3;color:#1a2744;overflow:hidden}
+.st-pc b{display:block;font-size:6.5px;letter-spacing:.07em;text-transform:uppercase;color:#555c6b;margin-bottom:1px}
+.st-pf{display:flex;justify-content:space-between;align-items:flex-end;gap:6px;border-top:1px solid #e4e2db;padding-top:6px}
+.st-pf span{font-size:8px;line-height:1.35;color:#3d4556}
+.st-pf .ch-qr{width:58px;height:58px}
+.st-sheet{background:#ffffff;border:1px solid #c9c8c0;border-radius:12px;box-shadow:0 12px 28px rgba(16,24,43,.12);overflow:hidden}
+.st-sheet-hd{padding:10px 12px;border-bottom:1px solid #ecebe6;display:flex;justify-content:space-between;gap:8px}
+.st-sheet-hd h3{margin:0;font-size:14.5px;line-height:1.3;font-weight:700}
+.st-sheet-bd{padding:8px 12px 10px;display:flex;flex-direction:column;gap:7px}
+.st-sheet .k-field{gap:3px}
+.st-sheet .k-field label{font-size:12px}
+.st-sheet .k-input{min-height:32px;font-size:13px;padding:0 9px}
+.st-sel{display:flex;justify-content:space-between;align-items:center}
+.st-ts{display:flex;align-items:center;gap:8px;height:38px;padding:0 10px;border:1px solid #d6d5cd;border-radius:6px;background:#fafaf7;font-size:12px;color:#3d4556}
+.st-ts i{display:block;width:18px;height:18px;border:2px solid #858b99;border-radius:4px;background:#ffffff;flex:none}
+.st-done{background:#e1f0e7;border:1px solid #b9dcc6;border-radius:10px;padding:8px 11px;font-size:12px;line-height:1.45;color:#145b3a;margin:0}
+.st-q{font-size:11.5px;line-height:1.4;color:#555c6b;margin:0}
+.st-q code{font-family:"Geist Mono",ui-monospace,monospace;font-size:11px;color:#2b3446}
+</style>
+</helmet>
+<div class="ch-root" style="width:1440px;height:2950px">
+
+<section class="ch-doc" aria-label="About this board">
+<div class="ch-doc-top">
+<div>
+<div class="k-row-sm" style="gap:10px"><p class="k-kicker">9 · Club page · round 3 · option H · part 2 of 2</p><span class="ch-round">ROUND 3</span></div>
+<h1 class="ch-title">Club page · H · Your club's page, the thin club and a phone</h1>
+<p class="ch-ml" style="margin-top:6px"><b>Built from:</b> Club-B's mini-site, Club-D's brackets and preset Suggest sheet, Club-F's one template; decided header, app bar and tab bar.</p>
+<p class="ch-ml"><b>Replaces:</b> Club-D-2, Club-E-2, Club-F-2: no claim form, no Tonight switch, no schedule chips, no day picker.</p>
+<p class="ch-ml"><b>K's feedback applied:</b> the club's own advertisement, SEO, no weekly claims; the rep sees the search result, share card and print it makes.</p>
+<p class="ch-ml"><b>Shown:</b> B the editor as Marcus T. edits it; C the thin Gonzales page at 600; D a phone at 390 × 844; E the states.</p>
+<p class="ch-ml" style="margin-top:6px"><span class="k-sample">Sample data: Marcus T., Camille Broussard, the club's wording, photos, links, email, street address</span></p>
+</div>
+<aside class="ch-grey" aria-label="Board note">
+<div><p><b>What</b>Part 2 of H: the rep's editor fills the six-card sheet with search, share and print previews beside it; the thin club, a phone, the states.</p><p><b>Built from</b>Club-B, Club-D, Club-F.</p><p><b>K's feedback applied</b>Reps advertise their club without a website; nothing weekly.</p></div>
+<div><p><b>Open for K</b></p><ol><li><span class="ch-prop">Proposal · question 20</span> The rep edits; Camille and admins can edit any club page.</li><li>Keep the "Your sheet: 5 of 6 cards filled" nudge in the editor? It is never public.</li><li>Editor in My LCA (drawn) or in Workspace?</li></ol></div>
+</aside>
+</div>
+<div class="ch-lbox">
+<p class="k-label">Notes on this board</p>
+<ol class="ch-notes">
+<li><span class="k-num-badge">1</span><span><b>The form runs in the sheet's order,</b> so the rep sees the sheet fill as they type. The previews are built from the same text the page uses.</span></li>
+<li><span class="k-num-badge">2</span><span><b>How we meet is free text</b> in the club's words with a short example. The site never turns it into dates; the page says "As told by the club" with the month saved.</span></li>
+<li><span class="k-num-badge">3</span><span><b>Proposal (question 20):</b> Save publishes at once and Camille Broussard, the region's representative, gets an email of what changed. She and LCA admins can edit any club page.</span></li>
+<li><span class="k-num-badge">4</span><span><b>The editor collects only what the page shows:</b> no grade, no birthdate, no roster, no schedule table. The contact email is never shown; messages are relayed.</span></li>
+<li><span class="k-num-badge">5</span><span><b>A thin sheet still reads as a sheet:</b> every card is there and the gaps say so in brackets, each with Suggest an update. Its search, share and print outputs carry the same brackets.</span></li>
+<li><span class="k-num-badge">6</span><span><b>Suggest an update opens preset by its card</b> and writes club_reports (kind 'suggestion', field). The rep gets it today; the representative after 14 days unanswered.</span></li>
+</ol>
+</div>
+</section>
+
+<div class="ch-flab"><span class="ch-code">B</span><h2>Editor · Your club's page · Marcus T., the club's rep</h2><span class="k-meta">Tue, Oct 13, 2026, signed in</span><span class="ch-urlchip">/my/club/baton-rouge-chess-club</span></div>
+<div class="ch-frame">
+<div class="k-browser-bar"><i></i><i></i><i></i><div class="k-browser-url">louisianachess.org/my/club/baton-rouge-chess-club</div></div>
+<div class="ch-page">
+<header class="k-header ch-hd">
+<div class="k-wrap-wide k-header-in ch-hd-in">
+<a class="k-brand" href="#" aria-label="Louisiana Chess Association, home"><svg class="ch-rook" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span class="k-brand-name" aria-hidden="true"><b>Louisiana Chess</b><span>Association</span></span></a>
+<nav class="k-navlinks ch-nav" aria-label="Main"><a href="#">Tournaments</a><a href="#">Clubs</a><a href="#">Scholastic</a><a href="#">News</a><a href="#">Membership</a><button class="ch-navbtn" type="button" aria-expanded="false" aria-haspopup="true">About<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></button></nav>
+<a class="ch-sbtn" href="#"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg><span>Search</span><kbd class="ch-kbd" aria-hidden="true">&#8984;K</kbd></a>
+<div class="k-utility ch-util"><a class="k-ulink" href="#">Donate</a><button class="ch-my" type="button" aria-haspopup="menu" aria-expanded="false"><span class="ch-av">MT</span><span>My LCA</span><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></button></div>
+</div>
+</header>
+<div class="ce-top">
+<div>
+<h2 class="ce-h1">Your club's page <span class="k-meta" style="font-size:13px;font-weight:500;letter-spacing:0">My LCA › Your club's page</span></h2>
+<p class="ce-sub"><b>Baton Rouge Chess Club</b> · <a class="ch-out" style="font-size:13.5px" href="#">See your page ↗</a> · Last saved Sat, Sep 12, 2026 by you · <b>Your sheet: 6 of 6 cards filled</b></p>
+</div>
+<div class="ce-toast"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true" style="stroke:#145b3a"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg><span><b>Saved</b> · live at louisianachess.org/clubs/<br>baton-rouge-chess-club <span style="font-size:11.5px">(after Save and publish)</span></span></div>
+</div>
+<div class="ce-cols">
+<div>
+<form class="ce-form" aria-label="Your club's page">
+<div class="ce-row ce-row-1">
+<div class="ce-sec">
+<div class="ce-g3">
+<div class="k-field"><label for="e-name"><span class="ce-n">1</span>Club name</label><input id="e-name" class="k-input" value="Baton Rouge Chess Club"></div>
+<div class="k-field"><label for="e-city">City</label><input id="e-city" class="k-input" value="Baton Rouge"></div>
+<div class="k-field"><label for="e-one"><span class="ce-n">2</span>Your club in one line <span class="ce-count" style="margin-left:auto">90 / 160</span></label><textarea id="e-one" class="k-input" rows="2">Long games at the library on Saturday mornings and a casual night over boba on Wednesdays.</textarea></div>
+</div>
+<div class="ce-g2" style="grid-template-columns:1fr 330px;gap:14px">
+<p class="ce-addr">Your page's address: <code>louisianachess.org/clubs/baton-rouge-chess-club</code>, made from your club's name the first time the page was saved. It stays the same if you rename the club, so links and search results keep working. Ask LCA if it ever needs to change.</p>
+<p class="ce-help">City makes the line "Chess club in Baton Rouge, Louisiana" and helps people searching "chess club near Baton Rouge". The one line shows under your name, in search results and on the printed sheet.</p>
+</div>
+</div>
+</div>
+<div class="ce-row" style="grid-template-columns:1fr 290px">
+<div class="k-field"><label for="e-meet"><span class="ce-n">3</span>How we meet, in your own words <span class="k-num-badge ch-nbs">2</span></label><textarea id="e-meet" class="k-input" rows="5" style="font-size:13px">Saturdays from 10:00 AM at Jones Creek Branch Library: long games, 90 minutes each plus 30 seconds a move, usually done by 2:00 PM. Wednesdays from 6:00 PM at Boba ParTea on O'Neil Lane: casual, no clock needed. We skip holiday weekends. Check our Facebook page before your first visit.</textarea></div>
+<div class="ce-sec" style="padding-top:20px">
+<p class="ce-help"><b>Say which days, where, what time, what kind of games, and where you announce changes.</b> Example: "Tuesdays from 6:00 PM at Utility Brewing, casual games. We post on Facebook if a week is off."</p>
+<p class="ce-help">Shown as "As told by the club, updated" with the month you save. <b>The site never turns it into dates.</b></p>
+</div>
+</div>
+<div class="ce-row ce-row-1">
+<div class="ce-sec">
+<div class="ce-place">
+<div class="k-stack-sm" style="gap:6px">
+<div class="ce-g3 ce-pl">
+<div class="k-field"><label for="e-p1n"><span class="ce-n">4</span>Where · place 1</label><input id="e-p1n" class="k-input" value="Jones Creek Branch Library"></div>
+<div class="k-field"><label for="e-p1a">Street address</label><input id="e-p1a" class="k-input" value="6222 Jones Creek Rd, Baton Rouge 70817"></div>
+<div class="k-field"><label for="e-p1x">A note for first-timers</label><input id="e-p1x" class="k-input" value="Saturdays · meeting room past the front desk"></div>
+</div>
+<div class="ce-g3 ce-pl">
+<div class="k-field"><label for="e-p2n">Place 2</label><input id="e-p2n" class="k-input" value="Boba ParTea"></div>
+<div class="k-field"><label for="e-p2a">Street address</label><input id="e-p2a" class="k-input" value="O'Neil Lane, Baton Rouge"></div>
+<div class="k-field"><label for="e-p2x">A note for first-timers</label><input id="e-p2x" class="k-input" value="Wednesdays · tables at the back"></div>
+</div>
+<p class="ce-help">Pinned once when you save; drag a pin if it lands wrong. <span class="ce-add">+ Add another place</span> (up to two)</p>
+</div>
+<div class="k-map ce-pmap" role="img" aria-label="Pin for place 1"><span class="ch-road" style="left:0;right:0;top:44%;height:7px"></span><span class="ch-road" style="top:0;bottom:0;left:62%;width:7px"></span><span class="ch-mpin" style="left:72%;top:26%">1</span><span class="ch-mpin" style="left:30%;top:66%">2</span><span class="ce-use">Use this address</span></div>
+</div>
+</div>
+</div>
+<div class="ce-row" style="grid-template-columns:260px 1fr">
+<div class="k-field"><label for="e-cost"><span class="ce-n">5</span>Cost</label><textarea id="e-cost" class="k-input" rows="3" style="font-size:12.5px;line-height:1.4">Free. Saturday rated games are $5 toward the room.</textarea></div>
+<div class="k-field"><label for="e-who"><span class="ce-n">6</span>Who is welcome <span class="ce-hl">Say who you're for and what a first-timer should bring or ask for.</span></label><textarea id="e-who" class="k-input" rows="3" style="font-size:12.5px;line-height:1.4">All ages and all levels. Kids under 12 come with a parent. No LCA or US Chess membership needed for a club night. Bring a board and clock if you have them, and ask for Marcus at the front table.</textarea></div>
+</div>
+<div class="ce-row">
+<div class="ce-sec">
+<div class="ce-g2"><div class="k-field"><label for="e-cn"><span class="ce-n">7</span>Name shown</label><input id="e-cn" class="k-input" value="Marcus T."></div><div class="k-field"><label for="e-ce">Email for messages</label><input id="e-ce" class="k-input" value="m•••@gmail.com"></div></div>
+<p class="ce-help">Never shown; the Contact form relays to it.</p>
+</div>
+<div class="ce-sec">
+<div class="ce-g2"><div class="k-field"><label for="e-fb"><span class="ce-n">8</span>Facebook page</label><input id="e-fb" class="k-input" value="facebook.com/…"></div><div class="k-field"><label for="e-web">Website</label><input id="e-web" class="k-input" placeholder="If you have one"></div></div>
+<p class="ce-help"><span class="ce-add">+ Add another link</span> · No website? This page is your website.</p>
+</div>
+</div>
+<div class="ce-row" style="grid-template-columns:1fr 300px">
+<div class="k-field"><label for="e-about"><span class="ce-n">9</span>The club in your own words <span class="ce-hl">shows under the sheet, in About</span></label><textarea id="e-about" class="k-input" rows="3" style="font-size:12.5px;line-height:1.4">We've been meeting in Baton Rouge since 2009. Most Saturdays you'll find fifteen to twenty of us at the Jones Creek library playing long, slow games…</textarea></div>
+<div class="ce-sec">
+<span class="ce-lab"><span class="ce-n">11</span>Logo and club colour</span>
+<div class="k-row-sm" style="gap:10px;flex-wrap:nowrap"><div class="ch-logo" style="width:48px;height:48px;padding:4px;flex:none;border-radius:10px"><div class="k-img" style="font-size:8px;padding:3px">Logo</div></div><div class="k-stack-sm" style="gap:5px"><div class="ce-sw"><i class="on" style="background:#2f6b4f"></i><i style="background:#1a2744"></i><i style="background:#7a2e2e"></i><i style="background:#3c4f7a"></i><i style="background:#5a4a7a"></i></div><span class="k-meta" style="font-size:11.5px">Forest green, selected · <span class="ce-add" style="font-size:11.5px">Replace logo</span></span></div></div>
+</div>
+</div>
+<div class="ce-row ce-row-1">
+<div class="ce-sec">
+<span class="ce-lab"><span class="ce-n">10</span>Photos <span class="k-meta" style="font-weight:500">· 4 of 6 · each caption: "Describe this photo for people who can't see it", used as alt text</span></span>
+<div class="ce-photos">
+<div class="ce-ph ce-ph-1"><div class="k-img">Your share picture · Set the crop</div><input class="k-input" aria-label="Describe this photo" value="Saturday long games at Jones Creek Branch Library"></div>
+<div class="ce-ph"><div class="k-img">Photo 2</div><input class="k-input" aria-label="Describe this photo" value="Wednesday casual night at Boba ParTea"></div>
+<div class="ce-ph"><div class="k-img">Photo 3</div><input class="k-input" aria-label="Describe this photo" value="The 2025 club championship prize table"></div>
+<div class="ce-ph"><div class="k-img">Photo 4</div><input class="k-input" aria-label="Describe this photo" value="The beginners' table on a Saturday morning"></div>
+<div class="ce-ph"><div class="ce-empty">+ Add photo</div></div>
+<div class="ce-ph"><div class="ce-empty">+ Add photo</div></div>
+</div>
+<p class="ce-help">JPG or PNG up to 8 MB. Photos of people need their OK; no children's names.</p>
+</div>
+</div>
+<div class="ce-save">
+<button class="k-btn k-btn-gold" type="button">Save and publish</button>
+<button class="k-btn k-btn-line k-btn-sm" type="button">Preview</button>
+<button class="k-btn k-btn-ghost k-btn-sm" type="button">Print preview</button>
+<p>Camille Broussard, your region's representative, gets an email of what changed. <span class="ch-prop">Proposal</span> <span class="k-num-badge ch-nbs">3</span></p>
+</div>
+</form>
+</div>
+
+<div class="ce-prev">
+<div class="ce-pc">
+<p class="ce-pct">Your sheet, as visitors see it <span class="k-num-badge ch-nbs">1</span></p>
+<div class="ce-mini">
+<div class="ce-mc"><b>How we meet</b>Saturdays from 10:00 AM at Jones Creek Branch Library…</div>
+<div class="ce-mc"><b>Where to find us</b>1 Jones Creek Branch Library · 2 Boba ParTea</div>
+<div class="ce-mc"><b>Cost</b>Free. Saturday rated games are $5…</div>
+<div class="ce-mc"><b>Who is welcome</b>All ages and all levels…</div>
+<div class="ce-mc"><b>Contact</b>Message the club: goes to Marcus T.</div>
+<div class="ce-mc"><b>Online</b>Facebook ↗ · this page is our website</div>
+</div>
+<div class="k-row-sm" style="gap:10px;flex-wrap:nowrap"><div class="ce-mc ce-mc-e" style="width:150px;min-height:0;flex:none;padding:3px 8px"><b>Cost</b><span>[not told yet]</span></div><p class="ce-help">An empty card stays on the sheet and says so, in grey.</p></div>
+</div>
+<div class="ce-pc">
+<p class="ce-pct">How your page shows up in a search</p>
+<div class="ch-g" style="padding:10px 12px">
+<div class="ch-g-site"><span class="ch-g-fav"><svg viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg></span><span><span class="ch-g-n" style="display:block">Louisiana Chess Association</span><span class="ch-g-u">louisianachess.org › clubs › baton-rouge-chess-club</span></span></div>
+<p class="ch-g-t">Baton Rouge Chess Club · Chess club in Baton Rouge, Louisi…</p>
+<p class="ch-g-d">Long games at the library on Saturday mornings and a casual night over boba on Wednesdays. Saturdays from 10:00 AM at Jones Creek Branch Library: long games…</p>
+</div>
+<p class="ce-help">About 60 characters of a title show, so name and city come first.</p>
+</div>
+<div class="ce-pc">
+<p class="ce-pct">When someone shares your page</p>
+<div class="ce-two">
+<div class="k-stack-sm" style="gap:8px">
+<div class="ch-fb"><div class="k-img">Photo 1 · your share crop</div><div class="ch-fb-b"><span>louisianachess.org</span><b>Baton Rouge Chess Club</b><i>Chess club in Baton Rouge, Louisiana</i></div></div>
+<p class="ce-help">No photo yet? Your How we meet line shows on your club colour.</p>
+</div>
+<div class="k-stack-sm" style="gap:6px">
+<div class="ch-bub" style="width:170px"><div class="k-img">Photo 1</div><div class="ch-bub-b"><b>Baton Rouge Chess Club</b><span>louisianachess.org</span></div></div>
+<span class="k-meta" style="font-size:11.5px">In Messages</span>
+<div class="ch-fallback" style="width:170px"><b>Saturdays from 10:00 AM at Jones Creek Branch Library</b><span>Baton Rouge Chess Club</span></div>
+</div>
+</div>
+</div>
+<div class="ce-pc">
+<p class="ce-pct">Your printed sheet</p>
+<div class="k-row-sm" style="gap:14px;align-items:flex-start;flex-wrap:nowrap">
+<div class="ch-print" role="img" aria-label="Your printed sheet on letter paper">
+<span class="pt">Baton Rouge Chess Club</span>
+<span class="pc">Chess club in Baton Rouge, Louisiana</span>
+<div class="pg"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+<div class="pf"><span>louisianachess.org/clubs/<br>baton-rouge-chess-club</span><svg class="ch-qr" viewBox="-2 -2 29 29" aria-hidden="true"><rect x="-2" y="-2" width="29" height="29" fill="#ffffff"></rect><path d="M0 0h1v1h-1zM1 0h1v1h-1zM2 0h1v1h-1zM3 0h1v1h-1zM4 0h1v1h-1zM5 0h1v1h-1zM6 0h1v1h-1zM8 0h1v1h-1zM9 0h1v1h-1zM11 0h1v1h-1zM13 0h1v1h-1zM14 0h1v1h-1zM16 0h1v1h-1zM18 0h1v1h-1zM19 0h1v1h-1zM20 0h1v1h-1zM21 0h1v1h-1zM22 0h1v1h-1zM23 0h1v1h-1zM24 0h1v1h-1zM0 1h1v1h-1zM6 1h1v1h-1zM8 1h1v1h-1zM9 1h1v1h-1zM10 1h1v1h-1zM11 1h1v1h-1zM13 1h1v1h-1zM14 1h1v1h-1zM18 1h1v1h-1zM24 1h1v1h-1zM0 2h1v1h-1zM2 2h1v1h-1zM3 2h1v1h-1zM4 2h1v1h-1zM6 2h1v1h-1zM9 2h1v1h-1zM11 2h1v1h-1zM13 2h1v1h-1zM14 2h1v1h-1zM15 2h1v1h-1zM16 2h1v1h-1zM18 2h1v1h-1zM20 2h1v1h-1zM21 2h1v1h-1zM22 2h1v1h-1zM24 2h1v1h-1zM0 3h1v1h-1zM2 3h1v1h-1zM3 3h1v1h-1zM4 3h1v1h-1zM6 3h1v1h-1zM9 3h1v1h-1zM12 3h1v1h-1zM14 3h1v1h-1zM15 3h1v1h-1zM16 3h1v1h-1zM18 3h1v1h-1zM20 3h1v1h-1zM21 3h1v1h-1zM22 3h1v1h-1zM24 3h1v1h-1zM0 4h1v1h-1zM2 4h1v1h-1zM3 4h1v1h-1zM4 4h1v1h-1zM6 4h1v1h-1zM9 4h1v1h-1zM10 4h1v1h-1zM12 4h1v1h-1zM13 4h1v1h-1zM16 4h1v1h-1zM18 4h1v1h-1zM20 4h1v1h-1zM21 4h1v1h-1zM22 4h1v1h-1zM24 4h1v1h-1zM0 5h1v1h-1zM6 5h1v1h-1zM12 5h1v1h-1zM14 5h1v1h-1zM15 5h1v1h-1zM18 5h1v1h-1zM24 5h1v1h-1zM0 6h1v1h-1zM1 6h1v1h-1zM2 6h1v1h-1zM3 6h1v1h-1zM4 6h1v1h-1zM5 6h1v1h-1zM6 6h1v1h-1zM8 6h1v1h-1zM10 6h1v1h-1zM12 6h1v1h-1zM14 6h1v1h-1zM16 6h1v1h-1zM18 6h1v1h-1zM19 6h1v1h-1zM20 6h1v1h-1zM21 6h1v1h-1zM22 6h1v1h-1zM23 6h1v1h-1zM24 6h1v1h-1zM8 7h1v1h-1zM10 7h1v1h-1zM15 7h1v1h-1zM2 8h1v1h-1zM5 8h1v1h-1zM6 8h1v1h-1zM8 8h1v1h-1zM13 8h1v1h-1zM14 8h1v1h-1zM16 8h1v1h-1zM17 8h1v1h-1zM18 8h1v1h-1zM19 8h1v1h-1zM20 8h1v1h-1zM22 8h1v1h-1zM23 8h1v1h-1zM24 8h1v1h-1zM1 9h1v1h-1zM2 9h1v1h-1zM8 9h1v1h-1zM9 9h1v1h-1zM10 9h1v1h-1zM13 9h1v1h-1zM14 9h1v1h-1zM15 9h1v1h-1zM16 9h1v1h-1zM19 9h1v1h-1zM20 9h1v1h-1zM21 9h1v1h-1zM22 9h1v1h-1zM4 10h1v1h-1zM6 10h1v1h-1zM10 10h1v1h-1zM11 10h1v1h-1zM12 10h1v1h-1zM14 10h1v1h-1zM15 10h1v1h-1zM16 10h1v1h-1zM17 10h1v1h-1zM18 10h1v1h-1zM19 10h1v1h-1zM20 10h1v1h-1zM21 10h1v1h-1zM22 10h1v1h-1zM23 10h1v1h-1zM24 10h1v1h-1zM2 11h1v1h-1zM3 11h1v1h-1zM4 11h1v1h-1zM5 11h1v1h-1zM7 11h1v1h-1zM10 11h1v1h-1zM12 11h1v1h-1zM13 11h1v1h-1zM14 11h1v1h-1zM15 11h1v1h-1zM17 11h1v1h-1zM18 11h1v1h-1zM21 11h1v1h-1zM23 11h1v1h-1zM3 12h1v1h-1zM4 12h1v1h-1zM5 12h1v1h-1zM6 12h1v1h-1zM10 12h1v1h-1zM11 12h1v1h-1zM18 12h1v1h-1zM20 12h1v1h-1zM21 12h1v1h-1zM22 12h1v1h-1zM23 12h1v1h-1zM24 12h1v1h-1zM2 13h1v1h-1zM7 13h1v1h-1zM8 13h1v1h-1zM9 13h1v1h-1zM10 13h1v1h-1zM11 13h1v1h-1zM15 13h1v1h-1zM18 13h1v1h-1zM23 13h1v1h-1zM24 13h1v1h-1zM1 14h1v1h-1zM4 14h1v1h-1zM5 14h1v1h-1zM6 14h1v1h-1zM9 14h1v1h-1zM10 14h1v1h-1zM11 14h1v1h-1zM14 14h1v1h-1zM18 14h1v1h-1zM20 14h1v1h-1zM21 14h1v1h-1zM1 15h1v1h-1zM4 15h1v1h-1zM5 15h1v1h-1zM7 15h1v1h-1zM8 15h1v1h-1zM10 15h1v1h-1zM11 15h1v1h-1zM12 15h1v1h-1zM14 15h1v1h-1zM15 15h1v1h-1zM18 15h1v1h-1zM23 15h1v1h-1zM24 15h1v1h-1zM0 16h1v1h-1zM1 16h1v1h-1zM3 16h1v1h-1zM4 16h1v1h-1zM6 16h1v1h-1zM8 16h1v1h-1zM12 16h1v1h-1zM14 16h1v1h-1zM15 16h1v1h-1zM21 16h1v1h-1zM9 17h1v1h-1zM11 17h1v1h-1zM16 17h1v1h-1zM20 17h1v1h-1zM21 17h1v1h-1zM22 17h1v1h-1zM23 17h1v1h-1zM24 17h1v1h-1zM0 18h1v1h-1zM1 18h1v1h-1zM2 18h1v1h-1zM3 18h1v1h-1zM4 18h1v1h-1zM5 18h1v1h-1zM6 18h1v1h-1zM8 18h1v1h-1zM12 18h1v1h-1zM15 18h1v1h-1zM18 18h1v1h-1zM20 18h1v1h-1zM24 18h1v1h-1zM0 19h1v1h-1zM6 19h1v1h-1zM8 19h1v1h-1zM10 19h1v1h-1zM11 19h1v1h-1zM12 19h1v1h-1zM14 19h1v1h-1zM16 19h1v1h-1zM17 19h1v1h-1zM18 19h1v1h-1zM21 19h1v1h-1zM0 20h1v1h-1zM2 20h1v1h-1zM3 20h1v1h-1zM4 20h1v1h-1zM6 20h1v1h-1zM8 20h1v1h-1zM9 20h1v1h-1zM10 20h1v1h-1zM12 20h1v1h-1zM13 20h1v1h-1zM14 20h1v1h-1zM17 20h1v1h-1zM18 20h1v1h-1zM22 20h1v1h-1zM23 20h1v1h-1zM0 21h1v1h-1zM2 21h1v1h-1zM3 21h1v1h-1zM4 21h1v1h-1zM6 21h1v1h-1zM8 21h1v1h-1zM9 21h1v1h-1zM13 21h1v1h-1zM15 21h1v1h-1zM17 21h1v1h-1zM18 21h1v1h-1zM21 21h1v1h-1zM22 21h1v1h-1zM24 21h1v1h-1zM0 22h1v1h-1zM2 22h1v1h-1zM3 22h1v1h-1zM4 22h1v1h-1zM6 22h1v1h-1zM8 22h1v1h-1zM9 22h1v1h-1zM10 22h1v1h-1zM11 22h1v1h-1zM12 22h1v1h-1zM13 22h1v1h-1zM15 22h1v1h-1zM17 22h1v1h-1zM18 22h1v1h-1zM19 22h1v1h-1zM20 22h1v1h-1zM21 22h1v1h-1zM24 22h1v1h-1zM0 23h1v1h-1zM6 23h1v1h-1zM8 23h1v1h-1zM10 23h1v1h-1zM12 23h1v1h-1zM15 23h1v1h-1zM19 23h1v1h-1zM23 23h1v1h-1zM24 23h1v1h-1zM0 24h1v1h-1zM1 24h1v1h-1zM2 24h1v1h-1zM3 24h1v1h-1zM4 24h1v1h-1zM5 24h1v1h-1zM6 24h1v1h-1zM8 24h1v1h-1zM9 24h1v1h-1zM10 24h1v1h-1zM12 24h1v1h-1zM13 24h1v1h-1zM14 24h1v1h-1zM18 24h1v1h-1zM19 24h1v1h-1zM20 24h1v1h-1zM21 24h1v1h-1zM22 24h1v1h-1zM23 24h1v1h-1zM24 24h1v1h-1z" fill="#1a2744"></path></svg></div>
+</div>
+<p class="ce-help">One letter page: your name, city line, the six cards, your address and a QR code of it, for the library noticeboard. <a class="ce-add" href="#">Print preview</a></p>
+</div>
+</div>
+<p class="ch-anno" style="margin:0"><span class="k-num-badge ch-nbs">4</span><span><b>Nothing else is collected:</b> no grade, no birthdate, no roster, no schedule table. </span></p>
+</div>
+</div>
+</div>
+</div>
+
+<div class="c2-row" style="margin-top:12px">
+<div class="c2-col">
+<div class="c2-lab"><span class="ch-code">C</span><h2>Thin club · Gonzales Chess Club · 600 wide</h2><span class="k-num-badge ch-nbs">5</span><span class="ch-urlchip" style="margin-left:6px">/clubs/gonzales-chess-club</span></div>
+<div class="c2-inset">
+<div class="k-browser-bar"><i></i><i></i><i></i><div class="k-browser-url">louisianachess.org/clubs/gonzales-chess-club</div></div>
+<div class="c2-band"></div>
+<div class="c2-hero">
+<nav class="ch-crumbs" aria-label="Breadcrumb" style="font-size:12px"><a href="#">Clubs</a><span aria-hidden="true">/</span><a href="#">South Central Louisiana</a><span aria-hidden="true">/</span><span aria-current="page">Gonzales Chess Club</span></nav>
+<div class="k-row-sm" style="gap:14px;flex-wrap:nowrap"><div class="c2-gc" aria-hidden="true">GC</div><div><h3 class="c2-h1">Gonzales Chess Club</h3><p class="ch-city" style="font-size:13.5px;margin-top:3px">Chess club in Gonzales, Louisiana · South Central Louisiana</p></div></div>
+<p class="ch-one" style="font-size:15.5px">Chess club serving the Gonzales area.</p>
+<div class="k-row-sm" style="gap:8px"><a class="k-btn k-btn-gold k-btn-sm" href="#">Follow this club</a><a class="k-btn k-btn-line k-btn-sm" href="#">Contact the club</a><a class="k-btn k-btn-ghost k-btn-sm" href="#">Share</a><span class="k-meta" style="font-size:12px">No address yet, so no Directions</span></div>
+<p class="ch-author" style="font-size:12px;border-top-color:#d5d9e2">This club hasn't named a rep yet · kept by Camille Broussard, the regional representative · <a class="ch-sug" style="font-size:12px" href="#">Suggest an update</a><br>Do you run this club? <a class="ch-sug" style="font-size:12px" href="#">Ask Camille to make you its rep</a> <span class="ch-prop">Proposal</span></p>
+</div>
+<div class="c2-body">
+<div class="c2-cards">
+<div class="c2-card"><h4 class="ch-clab">How we meet</h4><span class="ch-blank">[The club hasn't said how it meets yet]</span><span>Know when they play? <a class="ch-sug" href="#">Suggest an update</a></span><span class="k-meta" style="font-size:11.5px">Not told by the club yet</span></div>
+<div class="c2-card"><h4 class="ch-clab">Where to find us</h4><span>Gonzales area · no address yet, so no Directions</span><div class="k-map c2-dmap" role="img" aria-label="Gonzales area, no pin"><span class="c2-circle"></span></div></div>
+<div class="c2-card"><h4 class="ch-clab">Cost</h4><span><span class="ch-blank">[not listed]</span> · <a class="ch-sug" href="#">Suggest an update</a></span></div>
+<div class="c2-card"><h4 class="ch-clab">Who is welcome</h4><span><span class="ch-blank">[not listed]</span> · <a class="ch-sug" href="#">Suggest an update</a></span></div>
+<div class="c2-card"><h4 class="ch-clab">Contact</h4><span>LCA can pass on a message to the regional representative.</span><a class="k-btn k-btn-navy k-btn-sm" href="#" style="align-self:flex-start;min-height:32px">Message</a></div>
+<div class="c2-card"><h4 class="ch-clab">Online</h4><span class="ch-blank">No links yet</span><span style="font-size:12px"><span class="ch-mono" style="font-size:11px">louisianachess.org/clubs/gonzales-chess-club</span> · <a class="ch-sug" style="font-size:12px" href="#">Copy link</a></span></div>
+</div>
+<p class="k-meta" style="margin:0;font-size:11.5px">No photo strip, About, Events or News: a section with nothing behind it isn't shown.</p>
+<div>
+<p class="c2-sub">Events near Gonzales</p>
+<div class="c2-li"><span class="k-row-sm" style="gap:8px"><b>The Baton Rouge Classic</b><span class="k-tag k-tag-ext">Partner event</span></span><span class="k-meta" style="font-size:12px">Sat–Sun, Oct 24–25, 2026 · Baton Rouge, about 20 mi</span><a class="ch-out" style="font-size:12.5px;align-self:flex-start" href="#">Registers on the organizer's site ↗</a></div>
+</div>
+<div>
+<p class="c2-sub">Chess clubs near Gonzales</p>
+<div class="c2-li"><b>Baton Rouge Chess Club <span class="k-meta" style="font-weight:400">· about 20 mi</span></b><span>"Saturdays from 10:00 AM at Jones Creek Branch Library; casual Wednesdays from 6:00 PM", as the club says</span></div>
+<div class="c2-li"><b>Bluebonnet Chess Club <span class="k-meta" style="font-weight:400">· about 20 mi</span></b><span>"Meets at Bluebonnet Library on the 1st and 3rd Sunday of the month, 4:30–5:30 PM", as the club says</span></div>
+<div class="c2-li"><b>Houma Chess Club <span class="k-meta" style="font-weight:400">· about 60 mi</span></b><span>"Mondays 6:00–8:30 PM at Terrebonne Parish North Library", as the club says</span></div>
+</div>
+</div>
+</div>
+<p class="ch-anno c2-note"><span class="k-num-badge ch-nbs">5</span><span><b>A thin sheet still reads as a sheet.</b> Search: "Gonzales Chess Club · Chess club in Gonzales, Louisiana · Louisiana Chess Association" with "Chess club serving the Gonzales area. Meeting details not listed yet. Message the club through the Louisiana Chess Association." Share card: that sentence on navy. Print: the same brackets.</span></p>
+</div>
+
+<div class="c2-col">
+<div class="c2-lab"><span class="ch-code">D</span><h2>Phone · 390 × 844</h2><span class="k-meta">Tue, Oct 13, 4:40 PM</span></div>
+<div class="ph-phone">
+<div class="ph-scr">
+<div class="ph-status" aria-hidden="true"><span>4:40</span><span class="ph-island"></span><span class="ph-statr"><span class="ph-sig"><i></i><i></i><i></i><i></i></span><span class="ph-batt"><i></i></span></span></div>
+<div class="ph-app"><a class="ph-brand" href="#" aria-label="Louisiana Chess Association, home"><svg class="ph-mark" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span class="ph-bname"><b>Louisiana Chess</b><span>Association</span></span></a><a class="ph-sbtn" href="#" aria-label="Search"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg></a></div>
+<div class="ch-band" style="flex:none;height:6px"></div>
+<div class="ph-main">
+<div class="ph-hero">
+<div class="k-row-sm" style="gap:12px;flex-wrap:nowrap"><div class="ph-logo"><div class="k-img">Logo</div></div><h3 class="ph-h1">Baton Rouge Chess Club</h3></div>
+<p class="ch-city" style="font-size:13px">Chess club in Baton Rouge, Louisiana</p>
+<p class="ch-one" style="font-size:15px;line-height:1.45">Long games at the library on Saturday mornings and a casual night over boba on Wednesdays.</p>
+<div class="ph-half"><a class="k-btn k-btn-gold" href="#">Directions</a><a class="k-btn k-btn-line" href="#">Follow</a></div>
+</div>
+<div class="ph-body">
+<div class="ph-card"><h4 class="ch-clab">How we meet</h4><span>Saturdays from 10:00 AM at Jones Creek Branch Library: long games, 90 minutes each plus 30 seconds a move, usually done by 2:00 PM. Wednesdays from 6:00 PM at Boba ParTea on O'Neil Lane: casual, no clock needed. We skip holiday weekends. Check our Facebook page before your first visit.</span><span class="k-meta" style="font-size:11.5px">As told by the club, updated September 2026</span></div>
+<div class="ph-card"><h4 class="ch-clab">Where to find us</h4><div class="ch-place" style="font-size:13.5px"><span class="ch-pno">1</span><span><b style="font-weight:600">Jones Creek Branch Library</b>, 6222 Jones Creek Rd · Saturdays</span></div><div class="ch-place" style="font-size:13.5px"><span class="ch-pno">2</span><span><b style="font-weight:600">Boba ParTea</b>, O'Neil Lane · Wednesdays</span></div></div>
+<div class="ph-col"><span><b>Cost</b>Free. Saturday rated games are $5…</span><span class="ch-sug">More</span></div>
+<div class="ph-col"><span><b>Who is welcome</b>All ages and all levels…</span><span class="ch-sug">More</span></div>
+</div>
+</div>
+<div class="ph-bar"><a class="k-btn k-btn-gold" href="#">Directions</a><a class="k-btn k-btn-line" href="#">Message</a></div>
+<nav class="ph-tabs" aria-label="Main"><div class="ph-tabs-in"><a class="ph-tab" href="#"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4.5" width="18" height="16" rx="2"></rect><path d="M3 9.5h18M8 2.5v4M16 2.5v4"></path></svg><span>Tournaments</span></a><a class="ph-tab on" href="#" aria-current="page"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"></path><circle cx="12" cy="9.5" r="2.5"></circle></svg><span>Clubs</span></a><a class="ph-tab" href="#"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4.5 21c1-4 4-6 7.5-6s6.5 2 7.5 6"></path></svg><span>Log in</span></a><a class="ph-tab" href="#"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg><span>Menu</span></a></div><div class="ph-safe"><span class="ph-homeind"></span></div></nav>
+</div>
+</div>
+<p class="ph-cap">On a phone the sheet is a stack; the first screen still shows the name, how we meet and where. Cost, Who is welcome, Contact and Online collapse to their first line with More; the photos scroll sideways below them. Past the sheet, the jump strip becomes a pill row stuck under the app bar:</p>
+<div class="ph-pills" aria-hidden="true"><span class="ph-pill on">About</span><span class="ph-pill">Map</span><span class="ph-pill">Events</span><span class="ph-pill">News</span><span class="ph-pill">Nearby clubs</span></div>
+</div>
+
+<div class="c2-col st-col">
+<div class="c2-lab"><span class="ch-code">E</span><h2>States</h2><span class="k-num-badge ch-nbs">6</span></div>
+<div class="st-ban st-me"><span><span class="st-in">Signed in as Marcus T.</span><b>This is your club's page</b></span><a class="k-btn k-btn-navy" href="#">Edit</a></div>
+<div class="st-ban st-rep"><span><span class="st-in">Signed in as Camille Broussard</span>You can edit this page as the South Central Louisiana representative</span><a class="k-btn k-btn-navy" href="#">Edit</a></div>
+<div class="st-ban st-adm"><span><span class="st-in">Seat open and no rep</span>Kept by LCA admins until the South Central Louisiana seat is filled · <a class="ch-sug" style="font-size:12.5px" href="#">Suggest an update</a></span></div>
+<p class="st-lab">The printed sheet · 300 × 388</p>
+<div class="st-print" role="img" aria-label="The printed sheet">
+<p class="pt">Baton Rouge Chess Club</p>
+<p class="pc">Chess club in Baton Rouge, Louisiana · South Central Louisiana</p>
+<p class="po">Long games at the library on Saturday mornings and a casual night over boba on Wednesdays.</p>
+<div class="st-pg">
+<div class="st-pc"><b>How we meet</b>Saturdays from 10:00 AM at Jones Creek Branch Library: long games, usually done by 2:00 PM. Wednesdays from 6:00 PM at Boba ParTea: casual…</div>
+<div class="st-pc"><b>Where to find us</b>1 Jones Creek Branch Library, 6222 Jones Creek Rd · 2 Boba ParTea, O'Neil Lane</div>
+<div class="st-pc"><b>Cost</b>Free. Saturday rated games are $5 toward the room.</div>
+<div class="st-pc"><b>Who is welcome</b>All ages and all levels. Kids under 12 come with a parent…</div>
+<div class="st-pc"><b>Contact</b>Message the club at the address below.</div>
+<div class="st-pc"><b>Online</b>Facebook: Baton Rouge Chess Club</div>
+</div>
+<div class="st-pf"><span>Scan or visit<br><b>louisianachess.org/clubs/<br>baton-rouge-chess-club</b></span><svg class="ch-qr" viewBox="-2 -2 29 29" aria-hidden="true"><rect x="-2" y="-2" width="29" height="29" fill="#ffffff"></rect><path d="M0 0h1v1h-1zM1 0h1v1h-1zM2 0h1v1h-1zM3 0h1v1h-1zM4 0h1v1h-1zM5 0h1v1h-1zM6 0h1v1h-1zM8 0h1v1h-1zM9 0h1v1h-1zM11 0h1v1h-1zM13 0h1v1h-1zM14 0h1v1h-1zM16 0h1v1h-1zM18 0h1v1h-1zM19 0h1v1h-1zM20 0h1v1h-1zM21 0h1v1h-1zM22 0h1v1h-1zM23 0h1v1h-1zM24 0h1v1h-1zM0 1h1v1h-1zM6 1h1v1h-1zM8 1h1v1h-1zM9 1h1v1h-1zM10 1h1v1h-1zM11 1h1v1h-1zM13 1h1v1h-1zM14 1h1v1h-1zM18 1h1v1h-1zM24 1h1v1h-1zM0 2h1v1h-1zM2 2h1v1h-1zM3 2h1v1h-1zM4 2h1v1h-1zM6 2h1v1h-1zM9 2h1v1h-1zM11 2h1v1h-1zM13 2h1v1h-1zM14 2h1v1h-1zM15 2h1v1h-1zM16 2h1v1h-1zM18 2h1v1h-1zM20 2h1v1h-1zM21 2h1v1h-1zM22 2h1v1h-1zM24 2h1v1h-1zM0 3h1v1h-1zM2 3h1v1h-1zM3 3h1v1h-1zM4 3h1v1h-1zM6 3h1v1h-1zM9 3h1v1h-1zM12 3h1v1h-1zM14 3h1v1h-1zM15 3h1v1h-1zM16 3h1v1h-1zM18 3h1v1h-1zM20 3h1v1h-1zM21 3h1v1h-1zM22 3h1v1h-1zM24 3h1v1h-1zM0 4h1v1h-1zM2 4h1v1h-1zM3 4h1v1h-1zM4 4h1v1h-1zM6 4h1v1h-1zM9 4h1v1h-1zM10 4h1v1h-1zM12 4h1v1h-1zM13 4h1v1h-1zM16 4h1v1h-1zM18 4h1v1h-1zM20 4h1v1h-1zM21 4h1v1h-1zM22 4h1v1h-1zM24 4h1v1h-1zM0 5h1v1h-1zM6 5h1v1h-1zM12 5h1v1h-1zM14 5h1v1h-1zM15 5h1v1h-1zM18 5h1v1h-1zM24 5h1v1h-1zM0 6h1v1h-1zM1 6h1v1h-1zM2 6h1v1h-1zM3 6h1v1h-1zM4 6h1v1h-1zM5 6h1v1h-1zM6 6h1v1h-1zM8 6h1v1h-1zM10 6h1v1h-1zM12 6h1v1h-1zM14 6h1v1h-1zM16 6h1v1h-1zM18 6h1v1h-1zM19 6h1v1h-1zM20 6h1v1h-1zM21 6h1v1h-1zM22 6h1v1h-1zM23 6h1v1h-1zM24 6h1v1h-1zM8 7h1v1h-1zM10 7h1v1h-1zM15 7h1v1h-1zM2 8h1v1h-1zM5 8h1v1h-1zM6 8h1v1h-1zM8 8h1v1h-1zM13 8h1v1h-1zM14 8h1v1h-1zM16 8h1v1h-1zM17 8h1v1h-1zM18 8h1v1h-1zM19 8h1v1h-1zM20 8h1v1h-1zM22 8h1v1h-1zM23 8h1v1h-1zM24 8h1v1h-1zM1 9h1v1h-1zM2 9h1v1h-1zM8 9h1v1h-1zM9 9h1v1h-1zM10 9h1v1h-1zM13 9h1v1h-1zM14 9h1v1h-1zM15 9h1v1h-1zM16 9h1v1h-1zM19 9h1v1h-1zM20 9h1v1h-1zM21 9h1v1h-1zM22 9h1v1h-1zM4 10h1v1h-1zM6 10h1v1h-1zM10 10h1v1h-1zM11 10h1v1h-1zM12 10h1v1h-1zM14 10h1v1h-1zM15 10h1v1h-1zM16 10h1v1h-1zM17 10h1v1h-1zM18 10h1v1h-1zM19 10h1v1h-1zM20 10h1v1h-1zM21 10h1v1h-1zM22 10h1v1h-1zM23 10h1v1h-1zM24 10h1v1h-1zM2 11h1v1h-1zM3 11h1v1h-1zM4 11h1v1h-1zM5 11h1v1h-1zM7 11h1v1h-1zM10 11h1v1h-1zM12 11h1v1h-1zM13 11h1v1h-1zM14 11h1v1h-1zM15 11h1v1h-1zM17 11h1v1h-1zM18 11h1v1h-1zM21 11h1v1h-1zM23 11h1v1h-1zM3 12h1v1h-1zM4 12h1v1h-1zM5 12h1v1h-1zM6 12h1v1h-1zM10 12h1v1h-1zM11 12h1v1h-1zM18 12h1v1h-1zM20 12h1v1h-1zM21 12h1v1h-1zM22 12h1v1h-1zM23 12h1v1h-1zM24 12h1v1h-1zM2 13h1v1h-1zM7 13h1v1h-1zM8 13h1v1h-1zM9 13h1v1h-1zM10 13h1v1h-1zM11 13h1v1h-1zM15 13h1v1h-1zM18 13h1v1h-1zM23 13h1v1h-1zM24 13h1v1h-1zM1 14h1v1h-1zM4 14h1v1h-1zM5 14h1v1h-1zM6 14h1v1h-1zM9 14h1v1h-1zM10 14h1v1h-1zM11 14h1v1h-1zM14 14h1v1h-1zM18 14h1v1h-1zM20 14h1v1h-1zM21 14h1v1h-1zM1 15h1v1h-1zM4 15h1v1h-1zM5 15h1v1h-1zM7 15h1v1h-1zM8 15h1v1h-1zM10 15h1v1h-1zM11 15h1v1h-1zM12 15h1v1h-1zM14 15h1v1h-1zM15 15h1v1h-1zM18 15h1v1h-1zM23 15h1v1h-1zM24 15h1v1h-1zM0 16h1v1h-1zM1 16h1v1h-1zM3 16h1v1h-1zM4 16h1v1h-1zM6 16h1v1h-1zM8 16h1v1h-1zM12 16h1v1h-1zM14 16h1v1h-1zM15 16h1v1h-1zM21 16h1v1h-1zM9 17h1v1h-1zM11 17h1v1h-1zM16 17h1v1h-1zM20 17h1v1h-1zM21 17h1v1h-1zM22 17h1v1h-1zM23 17h1v1h-1zM24 17h1v1h-1zM0 18h1v1h-1zM1 18h1v1h-1zM2 18h1v1h-1zM3 18h1v1h-1zM4 18h1v1h-1zM5 18h1v1h-1zM6 18h1v1h-1zM8 18h1v1h-1zM12 18h1v1h-1zM15 18h1v1h-1zM18 18h1v1h-1zM20 18h1v1h-1zM24 18h1v1h-1zM0 19h1v1h-1zM6 19h1v1h-1zM8 19h1v1h-1zM10 19h1v1h-1zM11 19h1v1h-1zM12 19h1v1h-1zM14 19h1v1h-1zM16 19h1v1h-1zM17 19h1v1h-1zM18 19h1v1h-1zM21 19h1v1h-1zM0 20h1v1h-1zM2 20h1v1h-1zM3 20h1v1h-1zM4 20h1v1h-1zM6 20h1v1h-1zM8 20h1v1h-1zM9 20h1v1h-1zM10 20h1v1h-1zM12 20h1v1h-1zM13 20h1v1h-1zM14 20h1v1h-1zM17 20h1v1h-1zM18 20h1v1h-1zM22 20h1v1h-1zM23 20h1v1h-1zM0 21h1v1h-1zM2 21h1v1h-1zM3 21h1v1h-1zM4 21h1v1h-1zM6 21h1v1h-1zM8 21h1v1h-1zM9 21h1v1h-1zM13 21h1v1h-1zM15 21h1v1h-1zM17 21h1v1h-1zM18 21h1v1h-1zM21 21h1v1h-1zM22 21h1v1h-1zM24 21h1v1h-1zM0 22h1v1h-1zM2 22h1v1h-1zM3 22h1v1h-1zM4 22h1v1h-1zM6 22h1v1h-1zM8 22h1v1h-1zM9 22h1v1h-1zM10 22h1v1h-1zM11 22h1v1h-1zM12 22h1v1h-1zM13 22h1v1h-1zM15 22h1v1h-1zM17 22h1v1h-1zM18 22h1v1h-1zM19 22h1v1h-1zM20 22h1v1h-1zM21 22h1v1h-1zM24 22h1v1h-1zM0 23h1v1h-1zM6 23h1v1h-1zM8 23h1v1h-1zM10 23h1v1h-1zM12 23h1v1h-1zM15 23h1v1h-1zM19 23h1v1h-1zM23 23h1v1h-1zM24 23h1v1h-1zM0 24h1v1h-1zM1 24h1v1h-1zM2 24h1v1h-1zM3 24h1v1h-1zM4 24h1v1h-1zM5 24h1v1h-1zM6 24h1v1h-1zM8 24h1v1h-1zM9 24h1v1h-1zM10 24h1v1h-1zM12 24h1v1h-1zM13 24h1v1h-1zM14 24h1v1h-1zM18 24h1v1h-1zM19 24h1v1h-1zM20 24h1v1h-1zM21 24h1v1h-1zM22 24h1v1h-1zM23 24h1v1h-1zM24 24h1v1h-1z" fill="#1a2744"></path></svg></div>
+</div>
+<p class="st-lab">Suggest an update · opened from Cost</p>
+<div class="st-sheet">
+<div class="st-sheet-hd"><h3>Suggest an update to Baton Rouge Chess Club</h3><span aria-hidden="true">✕</span></div>
+<div class="st-sheet-bd">
+<div class="k-field"><label for="s-about">About <span class="k-meta" style="font-size:11px;font-weight:400">· preset by the card, changeable</span></label><div class="k-input st-sel" id="s-about"><span>Cost</span><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></div></div>
+<div class="k-field"><label for="s-what">What's changed or missing?</label><textarea id="s-what" class="k-input" rows="1" style="padding:6px 9px" placeholder="e.g. Saturday rated games are $10 now"></textarea></div>
+<div class="k-field"><label for="s-em">Your email (optional)</label><input id="s-em" class="k-input" placeholder="Only for a follow-up question"></div>
+<div class="k-between" style="gap:8px"><div class="st-ts" role="img" aria-label="Turnstile spam check"><i></i>Verify you're a person</div><button class="k-btn k-btn-navy k-btn-sm" type="button">Send</button></div>
+</div>
+</div>
+<p class="st-done"><b>Thanks.</b> Marcus T. gets this today and Camille Broussard after 14 days unanswered; the card changes when one of them saves it. <span style="color:#3d4556">club_reports: field 'cost', kind 'suggestion'.</span></p>
+</div>
+</div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":2950}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

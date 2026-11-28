@@ -1,0 +1,505 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Clubs · H · Clubs-H-2 · Phones, forms and states (round 3)</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/6107adb451dbab26ee5d89f4189b81f8">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+
+body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1a2744}
+.ch-root{box-sizing:border-box;padding:16px 0 16px;background:#ecebe6;color:#1a2744}
+.ch-root *{box-sizing:border-box}
+.ch-root p{margin:0}
+.ch-mk{position:absolute;z-index:40;box-shadow:0 0 0 3px #ffffff}
+
+/* board doc */
+.ch-doc{margin:0 40px;background:#fbfaf6;border:1px solid #d9d8d1;border-radius:14px;padding:16px 22px 16px}
+.ch-doc-top{display:flex;justify-content:space-between;align-items:flex-start;gap:24px}
+.ch-title{font-size:32px;line-height:1.15;font-weight:700;letter-spacing:-.015em;margin:6px 0 0}
+.ch-ml{font-size:13px;line-height:1.45;color:#3d4556;margin:4px 0 0 !important}
+.ch-ml b{color:#1a2744;font-weight:600}
+.ch-round{display:inline-flex;align-items:center;height:26px;padding:0 10px;border-radius:6px;background:#1a2744;color:#ffffff;font-size:12.5px;font-weight:700;letter-spacing:.04em}
+.ch-grey{flex:none;background:#efefea;border:1px solid #dfded6;border-radius:10px;padding:12px 14px;display:grid;grid-template-columns:1fr 1fr;gap:10px 18px}
+.ch-grey p{font-size:12px;line-height:1.42;color:#2b3446;margin:0}
+.ch-grey p + p{margin-top:8px !important}
+.ch-grey b{display:block;font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#555c6b;margin-bottom:2px}
+.ch-grey ol{margin:0;padding-left:16px;font-size:12px;line-height:1.42;color:#2b3446}
+.ch-grey li{margin-bottom:4px}
+.ch-lbox{background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:12px 16px 14px;margin-top:12px}
+.ch-notes{list-style:none;margin:10px 0 0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px 24px}
+.ch-notes li{display:flex;gap:8px;align-items:flex-start;font-size:12.5px;line-height:1.45;color:#2b3446}
+.ch-notes .k-num-badge{width:22px;height:22px;font-size:11.5px}
+.ch-notes b{font-weight:600;color:#1a2744}
+
+/* frame label */
+.ch-flab{display:flex;align-items:center;gap:12px;margin:14px 40px 8px}
+.ch-flab h2{white-space:nowrap;margin:0;font-size:19px;line-height:1.2;font-weight:600;letter-spacing:-.01em}
+.ch-code{display:inline-flex;align-items:center;justify-content:center;min-width:28px;height:28px;padding:0 9px;border-radius:7px;background:#c8a94a;color:#1a2744;font-weight:700;font-size:13px}
+.ch-urlchip{white-space:nowrap;font-family:"Geist Mono",ui-monospace,monospace;font-size:12px;color:#3d4556;background:#ffffff;border:1px solid #d9d8d1;border-radius:7px;padding:4px 10px;margin-left:auto}
+.ch-urlchip b{font-weight:500;color:#1a2744;background:#f4ecd4;border-radius:3px;padding:0 2px}
+.ch-frame{width:1440px;background:#ffffff;border-top:1px solid #cfcec6;border-bottom:1px solid #cfcec6;box-shadow:0 20px 50px rgba(16,24,43,.10)}
+.ch-page{background:#f5f5f2;position:relative}
+
+/* header and footer (decided) */
+.ch-hd-in{gap:0;position:relative;min-height:64px;height:64px}
+.ch-hd .k-brand{margin-right:16px}
+.ch-rook{width:30px;height:30px;fill:#ffffff;flex:none}
+.ch-rook-sm{width:24px;height:24px}
+.ch-nav{gap:0}
+.ch-nav a{padding:0 10px;white-space:nowrap}
+.ch-navbtn{display:inline-flex;align-items:center;gap:4px;min-height:44px;padding:0 10px;border:0;background:transparent;color:#ffffff;font:inherit;font-size:15px;font-weight:500}
+.ch-sbtn{display:inline-flex;align-items:center;gap:8px;width:200px;height:44px;padding:0 8px 0 12px;margin-right:14px;border-radius:8px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.45);color:#ffffff;text-decoration:none;font-size:14.5px;font-weight:500;flex:none}
+.ch-kbd{margin-left:auto;font-family:"Geist Mono",ui-monospace,monospace;font-size:12px;color:#e8ecf4;border:1px solid rgba(255,255,255,.4);border-radius:5px;padding:2px 6px;line-height:1.2}
+.ch-util{gap:10px}
+.ch-util .k-ulink{padding:0 4px}
+.ch-foot-in{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px;padding-top:16px;padding-bottom:16px}
+.ch-foot .k-meta{color:rgba(255,255,255,.78)}
+.ch-foot nav a{font-size:14px}
+
+/* drawer controls */
+.ch-field{display:flex;align-items:center;gap:8px;height:44px;padding:0 12px;border:1px solid #858b99;border-radius:10px;background:#ffffff;color:#6b7180;font-size:15px}
+.ch-field svg{color:#555c6b}
+.ch-near{display:inline-flex;align-items:center;gap:6px;height:40px;padding:0 13px 0 11px;border:1.5px solid #1a2744;border-radius:8px;background:#ffffff;color:#1a2744;font-size:14px;font-weight:600;white-space:nowrap}
+.ch-near-on{background:#1a2744;color:#ffffff}
+.ch-seg{display:inline-flex;border:1px solid #858b99;border-radius:8px;overflow:hidden;background:#ffffff;height:40px}
+.ch-seg span{display:inline-flex;align-items:center;padding:0 13px;font-size:13.5px;font-weight:600;color:#1a2744;white-space:nowrap}
+.ch-seg span + span{border-left:1px solid #c9c8c0}
+.ch-seg .on{background:#1a2744;color:#ffffff}
+.ch-seg .off{color:#7a8090;background:#f4f4f1}
+.ch-filt{display:inline-flex;align-items:center;gap:6px;height:40px;padding:0 13px;margin-left:auto;border:1px solid #858b99;border-radius:8px;background:#ffffff;color:#1a2744;font-size:14px;font-weight:600;white-space:nowrap}
+.ch-pill{display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 5px 0 10px;border-radius:999px;background:#eceef3;color:#1a2744;font-size:13.5px;font-weight:600;white-space:nowrap}
+.ch-pill i{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:#ffffff;font-style:normal}
+
+/* cards */
+.ch-card{position:relative;display:block;height:84px;padding:11px 34px 0 18px;border-bottom:1px solid #ecebe5;background:#ffffff;text-decoration:none;color:#1a2744}
+.ch-sel{background:#fbf7e9;box-shadow:inset 3px 0 0 #c8a94a}
+.ch-l1{display:flex;align-items:baseline;gap:10px;height:21px}
+.ch-nm{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#1a2744}
+.ch-nm b{font-size:15px;font-weight:600;color:#1a2744}
+.ch-town{font-size:13px;color:#555c6b}
+.ch-mi{flex:none;font-size:13px;color:#555c6b;font-variant-numeric:tabular-nums;white-space:nowrap}
+.ch-chev{position:absolute;right:12px;top:32px;color:#8a8f9c;display:inline-flex}
+.ch-l23{margin-top:3px !important;font-size:13.5px;line-height:1.38;color:#2b3446;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.ch-l2{margin-top:3px !important;font-size:13.5px;line-height:1.38;color:#555c6b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ch-lnk{color:#1a2744;font-weight:600;text-decoration:underline;text-decoration-color:#9aa1b0;text-underline-offset:3px}
+.ch-l3{margin-top:1px !important;font-size:13px;line-height:1.42;color:#6b7180;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ch-div{display:flex;align-items:center;gap:10px;height:32px;padding:0 18px;background:#f6f6f3;border-bottom:1px solid #ecebe5;font-size:12.5px;font-weight:600;color:#555c6b}
+.ch-div::before,.ch-div::after{content:"";flex:1;height:1px;background:#d6d5cd}
+.ch-missing{display:flex;align-items:center;height:48px;padding:0 18px;font-size:14px}
+
+/* map */
+.ch-map{position:relative;width:980px;height:780px;overflow:hidden;background:#f7f6f1}
+.ch-map > svg{position:absolute;left:0;top:0}
+.ch-ov{position:absolute;z-index:5}
+.ch-shadow{box-shadow:0 2px 10px rgba(16,24,43,.18)}
+.ch-zoom{display:flex;flex-direction:column;border-radius:8px;background:#ffffff;overflow:hidden;border:1px solid #c9c8c0}
+.ch-zoom span{display:flex;align-items:center;justify-content:center;width:44px;height:44px;font-size:22px;font-weight:500;color:#1a2744}
+.ch-zoom span + span{border-top:1px solid #e3e2dc}
+.ch-all{display:inline-flex;align-items:center;gap:7px;height:40px;padding:0 14px 0 12px;border-radius:8px;background:#ffffff;border:1.5px solid #1a2744;font-size:14px;font-weight:600;color:#1a2744;white-space:nowrap}
+.ch-all-dis{border:1px solid #d6d5cd;color:#8a8f9c;background:#f6f6f3}
+.ch-mcap{display:flex;align-items:center;gap:8px;height:32px;padding:0 12px;border-radius:8px;background:#ffffff;border:1px solid #d9d8d1;font-size:12px;color:#2b3446;white-space:nowrap}
+.ch-mcap span{display:inline-flex;align-items:center;gap:6px}
+.ch-mcap i{font-style:normal;color:#8a8f9c}
+.ch-tip{position:absolute;z-index:6;background:#1a2744;color:#ffffff;font-size:12.5px;font-weight:600;line-height:1;border-radius:7px;padding:7px 10px;white-space:nowrap;box-shadow:0 6px 14px rgba(16,24,43,.25)}
+.ch-tip::after{content:"";position:absolute;left:50%;bottom:-5px;margin-left:-5px;width:10px;height:10px;background:#1a2744;transform:rotate(45deg)}
+.ch-ann{position:absolute;z-index:7;background:#fffaf0;border:1.5px dashed #8a7a4a;border-radius:10px;padding:9px 12px;font-size:13px;line-height:1.45;color:#3d2f08;box-shadow:0 6px 16px rgba(16,24,43,.10)}
+.ch-ann b{font-weight:700;color:#3d2f08}
+
+.ch-sec{margin:14px 40px 0;position:relative}
+.ch-sech{display:flex;align-items:center;gap:12px;margin:0 0 8px}
+.ch-sech h2{white-space:nowrap;margin:0;font-size:19px;line-height:1.2;font-weight:600;letter-spacing:-.01em}
+.ch-g1{display:grid;grid-template-columns:532px 390px 390px;gap:24px;align-items:start}
+.ch-g2{display:grid;grid-template-columns:420px 420px 440px;gap:40px;align-items:start}
+.ch-g2 > div{display:flex;flex-direction:column;gap:14px}
+.ch-g3{display:grid;grid-template-columns:440px 440px 440px;gap:20px;align-items:start}
+.ch-doc2{margin:0;padding:14px 18px 14px}
+.ch-doc2 .ch-title{font-size:24px;white-space:nowrap}
+.ch-doc2 .k-kicker{font-size:11.5px;letter-spacing:.1em}
+.ch-g2 > div{gap:12px !important}
+.ch-doc2 .ch-grey{width:auto;margin-top:10px}
+.ch-doc2 .ch-notes{grid-template-columns:1fr;gap:7px}
+.ch-doc2 .ch-notes li{font-size:12px;line-height:1.42}
+.ch-pcol{display:flex;flex-direction:column;gap:6px;position:relative}
+.ch-pcap{font-size:14.5px;font-weight:600;height:24px;display:flex;align-items:center;gap:8px;white-space:nowrap}
+.ch-pcap span.m{font-size:12px;font-weight:400;color:#555c6b;white-space:nowrap}
+.ch-pscr{position:absolute;inset:0;overflow:hidden;background:#d9e3ed}
+.ch-pstat{position:absolute;left:0;right:0;top:0;height:34px;background:#1a2744;color:#ffffff;font-size:13px;font-weight:600;padding:9px 0 0 28px;z-index:8}
+.ch-papp{position:absolute;left:0;right:0;top:34px;height:52px;background:#1a2744;display:flex;align-items:center;justify-content:space-between;padding:0 8px 0 14px;z-index:8}
+.ch-papp .k-brand{gap:8px}
+.ch-papp .k-brand-name b{font-size:14.5px}
+.ch-papp .k-brand-name span{font-size:10px}
+.ch-pbtns{display:flex;align-items:center;gap:2px;color:#ffffff}
+.ch-pbtns span{display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px}
+.ch-pmap{position:absolute;left:0;top:86px;width:366px;height:734px}
+.ch-psheet{position:absolute;left:0;right:0;bottom:0;z-index:7;background:#ffffff;border-radius:18px 18px 0 0;box-shadow:0 -8px 26px rgba(26,39,68,.22);display:flex;flex-direction:column;overflow:hidden}
+.ch-handle{width:40px;height:5px;border-radius:3px;background:#c9c8c0;margin:8px auto 6px;flex:none}
+.ch-sht{font-size:15.5px;font-weight:700;padding:0 14px;display:flex;align-items:center;gap:8px}
+.ch-shrow{display:flex;align-items:center;gap:8px;padding:8px 14px 6px}
+.ch-shrow .ch-seg,.ch-shrow .ch-filt{height:38px}
+.ch-pcap2{font-size:12.5px;color:#555c6b;padding:0 14px 8px;border-bottom:1px solid #ecebe5}
+.ch-pc{position:relative;display:block;padding:9px 30px 9px 14px;border-bottom:1px solid #ecebe5;text-decoration:none;color:#1a2744;background:#ffffff}
+.ch-pc .ch-l1{height:20px}
+.ch-pc .ch-nm b{font-size:14.5px}
+.ch-pc .ch-l23{font-size:13px;-webkit-line-clamp:1;margin-top:2px !important}
+.ch-pc .ch-l2{font-size:13px;margin-top:2px !important}
+.ch-pc .ch-chev{right:10px;top:20px}
+.ch-pc.ch-sel{background:#fbf7e9}
+.ch-chip-w{display:inline-flex;align-items:center;gap:6px;height:40px;padding:0 14px 0 11px;border-radius:999px;background:#ffffff;border:1.5px solid #1a2744;color:#1a2744;font-size:14px;font-weight:600;white-space:nowrap}
+.ch-pcap11{display:flex;align-items:center;gap:6px;height:26px;padding:0 9px;border-radius:7px;background:#ffffff;border:1px solid #d9d8d1;font-size:11px;color:#2b3446;white-space:nowrap}
+.ch-pcap11 span{display:inline-flex;align-items:center;gap:4px}
+.ch-pcap11 i{font-style:normal;color:#8a8f9c}
+.ch-fab{position:absolute;left:50%;bottom:22px;transform:translateX(-50%);z-index:9;display:inline-flex;align-items:center;gap:7px;height:46px;padding:0 20px;border-radius:999px;background:#1a2744;color:#ffffff;font-size:15px;font-weight:600;box-shadow:0 6px 18px rgba(26,39,68,.35)}
+.ch-pnote{font-size:12.5px;line-height:1.45;color:#3d4556}
+
+/* sheets and forms */
+.ch-sheet{width:420px;background:#ffffff;border:1px solid #cfcec6;border-radius:14px;box-shadow:0 12px 30px rgba(16,24,43,.12);overflow:hidden;position:relative}
+.ch-sh{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;padding:12px 16px 10px;border-bottom:1px solid #ecebe5}
+.ch-sh b{font-size:16px;line-height:1.3}
+.ch-sh span{color:#555c6b;display:inline-flex;margin-top:3px}
+.ch-sb{padding:10px 16px 12px;display:flex;flex-direction:column;gap:7px}
+.ch-f2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.ch-q{font-size:13px;font-weight:700;color:#1a2744}
+.ch-sc{display:flex;flex-wrap:wrap;gap:6px}
+.ch-sc .k-chip{min-height:28px;padding:0 8px;font-size:11.5px}
+.ch-sh b{font-size:15px !important}
+.ch-msg{display:block !important}
+.ch-st .ch-l2{white-space:nowrap !important;font-size:12.5px}
+.ch-st .ch-card{padding-right:18px !important}
+.ch-st .ch-card .ch-chev{right:-2px !important}
+.ch-vrow{display:block !important}
+.ch-vrow small{display:block;font-size:11.5px;color:#555c6b;margin-top:3px}
+.ch-doc2{padding:12px 18px 12px !important}
+.ch-doc2 .ch-lbox{margin-top:10px;padding:10px 14px 10px}
+.ch-f{display:flex;flex-direction:column;gap:4px}
+.ch-f label{font-size:13px;font-weight:600;color:#1a2744}
+.ch-in{display:flex;align-items:center;height:36px;padding:0 10px;border:1px solid #858b99;border-radius:8px;background:#ffffff;font-size:13.5px;color:#6b7180;white-space:nowrap;overflow:hidden}
+.ch-ta{height:50px;align-items:flex-start;padding-top:9px;white-space:normal}
+.ch-turn{display:flex;align-items:center;gap:8px;height:34px;padding:0 10px;border:1px solid #d6d5cd;border-radius:6px;background:#fafaf8;font-size:12.5px;color:#3d4556}
+.ch-turn i{display:inline-block;width:18px;height:18px;border-radius:50%;background:#e1f0e7;box-shadow:inset 0 0 0 2px #145b3a}
+.ch-done{display:flex;gap:8px;align-items:flex-start;padding:9px 12px;border-radius:10px;background:#e1f0e7;color:#145b3a;font-size:12.5px;line-height:1.45}
+.ch-done b{font-weight:700}
+.ch-route{font-size:12px;line-height:1.45;color:#3d4556}
+.ch-sw{display:flex;align-items:center;gap:10px;font-size:13.5px;font-weight:600;color:#1a2744;padding:11px 16px;background:#fbfaf6;border-bottom:1px solid #ecebe5}
+.ch-tog{position:relative;display:inline-block;width:36px;height:22px;border-radius:999px;background:#c4c3bb;flex:none}
+.ch-tog::after{content:"";position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:#ffffff}
+.ch-var{margin-top:10px;background:#ffffff;border:1px solid #d6d5cd;border-radius:12px;padding:10px 14px}
+.ch-var p.h{font-size:11.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#555c6b;margin-bottom:6px !important}
+.ch-vrow{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:5px 0;font-size:12.5px;color:#2b3446}
+.ch-vrow + .ch-vrow{border-top:1px solid #f0efe9}
+.ch-vbtn{display:inline-flex;align-items:center;height:30px;padding:0 10px;border-radius:7px;background:#1a2744;color:#ffffff;font-size:12px;font-weight:600;white-space:nowrap}
+
+/* states */
+.ch-scol{display:flex;flex-direction:column;gap:14px}
+.ch-st{position:relative;background:#ffffff;border:1px solid #d6d5cd;border-radius:12px;padding:9px 14px 11px}
+.ch-st h3{margin:0 0 8px;font-size:13.5px;font-weight:700;display:flex;align-items:center;gap:8px}
+.ch-st h3 span{display:inline-flex;align-items:center;justify-content:center;height:20px;padding:0 6px;border-radius:5px;background:#eceef3;font-size:11.5px;font-weight:700}
+.ch-st .ch-field{height:42px;font-size:14px}
+.ch-focus{border:2px solid #1a2744;box-shadow:0 0 0 3px #c9d5ea}
+.ch-typed{color:#1a2744}
+.ch-caret{display:inline-block;width:1.5px;height:18px;background:#1a2744;margin-left:-6px}
+.ch-msg{display:flex;align-items:flex-start;gap:7px;margin-top:8px !important;padding:8px 10px;border-radius:8px;background:#eef2f8;color:#1a2744;font-size:12.5px;line-height:1.45}
+.ch-msg a{color:#1a2744;font-weight:600;text-decoration:underline;text-decoration-color:#9aa1b0;text-underline-offset:3px}
+.ch-scap{font-size:12px;line-height:1.45;color:#555c6b;margin-top:8px !important}
+.ch-scap a{color:#1a2744;font-weight:600;text-decoration:underline;text-decoration-color:#9aa1b0;text-underline-offset:3px}
+.ch-mini{display:flex;align-items:baseline;justify-content:space-between;gap:8px;padding:5px 0;border-bottom:1px solid #f0efe9;font-size:13px}
+.ch-mini b{font-weight:600}
+.ch-mini span{color:#555c6b}
+.ch-mini i{font-style:normal;color:#555c6b;white-space:nowrap}
+.ch-st .ch-card{height:auto;padding:9px 30px 9px 0;border-bottom:1px solid #f0efe9}
+.ch-st .ch-card .ch-chev{right:2px;top:20px}
+.ch-st .ch-l2{white-space:normal}
+.ch-fp{width:300px;border:1px solid #cfcec6;border-radius:12px;background:#ffffff;box-shadow:0 12px 28px rgba(16,24,43,.16);padding:10px 12px 10px;margin-top:6px;margin-left:auto}
+.ch-fp p.h{font-size:11.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#555c6b;margin:2px 0 3px !important}
+.ch-cb{display:flex;align-items:center;gap:8px;height:22px;font-size:13px;color:#1a2744}
+.ch-cb i{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:4px;border:1.5px solid #858b99;background:#ffffff;flex:none;font-style:normal;color:#ffffff}
+.ch-cb i.on{background:#1a2744;border-color:#1a2744}
+.ch-cb i svg{width:12px;height:12px}
+.ch-cb em{font-style:normal;margin-left:auto;font-size:12px;font-weight:600;color:#555c6b}
+.ch-hint{font-size:11.5px;color:#555c6b;margin:1px 0 2px 24px !important}
+.ch-fpf{display:flex;justify-content:space-between;align-items:center;margin-top:8px;padding-top:8px;border-top:1px solid #ecebe5}
+.ch-fpf a{font-size:13.5px;font-weight:600;color:#1a2744;text-decoration:underline;text-decoration-color:#9aa1b0;text-underline-offset:3px}
+.ch-empty{margin-top:8px !important;padding:10px 12px;border:1px dashed #c9c8c0;border-radius:8px;font-size:12.5px;line-height:1.45;color:#3d4556}
+.ch-empty a{color:#1a2744;font-weight:600;text-decoration:underline;text-decoration-color:#9aa1b0;text-underline-offset:3px}
+.ch-empty code,.ch-rules code{font-family:"Geist Mono",ui-monospace,monospace;font-size:10.5px;color:#1a2744}
+.ch-kb{margin:0;padding-left:18px;font-size:12.5px;line-height:1.5;color:#2b3446}
+.ch-skip{display:inline-flex;align-items:center;height:32px;padding:0 12px;border-radius:6px;background:#1a2744;color:#ffffff;font-size:13px;font-weight:600;box-shadow:0 0 0 3px #ffffff,0 0 0 5px #1a2744;margin:4px 0 8px 4px}
+.ch-rules{background:#efefea;border:1px solid #dfded6;border-radius:12px;padding:10px 14px}
+.ch-rules p{font-size:11px;line-height:1.42;color:#2b3446}
+.ch-rules p + p{margin-top:5px !important}
+.ch-rules b{font-weight:700;color:#1a2744}
+.ch-lit{display:inline-flex;vertical-align:middle;margin:0 2px}
+
+</style>
+</helmet>
+<div class="ch-root" style="width:1440px;height:2000px">
+<div class="ch-sec" style="margin-top:0"><div class="ch-g1"><div style="display:flex;flex-direction:column;gap:14px"><section class="ch-doc ch-doc2" aria-label="About this board">
+<div class="k-row-sm" style="gap:10px"><p class="k-kicker">8 · Clubs directory · round 3 · option H · part 2</p><span class="ch-round">ROUND 3</span></div>
+<h1 class="ch-title">Clubs · H · part 2: phones, forms, states</h1>
+<p class="ch-ml" style="margin-top:6px !important"><b>Built from:</b> Clubs-E's phone map and sheet, its Suggest an update sheet and its Start a club form, cut to what option H keeps. Goes with Clubs-H.</p>
+<p class="ch-ml"><b>Replaces:</b> Clubs-E's phones (numbered cards, Next: lines, chips, Sort and All regions selects), the update sheet's day picker, Repeats, Starts, Ends and Venue, and the email mock.</p>
+<p class="ch-ml"><b>K's feedback applied (Fri, Oct 9 and Tue, Oct 13):</b> no week grid; the map answers near me; simpler than E; every club browsable; nothing weekly.</p>
+<p style="margin-top:8px"><span class="k-sample">Sample data: representative names, road miles, scholastic flags.</span></p>
+<div class="ch-lbox">
+<p class="k-label">Notes on this board</p>
+<ol class="ch-notes">
+<li><span class="k-num-badge">1</span><span><b>Phones keep E's map plus sheet,</b> at state zoom with the same whole list. A tapped pin raises the sheet to its card; the card opens the club page. Pinch zooms (no + or −). Map drops the sheet, order kept.</span></li>
+<li><span class="k-num-badge">2</span><span><b>Suggest an update is one text box,</b> shared with the club page. No day picker, Repeats, Starts or Ends: the club's representative rewrites its own line.</span></li>
+<li><span class="k-num-badge">3</span><span><b>Start a club and Suggest a club are one form</b> with a switch, routed by city or ZIP (zip_regions) to the area's representative; open seat: LCA admins.</span></li>
+<li><span class="k-num-badge">4</span><span><b>States keep the list whole.</b> Only Filters and a typed club name narrow it, each with a one-tap way back (Clear filters, Show all 25). No Meets today, no Tonight, no day filter.</span></li>
+</ol>
+</div>
+<aside class="ch-grey" aria-label="Board note">
+<div><p><b>What</b>The phones, the two forms and the edge states for option H. Forms open from links, never on the first screen.</p><p><b>Built from</b>Clubs-E only (see above).</p></div>
+<div><p><b>K's feedback applied</b>Simpler, browse every club, no weekly claims.</p><p><b>Open for K</b></p><ol><li>Should the phone's low sheet show the first card (drawn) or only the count and order?</li><li>Is "Scholastic friendly" a filter you want, given clubs set it themselves?</li></ol></div>
+</aside>
+</section><div class="ch-st"><h3><span>S7</span>Keyboard</h3>
+<div style="display:flex;gap:14px;align-items:flex-start"><span class="ch-skip" style="flex:none">Skip to the list</span>
+<ol class="ch-kb"><li>Sits before the map.</li><li>The drawer is a list; each card is one link.</li><li>Focus on a card lifts its pin.</li><li>Pins are buttons, in list order.</li></ol></div></div></div><div class="ch-pcol">
+<p class="ch-pcap"><span class="ch-code">P1</span>Landing<span class="m">map at state zoom, sheet low</span></p>
+<div class="k-phone"><div class="ch-pscr">
+<div class="ch-pstat">9:41</div><div class="ch-papp"><a class="k-brand" href="#" aria-label="Louisiana Chess Association, home"><svg class="ch-rook ch-rook-sm" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span class="k-brand-name" aria-hidden="true"><b>Louisiana Chess</b><span>Association</span></span></a><div class="ch-pbtns"><span aria-label="Search"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg></span><span aria-label="Menu"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg></span></div></div>
+<div class="ch-pmap"><svg width="366" height="734" viewBox="0 0 366 734" role="img" aria-label="Louisiana at state zoom with 17 marks for 25 clubs"><path d="M-114.7 121.3 L16.0 121.3 L16.0 201.4 L30.1 231.8 L40.1 247.3 L50.1 264.4 L48.7 282.3 L44.1 301.8 L38.1 325.1 L37.4 348.5 L28.1 360.1 L29.4 379.6 L-1.3 391.3 L-41.3 410.7 L-114.7 465.2Z" fill="#ecebe4" stroke="#c9c8c0" stroke-width="1"></path>
+<path d="M-114.7 121.3 L16.0 121.3 L207.5 122.8 L207.5 6.1 L-114.7 6.1Z" fill="#ecebe4" stroke="#c9c8c0" stroke-width="1"></path>
+<path d="M177.5 278.4 L184.1 259.0 L186.8 243.4 L193.5 224.0 L202.1 210.0 L215.5 196.8 L223.5 181.2 L217.5 165.6 L207.5 150.1 L212.1 134.5 L207.5 122.8 L207.5 6.1 L485.6 6.1 L485.6 332.9 L378.9 328.2 L352.2 325.1 L332.2 331.3 L315.5 342.2 L312.2 340.7 L306.9 331.3 L301.5 321.2 L301.5 308.0 L300.2 294.0 L303.5 278.4Z" fill="#ecebe4" stroke="#c9c8c0" stroke-width="1"></path>
+<path d="M16.0 121.3 L207.5 122.8 L212.1 134.5 L207.5 150.1 L217.5 165.6 L223.5 181.2 L215.5 196.8 L202.1 210.0 L193.5 224.0 L186.8 243.4 L184.1 259.0 L177.5 278.4 L303.5 278.4 L300.2 294.0 L301.5 308.0 L301.5 321.2 L306.9 331.3 L312.2 340.7 L315.5 342.2 L308.9 352.4 L318.9 364.0 L325.5 375.7 L315.5 385.8 L325.5 399.0 L338.9 409.1 L348.9 418.5 L335.5 430.2 L325.5 437.9 L315.5 422.4 L298.9 410.7 L285.5 416.9 L278.8 426.3 L265.5 427.8 L248.8 424.7 L232.2 427.8 L218.8 420.0 L202.1 412.3 L192.1 399.0 L177.5 395.1 L162.1 391.3 L145.4 387.4 L128.8 391.3 L108.8 387.4 L85.4 377.2 L62.1 374.1 L38.7 377.2 L29.4 379.6 L28.1 360.1 L37.4 348.5 L38.1 325.1 L44.1 301.8 L48.7 282.3 L50.1 264.4 L40.1 247.3 L30.1 231.8 L16.0 201.4Z" fill="#f7f6f1" stroke="#9aa0ad" stroke-width="1.3" stroke-linejoin="round"></path>
+<ellipse cx="278.8" cy="343.0" rx="22.7" ry="10.5" fill="#d3e0ec"></ellipse>
+<ellipse cx="252.2" cy="336.0" rx="6.0" ry="4.7" fill="#d3e0ec"></ellipse>
+<ellipse cx="305.5" cy="353.9" rx="10.0" ry="6.2" fill="#d3e0ec"></ellipse>
+<ellipse cx="65.4" cy="367.1" rx="6.0" ry="5.4" fill="#d3e0ec"></ellipse>
+<ellipse cx="28.1" cy="367.1" rx="3.3" ry="7.0" fill="#d3e0ec"></ellipse>
+<ellipse cx="212.1" cy="365.6" rx="3.3" ry="5.4" fill="#d3e0ec"></ellipse>
+<ellipse cx="188.1" cy="358.6" rx="3.3" ry="4.7" fill="#d3e0ec"></ellipse>
+<ellipse cx="40.1" cy="255.1" rx="2.7" ry="17.1" fill="#d3e0ec"></ellipse>
+<path d="M207.5 99.5 L207.5 122.8 L212.1 134.5 L207.5 150.1 L217.5 165.6 L223.5 181.2 L215.5 196.8 L202.1 210.0 L193.5 224.0 L186.8 243.4 L184.1 259.0 L177.5 278.4 L184.1 294.0 L193.5 305.7 L202.1 313.5 L205.5 321.2 L205.5 331.3 L215.5 344.6 L228.8 350.8 L245.5 353.1 L260.2 356.2 L272.2 361.7 L283.5 360.9 L290.9 367.9 L302.2 383.5 L315.5 399.0 L328.9 414.6 L335.5 426.3" fill="none" stroke="#bfd0e3" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path>
+<path d="M16.0 107.3 L26.7 134.5 L36.1 157.9 L48.7 185.1 L68.7 208.4 L85.4 227.9 L105.4 241.1 L122.1 253.5 L138.8 265.2 L158.8 273.8 L174.8 277.7" fill="none" stroke="#bfd0e3" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"></path>
+<path d="M170.8 278.4 L169.5 300.2 L172.1 321.2 L177.5 340.7 L188.8 360.1 L198.8 373.4 L205.5 382.7 L202.1 399.0" fill="none" stroke="#bfd0e3" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"></path>
+<path d="M-14.6 352.4 L32.1 346.1 L60.1 338.4 L72.1 337.6 L112.1 339.1 L150.8 339.9 L168.8 330.6 L188.8 325.1 L206.8 322.0 L215.5 326.7 L224.2 336.0 L245.5 348.5 L265.5 357.0 L280.8 359.4 L290.9 352.4 L300.2 336.0 L318.9 328.2 L365.6 323.6 L418.9 317.3" fill="none" stroke="#d6d3c8" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"></path>
+<path d="M-14.6 352.4 L32.1 346.1 L60.1 338.4 L72.1 337.6 L112.1 339.1 L150.8 339.9 L168.8 330.6 L188.8 325.1 L206.8 322.0 L215.5 326.7 L224.2 336.0 L245.5 348.5 L265.5 357.0 L280.8 359.4 L290.9 352.4 L300.2 336.0 L318.9 328.2 L365.6 323.6 L418.9 317.3" fill="none" stroke="#ffffff" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"></path>
+<path d="M215.5 322.8 L235.5 319.7 L254.8 318.9 L278.8 322.8 L298.9 332.9" fill="none" stroke="#d6d3c8" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"></path>
+<path d="M215.5 322.8 L235.5 319.7 L254.8 318.9 L278.8 322.8 L298.9 332.9" fill="none" stroke="#ffffff" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"></path>
+<path d="M-34.6 161.7 L35.4 163.3 L72.1 160.2 L109.4 159.4 L144.1 161.7 L178.8 168.0 L206.8 173.4 L258.8 175.7" fill="none" stroke="#d6d3c8" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"></path>
+<path d="M-34.6 161.7 L35.4 163.3 L72.1 160.2 L109.4 159.4 L144.1 161.7 L178.8 168.0 L206.8 173.4 L258.8 175.7" fill="none" stroke="#ffffff" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"></path>
+<path d="M35.4 168.0 L55.4 192.9 L79.4 219.3 L102.1 239.5 L122.1 255.1 L132.1 278.4 L144.1 297.9 L148.1 317.3 L150.8 339.1" fill="none" stroke="#d6d3c8" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"></path>
+<path d="M35.4 168.0 L55.4 192.9 L79.4 219.3 L102.1 239.5 L122.1 255.1 L132.1 278.4 L144.1 297.9 L148.1 317.3 L150.8 339.1" fill="none" stroke="#ffffff" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"></path>
+<path d="M255.5 216.2 L255.5 278.4 L254.8 318.9 L254.2 350.8" fill="none" stroke="#d6d3c8" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"></path>
+<path d="M255.5 216.2 L255.5 278.4 L254.8 318.9 L254.2 350.8" fill="none" stroke="#ffffff" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"></path>
+<text x="-18.0" y="278.4" text-anchor="middle" font-size="8.9" font-weight="600" letter-spacing="2" fill="#a0a5b0">TEXAS</text>
+<text x="112.1" y="107.3" text-anchor="middle" font-size="8.9" font-weight="600" letter-spacing="2" fill="#a0a5b0">ARKANSAS</text>
+<text x="288.9" y="220.1" text-anchor="middle" font-size="8.9" font-weight="600" letter-spacing="2" fill="#a0a5b0">MISSISSIPPI</text>
+<text x="245.5" y="444.9" text-anchor="middle" font-size="9.8" font-weight="500" font-style="italic" fill="#7c8698">Gulf of Mexico</text>
+<text x="30.7" y="152.0" text-anchor="start" font-size="10" font-weight="600" fill="#1a2744" stroke="#ffffff" stroke-width="3.4" paint-order="stroke" stroke-linejoin="round">Shreveport-Bossier</text>
+<text x="109.4" y="175.2" text-anchor="middle" font-size="10" font-weight="600" fill="#1a2744" stroke="#ffffff" stroke-width="3.4" paint-order="stroke" stroke-linejoin="round">Ruston</text>
+<text x="152.1" y="164.5" text-anchor="start" font-size="10" font-weight="600" fill="#1a2744" stroke="#ffffff" stroke-width="3.4" paint-order="stroke" stroke-linejoin="round">Monroe</text>
+<text x="131.4" y="257.0" text-anchor="start" font-size="10" font-weight="600" fill="#1a2744" stroke="#ffffff" stroke-width="3.4" paint-order="stroke" stroke-linejoin="round">Pineville</text>
+<text x="148.1" y="285.8" text-anchor="start" font-size="10" font-weight="600" fill="#1a2744" stroke="#ffffff" stroke-width="3.4" paint-order="stroke" stroke-linejoin="round">Bunkie</text>
+<text x="66.1" y="305.1" text-anchor="middle" font-size="10" font-weight="600" fill="#1a2744" stroke="#ffffff" stroke-width="3.4" paint-order="stroke" stroke-linejoin="round">DeRidder</text>
+<text x="138.8" y="318.5" text-anchor="end" font-size="10" font-weight="600" fill="#1a2744" stroke="#ffffff" stroke-width="3.4" paint-order="stroke" stroke-linejoin="round">Opelousas</text>
+<text x="60.1" y="352.6" text-anchor="middle" font-size="10" font-weight="600" fill="#1a2744" stroke="#ffffff" stroke-width="3.4" paint-order="stroke" stroke-linejoin="round">Sulphur</text>
+<text x="142.8" y="342.6" text-anchor="end" font-size="10" font-weight="600" fill="#1a2744" stroke="#ffffff" stroke-width="3.4" paint-order="stroke" stroke-linejoin="round">Lafayette</text>
+<text x="210.8" y="307.2" text-anchor="middle" font-size="10" font-weight="600" fill="#1a2744" stroke="#ffffff" stroke-width="3.4" paint-order="stroke" stroke-linejoin="round">Baton Rouge</text>
+<text x="224.2" y="352.6" text-anchor="middle" font-size="10" font-weight="600" fill="#1a2744" stroke="#ffffff" stroke-width="3.4" paint-order="stroke" stroke-linejoin="round">Gonzales</text>
+<text x="280.8" y="382.1" text-anchor="middle" font-size="10" font-weight="600" fill="#1a2744" stroke="#ffffff" stroke-width="3.4" paint-order="stroke" stroke-linejoin="round">New Orleans</text>
+<text x="280.8" y="319.2" text-anchor="middle" font-size="10" font-weight="600" fill="#1a2744" stroke="#ffffff" stroke-width="3.4" paint-order="stroke" stroke-linejoin="round">Mandeville</text>
+<text x="308.2" y="338.0" text-anchor="start" font-size="10" font-weight="600" fill="#1a2744" stroke="#ffffff" stroke-width="3.4" paint-order="stroke" stroke-linejoin="round">Slidell</text>
+<text x="314.9" y="306.0" text-anchor="middle" font-size="10" font-weight="600" fill="#1a2744" stroke="#ffffff" stroke-width="3.4" paint-order="stroke" stroke-linejoin="round">Picayune, MS</text>
+<text x="237.5" y="402.4" text-anchor="middle" font-size="10" font-weight="600" fill="#1a2744" stroke="#ffffff" stroke-width="3.4" paint-order="stroke" stroke-linejoin="round">Houma</text>
+<text x="196.8" y="383.1" text-anchor="end" font-size="10" font-weight="600" fill="#1a2744" stroke="#ffffff" stroke-width="3.4" paint-order="stroke" stroke-linejoin="round">Morgan City</text>
+<circle cx="38.7" cy="161.0" r="5.5" fill="#1a2744" stroke="#ffffff" stroke-width="2"></circle>
+<circle cx="109.4" cy="160.2" r="5.5" fill="#1a2744" stroke="#ffffff" stroke-width="2"></circle>
+<circle cx="144.1" cy="161.0" r="5.5" fill="#1a2744" stroke="#ffffff" stroke-width="2"></circle>
+<circle cx="123.4" cy="253.5" r="5.5" fill="#1a2744" stroke="#ffffff" stroke-width="2"></circle>
+<circle cx="140.1" cy="282.3" r="5.5" fill="#1a2744" stroke="#ffffff" stroke-width="2"></circle>
+<circle cx="66.1" cy="290.1" r="5.5" fill="#1a2744" stroke="#ffffff" stroke-width="2"></circle>
+<circle cx="146.8" cy="315.0" r="5.5" fill="#1a2744" stroke="#ffffff" stroke-width="2"></circle>
+<circle cx="60.1" cy="337.6" r="5.0" fill="#ffffff" stroke="#1a2744" stroke-width="2"></circle>
+<circle cx="150.8" cy="339.1" r="5.0" fill="#ffffff" stroke="#1a2744" stroke-width="2"></circle>
+<circle cx="210.8" cy="321.2" r="10.0" fill="#1a2744" stroke="#ffffff" stroke-width="2"></circle><text x="210.8" y="325.0" text-anchor="middle" font-size="10.5" font-weight="700" fill="#ffffff">2</text>
+<circle cx="224.2" cy="337.6" r="5.0" fill="#ffffff" stroke="#1a2744" stroke-width="2"></circle>
+<circle cx="280.8" cy="360.1" r="10.0" fill="#1a2744" stroke="#ffffff" stroke-width="2"></circle><text x="280.8" y="363.9" text-anchor="middle" font-size="10.5" font-weight="700" fill="#ffffff">8</text>
+<circle cx="280.8" cy="328.2" r="5.5" fill="#1a2744" stroke="#ffffff" stroke-width="2"></circle>
+<circle cx="300.2" cy="334.5" r="5.5" fill="#1a2744" stroke="#ffffff" stroke-width="2"></circle>
+<circle cx="314.9" cy="315.0" r="5.5" fill="#1a2744" stroke="#ffffff" stroke-width="2"></circle>
+<circle cx="237.5" cy="387.4" r="5.5" fill="#1a2744" stroke="#ffffff" stroke-width="2"></circle>
+<circle cx="204.8" cy="379.6" r="5.5" fill="#1a2744" stroke="#ffffff" stroke-width="2"></circle>
+</svg></div>
+<div style="position:absolute;left:12px;right:12px;top:98px;z-index:5;display:flex;flex-direction:column;align-items:flex-start;gap:8px">
+<div class="ch-field ch-shadow" style="width:100%"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg><span>City, ZIP or club name</span></div>
+<span class="ch-chip-w ch-shadow"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"></circle><circle cx="12" cy="12" r="7.5"></circle><path d="M12 1.5v3M12 19.5v3M1.5 12h3M19.5 12h3"></path></svg>Near me</span>
+</div>
+<div class="ch-pcap11 ch-shadow" style="position:absolute;left:12px;bottom:150px;z-index:6"><span><svg width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><circle cx="5" cy="5" r="4" fill="#1a2744"></circle></svg>times listed</span><i>·</i><span><svg width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><circle cx="5" cy="5" r="3.6" fill="#ffffff" stroke="#1a2744" stroke-width="1.5"></circle></svg>not listed</span><i>·</i><span><svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><circle cx="7" cy="7" r="6.5" fill="#1a2744"></circle><text x="7" y="10" text-anchor="middle" font-size="8.5" font-weight="700" fill="#ffffff">2</text></svg>several clubs, tap to open</span></div>
+<div class="ch-psheet" style="height:140px">
+<span class="ch-handle"></span>
+<p class="ch-sht">25 clubs · A to Z</p>
+<div style="margin-top:4px;border-top:1px solid #ecebe5"><a class="ch-pc" href="#" role="listitem"><div class="ch-l1"><span class="ch-nm"><b>Baton Rouge Chess Club</b><span class="ch-town"> · Baton Rouge</span></span></div><p class="ch-l23">Saturdays 10:00 AM at Jones Creek Branch Library, G/90+30. Casual meets Wednesdays 6:00 PM at Boba ParTea on O&#x27;Neil Lane.</p><span class="ch-chev"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></span></a></div>
+</div>
+</div></div>
+<span class="k-num-badge ch-mk" style="left:-10px;top:150px">1</span>
+</div><div class="ch-pcol">
+<p class="ch-pcap"><span class="ch-code">P2</span>Near me from 70808, sheet up<span class="m">order kept</span></p>
+<div class="k-phone"><div class="ch-pscr" style="background:#ffffff">
+<div class="ch-pstat">9:41</div><div class="ch-papp"><a class="k-brand" href="#" aria-label="Louisiana Chess Association, home"><svg class="ch-rook ch-rook-sm" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span class="k-brand-name" aria-hidden="true"><b>Louisiana Chess</b><span>Association</span></span></a><div class="ch-pbtns"><span aria-label="Search"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg></span><span aria-label="Menu"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg></span></div></div>
+<div style="position:absolute;left:0;right:0;top:86px;height:40px;overflow:hidden;z-index:2"><svg width="366" height="40" viewBox="140 290 366 40" aria-hidden="true"><path d="M-114.7 121.3 L16.0 121.3 L16.0 201.4 L30.1 231.8 L40.1 247.3 L50.1 264.4 L48.7 282.3 L44.1 301.8 L38.1 325.1 L37.4 348.5 L28.1 360.1 L29.4 379.6 L-1.3 391.3 L-41.3 410.7 L-114.7 465.2Z" fill="#ecebe4" stroke="#c9c8c0" stroke-width="1"></path>
+<path d="M-114.7 121.3 L16.0 121.3 L207.5 122.8 L207.5 6.1 L-114.7 6.1Z" fill="#ecebe4" stroke="#c9c8c0" stroke-width="1"></path>
+<path d="M177.5 278.4 L184.1 259.0 L186.8 243.4 L193.5 224.0 L202.1 210.0 L215.5 196.8 L223.5 181.2 L217.5 165.6 L207.5 150.1 L212.1 134.5 L207.5 122.8 L207.5 6.1 L485.6 6.1 L485.6 332.9 L378.9 328.2 L352.2 325.1 L332.2 331.3 L315.5 342.2 L312.2 340.7 L306.9 331.3 L301.5 321.2 L301.5 308.0 L300.2 294.0 L303.5 278.4Z" fill="#ecebe4" stroke="#c9c8c0" stroke-width="1"></path>
+<path d="M16.0 121.3 L207.5 122.8 L212.1 134.5 L207.5 150.1 L217.5 165.6 L223.5 181.2 L215.5 196.8 L202.1 210.0 L193.5 224.0 L186.8 243.4 L184.1 259.0 L177.5 278.4 L303.5 278.4 L300.2 294.0 L301.5 308.0 L301.5 321.2 L306.9 331.3 L312.2 340.7 L315.5 342.2 L308.9 352.4 L318.9 364.0 L325.5 375.7 L315.5 385.8 L325.5 399.0 L338.9 409.1 L348.9 418.5 L335.5 430.2 L325.5 437.9 L315.5 422.4 L298.9 410.7 L285.5 416.9 L278.8 426.3 L265.5 427.8 L248.8 424.7 L232.2 427.8 L218.8 420.0 L202.1 412.3 L192.1 399.0 L177.5 395.1 L162.1 391.3 L145.4 387.4 L128.8 391.3 L108.8 387.4 L85.4 377.2 L62.1 374.1 L38.7 377.2 L29.4 379.6 L28.1 360.1 L37.4 348.5 L38.1 325.1 L44.1 301.8 L48.7 282.3 L50.1 264.4 L40.1 247.3 L30.1 231.8 L16.0 201.4Z" fill="#f7f6f1" stroke="#9aa0ad" stroke-width="1.3" stroke-linejoin="round"></path>
+<ellipse cx="278.8" cy="343.0" rx="22.7" ry="10.5" fill="#d3e0ec"></ellipse>
+<ellipse cx="252.2" cy="336.0" rx="6.0" ry="4.7" fill="#d3e0ec"></ellipse>
+<ellipse cx="305.5" cy="353.9" rx="10.0" ry="6.2" fill="#d3e0ec"></ellipse>
+<ellipse cx="65.4" cy="367.1" rx="6.0" ry="5.4" fill="#d3e0ec"></ellipse>
+<ellipse cx="28.1" cy="367.1" rx="3.3" ry="7.0" fill="#d3e0ec"></ellipse>
+<ellipse cx="212.1" cy="365.6" rx="3.3" ry="5.4" fill="#d3e0ec"></ellipse>
+<ellipse cx="188.1" cy="358.6" rx="3.3" ry="4.7" fill="#d3e0ec"></ellipse>
+<ellipse cx="40.1" cy="255.1" rx="2.7" ry="17.1" fill="#d3e0ec"></ellipse>
+<path d="M207.5 99.5 L207.5 122.8 L212.1 134.5 L207.5 150.1 L217.5 165.6 L223.5 181.2 L215.5 196.8 L202.1 210.0 L193.5 224.0 L186.8 243.4 L184.1 259.0 L177.5 278.4 L184.1 294.0 L193.5 305.7 L202.1 313.5 L205.5 321.2 L205.5 331.3 L215.5 344.6 L228.8 350.8 L245.5 353.1 L260.2 356.2 L272.2 361.7 L283.5 360.9 L290.9 367.9 L302.2 383.5 L315.5 399.0 L328.9 414.6 L335.5 426.3" fill="none" stroke="#bfd0e3" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path>
+<path d="M16.0 107.3 L26.7 134.5 L36.1 157.9 L48.7 185.1 L68.7 208.4 L85.4 227.9 L105.4 241.1 L122.1 253.5 L138.8 265.2 L158.8 273.8 L174.8 277.7" fill="none" stroke="#bfd0e3" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"></path>
+<path d="M170.8 278.4 L169.5 300.2 L172.1 321.2 L177.5 340.7 L188.8 360.1 L198.8 373.4 L205.5 382.7 L202.1 399.0" fill="none" stroke="#bfd0e3" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"></path>
+<path d="M-14.6 352.4 L32.1 346.1 L60.1 338.4 L72.1 337.6 L112.1 339.1 L150.8 339.9 L168.8 330.6 L188.8 325.1 L206.8 322.0 L215.5 326.7 L224.2 336.0 L245.5 348.5 L265.5 357.0 L280.8 359.4 L290.9 352.4 L300.2 336.0 L318.9 328.2 L365.6 323.6 L418.9 317.3" fill="none" stroke="#d6d3c8" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"></path>
+<path d="M-14.6 352.4 L32.1 346.1 L60.1 338.4 L72.1 337.6 L112.1 339.1 L150.8 339.9 L168.8 330.6 L188.8 325.1 L206.8 322.0 L215.5 326.7 L224.2 336.0 L245.5 348.5 L265.5 357.0 L280.8 359.4 L290.9 352.4 L300.2 336.0 L318.9 328.2 L365.6 323.6 L418.9 317.3" fill="none" stroke="#ffffff" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"></path>
+<path d="M215.5 322.8 L235.5 319.7 L254.8 318.9 L278.8 322.8 L298.9 332.9" fill="none" stroke="#d6d3c8" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"></path>
+<path d="M215.5 322.8 L235.5 319.7 L254.8 318.9 L278.8 322.8 L298.9 332.9" fill="none" stroke="#ffffff" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"></path>
+<path d="M-34.6 161.7 L35.4 163.3 L72.1 160.2 L109.4 159.4 L144.1 161.7 L178.8 168.0 L206.8 173.4 L258.8 175.7" fill="none" stroke="#d6d3c8" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"></path>
+<path d="M-34.6 161.7 L35.4 163.3 L72.1 160.2 L109.4 159.4 L144.1 161.7 L178.8 168.0 L206.8 173.4 L258.8 175.7" fill="none" stroke="#ffffff" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"></path>
+<path d="M35.4 168.0 L55.4 192.9 L79.4 219.3 L102.1 239.5 L122.1 255.1 L132.1 278.4 L144.1 297.9 L148.1 317.3 L150.8 339.1" fill="none" stroke="#d6d3c8" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"></path>
+<path d="M35.4 168.0 L55.4 192.9 L79.4 219.3 L102.1 239.5 L122.1 255.1 L132.1 278.4 L144.1 297.9 L148.1 317.3 L150.8 339.1" fill="none" stroke="#ffffff" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"></path>
+<path d="M255.5 216.2 L255.5 278.4 L254.8 318.9 L254.2 350.8" fill="none" stroke="#d6d3c8" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"></path>
+<path d="M255.5 216.2 L255.5 278.4 L254.8 318.9 L254.2 350.8" fill="none" stroke="#ffffff" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"></path>
+<text x="-18.0" y="278.4" text-anchor="middle" font-size="8.9" font-weight="600" letter-spacing="2" fill="#a0a5b0">TEXAS</text>
+<text x="112.1" y="107.3" text-anchor="middle" font-size="8.9" font-weight="600" letter-spacing="2" fill="#a0a5b0">ARKANSAS</text>
+<text x="288.9" y="220.1" text-anchor="middle" font-size="8.9" font-weight="600" letter-spacing="2" fill="#a0a5b0">MISSISSIPPI</text>
+<text x="245.5" y="444.9" text-anchor="middle" font-size="9.8" font-weight="500" font-style="italic" fill="#7c8698">Gulf of Mexico</text>
+<text x="30.7" y="152.0" text-anchor="start" font-size="10" font-weight="600" fill="#1a2744" stroke="#ffffff" stroke-width="3.4" paint-order="stroke" stroke-linejoin="round">Shreveport-Bossier</text>
+<text x="109.4" y="175.2" text-anchor="middle" font-size="10" font-weight="600" fill="#1a2744" stroke="#ffffff" stroke-width="3.4" paint-order="stroke" stroke-linejoin="round">Ruston</text>
+<text x="152.1" y="164.5" text-anchor="start" font-size="10" font-weight="600" fill="#1a2744" stroke="#ffffff" stroke-width="3.4" paint-order="stroke" stroke-linejoin="round">Monroe</text>
+<text x="131.4" y="257.0" text-anchor="start" font-size="10" font-weight="600" fill="#1a2744" stroke="#ffffff" stroke-width="3.4" paint-order="stroke" stroke-linejoin="round">Pineville</text>
+<text x="148.1" y="285.8" text-anchor="start" font-size="10" font-weight="600" fill="#1a2744" stroke="#ffffff" stroke-width="3.4" paint-order="stroke" stroke-linejoin="round">Bunkie</text>
+<text x="66.1" y="305.1" text-anchor="middle" font-size="10" font-weight="600" fill="#1a2744" stroke="#ffffff" stroke-width="3.4" paint-order="stroke" stroke-linejoin="round">DeRidder</text>
+<text x="138.8" y="318.5" text-anchor="end" font-size="10" font-weight="600" fill="#1a2744" stroke="#ffffff" stroke-width="3.4" paint-order="stroke" stroke-linejoin="round">Opelousas</text>
+<text x="60.1" y="352.6" text-anchor="middle" font-size="10" font-weight="600" fill="#1a2744" stroke="#ffffff" stroke-width="3.4" paint-order="stroke" stroke-linejoin="round">Sulphur</text>
+<text x="142.8" y="342.6" text-anchor="end" font-size="10" font-weight="600" fill="#1a2744" stroke="#ffffff" stroke-width="3.4" paint-order="stroke" stroke-linejoin="round">Lafayette</text>
+<text x="210.8" y="307.2" text-anchor="middle" font-size="10" font-weight="600" fill="#1a2744" stroke="#ffffff" stroke-width="3.4" paint-order="stroke" stroke-linejoin="round">Baton Rouge</text>
+<text x="224.2" y="352.6" text-anchor="middle" font-size="10" font-weight="600" fill="#1a2744" stroke="#ffffff" stroke-width="3.4" paint-order="stroke" stroke-linejoin="round">Gonzales</text>
+<text x="280.8" y="382.1" text-anchor="middle" font-size="10" font-weight="600" fill="#1a2744" stroke="#ffffff" stroke-width="3.4" paint-order="stroke" stroke-linejoin="round">New Orleans</text>
+<text x="280.8" y="319.2" text-anchor="middle" font-size="10" font-weight="600" fill="#1a2744" stroke="#ffffff" stroke-width="3.4" paint-order="stroke" stroke-linejoin="round">Mandeville</text>
+<text x="308.2" y="338.0" text-anchor="start" font-size="10" font-weight="600" fill="#1a2744" stroke="#ffffff" stroke-width="3.4" paint-order="stroke" stroke-linejoin="round">Slidell</text>
+<text x="314.9" y="306.0" text-anchor="middle" font-size="10" font-weight="600" fill="#1a2744" stroke="#ffffff" stroke-width="3.4" paint-order="stroke" stroke-linejoin="round">Picayune, MS</text>
+<text x="237.5" y="402.4" text-anchor="middle" font-size="10" font-weight="600" fill="#1a2744" stroke="#ffffff" stroke-width="3.4" paint-order="stroke" stroke-linejoin="round">Houma</text>
+<text x="196.8" y="383.1" text-anchor="end" font-size="10" font-weight="600" fill="#1a2744" stroke="#ffffff" stroke-width="3.4" paint-order="stroke" stroke-linejoin="round">Morgan City</text>
+<circle cx="38.7" cy="161.0" r="5.5" fill="#1a2744" stroke="#ffffff" stroke-width="2"></circle>
+<circle cx="109.4" cy="160.2" r="5.5" fill="#1a2744" stroke="#ffffff" stroke-width="2"></circle>
+<circle cx="144.1" cy="161.0" r="5.5" fill="#1a2744" stroke="#ffffff" stroke-width="2"></circle>
+<circle cx="123.4" cy="253.5" r="5.5" fill="#1a2744" stroke="#ffffff" stroke-width="2"></circle>
+<circle cx="140.1" cy="282.3" r="5.5" fill="#1a2744" stroke="#ffffff" stroke-width="2"></circle>
+<circle cx="66.1" cy="290.1" r="5.5" fill="#1a2744" stroke="#ffffff" stroke-width="2"></circle>
+<circle cx="146.8" cy="315.0" r="5.5" fill="#1a2744" stroke="#ffffff" stroke-width="2"></circle>
+<circle cx="60.1" cy="337.6" r="5.0" fill="#ffffff" stroke="#1a2744" stroke-width="2"></circle>
+<circle cx="150.8" cy="339.1" r="5.0" fill="#ffffff" stroke="#1a2744" stroke-width="2"></circle>
+<circle cx="210.8" cy="321.2" r="10.0" fill="#1a2744" stroke="#ffffff" stroke-width="2"></circle><text x="210.8" y="325.0" text-anchor="middle" font-size="10.5" font-weight="700" fill="#ffffff">2</text>
+<circle cx="224.2" cy="337.6" r="5.0" fill="#ffffff" stroke="#1a2744" stroke-width="2"></circle>
+<circle cx="280.8" cy="360.1" r="10.0" fill="#1a2744" stroke="#ffffff" stroke-width="2"></circle><text x="280.8" y="363.9" text-anchor="middle" font-size="10.5" font-weight="700" fill="#ffffff">8</text>
+<circle cx="280.8" cy="328.2" r="5.5" fill="#1a2744" stroke="#ffffff" stroke-width="2"></circle>
+<circle cx="300.2" cy="334.5" r="5.5" fill="#1a2744" stroke="#ffffff" stroke-width="2"></circle>
+<circle cx="314.9" cy="315.0" r="5.5" fill="#1a2744" stroke="#ffffff" stroke-width="2"></circle>
+<circle cx="237.5" cy="387.4" r="5.5" fill="#1a2744" stroke="#ffffff" stroke-width="2"></circle>
+<circle cx="204.8" cy="379.6" r="5.5" fill="#1a2744" stroke="#ffffff" stroke-width="2"></circle>
+</svg><span style="position:absolute;inset:0;background:rgba(16,24,43,.35)"></span></div>
+<div class="ch-psheet" style="top:112px">
+<span class="ch-handle"></span>
+<p class="ch-sht"><span class="ch-pill">Near you: 70808<i aria-label="Clear location"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></i></span></p>
+<div class="ch-shrow"><span class="ch-seg"><span>A to Z</span><span class="on">Nearest</span></span><span class="ch-filt"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16l-6 7.5V19l-4 1.5v-8L4 5z"></path></svg>Filters</span></div>
+<p class="ch-pcap2">All 25 clubs, nearest first</p>
+<div role="list"><a class="ch-pc ch-sel" href="#" role="listitem"><div class="ch-l1"><span class="ch-nm"><b>Baton Rouge Chess Club</b><span class="ch-town"> · Baton Rouge</span></span><span class="ch-mi">about 3 mi</span></div><p class="ch-l23">Saturdays 10:00 AM at Jones Creek Branch Library, G/90+30. Casual meets Wednesdays 6:00 PM at Boba ParTea on O&#x27;Neil Lane.</p><span class="ch-chev"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></span></a><a class="ch-pc" href="#" role="listitem"><div class="ch-l1"><span class="ch-nm"><b>Bluebonnet Chess Club</b><span class="ch-town"> · Baton Rouge</span></span><span class="ch-mi">about 5 mi</span></div><p class="ch-l23">Meets bi-weekly at Bluebonnet Library on the 1st and 3rd Sunday of the month, 4:30–5:30 PM.</p><span class="ch-chev"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></span></a><a class="ch-pc" href="#" role="listitem"><div class="ch-l1"><span class="ch-nm"><b>Gonzales Chess Club</b><span class="ch-town"> · Gonzales</span></span><span class="ch-mi">about 20 mi</span></div><p class="ch-l2">Schedule not listed · <span class="ch-lnk">Suggest an update</span></p><span class="ch-chev"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></span></a><a class="ch-pc" href="#" role="listitem"><div class="ch-l1"><span class="ch-nm"><b>Lafayette Chess Club</b><span class="ch-town"> · Lafayette</span></span><span class="ch-mi">about 55 mi</span></div><p class="ch-l2">Schedule not listed · <span class="ch-lnk">Suggest an update</span></p><span class="ch-chev"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></span></a><a class="ch-pc" href="#" role="listitem"><div class="ch-l1"><span class="ch-nm"><b>Heart of Worship Church Chess</b><span class="ch-town"> · Opelousas</span></span><span class="ch-mi">about 60 mi</span></div><p class="ch-l23">Fridays 5:30–7:00 PM. Open to anyone: join before church for chess.</p><span class="ch-chev"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></span></a><a class="ch-pc" href="#" role="listitem"><div class="ch-l1"><span class="ch-nm"><b>Houma Chess Club</b><span class="ch-town"> · Houma</span></span><span class="ch-mi">about 65 mi</span></div><p class="ch-l23">Mondays 6:00–8:30 PM at Terrebonne Parish North Library.</p><span class="ch-chev"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></span></a><a class="ch-pc" href="#" role="listitem"><div class="ch-l1"><span class="ch-nm"><b>Morgan City Chess Club</b><span class="ch-town"> · Morgan City</span></span><span class="ch-mi">about 70 mi</span></div><p class="ch-l23">1st, 3rd and 5th Tuesday evenings at 5:30 PM at First Baptist Church.</p><span class="ch-chev"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></span></a><a class="ch-pc" href="#" role="listitem"><div class="ch-l1"><span class="ch-nm"><b>Marrero Chess Organization</b><span class="ch-town"> · Marrero</span></span><span class="ch-mi">about 75 mi</span></div><p class="ch-l23">Wednesdays 6:00–10:00 PM at Chopsticks Buffet. No entry fee, all welcome. Skittles games only.</p><span class="ch-chev"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></span></a><div class="ch-div" role="separator" style="padding:0 14px">Farther than 75 miles</div><a class="ch-pc" href="#" role="listitem"><div class="ch-l1"><span class="ch-nm"><b>North Kenner Library Chess Club</b><span class="ch-town"> · Kenner</span></span><span class="ch-mi">about 78 mi</span></div><p class="ch-l2">Schedule not listed · <span class="ch-lnk">Suggest an update</span></p><span class="ch-chev"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></span></a><a class="ch-pc" href="#" role="listitem"><div class="ch-l1"><span class="ch-nm"><b>Mandeville Chess Club</b><span class="ch-town"> · Mandeville</span></span><span class="ch-mi">about 80 mi</span></div><p class="ch-l23">Meets Mondays at 5:00 PM at George&#x27;s Mexican Restaurant.</p><span class="ch-chev"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></span></a></div>
+</div>
+<span class="ch-fab"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4L3 6.5v13.5L9 17.5l6 2.5 6-2.5V4l-6 2.5L9 4z"></path><path d="M9 4v13.5M15 6.5V20"></path></svg>Map</span>
+</div></div>
+</div></div></div>
+<div class="ch-sec"><div class="ch-sech"><span class="ch-code">F · S</span><h2>Forms, and states drawn small</h2><span class="k-meta">forms open from links, never on the first screen · S1 to S6 are the drawer of frame A unless they say otherwise; S7 is under the doc</span></div><div class="ch-g2"><div><div style="position:relative">
+<div class="ch-sheet" role="dialog" aria-labelledby="ch-sug">
+<div class="ch-sh"><b id="ch-sug">Suggest an update to Baton Rouge Chess Club</b><span aria-label="Close"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></span></div>
+<div class="ch-sb">
+<p class="ch-q">What changed?</p>
+<div class="ch-sc"><span class="k-chip k-chip-on">Meeting day or time</span><span class="k-chip">Venue or address</span><span class="k-chip">Cost or who it's for</span><span class="k-chip">Contact</span><span class="k-chip">The club has closed or moved</span><span class="k-chip">Something else</span></div>
+<div class="ch-f"><label>What should the listing say?</label><span class="ch-in ch-ta">e.g. Wednesdays moved to 6:30 PM</span></div>
+<div class="ch-f"><label>Your email (optional, in case there's a question)</label><span class="ch-in">&#8203;</span></div>
+<div class="ch-turn"><i></i>Cloudflare Turnstile check</div>
+<span class="k-btn k-btn-navy k-btn-block" style="min-height:42px">Send to the club's representative</span>
+<p class="ch-route">Goes to Baton Rouge Chess Club's representative; Camille Broussard, LCA's South Central Louisiana representative, is copied.</p>
+<div class="ch-done"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg><span><b>Sent.</b> The club's representative checks it before anything changes.</span></div>
+</div>
+</div>
+<div class="ch-var"><p class="h">The button, in two other cases</p>
+<div class="ch-vrow"><span class="ch-vbtn">Send to the South Central Louisiana representative</span><small>Gonzales Chess Club has no representative of its own (sample)</small></div>
+<div class="ch-vrow"><span class="ch-vbtn">Send to LCA</span><small>Bunkie Chess Club: the Central Louisiana seat is open (sample)</small></div>
+</div>
+<span class="k-num-badge ch-mk" style="right:-12px;top:-12px">2</span>
+</div><div class="ch-st"><h3><span>S1</span>Location denied</h3>
+<div class="ch-field ch-focus"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg><span class="ch-caret"></span><span>City, ZIP or club name</span></div>
+<p class="ch-msg">We couldn't get your location. Type a city or ZIP.</p>
+<p class="ch-scap">The field takes focus; the list stays A to Z.</p></div><div class="ch-st"><h3><span>S3</span>Typed "Houston"</h3>
+<div class="ch-field"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg><span class="ch-typed">Houston</span></div>
+<p class="ch-msg">That's outside Louisiana. Picayune, MS is our one club over the line.</p>
+<p class="ch-scap">The map stays at state zoom; the list stays A to Z.</p></div></div><div><div style="position:relative">
+<div class="ch-sheet" role="dialog" aria-labelledby="ch-start">
+<label class="ch-sw"><span class="ch-tog" role="switch" aria-checked="false"></span>This club already exists, you're just missing it</label>
+<div class="ch-sh"><b id="ch-start">Start a club</b><span aria-label="Close"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></span></div>
+<div class="ch-sb">
+<div class="ch-f2"><div class="ch-f"><label>Club name</label><span class="ch-in">e.g. Zachary Chess Club</span></div>
+<div class="ch-f"><label>City or ZIP</label><span class="ch-in">e.g. Zachary or 70791</span></div></div>
+<div class="ch-f"><label>Where and when you'd meet, in your words</label><span class="ch-in ch-ta">e.g. Tuesdays 6:30 PM, Zachary Branch Library</span></div>
+<div class="ch-f2"><div class="ch-f"><label>Your name</label><span class="ch-in">&#8203;</span></div>
+<div class="ch-f"><label>Your email (stays private)</label><span class="ch-in">&#8203;</span></div></div>
+<div class="ch-turn"><i></i>Cloudflare Turnstile check</div>
+<span class="k-btn k-btn-navy k-btn-block" style="min-height:42px">Send to LCA</span>
+<p class="ch-route">Routed by city or ZIP (zip_regions) to the area's LCA representative; open seat: LCA admins. They check with you, then it goes on the map. Switch on: the title reads Suggest a club.</p>
+</div>
+</div>
+<span class="k-num-badge ch-mk" style="right:-12px;top:-12px">3</span>
+</div><div class="ch-st"><h3><span>S2</span>Typed "Natchitoches" (no club there)</h3>
+<div class="ch-field"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg><span class="ch-typed">Natchitoches</span></div>
+<p class="ch-msg">No club in Natchitoches yet. The nearest are listed first. <a href="#">Start a club?</a></p>
+<div style="margin-top:6px">
+<div class="ch-mini"><b>Pineville Homeschool Chess Club</b><i>about 50 mi</i></div>
+<div class="ch-mini"><b>Bunkie Chess Club</b><i>about 70 mi</i></div>
+<div class="ch-mini"><b>Ruston Knights Chess Club</b><i>about 75 mi</i></div>
+<div class="ch-mini" style="border-bottom:0"><span>22 more, nearest first</span><i></i></div>
+</div>
+<p class="ch-scap">The map zooms to Natchitoches; the list stays whole, nearest first. <span class="k-sample" style="font-size:11px;padding:2px 8px">Sample data</span></p></div><div class="ch-st"><h3><span>S6</span>A thin card, close up, and the list's last row</h3>
+<a class="ch-card" href="#" role="listitem"><div class="ch-l1"><span class="ch-nm"><b>Gonzales Chess Club</b><span class="ch-town"> · Gonzales</span></span></div><p class="ch-l2">Schedule not listed · Know when they meet? <span class="ch-lnk">Suggest an update</span></p><span class="ch-chev"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></span></a>
+<div class="ch-missing" style="padding:0;height:40px"><a class="k-link" href="#">Missing a club? Suggest it</a></div></div></div><div><div class="ch-st" style="position:relative"><h3><span>S4</span>Filters open</h3>
+<div style="display:flex;align-items:center;gap:8px"><span class="ch-seg" style="height:36px"><span class="on">A to Z</span><span class="off">Nearest</span></span><span class="ch-filt" style="height:36px;background:#eceef3"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16l-6 7.5V19l-4 1.5v-8L4 5z"></path></svg>Filters · 1</span></div>
+<div style="display:flex;gap:12px;align-items:flex-start"><p class="ch-scap" style="flex:1;margin-top:10px !important">Acts on the list and the pins together. Caption: "5 clubs match · <a href="#">Clear filters</a>". Weekends: Baton Rouge, Bluebonnet, Monroe, by their own lines. Scholastic: <span class="k-sample" style="font-size:10.5px;padding:1px 6px">Sample data</span></p>
+<div class="ch-fp" role="dialog" aria-label="Filters" style="flex:none;margin-left:0">
+<p class="h">Region</p><div class="ch-cb"><i class=""></i>North Louisiana<em>3</em></div><div class="ch-cb"><i class=""></i>Central Louisiana<em>2</em></div><div class="ch-cb"><i class=""></i>North of Lake Pontchartrain<em>3</em></div><div class="ch-cb"><i class=""></i>New Orleans Metro<em>8</em></div><div class="ch-cb"><i class="on"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></i>South Central Louisiana<em>5</em></div><div class="ch-cb"><i class=""></i>Bayou Region<em>2</em></div><div class="ch-cb"><i class=""></i>Southwest Louisiana<em>2</em></div>
+<p class="h" style="margin-top:8px !important">Only clubs that say so themselves</p>
+<div class="ch-cb"><i></i>Plays on weekends<em>3</em></div>
+<div class="ch-cb"><i></i>Scholastic friendly<em>5</em></div>
+<div class="ch-fpf"><a href="#">Clear</a><span class="k-btn k-btn-navy k-btn-sm" style="min-height:34px">Done</span></div>
+</div></div>
+<p class="ch-empty"><code>?region=bayou&amp;weekends=1</code> · No clubs match these filters. <a href="#">Clear filters</a>.</p>
+<span class="k-num-badge ch-mk" style="right:-12px;top:-12px">4</span>
+</div><div class="ch-st" style="position:relative"><h3><span>S5</span>Typed "kni"</h3>
+<div class="ch-field"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg><span class="ch-typed">kni</span></div>
+<p class="ch-scap" style="margin-top:6px !important">1 club matches kni · <a href="#">Show all 25</a></p>
+<a class="ch-card" href="#" role="listitem"><div class="ch-l1"><span class="ch-nm"><b>Knight Light Chess</b><span class="ch-town"> · New Orleans</span></span></div><p class="ch-l2">Schedule not listed · Know when they meet? <span class="ch-lnk">Suggest an update</span></p><p class="ch-l3">Summer camps, after-school programs, private instruction and community tournaments.</p><span class="ch-chev"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></span></a>
+<p class="ch-scap">The New Orleans <svg class="ch-lit" width="22" height="22" viewBox="0 0 22 22" aria-hidden="true"><circle cx="11" cy="11" r="10" fill="none" stroke="#c8a94a" stroke-width="2.4"></circle><circle cx="11" cy="11" r="7.5" fill="#1a2744"></circle><text x="11" y="14.3" text-anchor="middle" font-size="9.5" font-weight="700" fill="#ffffff">8</text></svg> circle lights; nothing else moves.</p>
+<span class="k-num-badge ch-mk" style="right:-12px;top:-12px">4</span>
+</div><div class="ch-rules" aria-label="Rules and data">
+<p><b>Rules and data.</b> The list always holds all 25; the map never filters it, only Filters do, and they act on both. Sorts: A to Z, and Nearest once located. Location is read once on tap and kept only in ?near=; a typed city or ZIP is sent only to look up a point. No card carries a computed date, a tonight state or a count; the page never computes a next date, a meets-today count, a Meets soonest order or a freshness badge.</p>
+<p>A card reads <code>clubs.meeting_text</code> (the club's own line, written by the club's representative on its club page) and <code>clubs.schedule_status</code>; filters read <code>clubs.region</code> (Appendix C), <code>clubs.weekend_play</code> and <code>clubs.scholastic_friendly</code>, set by the club on its page; miles come from <code>club_distances</code> (hub to club, road, cached) through a ZIP or city to point lookup; Suggest an update and Suggest a club write <code>club_reports</code> to the club's representative with the regional seat holder copied, LCA admins while a seat is open.</p>
+<p><b>Not on this page:</b> Tonight, Next, Checked months, the monthly email, Get updates, a legend panel, a regions overlay, Search this area, club-manager claims, rosters, leaderboards, member counts.</p>
+</div></div></div></div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":2000}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

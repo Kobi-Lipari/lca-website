@@ -1,0 +1,413 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Workspace · K · Setup checklist, every step on one page (round 2) · part 2</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/6107adb451dbab26ee5d89f4189b81f8">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1a2744}
+.wk-root{width:1440px;box-sizing:border-box;padding:32px 0 48px;background:#ecebe6;color:#1a2744}
+.wk-root *{box-sizing:border-box}
+.wk-pad{margin:0 32px}
+.wk-doc{background:#fbfaf6;border:1px solid #d9d8d1;border-radius:14px;padding:22px 26px 24px}
+.wk-title{font-size:27px;line-height:1.15;font-weight:700;letter-spacing:-.015em;margin:6px 0 4px}
+.wk-ml{font-size:14px;line-height:1.5;color:#3d4556;margin:2px 0 0;max-width:1180px}
+.wk-ml b{color:#1a2744;font-weight:600}
+.wk-kq{margin:10px 0 0;padding:9px 14px;border-left:4px solid #c8a94a;background:#ffffff;border-radius:0 8px 8px 0;font-size:14px;line-height:1.5;color:#1a2744;max-width:1180px}
+.wk-legend{display:flex;flex-direction:column;gap:12px;margin-top:14px}
+.wk-lbox{background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:16px 20px}
+.wk-notes{list-style:none;margin:10px 0 0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px 22px}
+.wk-notes li{display:flex;gap:10px;align-items:flex-start;font-size:13.5px;line-height:1.45}
+.wk-notes b{font-weight:600}
+.wk-fl2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px;align-items:start;margin-top:12px}
+.wk-frameline{margin:0;padding:10px 14px;border:1px dashed #b9b7ad;border-radius:10px;background:#fbfbf8;font-size:13px;line-height:1.5;color:#3d4556}
+.wk-frameline b{color:#1a2744}
+.wk-crumbs3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.wk-c3{border:1px solid #e3e2dc;border-radius:8px;background:#ffffff;padding:8px 10px;font-size:13px;line-height:1.4}
+.wk-c3 span{display:block;font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:#555c6b;margin-bottom:2px}
+.wk-c3 small{display:block;font-family:"Geist Mono",ui-monospace,monospace;font-size:11.5px;color:#3d4556;margin-top:2px;word-break:break-all}
+.wk-grey{background:#efefea;border:1px solid #dddcd4;border-radius:12px;padding:14px 18px;display:grid;grid-template-columns:1fr 1fr 1fr 1.25fr;gap:20px}
+.wk-grey p{margin:0;font-size:13.5px;line-height:1.45;color:#3d4556}
+.wk-grey b{display:block;color:#1a2744;font-size:12px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;margin-bottom:2px}
+.wk-grey ul{margin:2px 0 0;padding-left:18px;font-size:13.5px;line-height:1.45;color:#3d4556}
+.wk-grey li{margin-bottom:4px}
+.wk-sec{margin-top:26px}
+.wk-flab{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:0 32px 12px}
+.wk-flab h2{margin:0;font-size:20px;line-height:1.2;font-weight:600;letter-spacing:-.01em}
+.wk-code{display:inline-flex;align-items:center;justify-content:center;min-width:28px;height:28px;padding:0 9px;border-radius:7px;background:#c8a94a;color:#1a2744;font-weight:700;font-size:13px}
+.wk-browser{border-radius:0;border-left:0;border-right:0;box-shadow:0 14px 34px rgba(16,24,43,.10)}
+.wk-view{background:#f5f5f2;position:relative}
+/* decided header */
+.wk-hd-in{gap:0;position:relative;padding:0 24px;max-width:none}
+.wk-hd .k-brand{margin-right:16px}
+.wk-rook{width:30px;height:30px;fill:#ffffff;flex:none}
+.wk-rook-sm{width:24px;height:24px}
+.wk-nav{gap:0}
+.wk-nav a{padding:0 10px;white-space:nowrap}
+.wk-navbtn{display:inline-flex;align-items:center;gap:4px;min-height:44px;padding:0 10px;border:0;background:transparent;color:#ffffff;font:inherit;font-size:15px;font-weight:500}
+.wk-sbtn{display:inline-flex;align-items:center;gap:8px;width:220px;height:44px;padding:0 8px 0 12px;margin-right:16px;border-radius:8px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.45);color:#ffffff;text-decoration:none;font-size:14.5px;font-weight:500;flex:none}
+.wk-kbd{margin-left:auto;font-family:"Geist Mono",ui-monospace,monospace;font-size:12px;color:#e8ecf4;border:1px solid rgba(255,255,255,.4);border-radius:5px;padding:2px 6px;line-height:1.2}
+.wk-my{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 8px;border:0;border-radius:8px;background:transparent;color:#ffffff;font:inherit;font-size:14px;font-weight:500}
+.wk-count{display:inline-flex;align-items:center;justify-content:center;min-width:20px;height:20px;padding:0 6px;border-radius:999px;background:#fbfaf6;color:#1a2744;font-size:12px;font-weight:700}
+.wk-foot-in{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px;padding:18px 24px 20px}
+.wk-foot .k-meta{color:rgba(255,255,255,.78)}
+/* room chrome */
+.wk-crumb{display:flex;align-items:center;justify-content:space-between;gap:12px;height:44px;padding:0 36px;background:#fbfaf6;border-bottom:1px solid #e3e2dc}
+.wk-crumb nav{display:flex;align-items:center;gap:8px;font-size:14px;color:#555c6b}
+.wk-crumb nav a{color:#1a2744;font-weight:600;text-decoration:underline;text-decoration-color:#c8a94a;text-decoration-thickness:2px;text-underline-offset:4px}
+.wk-crumb nav b{color:#1a2744;font-weight:600}
+.wk-back{display:inline-flex;align-items:center;gap:6px;min-height:34px;padding:0 12px;border:1px solid #1a2744;border-radius:8px;background:#ffffff;color:#1a2744;font-size:14px;font-weight:600;text-decoration:none}
+.wk-band{background:#ffffff;border-bottom:1px solid #dddcd4;padding:18px 36px 18px}
+.wk-band-in{display:flex;justify-content:space-between;align-items:flex-end;gap:24px}
+.wk-band h1{margin:6px 0 4px;font-size:34px;line-height:1.1;font-weight:700;letter-spacing:-.015em}
+.wk-bact{display:flex;flex-direction:column;align-items:flex-end;gap:6px}
+.wk-why{font-size:13px;color:#555c6b;display:flex;align-items:center;gap:6px}
+.wk-gold-off{opacity:.55;cursor:not-allowed}
+.wk-import{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;margin-top:14px;border:1px dashed #858b99;border-radius:12px;padding:11px 16px;background:#f5f5f2;font-size:14.5px;line-height:1.45;color:#1a2744}
+.wk-body{display:grid;grid-template-columns:900px 440px;gap:28px;padding:22px 36px 30px;align-items:start}
+.wk-colh{display:flex;align-items:center;gap:8px;margin:0 0 8px;font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#555c6b}
+.wk-colh .k-meta{text-transform:none;letter-spacing:0;font-weight:400}
+.wk-form{position:relative;border:1px solid #cfcec6;border-radius:14px;background:#efeee8;padding:14px;display:flex;flex-direction:column;gap:12px;box-shadow:inset 0 2px 0 rgba(26,39,68,.22),inset 0 -2px 0 rgba(26,39,68,.22)}
+.wk-edge{display:flex;align-items:center;gap:8px;font-size:12.5px;color:#555c6b;padding:0 4px}
+.wk-edge::before,.wk-edge::after{content:"";flex:1;height:0;border-top:1px dashed #9a988e}
+.wk-step{background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:16px 18px;display:flex;flex-direction:column;gap:12px;position:relative}
+.wk-step-h{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
+.wk-step-h h3{margin:0;font-size:19px;line-height:1.25;font-weight:600}
+.wk-n{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:8px;background:#efefea;color:#1a2744;font-size:14px;font-weight:700;flex:none}
+.wk-push{margin-left:auto}
+.wk-pair{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px;align-items:stretch}
+.wk-sum{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px 18px}
+.wk-sum div{display:flex;flex-direction:column;gap:1px;font-size:13px;color:#555c6b;line-height:1.4}
+.wk-sum b{color:#1a2744;font-size:15px}
+.wk-preset{min-width:80px}
+.wk-row{display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+.wk-tbl{width:100%;border-collapse:collapse;font-size:14px}
+.wk-tbl th{text-align:left;font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:#555c6b;padding:7px 10px;background:#fbfbf8;border-bottom:1px solid #e3e2dc}
+.wk-tbl td{padding:6px 10px;border-bottom:1px solid #eeede8;vertical-align:middle}
+.wk-tbl tr:last-child td{border-bottom:0}
+.wk-tbox{border:1px solid #dddcd4;border-radius:10px;overflow:hidden}
+.wk-in{display:flex;align-items:center;min-height:36px;padding:0 10px;border:1px solid #858b99;border-radius:7px;background:#ffffff;font-size:14px;color:#1a2744}
+.wk-in-r{justify-content:flex-end;font-variant-numeric:tabular-nums}
+.wk-in-ph{color:#6b7180}
+.wk-hint{font-size:13px;line-height:1.45;color:#555c6b;margin:0}
+.wk-ladder{display:flex;border-radius:10px;overflow:hidden;border:1px solid #1a2744}
+.wk-ladder div{display:flex;flex-direction:column;gap:1px;padding:8px 12px;font-size:13px;line-height:1.3}
+.wk-l1{flex:3;background:#1a2744;color:#ffffff}
+.wk-l2{flex:2;background:#dfe3ea;color:#1a2744}
+.wk-l3{flex:2;background:#c8a94a;color:#1a2744}
+.wk-fees{display:grid;grid-template-columns:90px repeat(3,minmax(0,1fr));gap:7px 10px;align-items:center}
+.wk-lock{display:flex;flex-direction:column;gap:8px;padding:12px 14px;border:1px solid #d7d6cf;border-radius:10px;background:#f7f7f4}
+.wk-seg-off{opacity:1}
+.wk-seg-off button{color:#6b7180;cursor:not-allowed}
+.wk-seg-off .k-seg-on{background:#3d4a66;color:#ffffff}
+.wk-locktag{display:inline-flex;align-items:center;gap:5px;padding:3px 8px;border-radius:6px;background:#eceef2;color:#2b3446;font-size:12px;font-weight:600}
+.wk-rounds{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.wk-rl{list-style:none;margin:0;padding:0;border:1px solid #dddcd4;border-radius:10px;overflow:hidden}
+.wk-rl li{display:flex;justify-content:space-between;gap:10px;padding:7px 12px;border-bottom:1px solid #eeede8;font-size:14px}
+.wk-rl li:last-child{border-bottom:0}
+.wk-rl .wk-day{background:#fbfbf8;font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:#555c6b;padding:6px 12px}
+.wk-note{border-radius:10px;background:#fbf6e6;border:1px solid #e3d29b;padding:10px 14px;display:flex;flex-direction:column;gap:6px;font-size:13.5px;line-height:1.45}
+.wk-off{display:flex;align-items:center;gap:10px;padding:8px 12px;border:1px solid #e3e2dc;border-radius:10px;background:#fbfbf8;font-size:13.5px;line-height:1.4;color:#3d4556}
+.wk-sw{display:inline-flex;align-items:center;flex:none;width:40px;height:24px;border-radius:999px;background:#c4c3bb;padding:2px}
+.wk-sw i{display:block;width:20px;height:20px;border-radius:50%;background:#ffffff}
+.wk-sw-on{background:#1a2744;justify-content:flex-end}
+.wk-swl{font-size:12.5px;font-weight:600;color:#3d4556;flex:none}
+.wk-dd{display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:38px;padding:0 10px;border:1px solid #858b99;border-radius:7px;background:#ffffff;font-size:14px;font-weight:500;color:#1a2744}
+.wk-fld{display:flex;flex-direction:column;gap:4px}
+.wk-fl{font-size:12px;font-weight:600;color:#3d4556}
+.wk-share{border:1px solid #c4c3bb;border-radius:10px;overflow:hidden;background:#ffffff}
+.wk-share-img{background:#1a2744;color:#ffffff;padding:12px 14px;display:flex;flex-direction:column;gap:6px;min-height:130px;justify-content:space-between}
+.wk-share-k{display:flex;align-items:center;gap:8px;font-size:11px;letter-spacing:.12em;font-weight:700;color:#e6cf86}
+.wk-share-t{font-size:22px;font-weight:700;line-height:1.1}
+.wk-share-s{font-size:13.5px;color:rgba(255,255,255,.88)}
+.wk-pill{display:inline-flex;align-self:flex-start;background:#c8a94a;color:#1a2744;border-radius:99px;padding:4px 12px;font-size:12.5px;font-weight:700}
+.wk-share-meta{padding:8px 12px;background:#eef0f3;display:flex;flex-direction:column;gap:1px;font-size:12.5px;color:#555c6b}
+.wk-share-meta b{color:#1a2744;font-size:14px}
+.wk-status{display:flex;align-items:center;gap:8px;padding:9px 12px;border-radius:10px;background:#f5ecd2;color:#664c0c;font-size:13.5px;font-weight:600}
+/* right column */
+.wk-side{display:flex;flex-direction:column;gap:16px}
+.wk-pin{display:inline-flex;align-items:center;gap:6px;padding:3px 9px;border-radius:999px;background:#e8ebf2;color:#1a2744;font-size:12px;font-weight:600;text-transform:none;letter-spacing:0}
+.wk-steps{list-style:none;margin:0;padding:0}
+.wk-steps li{display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid #ecebe4;font-size:14.5px}
+.wk-steps li:last-child{border-bottom:0}
+.wk-steps a{flex:1;color:#1a2744;text-decoration:none;font-weight:500}
+.wk-ok{color:#2f6b45}
+.wk-todo{color:#866a1e}
+.wk-prog{height:8px;border-radius:99px;background:#e6e5de;overflow:hidden}
+.wk-prog span{display:block;height:100%;background:#1a2744;border-radius:99px}
+.wk-steps .wk-cur{background:#f3eedc;margin:0 -10px;padding:6px 10px;border-radius:6px;box-shadow:inset 3px 0 0 #866a1e}
+.wk-og{border:1px solid #c4c3bb;border-radius:10px;overflow:hidden;background:#ffffff}
+.wk-og-img{aspect-ratio:1.91/1;background:#1a2744;color:#ffffff;padding:14px 18px;display:flex;flex-direction:column;justify-content:space-between}
+.wk-og-t{font-size:24px;font-weight:700;line-height:1.1}
+.wk-og-s{font-size:13.5px;color:rgba(255,255,255,.88)}
+.wk-bad{display:flex;align-items:center;gap:12px}
+.wk-bad-img{flex:none;width:126px;height:66px;border:1px dashed #858b99;border-radius:8px;background:#efefea;display:flex;align-items:center;justify-content:center;font-size:11px;color:#555c6b;text-align:center;padding:6px}
+.wk-badge-abs{position:absolute;top:-12px;right:-12px}
+.wk-feerow{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:16px;align-items:start}
+.wk-fees .wk-in{min-height:32px}
+.wk-schrow{display:grid;grid-template-columns:420px minmax(0,1fr);gap:16px;align-items:start}
+.wk-schrow .wk-rounds{gap:8px}
+.wk-tri{display:grid;grid-template-columns:1fr 1fr 1.25fr;gap:12px;align-items:stretch}
+.wk-lr{display:grid;grid-template-columns:96px minmax(0,1fr);gap:8px;align-items:center}
+.wk-lr .wk-in,.wk-lr .wk-dd{min-height:34px;font-size:13.5px}
+.wk-seg-sm button{min-height:34px;padding:0 11px;font-size:13px}
+.wk-pub{display:grid;grid-template-columns:290px minmax(0,1fr) minmax(0,1fr);gap:16px;align-items:start}
+.wk-ck{font-size:13.5px;gap:8px}
+.wk-ck input{width:18px;height:18px}
+.wk-tbl td{padding:5px 10px}
+.wk-tbl .wk-in{min-height:32px}
+.wk-step{padding:14px 16px;gap:10px}
+.wk-notes li{font-size:13px}
+.wk-sum{grid-template-columns:1.15fr 1.1fr 1.1fr 1fr .8fr .8fr;gap:10px 14px}
+.wk-fl2{grid-template-columns:minmax(0,1fr) minmax(0,1.5fr)}
+.wk-grey p,.wk-grey ul{font-size:13px;line-height:1.42}
+.wk-doc{padding:20px 24px 20px}
+.wk-import{font-size:13.5px;padding:9px 14px;margin-top:12px}
+.wk-band{padding:14px 36px 14px}
+.wk-band h1{font-size:32px;margin:4px 0 2px}
+.wk-lr{grid-template-columns:92px minmax(0,1fr);gap:6px}
+.wk-lr .wk-in,.wk-lr .wk-dd{min-height:30px}
+.wk-tbl .wk-in{min-height:28px}
+.wk-tbl td{padding:4px 10px}
+.wk-segcol{display:flex;width:100%}
+.wk-segcol button{flex:1;padding:0 8px}
+.wk-pub .wk-seg-sm button{padding:0 9px}
+.wk-root{padding:28px 0 28px}
+.wk-form{gap:10px;padding:12px}
+.wk-band h1{margin:0}
+.wk-sum b{font-size:14.5px}
+.wk-fees{gap:6px 10px}
+.wk-fees .wk-in{min-height:30px}
+.wk-import{font-size:13px;flex-wrap:nowrap;gap:10px}
+.wk-fl2{grid-template-columns:minmax(0,1.15fr) minmax(0,1.5fr)}
+.wk-kq,.wk-ml{max-width:none}
+.wk-sec{margin-top:20px}
+.wk-pub{grid-template-columns:272px minmax(0,1fr) minmax(0,1.3fr)}
+.wk-segcol button{white-space:nowrap;font-size:12.5px}
+.wk-pub{grid-template-columns:300px minmax(0,1fr) minmax(0,1fr)}
+.wk-segv{display:flex;flex-direction:column;width:100%}
+.wk-segv button{text-align:left;padding:0 12px}
+.wk-segcol button{padding:0 6px}
+.wk-share-t{font-size:21px}
+/* part 2 */
+.wk-ins{display:grid;grid-template-columns:560px 400px 400px;gap:16px;margin:0 24px;align-items:start}
+.wk-icard{background:#ffffff;border:1px solid #cfcec6;border-radius:12px;overflow:hidden;box-shadow:0 10px 26px rgba(16,24,43,.08)}
+.wk-ihead{display:flex;align-items:center;flex-wrap:wrap;gap:8px;padding:10px 14px;background:#fbfbf8;border-bottom:1px solid #ecebe5;font-size:13px;line-height:1.35;color:#555c6b}
+.wk-ihead b{color:#1a2744;font-size:14px}
+.wk-icode{display:inline-flex;align-items:center;justify-content:center;min-width:30px;height:24px;padding:0 7px;border-radius:6px;background:#1a2744;color:#ffffff;font-size:12px;font-weight:700}
+.wk-ibody{padding:12px 14px 14px;display:flex;flex-direction:column;gap:10px;background:#f5f5f2}
+.wk-mcrumb{display:flex;flex-wrap:wrap;align-items:center;gap:6px;font-size:12.5px;color:#555c6b}
+.wk-mcrumb a{color:#1a2744;font-weight:600;text-decoration:underline;text-decoration-color:#c8a94a;text-decoration-thickness:2px;text-underline-offset:3px}
+.wk-mband{background:#ffffff;border:1px solid #dddcd4;border-radius:10px;padding:10px 12px;display:flex;flex-direction:column;gap:6px}
+.wk-mband h4{margin:0;font-size:17px;line-height:1.25;font-weight:700}
+.wk-mstep{background:#ffffff;border:1px solid #dddcd4;border-radius:10px;padding:12px;display:flex;flex-direction:column;gap:8px}
+.wk-mstep h5{margin:0;font-size:15.5px;font-weight:600}
+.wk-live{display:flex;gap:8px;align-items:flex-start;padding:10px 12px;border-radius:10px;background:#eef1f7;font-size:13px;line-height:1.45;color:#1a2744}
+.wk-stop{display:flex;flex-direction:column;gap:8px;padding:10px 12px;border-radius:10px;background:#fbe9e7;border:1px solid #e9b8b1;color:#5e1a14;font-size:13.5px;line-height:1.45}
+.wk-stop b{color:#5e1a14}
+.wk-msteps{list-style:none;margin:0;padding:0;border:1px solid #e3e2dc;border-radius:10px;background:#ffffff}
+.wk-msteps li{display:flex;justify-content:space-between;gap:8px;padding:5px 10px;border-bottom:1px solid #eeede8;font-size:13px}
+.wk-msteps li:last-child{border-bottom:0}
+.wk-schem{display:grid;grid-template-columns:1.4fr 1fr;gap:6px}
+.wk-blk{border:1px dashed #9a988e;border-radius:6px;padding:6px 8px;font-size:12px;line-height:1.3;color:#3d4556;background:#ffffff}
+.wk-blk b{display:block;color:#1a2744;font-size:12.5px}
+.wk-blk-wide{grid-column:1 / -1}
+.wk-mrow{display:grid;grid-template-columns:70px minmax(0,1fr) 60px 70px;gap:8px;align-items:center;padding:6px 10px;border-bottom:1px solid #eeede8;font-size:13px}
+.wk-mrow:last-child{border-bottom:0}
+.wk-mrow-x{background:#fff6f4;box-shadow:inset 3px 0 0 #b3202f}
+.wk-way{display:grid;grid-template-columns:1.15fr 1fr 1fr 1.05fr;gap:16px;margin:0 24px;align-items:start}
+.wk-wbody{padding:12px 14px 14px;display:flex;flex-direction:column;gap:10px;font-size:13.5px;line-height:1.45;color:#3d4556}
+.wk-wbody b{color:#1a2744}
+.wk-erow{display:grid;grid-template-columns:56px minmax(0,1fr);gap:12px;align-items:start;border:1px solid #e3e2dc;border-radius:10px;padding:10px 12px;background:#ffffff}
+.wk-date{display:flex;flex-direction:column;align-items:center;justify-content:center;width:56px;min-height:60px;border-radius:9px;background:#1a2744;color:#ffffff;line-height:1.05}
+.wk-date span{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#e6cf86}
+.wk-date b{font-size:22px;font-weight:700;margin:2px 0}
+.wk-today{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;border:1px solid #e3e2dc;border-radius:10px;padding:10px 12px;background:#ffffff}
+.wk-role{display:inline-flex;align-items:center;padding:2px 8px;border-radius:6px;background:#e8ebf2;color:#1a2744;font-size:12px;font-weight:600}
+.wk-door{display:flex;flex-direction:column;gap:2px;padding:8px 10px;border:1px solid #e3e2dc;border-radius:8px;background:#fbfbf8}
+.wk-door small{font-family:"Geist Mono",ui-monospace,monospace;font-size:11.5px;color:#3d4556}
+.wk-done{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;background:#e2f0e5;color:#1d5a31;font-size:13.5px;font-weight:600}
+.wk-done a{color:#1a2744;text-decoration:underline;text-decoration-color:#c8a94a;text-decoration-thickness:2px;text-underline-offset:4px}
+.wk-wbody .wk-date b{color:#ffffff}
+</style>
+</helmet>
+<div class="wk-root" style="width:1440px;height:2150px">
+
+<section class="wk-doc wk-pad" aria-label="About this board">
+  <div class="k-between"><p class="k-kicker" style="margin:0">15 · Workspace and admin · round 2 · option K · part 2 of 2</p><span class="k-sample">Sample data · the club event, its fee, times, the State Championship's entries</span></div>
+  <h1 class="wk-title">Workspace · K · Setup checklist, every step on one page (round 2) · part 2</h1>
+  <p class="wk-ml"><b>Built from:</b> Work-D, Event-Final-Setup and WS08 as amended (replan 4.6), Account-K and Work-G (the doors in) · <b>Round 2</b> · <b>Frame:</b> Int-A, swappable · <b>Replaces:</b> Work-D, with Work-L (one is picked)</p>
+  <p class="wk-ml"><b>K's feedback applied:</b> the screens joined to the whole, with options for each. Part 1 (Work-K) draws the setup room with every step on one page; this part draws its other states and how it joins My LCA. K1 to K3 are the same on Work-L.</p>
+  <p class="wk-kq"><b>K, page 15, Tue, Oct 13:</b> "for 15, it seems all the pages here are all their separate ideas and are good on their own right, i think its proper to think about how we plan to integrate each of them into the whole and also get mockup options for each to pin down a good vision."</p>
+  <div class="wk-legend">
+    <div class="wk-lbox">
+      <p class="k-label" style="margin:0">Notes on this board</p>
+      <ol class="wk-notes">
+        <li><span class="k-num-badge">1</span><span><b>The membership switch is live on a club's own event</b> for the region's representative or an admin (D12); Not required skips the checkout's membership step.</span></li>
+        <li><span class="k-num-badge">2</span><span><b>Club events submit for LCA review</b> in place of Publish; the representative gets an email when an admin approves.</span></li>
+        <li><span class="k-num-badge">3</span><span><b>Empty state:</b> a new event with nothing cloned; every step To do, the preview a schematic of the blocks every event has.</span></li>
+        <li><span class="k-num-badge">4</span><span><b>Busy state:</b> a live event stays editable; a change that strands paid players stops and says in words what to do first.</span></li>
+        <li><span class="k-num-badge">5</span><span><b>The way in:</b> Setup on Events you direct opens the room; the Today item opens it at the step left; admins and representatives start new events.</span></li>
+        <li><span class="k-num-badge">6</span><span><b>The way back:</b> Back to My LCA in the bar, every crumb a link, and after Publish "Done · Back to My LCA". Never through Admin.</span></li>
+      </ol>
+      <div class="wk-fl2"><p class="wk-frameline"><b>Frame.</b> Drawn inside Int-A (My LCA as the hub, rooms open from each section). The frame is swappable: under Int-B this room is a page the left rail opens; under Int-C it opens from a card on Your work. The room itself does not change; only the breadcrumb, the way back and the menu row do. Pick the frame on Account-Int-A, B or C.</p>
+      <div class="wk-crumbs3">
+        <div class="wk-c3"><span>Int-A · baseline</span>My LCA › Events you direct › 2027 Paul Morphy Open › Setup<small>/workspace/tournaments/:id/setup</small></div>
+        <div class="wk-c3"><span>Int-B</span>My LCA rail › 2027 Paul Morphy Open › Setup<small>/my/events/:id/setup</small></div>
+        <div class="wk-c3"><span>Int-C</span>My LCA › Your work › 2027 Paul Morphy Open › Setup<small>/work/tournaments/:id/setup</small></div>
+      </div></div>
+    </div>
+    <aside class="wk-grey" aria-label="Board note">
+      <p><b>What</b>The setup room's other states and its doors: a representative's club event with the membership switch live and Submit for LCA review (K1), a new event (K2), a live event that stops a change (K3), and the way in from My LCA and back.</p>
+      <p><b>Built from</b>Work-D's review line and empty checklist; Event-Final-Setup's live State Championship and its stranded-players rule; Account-K's Events you direct row; Work-G's Add a club event; the frame's Today rules.</p>
+      <p><b>K's feedback applied</b>The checklist joined to the whole: every door in starts on My LCA or My region, every way out lands on My LCA. The club rep's review button is now the region's representative's, on a club event only.</p>
+      <div><p><b>Open for K</b></p>
+        <ul>
+          <li>May a standing tournament director start a draft and submit it for review? Drawn: no, admins and representatives create events.</li>
+          <li>The Today item opens the first step still To do (drawn) or the top of the form.</li>
+        </ul>
+      </div>
+    </aside>
+  </div>
+</section>
+
+<section class="wk-sec" aria-labelledby="wk-fk">
+  <div class="wk-flab" style="margin:0 24px 12px"><span class="wk-code">K</span><h2 id="wk-fk">Insets K1 to K3 · a club event, a new event, a live event</h2><span class="k-meta">Each is the same room at a different moment; the layout is part 1's</span></div>
+  <div class="wk-ins">
+
+    <div class="wk-icard">
+      <div class="wk-ihead"><span class="wk-icode">K1</span><b>A club event's Fees step</b> <span>Sat, Oct 3, 2026 · 8:50 AM · Chris as South Central Louisiana's representative</span> <span class="k-sample">Sample data</span></div>
+      <div class="wk-ibody">
+        <nav class="wk-mcrumb" aria-label="Breadcrumb"><a href="#">My LCA</a>›<a href="#">My region</a>›<a href="#">Baton Rouge Chess Club</a>›<b class="k-ink">Setup</b><a class="wk-back" href="#" style="margin-left:auto;min-height:30px;font-size:12.5px;text-decoration:none">Back to My LCA</a></nav>
+        <div class="wk-mband">
+          <div class="k-row-sm"><span class="k-tag">Draft</span><span class="k-tag k-tag-ext">Club event · Baton Rouge Chess Club</span></div>
+          <div class="k-between" style="align-items:flex-start;flex-wrap:nowrap"><h4>Baton Rouge Chess Club November Saturday G/90</h4><span class="k-num-badge">2</span></div>
+          <span class="k-meta">Sat, Nov 7, 2026 · 10:00 AM · Jones Creek Branch Library, Baton Rouge · G/90 (90 min each)</span>
+          <div class="k-row-sm" style="gap:8px"><button class="k-btn k-btn-line k-btn-sm" type="button">Save draft</button><button class="k-btn k-btn-gold k-btn-sm" type="button">Submit for LCA review</button></div>
+          <span class="k-small" style="font-size:13px">LCA admins review club events before they go public; you'll get an email. After it, My region lists the event "In LCA review · submitted Sat, Oct 3" with Edit and Withdraw.</span>
+        </div>
+        <div class="wk-mstep">
+          <div class="k-row-sm" style="gap:8px"><span class="wk-n">3</span><h5>Fees</h5><span class="k-tag k-tag-open">Done · 1 tier</span><span class="k-num-badge" style="margin-left:auto">1</span></div>
+          <div class="k-row-sm" style="gap:10px;font-size:14px"><b>Open</b><span class="k-muted">Regular</span><span class="wk-in wk-in-r" style="width:80px;min-height:32px">$20</span><span class="k-meta">Early and Late off. No member price.</span></div>
+          <div class="wk-lock" style="background:#ffffff">
+            <div class="wk-row" style="gap:10px"><b style="font-size:14.5px">LCA membership</b><div class="k-seg wk-seg-sm" role="group" aria-label="LCA membership"><button type="button">Required to enter</button><button class="k-seg-on" type="button">Not required</button></div><span class="k-tag k-tag-open">Switch live for you</span></div>
+            <span class="wk-hint">Club events may drop it; the checkout then skips the membership step. Only the region's representative or an LCA admin can change this; a director named on the event sees it locked.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="wk-icard">
+      <div class="wk-ihead"><span class="wk-icode">K2</span><b>A new event, nothing cloned</b> · the empty state <span class="k-num-badge" style="margin-left:auto">3</span></div>
+      <div class="wk-ibody">
+        <div class="wk-mband">
+          <div class="k-row-sm"><span class="k-tag">Draft</span><span class="k-tag k-tag-lca">LCA event</span><span class="k-meta">Untitled tournament</span></div>
+          <div class="wk-import" style="margin:0;flex-wrap:wrap;font-size:13px"><b>Start from a past event</b><span>or fill the steps in order</span><a class="k-link" href="#">Choose an event</a></div>
+        </div>
+        <div class="k-between"><span class="k-label">Setup steps</span><span class="k-small k-strong">0 of 10 done</span></div>
+        <ol class="wk-msteps">
+          <li><span>1 · Basics</span><span class="wk-todo">To do</span></li><li><span>2 · Sections</span><span class="wk-todo">To do</span></li><li><span>3 · Fees</span><span class="wk-todo">To do</span></li><li><span>4 · Schedule</span><span class="wk-todo">To do</span></li><li><span>5 · Byes &amp; rules</span><span class="wk-todo">To do</span></li><li><span>6 · Venue &amp; travel</span><span class="wk-todo">To do</span></li><li><span>7 · Prizes</span><span class="wk-todo">To do</span></li><li><span>8 · Side events</span><span class="wk-todo">To do</span></li><li><span>9 · Directors</span><span class="wk-todo">To do</span></li><li><span>10 · Publish</span><span class="k-muted">Last step</span></li>
+        </ol>
+        <span class="k-label">Page preview · a schematic until steps are filled</span>
+        <div class="wk-schem">
+          <div class="wk-blk wk-blk-wide"><b>Title, dates, place</b>Always · fills from step 1</div>
+          <div class="wk-blk"><b>Sections &amp; prizes</b>Always · from steps 2 and 7</div>
+          <div class="wk-blk"><b>Registration card</b>Always · from steps 3 and 10</div>
+          <div class="wk-blk"><b>Schedule</b>Always · from step 4</div>
+          <div class="wk-blk"><b>Venue &amp; travel</b>Always · from step 6</div>
+          <div class="wk-blk wk-blk-wide"><b>Good to know</b>Always · byes and rules from step 5</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="wk-icard">
+      <div class="wk-ihead"><span class="wk-icode">K3</span><b>A live event</b> <span>the busy state · Thu, Oct 8, 2026 · 9:52 AM</span> <span class="k-sample">Sample data</span></div>
+      <div class="wk-ibody">
+        <div class="wk-mband">
+          <div class="k-row-sm"><span class="k-tag k-tag-open">Published · Registration open</span><span class="k-tag">23 registered</span></div>
+          <h4>2027 Louisiana State Championship</h4>
+          <span class="k-meta">Sat–Mon, Sep 4–6, 2027 · Baton Rouge · Published Mon, Sep 28, 2026 · every step stays editable</span>
+        </div>
+        <div class="wk-mstep" style="padding:0;overflow:hidden">
+          <div class="k-row-sm" style="gap:8px;padding:10px 12px 6px"><span class="wk-n">2</span><h5>Sections</h5><span class="k-tag k-tag-open">Done · 4 sections</span><span class="k-num-badge" style="margin-left:auto">4</span></div>
+          <div class="wk-mrow" style="font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#555c6b;background:#fbfbf8"><span>Section</span><span>Who can enter</span><span>Entered</span><span></span></div>
+          <div class="wk-mrow"><b>Champ.</b><span>All ratings</span><span>9</span><span></span></div>
+          <div class="wk-mrow"><b>U1800</b><span>Under 1800</span><span>6</span><span></span></div>
+          <div class="wk-mrow"><b>U1400</b><span>Under 1400</span><span>5</span><span></span></div>
+          <div class="wk-mrow wk-mrow-x"><b>U1000</b><span>Under 1000 or unrated</span><span>3 paid</span><span class="k-small" style="color:#8b2a21;font-weight:600">Remove</span></div>
+        </div>
+        <div class="wk-stop" role="alert">
+          <b>Not removed. Dropping U1000 would strand 3 paid players. Move them first from Entries.</b>
+          <span>Each player gets an email when moved; then U1000 can go.</span>
+          <div class="k-row-sm" style="gap:8px"><button class="k-btn k-btn-navy k-btn-sm" type="button">Open Entries</button><button class="k-btn k-btn-line k-btn-sm" type="button">Keep U1000</button></div>
+        </div>
+        <div class="wk-live"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true" style="flex:none;margin-top:2px"><circle cx="12" cy="12" r="9"></circle><path d="M12 11v6M12 7.5v.01"></path></svg><span>On a live event the bar reads <b>Save changes</b> in place of Publish; the public page updates when you save.</span></div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<section class="wk-sec" aria-labelledby="wk-fw">
+  <div class="wk-flab" style="margin:0 24px 12px"><span class="wk-code">W</span><h2 id="wk-fw">The way in from My LCA and the way back</h2><span class="k-meta">Thu, Oct 8, 2026 · every door starts on My LCA or My region; every way out lands on My LCA</span></div>
+  <div class="wk-way">
+    <div class="wk-icard">
+      <div class="wk-ihead"><span class="wk-icode">W1</span><b>Events you direct</b> · the row on My LCA <span class="k-num-badge" style="margin-left:auto">5</span></div>
+      <div class="wk-wbody">
+        <div class="wk-erow">
+          <div class="wk-date"><span>Sat</span><b>12</b><span>Jun</span></div>
+          <div class="k-stack-sm" style="gap:5px">
+            <div class="k-row-sm" style="gap:8px"><b style="font-size:15px">2027 Paul Morphy Open</b><span class="k-tag">Draft · Setup 8 of 10</span></div>
+            <span>Sat–Sun, Jun 12–13, 2027 · New Orleans · publishes Mon, Oct 12, 9:00 AM once Prizes and Directors are done</span>
+            <span><b>Next:</b> confirm the prize list</span>
+            <div class="k-row-sm" style="gap:8px"><a class="k-btn k-btn-gold k-btn-sm" href="#">Setup 8 of 10</a><a class="k-btn k-btn-line k-btn-sm" href="#">Preview public page</a></div>
+          </div>
+        </div>
+        <span class="k-meta">Setup opens the room at the first step still To do, here 7 Prizes.</span>
+      </div>
+    </div>
+    <div class="wk-icard">
+      <div class="wk-ihead"><span class="wk-icode">W2</span><b>A Today item</b> · on My LCA</div>
+      <div class="wk-wbody">
+        <div class="wk-today">
+          <div class="k-stack-sm" style="gap:4px"><span class="wk-role">Director · 2027 Paul Morphy Open</span><span><b>Next: confirm the prize list</b></span><span class="k-meta">Registration opens Mon, Oct 12</span></div>
+          <a class="k-btn k-btn-line k-btn-sm" href="#">Open setup</a>
+        </div>
+        <span class="k-meta">A setup step left before registration opens counts as an item from 14 days out; the chip names the event, never a system role name.</span>
+      </div>
+    </div>
+    <div class="wk-icard">
+      <div class="wk-ihead"><span class="wk-icode">W3</span><b>A new event</b> · who starts one</div>
+      <div class="wk-wbody">
+        <div class="wk-door"><b>Admin › Tournaments › New tournament</b><span>LCA admins, for LCA events</span><small>/workspace/tournaments/new</small></div>
+        <div class="wk-door"><b>My region › Baton Rouge Chess Club › Events › Add a club event</b><span>The region's representative, for a club's event (K1)</span><small>/workspace/tournaments/new?club=:id</small></div>
+        <span class="k-meta">A director is named on the event and then finds it under Events you direct; a director cannot start one.</span>
+      </div>
+    </div>
+    <div class="wk-icard">
+      <div class="wk-ihead"><span class="wk-icode">W4</span><b>The way back</b> <span class="k-num-badge" style="margin-left:auto">6</span></div>
+      <div class="wk-wbody">
+        <div class="wk-door"><span><span class="wk-back" style="min-height:30px;font-size:13px">Back to My LCA</span></span><span>In the crumb bar on every step</span><small>/dashboard#directing</small></div>
+        <div class="wk-door"><b>Crumbs</b><span>My LCA · Events you direct · 2027 Paul Morphy Open, each a link</span></div>
+        <span>After Publish, or on Mon, Oct 12 at 9:00 AM when it goes out:</span>
+        <div class="wk-done"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg><span>Published · registration is open · <a href="#">Done · Back to My LCA</a></span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":2150}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

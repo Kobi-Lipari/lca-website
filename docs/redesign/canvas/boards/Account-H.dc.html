@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>My LCA · H · An urgent band, then by role (round 2)</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/6107adb451dbab26ee5d89f4189b81f8">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1a2744}
+.ah-root{width:1440px;box-sizing:border-box;padding:20px 24px 16px;background:#ecebe6;color:#1a2744}
+.ah-root *{box-sizing:border-box}
+.ah-root p{margin:0}
+.ah-doc{background:#fbfaf6;border:1px solid #d9d8d1;border-radius:14px;padding:16px 22px 16px}
+.ah-doc-top{display:flex;justify-content:space-between;align-items:flex-start;gap:24px}
+.ah-title{font-size:28px;line-height:1.15;font-weight:700;letter-spacing:-.015em;margin:2px 0 4px}
+.ah-meta-line{font-size:13.5px;line-height:1.45;color:#3d4556}
+.ah-meta-line b{color:#1a2744;font-weight:600}
+.ah-legend{display:flex;flex-direction:column;gap:10px;margin-top:12px}
+.ah-lbox{background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:12px 18px 12px}
+.ah-notes{list-style:none;margin:8px 0 0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px 22px}
+.ah-notes li{display:flex;gap:9px;align-items:flex-start;font-size:12px;line-height:1.36}
+.ah-notes b{font-weight:600}
+.ah-grey{background:#efeee9;border:1px solid #dddcd4;border-radius:12px;padding:10px 18px 10px;font-size:12.5px;line-height:1.4;color:#3d4556}
+.ah-grey dl{margin:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px 20px}
+.ah-grey dl div{min-width:0}
+.ah-grey dt{font-weight:700;color:#1a2744;display:inline;margin-right:6px}
+.ah-grey dd{margin:0;display:inline}
+
+.ah-swap{display:flex;align-items:center;gap:10px;margin:10px 0 0;font-size:13px;line-height:1.45;color:#555c6b}
+.ah-swap span.ah-swtext{max-width:none}
+.ah-flab{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:10px 0 8px}
+.ah-flab h2{margin:0;font-size:19px;line-height:1.2;font-weight:600;letter-spacing:-.01em}
+.ah-code{display:inline-flex;align-items:center;justify-content:center;min-width:30px;height:28px;padding:0 8px;border-radius:7px;background:#c8a94a;color:#1a2744;font-weight:700;font-size:13px}
+.ah-frame{display:grid;grid-template-columns:1010px 72px minmax(0,1fr);gap:0;align-items:start}
+.ah-mock{position:relative;width:1010px;background:#f5f5f2;border:1px solid #cfcec6;border-radius:12px;box-shadow:0 12px 30px rgba(16,24,43,.09)}
+.ah-mock > .k-header{border-radius:11px 11px 0 0}
+.ah-side{grid-column:3;display:flex;flex-direction:column;gap:10px;min-width:0}
+
+/* decided header, sized for the 1020 mock */
+.ah-hd-in{padding:0 14px;gap:0;min-height:60px}
+.ah-brand{margin-right:10px}
+.ah-rook{width:28px;height:28px;fill:#ffffff;flex:none}
+.ah-nav{gap:0}
+.ah-nav a{padding:0 7px;font-size:14.5px;white-space:nowrap}
+.ah-navbtn{display:inline-flex;align-items:center;gap:4px;min-height:44px;padding:0 7px;border:0;background:transparent;color:#ffffff;font:inherit;font-size:14.5px;font-weight:500}
+.ah-search{display:inline-flex;align-items:center;gap:7px;height:40px;padding:0 12px;margin-right:8px;border-radius:8px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.45);color:#ffffff;text-decoration:none;font-size:14px;font-weight:500;flex:none}
+.ah-util{gap:6px;position:relative}
+.ah-util .k-ulink{padding:0 4px}
+.ah-my{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 8px;border:0;border-radius:8px;background:transparent;color:#ffffff;font:inherit;font-size:14px;font-weight:500}
+.ah-my-on{box-shadow:inset 0 -2px 0 #c8a94a;border-radius:0}
+.ah-count{display:inline-flex;align-items:center;justify-content:center;min-width:20px;height:20px;padding:0 6px;border-radius:999px;background:#fbfaf6;color:#1a2744;font-size:12px;font-weight:700}
+
+/* page body */
+.ah-body{display:grid;grid-template-columns:176px minmax(0,1fr);gap:18px;padding:16px 16px 16px;align-items:start}
+.ah-rail{background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:12px 10px 10px}
+.ah-rail .k-label{padding:0 8px}
+.ah-rnav{display:flex;flex-direction:column;gap:2px;margin-top:6px}
+.ah-rnav a{display:flex;justify-content:space-between;align-items:center;gap:8px;min-height:31px;padding:0 10px;border-radius:8px;color:#1a2744;text-decoration:none;font-size:14px}
+.ah-rnav a.ah-on{background:#efede6;font-weight:600;box-shadow:inset 3px 0 0 #1a2744}
+.ah-rc{font-size:12.5px;font-weight:600;color:#555c6b}
+.ah-main{min-width:0}
+.ah-today{background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:14px 18px 14px;position:relative}
+.ah-th{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+.ah-th h3{margin:0;font-size:22px;line-height:1.25;font-weight:700;letter-spacing:-.01em}
+.ah-thd{font-size:15px;color:#555c6b;font-weight:500}
+.ah-sub{font-size:14px;color:#555c6b;margin:4px 0 0 !important}
+.ah-cut{margin:12px 0 0 !important;font-size:12.5px;color:#6b7180;border-top:1px dashed #cfcec6;padding-top:10px}
+
+/* empty day */
+.ah-nothing{font-size:16px;font-weight:600;color:#1a2744;margin:10px 0 6px !important}
+.ah-next{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.ah-next li{display:flex;gap:9px;align-items:flex-start;font-size:14px;line-height:1.4;color:#555c6b}
+.ah-next li .k-i{margin-top:2px;color:#6b7180}
+.ah-next b{color:#3d4556;font-weight:600}
+
+/* Avery rows */
+.ah-alist{list-style:none;margin:10px 0 0;padding:0;display:flex;flex-direction:column;gap:6px}
+.ah-arow{position:relative;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:16px;align-items:center;padding:8px 14px;border:1px solid #e3e2dc;border-radius:10px;background:#ffffff}
+.ah-atext .k-tag{margin-right:8px;vertical-align:2px}
+.ah-atext .ah-ttl{display:inline}
+.ah-ttl{font-size:15px;line-height:1.35;font-weight:600;color:#1a2744}
+.ah-ln{font-size:13px;line-height:1.42;color:#555c6b;margin-top:2px !important}
+.ah-acts{display:flex;align-items:center;gap:10px;justify-content:flex-end}
+.ah-tlink{font-size:14px;font-weight:600;color:#1a2744;text-decoration:underline;text-decoration-color:#9aa1b0;text-underline-offset:3px;white-space:nowrap}
+.ah-tier{position:absolute;top:50%;left:calc(100% + 47px);transform:translateY(-50%);width:54px;font-size:11px;line-height:1.3;font-weight:600;color:#555c6b;font-family:"Geist Mono",ui-monospace,monospace;white-space:normal}
+
+/* merged rows */
+.ah-mlist{list-style:none;margin:8px 0 0;padding:0}
+.ah-mrow{position:relative;display:grid;grid-template-columns:150px minmax(0,1fr) auto;gap:14px;align-items:center;padding:9px 0;border-top:1px solid #ecebe5}
+.ah-mrow:first-child{border-top:0;padding-top:4px}
+
+.ah-chip{display:inline-block;max-width:150px;padding:4px 10px;border-radius:12px;font-size:12px;font-weight:600;line-height:1.3}
+.ah-c-ella{background:#f4ecd4;color:#1a2744}
+.ah-c-dir{background:#1a2744;color:#ffffff}
+.ah-c-rep{background:#e1f0e7;color:#1a2744}
+.ah-c-tre{background:#e4e9f3;color:#1a2744}
+.ah-c-off{background:#ecebe5;color:#1a2744}
+.ah-more{display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:0 4px;margin-top:2px;border:0;background:transparent;color:#1a2744;font:inherit;font-size:14.5px;font-weight:600;text-decoration:underline;text-decoration-color:#9aa1b0;text-underline-offset:3px}
+.ah-notyet{margin-top:4px !important;font-size:12px;line-height:1.45;color:#555c6b;background:#fbfbf8;border:1px solid #ecebe5;border-radius:8px;padding:8px 12px}
+.ah-notyet p+p{margin-top:4px !important}
+.ah-notyet .k-num-badge{float:left;margin:0 10px 0 0}
+.ah-notyet b{color:#3d4556}
+.ah-nb{position:absolute;box-shadow:0 0 0 3px #ffffff;z-index:5}
+
+/* side insets */
+.ah-ins{background:#ffffff;border:1px solid #d9d8d1;border-radius:12px;padding:12px 14px}
+.ah-ins-light{background:#fbfaf6;border-style:dashed;border-color:#b9b7ad}
+.ah-icap{font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#555c6b;margin-bottom:6px !important}
+.ah-rules{background:#efeee9;border:1px solid #dddcd4;border-radius:12px;padding:12px 14px;font-size:12px;line-height:1.48;color:#3d4556}
+.ah-rules p+p{margin-top:6px !important}
+.ah-rules b{color:#1a2744}
+.ah-trig{display:flex;justify-content:flex-end;background:#1a2744;border-radius:10px 10px 0 0;padding:4px 8px}
+.ah-dd{background:#ffffff;border:1px solid #d9d8d1;border-top:0;border-radius:0 0 12px 12px;padding:6px;box-shadow:0 14px 30px rgba(16,24,43,.14)}
+.ah-ddlabel{font-size:11.5px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:#555c6b;padding:6px 10px 3px}
+.ah-ddrow{display:flex;justify-content:space-between;align-items:center;gap:10px;min-height:32px;padding:4px 10px;border-radius:8px;color:#1a2744;text-decoration:none;font-size:14px;font-weight:500}
+.ah-ddrow .ah-ddsub{font-size:12px;color:#555c6b;font-weight:400;white-space:nowrap}
+.ah-ddsub2{display:block;font-size:12px;color:#555c6b;font-weight:400;margin-top:1px}
+.ah-todo{background:#fbf7e9;margin-bottom:2px}
+.ah-ddsep{height:1px;background:#e3e2dc;margin:4px 4px}
+.ah-orow{position:relative;padding:7px 0;border-top:1px solid #ecebe5}
+.ah-orow:first-of-type{border-top:0}
+.ah-orow .ah-ttl{font-size:13.5px}
+.ah-orow .ah-ln{font-size:12.5px}
+.ah-orow .ah-acts{justify-content:flex-start;margin-top:6px}
+.ah-otier{display:inline-block;font-size:11px;font-weight:600;color:#6b7180;font-family:"Geist Mono",ui-monospace,monospace;margin-left:6px}
+.ah-gh{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:6px 0 4px;border-bottom:1px solid #e3e2dc;margin-bottom:2px}
+.ah-gh b{font-size:13.5px}
+
+/* H additions */
+.ah-root{padding:16px 24px 10px !important}
+.ah-more{min-height:32px !important}
+.ah-ln{line-height:1.36 !important}
+.ah-rules{font-size:11px !important;line-height:1.4 !important}
+.ah-tier{width:50px !important}
+.ah-next li{font-size:13.5px !important}
+.ah-ins .ah-mini .ah-band .k-btn{margin-top:0}
+
+.ah-body{padding:12px 14px 12px !important}
+.ah-today{padding:12px 18px 12px !important}
+.ah-flab{margin:6px 0 6px !important}
+.ah-swap{margin:6px 0 0 !important}
+.ah-next{gap:4px !important}
+.ah-left section+section{margin-top:2px !important}
+.ah-group{margin-top:8px !important}
+.ah-grow{padding:6px 0 !important}
+.ah-band{margin:10px 0 2px !important;padding:7px 14px 6px !important}
+.ah-brow{padding:5px 0 1px !important}
+.ah-ddrow{min-height:28px !important;padding:3px 10px !important}
+.ah-ins{padding:10px 12px !important}
+.ah-notyet{padding:7px 12px !important}
+
+.ah-cols{display:grid;grid-template-columns:990px 66px minmax(0,1fr);align-items:start}
+.ah-mock{width:990px !important}
+.ah-flab .k-meta{white-space:nowrap}
+.ah-gpane .ah-grow2{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ah-rules p+p{margin-top:5px !important}
+.ah-fold .ah-ghost{flex:1;margin:0}
+.ah-left{grid-column:1;min-width:0}
+.ah-right{grid-column:3;display:flex;flex-direction:column;gap:12px;min-width:0}
+.ah-left section+section{margin-top:6px}
+.ah-band{position:relative;margin:12px 0 4px;background:#fbf7e9;border:1px solid #866a1e;border-radius:10px;padding:8px 14px 8px}
+.ah-bandt{font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#1a2744;display:flex;align-items:center;gap:8px}
+.ah-brow{position:relative;display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:14px;align-items:center;padding:8px 0 2px}
+.ah-group{position:relative;margin-top:10px}
+.ah-gh{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:0 0 6px;border-bottom:2px solid #1a2744}
+.ah-ghl{display:flex;align-items:center;gap:8px;font-size:16px;font-weight:700;color:#1a2744}
+.ah-ghl small{font-size:13.5px;font-weight:500;color:#555c6b}
+.ah-pill{display:inline-flex;align-items:center;justify-content:center;height:22px;padding:0 8px;border-radius:6px;background:#efede6;border:1px solid #cfcec6;color:#1a2744;font-size:12.5px;font-weight:700}
+.ah-room{display:inline-flex;align-items:center;gap:5px;font-size:14px;font-weight:600;color:#1a2744;text-decoration:underline;text-decoration-color:#9aa1b0;text-underline-offset:3px;white-space:nowrap}
+.ah-glist{list-style:none;margin:0;padding:0}
+.ah-grow{position:relative;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:16px;align-items:center;padding:7px 0;border-top:1px solid #ecebe5}
+.ah-grow:first-child{border-top:0}
+.ah-ghost{position:relative;display:grid;grid-template-columns:auto minmax(0,1fr);gap:10px;align-items:center;margin:2px 0 0;padding:5px 10px;border:1px dashed #b9b7ad;border-radius:8px;background:#fbfbf8}
+.ah-ghost .ah-ttl{font-size:13.5px;color:#3d4556}
+.ah-ghost .ah-ln{font-size:12.5px}
+.ah-opens{font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#6b7180;white-space:nowrap}
+.ah-fold{display:flex;align-items:center;gap:10px}
+.ah-gpane .ah-grow2{position:relative;padding:6px 0;border-top:1px solid #ecebe5;font-size:12.5px;line-height:1.38;color:#3d4556}
+.ah-gpane .ah-grow2:first-of-type{border-top:0}
+.ah-gpane .ah-chip{font-size:11px;padding:2px 8px;margin-right:6px;vertical-align:1px}
+.ah-gn{display:inline-block;width:16px;font-family:"Geist Mono",ui-monospace,monospace;font-size:11px;font-weight:600;color:#6b7180}
+.ah-moved{background:#fdebd6;border-radius:6px;padding:6px 8px !important;border-top:0 !important;margin:2px 0}
+.ah-mini{background:#ffffff;border:1px solid #e3e2dc;border-radius:10px;padding:8px 10px;margin-top:8px}
+.ah-mini .ah-band{margin:0 0 6px;padding:7px 10px}
+.ah-mini .ah-bandt{font-size:11.5px}
+.ah-mrow2{font-size:12.5px;line-height:1.38;color:#3d4556;padding:5px 0;border-top:1px solid #ecebe5}
+.ah-mrow2 b{color:#1a2744;font-weight:600}
+</style>
+</helmet>
+<div class="ah-root" style="width:1440px;height:2350px"><section class="ah-doc" aria-label="About this board"><div><div class="ah-doc-top"><p class="k-kicker">14 · My LCA · Today list · option H · round 2</p><span class="k-sample" style="flex:none">Sample data · names, counts and dates beyond Account-A, B and C are invented</span></div><h1 class="ah-title">My LCA · H · An urgent band, then by role (round 2)</h1><p class="ah-meta-line"><b>Built from:</b> Account-C (Today card, Chris's Monday) · Account-A (Avery's Needs attention) · Account-G (the same items) · Nav-Header-Final (My LCA &#9662; menu) · the frame's Today rules</p><p class="ah-meta-line"><b>Replaces:</b> Account-C's Today card and Account-A's Needs attention row · <b>Round 2</b> · <b>Frame:</b> Int-A, swappable · <b>Pairs with:</b> Account-G (the same items as one merged list)</p><p class="ah-meta-line"><b>K's feedback applied:</b> a good default (a member sees "Today", no groups, no band unless something is due) · every section drawn in full (empty, one role, five roles) · roles hosted in My LCA · options for each (G and H)</p></div>
+<div class="ah-legend"><div class="ah-lbox"><p class="k-label">Notes on this board</p><ol class="ah-notes"><li><span class="k-num-badge">1</span><span><b>One urgent band first:</b> anything due today or within 48 hours, any role, in deadline order; the role word stays because the band mixes roles.</span></li><li><span class="k-num-badge">2</span><span><b>Below the band, one group per role</b> in the order You · Family · Director · Representative · Board, each header with its count and room link; rows rank by G's tiers; an empty group is not drawn.</span></li><li><span class="k-num-badge">3</span><span><b>The cap is per group:</b> three rows open, the rest behind "Show 1 more". The seven-row cap still holds: G's one list becomes four short ones.</span></li><li><span class="k-num-badge">4</span><span><b>The cost, at the right of frame 3:</b> a ticket waiting a day folds under its header; the gain, a representative reads her region in one place.</span></li><li><span class="k-num-badge">5</span><span><b>The band is never drawn empty:</b> a plain member meets it only when something is due within 48 hours (Avery, Fri, Oct 16).</span></li><li><span class="k-num-badge">6</span><span><b>Drawn inside Int-A; the frame is swappable</b> (Int-B: the Overview page; Int-C: the head of Your work). Only the breadcrumb and the menu row change.</span></li></ol></div>
+<aside class="ah-grey" aria-label="Board note"><dl><div><dt>What</dt><dd>One urgent band, then groups by role: empty day, one role, five roles.</dd></div><div><dt>Built from</dt><dd>Account-C, Account-A, Account-G's items, the Today rules.</dd></div><div><dt>K's feedback applied</dt><dd>A plain "Today" by default; every case drawn; each role under its own name.</dd></div><div><dt>Open for K</dt><dd>G or H · "Today" or WS13's "Needs attention" · one personal header count (drawn) or two.</dd></div></dl></aside></div></section><p class="ah-swap"><span class="k-num-badge">6</span><span class="ah-swtext">Drawn inside Int-A (My LCA as the hub, rooms open from each section). The frame is swappable: under Int-B this list is the Overview page; under Int-C it heads Your work and My LCA repeats only the personal rows. Pick the frame on Account-Int-A, B or C.</span></p><div class="ah-cols"><div class="ah-left"><section aria-labelledby="ah-f1"><div class="ah-flab"><span class="ah-code">F1</span><h2 id="ah-f1">An empty day · Chris Arceneaux, Wed, Oct 21, 2026 · 8:05 AM</h2><span class="k-meta">No band, no box, no picture; no count on the rail or the header.</span></div>
+<div class="ah-mock"><header class="k-header ah-hd"><div class="k-header-in ah-hd-in"><a class="k-brand ah-brand" href="#" aria-label="Louisiana Chess Association, home"><svg class="ah-rook" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span class="k-brand-name" aria-hidden="true"><b>Louisiana Chess</b><span>Association</span></span></a><nav class="k-navlinks ah-nav" aria-label="Main"><a href="#">Tournaments</a><a href="#">Clubs</a><a href="#">Scholastic</a><a href="#">News</a><a href="#">Membership</a><button class="ah-navbtn" type="button" aria-expanded="false" aria-haspopup="true">About<svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"></path></svg></button></nav><a class="ah-search" href="#"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg><span>Search</span></a><div class="k-utility ah-util"><a class="k-ulink" href="#">Donate</a><button class="ah-my ah-my-on" type="button" aria-haspopup="menu" aria-expanded="false" aria-label="My LCA"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4.5 21c1-4 4-6 7.5-6s6.5 2 7.5 6"></path></svg><span>My LCA</span><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"></path></svg></button></div></div></header><div class="ah-body"><aside class="ah-rail"><p class="k-label">On this page</p><nav class="ah-rnav" aria-label="Sections"><a href="#" class="ah-on" aria-current="true"><span>Today</span></a><a href="#"><span>You</span></a><a href="#"><span>Family</span></a><a href="#"><span>Events you direct</span></a><a href="#"><span>Your region</span></a><a href="#"><span>Board</span></a></nav></aside><div class="ah-main"><div class="ah-today"><div class="ah-th"><h3>Today</h3><span class="ah-thd">Wed, Oct 21</span></div><p class="ah-nothing">Nothing needs you today.</p><ul class="ah-next"><li><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4.5" width="18" height="16" rx="2"></rect><path d="M3 9.5h18M8 2.5v4M16 2.5v4"></path></svg><span><b>Next:</b> The Baton Rouge Classic, Sat–Sun, Oct 24–25 · you direct it · Open event day from Sat, Oct 24 at 8:00 AM</span></li><li><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="7" r="3.5"></circle><path d="M6 21c.6-4 3-6 6-6s5.4 2 6 6"></path></svg><span><b>Ella:</b> New Orleans Youth Chess November Meet, Sat, Nov 14 · entered and paid</span></li><li><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 21V4M5 4h11l-2 4 2 4H5"></path></svg><span><b>Director:</b> The Baton Rouge Classic · setup 10 of 10 · registration closes Fri, Oct 23</span></li><li><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-6.5-6-6.5-11a6.5 6.5 0 0 1 13 0c0 5-6.5 11-6.5 11z"></path><circle cx="12" cy="10" r="2.3"></circle></svg><span><b>Representative:</b> next monthly check lands Mon, Nov 2</span></li><li><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.5"></circle><path d="M2.5 20c.8-3.6 3.4-5.5 6.5-5.5s5.7 1.9 6.5 5.5M16 4.6a3.5 3.5 0 0 1 0 6.8M18 14.8c2 .7 3.2 2.4 3.6 5.2"></path></svg><span><b>Treasurer:</b> next board meeting Tue, Nov 10 · 7:00 PM</span></li></ul></div></div></div></div></section><section aria-labelledby="ah-f2"><div class="ah-flab"><span class="ah-code">F2</span><h2 id="ah-f2">One role · Avery Thibodeaux, Mon, Oct 5, 2026 · 7:40 AM</h2><span class="k-meta">The default page: no groups, no labels, no band. Header 3.</span></div>
+<div class="ah-mock"><header class="k-header ah-hd"><div class="k-header-in ah-hd-in"><a class="k-brand ah-brand" href="#" aria-label="Louisiana Chess Association, home"><svg class="ah-rook" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span class="k-brand-name" aria-hidden="true"><b>Louisiana Chess</b><span>Association</span></span></a><nav class="k-navlinks ah-nav" aria-label="Main"><a href="#">Tournaments</a><a href="#">Clubs</a><a href="#">Scholastic</a><a href="#">News</a><a href="#">Membership</a><button class="ah-navbtn" type="button" aria-expanded="false" aria-haspopup="true">About<svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"></path></svg></button></nav><a class="ah-search" href="#"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg><span>Search</span></a><div class="k-utility ah-util"><a class="k-ulink" href="#">Donate</a><button class="ah-my ah-my-on" type="button" aria-haspopup="menu" aria-expanded="false" aria-label="My LCA, 3 things to do"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4.5 21c1-4 4-6 7.5-6s6.5 2 7.5 6"></path></svg><span>My LCA</span><span class="ah-count" aria-hidden="true">3</span><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"></path></svg></button></div></div></header><div class="ah-body"><aside class="ah-rail"><p class="k-label">On this page</p><nav class="ah-rnav" aria-label="Sections"><a href="#" class="ah-on" aria-current="true"><span>Today</span><span class="ah-rc">4</span></a><a href="#"><span>Membership</span></a><a href="#"><span>Entries</span></a><a href="#"><span>Receipts</span></a><a href="#"><span>Settings</span></a></nav></aside><div class="ah-main"><div class="ah-today"><div class="ah-th"><h3>Today</h3><span class="ah-thd">Mon, Oct 5</span></div><ul class="ah-alist"><li class="ah-arow"><div class="ah-atext"><span class="k-tag k-tag-soon">Payment pending</span><p class="ah-ttl">Pay for The Baton Rouge Classic</p><p class="ah-ln">Open section · $60 by Sat, Oct 17 · $70 after</p></div><div class="ah-acts"><a class="k-btn k-btn-sm k-btn-gold" href="#">Pay $60</a><a class="ah-tlink" href="#">Withdraw</a></div><span class="ah-tier" aria-hidden="true">T2</span></li><li class="ah-arow"><div class="ah-atext"><span class="k-tag k-tag-full">Ends before your event</span><p class="ah-ttl">US Chess membership ends Thu, Dec 31</p><p class="ah-ln">Before the Ken Ferguson Memorial Open, Sat–Mon, Jan 16–18, 2027 · we re-check your ID every night</p></div><div class="ah-acts"><a class="k-btn k-btn-sm k-btn-line" href="#">Renew at US Chess &#8599;</a><a class="ah-tlink" href="#">Check again now</a></div><span class="ah-tier" aria-hidden="true">T2</span></li><li class="ah-arow"><div class="ah-atext"><span class="k-tag k-tag-soon">Expires in 21 days</span><p class="ah-ttl">LCA membership ends Mon, Oct 26</p><p class="ah-ln">Adult, $15 a year · required to enter LCA events</p></div><div class="ah-acts"><a class="k-btn k-btn-sm k-btn-gold" href="#">Renew · $15</a><a class="ah-tlink" href="#">Turn on auto-renew</a></div><span class="ah-tier" aria-hidden="true">T2</span></li><li class="ah-arow"><div class="ah-atext"><span class="k-tag k-tag-closed">Your reminder</span><p class="ah-ttl">Lafayette Open 2026 is this weekend, Sat–Sun, Oct 10–11</p><p class="ah-ln">You saved it and asked to be reminded today · you're not entered</p></div><div class="ah-acts"><a class="k-btn k-btn-sm k-btn-line" href="#">See event and enter</a><a class="ah-tlink" href="#">Stop this reminder</a></div><span class="ah-tier" aria-hidden="true">T4</span></li></ul></div></div></div></div></section><section aria-labelledby="ah-f3"><div class="ah-flab"><span class="ah-code">F3</span><h2 id="ah-f3">Five roles · Chris Arceneaux, Mon, Oct 5, 2026 · 7:40 AM</h2><span class="k-meta">Tier marks at the right are notes for K.</span></div>
+<div class="ah-mock"><header class="k-header ah-hd"><div class="k-header-in ah-hd-in"><a class="k-brand ah-brand" href="#" aria-label="Louisiana Chess Association, home"><svg class="ah-rook" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span class="k-brand-name" aria-hidden="true"><b>Louisiana Chess</b><span>Association</span></span></a><nav class="k-navlinks ah-nav" aria-label="Main"><a href="#">Tournaments</a><a href="#">Clubs</a><a href="#">Scholastic</a><a href="#">News</a><a href="#">Membership</a><button class="ah-navbtn" type="button" aria-expanded="false" aria-haspopup="true">About<svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"></path></svg></button></nav><a class="ah-search" href="#"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg><span>Search</span></a><div class="k-utility ah-util"><a class="k-ulink" href="#">Donate</a><button class="ah-my ah-my-on" type="button" aria-haspopup="menu" aria-expanded="false" aria-label="My LCA, 1 thing to do"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4.5 21c1-4 4-6 7.5-6s6.5 2 7.5 6"></path></svg><span>My LCA</span><span class="ah-count" aria-hidden="true">1</span><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"></path></svg></button></div></div></header><div class="ah-body"><aside class="ah-rail"><p class="k-label">On this page</p><nav class="ah-rnav" aria-label="Sections"><a href="#" class="ah-on" aria-current="true"><span>Today</span><span class="ah-rc">9</span></a><a href="#"><span>You</span></a><a href="#"><span>Family</span><span class="ah-rc">1</span></a><a href="#"><span>Events you direct</span><span class="ah-rc">3</span></a><a href="#"><span>Your region</span><span class="ah-rc">4</span></a><a href="#"><span>Board</span><span class="ah-rc">7</span></a></nav></aside><div class="ah-main"><div class="ah-today"><div class="ah-th"><h3>Today across your roles</h3><span class="ah-thd">Mon, Oct 5</span></div><p class="ah-sub">9 things · 1 is yours</p><div class="ah-band" role="region" aria-label="Due today or by Wed, Oct 7"><p class="ah-bandt">Due today or by Wed, Oct 7</p><div class="ah-brow"><span class="ah-chip ah-c-ella">Ella</span><div><p class="ah-ttl">Pay $20 for Ella's November Meet entry</p><p class="ah-ln"><span class="k-tag k-tag-soon" style="margin-right:8px;vertical-align:1px">Due today</span>New Orleans Youth Chess November Meet, Sat, Nov 14 · K–5 · early price ends today, Mon, Oct 5</p></div><div class="ah-acts"><a class="k-btn k-btn-sm k-btn-gold" href="#">Pay $20</a></div><span class="ah-tier" aria-hidden="true" style="left:calc(100% + 62px)">T1</span></div><span class="k-num-badge ah-nb" style="left:-33px;top:-12px">1</span></div><div class="ah-group"><div class="ah-gh"><span class="ah-ghl"><span>Director</span><span class="ah-pill" aria-label="2 open">2</span></span><a class="ah-room" href="#">Events you direct<svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></a></div><ul class="ah-glist"><li class="ah-grow"><div><p class="ah-ttl">Bye request: Maya Robichaux, ½ point in round 5</p><p class="ah-ln">The Baton Rouge Classic · requested Fri, Oct 2 · within the 2-bye limit</p></div><div class="ah-acts"><a class="k-btn k-btn-sm k-btn-navy" href="#">Approve</a><a class="ah-tlink" href="#">Decline</a></div><span class="ah-tier" aria-hidden="true">T3 3d</span></li><li class="ah-grow"><div><p class="ah-ttl">Rating report due Sat, Oct 10</p><p class="ah-ln">Baton Rouge Chess Club Saturday G/90 · finished Sat, Oct 3 · 14 players · 1 check to fix: Theo Guidry's US Chess membership ended Wed, Sep 30</p></div><div class="ah-acts"><a class="k-btn k-btn-sm k-btn-line" href="#">Open rating report</a></div><span class="ah-tier" aria-hidden="true">T4<br>Sat,<br>Oct 10</span></li></ul><span class="k-num-badge ah-nb" style="left:-33px;top:-4px">2</span></div><div class="ah-group"><div class="ah-gh"><span class="ah-ghl"><span>Representative</span> <small>· South Central Louisiana</small><span class="ah-pill" aria-label="4 open">4</span></span><a class="ah-room" href="#">Your region<svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></a></div><ul class="ah-glist"><li class="ah-grow"><div><p class="ah-ttl">"The library closes at 8:00 PM on Mondays now. Are you still meeting until 8:30 PM?" · Houma Chess Club</p><p class="ah-ln">Report outdated info from a visitor · Sat, Sep 26 · no answer in 9 days</p></div><div class="ah-acts"><a class="k-btn k-btn-sm k-btn-line" href="#">Reply</a></div><span class="ah-tier" aria-hidden="true">T3 9d</span></li><li class="ah-grow"><div><p class="ah-ttl">"The club moved to the Bunkie Public Library" · Bunkie Chess Club</p><p class="ah-ln">Suggest an update from the club · Sun, Oct 4 · no answer in 1 day</p></div><div class="ah-acts"><a class="k-btn k-btn-sm k-btn-navy" href="#">Apply this</a><a class="ah-tlink" href="#">Reply</a></div><span class="ah-tier" aria-hidden="true">T3 1d</span></li><li class="ah-grow"><div><p class="ah-ttl">4 of 9 clubs not checked in 90 days: Bunkie, Gonzales, Heart of Worship, Pineville</p><p class="ah-ln">Each takes one tap in Your region</p></div><div class="ah-acts"><a class="k-btn k-btn-sm k-btn-line" href="#">Check the four</a></div><span class="ah-tier" aria-hidden="true">T4</span></li></ul><div class="ah-fold"><button class="ah-more" type="button" aria-expanded="false">Show 1 more<svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"></path></svg></button><span class="k-num-badge">3</span><div class="ah-ghost"><span class="ah-opens">Opens</span><p class="ah-ttl" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Baton Rouge Chess Club November Saturday G/90 is in LCA review</p><span class="ah-tier" aria-hidden="true" style="left:calc(100% + 47px)">(T4)</span></div></div></div><div class="ah-group"><div class="ah-gh"><span class="ah-ghl"><span>Treasurer</span><span class="ah-pill" aria-label="1 open">1</span></span><a class="ah-room" href="#">Board inbox<svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></a></div><ul class="ah-glist"><li class="ah-grow"><div><p class="ah-ttl">3 messages waiting in the Treasurer inbox</p><p class="ah-ln">Oldest Fri, Oct 2 · "Receipt for the Lafayette Open sponsorship"</p></div><div class="ah-acts"><a class="k-btn k-btn-sm k-btn-line" href="#">Open inbox</a></div><span class="ah-tier" aria-hidden="true">T3 3d</span></li></ul></div><div class="ah-group"><div class="ah-gh"><span class="ah-ghl"><span>LCA office</span><span class="ah-pill" aria-label="1 open">1</span></span><a class="ah-room" href="#">Support tickets<svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></a></div><div style="padding-top:4px"><div class="ah-fold"><button class="ah-more" type="button" aria-expanded="false">Show 1 more<svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"></path></svg></button><div class="ah-ghost"><span class="ah-opens">Opens</span><p class="ah-ttl" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Support ticket assigned to you: "Wrong section on my registration"</p><span class="ah-tier" aria-hidden="true" style="left:calc(100% + 47px)">(T3 1d)</span></div></div></div></div><div class="ah-notyet"><span class="k-num-badge">3</span><p><b>Seven open:</b> the band's one row, Director 2, Representative 3, Treasurer 1. The other two fold under their own headers, which still count them. <b>Not shown yet:</b> 2 entrants' US Chess memberships end before The Baton Rouge Classic (Jordan Lee ended Wed, Sep 30 · Rosa Mendez ends Mon, Oct 12); it joins Today on Sat, Oct 17, 7 days before day 1. The prize-list step joins on Sat, Oct 10, when day 1 is within 14 days.</p></div></div></div></div></div></section></div><div></div><div class="ah-right"><div class="ah-ins"><p class="ah-icap">Inset · Avery's empty day</p><p class="k-meta">Avery Thibodeaux · Tue, Oct 20, 2026 · 6:15 PM, after paying and renewing</p><div class="ah-th" style="margin-top:10px"><h3 style="font-size:19px">Today</h3><span class="ah-thd" style="font-size:14px">Tue, Oct 20</span></div><p class="ah-nothing" style="font-size:15px;margin:8px 0 6px">Nothing needs you today.</p><p class="k-small k-muted" style="font-size:13.5px">Next: The Baton Rouge Classic, <span style="white-space:nowrap">Sat–Sun, Oct 24–25</span> · you're entered and paid</p><p class="k-meta" style="margin-top:12px;padding-top:10px;border-top:1px dashed #cfcec6">A new member with no entries reads:</p><p class="k-small k-muted" style="font-size:13.5px;margin-top:2px">Nothing entered yet · <a class="k-link" href="#">Find a tournament</a></p></div><div class="ah-ins" style="position:relative"><p class="ah-icap">Inset · the same list on Fri, Oct 16</p><p class="k-meta">Avery, 9:10 AM: something is now due within 48 hours.</p><div class="ah-mini"><div class="ah-th"><h3 style="font-size:17px">Today</h3><span class="ah-thd" style="font-size:13px">Fri, Oct 16</span></div><div class="ah-band" style="margin-top:6px"><p class="ah-bandt">Due today or by Sun, Oct 18</p><div style="display:flex;gap:10px;align-items:center;justify-content:space-between;margin-top:4px"><div><p class="ah-ttl" style="font-size:13.5px">Pay $60 · The Baton Rouge Classic</p><p class="ah-ln" style="font-size:12px"><span class="k-tag k-tag-soon" style="margin-right:6px;padding:2px 7px;font-size:11px">Due tomorrow</span>early price ends tomorrow, Sat, Oct 17</p></div><a class="k-btn k-btn-sm k-btn-gold" href="#">Pay $60</a></div></div><div class="ah-mrow2" style="border-top:0"><b>US Chess membership ends Thu, Dec 31</b> · Renew at US Chess &#8599;</div><div class="ah-mrow2"><b>LCA membership ends Mon, Oct 26</b> · Renew · $15</div><p class="k-meta" style="margin-top:6px">One role: no group header under the band. The Lafayette Open reminder left the list once its weekend passed.</p></div><span class="k-num-badge ah-nb" style="left:-14px;top:-12px">5</span></div><div class="ah-rules"><p class="ah-icap" style="margin-bottom:6px">The rules this list follows</p><p><b>An item</b> is something the viewer can finish or decide today, from this page or one of its rooms, with a deadline within 14 days or a person waiting on the viewer now; it carries exactly one button in words. A status, a count of things that are fine, or information with no action is never an item.</p><p><b>Tiers:</b> 1 due today or already past; 2 money and eligibility with a date, in WS13's order (unpaid entry, US Chess before an entered event, LCA membership within 30 days, a waitlist offer), then the nearer date first; 3 a person waiting on you, longest wait first; 4 dated upkeep, sooner deadline first, undated last; 5 counts and summaries (an admin's queue line only).</p><p><b>Inside a tier:</b> sooner deadline, then the role order You · Family · Director · Representative · Board · Admin.</p><p><b>Cap:</b> seven open; the rest behind "Show N more", and no role may hold more than three rows before the fold. The header's My LCA count stays the personal count.</p><p><b>The urgent band</b> holds every item in tier 1 and anything due within 48 hours, from any role, in deadline order; a group below never repeats a banded item; a band with nothing in it is not drawn.</p></div><div><div class="ah-trig"><button class="ah-my" type="button" aria-haspopup="menu" aria-expanded="true" aria-label="My LCA, 1 thing to do" style="background:rgba(255,255,255,.12)"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4.5 21c1-4 4-6 7.5-6s6.5 2 7.5 6"></path></svg><span>My LCA</span><span class="ah-count" aria-hidden="true">1</span><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 15l7-7 7 7"></path></svg></button></div><div class="ah-dd" role="menu" aria-label="My LCA"><div class="ah-ddlabel">To do · 1</div><a class="ah-ddrow ah-todo" href="#" role="menuitem"><span><span>Pay $20 · Ella's November Meet entry</span><span class="ah-ddsub2">Early price ends today</span></span><span class="k-tag k-tag-soon">Unpaid</span></a><div class="ah-ddsep"></div><a class="ah-ddrow" href="#" role="menuitem"><span>My LCA</span><span class="ah-ddsub">Your dashboard</span></a><a class="ah-ddrow" href="#" role="menuitem"><span>Family</span><span class="ah-ddsub">Players you register</span></a><a class="ah-ddrow" href="#" role="menuitem"><span>Membership card</span><span class="ah-ddsub">Show at the desk</span></a><div class="ah-ddsep"></div><div class="ah-ddlabel">By role</div><a class="ah-ddrow" href="#" role="menuitem"><span>Events you direct (3)</span></a><a class="ah-ddrow" href="#" role="menuitem"><span>My region · 4 to check</span></a><a class="ah-ddrow" href="#" role="menuitem"><span>Board inbox (3)</span></a><a class="ah-ddrow" href="#" role="menuitem"><span>Support tickets (4)</span></a><div class="ah-ddsep"></div><a class="ah-ddrow" href="#" role="menuitem"><span>Log out</span></a></div><p class="k-meta" style="margin-top:4px">No Workspace, Admin or Member lookup row for Chris.</p></div><div class="ah-ins ah-ins-light ah-gpane" style="position:relative"><p class="ah-icap">What G shows in the same seven slots</p><p class="ah-grow2"><span class="ah-gn">1</span><span class="ah-chip ah-c-ella">Ella</span>Pay $20 for Ella's Meet entry</p><p class="ah-grow2"><span class="ah-gn">2</span><span class="ah-chip ah-c-rep">Representative</span>Houma: library closes at 8:00 PM</p><p class="ah-grow2"><span class="ah-gn">3</span><span class="ah-chip ah-c-dir">Director</span>Bye request: Maya Robichaux</p><p class="ah-grow2"><span class="ah-gn">4</span><span class="ah-chip ah-c-tre">Treasurer</span>3 messages in the inbox</p><p class="ah-grow2"><span class="ah-gn">5</span><span class="ah-chip ah-c-rep">Representative</span>Bunkie: the club moved</p><p class="ah-grow2 ah-moved"><span class="ah-gn">6</span><span class="ah-chip ah-c-off">LCA office</span>Ticket: Wrong section · <b>folded on H</b></p><p class="ah-grow2"><span class="ah-gn">7</span><span class="ah-chip ah-c-dir">Director</span>Rating report due Sat, Oct 10</p><p class="k-meta" style="margin-top:6px">H gives slot 6 to the 90-day club check and folds the ticket under "LCA office · 1", which still counts it.</p><span class="k-num-badge ah-nb" style="left:-14px;top:-12px">4</span></div></div></div></div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":2350}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

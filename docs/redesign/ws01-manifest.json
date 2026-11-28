@@ -1,0 +1,1762 @@
+{
+ "slices": [
+  {
+   "name": "ws01-01-preview-database",
+   "order": 1,
+   "brief": "Create branch redesign/ws01-design-system from main. This slice comes first so the branch is never pushed without its own preview binding: a branch pushed before this commit would get a Pages preview bound to production lca-db, and anyone clicking around it would write real data. Do not push the branch until this slice is committed.\n\nAdd REDESIGN_STATUS.md at the repo root with one block per workstream (status, branch, PR, decisions, deviations, follow-ups, verify items resolved) and an empty table mapping AC1 to AC14 and K1a to K6 to slices (slice 2 fills it). Record the two ordering rules: the branch is pushed only after this slice, and K migrates the preview database from the branch before reviewing each checkpoint's preview.\n\nwrangler.toml: add [env.preview] with [[env.preview.d1_databases]] binding DB (the same binding name, never another), database_name lca-db-preview, database_id the literal \"REPLACE_WITH_LCA_DB_PREVIEW_ID\", with a comment telling K to paste the real id. repo-facts.md records an id for lca-db-preview (28e13174-3a06-47a7-ab0f-b4ac7f24af6f, created Oct 8, ENAM); K confirms and pastes it himself, and checkpoint A does not merge while the placeholder is in place. Pages does not inherit vars, d1_databases or r2_buckets, so the block repeats all 10 [vars] keys and the CLUB_LOGOS binding. SITE_URL stays the production origin until K answers the open question.\n\nscripts/db/preview-guard.ts (node --experimental-strip-types, like the scanner scripts) parses wrangler.toml with smol-toml (exact-pinned devDependency) and exits non-zero with a plain message when the preview id is the placeholder, equals production's id, or the target name is lca-db. npm scripts, each running the guard first: db:migrate:preview (wrangler d1 migrations apply lca-db-preview --remote --env preview), db:migrate:status:preview, and db:seed:preview, which refuses with a clear message until scripts/seed/fixtures.sql exists (slice 20).\n\nREADME.md gains a Safe previews section: the preview database and the guard; K runs db:migrate:preview from the branch with his own credentials before reviewing each checkpoint's preview (from slice 8 on, a preview bound to an unmigrated database errors), not after the merge; Supabase logins are shared with production; preview secrets (Stripe test keys, Resend) are set separately in the Pages dashboard. Nothing in this container ever targets the preview database.",
+   "files": [
+    "REDESIGN_STATUS.md",
+    "wrangler.toml",
+    "scripts/db/preview-guard.ts",
+    "package.json",
+    "package-lock.json",
+    "README.md",
+    "test/unit/wrangler-config.test.ts"
+   ],
+   "acceptance": [
+    "Gate green: npm run lint, npm run build, npm run typecheck:functions, npm run test:all (run npm ci first; node_modules is not installed in this container)",
+    "Top-level DB binding is still lca-db with id e891b93f-e7fe-48d0-9afc-8570d805ef08 (production unchanged)",
+    "[env.preview] binds DB to database_name lca-db-preview with an id different from production, and repeats all 10 top-level [vars] keys and the CLUB_LOGOS bucket",
+    "preview-guard exits non-zero with a plain message for the placeholder id, the production id and the production name; db:migrate:preview and db:seed:preview stop when the guard fails",
+    "AC9 (branch deploys use lca-db-preview, never lca-db): the static half is proved by wrangler-config.test.ts; the live half (a branch deploy's bindings show lca-db-preview) is checked by K once he has pasted the id and migrated the database, and recorded in REDESIGN_STATUS.md",
+    "README states that K migrates the preview from the branch before each checkpoint review; REDESIGN_STATUS.md records both ordering rules",
+    "REDESIGN_STATUS.md records this slice's AC/K row, any deviation and each resolved verify item"
+   ],
+   "verify_items": [
+    {
+     "item": "wrangler.toml has no preview override",
+     "finding": "Confirmed: one [[d1_databases]] (DB -> lca-db, e891b93f-e7fe-48d0-9afc-8570d805ef08), [vars] with 10 keys (SITE_URL, SUPABASE_URL, FROM_EMAIL, CONTACT_EMAIL, SUPPORT_EMAIL, REPLY_TO_EMAIL and four VITE_ keys), [[r2_buckets]] CLUB_LOGOS -> lca-club-logos, and no [env.*] block. Pages deploys through the Git integration, so wrangler.toml is the binding source for previews."
+    },
+    {
+     "item": "Pages environment inheritance",
+     "finding": "For Pages, vars, d1_databases and r2_buckets are non-inheritable, so the preview block must restate all of them or preview deploys lose them. Repeating SITE_URL unchanged means emails sent from a preview link to production (open question)."
+    },
+    {
+     "item": "Does the preview database exist",
+     "finding": "The computed task says it does not yet exist; repo-facts.md says K created it on Oct 8 with id 28e13174-3a06-47a7-ab0f-b4ac7f24af6f. This container is not logged in to wrangler and cannot check either. The placeholder plus the guard is safe in both cases, and K pastes the confirmed id."
+    },
+    {
+     "item": "Who applies remote migrations",
+     "finding": "The brief says K does. In fact .github/workflows/migrate-db.yml applies migrations/** to lca-db --remote on every push to main that touches migrations, so merging a checkpoint that carries 0052 to 0054 applies them to production. Recorded as a deviation; the preview database is migrated only by K's db:migrate:preview, run from the branch before review."
+    },
+    {
+     "item": "Workers",
+     "finding": "workers/daily-emails binds lca-db and deploys from main only (deploy-worker.yml); workers/clearinghouse-sync imports nothing from functions/. Neither is affected."
+    }
+   ],
+   "flags": [],
+   "migrations": [],
+   "tests": [
+    "test/unit/wrangler-config.test.ts: production binding unchanged; preview binding name and id differ from production; every [vars] key and the R2 binding repeated under env.preview; the guard rejects fixture TOML with the placeholder id, the production id and the production name"
+   ],
+   "risks": [
+    "Until K pastes the id, Pages preview builds of this branch fail to bind the database. That fails closed, which is safe, but K cannot check previews until he pastes it",
+    "Supabase auth is shared between preview and production, so logins on a preview are real accounts",
+    "Preview CLUB_LOGOS still points at the production bucket unless K creates a preview bucket (open question)",
+    "Pages preview secrets (Stripe, Resend) must be test or sandbox values before anyone pays or sends email from a preview",
+    "One preview database is shared by every branch; only the redesign branch migrates it"
+   ],
+   "estimated_size": "small"
+  },
+  {
+   "name": "ws01-02-groundwork",
+   "order": 2,
+   "brief": "Fill the WS01 block of REDESIGN_STATUS.md with this manifest's verify findings and deviations, including the brief's own 0.2 line (Heritage loads Libre Caslon Display and Source Serif 4 instead of reusing Instrument Serif; Baloo 2 and Nunito move to WS11). Fill the table that maps AC1 to AC14 and each part of K's structural decisions (K1a to K6) to the one slice that proves it, marking K1d as 'partial: ratchet' until K answers the contracts question, and keep it current. Write it in plain language with no internal workflow terms.\n\nAdd the 15 Phase 0 flags from REDESIGN_SPEC.md 0.2 to FEATURES in src/lib/features.ts, every one false, each with a short plain comment in the existing JSDoc style: newLook, themeHeritage, themeScholastic, newNav, siteSearch, homeSearch, eventStrip, eventStripLive, liveMarker, newHome, homeResults, homeChampions, homeLive, homeWeek, homeRecap. Leave the three existing flags untouched.\n\nSet up the test infrastructure the later slices need. vitest.config.ts gains resolve.alias '@' -> ./src, includes test/unit/**/*.test.tsx, and adds @vitejs/plugin-react (already a devDependency) so .tsx tests compile with the automatic JSX runtime; test/ sits in no tsconfig, so without the plugin a TSX test can fall back to the classic runtime and fail with 'React is not defined'. Add exact-pinned devDependencies jsdom and @testing-library/react, at versions at least two weeks old. A render test opts in with a per-file `// @vitest-environment jsdom` comment, so the default environment stays node and the swiss, scanner and existing unit tests are unaffected. Add one smoke render test that mounts today's StatusBadge without importing React explicitly, proving both the jsdom setup and the JSX runtime. No user-visible change and no migration.",
+   "files": [
+    "REDESIGN_STATUS.md",
+    "src/lib/features.ts",
+    "vitest.config.ts",
+    "package.json",
+    "package-lock.json",
+    "test/unit/features.test.ts",
+    "test/unit/render-smoke.test.tsx"
+   ],
+   "acceptance": [
+    "Gate green: npm run lint, npm run build, npm run typecheck:functions, npm run test:all",
+    "FEATURES holds the 15 Phase 0 keys, all false, each with a plain comment; clubTournaments, tournamentQuickFilters and externalTags are unchanged",
+    "A .test.tsx file under test/unit with no React import runs in jsdom and imports an '@/...' module; node-environment unit tests still run in node (test count otherwise unchanged)",
+    "REDESIGN_STATUS.md holds the WS01 block, the resolved verify items and the AC/K-to-slice map, with K1d marked 'partial: ratchet' pending K's answer",
+    "REDESIGN_STATUS.md records this slice's AC/K row, any deviation and each resolved verify item"
+   ],
+   "verify_items": [
+    {
+     "item": "Phase 0 flag list",
+     "finding": "REDESIGN_SPEC.md 0.2 lists 15 flags to add, all false. src/lib/features.ts today holds clubTournaments, tournamentQuickFilters and externalTags, all false and read only in src/pages/TournamentsPage.tsx."
+    },
+    {
+     "item": "Unit tests can import src modules with the '@' alias",
+     "finding": "vitest.config.ts has no alias and includes only functions/utils/swiss/**/*.test.ts, src/lib/scanner/**/*.test.ts and test/unit/**/*.test.ts; mirrors.test.ts reaches src by relative path. The alias and the .tsx include have to be added."
+    },
+    {
+     "item": "JSX runtime for test files",
+     "finding": "vitest.config.ts has no React plugin and the root tsconfig.json only holds references, so test/ is in no tsconfig. @vitejs/plugin-react ^6.0.1 is already a devDependency and is added to vitest.config.ts plugins."
+    }
+   ],
+   "flags": [
+    "newLook",
+    "themeHeritage",
+    "themeScholastic",
+    "newNav",
+    "siteSearch",
+    "homeSearch",
+    "eventStrip",
+    "eventStripLive",
+    "liveMarker",
+    "newHome",
+    "homeResults",
+    "homeChampions",
+    "homeLive",
+    "homeWeek",
+    "homeRecap"
+   ],
+   "migrations": [],
+   "tests": [
+    "test/unit/features.test.ts: every Phase 0 key exists, is boolean and is false",
+    "test/unit/render-smoke.test.tsx: jsdom render of StatusBadge with no explicit React import"
+   ],
+   "risks": [
+    "Making jsdom the global default would slow or break the node-only scanner and swiss tests, so it stays opt-in per file"
+   ],
+   "estimated_size": "small"
+  },
+  {
+   "name": "ws01-03-domain-folder",
+   "order": 3,
+   "brief": "K1a: create the shared domain folder at the repo root, domain/, for pure code that src, functions and workers all import. It holds no database access, no DOM, no Workers types and no React. Areas inside it: events, registration, households, membership, clubs, live, format, contracts.\n\nWiring:\n- tsconfig.app.json paths gain \"@domain/*\": [\"./domain/*\"].\n- vite.config.ts and vitest.config.ts gain the matching alias.\n- tsconfig.functions.json include becomes [\"functions\", \"domain\", \"workers/daily-emails/src\"], so typecheck:functions also proves domain code has no DOM dependency and the gate typechecks the worker, which no gate command does today.\n- workers/daily-emails/tsconfig.json includes ../../domain.\n- Functions and workers import domain by relative path; the Pages Functions bundler already resolves relative paths outside functions/, as the worker does with functions/utils.\n- ESLint: a block for domain/** with no-restricted-imports banning '@/*', react, any path into src or functions, and cloudflare:*, plus no-restricted-globals for window, document, localStorage and navigator. tseslint's recommended config turns no-undef off for TS and flat-config globals merge rather than replace, so dropping browser globals alone would never fail; the restricted-globals rule is what fails. Add a lint fixture that proves both rules.\n\nFirst content, since K decided formatting lives in the domain:\n- domain/format/score.ts: formatScore (3.5 -> \"3½\", 0.5 -> \"½\", 0 -> \"0\")\n- date.ts: formatDate, \"Sat, Oct 24\" in America/Chicago with an optional year\n- clock.ts: formatTime, \"7:00 PM\"\n- timeControl.ts: formatTimeControl, \"G/90+30\" -> \"G/90+30 · 90 min each + 30 sec per move\", handling d5, inc and plain G/60, and returning unknown strings unchanged\n- domain/format/index.ts\n\nsrc/lib/format.ts becomes a one-line re-export so the brief's path still works. Leave src/lib/clearinghouse.ts formatDate alone (different callers) and log it as a follow-up.",
+   "files": [
+    "domain/format/score.ts",
+    "domain/format/date.ts",
+    "domain/format/clock.ts",
+    "domain/format/timeControl.ts",
+    "domain/format/index.ts",
+    "src/lib/format.ts",
+    "tsconfig.app.json",
+    "tsconfig.functions.json",
+    "workers/daily-emails/tsconfig.json",
+    "vite.config.ts",
+    "vitest.config.ts",
+    "eslint.config.js",
+    "test/unit/format.test.ts",
+    "test/unit/domain-boundaries.test.ts",
+    "test/unit/fixtures/lint/domain-violations.ts",
+    "REDESIGN_STATUS.md"
+   ],
+   "acceptance": [
+    "K1a: domain/ exists, is reachable from src (@domain), functions and workers (relative), and the gate is green",
+    "npx wrangler pages functions build --outdir <scratchpad>/fn succeeds before and after (it bundles offline)",
+    "npm run typecheck:functions now also typechecks domain/ and workers/daily-emails/src",
+    "formatScore never returns a decimal point for halves; formatDate always includes the weekday and is correct across the 2026 DST changes; formatTime uses 12-hour time with AM/PM; formatTimeControl adds the plain companion",
+    "ESLint run on the fixture reports errors for an import from src, functions, react or cloudflare:* and for a use of window or document inside domain/",
+    "REDESIGN_STATUS.md records this slice's AC/K row, any deviation and each resolved verify item"
+   ],
+   "verify_items": [
+    {
+     "item": "Shared folder reachable from src, functions and workers",
+     "finding": "Only '@/*' -> src exists (tsconfig.app.json, vite.config.ts). tsconfig.functions.json includes only functions and has no paths. workers/daily-emails/src/index.ts imports ../../../functions/utils/* relatively, and its tsconfig includes only src/**/*.ts and ../../functions/utils/email.ts. eslint.config.js is one flat block with browser globals for every ts and tsx file."
+    },
+    {
+     "item": "ESLint can fail on browser globals",
+     "finding": "tseslint.configs.recommended disables no-undef for TS files and flat-config globals merge, so no-restricted-globals is required for the window and document check."
+    },
+    {
+     "item": "src/lib/format.ts (new) per 2.2",
+     "finding": "It does not exist. HomePage imports formatDate from src/lib/clearinghouse.ts, a different helper, so there is no collision."
+    }
+   ],
+   "flags": [],
+   "migrations": [],
+   "tests": [
+    "test/unit/format.test.ts: scores (0, ½, 3½, 10), dates with weekday across Sun Mar 8 2026 and Sun Nov 1 2026, 12:00 PM and 12:00 AM, time controls G/90+30, G/30;d5, G/60 and unknown text",
+    "test/unit/domain-boundaries.test.ts: no file under domain/ imports src, functions, react or cloudflare modules; ESLint on the lint fixture reports the restricted imports and globals"
+   ],
+   "risks": [
+    "Folding the worker into typecheck:functions may surface existing type errors in the worker; fix them in this slice or record them",
+    "The app tsconfig compiles domain files with DOM libs; typecheck:functions compiles the same files without DOM, which is the second guard after the lint rule"
+   ],
+   "estimated_size": "small"
+  },
+  {
+   "name": "ws01-04-domain-shared-rules",
+   "order": 4,
+   "brief": "K1b: move the browser and server copies that test/unit/mirrors.test.ts keeps in step into domain/. Each old file becomes a one-line re-export shim, so no importer changes in this slice and the daily-emails worker keeps importing functions/utils/time unchanged.\n\nMoves:\n- functions/utils/sectionRules.ts and src/lib/sectionRules.ts -> domain/events/sectionRules.ts (section eligibility)\n- functions/utils/time.ts and src/lib/lcaTime.ts -> domain/format/centralTime.ts\n- functions/utils/pricing.ts and src/lib/pricing.ts -> domain/registration/pricing.ts. Behaviour is unchanged here; the tier and member-discount work is slices 10 and 15.\n- REGIONS and isRegion -> domain/clubs/regions.ts\n- FAMILY_MEMBERSHIP_CHILDREN -> domain/households/family.ts. functions/utils/family.ts keeps listChildren, canActFor and syncFamilyCoverage because they use D1, and re-exports the constant. src/lib/family.ts (only the constant today) becomes a shim and stays in src/lib permanently.\n\nNew pure modules:\n- domain/membership/tiers.ts: adult 15, scholastic 5, family 25, senior 10, the values hardcoded as TIER_PRICES in functions/api/membership/checkout.ts, which now imports them.\n- domain/households/publicName.ts, the minor display-name rule from DESIGN_REPLAN_phase1 (lines 210, 256, 352 and 394, cited in the file header): publicName({ fullName, hasActiveGuardianLink, entryMarkedMinor }, context). A player is shown abbreviated while any guardian link is active, or when their entry is marked under 18 (eligibility_json set or the 'I'm under 18' tick). context 'entrants' abbreviates such a player to first name plus last initial (\"Leo R.\"); 'results' always returns the full name (D3: results, standings, winners and recaps congratulate performance). Being a household dependent alone is not the trigger.\n\nReplace mirrors.test.ts with test/unit/domain-shims.test.ts. It asserts that every shim re-exports the identical function objects from domain, and that no other file defines rulesFromName, entryPrice, lcaTimeToMs, REGIONS or FAMILY_MEMBERSHIP_CHILDREN. Add 'domain/**' to the paths of .github/workflows/deploy-worker.yml, so a domain change the worker uses redeploys it.",
+   "files": [
+    "domain/events/sectionRules.ts",
+    "domain/format/centralTime.ts",
+    "domain/registration/pricing.ts",
+    "domain/clubs/regions.ts",
+    "domain/households/family.ts",
+    "domain/households/publicName.ts",
+    "domain/membership/tiers.ts",
+    "functions/utils/sectionRules.ts",
+    "functions/utils/time.ts",
+    "functions/utils/pricing.ts",
+    "functions/utils/regions.ts",
+    "functions/utils/family.ts",
+    "functions/api/membership/checkout.ts",
+    "src/lib/sectionRules.ts",
+    "src/lib/lcaTime.ts",
+    "src/lib/pricing.ts",
+    "src/lib/regions.ts",
+    "src/lib/family.ts",
+    ".github/workflows/deploy-worker.yml",
+    "test/unit/mirrors.test.ts",
+    "test/unit/domain-shims.test.ts",
+    "test/unit/public-name.test.ts",
+    "REDESIGN_STATUS.md"
+   ],
+   "acceptance": [
+    "K1b: pricing, section eligibility, regions, family size, membership tier prices and the minor display-name rule each have exactly one definition, in domain/",
+    "Gate green, with the existing pricing, section-rules, time and renewal-expiry tests unchanged and passing",
+    "npx wrangler deploy --dry-run --outdir <scratchpad>/w --config workers/daily-emails/wrangler.toml bundles; npx wrangler pages functions build succeeds",
+    "mirrors.test.ts is removed and domain-shims.test.ts proves single definitions",
+    "publicName abbreviates only in the 'entrants' context, for an active guardian link or an entry marked under 18, and never in 'results'",
+    "REDESIGN_STATUS.md records this slice's AC/K row, any deviation and each resolved verify item"
+   ],
+   "verify_items": [
+    {
+     "item": "Which helpers are mirrored",
+     "finding": "test/unit/mirrors.test.ts compares functions/utils/sectionRules.ts with src/lib/sectionRules.ts, functions/utils/time.ts with src/lib/lcaTime.ts, functions/utils/pricing.ts with src/lib/pricing.ts (import './time' vs './lcaTime'), REGIONS and FAMILY_MEMBERSHIP_CHILDREN. src/lib/family.ts is five lines holding only FAMILY_MEMBERSHIP_CHILDREN = 3."
+    },
+    {
+     "item": "Membership prices are hardcoded",
+     "finding": "functions/api/membership/checkout.ts TIER_PRICES {adult 15, scholastic 5, family 25, senior 10}; family-brief.md confirms there is no other source."
+    },
+    {
+     "item": "Minor display-name trigger",
+     "finding": "DESIGN_REPLAN_phase1 abbreviates a player while any guardian link is active or when the entry's eligibility_json is set / 'I'm under 18' is ticked; a household dependent is not the same as a minor."
+    },
+    {
+     "item": "Worker CI coupling",
+     "finding": "deploy-worker.yml triggers on workers/** and functions/utils/** only, so domain/** must be added."
+    }
+   ],
+   "flags": [],
+   "migrations": [],
+   "tests": [
+    "test/unit/domain-shims.test.ts",
+    "test/unit/public-name.test.ts: 'Leo Robichaux' -> 'Leo R.' in entrants for each trigger (active guardian link, entry marked under 18), full name in results, no abbreviation with neither trigger, single names, hyphenated and two-word surnames"
+   ],
+   "risks": [
+    "A shim that re-exports under a different name would break callers silently; the identity assertions in domain-shims.test.ts catch it"
+   ],
+   "estimated_size": "medium"
+  },
+  {
+   "name": "ws01-05-event-mode-phases",
+   "order": 5,
+   "brief": "K1c: put the event-mode phase machine in the domain folder as pure code, so WS02's endpoint, WS03's hero and WS13's event-day view share one definition. domain/events/eventMode.ts exports the EventPhase type with every phase the brief names (week, dayBefore, checkin, eventDay, roundPosted, roundInProgress, between, final, after). It also exports eventPhase(input, now) and phaseKey(eventId, phase, round). The input is storage-free: { date, endDate, status, firstRoundTimes: per event day the first round_schedule time or null, lastRoundResultsComplete: boolean }. The Phase 0 predicates follow REDESIGN_SPEC.md WS02 exactly:\n- eventEnd = (end_date ?? date) 23:59 Central\n- week = 6 days before day 1 at 6:00 AM until the day before\n- dayBefore = the calendar day before date\n- checkin = an event day from 6:00 AM until that day's first round time\n- eventDay = the rest of that day\n- final = status 'completed' or lastRoundResultsComplete\n- after = final until eventEnd + 48 h\n\nOutside the window it returns null. Time arithmetic uses domain/format/centralTime.ts. The WS07 phases are declared in the type but never produced until a later input (round publications) exists; the function documents that. The endpoint GET /api/me/event-mode, src/lib/eventModeCopy.ts and the strip stay WS02 work, and WS02 calls this module instead of creating functions/utils/eventMode.ts. Add a REDESIGN_STATUS.md note so the WS02 brief is read with this path.",
+   "files": [
+    "domain/events/eventMode.ts",
+    "test/unit/eventMode.test.ts",
+    "REDESIGN_STATUS.md"
+   ],
+   "acceptance": [
+    "K1c: event-mode phases live in domain/events/eventMode.ts with no storage or DOM dependency",
+    "Gate green",
+    "Unit tests cover every Phase 0 phase, midnight, both 2026 DST changes, multi-day events, end_date null, the checkin -> eventDay switch on each day, final for a completed event, for last-round results without completion and for a completed event with no results, and the key format",
+    "REDESIGN_STATUS.md records this slice's AC/K row, any deviation and each resolved verify item"
+   ],
+   "verify_items": [
+    {
+     "item": "Phase definitions",
+     "finding": "REDESIGN_SPEC.md WS02 (Event mode and the GET /api/me/event-mode API notes) defines the Phase 0 predicates and the WS07 phases; 2.2 places the machine at functions/utils/eventMode.ts, which K's domain-folder decision supersedes."
+    }
+   ],
+   "flags": [],
+   "migrations": [],
+   "tests": [
+    "test/unit/eventMode.test.ts"
+   ],
+   "risks": [
+    "WS02 may refine phase inputs; the input shape is a plain object, so changing it touches only this module and its test"
+   ],
+   "estimated_size": "small"
+  },
+  {
+   "name": "ws01-06-drizzle-baseline",
+   "order": 6,
+   "brief": "K4: introduce Drizzle's schema and query builder on D1 without changing any runtime query.\n\nDependencies, exact-pinned at versions at least two weeks old: drizzle-orm (0.45.x), and as devDependencies drizzle-kit (0.31.x) and @libsql/client (only so drizzle-kit can read a local file; better-sqlite3 is the fallback).\n\nIntrospection source:\n- Extract splitSql from test/integration/setup.ts into test/shared/splitSql.ts (no cloudflare:test, no import.meta.glob); setup.ts imports it. Today a trigger ends at the first ';' where the text so far ends in END, so a trigger body holding CASE ... END; splits mid-trigger. The extracted version tracks depth (BEGIN and CASE open, END closes) and ends a statement only at a ';' at depth 0. Fixture: a trigger whose body contains CASE ... END;.\n- test/unit/helpers/sqlite.ts opens node:sqlite (Node 22.22, SQLite 3.50), runs PRAGMA foreign_keys = ON first (D1 always enforces foreign keys), and applies migrations through splitSql.\n- scripts/db/build-local-sqlite.ts applies every migrations/*.sql in filename order into .drizzle/introspect.sqlite (gitignored).\n\ndrizzle.config.ts: dialect sqlite, schema functions/db/schema.ts, out drizzle/ (a staging folder, never migrations/), tablesFilter excluding d1_migrations, _cf_* and sqlite_*. Run drizzle-kit pull, move the result to functions/db/schema.ts and relations.ts, and review types, defaults and indexes by hand. Keep drizzle/meta; do not copy the baseline SQL into migrations/. drizzle-kit generate must then report no changes. functions/db/client.ts exports getDb(d1) = drizzle(d1, { schema }).\n\nscripts/db/generate.ts (npm run db:generate -- <name>, --custom for hand-written data migrations) runs drizzle-kit generate, numbers the staging file after the highest prefix in migrations/ (0052 next), adds a header comment, writes it to migrations/, and refuses output containing DROP TABLE, __new_ or PRAGMA foreign_keys, pointing at migrations/README.md (Drizzle rebuilds SQLite tables to add constraints: the cascade gotcha).\n\nmigration-safety.test.ts must read what drizzle-kit writes: backtick and double-quoted identifiers everywhere (CREATE TABLE, REFERENCES, INSERT INTO, UPDATE, DROP TABLE and the restore checks), an optional ON UPDATE clause before ON DELETE, and ALTER TABLE ... ADD with or without COLUMN. Add fixtures copied from real drizzle-kit output: a CREATE TABLE with an FK, an ALTER ADD with REFERENCES ... ON DELETE cascade, and a DROP of a quoted parent. migrations/README.md documents the generate flow and states that triggers stay hand-written.",
+   "files": [
+    "package.json",
+    "package-lock.json",
+    "drizzle.config.ts",
+    "drizzle/meta/_journal.json",
+    "drizzle/meta/0000_snapshot.json",
+    "functions/db/schema.ts",
+    "functions/db/relations.ts",
+    "functions/db/client.ts",
+    "scripts/db/build-local-sqlite.ts",
+    "scripts/db/generate.ts",
+    "test/shared/splitSql.ts",
+    "test/integration/setup.ts",
+    "test/unit/helpers/sqlite.ts",
+    "test/unit/split-sql.test.ts",
+    "test/unit/schema-drift.test.ts",
+    "test/unit/migration-safety.test.ts",
+    "test/unit/fixtures/drizzle-sql/*.sql",
+    "test/unit/db-generate-guard.test.ts",
+    "test/integration/drizzle-smoke.test.ts",
+    ".gitignore",
+    "migrations/README.md",
+    "REDESIGN_STATUS.md"
+   ],
+   "acceptance": [
+    "K4: the typed schema layer exists, introspected from the current migrations, and generates numbered files into migrations/ so the runner does not change",
+    "Gate green; no runtime file imports functions/db yet",
+    "drizzle-kit generate right after the pull reports no schema changes (output recorded in REDESIGN_STATUS.md)",
+    "schema-drift.test.ts compares every table's columns (name, affinity, notnull, default, pk) with getTableConfig in both directions, and fails when a migration adds a column that schema.ts lacks",
+    "split-sql.test.ts: a trigger with CASE ... END; in its body stays one statement; all 52 existing migrations split exactly as before (statement count per file unchanged)",
+    "test/unit/helpers/sqlite.ts enables foreign keys before applying migrations (asserted with PRAGMA foreign_keys)",
+    "migration-safety detects, on the real drizzle-kit fixtures, a quoted cascade with ON UPDATE no action ON DELETE cascade, an ALTER TABLE `x` ADD `col` ... REFERENCES ... ON DELETE cascade without COLUMN, and a DROP of a quoted parent, and still flags its existing cases",
+    "db:generate refuses a generated file containing DROP TABLE, __new_ or PRAGMA foreign_keys",
+    "A trivial select through getDb works against Miniflare D1 in an integration test; setup.ts, migrate-db.yml and wrangler still read migrations/*.sql unchanged",
+    "REDESIGN_STATUS.md records this slice's AC/K row, any deviation and each resolved verify item"
+   ],
+   "verify_items": [
+    {
+     "item": "Migration file set and runner",
+     "finding": "52 files, 0001 to 0051, with a duplicate 0022 prefix (0022_site_announcement.sql, 0022_tournament_reminders_registration_notified.sql); the next number is 0052. setup.ts globs ../../migrations/*.sql non-recursively and splitSql strips -- comments, so Drizzle's '--> statement-breakpoint' lines are harmless. 0003, 0019, 0033, 0040 and 0046 rebuild tables."
+    },
+    {
+     "item": "splitSql trigger handling",
+     "finding": "test/integration/setup.ts:55-56 keeps a CREATE TRIGGER open until the accumulated text ends in END, so an inner CASE ... END; ends the trigger early."
+    },
+    {
+     "item": "Introspection source",
+     "finding": "There are no d1-http credentials in this container. node v22.22.0 node:sqlite works (SQLite 3.50.4, with an ExperimentalWarning) but leaves foreign keys off by default; drizzle-kit pull needs @libsql/client or better-sqlite3 to read the file."
+    },
+    {
+     "item": "Safety test regex",
+     "finding": "migration-safety.test.ts matches CREATE TABLE(?: IF NOT EXISTS)?\\s+(\\w+), REFERENCES\\s+(\\w+)\\s*\\( followed directly by ON DELETE, ALTER TABLE ... ADD COLUMN, and \\b-bounded bare names in the INSERT, UPDATE and DROP checks. drizzle-kit writes quoted names, 'ON UPDATE no action ON DELETE cascade' and 'ADD' without COLUMN, so all of these miss it."
+    }
+   ],
+   "flags": [],
+   "migrations": [],
+   "tests": [
+    "test/unit/split-sql.test.ts",
+    "test/unit/schema-drift.test.ts",
+    "test/unit/migration-safety.test.ts (drizzle-kit fixtures)",
+    "test/unit/db-generate-guard.test.ts",
+    "test/integration/drizzle-smoke.test.ts"
+   ],
+   "risks": [
+    "Introspection fidelity: CHECK constraints, expression defaults such as lower(hex(randomblob(8))), and the members role triggers. Triggers are not modelled and stay in hand-written migrations",
+    "@libsql/client native packages must install through the proxy; better-sqlite3 is the fallback",
+    "Vitest must externalise node:sqlite; if it cannot, the drift and backfill tests move to Miniflare using pragma_table_info",
+    "Changing splitSql touches the integration setup every test uses; the per-file statement-count check guards it"
+   ],
+   "estimated_size": "medium"
+  },
+  {
+   "name": "ws01-07-contracts-infrastructure",
+   "order": 7,
+   "brief": "K1d: zod schemas become the contract for endpoints, with a ratchet so coverage only grows. Before this slice starts, ask K open question 4 (all endpoints in WS01, or the ratchet). This slice is the same either way; his answer decides whether a contracts sweep slice is added before checkpoint D, and until then K1d is labelled 'partial: ratchet' in REDESIGN_STATUS.md. Add zod 4 as a dependency, exact-pinned at a version at least two weeks old.\n\nRegistry and schemas:\n- domain/contracts/registry.ts maps a route path, named as file routing names it ('tournaments/[id]', 'admin/tournaments', 'registrations/batch'), to per-method contracts { request?, query?, response }, keyed only by methods the handler file actually exports.\n- Schemas live per area in domain/contracts/common.ts (ids, ISO dates, money in dollars, the { error } shape), events.ts, registration.ts and so on, with an index.ts.\n- zod is imported only under domain/contracts; every other domain module stays zod-free, so domain logic the browser imports at runtime never pulls zod into the bundle. Client api types come from contracts through type-only imports (z.infer).\n\nServer: parseBody(request, schema) goes in functions/utils/response.ts next to parseJsonBody. It returns the parsed body, or the existing errorResponse shape ({ error }) with status 400 plus a fields map. Request schemas describe what handlers accept today (optional where optional, passthrough), so nothing the current frontend sends is newly rejected. Responses are not validated at runtime in production; contract tests validate them.\n\nHarness: expectContract(result, schema) in test/integration/harness.ts parses result.json() strictly and prints the zod issues.\n\nRatchet: extract collectRoutes from route-audit.test.ts into test/unit/routes.ts. test/unit/contract-coverage.test.ts lists every handler file under functions/api plus the page routes functions/tournaments/[id].ts and functions/clubs/[id].ts, with their exported onRequest methods. Each method needs a registry entry, a line in test/unit/contracts-pending.ts, or (for the two page routes, which serve HTML with link-preview meta and are covered by test/integration/preview.test.ts) a line in its EXCLUDED list with a reason. The test fails when a route is in two lists, or when a registry entry names a method the file does not export. The pending list's length is pinned in the file, so it can only shrink.\n\nProve the pattern on GET /api/tournaments with test/integration/contracts/tournaments-list.test.ts. Each later slice that touches an endpoint writes its contract and contract test and removes it from the pending list.",
+   "files": [
+    "package.json",
+    "package-lock.json",
+    "domain/contracts/registry.ts",
+    "domain/contracts/common.ts",
+    "domain/contracts/events.ts",
+    "domain/contracts/index.ts",
+    "functions/utils/response.ts",
+    "test/integration/harness.ts",
+    "test/unit/routes.ts",
+    "test/unit/route-audit.test.ts",
+    "test/unit/contract-coverage.test.ts",
+    "test/unit/contracts-pending.ts",
+    "test/unit/domain-boundaries.test.ts",
+    "test/integration/contracts/tournaments-list.test.ts",
+    "test/integration/parse-body.test.ts",
+    "REDESIGN_STATUS.md"
+   ],
+   "acceptance": [
+    "K1d (partial: ratchet, pending K's answer): the contract layer, the per-endpoint contract-test pattern and the coverage ratchet exist; the pending count and K's answer are recorded in REDESIGN_STATUS.md",
+    "Gate green; route-audit unchanged in behaviour",
+    "contract-coverage fails for a synthetic new handler file with no contract and no pending entry, when a contracted route is still listed as pending, and when a registry entry names an unexported method",
+    "The two page routes are listed as EXCLUDED with a reason",
+    "domain-boundaries fails if any domain file outside domain/contracts imports zod",
+    "GET /api/tournaments has a response contract and a passing contract test against the real handler with factory data",
+    "parseBody returns 400 with { error } plus fields for a malformed body",
+    "REDESIGN_STATUS.md records this slice's AC/K row, any deviation and each resolved verify item"
+   ],
+   "verify_items": [
+    {
+     "item": "Endpoint count and naming",
+     "finding": "88 handler files under functions/api; route-audit.test.ts already derives route segments from file paths ([id] params), which can be reused for the registry keys. functions/tournaments/[id].ts and functions/clubs/[id].ts are page routes outside functions/api."
+    },
+    {
+     "item": "Error response shape",
+     "finding": "functions/utils/response.ts exports jsonResponse, errorResponse, parseJsonBody, handleOptions and isResponse; parseBody must keep { error } and add fields, not replace it. Client types are hand-written in src/lib/api.ts (ApiTournamentSection and the tournament fields including member_discount)."
+    },
+    {
+     "item": "Methods on the admin tournament endpoint",
+     "finding": "functions/api/admin/tournaments/[id].ts exports onRequestOptions, onRequestPatch and onRequestDelete only (no GET, no PUT). The manage page loads its tournament through GET functions/api/admin/tournaments/[id]/manage.ts."
+    }
+   ],
+   "flags": [],
+   "migrations": [],
+   "tests": [
+    "test/unit/contract-coverage.test.ts",
+    "test/integration/contracts/tournaments-list.test.ts",
+    "test/integration/parse-body.test.ts",
+    "test/unit/domain-boundaries.test.ts (zod rule)"
+   ],
+   "risks": [
+    "A strict request schema could reject payloads the current UI sends; contract tests use the exact bodies api.ts builds",
+    "88 endpoints: if K wants full coverage, a sweep slice (split by area) is added before checkpoint D and the estimate grows"
+   ],
+   "estimated_size": "small"
+  },
+  {
+   "name": "ws01-08-sections-schedules-tables",
+   "order": 8,
+   "brief": "K2a: add the sections and schedules tables and backfill them, with no reader changed. The migration is additive, safe to merge and soak in production before any code depends on it. Merge checkpoint A follows (sub-PR 1 = slices 1 to 8), after K has pasted the preview id.\n\nAdd to functions/db/schema.ts and generate 0052_sections_schedules.sql with npm run db:generate:\n- tournament_sections: id TEXT PK default lower(hex(randomblob(8))); tournament_id NOT NULL REFERENCES tournaments(id) ON DELETE CASCADE; position; name NOT NULL; fee_regular REAL null (null inherits tournaments.entry_fee); fee_early REAL null and fee_late REAL null (explicit tier prices; null means the tier is derived at read time from the tournament's live early_deadline, early_discount, late_after and late_fee); cap INTEGER null; prize_fund, rating_min, rating_max, unrated_ok, grade_min, grade_max; rules_set default 0; prizes_json; extra_json; archived_at; created_at. Unique on (tournament_id, name) WHERE archived_at IS NULL. No tier price is ever stored as a frozen copy of a tournament column.\n- tournament_schedules: id; tournament_id cascade; position; label default 'Main schedule'; time_control; is_primary; merge_round null; archived_at; created_at. Unique on tournament_id WHERE is_primary = 1 AND archived_at IS NULL.\n- tournament_schedule_rounds: schedule_id cascade; round; date; time; PK(schedule_id, round).\n- registrations.section_id and schedule_id: nullable, REFERENCES without ON DELETE, ALTER TABLE ADD, never a rebuild.\n\n0053_sections_schedules_backfill.sql (db:generate --custom), idempotent:\n- Sections from json_each, guarded by json_valid and json_type = 'array'. Strings become names; fee_regular = entryFee or null; fee_early and fee_late null; extra keys to extra_json; for duplicate names the first wins.\n- Names in registrations or tournament_games missing from the JSON get archived rows.\n- One primary schedule per tournament with rounds from round_schedule.\n- section_id and schedule_id set on every registration.\n\nTriggers (IF NOT EXISTS) keep the tables right while old code writes, through the whole soak:\n- registration insert: fill a null section_id by live name and schedule_id with the primary\n- registration section change: re-resolve section_id by name, only WHEN NEW.section IS NOT OLD.section AND NEW.section_id IS OLD.section_id (a handler that sets section_id wins)\n- tournament insert: create section rows and the primary schedule\n- AFTER UPDATE OF sections, round_schedule ON tournaments (guarded by json_valid): insert missing live names, update the legacy-shaped columns of live rows by name, archive live rows whose names left a valid array, replace the primary schedule's rounds, fill null section_id and schedule_id. It never touches cap or ids, so it agrees with the slice 9 writer, and it stays until the JSON columns are retired.\n\nThe JSON columns stay and stay authoritative.",
+   "files": [
+    "functions/db/schema.ts",
+    "migrations/0052_sections_schedules.sql",
+    "migrations/0053_sections_schedules_backfill.sql",
+    "drizzle/meta/_journal.json",
+    "drizzle/meta/0001_snapshot.json",
+    "test/unit/migration-0053-backfill.test.ts",
+    "test/integration/sections-triggers.test.ts",
+    "test/unit/migration-safety.test.ts",
+    "REDESIGN_STATUS.md"
+   ],
+   "acceptance": [
+    "K2a: the sections and schedules tables exist and are backfilled from the JSON columns, with nothing dropped",
+    "Gate green, including schema-drift and migration-safety, where links() returns tournament_sections and tournament_schedules as cascade children of tournaments (and tournament_schedule_rounds of tournament_schedules)",
+    "node:sqlite migration test (foreign keys on): after 0001 to 0051, legacy fixtures (object sections, string sections, invalid JSON, '[]', duplicate names, orphan registration and game section names, null and valid round_schedule, sections with and without entryFee) then 0052 and 0053 give the expected rows, fee_early and fee_late null everywhere, and running 0053 again adds nothing",
+    "After backfill every registration has section_id and schedule_id, and every tournament has exactly one primary schedule",
+    "Triggers set section_id and schedule_id for inserts by the unchanged registrations.ts, batch.ts and walk-ins.ts, and create rows for a tournament created by the unchanged admin POST",
+    "Soak case: the unchanged admin PATCH adds a section, renames one, removes one and changes round_schedule; afterwards live rows match the JSON, the primary rounds match round_schedule, and a registration into the new section has a non-null section_id",
+    "Existing integration tests stay green",
+    "REDESIGN_STATUS.md lists the read-only queries K runs on production before the merge (invalid JSON count, duplicate names, registrations naming a missing section) and after it (SELECT COUNT(*) FROM registrations WHERE section_id IS NULL, expected 0, re-run before checkpoint B)",
+    "REDESIGN_STATUS.md records this slice's AC/K row, any deviation and each resolved verify item"
+   ],
+   "verify_items": [
+    {
+     "item": "Shape of tournaments.sections",
+     "finding": "A JSON array of {name, entryFee, prizeFund?, ratingMax?, ratingMin?, unratedOk?, gradeMin?, gradeMax?, rulesSet?, prizes?}. Legacy plain strings exist (batch.ts:39-46, walk-ins.ts, registrations/[id].ts and pricing.ts all handle strings). The column is TEXT NOT NULL DEFAULT '[]' (0003). Pricing columns: entry_fee, early_deadline, early_discount, late_after, late_fee, member_discount; the only cap is max_players. pricing.ts takes the section's entryFee or the tournament entry_fee, then adds tier lines from the live tournament columns."
+    },
+    {
+     "item": "Old writes during the soak",
+     "finding": "The admin PATCH (functions/api/admin/tournaments/[id].ts around lines 88-90 and 106-108) keeps rewriting sections, round_schedule and the fee columns until checkpoint B, so the tournaments AFTER UPDATE trigger is required; with tiers derived at read time, fee column edits need no sync."
+    },
+    {
+     "item": "Who references registrations and tournaments",
+     "finding": "Nothing references registrations. tournament_games, tournament_directors, the reminders tables and state_champions cascade or set null from tournaments. registrations.tournament_id has no ON DELETE, and the admin DELETE handler deletes registrations, games, directors and reminders before the tournament, so a sections cascade cannot orphan a registration FK."
+    },
+    {
+     "item": "round_schedule",
+     "finding": "JSON [{round, date, time}] added in 0007; written only by the admin PATCH in functions/api/admin/tournaments/[id].ts; read there, in [id]/manage.ts and in tournaments/[id].ts."
+    },
+    {
+     "item": "Names, not ids, link entries and games to sections",
+     "finding": "registrations.section and tournament_games.section are TEXT NOT NULL names (UNIQUE (tournament_id, round, board, section) on games); report_settings.sections is keyed by section name (src/lib/uschessUpload.ts). Games keep names in WS01; tournament_games.section_id is a follow-up for WS07."
+    }
+   ],
+   "flags": [],
+   "migrations": [
+    "0052_sections_schedules.sql (generated: tournament_sections, tournament_schedules, tournament_schedule_rounds, registrations.section_id, registrations.schedule_id)",
+    "0053_sections_schedules_backfill.sql (hand-written via db:generate --custom: idempotent backfill and the four fill and sync triggers)"
+   ],
+   "tests": [
+    "test/unit/migration-0053-backfill.test.ts",
+    "test/integration/sections-triggers.test.ts",
+    "test/unit/migration-safety.test.ts",
+    "test/unit/schema-drift.test.ts"
+   ],
+   "risks": [
+    "json_each throws on malformed JSON unless every call is guarded with json_valid",
+    "An upsert inside a trigger needs a WHERE clause to parse; prefer INSERT OR IGNORE against the partial unique index",
+    "Trigger bodies with CASE ... END rely on the depth-aware splitSql from slice 6",
+    "Production JSON may hold names the backfill trims or merges; the pre-merge queries surface them",
+    "migrate-db.yml applies 0052 and 0053 to production when checkpoint A merges; they are additive, so old code keeps working, and K migrates the preview database separately"
+   ],
+   "estimated_size": "medium"
+  },
+  {
+   "name": "ws01-09-sections-single-writer",
+   "order": 9,
+   "brief": "K2b: make one function the only writer of sections, writing the table and the JSON column together, so either can be read and any later reader commit can be reverted alone. Checkpoint B starts here; K re-runs the section_id IS NULL query first.\n\ndomain/events/sections.ts (zod-free): normalizeLegacySections(unknown) for strings and objects, tierFees(section, tournament) giving the effective regular, early and late prices (fee_regular or entry_fee; an explicit fee_early or fee_late, else derived from the live early_deadline, early_discount, late_after and late_fee), and validation that no two live names repeat. SectionSchema (name 1 to 80 chars, cap a positive integer or null, the rule and prize fields, optional id and fees) lives in domain/contracts/events.ts.\n\nfunctions/utils/events/sectionsRepo.ts is the first runtime use of getDb:\n- loadSections(db, tournamentId, { includeArchived }) and loadSectionsFor(db, ids[]), chunked under the D1 bound-parameter limit\n- buildSaveSections(db, tournamentId, input) returns Drizzle queries for one db.batch:\n  - match by id, else by live name; new ids are generated in code (16 hex characters from crypto.randomUUID), never by the SQL default\n  - renames run in two phases (affected rows first get a temporary name, then their final one), so swaps and rotations never violate the partial unique index\n  - archive removed sections (archived_at, never delete)\n  - after final names: update registrations.section by section_id, tournament_games.section by old name, and the report_settings.sections key\n  - reorder by position\n  - write tournaments.sections last, in today's legacy shape: the keys the admin sent, no id, no cap, no fees object, absent fields omitted\n\nThe PATCH and POST handlers' own tournament writes convert to Drizzle so the whole edit is one db.batch. POST inserts with sections '[]' then writes rows, and returns the tournament with sections from the repo (array with ids) under a new contract; the wizard reads only the id. test/integration/factories.ts seedTournament writes through the repo. sections-writer-audit scans functions/ and workers/ for SQL writing the sections column outside sectionsRepo. Write contracts and contract tests for POST /api/admin/tournaments and PATCH /api/admin/tournaments/[id]. The frontend is unchanged; payloads without ids match by name.",
+   "files": [
+    "domain/events/sections.ts",
+    "domain/contracts/events.ts",
+    "domain/contracts/registry.ts",
+    "functions/utils/events/sectionsRepo.ts",
+    "functions/api/admin/tournaments.ts",
+    "functions/api/admin/tournaments/[id].ts",
+    "test/integration/factories.ts",
+    "test/integration/sections-writer.test.ts",
+    "test/integration/contracts/admin-tournaments.test.ts",
+    "test/unit/sections-writer-audit.test.ts",
+    "test/unit/sections-domain.test.ts",
+    "test/unit/contracts-pending.ts",
+    "REDESIGN_STATUS.md"
+   ],
+   "acceptance": [
+    "K2b: one writer owns sections; the writer audit passes",
+    "Gate green; tournament-create and tournament-edit integration tests pass unchanged, including tournament-edit.test.ts:122 (toEqual on the parsed JSON), because the JSON mirror keeps today's shape",
+    "After every write in the tests, live table rows match the JSON column (names, order, fees, rules), with the 0053 tournaments update trigger present",
+    "A rename keeps the section id and moves registrations.section, tournament_games.section and the report_settings key; a swap (A to B and B to A) and a three-way rotation succeed and leave each registration on its original section id",
+    "Removing a section with entries archives it, and the entries keep section_id",
+    "Duplicate live names return 400 in the existing { error } shape",
+    "Role safety: a club rep editing another club's event still gets 403, and a non-admin cannot change the organizing club",
+    "The PATCH and POST tournament writes run through getDb and one db.batch (the Drizzle conversion rule: a query converts when the slice changes its SQL or bound values)",
+    "REDESIGN_STATUS.md records this slice's AC/K row, the conversion rule as a deviation, and each resolved verify item"
+   ],
+   "verify_items": [
+    {
+     "item": "Every writer of the sections column",
+     "finding": "Only functions/api/admin/tournaments.ts (INSERT) and functions/api/admin/tournaments/[id].ts (onRequestPatch, UPDATE ... sections = ?) write it. admin/tournaments/[id]/registration.ts updates other columns, the daily-emails worker updates registration_status only, and 0002_seed.sql seeds JSON."
+    },
+    {
+     "item": "Endpoint methods",
+     "finding": "admin/tournaments/[id].ts exports PATCH and DELETE (no PUT, no GET); admin/tournaments.ts exports POST and returns the raw SELECT * row with sections as a string. The client createTournament reads data.tournament as a loose record."
+    },
+    {
+     "item": "tournament-edit assertion",
+     "finding": "test/integration/tournament-edit.test.ts:108-122 sends [{ name: 'Open', entryFee: 40, prizeFund: '$700' }, { name: 'U1400', entryFee: 30 }] and compares the parsed JSON with toEqual, so the mirror must not gain ids or other keys."
+    },
+    {
+     "item": "Tournament write permissions",
+     "finding": "PATCH already restricts organizing-club changes to lca_admin; the edit itself uses requireTournamentManager (canManageTournament), unchanged here."
+    }
+   ],
+   "flags": [],
+   "migrations": [],
+   "tests": [
+    "test/integration/sections-writer.test.ts",
+    "test/integration/contracts/admin-tournaments.test.ts",
+    "test/unit/sections-writer-audit.test.ts",
+    "test/unit/sections-domain.test.ts"
+   ],
+   "risks": [
+    "Statement order in the batch matters: table rows with final names first, dependent renames next, JSON last, so the update trigger sees the final table",
+    "Rename propagation touches entries and games; covered by tests on a tournament with pairings",
+    "Deploy window: an edit by old code between the migration and the new deploy is still synced by the 0053 trigger"
+   ],
+   "estimated_size": "medium"
+  },
+  {
+   "name": "ws01-10-registration-readers-player",
+   "order": 10,
+   "brief": "K2c: move the player-facing registration readers of sections from the JSON column to the table, keeping request and response shapes identical.\n\ndomain/registration/pricing.ts gains a storage-free core, priceEntry(section, tournament, now, opts). section is the table row (fee_regular, fee_early, fee_late); tournament carries entry_fee, early_deadline, early_discount, late_after, late_fee and, until slice 15, member_discount. It returns the same Price shape as today, { amount, base, lines }, with the same labels ('Early entry discount', 'LCA member discount', 'Late entry fee'), the same additive formula (base, minus early while before the deadline, minus member for active members, plus late after the late date, never below zero, rounded to cents) and lines only when base > 0. Tiers are read from the live tournament columns, so an UPDATE of those columns changes the price at once. An explicit fee_early or fee_late (none exist until WS08) replaces the derived line, whose amount is the difference from base under the same label. entryPrice(t, sectionName, opts) stays as an adapter over normalizeLegacySections for the browser callers until slice 13.\n\nServer readers switch to loadSections:\n- functions/api/registrations.ts (parseSections and parseSectionNames)\n- functions/api/registrations/batch.ts (load once per tournament, not per entry)\n- functions/api/registrations/[id].ts (parseSectionList, and sectionFee on a section change)\n\nThe INSERT INTO registrations statements and section updates in these files set section_id explicitly, on both the free-entry and the paid paths, and convert to Drizzle because their SQL changes; when one shares a batch with raw statements, the batch moves to db.batch with the others written as Drizzle sql`` queries. The 0053 triggers remain as a safety net. Archived sections are never offered for new entries.\n\nWrite contracts and contract tests for POST /api/registrations, POST /api/registrations/batch and PATCH /api/registrations/[id], using the exact bodies src/lib/api.ts sends, and remove them from contracts-pending. Converted handlers use parseBody, and a malformed body returns 400 in the { error } shape.",
+   "files": [
+    "domain/registration/pricing.ts",
+    "domain/contracts/registration.ts",
+    "domain/contracts/registry.ts",
+    "functions/utils/events/sectionsRepo.ts",
+    "functions/api/registrations.ts",
+    "functions/api/registrations/batch.ts",
+    "functions/api/registrations/[id].ts",
+    "test/integration/contracts/registrations.test.ts",
+    "test/integration/registration-section-ids.test.ts",
+    "test/unit/pricing.test.ts",
+    "test/unit/contracts-pending.ts",
+    "REDESIGN_STATUS.md"
+   ],
+   "acceptance": [
+    "K2c: no file in this slice parses tournaments.sections",
+    "Gate green, with registration-rules.test.ts unchanged and passing, including its raw UPDATEs of early_deadline, early_discount, member_discount (lines 75-87, expecting 17 and 20) and late_after, late_fee (line 91, expecting 35), plus the family, coverage, lifecycle and role-safety tests",
+    "Every registration row these handlers insert or move has section_id equal to the section's id, set by the handler (the test checks the value, not the trigger's)",
+    "priceEntry returns { amount, base, lines } with today's labels; prices charged are identical to before for the same inputs, including an overlap case where the early and late tiers both apply and the floor at zero",
+    "Each converted POST or PATCH returns 400 with { error } for a malformed body",
+    "REDESIGN_STATUS.md records this slice's AC/K row, any deviation and each resolved verify item"
+   ],
+   "verify_items": [
+    {
+     "item": "Player registration readers",
+     "finding": "registrations.ts lines 25-40 and 94-100, batch.ts 39-46 and 92-126, registrations/[id].ts 28-40 and 231-258; registrations/[id]/pay.ts does not read sections (the amount comes from the payment row)."
+    },
+    {
+     "item": "Registration writers",
+     "finding": "INSERT INTO registrations in registrations.ts (3 places) and batch.ts, and section updates in registrations/[id].ts. None sets section_id today."
+    },
+    {
+     "item": "Price display contract",
+     "finding": "TournamentDetailPage.tsx:136-149 and :961 render price.base and each price.lines label, so the Price shape and labels must not change. Today's formula is additive in one expression with Math.max(0, ...) and cent rounding (src/lib/pricing.ts)."
+    },
+    {
+     "item": "Tests that edit pricing columns directly",
+     "finding": "test/integration/registration-rules.test.ts:75 and :91 set the early and late columns by raw UPDATE after seeding; pricing from the live tournament columns keeps them valid."
+    }
+   ],
+   "flags": [],
+   "migrations": [],
+   "tests": [
+    "test/integration/contracts/registrations.test.ts",
+    "test/integration/registration-section-ids.test.ts",
+    "test/unit/pricing.test.ts"
+   ],
+   "risks": [
+    "Free-entry and paid paths diverge in registrations.ts; both must set section_id",
+    "Mixing raw D1 and Drizzle statements in one batch is not possible, so a batch that gains one Drizzle query converts as a whole"
+   ],
+   "estimated_size": "medium"
+  },
+  {
+   "name": "ws01-11-registration-readers-admin",
+   "order": 11,
+   "brief": "K2d: move the director-side entry readers to the table. functions/api/admin/tournaments/[id]/walk-ins.ts stops parsing the sections JSON (lines 19-68), loads sections with loadSections, offers only live sections, and sets section_id on the walk-in registration it inserts; that INSERT converts to Drizzle because its SQL changes (with its batch, as in slice 10). functions/api/admin/tournaments/[id]/waitlist.ts stops calling entryPrice on the JSON (lines 42-48) and prices through priceEntry over the table row and the live tournament columns. The member discount still applies until slice 15, so amounts are unchanged. Walk-in name matching stays case-sensitive, as today.\n\nWrite contracts and contract tests for the methods walk-ins.ts and waitlist.ts actually export, using the bodies the manage page sends, and remove them from contracts-pending. Converted handlers use parseBody. Add role-safety cases to the contract tests: a club rep of another club and a plain member get 403, as the existing permission checks already decide; no permission logic changes.",
+   "files": [
+    "functions/api/admin/tournaments/[id]/walk-ins.ts",
+    "functions/api/admin/tournaments/[id]/waitlist.ts",
+    "domain/contracts/registration.ts",
+    "domain/contracts/registry.ts",
+    "test/integration/contracts/walkins-waitlist.test.ts",
+    "test/unit/contracts-pending.ts",
+    "REDESIGN_STATUS.md"
+   ],
+   "acceptance": [
+    "K2d: walk-ins and waitlist no longer parse tournaments.sections",
+    "Gate green; existing walk-in, waitlist, lifecycle and role-safety tests unchanged",
+    "A walk-in row has section_id equal to its section's id; a waitlist claim is priced as before",
+    "Role safety: another club's rep and a plain member get 403 on both endpoints",
+    "REDESIGN_STATUS.md records this slice's AC/K row, any deviation and each resolved verify item"
+   ],
+   "verify_items": [
+    {
+     "item": "Admin entry readers",
+     "finding": "walk-ins.ts 19-68 parses sections, including plain strings, and inserts registrations without section_id; waitlist.ts 42-48 prices with entryPrice and the member discount."
+    }
+   ],
+   "flags": [],
+   "migrations": [],
+   "tests": [
+    "test/integration/contracts/walkins-waitlist.test.ts"
+   ],
+   "risks": [
+    "Walk-ins accept legacy string section names typed by a TD; matching must stay case-sensitive by name as today"
+   ],
+   "estimated_size": "small"
+  },
+  {
+   "name": "ws01-12-display-readers-server",
+   "order": 12,
+   "brief": "K2e: move the remaining server readers to the table, so the JSON column is only a mirror. Readers:\n- functions/api/tournaments.ts (list)\n- functions/api/tournaments/[id].ts\n- functions/api/clearinghouse.ts (LCA rows; partner rows keep sections [])\n- functions/api/clubs/[id].ts\n- functions/api/admin/tournaments/[id].ts (the PATCH response; there is no GET)\n- functions/api/admin/tournaments/[id]/registration.ts (its PATCH returns SELECT * with sections and round_schedule as raw JSON strings; the client ignores the body)\n- functions/api/admin/tournaments/[id]/manage.ts (GET, which is how the manage page loads its tournament) and [id]/rating-report.ts\n- functions/utils/tournament-manage.ts parseTournamentSections\n- functions/utils/prizes.ts via tournamentPrizes\n\nAdd toTournamentResponse(row, sections, schedules?) in sectionsRepo: it drops the raw sections and round_schedule strings from a tournaments row and puts in the repo values (round_schedule stays the parsed array until slice 14 moves it). Every handler that returns a tournaments row uses it.\n\nList endpoints load sections for all listed tournaments in one chunked query, never one per row. Responses keep sections: [...] with today's field names (name, entryFee, prizeFund and so on), adding id, cap and fees { regular, early, late } as effective prices from tierFees, with entryFee equal to the effective regular fee for old clients. Archived sections stay where history needs them (crosstables, standings, rating report) and are hidden where entry is offered. functions/types.ts gains the row type.\n\nWrite contracts and contract tests for each method touched and remove them from contracts-pending. test/unit/sections-reader-audit.test.ts fails on any parse of a sections column in functions/ or workers/ outside sectionsRepo and domain/ (parseJsonArray(... .sections), JSON.parse of sections or similar), and on any handler that selects * from tournaments and passes the row to jsonResponse without toTournamentResponse. This makes 'every current reader moved over' provable on the server side. The queries here keep their SQL, so none converts to Drizzle.",
+   "files": [
+    "functions/api/tournaments.ts",
+    "functions/api/tournaments/[id].ts",
+    "functions/api/clearinghouse.ts",
+    "functions/api/clubs/[id].ts",
+    "functions/api/admin/tournaments/[id].ts",
+    "functions/api/admin/tournaments/[id]/registration.ts",
+    "functions/api/admin/tournaments/[id]/manage.ts",
+    "functions/api/admin/tournaments/[id]/rating-report.ts",
+    "functions/utils/tournament-manage.ts",
+    "functions/utils/prizes.ts",
+    "functions/utils/events/sectionsRepo.ts",
+    "functions/types.ts",
+    "domain/contracts/events.ts",
+    "domain/contracts/registry.ts",
+    "test/unit/sections-reader-audit.test.ts",
+    "test/integration/contracts/tournaments.test.ts",
+    "test/unit/contracts-pending.ts",
+    "REDESIGN_STATUS.md"
+   ],
+   "acceptance": [
+    "K2e: sections-reader-audit passes, no server reader of the JSON column remains, and no handler returns a raw tournaments row",
+    "Gate green; prizes, public-feed, pairing-flow, rating-upload and lifecycle tests unchanged and passing",
+    "Responses of the touched methods validate against their contracts, and sections carry id, cap and fees alongside the old fields; the registration PATCH and admin PATCH return sections as arrays",
+    "The tournaments list issues a bounded number of section queries regardless of row count (test counts statements or uses 150 tournaments)",
+    "The audit fails on a planted SELECT * FROM tournaments passed straight to jsonResponse",
+    "REDESIGN_STATUS.md records this slice's AC/K row, any deviation and each resolved verify item"
+   ],
+   "verify_items": [
+    {
+     "item": "Complete server reader list",
+     "finding": "grep over functions/ and workers/ finds sections readers in tournaments.ts, tournaments/[id].ts, clearinghouse.ts, clubs/[id].ts, admin/tournaments.ts (write and SELECT * response, handled in slice 9), admin [id].ts (PATCH and its response), [id]/registration.ts (PATCH returns SELECT * raw), manage.ts, rating-report.ts, waitlist.ts, walk-ins.ts, registrations.ts, batch.ts, registrations/[id].ts, utils/pricing.ts, utils/prizes.ts, utils/tournament-manage.ts and functions/types.ts. uscf.ts, registrationEmails.ts and email.ts mention the word only in comments. No worker reads sections or round_schedule."
+    },
+    {
+     "item": "Client use of the registration PATCH response",
+     "finding": "src/lib/api.ts calls PATCH /api/admin/tournaments/[id]/registration and returns Promise<void>, so changing its body shape breaks no caller."
+    },
+    {
+     "item": "report_settings per-section rating system",
+     "finding": "Keyed by section name in report_settings.sections; renames are handled by the writer (slice 9), and rating-report now reads names from the table."
+    }
+   ],
+   "flags": [],
+   "migrations": [],
+   "tests": [
+    "test/unit/sections-reader-audit.test.ts",
+    "test/integration/contracts/tournaments.test.ts"
+   ],
+   "risks": [
+    "D1 limits bound parameters per statement, so IN lists are chunked",
+    "A section archived by mistake would vanish from entry but stay in history; the archive rule is an open question for K"
+   ],
+   "estimated_size": "medium"
+  },
+  {
+   "name": "ws01-13-display-readers-client",
+   "order": 13,
+   "brief": "K2f: finish the client side of the sections move, with no visual change. ApiTournamentSection in src/lib/api.ts becomes z.infer of the section response contract, through a type-only import from @domain/contracts, and the tournament types gain the new fields. TournamentWizard.tsx and TournamentManagePage.tsx keep each section's id while editing and send it back in the PATCH /api/admin/tournaments/[id] body, so a rename made in the UI keeps entries and pairings attached instead of being read as remove plus add (the writer strips ids from the JSON mirror). Every other client reader compiles against the inferred type with no behaviour change:\n- components: FamilyRegistrationPanel, GradeConfirm, ResultsEntry, UsChessUploadPanel\n- pages: TournamentDetailPage, TournamentPairingsPage, TournamentPrintPage, TournamentsPage, ScholasticPage, AdminPage\n- libraries: src/lib/scholastic.ts, clearinghouse.ts, uschessUpload.ts\n\nThe browser callers of entryPrice switch to priceEntry with the section object from the response and the tournament's pricing fields; the Price shape and labels are unchanged, so the detail page renders the same lines. The JSON-string adapter (entryPrice and sectionBaseFee) is then removed from domain/registration/pricing.ts and from both shims, src/lib/pricing.ts and functions/utils/pricing.ts, and the entryPrice tests in pricing.test.ts are rewritten against priceEntry with the same cases and amounts. Because domain/events/sections.ts and domain/registration/pricing.ts are zod-free, the browser bundle gains no zod: after npm run build, a check finds no zod code in dist/assets.\n\nAdd test/integration/sections-rename-ui-path.test.ts: it sends the exact PATCH body api.ts builds for a rename with ids and asserts that the registrations stay attached. Record a manual check of the wizard, manage, detail and family panel on the dev server in REDESIGN_STATUS.md.",
+   "files": [
+    "src/lib/api.ts",
+    "src/components/admin/TournamentWizard.tsx",
+    "src/pages/TournamentManagePage.tsx",
+    "src/components/family/FamilyRegistrationPanel.tsx",
+    "src/pages/TournamentDetailPage.tsx",
+    "src/lib/pricing.ts",
+    "functions/utils/pricing.ts",
+    "domain/registration/pricing.ts",
+    "scripts/check-bundle.ts",
+    "package.json",
+    "test/integration/sections-rename-ui-path.test.ts",
+    "test/unit/pricing.test.ts",
+    "test/unit/domain-shims.test.ts",
+    "REDESIGN_STATUS.md"
+   ],
+   "acceptance": [
+    "K2f: every client reader uses the contract-derived section type, and no caller passes a sections JSON string to pricing",
+    "Gate green",
+    "Renaming a section through the manage page PATCH payload (with id) keeps registrations attached",
+    "scripts/check-bundle.ts (npm run check:bundle) finds no zod in dist/assets after npm run build",
+    "No visible change on any page (no flag involved); the manual check of the wizard, manage, detail and family panel on the dev server is recorded in REDESIGN_STATUS.md",
+    "REDESIGN_STATUS.md records this slice's AC/K row, any deviation and each resolved verify item"
+   ],
+   "verify_items": [
+    {
+     "item": "Client readers",
+     "finding": "17 distinct src files reference sections: TournamentWizard, FamilyRegistrationPanel, GradeConfirm, ResultsEntry, UsChessUploadPanel, uschessUpload.ts, pricing.ts, scholastic.ts, clearinghouse.ts, ScholasticPage, TournamentDetailPage, TournamentManagePage, TournamentPairingsPage, TournamentPrintPage, TournamentsPage, AdminPage and api.ts (ApiTournamentSection lines 213-225)."
+    },
+    {
+     "item": "Shims that re-export entryPrice",
+     "finding": "Both src/lib/pricing.ts and functions/utils/pricing.ts re-export entryPrice after slice 4, so both change when the adapter is removed."
+    }
+   ],
+   "flags": [],
+   "migrations": [],
+   "tests": [
+    "test/integration/sections-rename-ui-path.test.ts",
+    "test/unit/pricing.test.ts",
+    "test/unit/domain-shims.test.ts"
+   ],
+   "risks": [
+    "Optional fields that the inferred type makes required can ripple through pages; schemas keep today's optionality",
+    "A runtime import of domain/contracts from a page would pull zod in; the bundle check catches it"
+   ],
+   "estimated_size": "medium"
+  },
+  {
+   "name": "ws01-14-schedules-writer-readers",
+   "order": 14,
+   "brief": "K2g: do for schedules what slices 9 to 13 did for sections.\n\ndomain/events/schedules.ts (zod-free) holds:\n- validateSchedules: exactly one primary. A non-primary schedule's mergeRound is between 2 and the event's round count, and it lists exactly rounds 1 to mergeRound - 1; rounds from mergeRound on come from the primary. Rounds are unique.\n- roundsFor(schedules, scheduleId): a player's effective round list\n- scheduleForRound, for the pairing side (who is present in which round)\nScheduleSchema (id, label, timeControl, isPrimary, mergeRound, rounds [{round, date, time}]) goes in domain/contracts/events.ts.\n\nfunctions/utils/events/schedulesRepo.ts (Drizzle) provides loadSchedules and loadSchedulesFor (chunked), plus buildSaveSchedules. The 0053 insert trigger already creates a primary schedule for every tournament, so the writer matches that existing primary rather than creating another. It replaces the primary's rounds from the existing roundSchedule body field, keeps ids (generated in code for new rows), archives before inserting any new primary, and writes the round_schedule JSON last in the same batch, in today's shape. A second schedule with its merge round is accepted by the repo and the contract, but has no UI until WS08's setup. PATCH /api/admin/tournaments/[id] uses the repo.\n\nReaders return round_schedule exactly as today, from the primary, plus schedules[]: functions/api/tournaments/[id].ts, the admin PATCH response and the registration PATCH response (through toTournamentResponse), and GET [id]/manage.ts. Add writer and reader audits for round_schedule like the sections ones. ApiRoundScheduleItem and a new ApiSchedule come from the contracts through type-only imports. TournamentDetailPage, TournamentManagePage and TournamentPairingsPage keep the same behaviour. Registrations keep schedule_id from the trigger (the primary) until WS06 adds the schedule picker K called essential for pairing.",
+   "files": [
+    "domain/events/schedules.ts",
+    "domain/contracts/events.ts",
+    "domain/contracts/registry.ts",
+    "functions/utils/events/schedulesRepo.ts",
+    "functions/utils/events/sectionsRepo.ts",
+    "functions/api/admin/tournaments/[id].ts",
+    "functions/api/admin/tournaments/[id]/manage.ts",
+    "functions/api/tournaments/[id].ts",
+    "src/lib/api.ts",
+    "test/unit/schedules-domain.test.ts",
+    "test/unit/schedules-audit.test.ts",
+    "test/integration/schedules.test.ts",
+    "test/integration/contracts/tournaments.test.ts",
+    "REDESIGN_STATUS.md"
+   ],
+   "acceptance": [
+    "K2g: schedules are read and written only through the table and repo; no server code parses round_schedule outside the repo (audit)",
+    "Gate green; tournament-edit and lifecycle tests unchanged",
+    "round_schedule in every response equals the primary schedule's rounds, and the JSON column equals the table after every write, with the 0053 tournaments update trigger present",
+    "A tournament never has two live primary schedules after create plus edit",
+    "A second schedule with mergeRound 3 round-trips through the repo and contract; mergeRound 1, a mergeRound beyond the round count, and missing or extra pre-merge rounds are rejected with 400",
+    "roundsFor gives an alternate-schedule player their own pre-merge rounds and the primary's rounds from the merge on",
+    "REDESIGN_STATUS.md records this slice's AC/K row, any deviation and each resolved verify item"
+   ],
+   "verify_items": [
+    {
+     "item": "round_schedule writers and readers",
+     "finding": "Written only by the onRequestPatch of functions/api/admin/tournaments/[id].ts (roundSchedule); read by that file, GET [id]/manage.ts and tournaments/[id].ts on the server, and by TournamentDetailPage, TournamentManagePage (normalizeSchedule) and TournamentPairingsPage through src/lib/api.ts. [id]/registration.ts returns it raw (moved to toTournamentResponse in slice 12)."
+    },
+    {
+     "item": "Merge round meaning",
+     "finding": "DESIGN_REPLAN_phase1.md sections 6 and 8.1: two schedules that merge (a 3-day and a 2-day), shown as one day-by-day list with a merge row; the player's choice is stored on the registration (registrations.schedule_id). K's Oct 8 decision replaces the replan's tournaments.schedules JSON and tournaments.merge_round with tables."
+    }
+   ],
+   "flags": [],
+   "migrations": [],
+   "tests": [
+    "test/unit/schedules-domain.test.ts",
+    "test/unit/schedules-audit.test.ts",
+    "test/integration/schedules.test.ts"
+   ],
+   "risks": [
+    "Time strings in round_schedule are free text from the wizard; keep them as text and do not reinterpret them",
+    "Primary uniqueness relies on the partial unique index, so the repo must archive before inserting a new primary"
+   ],
+   "estimated_size": "medium"
+  },
+  {
+   "name": "ws01-15-pricing-membership-rule",
+   "order": 15,
+   "brief": "K6: apply K's pricing decisions. There is one price per section per tier and no member pricing. LCA events require an LCA membership, and a per-tournament setting lets club-run events switch the requirement off. Merge checkpoint B follows (sub-PR 2 = slices 9 to 15). Before the merge, K runs on production: SELECT id, name, member_discount FROM tournaments WHERE member_discount > 0 AND status != 'completed'. If it returns rows, stop and ask him.\n\nMigration 0054_requires_lca_membership.sql (generated) adds tournaments.requires_lca_membership INTEGER NOT NULL DEFAULT 1. member_discount stays in the table, unread and no longer written, so no data is dropped.\n\nDomain:\n- domain/registration/pricing.ts: priceEntry drops the member line and the isLcaMember option; regular, early and late come from the section row and the live tournament columns as before.\n- domain/membership/requirement.ts: requiresLcaMembership(t) reads the column or FORCE_LCA_MEMBERSHIP, a constant that is false today and exists for the board's possible future rule. LCA-run events (club_id null) always require it. needsMembershipAtCheckout(player, t) is a pure rule for WS06 to call.\n\nServer:\n- registrations.ts, batch.ts, registrations/[id].ts and waitlist.ts price without member status.\n- PATCH /api/admin/tournaments/[id] and POST /api/admin/tournaments ignore memberDiscount and accept requiresLcaMembership, so the option exists at creation. Who may set it: lca_admin on any club-run event, a club rep only on their own club's event. An assigned TD who manages the event through canManageTournament gets 403 for this field, as with the organizing club (confirm with K). It is never 0 on an LCA-run event. Response contracts gain requires_lca_membership. The UPDATE whose SQL changes converts to Drizzle.\n\nClient:\n- TournamentManagePage removes the member discount input.\n- TournamentDetailPage drops the 'LCA members save $X' line and the member price lines.\n- FamilyRegistrationPanel prices each player by section only.\n\nThese removals are not flagged, because leaving them would advertise a discount that is no longer charged. The setup toggle for the requirement is WS08, and enforcement at checkout (adding the membership to the cart) is WS06.",
+   "files": [
+    "functions/db/schema.ts",
+    "migrations/0054_requires_lca_membership.sql",
+    "drizzle/meta/_journal.json",
+    "drizzle/meta/0002_snapshot.json",
+    "domain/registration/pricing.ts",
+    "domain/membership/requirement.ts",
+    "domain/contracts/events.ts",
+    "functions/api/registrations.ts",
+    "functions/api/registrations/batch.ts",
+    "functions/api/registrations/[id].ts",
+    "functions/api/admin/tournaments.ts",
+    "functions/api/admin/tournaments/[id].ts",
+    "functions/api/admin/tournaments/[id]/waitlist.ts",
+    "src/pages/TournamentManagePage.tsx",
+    "src/pages/TournamentDetailPage.tsx",
+    "src/components/family/FamilyRegistrationPanel.tsx",
+    "src/lib/api.ts",
+    "test/unit/pricing.test.ts",
+    "test/unit/membership-requirement.test.ts",
+    "test/unit/no-member-price-copy.test.ts",
+    "test/integration/pricing-no-member-discount.test.ts",
+    "test/integration/requires-membership.test.ts",
+    "test/integration/registration-rules.test.ts",
+    "REDESIGN_STATUS.md"
+   ],
+   "acceptance": [
+    "K6: no member pricing anywhere; the requirement rule, the column and the API field exist",
+    "Gate green (registration-rules member-discount case at lines 73-87 rewritten to assert the member and the guest both pay 20)",
+    "A member and a non-member entering the same section at the same moment are charged the same, even when member_discount > 0 in the row, in each tier",
+    "requires_lca_membership defaults to 1, round-trips through POST, PATCH and the GET contracts, and cannot be 0 on an event with no club",
+    "Role safety: a club rep of another club gets 403, and an assigned TD who is not the club rep or an admin gets 403 when sending requiresLcaMembership",
+    "No UI text mentions a member price or member discount (grep test over src)",
+    "The pre-merge production query result is recorded in REDESIGN_STATUS.md",
+    "REDESIGN_STATUS.md records this slice's AC/K row, any deviation and each resolved verify item"
+   ],
+   "verify_items": [
+    {
+     "item": "Where member pricing is applied and shown",
+     "finding": "member_discount or memberDiscount appears in functions/utils/pricing.ts, registrations.ts, batch.ts, waitlist.ts, admin/tournaments/[id].ts, src/lib/pricing.ts, src/lib/api.ts, TournamentDetailPage.tsx (advertised around lines 1081-1083) and TournamentManagePage.tsx (edited around lines 210, 315, 624 and 1552); FamilyRegistrationPanel prices per player membership; tested in test/unit/pricing.test.ts and test/integration/registration-rules.test.ts:73-87."
+    },
+    {
+     "item": "requires_lca_membership absent today",
+     "finding": "No column or reference in migrations, functions or src."
+    },
+    {
+     "item": "Who can edit a tournament",
+     "finding": "requireTournamentManager (functions/utils/auth.ts:306) uses canManageTournament from functions/utils/permissions.ts, which also admits assigned TDs; the field rule must name the TD case."
+    }
+   ],
+   "flags": [],
+   "migrations": [
+    "0054_requires_lca_membership.sql (generated: tournaments.requires_lca_membership INTEGER NOT NULL DEFAULT 1)"
+   ],
+   "tests": [
+    "test/unit/pricing.test.ts",
+    "test/unit/membership-requirement.test.ts",
+    "test/unit/no-member-price-copy.test.ts",
+    "test/integration/pricing-no-member-discount.test.ts",
+    "test/integration/requires-membership.test.ts"
+   ],
+   "risks": [
+    "The server-side price change cannot sit behind a frontend flag (open question)",
+    "An open event with a member discount would change price mid-registration; the pre-merge query guards against it"
+   ],
+   "estimated_size": "medium"
+  },
+  {
+   "name": "ws01-16-server-areas-move",
+   "order": 16,
+   "brief": "K3a: organise server helper code by domain with a scripted, mechanical move. scripts/move-files.ts (node --experimental-strip-types) takes a JSON map of old to new paths and runs git mv. It then rewrites every import specifier that resolves to a moved file across src, functions, workers, domain, test, scripts and scanner. It covers static imports, export-from, dynamic import(), vi.mock() and ?raw imports, for both relative and '@/' specifiers, resolved with the TypeScript module resolver rather than string matching. It has a --dry-run that prints the plan and every specifier it could not resolve, and it fails on any. scripts/verify-move.ts confirms that each moved file differs from its original only in import lines.\n\nApply it to functions/utils only. functions/api stays where it is because its paths are URLs. Areas under functions/utils:\n- events: tournament-manage, prizes, champions, linkPreview, plus the sections and schedules repos already there\n- registration: registrationEmails, registrationOpenNotify\n- households: family\n- membership: membershipActivation, membershipExpiry, ratingSnapshots\n- live: swiss/\n- admin: audit, campaigns, tickets, permissions, members\n\nPlatform files stay at the root: auth, response, json, csv, email, emailLayout, site, supabase, stripe, uscf, posts. The re-export shims from slice 4 stay and are retired as their importers are touched. scan/ stays in place so the scanner protocol is not triggered. The audit tests from slices 9, 12 and 14 locate the repos by their new paths through the move.\n\nAlso update vitest.config.ts's swiss include, workers/daily-emails/src/index.ts imports (through the script) and its tsconfig include. Commit the mapping file with the slice so the move can be reviewed and reverted as one unit. Merge order note for REDESIGN_STATUS.md: no other branch should touch functions/utils while checkpoint C is open.",
+   "files": [
+    "scripts/move-files.ts",
+    "scripts/verify-move.ts",
+    "scripts/moves/server-areas.json",
+    "functions/utils/**",
+    "functions/api/** (import lines only)",
+    "workers/daily-emails/src/index.ts",
+    "workers/daily-emails/tsconfig.json",
+    "vitest.config.ts",
+    "test/** (import lines only)",
+    "test/unit/move-files.test.ts",
+    "REDESIGN_STATUS.md"
+   ],
+   "acceptance": [
+    "K3a: server helpers live in functions/utils/<area>/ for events, registration, households, membership, live and admin, with platform files at the root",
+    "Gate green with zero test changes other than import paths; unit test count unchanged (swiss engine, matching and tiebreak tests still run)",
+    "npx wrangler pages functions build and npx wrangler deploy --dry-run for daily-emails succeed before and after",
+    "move-files --dry-run on the committed map reports zero unresolved specifiers; verify-move shows only renames and import-line edits",
+    "REDESIGN_STATUS.md records this slice's AC/K row, any deviation and each resolved verify item"
+   ],
+   "verify_items": [
+    {
+     "item": "Pages routing of non-API files",
+     "finding": "functions/utils files export no onRequest handlers, so moving them inside functions/utils creates no routes. functions/tournaments/[id].ts and functions/clubs/[id].ts are page routes, so no area folder can be functions/<area>/."
+    },
+    {
+     "item": "Worker and CI coupling",
+     "finding": "workers/daily-emails/src/index.ts imports email, campaigns, site, membershipExpiry, ratingSnapshots and time from functions/utils. deploy-worker.yml triggers on workers/**, functions/utils/** and (from slice 4) domain/**. vitest.config.ts includes functions/utils/swiss/**/*.test.ts. src/vite-env.d.ts and src/lib/{api,roles}.ts mention functions/utils paths (some only in comments)."
+    }
+   ],
+   "flags": [],
+   "migrations": [],
+   "tests": [
+    "test/unit/move-files.test.ts: the rewriter on a fixture tree (relative, alias, dynamic, vi.mock, ?raw)"
+   ],
+   "risks": [
+    "A missed dynamic import only fails at runtime; the functions build, the worker dry-run and the integration suite catch bundling and handler imports",
+    "Long-lived branches touching functions/utils will conflict; WS01 is the only active branch"
+   ],
+   "estimated_size": "medium"
+  },
+  {
+   "name": "ws01-17-client-lib-moves",
+   "order": 17,
+   "brief": "K3b: organise client library code by domain with the same move script, keeping every page working. Create src/areas/<area>/ for events, registration, households, live, membership, clubs and admin, plus governance (it exists and fits none of the seven). Move area-specific lib files with scripts/move-files.ts and a committed map, scripts/moves/client-lib.json:\n- tournamentStatus, clearinghouse, scholastic, uschessUpload and champions -> src/areas/events\n- clubColors, clubMapData and mapLocation -> src/areas/clubs\n- roles -> src/areas/admin\n\nThe slice 4 shims stay in src/lib, unmoved, so the brief's paths keep working: pricing, sectionRules, lcaTime, regions and family. They re-export domain/, so moving them would add nothing; domain-shims.test.ts keeps its paths. src/areas/households/index.ts and src/areas/clubs/index.ts re-export the household and region rules from @domain so area code has one import point. Platform files stay in src/lib: api.ts until slice 18, brand, features, format, supabase, utils, mfa, posts, documentUpload, parseDocumentFile, resizeImage, viewOnly. src/lib/scanner stays put so the scanner protocol and the vitest scanner include are untouched. Add an index.ts to each area that exports its public modules. Importers are rewritten by the script, and verify-move confirms that only import lines changed. tsconfig.app.json needs no new alias because '@/areas/...' resolves through '@/*'.",
+   "files": [
+    "scripts/moves/client-lib.json",
+    "src/areas/*/index.ts",
+    "src/areas/events/*.ts",
+    "src/areas/clubs/*.ts",
+    "src/areas/admin/*.ts",
+    "src/lib/**",
+    "src/pages/*.tsx (import lines only)",
+    "src/components/** (import lines only)",
+    "test/unit/** (import lines only)",
+    "REDESIGN_STATUS.md"
+   ],
+   "acceptance": [
+    "K3b: area-specific client library code lives under src/areas/<area>/; the domain shims stay in src/lib and domain-shims.test.ts is unchanged",
+    "Gate green; scanner unit test count unchanged and scanner:check not needed (no scanner path touched)",
+    "move-files --dry-run reports zero unresolved specifiers; verify-move shows only renames and import-line edits",
+    "vite build succeeds with the same route chunks",
+    "REDESIGN_STATUS.md records this slice's AC/K row, any deviation and each resolved verify item"
+   ],
+   "verify_items": [
+    {
+     "item": "src/lib contents",
+     "finding": "api, brand, champions, clearinghouse, clubColors, clubMapData, documentUpload, family, features, lcaTime, mapLocation, mfa, parseDocumentFile, posts, pricing, regions, resizeImage, roles, scanner/, scholastic, sectionRules, supabase, tournamentStatus, uschessUpload, utils, viewOnly.tsx; after slice 4, pricing, sectionRules, lcaTime, regions and family are shims over domain/."
+    },
+    {
+     "item": "shadcn aliases",
+     "finding": "components.json aliases @/components, @/lib/utils, @/components/ui, @/lib and @/hooks; src/lib/utils.ts stays so future shadcn adds resolve."
+    }
+   ],
+   "flags": [],
+   "migrations": [],
+   "tests": [
+    "existing suite (import paths only)"
+   ],
+   "risks": [
+    "Area index barrels can create import cycles; keep them to re-exports of leaf modules"
+   ],
+   "estimated_size": "small"
+  },
+  {
+   "name": "ws01-18-api-split",
+   "order": 18,
+   "brief": "K3c: split src/lib/api.ts (2206 lines) by area without changing what any importer sees. Shared request helpers, the auth header logic and the error type move to src/lib/http.ts, which imports nothing from areas. Each exported function and type moves whole, with no body edits, to src/areas/<area>/api.ts for events, registration, households, live, membership, clubs, admin and governance, following a committed export-name-to-area map, scripts/moves/api-split.json, applied by a script using the TypeScript compiler API, so the cut is mechanical. The contract-derived types (ApiTournamentSection, ApiSchedule, ApiRoundScheduleItem) move with the events module and keep their type-only imports. src/lib/api.ts becomes a barrel that re-exports every area module, so the 37 pages and the components keep importing from '@/lib/api'. Importers move to area paths later, as they are touched. test/unit/route-audit.test.ts scans src/lib/api.ts, src/lib/http.ts and every src/areas/*/api.ts for fetch('/api/...') calls, and keeps its 'more than 20 paths' guard over the union. A check in the slice confirms the set of exported names before and after is identical and that each export exists exactly once.",
+   "files": [
+    "src/lib/api.ts",
+    "src/lib/http.ts",
+    "src/areas/events/api.ts",
+    "src/areas/registration/api.ts",
+    "src/areas/households/api.ts",
+    "src/areas/live/api.ts",
+    "src/areas/membership/api.ts",
+    "src/areas/clubs/api.ts",
+    "src/areas/admin/api.ts",
+    "src/areas/governance/api.ts",
+    "scripts/moves/api-split.json",
+    "scripts/split-api.ts",
+    "test/unit/route-audit.test.ts",
+    "test/unit/api-exports.test.ts",
+    "REDESIGN_STATUS.md"
+   ],
+   "acceptance": [
+    "K3c: client API calls live per area, behind an unchanged '@/lib/api' surface",
+    "Gate green; route-audit finds the same set of fetch paths as before the split (the before list is kept as a fixture in the test)",
+    "api-exports.test.ts: the exported name set of '@/lib/api' equals the pre-split snapshot",
+    "vite build has no new circular-import warnings, the same route chunks, and check:bundle still finds no zod",
+    "REDESIGN_STATUS.md records this slice's AC/K row, any deviation and each resolved verify item"
+   ],
+   "verify_items": [
+    {
+     "item": "route-audit couples to one file",
+     "finding": "test/unit/route-audit.test.ts reads src/lib/api.ts by a fixed path (API_TS) and extracts fetch('/api/...') literals; splitting api.ts without widening it would silently drop coverage, which 0.2 forbids."
+    },
+    {
+     "item": "Direct page fetches",
+     "finding": "HomePage fetches /api/clearinghouse directly, outside api.ts; route-audit already ignores pages, and moving that call is left to WS03."
+    }
+   ],
+   "flags": [],
+   "migrations": [],
+   "tests": [
+    "test/unit/route-audit.test.ts (multi-file)",
+    "test/unit/api-exports.test.ts"
+   ],
+   "risks": [
+    "Barrel re-exports can create cycles between area api modules and lib helpers, so http.ts stays dependency-free",
+    "Types shared by several areas go in the area that owns the resource, and the others import that area's api module"
+   ],
+   "estimated_size": "medium"
+  },
+  {
+   "name": "ws01-19-client-component-areas",
+   "order": 19,
+   "brief": "K3d: move domain components into the area folders with the move script, and set the boundary rules that keep pages thin from here on. Merge checkpoint C follows (sub-PR 3 = slices 16 to 19). Moves follow scripts/moves/client-components.json:\n- src/components/tournaments -> src/areas/events/components, except Crosstable, StandingsTable and ResultsEntry, which go to src/areas/live/components\n- src/components/family -> src/areas/households/components\n- src/components/admin and the top-level AdminAnnouncementPanel -> src/areas/admin/components\n- src/components/governance -> src/areas/governance/components\n- src/components/maps -> src/areas/clubs/components\n- src/components/uscf -> src/areas/membership/components\n- RegistrationReminderButton -> src/areas/registration/components\n\nShared pieces stay in src/components: ui/, layout/, errors/, auth/, PageHero, StatusBadge, FacebookFeed, DonateButton, AnnouncementBanner, ImpersonationBanner, FilterDropdown and MultiSelectDropdown.\n\nESLint rules:\n- Files in src/areas may not import from src/pages (error).\n- One area imports another only through that area's index.ts or api.ts (warn in WS01, so existing cross-area imports do not fail the gate; they are listed in REDESIGN_STATUS.md as follow-ups).\n- Pages may not call fetch directly (warn, with HomePage's existing call listed).\n\nThin pages are the rule for new and rebuilt pages. The large existing pages (TournamentManagePage 2346 lines, TournamentDetailPage 1113, ScannerPage 1031, TournamentsPage 865) are decomposed when WS05, WS06, WS08 and WS15 rebuild them, not here.",
+   "files": [
+    "scripts/moves/client-components.json",
+    "src/areas/*/components/**",
+    "src/areas/*/index.ts",
+    "src/components/**",
+    "src/pages/*.tsx (import lines only)",
+    "src/App.tsx (import lines only)",
+    "eslint.config.js",
+    "test/unit/fixtures/lint/area-imports-page.tsx",
+    "test/unit/area-boundaries.test.ts",
+    "test/unit/render-smoke.test.tsx",
+    "REDESIGN_STATUS.md"
+   ],
+   "acceptance": [
+    "K3d: domain components live in their area folders; the boundary lint rules exist",
+    "Gate green",
+    "verify-move shows only renames and import-line edits",
+    "vite build succeeds with the same route chunks, and every lazy route in App.tsx still resolves",
+    "ESLint reports a src/areas file importing src/pages as an error (fixture, checked by area-boundaries.test.ts)",
+    "REDESIGN_STATUS.md records this slice's AC/K row, any deviation and each resolved verify item"
+   ],
+   "verify_items": [
+    {
+     "item": "Component folders today",
+     "finding": "src/components has admin, auth, errors, family, governance, layout, maps, tournaments, ui and uscf, plus top-level AdminAnnouncementPanel, AnnouncementBanner, DonateButton, FacebookFeed, FilterDropdown, ImpersonationBanner, MultiSelectDropdown, PageHero, RegistrationReminderButton and StatusBadge."
+    },
+    {
+     "item": "react-refresh lint",
+     "finding": "eslint.config.js uses reactRefresh.configs.vite, which warns when a module mixes component and non-component exports; area index.ts files are re-export-only."
+    }
+   ],
+   "flags": [],
+   "migrations": [],
+   "tests": [
+    "test/unit/area-boundaries.test.ts",
+    "existing suite (import paths only)"
+   ],
+   "risks": [
+    "Merge conflicts with any parallel UI work; WS01 is the only active branch"
+   ],
+   "estimated_size": "medium"
+  },
+  {
+   "name": "ws01-20-a11y-e2e-harness",
+   "order": 20,
+   "brief": "K5 and the browser layer the design slices test against. Add exact-pinned devDependencies @playwright/test and @axe-core/playwright. playwright.config.ts defines three projects.\n\na11y-on and a11y-off:\n- globalSetup builds `vite build --mode a11y` twice: once into dist-a11y-on with VITE_FLAGS=newLook,themeHeritage, and once into dist-a11y-off with no flags.\n- It applies migrations to a dedicated local state (wrangler d1 migrations apply lca-db --local --persist-to .wrangler/a11y) and loads scripts/seed/fixtures.sql.\n- webServer runs wrangler pages dev for each dist on its own port, with .dev.vars.a11y holding fake secrets and a fake SUPABASE_URL that fails fast. page.route stubs the external Facebook feed.\n- In src/lib/features.ts, VITE_FLAGS is honoured only when import.meta.env.MODE === 'a11y'. A ScopeFixturePage (/__fixtures/:name) is registered only in that mode.\n- The a11y-off run records a baseline of computed colours and font-family for body, a Button, a table header and a font-mono element on /, /tournaments and /membership, which later slices compare against.\n\nfixtures.sql is synthetic only, with example.org emails and no real names: an open LCA tournament with object sections and fees; a legacy event with string sections; a completed event with half-point results; an event with round_schedule; clubs, a pinned news post, governance documents, champions and board seats; a guardian with two children. db:seed:preview now loads this file through preview-guard.\n\ne2e-preview:\n- baseURL comes from E2E_BASE_URL, and the config throws for louisianachess.org hosts.\n- test/e2e/register-family.spec.ts and test/e2e/publish-round.spec.ts are written now as test.fixme with their steps and preconditions (preview id filled, preview migrated and seeded, Stripe test keys, WS06 household checkout and WS07 round publication shipped). The family spec includes the step that the household cannot add more members than FAMILY_MEMBERSHIP_CHILDREN allows.\n- .github/workflows/e2e-preview.yml runs only by workflow_dispatch against a branch preview URL, and exits unless its inputs confirm those preconditions.\n\nScripts: test:a11y and test:e2e, both outside the gate. ci.yml gains an a11y job on pull requests. A smoke spec loads / on both builds and runs axe.",
+   "files": [
+    "package.json",
+    "package-lock.json",
+    "playwright.config.ts",
+    "test/a11y/global-setup.ts",
+    "test/a11y/baseline.ts",
+    "test/a11y/smoke.spec.ts",
+    "test/e2e/register-family.spec.ts",
+    "test/e2e/publish-round.spec.ts",
+    "scripts/seed/fixtures.sql",
+    "scripts/db/preview-guard.ts",
+    ".dev.vars.a11y",
+    ".gitignore",
+    "src/lib/features.ts",
+    "src/App.tsx",
+    "src/pages/fixtures/ScopeFixturePage.tsx",
+    "test/unit/feature-overrides.test.ts",
+    ".github/workflows/ci.yml",
+    ".github/workflows/e2e-preview.yml",
+    "README.md",
+    "REDESIGN_STATUS.md"
+   ],
+   "acceptance": [
+    "K5: the Playwright end-to-end test of registering a family and publishing a round is planned as fixme specs with a dispatch-only preview workflow that refuses without the confirmations",
+    "Gate green (vitest include patterns do not collect test/a11y or test/e2e)",
+    "npm run test:a11y builds both variants, serves them on seeded local data, records the a11y-off baseline and passes the smoke spec (axe runs and reports)",
+    "feature-overrides.test.ts: VITE_FLAGS has no effect outside a11y mode; a production dist contains no fixture route or chunk",
+    "test:e2e refuses a production base URL; e2e-preview.yml has no push or pull_request trigger",
+    "Seed contains no real names or real email addresses; db:seed:preview still refuses while the preview id is a placeholder",
+    "REDESIGN_STATUS.md records this slice's AC/K row, any deviation and each resolved verify item"
+   ],
+   "verify_items": [
+    {
+     "item": "Package names",
+     "finding": "@playwright/test 1.64.0 and @axe-core/playwright 4.13.0 resolve on npm; pin exact versions at least two weeks old."
+    },
+    {
+     "item": "Local Pages runtime",
+     "finding": "package.json already has pages:dev (wrangler pages dev dist); wrangler 4 runs D1 locally without login. test/integration/preview.test.ts exists but covers link previews, not preview deployments."
+    },
+    {
+     "item": "Browsers in this container",
+     "finding": "Not verified: Playwright browser downloads go through the container's outbound proxy. If they are blocked, the suite runs in the CI job and the slice records that."
+    },
+    {
+     "item": "E2E against the preview",
+     "finding": "Previews share Supabase auth with production and may hold live Stripe and Resend secrets until K confirms, so the workflow never runs automatically."
+    }
+   ],
+   "flags": [],
+   "migrations": [],
+   "tests": [
+    "test/a11y/smoke.spec.ts",
+    "test/unit/feature-overrides.test.ts",
+    "test/e2e/register-family.spec.ts (fixme until WS06)",
+    "test/e2e/publish-round.spec.ts (fixme until WS07)"
+   ],
+   "risks": [
+    "A mode-based flag override is the one path by which flags could turn on outside code review; it is guarded by the MODE check and a unit test",
+    "Two pages dev servers sharing one persisted local D1 may contend; fall back to two persist directories seeded identically",
+    "AuthProvider must tolerate an unreachable Supabase in the signed-out state"
+   ],
+   "estimated_size": "medium"
+  },
+  {
+   "name": "ws01-21-tokens-dark-focus-motion",
+   "order": 21,
+   "brief": "Build the token layer, gated so nothing changes until K turns on newLook. main.tsx sets data-look=\"new\" on <html> when FEATURES.newLook.\n\nSemantic tokens: --ground, --surface, --surface-2, --raised, --ink, --ink-muted, --hairline, --ok, --bad, --gold, --gold-ink, --gold-on-dark, --focus, --font-mono-face and the status tokens (open, soon, full, waitlist, closed, live, partner, lca). In src/index.css:\n- :root holds values equal to today's look: --gold-ink #c8a94a, --ink #1a2744, --surface #fff, --focus reproducing today's ring-ring/50 exactly (the stock --ring at 50 percent), and --font-mono-face Tailwind's default mono stack.\n- :root[data-look=\"new\"] holds Looks-3: navy #1a2744 ink, #fff and #f7f8fa surfaces, #e5e7ed borders, #5b6478 muted, ok #047857, bad #c0362c, gold #c8a94a as a fill, gold-ink #866a1e, and --font-mono-face 'Geist Mono Variable'.\n- .dark under data-look=new uses the Looks-3 dark palette: #0b1220 ground, #111a2c surface, #1a2744 raised, ink #e8ecf4, muted #9aa6bf.\n- [data-theme=\"live\"], [data-theme=\"scholastic\"] and [data-theme=\"heritage\"] carry the WS01 values (heritage --gold-ink #705718; the heritage .dark block keeps the Minimal dark grounds), and [data-theme=\"\"] resets to base. Exact values come from the Looks tile boards where they differ.\n- The shadcn variables are re-pointed at the semantic tokens only under data-look=new.\n- @theme inline exposes the token utilities (text-ink, text-ink-muted, bg-ground, bg-surface, bg-surface-2, border-hairline, bg-gold, text-gold-ink, text-gold-on-dark, status utilities) and --font-mono: var(--font-mono-face), so the 17 existing font-mono uses keep the OS stack while the flag is off.\n- The dark variant becomes (&:where(.dark, .dark *)).\n\nFocus: button.tsx and badge.tsx use the --focus token; with the flag off the ring is identical to today, and under data-look=new :focus-visible is a 2px --focus ring with 2px offset, navy on light grounds and gold on dark and live grounds.\n\nMotion: under data-look=new, prefers-reduced-motion: reduce zeroes transitions and animations.\n\nFonts: @fontsource-variable/geist-mono (the only mono face, applied only through --font-mono-face) and @fontsource/instrument-serif 400 as --font-accent.\n\nAppearance: src/lib/colorScheme.ts and src/hooks/useColorScheme.ts support system, light and dark, stored in localStorage inside try/catch, and apply .dark only when newLook is on. The pre-paint inline script is injected by a Vite transformIndexHtml hook only when FEATURES.newLook is true at build time, so a flag-off build can never add .dark and wake the stock shadcn dark block. AppearanceControl sits in the current Footer under newLook until WS02 rebuilds it.",
+   "files": [
+    "src/index.css",
+    "src/main.tsx",
+    "index.html",
+    "vite.config.ts",
+    "src/lib/colorScheme.ts",
+    "src/hooks/useColorScheme.ts",
+    "src/components/AppearanceControl.tsx",
+    "src/components/layout/Footer.tsx",
+    "src/components/ui/button.tsx",
+    "src/components/ui/badge.tsx",
+    "src/lib/brand.ts",
+    "package.json",
+    "package-lock.json",
+    "test/unit/tokens.test.ts",
+    "test/unit/contrast.test.ts",
+    "test/unit/prepaint-gate.test.ts",
+    "test/a11y/tokens.spec.ts",
+    "REDESIGN_STATUS.md"
+   ],
+   "acceptance": [
+    "AC3: the focus ring reaches at least 3:1 against its ground in base, dark, live, scholastic and heritage under newLook (contrast.test.ts applies the WCAG formula to token values parsed from index.css, and tokens.spec.ts measures the computed outline on a focused Button in each scope)",
+    "Gate green",
+    "With newLook off, computed colours and font-family of body, a Button, a table header and a font-mono element on /, /tournaments and /membership equal the a11y-off baseline from slice 20; a focused Button's computed ring equals today's",
+    "tokens.test.ts proves the legacy :root values equal today's literals, including --focus and --font-mono-face",
+    "prepaint-gate.test.ts: the transformIndexHtml hook injects nothing when newLook is false",
+    "With newLook on, base, dark, live, scholastic and heritage tokens resolve to the brief's values; ink and muted text reach at least 4.5:1 on their grounds",
+    "Appearance follows prefers-color-scheme by default, can be set to light or dark, persists per viewer, does not flash, and a throwing localStorage leaves the page on the system scheme",
+    "Geist Mono is the only mono face and is applied only under data-look=new",
+    "REDESIGN_STATUS.md records this slice's AC/K row, any deviation and each resolved verify item"
+   ],
+   "verify_items": [
+    {
+     "item": "Current token state",
+     "finding": "src/index.css (148 lines) has a stock oklch shadcn :root and a .dark block that nothing toggles (no 'dark' class is set anywhere in src). Brand @theme defines lca-navy, lca-gold and lca-cream; the dark variant is (&:is(.dark *)). There is no data-theme, no semantic token and no gold-ink token, and only Geist Variable is imported."
+    },
+    {
+     "item": "Button focus",
+     "finding": "button.tsx uses focus-visible:ring-3 ring-ring/50 with the stock --ring oklch(0.708 0 0), the source of the 1.54:1 ring; the legacy --focus must reproduce exactly that."
+    },
+    {
+     "item": "Mono font",
+     "finding": "No --font-mono is defined, so font-mono falls back to the OS stack. 17 font-mono uses in 9 TSX files (Crosstable, ChampionsPanel, PostsPanel, UscfSearchInput, AdminClubPage, AnnualMeetingPage, TournamentDetailPage, TournamentManagePage, AccountSecurityPage) would change if Geist Mono were bound unconditionally. @fontsource-variable/geist-mono 5.3.0 exists (latin wght file about 23 KB) and has ½; its GSUB has no tnum and no liga."
+    },
+    {
+     "item": "theme-color metas",
+     "finding": "index.html already has #1a2744 light and #0b1220 dark."
+    }
+   ],
+   "flags": [
+    "newLook"
+   ],
+   "migrations": [],
+   "tests": [
+    "test/unit/tokens.test.ts",
+    "test/unit/contrast.test.ts",
+    "test/unit/prepaint-gate.test.ts",
+    "test/a11y/tokens.spec.ts"
+   ],
+   "risks": [
+    "Dark mode follows the OS as soon as newLook is on, while unconverted pages still hardcode colours; slices 23 and 24 convert them before checkpoint D (open question on a separate flag)",
+    "Tailwind v4 @theme inline variables must exist at :root for utilities to work, and the legacy default values guarantee that"
+   ],
+   "estimated_size": "medium"
+  },
+  {
+   "name": "ws01-22-theme-scope",
+   "order": 22,
+   "brief": "Add the scope mechanism every themed area uses. src/components/ThemeScope.tsx takes a scope prop: 'base', 'heritage', 'live' or 'scholastic'. It renders a wrapper with data-theme and display: contents where layout must not change, where base renders data-theme=\"\" as the reset, and lazily imports the scope's font CSS: src/styles/themes/live.css now, heritage.css in slice 30, and scholastic fonts in WS11. Nesting rules from the brief: one level only, base inside heritage is the one permitted nesting, and heritage never renders inside live. ThemeScope warns in development and the unit test asserts the rule. live.css imports only @fontsource/barlow-condensed and @fontsource/barlow (exact-pinned); JetBrains Mono is added only if the Looks-7 tile requires it. src/lib/themeScopes.ts exports routeScope(pathname): admin, workspace, manage, dashboard, account and board inbox routes are always base, and the heritage set (/about, /governance/board, /governance/bylaws, /governance/minutes, /meeting, /champions) resolves to heritage. The ScopeFixturePage from slice 20 renders a fixture container per scope, including the scholastic hue tiles with their words. Token blocks already live in index.css (slice 21), so a scope switch never flashes base colours. Nothing renders ThemeScope outside the fixture page in this slice.",
+   "files": [
+    "src/components/ThemeScope.tsx",
+    "src/styles/themes/live.css",
+    "src/lib/themeScopes.ts",
+    "src/pages/fixtures/ScopeFixturePage.tsx",
+    "package.json",
+    "package-lock.json",
+    "test/unit/themeScopes.test.ts",
+    "test/unit/theme-scope.test.tsx",
+    "test/a11y/scope-switch.spec.ts",
+    "REDESIGN_STATUS.md"
+   ],
+   "acceptance": [
+    "AC8: switching data-theme among base, live, scholastic and heritage on the fixture container changes token colours, while the bounding boxes of Button, Input and StatusBadge do not move (layout-shift observer reports 0)",
+    "Gate green",
+    "themeScopes.test.ts: --gold-ink resolves to #705718 inside heritage and #866a1e in base (parsed from index.css); the heritage route set is exactly the six pages",
+    "theme-scope.test.tsx: base inside heritage is allowed; heritage inside live and any other nesting is reported",
+    "live.css is fetched only when a live scope renders (network check on the fixture page)",
+    "REDESIGN_STATUS.md records this slice's AC/K row, any deviation and each resolved verify item"
+   ],
+   "verify_items": [
+    {
+     "item": "Live fonts",
+     "finding": "@fontsource/barlow-condensed and @fontsource/barlow 5.3.0 exist on npm."
+    },
+    {
+     "item": "Heritage routes",
+     "finding": "App.tsx has lazy routes /meeting, /about, /governance/board, /champions, /governance/bylaws and /governance/minutes."
+    }
+   ],
+   "flags": [
+    "newLook"
+   ],
+   "migrations": [],
+   "tests": [
+    "test/unit/themeScopes.test.ts",
+    "test/unit/theme-scope.test.tsx",
+    "test/a11y/scope-switch.spec.ts"
+   ],
+   "risks": [
+    "A lazily loaded font can cause a layout shift on first switch; the AC8 test measures after fonts are ready and the heritage CLS is measured separately (slice 31)"
+   ],
+   "estimated_size": "small"
+  },
+  {
+   "name": "ws01-23-semantic-colours-ink-surface",
+   "order": 23,
+   "brief": "Make the existing pages theme-able for dark, live and heritage, part one: ink and grounds. scripts/codemods/semantic-colours.ts reads a reviewed map, scripts/codemods/semantic-colours.map.json, and rewrites TSX class strings:\n- text-lca-navy -> text-ink\n- bg-white -> bg-surface\n- card and section grounds -> bg-surface or bg-surface-2\n- border greys -> border-hairline\n- bg-lca-navy heroes -> bg-brand-navy, a token that stays #1a2744 in every scope, so navy heroes stay navy in dark\n\ntext-white on navy grounds stays. text-lca-gold is not touched here (slice 25). Every mapped utility resolves under the legacy :root to exactly the colour it replaces, so with newLook off nothing changes. test/unit/semantic-map.test.ts proves this by checking each mapping pair against the legacy values parsed from index.css. Club colours (AdminClubPage, AdminPage swatches, clubColors.ts) are user data and stay inline styles. A person reviews every place where a mapped class sits on a coloured ground (badges, tinted banners) and records judgement calls in REDESIGN_STATUS.md.",
+   "files": [
+    "scripts/codemods/semantic-colours.ts",
+    "scripts/codemods/semantic-colours.map.json",
+    "src/**/*.tsx",
+    "src/index.css",
+    "test/unit/semantic-map.test.ts",
+    "REDESIGN_STATUS.md"
+   ],
+   "acceptance": [
+    "Gate green; build size change negligible",
+    "No text-lca-navy or bg-white remains in TSX",
+    "semantic-map.test.ts proves every replacement resolves to the identical legacy colour, and the a11y-off baseline on /, /tournaments and /membership is unchanged",
+    "With newLook on and .dark set, a spot run of axe on /, /tournaments and /membership shows no colour-contrast violation caused by navy-on-dark text or white grounds",
+    "REDESIGN_STATUS.md records this slice's AC/K row, the judgement calls, any deviation and each resolved verify item"
+   ],
+   "verify_items": [
+    {
+     "item": "Hardcoded colour counts",
+     "finding": "In src: text-lca-navy 382, bg-lca-navy 103, bg-white 42, text-[#...] 39, bg-[#...] 8, text-emerald-* 62, text-red-* 19. Muted tokens are already used widely (text-muted-foreground, bg-muted)."
+    },
+    {
+     "item": "Dark usage today",
+     "finding": "Only one dark: or prefers-color-scheme reference outside components/ui; the stock .dark block is never toggled."
+    }
+   ],
+   "flags": [
+    "newLook"
+   ],
+   "migrations": [],
+   "tests": [
+    "test/unit/semantic-map.test.ts",
+    "spot run of test/a11y in dark"
+   ],
+   "risks": [
+    "Wide mechanical diff across most pages; the map test is the proof and it lands after the folder moves so it is not rebased over renames"
+   ],
+   "estimated_size": "medium"
+  },
+  {
+   "name": "ws01-24-semantic-colours-status-raw",
+   "order": 24,
+   "brief": "Part two of the theme-ability pass: status colours and raw hex. The same codemod gets a second map. Emerald and red status text and fills become the status tokens (ok, bad, or the matching status-* utility). Gray and slate stragglers become ink-muted or border-hairline. The remaining arbitrary hex text and background classes (text-[#...] 39, bg-[#...] 8) become tokens, except StatusBadge's light gold text-[#7a5c00] and PageHero's text-[#f0d07a], which slice 25 handles with the gold work. Each mapping again resolves under the legacy :root to the colour it replaces, and semantic-map.test.ts is extended to cover it. Add a ratchet, test/unit/raw-colours.test.ts. It fails when text-lca-navy, bg-white, raw emerald or red status classes, or arbitrary hex colour classes appear in TSX outside the allowlist fixture test/unit/fixtures/raw-colours-allowlist.json, which holds club colour swatches and user-chosen club colours with a reason per line. A person reviews tinted banners and badges, and the judgement calls go in REDESIGN_STATUS.md.",
+   "files": [
+    "scripts/codemods/semantic-colours.status.map.json",
+    "src/**/*.tsx",
+    "src/index.css",
+    "test/unit/semantic-map.test.ts",
+    "test/unit/raw-colours.test.ts",
+    "test/unit/fixtures/raw-colours-allowlist.json",
+    "REDESIGN_STATUS.md"
+   ],
+   "acceptance": [
+    "Gate green",
+    "raw-colours.test.ts passes on the codebase and fails on a planted bg-white or text-[#123456] outside the allowlist",
+    "Flag-off colours unchanged (semantic-map extended, a11y-off baseline unchanged)",
+    "With newLook on, status text in dark and live reaches 4.5:1 (token contrast test extended)",
+    "REDESIGN_STATUS.md records this slice's AC/K row, the judgement calls, any deviation and each resolved verify item"
+   ],
+   "verify_items": [
+    {
+     "item": "Legitimate raw colours",
+     "finding": "AdminClubPage.tsx:391 uses '#c8a94a' as placeholder text in a colour input (not a colour class); AdminPage.tsx:531 uses it as a background fallback for a club swatch; club colours come from clubColors.ts and are user data."
+    }
+   ],
+   "flags": [
+    "newLook"
+   ],
+   "migrations": [],
+   "tests": [
+    "test/unit/semantic-map.test.ts",
+    "test/unit/raw-colours.test.ts"
+   ],
+   "risks": [
+    "Emerald and red are sometimes decorative rather than status; the human pass decides and records each"
+   ],
+   "estimated_size": "medium"
+  },
+  {
+   "name": "ws01-25-gold-ink-codemod",
+   "order": 25,
+   "brief": "Remove gold text on light grounds without changing anything while newLook is off. scripts/codemods/gold-ink.ts lists every text-lca-gold use (135 in 43 TSX files) with its surrounding JSX. It classifies each by its nearest ground: inside bg-lca-navy or bg-brand-navy, PageHero, Navbar, Footer, the navy hero or another dark container, the class stays; elsewhere it becomes text-gold-ink. It prints a review table to the scratchpad (not committed) and applies the changes. A person then reviews every changed line. Meaningful icons are checked by hand: the NewsPage Pinned pin gets a visible word, rendered only under newLook so the flag-off page is unchanged, and the reminder bell in RegistrationReminderButton and TournamentDetailPage gets an accessible name (not visible, so unflagged). StatusBadge's light gold tone text-[#7a5c00] moves to text-gold-ink, and PageHero's text-[#f0d07a] eyebrow on navy moves to text-gold-on-dark, each with a legacy :root value equal to the literal it replaces (add --gold-ink-badge legacy #7a5c00 if one token cannot serve both). Because --gold-ink defaults to #c8a94a under the legacy root, the swap is invisible until data-look=new.\n\ntest/unit/goldText.test.ts is the scope-aware guard, with its allowlist fixture at test/unit/fixtures/goldAllowlist.ts. It fails when:\n- text-lca-gold, text-[#c8a94a], a style color '#c8a94a' or color: LCA.gold appears in TSX outside allowlisted navy or dark contexts\n- #705718 appears outside heritage files and the About menu's \"You are here\" label entry\n- #866a1e is used as text below 13px, except on the listed #fbfaf6 contexts and as the phone tab bar's current-tab bar\n\n#c8a94a is never text on a light ground, the phone tab bar included. The WS02 entries are in the fixture now and match nothing yet. bg-lca-gold fills and GOLD_BUTTON are unaffected.",
+   "files": [
+    "scripts/codemods/gold-ink.ts",
+    "src/**/*.tsx (the 43 files using text-lca-gold)",
+    "src/index.css",
+    "src/components/StatusBadge.tsx",
+    "src/components/PageHero.tsx",
+    "src/areas/registration/components/RegistrationReminderButton.tsx",
+    "src/pages/NewsPage.tsx",
+    "src/pages/TournamentDetailPage.tsx",
+    "test/unit/goldText.test.ts",
+    "test/unit/fixtures/goldAllowlist.ts",
+    "test/unit/tokens.test.ts",
+    "REDESIGN_STATUS.md"
+   ],
+   "acceptance": [
+    "AC2: goldText.test.ts fails on a planted text-lca-gold or raw #c8a94a text colour in a light context and passes on the codebase with only allowlisted navy or dark contexts",
+    "Gate green",
+    "With newLook off, gold text, the StatusBadge light tone, the PageHero eyebrow and the NewsPage pinned row render exactly as before (legacy token values equal the replaced literals, asserted in tokens.test.ts); with it on, light-ground gold text reaches at least 4.5:1",
+    "The Pinned pin carries a visible word under newLook and the reminder bell has an accessible name; nothing relies on colour alone",
+    "Every judgement call is recorded in REDESIGN_STATUS.md",
+    "REDESIGN_STATUS.md records this slice's AC/K row, any deviation and each resolved verify item"
+   ],
+   "verify_items": [
+    {
+     "item": "About 135 uses of text-lca-gold",
+     "finding": "Confirmed on Oct 8: 135 occurrences in 43 TSX files (136 including a comment in src/index.css)."
+    },
+    {
+     "item": "Meaningful gold icons",
+     "finding": "NewsPage.tsx:140 <Pin className=\"size-3 text-lca-gold\" aria-label=\"Pinned\" /> on a light ground; Bell icons in RegistrationReminderButton.tsx:83 and TournamentDetailPage.tsx."
+    },
+    {
+     "item": "Other gold-ish text",
+     "finding": "StatusBadge light gold uses text-[#7a5c00]; PageHero eyebrow uses text-[#f0d07a] on navy."
+    }
+   ],
+   "flags": [
+    "newLook"
+   ],
+   "migrations": [],
+   "tests": [
+    "test/unit/goldText.test.ts",
+    "test/unit/tokens.test.ts"
+   ],
+   "risks": [
+    "The ground heuristic misclassifies text inside a navy card nested in a light page, or a component reused on both grounds; the human pass and the allowlist catch it, and reused components take the scope token"
+   ],
+   "estimated_size": "medium"
+  },
+  {
+   "name": "ws01-26-status-buttons-chips-scrollpanel",
+   "order": 26,
+   "brief": "Build the base components later workstreams assemble pages from.\n\nStatusBadge.tsx:\n- gains a status prop (open, soon, full, waitlist, closed, live, partner, lca) mapped to status tokens, always rendering a text label (a default label per status when no children are given)\n- the live variant's dot is static, with no animation class and animation: none\n- the existing tone and on props keep working unchanged for current callers\n- StatusDot gains a label prop and, under newLook, renders its words visibly next to the dot, because a title attribute alone fails AC5\n\nbutton.tsx gains a gold variant: gold fill, navy text, never white on gold. GOLD_BUTTON in brand.ts stays for current callers and points at the same classes.\n\nNew components:\n- src/components/ui/filter-chip.tsx: a toggle with aria-pressed, an optional count, and a remove button labelled \"Remove filter: <name>\"\n- src/components/DateBlock.tsx: weekday plus date from formatDate, inside <time dateTime>\n- src/components/ScrollPanel.tsx, from K's October 8 note that long screens such as tournament setup sit in a scroll container so content stays together: a bounded, keyboard-focusable region (tabIndex 0, role region, aria-label) with overscroll-contain, a max height relative to the viewport, and an optional sticky header slot, generalising ADMIN_SCROLL\n\nNew components are used only behind flags, and no existing page changes. Applying ScrollPanel to long pages happens as WS06 and WS08 rebuild them, and REDESIGN_STATUS.md records that as a follow-up.",
+   "files": [
+    "src/components/StatusBadge.tsx",
+    "src/components/ui/button.tsx",
+    "src/components/ui/filter-chip.tsx",
+    "src/components/DateBlock.tsx",
+    "src/components/ScrollPanel.tsx",
+    "src/lib/brand.ts",
+    "src/pages/fixtures/ScopeFixturePage.tsx",
+    "test/unit/status-badge.test.tsx",
+    "test/unit/filter-chip.test.tsx",
+    "test/unit/date-block.test.tsx",
+    "test/unit/scroll-panel.test.tsx",
+    "test/a11y/components.spec.ts",
+    "REDESIGN_STATUS.md"
+   ],
+   "acceptance": [
+    "AC5: every StatusBadge status renders visible label text, StatusDot shows words under newLook, and an a11y check finds non-empty text on every [data-status] element on the fixture page",
+    "AC14: the live badge's dot has no animation class, computed animation-name is none, and getAnimations() is empty for it",
+    "Gate green",
+    "FilterChip's remove button has an accessible name; DateBlock always includes the weekday; ScrollPanel is reachable and scrollable by keyboard; all pass axe on the fixture page",
+    "Existing StatusBadge and StatusDot callers render unchanged with newLook off (a11y-off baseline unchanged)",
+    "REDESIGN_STATUS.md records this slice's AC/K row, any deviation and each resolved verify item"
+   ],
+   "verify_items": [
+    {
+     "item": "StatusBadge today",
+     "finding": "Tones gold, emerald, red, blue and muted, on navy or light surfaces; children are optional in practice; StatusDot is colour plus a title attribute only. The light gold tone used text-[#7a5c00] (moved to a token in slice 25)."
+    },
+    {
+     "item": "Pulsing elements",
+     "finding": "No animate-pulse or animate-ping in src today; keep it that way."
+    },
+    {
+     "item": "ADMIN_SCROLL",
+     "finding": "src/lib/brand.ts exports ADMIN_SCROLL, a class string for bounded admin scroll areas; ScrollPanel generalises it."
+    }
+   ],
+   "flags": [
+    "newLook"
+   ],
+   "migrations": [],
+   "tests": [
+    "test/unit/status-badge.test.tsx",
+    "test/unit/filter-chip.test.tsx",
+    "test/unit/date-block.test.tsx",
+    "test/unit/scroll-panel.test.tsx",
+    "test/a11y/components.spec.ts"
+   ],
+   "risks": [
+    "Changing defaults of shared shadcn primitives affects every page; all new styling sits behind data-look=new tokens"
+   ],
+   "estimated_size": "medium"
+  },
+  {
+   "name": "ws01-27-chess-data-tables",
+   "order": 27,
+   "brief": "Make chess data read correctly: halves as ½, tabular mono figures, colour shown by shape and word, and real table headers.\n\nsrc/components/ResultCell.tsx renders the result letter, a tint, a colour marker and the opponent number, for example \"W ○ 17\". The marker is an inline SVG circle, hollow for White and filled for Black, because the Geist Mono latin subset has no ○ or ● glyphs. The cell's accessible name reads like \"Won with White against 17\".\n\nsrc/components/ui/table.tsx:\n- TableHead defaults to scope=\"col\"\n- a new TableRowHeader renders th scope=\"row\"\n- Table gains a stickyFirst prop that pins the first column with an opaque surface token in every scope\n- Table gains an optional bounded scroll container with a sticky header, so long tables stay together on the page\nThe new props are opt-in; adding scope=\"col\" changes no rendering.\n\nCrosstable.tsx and StandingsTable.tsx (now in src/areas/live/components) change only with newLook on:\n- scores and tiebreaks use formatScore\n- figures use font-mono (Geist Mono under data-look=new) with tabular-nums\n- the player cell is a row header\n- the first column is sticky on narrow screens\n- Crosstable renders round cells through ResultCell, drops the separate w/b line, and adds a legend that names the markers in words\n- the em dash placeholder for a missing tiebreak becomes a plain hyphen with an aria-label\n\nWith newLook off, both tables render exactly as today. Under the flag, check the other score renderers on the pairings and print pages (TournamentPairingsPage, TournamentPrintPage, ResultsEntry) and switch any half-point display to formatScore.",
+   "files": [
+    "src/components/ResultCell.tsx",
+    "src/components/ui/table.tsx",
+    "src/areas/live/components/Crosstable.tsx",
+    "src/areas/live/components/StandingsTable.tsx",
+    "src/areas/live/components/ResultsEntry.tsx",
+    "src/pages/TournamentPairingsPage.tsx",
+    "src/pages/TournamentPrintPage.tsx",
+    "test/unit/result-cell.test.tsx",
+    "test/unit/standings-format.test.tsx",
+    "test/a11y/chess-data.spec.ts",
+    "REDESIGN_STATUS.md"
+   ],
+   "acceptance": [
+    "AC6: with newLook on, standings and crosstables show 3½ and ½, never 3.5 or 0.5, for scores and tiebreaks, with figures in Geist Mono and tabular alignment (render tests with half-point fixtures, plus computed font-family and font-variant-numeric on the seeded completed event's page)",
+    "Gate green",
+    "Every crosstable result cell has a letter, a marker and an accessible name; nothing relies on colour alone",
+    "Headers are real th elements with scope, and the tables pass axe in base and live",
+    "With newLook off, the rendered markup of both tables is unchanged apart from the added scope attribute (snapshot), and computed font-family is the OS mono stack",
+    "REDESIGN_STATUS.md records this slice's AC/K row, any deviation and each resolved verify item"
+   ],
+   "verify_items": [
+    {
+     "item": "3.5 today",
+     "finding": "Crosstable.tsx:11 and StandingsTable.tsx:9 both define fmt = n % 1 === 0 ? String(n) : n.toFixed(1); Crosstable uses font-mono (OS default) and prints colour as a bare w/b letter under the cell."
+    },
+    {
+     "item": "Marker glyph coverage",
+     "finding": "The Geist Mono, Libre Caslon Display and Source Serif 4 latin subsets contain U+00BD (½) but not U+25CB (○) or U+25CF (●), so markers must be SVG or CSS shapes."
+    }
+   ],
+   "flags": [
+    "newLook"
+   ],
+   "migrations": [],
+   "tests": [
+    "test/unit/result-cell.test.tsx",
+    "test/unit/standings-format.test.tsx (flag on and off via vi.mock of features)",
+    "test/a11y/chess-data.spec.ts"
+   ],
+   "risks": [
+    "The print layout must still fit with the mono font; check the print stylesheet",
+    "A sticky first column needs an opaque background in every scope, or rows bleed through on scroll"
+   ],
+   "estimated_size": "medium"
+  },
+  {
+   "name": "ws01-28-brand-marks",
+   "order": 28,
+   "brief": "Logo and mark components, placed where they exist today. src/components/LcaMark.tsx is the one-colour rook-Louisiana mark as inline SVG, reusing the single path from public/favicon.svg (viewBox 0 0 100 100). It uses fill currentColor and a title prop (default \"Louisiana Chess Association\"), and is for the header at every width and tight spaces (D1). src/components/LcaLogo.tsx wraps src/assets/lca-logo.webp, the file Navbar and Footer use today. It renders width, height and alt, has no colour, filter or className-colour props, and is set on white or cream; the official logo is never recoloured.\n\nUnder newLook: the current Navbar shows LcaMark at every width, the Footer keeps LcaLogo, and AboutPage shows LcaLogo on a white or cream mat near its heading, because D1 gives the full-colour logo to About and history pages. With the flag off, all three render as today. Slice 31 keeps the AboutPage placement inside the heritage layout. ChampionsPage, the other history page, is recorded with the remaining D1 placements that do not exist yet (the homepage identity band, the membership card, certificates and the print kit cover) in REDESIGN_STATUS.md for WS03, WS10 and WS12. Log a follow-up to point AdminEmailPage's preview LOGO_URL at /email-logo.jpg instead of the 2.4 MB public/lca-logo.jpg.",
+   "files": [
+    "src/components/LcaMark.tsx",
+    "src/components/LcaLogo.tsx",
+    "src/components/layout/Navbar.tsx",
+    "src/components/layout/Footer.tsx",
+    "src/pages/AboutPage.tsx",
+    "test/unit/lca-mark.test.tsx",
+    "test/a11y/brand.spec.ts",
+    "REDESIGN_STATUS.md"
+   ],
+   "acceptance": [
+    "AC10: with newLook on, the header shows LcaMark at 390, 768 and 1280 px, the footer and /about show LcaLogo; LcaLogo exposes no colour or filter prop and renders the original file; the deferred placements, including ChampionsPage, are recorded with their owning workstreams",
+    "Gate green",
+    "LcaMark uses currentColor and has an accessible title",
+    "With newLook off, Navbar, Footer and AboutPage render as before",
+    "REDESIGN_STATUS.md records this slice's AC/K row, any deviation and each resolved verify item"
+   ],
+   "verify_items": [
+    {
+     "item": "Which logo file is current (verify in the brief)",
+     "finding": "src/assets/lca-logo.webp (400 x 399, 16 KB) is imported by Navbar.tsx and Footer.tsx and is the current site logo. public/lca-logo.jpg (4355 x 4340, 2.4 MB) is used only as LOGO_URL in AdminEmailPage.tsx:45 for the email preview; real emails use public/email-logo.jpg (280 px) via functions/utils/emailLayout.ts and site.ts. LcaLogo wraps the webp; the jpg is a source master."
+    },
+    {
+     "item": "Rook mark source",
+     "finding": "public/favicon.svg is a single path with a navy fill #1a2744 and a dark-scheme gold fill #ffd54a."
+    },
+    {
+     "item": "D1 placements in WS01 scope",
+     "finding": "D1 gives the full-colour logo to About and history pages; /about exists today and is placed here, the rest are deferred."
+    }
+   ],
+   "flags": [
+    "newLook"
+   ],
+   "migrations": [],
+   "tests": [
+    "test/unit/lca-mark.test.tsx",
+    "test/a11y/brand.spec.ts"
+   ],
+   "risks": [
+    "WS02 rebuilds the header; this slice only swaps the brand image under the flag to satisfy D1 now"
+   ],
+   "estimated_size": "small"
+  },
+  {
+   "name": "ws01-29-hero-images",
+   "order": 29,
+   "brief": "End auto-advance and build the image pipeline. scripts/images.mjs, with sharp as an exact-pinned devDependency run by hand, writes AVIF and WebP at 640, 1024 and 1600 widths for src/assets/LCA_Slide_1.jpg to LCA_Slide_5.jpg into src/assets/generated/. Quality is tuned so the file a 390 px phone at DPR 3 picks is at most 200 KB. The outputs are committed, so builds never need sharp. hero.png is skipped because nothing imports it. src/components/ResponsiveImage.tsx renders <picture> with AVIF and WebP sources, sizes, explicit width and height from the source dimensions, fetchpriority=\"high\" for the LCP image and loading=\"lazy\" otherwise. In HomePage.tsx, when newLook is on, HeroSlideshow is not rendered. The hero shows one static ResponsiveImage (slide 1) with the existing heading and actions, and no timer exists. With the flag off, today's slideshow remains. WS03 replaces the hero entirely. test/unit/no-rotation.test.ts fails on setInterval or setTimeout loops that rotate content in src TSX, with an allowlist for AdminEmailPage's history poll and AnnualMeetingPage's minute clock; HomePage's flag-off path is listed until WS03 deletes it. npm run perf:home runs Lighthouse (exact-pinned devDependency) in mobile mode against the a11y-on server and prints the performance score. K also runs a lab check on the preview, and both are recorded in REDESIGN_STATUS.md.",
+   "files": [
+    "scripts/images.mjs",
+    "src/assets/generated/*",
+    "src/components/ResponsiveImage.tsx",
+    "src/pages/HomePage.tsx",
+    "scripts/perf-home.ts",
+    "package.json",
+    "package-lock.json",
+    "test/unit/image-budget.test.ts",
+    "test/unit/no-rotation.test.ts",
+    "test/unit/hero-no-autoplay.test.tsx",
+    "test/a11y/home.spec.ts",
+    "REDESIGN_STATUS.md"
+   ],
+   "acceptance": [
+    "AC4: with newLook on, the home hero does not change after advancing timers or a Playwright clock by 60 s, no rotating timer exists outside the allowlist, and with prefers-reduced-motion: reduce document.getAnimations() is empty after interactions on / and the fixture page",
+    "AC7: at a 390 px viewport and DPR 3, the LCP element is the hero picture and its transferred size is at most 200 KB (home.spec.ts); every generated file exists at three widths in both formats (unit test); Lighthouse mobile performance on / is 90 or more in the lab, recorded in REDESIGN_STATUS.md",
+    "Gate green",
+    "Every <img> rendered on / has width and height",
+    "With newLook off, the slideshow still renders as today",
+    "REDESIGN_STATUS.md records this slice's AC/K row, any deviation and each resolved verify item"
+   ],
+   "verify_items": [
+    {
+     "item": "Hero weight and auto-advance",
+     "finding": "Five slides total 2,171 KB (569, 303, 519, 290 and 490 KB; 2048 px wide). HeroSlideshow in HomePage.tsx calls setInterval(..., 5000) at lines 53 and 56, with no pause control and no reduced-motion check. hero.png (343 x 361, 13 KB) is not imported anywhere."
+    },
+    {
+     "item": "Other timers",
+     "finding": "setInterval also appears in AdminEmailPage.tsx:196 (history poll) and AnnualMeetingPage.tsx:80 (minute clock); neither rotates content."
+    },
+    {
+     "item": "PageHero without any slideshow",
+     "finding": "PageHero.tsx has no slideshow; its header comment says the HomePage slideshow is separate. Nothing to remove there."
+    }
+   ],
+   "flags": [
+    "newLook"
+   ],
+   "migrations": [],
+   "tests": [
+    "test/unit/image-budget.test.ts",
+    "test/unit/no-rotation.test.ts",
+    "test/unit/hero-no-autoplay.test.tsx",
+    "test/a11y/home.spec.ts"
+   ],
+   "risks": [
+    "Lighthouse scores in a container vary widely, so the score is a recorded lab measurement, not a gate",
+    "The Facebook feed and clubs fetch on / may dominate performance; findings go to WS03",
+    "sharp native binaries must install through the proxy; it is used only by the script",
+    "Committed generated images add about 30 files to the repo"
+   ],
+   "estimated_size": "medium"
+  },
+  {
+   "name": "ws01-30-heritage-fonts",
+   "order": 30,
+   "brief": "The Heritage Club type layer, loaded only inside its scope.\n\nDependencies, exact-pinned:\n- @fontsource/libre-caslon-display: 400, latin, about 24 KB\n- @fontsource-variable/source-serif-4: the wght-axis latin file (about 51 KB), not the opsz file at 122 KB\n\nTogether they come to about 75 KB, under the 110 KB budget. The italic (about 51 KB) is declared and fetched only when italic text renders.\n\nsrc/styles/themes/heritage.css, imported lazily by ThemeScope when scope is heritage:\n- the font imports\n- a Georgia fallback @font-face with size-adjust and ascent-override tuned to keep CLS under 0.1\n- --font-display bound to Caslon for h1 and h2 at 32 px and up and display numerals inside the scope, never ratings, scores or tables\n- Source Serif body text at 18 px / 1.6 with a 70ch measure in the readers, with lining and tabular figures\n- Instrument Serif switched off inside the scope\n- a 2 px radius on cards, tables and hero mats only, while controls keep the base radius\n- .small-caps: uppercase at 0.85em with 0.07em tracking, because the latin subsets have no smcp or c2sc, so small caps are never synthesised\n\nInside heritage, Button, Input, chips, StatusBadge, the focus ring, control radius and date and score formats keep base styling. test/unit/heritage-css.test.ts asserts that Instrument Serif is unreachable inside [data-theme=heritage], that Caslon is referenced only by --font-display, and that no control selector is restyled. test/unit/heritage-budget.test.ts sums the woff2 files the scope imports. Nothing renders the heritage scope outside the fixture page until slice 31.",
+   "files": [
+    "package.json",
+    "package-lock.json",
+    "src/styles/themes/heritage.css",
+    "src/components/ThemeScope.tsx",
+    "src/index.css",
+    "test/unit/heritage-css.test.ts",
+    "test/unit/heritage-budget.test.ts",
+    "REDESIGN_STATUS.md"
+   ],
+   "acceptance": [
+    "Gate green",
+    "heritage-budget: the woff2 files the scope imports (normal faces) total 110 KB or less",
+    "heritage-css: no Instrument Serif inside [data-theme=heritage]; Caslon bound only through --font-display; .small-caps uses the uppercase fallback, not font-variant-caps; controls not restyled",
+    "heritage.css is a separate lazy chunk (build output check)",
+    "REDESIGN_STATUS.md records this slice's AC/K row, any deviation and each resolved verify item"
+   ],
+   "verify_items": [
+    {
+     "item": "Latin subset keeps smcp / c2sc (verify in the brief)",
+     "finding": "No. GSUB features: the Source Serif 4 latin wght and opsz files have ccmp, dnom, frac, liga, locl, numr, pnum and tnum; Libre Caslon Display latin 400 has dnom, frac, liga and numr. Use the uppercase 0.85em fallback as the brief directs."
+    },
+    {
+     "item": "Heritage font budget",
+     "finding": "Caslon latin 400: 24,236 bytes. Source Serif 4 latin wght normal: 50,824; italic: 51,516; opsz normal: 122,360. Caslon plus the wght file is about 75 KB."
+    },
+    {
+     "item": "Fontsource package names",
+     "finding": "@fontsource/libre-caslon-display and @fontsource-variable/source-serif-4 both resolve at 5.3.0."
+    }
+   ],
+   "flags": [
+    "themeHeritage",
+    "newLook"
+   ],
+   "migrations": [],
+   "tests": [
+    "test/unit/heritage-css.test.ts",
+    "test/unit/heritage-budget.test.ts"
+   ],
+   "risks": [
+    "Fallback metric overrides need tuning against the real fonts; CLS is measured in slice 31 once the layout applies the scope"
+   ],
+   "estimated_size": "small"
+  },
+  {
+   "name": "ws01-31-heritage-layout",
+   "order": 31,
+   "brief": "Ship the Heritage Club scope on its six pages behind themeHeritage. src/layouts/HeritageLayout.tsx is a lazy layout route in App.tsx. It wraps AboutPage, BoardPage, BylawsPage, MinutesPage, AnnualMeetingPage and ChampionsPage in ThemeScope scope=\"heritage\", keeping GovLayout inside, and is active only when FEATURES.themeHeritage is on. With the flag off, the route elements are exactly as today. AboutPage keeps slice 28's LcaLogo on its white or cream mat inside the scope. GovernanceDocuments (src/areas/governance/components) wraps its form and the lazy RichTextEditor in ThemeScope scope=\"base\", the data-theme=\"\" reset, only when themeHeritage is on, and the wrapper uses display: contents, so the flag-off DOM and layout are unchanged. New ornaments: ThickThinRule.tsx (a CSS thick-thin rule) and Seal.tsx (an SVG built from LcaMark, brand gold used only as a rule or seal). themeScopes.test.ts is extended to extract every route path from App.tsx and fail if any admin, workspace, manage, dashboard, account or board inbox route resolves to heritage. test/unit/governanceEditors.test.tsx renders RichTextEditor and the GovernanceDocuments form inside HeritageLayout and asserts that the closest [data-theme] above each is \"\", and that with themeHeritage off no ThemeScope wrapper is rendered. test/a11y/heritage.spec.ts has three parts: the heritage CSS chunk and font files never appear in the / network log; CLS on /about and /governance/bylaws stays under 0.1 across the font swap; and element screenshots of Button, Input, StatusBadge and a focused control, taken in the same run inside heritage and base, are pixel-identical.",
+   "files": [
+    "src/layouts/HeritageLayout.tsx",
+    "src/App.tsx",
+    "src/components/ThickThinRule.tsx",
+    "src/components/Seal.tsx",
+    "src/areas/governance/components/GovernanceDocuments.tsx",
+    "src/lib/themeScopes.ts",
+    "src/pages/fixtures/ScopeFixturePage.tsx",
+    "test/unit/themeScopes.test.ts",
+    "test/unit/governanceEditors.test.tsx",
+    "test/a11y/heritage.spec.ts",
+    "REDESIGN_STATUS.md"
+   ],
+   "acceptance": [
+    "AC11: the heritage font chunk never appears in the / network log, and CLS on /about and /governance/bylaws stays under 0.1 across the font swap",
+    "AC12: the route-to-scope test fails if any workspace or admin route resolves to heritage; the render test finds the closest data-theme above RichTextEditor and the GovernanceDocuments form is \"\"; no Instrument Serif renders inside heritage and Caslon is bound only to --font-display (checked on the rendered pages)",
+    "AC13: Button, Input, StatusBadge and the focus ring render pixel-identical inside heritage and base (same-run element screenshots)",
+    "Gate green",
+    "With themeHeritage off, the App.tsx route elements are unchanged and GovernanceDocuments renders no extra wrapper",
+    "REDESIGN_STATUS.md records this slice's AC/K row, any deviation and each resolved verify item"
+   ],
+   "verify_items": [
+    {
+     "item": "Pages and editors exist",
+     "finding": "AboutPage, BoardPage, BylawsPage, MinutesPage, AnnualMeetingPage and ChampionsPage are lazy routes in App.tsx (/about, /governance/board, /governance/bylaws, /governance/minutes, /meeting, /champions). GovLayout, GovernanceDocuments and RichTextEditor moved to src/areas/governance/components in slice 19; GovernanceDocuments lazy-loads RichTextEditor and is used by MinutesPage."
+    }
+   ],
+   "flags": [
+    "themeHeritage",
+    "newLook"
+   ],
+   "migrations": [],
+   "tests": [
+    "test/unit/themeScopes.test.ts",
+    "test/unit/governanceEditors.test.tsx",
+    "test/a11y/heritage.spec.ts"
+   ],
+   "risks": [
+    "Tiptap in jsdom may need DOM shims (getClientRects, elementFromPoint) for the render test",
+    "Screenshot comparisons are font-rendering sensitive across machines; they compare within one run, so they never compare against a stored baseline"
+   ],
+   "estimated_size": "medium"
+  },
+  {
+   "name": "ws01-32-a11y-sweep-close-out",
+   "order": 32,
+   "brief": "Run AC1 and close out WS01. Merge checkpoint D follows (sub-PR 4 = slices 20 to 32). test/a11y/scopes.spec.ts is the full matrix. It covers /, /tournaments, the seeded tournament detail page, /clubs, /membership, /scholastic, /about, /governance/minutes and /champions, each in four modes on the a11y-on build:\n- light\n- dark (.dark on <html>)\n- live and heritage (data-theme set on <main> through page.evaluate, so every page's real content is tested under each token set)\n\nIt also covers the scholastic fixture page. @axe-core/playwright runs with tags wcag2a, wcag2aa, wcag21a, wcag21aa and wcag22aa. The spec fails on any serious or critical violation and prints the rule, selector, page and mode.\n\nFix every violation inside WS01's scope: tokens under data-look=new first, shared components second, then the page class that causes it. Every fix is token-level or gated on data-look=new or a flag, so the a11y-off baseline stays unchanged; an ungated fix is allowed only when it changes nothing visible (an accessible name, a heading level, a scope attribute) and is listed. There is no nav or homepage redesign here; anything bigger is recorded as a follow-up for the owning workstream. Run the whole browser suite green (smoke, tokens, scope-switch, components, chess-data, brand, home, heritage, scopes).\n\nUpdate REDESIGN_STATUS.md:\n- each of AC1 to AC14 and K1a to K6 with the slice and test that proves it (K1d as K answered)\n- deviations, verify items, and every flag with what K should look at on the preview\n- follow-ups:\n  - retiring the tournaments.sections and round_schedule JSON columns and the 0053 sync trigger\n  - tournament_games.section_id\n  - per-section cap enforcement, holds, the schedule picker and the family member limit in WS06\n  - the contracts-pending count\n  - pages to thin in WS05, WS06 and WS08, with ScrollPanel applied to long screens such as tournament setup\n  - the AdminEmailPage logo\n  - the AC9 live check\n  - the e2e specs once WS06 and WS07 exist\n\nWrite the PR text in plain language, with no AI references, no attribution lines, no internal workflow terms and no em dashes.",
+   "files": [
+    "test/a11y/scopes.spec.ts",
+    "src/index.css",
+    "src/components/**",
+    "src/areas/**",
+    "src/pages/**",
+    "REDESIGN_STATUS.md"
+   ],
+   "acceptance": [
+    "AC1: zero serious or critical axe violations on all nine routes in light, dark, live and heritage, plus the scholastic fixture page",
+    "Gate green, and npm run test:a11y green",
+    "The a11y-off baseline from slice 20 is unchanged after the fixes; every ungated fix is listed in REDESIGN_STATUS.md with why nothing visible changed",
+    "REDESIGN_STATUS.md maps every acceptance criterion and K decision to a passing test or, for AC7's preview score and AC9's live check, a recorded measurement or a pending K action",
+    "A grep check finds no AI references and no em dashes in any file, commit or PR text WS01 changed"
+   ],
+   "verify_items": [
+    {
+     "item": "AC1 page list against routes",
+     "finding": "All nine routes exist in App.tsx (/, /tournaments, /tournaments/:id, /clubs, /membership, /scholastic, /about, /governance/minutes, /champions); the detail page uses the tournament seeded by scripts/seed/fixtures.sql."
+    }
+   ],
+   "flags": [
+    "newLook",
+    "themeHeritage"
+   ],
+   "migrations": [],
+   "tests": [
+    "test/a11y/scopes.spec.ts",
+    "full npm run test:a11y"
+   ],
+   "risks": [
+    "The number of violations is unknown until the matrix runs; fixes beyond tokens and shared components become follow-ups rather than page redesigns",
+    "Forcing live or heritage tokens onto pages that never wear them is stricter than production, but it is what AC1 asks for"
+   ],
+   "estimated_size": "medium"
+  }
+ ],
+ "sequencing_rationale": "K's structural decisions come first and the design tokens last. Each risky change sits in its own slice, and the work merges from the one branch (redesign/ws01-design-system) in four checkpoints.\n\nPart 1 (slices 1 to 8, checkpoint A) changes nothing at runtime:\n- the preview database with its guard, first, so the branch is never pushed without its own binding (a branch pushed earlier would get a Pages preview bound to production lca-db)\n- the flags, the status map and the jsdom test setup\n- the domain folder with its format helpers, the moved mirror rules and the event-mode phases\n- the Drizzle baseline, with the depth-aware splitSql and a safety test that reads drizzle-kit's real output\n- the contract ratchet (K answers the contracts question before slice 7)\n- an additive migration that creates and backfills the sections and schedules tables\n\nDrizzle comes before the migration so that 0052 is generated, the drift test covers it, and the safety test reads Drizzle's quoted names, ON UPDATE clauses and ADD without COLUMN before any Drizzle SQL lands. migrate-db.yml applies migrations to production on every merge to main, so 0053's triggers, including an AFTER UPDATE trigger on tournaments, keep the tables in step with every write the old code makes for the whole soak. Tier prices are never stored as copies of tournament columns, so edits to deadlines and fees need no sync. Checkpoint A does not merge until K has pasted the preview id, and K migrates lca-db-preview from the branch before reviewing each checkpoint's preview.\n\nPart 2 (slices 9 to 15, checkpoint B) makes the data change dual-path:\n- the single writer first, writing table rows and then the JSON mirror in today's shape, in one Drizzle batch\n- the readers in four small groups: player registration, admin entry, server display, client\n- then schedules, then the pricing decision\n\nAt every point the JSON column is a complete mirror, so any reader commit can be reverted alone. The writer, reader and schedule audit tests prove when no JSON reader or raw tournaments response is left. Prices come from the section row plus the live tournament columns, so existing pricing tests stay green. The member-discount retirement and requires_lca_membership get their own slice, because the server price change cannot sit behind a frontend flag and waits for K's production query.\n\nPart 3 (slices 16 to 19, checkpoint C) does the folder moves by script with renames-only commits:\n- server helpers\n- client lib (the domain shims stay in src/lib)\n- the api.ts split behind a barrel\n- components plus boundary lint\n\nThe moves come after the data work so they do not rebase over semantic edits, and before the codemods and component work so those land on final paths. Each move is checked by the gate, the Pages Functions build, the worker dry-run and verify-move.\n\nPart 4 (slices 20 to 32, checkpoint D) is the design system:\n- the Playwright harness first, because every later design slice adds browser checks and compares against its flag-off baseline; it also carries the planned family-registration and publish-round e2e specs\n- then tokens, scope mechanism, the two semantic colour codemods, gold-ink, components, chess data, brand marks, hero and images, heritage fonts, heritage layout\n- the AC1 sweep last, because it tests everything before it\n\nEverything visible depends on data-look=\"new\" or themeHeritage. Legacy token values equal today's colours, focus ring and mono font stack, and the pre-paint script is only built in when newLook is on, so these slices merge with nothing visible.\n\nExactly-one mapping:\n\n| Item | Slice |\n|---|---|\n| AC9 | 1 |\n| AC3 | 21 |\n| AC8 | 22 |\n| AC2 | 25 |\n| AC5, AC14 | 26 |\n| AC6 | 27 |\n| AC10 | 28 |\n| AC4, AC7 | 29 |\n| AC11, AC12, AC13 | 31 |\n| AC1 | 32 |\n| K1a (domain folder and format) | 3 |\n| K1b (pricing, eligibility, minor name rule) | 4 |\n| K1c (event-mode phases) | 5 |\n| K4 (Drizzle) | 6 |\n| K1d (contracts; partial: ratchet until K answers) | 7 |\n| K2a (tables and backfill) | 8 |\n| K2b (single writer) | 9 |\n| K2c (player readers) | 10 |\n| K2d (admin readers) | 11 |\n| K2e (server display readers) | 12 |\n| K2f (client readers) | 13 |\n| K2g (schedules) | 14 |\n| K6 (no member pricing, membership requirement) | 15 |\n| K3a (server move) | 16 |\n| K3b (client lib) | 17 |\n| K3c (api split) | 18 |\n| K3d (components and thin-page rules) | 19 |\n| K5 (Playwright e2e) | 20 |",
+ "deviations_from_brief": [
+  "Structural slices 3 to 19 (domain folder, Drizzle, contracts, sections and schedules tables, the member-pricing decision, folder moves) come ahead of the design tokens, per K's October 8 decisions. The brief's WS01 says 'Data model: none' and 'API: none'.",
+  "The preview database slice is first and the branch is not pushed before it, so no branch preview is ever bound to production. The committed wrangler.toml carries the placeholder REPLACE_WITH_LCA_DB_PREVIEW_ID, as instructed, even though repo-facts.md records an id for lca-db-preview (28e13174-3a06-47a7-ab0f-b4ac7f24af6f). K confirms and pastes it, and checkpoint A does not merge before he does. The preview block repeats all 10 [vars] keys and the R2 binding, because Pages does not inherit them.",
+  "The brief says K applies remote migrations. In fact .github/workflows/migrate-db.yml applies migrations/** to lca-db on every merge to main, so each checkpoint carrying 0052 to 0054 reaches production on merge. The preview database is migrated only by K's db:migrate:preview, run from the branch before he reviews each checkpoint's preview.",
+  "The shared folder is domain/ at the repo root, imported as @domain in src and by relative path in functions and workers. Formatting helpers live in domain/format, and src/lib/format.ts is a re-export so the brief's path still works. zod is allowed only in domain/contracts, so domain logic the browser imports never brings zod into the bundle.",
+  "Event-mode phases are built as a pure module in domain/events/eventMode.ts in WS01 (K's domain-folder decision), not functions/utils/eventMode.ts in WS02. WS02 still builds the endpoint, the copy builder and the strip on top of it.",
+  "Mirrored helpers (sectionRules, time, pricing, regions, family size) collapse into domain/ with one-line shims that stay in src/lib and functions/utils. test/unit/mirrors.test.ts is replaced by a single-definition test, and membership tier prices move out of checkout.ts into domain/membership/tiers.ts.",
+  "The minor display-name rule follows DESIGN_REPLAN_phase1 (an active guardian link, or an entry marked under 18), not 'is a household dependent'.",
+  "The daily-emails worker is folded into typecheck:functions so the gate catches its imports, and deploy-worker.yml also triggers on domain/**.",
+  "functions/api route files do not move, because their paths are URLs. Server helpers are grouped under functions/utils/<area>/, and client code under src/areas/<area>/. Areas are K's seven plus governance; platform files stay at the root. Scanner code (functions/utils/scan, src/lib/scanner) stays put to avoid triggering the scanner protocol.",
+  "src/lib/api.ts is split by area but kept as a re-exporting barrel, so importers do not change in WS01. route-audit is widened to every area api.ts.",
+  "Thin pages: WS01 moves components and library code and adds boundary lint rules (cross-area imports at warn level). The big existing pages are decomposed when WS05, WS06, WS08 and WS15 rebuild them.",
+  "Contracts are a ratchet unless K asks for full coverage. WS01 writes contracts and contract tests for every endpoint it touches, the coverage test fails for any new endpoint without one, and the pending list can only shrink. K1d is labelled 'partial: ratchet' until K answers; if he wants all 88 endpoints, a sweep slice is added before checkpoint D. The two page routes (functions/tournaments/[id].ts and functions/clubs/[id].ts) serve HTML and are excluded from the contract list with that reason.",
+  "Drizzle conversion of old queries uses a narrow meaning of 'touched': a query converts when a slice changes its SQL text or bound values. Queries whose rows are only post-processed differently stay as raw D1. When a converted statement shares a batch, the whole batch moves to Drizzle's db.batch.",
+  "Sections and schedules become tables: tournament_sections with fee_regular (null inherits the tournament entry fee), optional explicit fee_early and fee_late, and a cap; tournament_schedules with merge_round and is_primary; tournament_schedule_rounds; and registrations.section_id and schedule_id. These replace DESIGN_REPLAN_phase1 8.1's schedules JSON column, tournaments.merge_round and the cap key in the JSON. Early and late prices are derived at read time from the tournament's live deadline and fee columns unless a section sets an explicit tier price, so no tier price is a frozen copy. The JSON columns are kept as mirrors in today's exact shape (no ids, caps or fee objects) and nothing is dropped. tournament_games keeps section names in WS01; a section_id there is a follow-up for WS07.",
+  "The 0053 AFTER UPDATE trigger on tournaments that syncs sections and rounds from the JSON stays in place after checkpoint B instead of being dropped there, because dropping it at a merge would reopen the deploy-window gap where old code still writes JSON. It never touches caps or ids, agrees with the single writer (which writes the table first and the JSON last), and is retired together with the JSON columns.",
+  "Member pricing is retired. tournaments.member_discount is kept but neither read nor written, and the member-discount input and the 'LCA members save' line are removed without a flag, because keeping them would advertise a price that is not charged. requires_lca_membership (default 1, never 0 on an LCA-run event) is accepted on tournament creation and edit, and a FORCE_LCA_MEMBERSHIP constant exists for a possible board rule. Only an LCA admin or the owning club's rep may change it; an assigned TD may not. Its setup toggle is WS08, and enforcement at checkout is WS06.",
+  "With newLook on, the homepage hero renders one static responsive image instead of HeroSlideshow. WS03 replaces the hero entirely.",
+  "hero.png is not run through the image pipeline, because nothing imports it.",
+  "AC7's Lighthouse score of 90 or more is a recorded lab measurement (npm run perf:home plus K's preview run), not a gate. The 200 KB LCP image limit is gated.",
+  "AC13's visual test compares element screenshots taken in the same run (base versus heritage) instead of against stored baselines.",
+  "AC1's live and heritage runs force data-theme onto each page's <main> in the test, since few routes wear those scopes in WS01.",
+  "The a11y suite runs against local Pages builds on seeded local D1, with flags forced on through VITE_FLAGS only in a11y mode. Production ignores the override, and a test proves it. The flag-off build's computed colours and fonts are recorded once as a baseline that later slices must not change.",
+  "Geist Mono is applied only under data-look=new through an intermediate variable; with the flag off, font-mono keeps the OS mono stack. The legacy focus token reproduces today's ring exactly.",
+  "The Appearance control sits in the current Footer behind newLook until WS02 rebuilds the footer, and its pre-paint script is only built in when newLook is on. The current Navbar shows LcaMark under newLook to meet D1 before WS02. The full-colour logo is placed on /about under newLook; the AC10 placements that do not exist yet (identity band, membership card, certificates, print kit cover) and ChampionsPage are deferred to WS03, WS10 and WS12.",
+  "ResultCell draws the White and Black markers as SVG, because the Geist Mono latin subset has no ○ or ● glyphs.",
+  "Small caps use the uppercase 0.85em fallback, because the latin subsets of Source Serif 4 and Libre Caslon Display have no smcp or c2sc. Source Serif 4 uses its wght-axis file (51 KB), not the opsz file (122 KB), to stay under the 110 KB budget.",
+  "Drizzle writes into a staging folder (drizzle/), and a wrapper script numbers each file into migrations/, so wrangler and the test runner do not change. migration-safety.test.ts is extended to read drizzle-kit's quoted identifiers, ON UPDATE clauses and ADD without COLUMN, and splitSql now tracks BEGIN, CASE and END depth so triggers with CASE expressions split correctly.",
+  "Added from K's October 8 feedback: a ScrollPanel primitive and a bounded table scroll container, so long screens such as tournament setup stay together. They are applied as the owning workstreams rebuild those pages.",
+  "WS01 adds no new endpoints, so there are no new-endpoint role-safety tests. Role-safety cases are added to the changed endpoints: the admin tournament POST and PATCH (sections, requires_lca_membership, including the TD case), walk-ins and waitlist.",
+  "The Playwright e2e tests for registering a family and publishing a round are written as fixme specs with a dispatch-only preview workflow. They can run only once WS06 and WS07 exist and the preview database is migrated and seeded."
+ ],
+ "open_questions_for_k": [
+  "Contracts (needed before slice 7 starts): do you want zod contracts and contract tests for all 88 endpoints inside WS01? The plan covers every endpoint WS01 touches and blocks new ones without a contract, and the rest are converted as later workstreams touch them. If you want all of them now, I add a sweep slice before the last merge.",
+  "Preview database: can you confirm that 28e13174-3a06-47a7-ab0f-b4ac7f24af6f is the id of lca-db-preview, and paste it over the placeholder in wrangler.toml (or tell me to)? Should previews keep the production club-logo bucket, or will you create lca-club-logos-preview? Are the Pages preview secrets Stripe test keys, and is the Resend key safe to use there? Previews share Supabase logins with production either way.",
+  "Preview links in emails: should SITE_URL on previews stay the production address (emails sent from a preview link to the live site), or point at the preview?",
+  "Member discount: before the second merge, please run this on production: SELECT id, name, member_discount FROM tournaments WHERE member_discount > 0 AND status != 'completed'. If it returns nothing, the member discount is retired as planned, even though that server-side change cannot sit behind a flag. If it returns rows, should those events keep the discount until they finish?",
+  "LCA membership requirement: the plan sets it on for every existing and new event. Only club-run events can switch it off, and only the club's own rep or an LCA admin can do that; a tournament director assigned to the event cannot. Is that right, or should existing club-run events start with it off, or should directors be allowed to change it?",
+  "Dark mode: once newLook is on, should the site follow the phone or computer setting right away? The plan converts the existing pages' colours first (slices 23 and 24). A separate darkMode flag would let you turn the new look on before dark mode.",
+  "Removing a section that already has entries: the plan archives it quietly. The entries keep their section, results still group correctly, and new entries cannot pick it. Should setup refuse the removal instead?",
+  "Merging in four parts: are you OK with part 1 (no visible change, migrations 0052 and 0053) merging to main early? The migrate workflow then applies it to production on merge, so the new tables exist before any code reads them. You would also run db:migrate:preview from the branch before reviewing each part's preview."
+ ]
+}

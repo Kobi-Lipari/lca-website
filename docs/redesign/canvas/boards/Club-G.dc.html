@@ -1,0 +1,492 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Club page · G · Club-G · Club site (round 3)</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/6107adb451dbab26ee5d89f4189b81f8">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1a2744}
+.cg-root{box-sizing:border-box;padding:16px 0 16px;background:#ecebe6;color:#1a2744}
+.cg-root *{box-sizing:border-box}
+.cg-doc{margin:0 40px;background:#fbfaf6;border:1px solid #d9d8d1;border-radius:14px;padding:14px 22px 14px}
+.cg-doc-top{display:flex;justify-content:space-between;align-items:flex-start;gap:26px}
+.cg-title{font-size:32px;line-height:1.15;font-weight:700;letter-spacing:-.015em;margin:6px 0 0}
+.cg-ml{font-size:12.5px;line-height:1.4;color:#3d4556;margin:2px 0 0}
+.cg-ml b{color:#1a2744;font-weight:600}
+.cg-round{display:inline-flex;align-items:center;height:26px;padding:0 10px;border-radius:6px;background:#1a2744;color:#ffffff;font-size:12.5px;font-weight:700;letter-spacing:.04em}
+.cg-grey{flex:none;width:600px;background:#efefea;border:1px solid #dfded6;border-radius:10px;padding:12px 14px;display:grid;grid-template-columns:1fr 1fr;gap:10px 16px}
+.cg-grey > div > p + p{margin-top:8px}
+.cg-grey p{font-size:11.5px;line-height:1.4;color:#2b3446;margin:0}
+.cg-grey b{display:block;font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#555c6b;margin-bottom:2px}
+.cg-grey ol{margin:0;padding-left:16px;font-size:11.5px;line-height:1.4;color:#2b3446}
+.cg-grey li{margin-bottom:4px}
+.cg-lbox{background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:10px 16px 10px;margin-top:10px}
+.cg-notes{list-style:none;margin:6px 0 0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px 22px}
+.cg-notes li{display:flex;gap:8px;align-items:flex-start;font-size:11.5px;line-height:1.4;color:#2b3446}
+.cg-notes .k-num-badge{width:20px;height:20px;font-size:11px}
+.cg-notes b{font-weight:600;color:#1a2744}
+.cg-data{margin:10px 0 0;padding-top:8px;border-top:1px solid #ecebe5;font-size:11.5px;line-height:1.45;color:#555c6b}
+.cg-data code,.cg-mono{font-family:"Geist Mono",ui-monospace,monospace;font-size:11.5px;color:#2b3446}
+.cg-flab{display:flex;align-items:center;gap:12px;margin:16px 40px 8px}
+.cg-flab h2{white-space:nowrap;margin:0;font-size:19px;line-height:1.2;font-weight:600;letter-spacing:-.01em}
+.cg-code{display:inline-flex;align-items:center;justify-content:center;min-width:28px;height:28px;padding:0 9px;border-radius:7px;background:#c8a94a;color:#1a2744;font-weight:700;font-size:13px}
+.cg-urlchip{white-space:nowrap;font-family:"Geist Mono",ui-monospace,monospace;font-size:12px;color:#3d4556;background:#ffffff;border:1px solid #d9d8d1;border-radius:7px;padding:4px 10px;margin-left:auto}
+.cg-frame{width:1440px;background:#ffffff;border-top:1px solid #cfcec6;border-bottom:1px solid #cfcec6;box-shadow:0 20px 50px rgba(16,24,43,.10)}
+.cg-frame .k-browser-url{max-width:760px}
+.cg-nb{width:24px;height:24px;font-size:12px}
+.cg-nbs{width:20px;height:20px;font-size:10.5px;vertical-align:middle}
+.cg-anno{display:flex;gap:8px;align-items:flex-start;border:1px dashed #b9b7ad;border-radius:10px;background:#fbfbf8;padding:7px 11px;font-size:12.5px;line-height:1.45;color:#3d4556;margin:0}
+.cg-anno b{color:#1a2744;font-weight:600}
+/* decided header and footer */
+.cg-hd-in{gap:0;position:relative}
+.cg-hd .k-brand{margin-right:16px}
+.cg-rook{width:30px;height:30px;fill:#ffffff;flex:none}
+.cg-rook-sm{width:24px;height:24px}
+.cg-nav{gap:0}
+.cg-nav a{padding:0 10px;white-space:nowrap}
+.cg-navbtn{display:inline-flex;align-items:center;gap:4px;min-height:44px;padding:0 10px;border:0;background:transparent;color:#ffffff;font:inherit;font-size:15px;font-weight:500;cursor:pointer}
+.cg-sbtn{display:inline-flex;align-items:center;gap:8px;width:200px;height:44px;padding:0 8px 0 12px;margin-right:14px;border-radius:8px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.45);color:#ffffff;text-decoration:none;font-size:14.5px;font-weight:500;flex:none}
+.cg-kbd{margin-left:auto;font-family:"Geist Mono",ui-monospace,monospace;font-size:12px;color:#e8ecf4;border:1px solid rgba(255,255,255,.4);border-radius:5px;padding:2px 6px;line-height:1.2}
+.cg-util{gap:10px}
+.cg-util .k-ulink{padding:0 4px}
+.cg-foot-in{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px;padding-top:18px;padding-bottom:20px}
+.cg-foot .k-meta{color:rgba(255,255,255,.78)}
+.cg-foot nav a{font-size:14px}
+/* club page */
+.cg-band{height:8px;background:#2f6b4f}
+.cg-crumbs{display:flex;flex-wrap:wrap;gap:8px;font-size:13px;color:#555c6b;padding:8px 0 8px}
+.cg-crumbs a{color:#1a2744}
+.cg-cover{position:relative;height:340px;overflow:hidden;background:#2f6b4f}
+.cg-cover img{position:absolute;left:0;top:0;width:100%;height:100%;object-fit:cover;object-position:center 40%}
+.cg-shade{position:absolute;left:0;top:0;right:0;bottom:0;background:linear-gradient(180deg,rgba(16,24,43,.18) 0%,rgba(16,24,43,.22) 34%,rgba(28,64,48,.86) 72%,#2f6b4f 100%)}
+.cg-photolab{position:absolute;left:24px;top:16px;display:inline-flex;align-items:center;gap:6px;background:rgba(16,24,43,.78);color:#ffffff;border-radius:6px;padding:5px 10px;font-size:12px;font-weight:500}
+.cg-covtag{position:absolute;right:24px;top:16px}
+.cg-cover-in{position:absolute;left:0;right:0;bottom:0}
+.cg-cover-row{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;padding-bottom:28px}
+.cg-idrow{display:flex;align-items:flex-end;gap:22px}
+.cg-logo{width:112px;height:112px;border-radius:18px;background:#ffffff;padding:8px;box-sizing:border-box;box-shadow:0 8px 24px rgba(16,24,43,.25);position:relative;flex:none}
+.cg-logo .k-img{width:100%;height:100%;border-radius:11px;font-size:11.5px}
+.cg-logo .k-num-badge{position:absolute;right:-10px;top:-10px}
+.cg-h1{font-size:44px;line-height:1.05;font-weight:700;letter-spacing:-.02em;color:#ffffff;margin:0}
+.cg-city{font-size:18px;line-height:1.4;color:#ffffff;margin:8px 0 2px}
+.cg-cbtns{display:flex;gap:10px;align-items:center}
+.cg-btn-wline{background:transparent;color:#ffffff;border-color:#ffffff}
+.cg-btn-wghost{background:transparent;color:#ffffff;border-color:transparent;padding:0 10px}
+.cg-author{background:#fbfaf6;border-bottom:1px solid #ecebe6}
+.cg-author-in{display:flex;align-items:center;gap:14px;min-height:44px;font-size:13.5px;color:#3d4556;flex-wrap:nowrap}
+.cg-author-in b{color:#1a2744;font-weight:600}
+.cg-sep{width:1px;height:16px;background:#d6d5cd}
+.cg-ok{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;background:#2f6b4f;color:#ffffff;flex:none}
+.cg-sug{font-size:13.5px;font-weight:600;color:#1a2744;text-decoration:underline;text-decoration-color:#c8a94a;text-decoration-thickness:2px;text-underline-offset:3px;white-space:nowrap}
+.cg-prop{display:inline-flex;align-items:center;padding:3px 8px;border-radius:6px;border:1px dashed #1a2744;background:#ffffff;color:#1a2744;font-size:11.5px;font-weight:700;white-space:nowrap}
+.cg-snav{background:#ffffff;border-bottom:1px solid #e4e2db;box-shadow:0 4px 12px rgba(16,24,43,.05)}
+.cg-snav-in{display:flex;align-items:center;justify-content:space-between;gap:20px}
+.cg-sl{display:flex;gap:2px}
+.cg-sl a{display:inline-flex;align-items:center;gap:6px;min-height:52px;padding:4px 14px 0;font-size:15px;font-weight:600;color:#555c6b;text-decoration:none;border-bottom:3px solid transparent;white-space:nowrap}
+.cg-sl a.on{color:#1a2744;border-bottom-color:#2f6b4f}
+.cg-sec{padding:16px 0}
+.cg-frame .k-h2{font-size:25px}
+.cg-cream{background:#fbfaf6;border-top:1px solid #ecebe6;border-bottom:1px solid #ecebe6}
+.cg-h{display:flex;align-items:center;gap:10px;margin:0}
+.cg-bar{width:6px;height:24px;border-radius:3px;background:#2f6b4f;flex:none}
+.cg-two{display:grid;grid-template-columns:760px 420px;justify-content:space-between;align-items:start}
+.cg-about p{font-size:17px;line-height:1.55;color:#1a2744;margin:0}
+.cg-about p + p{margin-top:10px}
+.cg-side{display:flex;flex-direction:column;gap:10px}
+.cg-sc{background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:11px 16px;display:flex;flex-direction:column;gap:4px}
+.cg-sc p{margin:0;font-size:14px;line-height:1.5;color:#1a2744}
+.cg-muted-i{color:#555c6b;font-style:italic}
+.cg-say{background:#ffffff;border:1px solid #dddcd4;border-left:5px solid #2f6b4f;border-radius:12px;padding:16px 22px 16px}
+.cg-say p{font-size:19px;line-height:1.5;color:#1a2744;margin:6px 0 0}
+.cg-told{display:flex;align-items:center;gap:8px;font-size:13px;color:#555c6b;margin:10px 0 0}
+.cg-map{position:relative;height:160px;border-radius:12px;overflow:hidden}
+.cg-road{position:absolute;background:#ffffff;border:1px solid #d9dee5}
+.cg-river{position:absolute;border-radius:40px;background:#cfe0ea}
+.cg-mpin{position:absolute;width:28px;height:28px;margin:-14px 0 0 -14px;border-radius:50%;background:#1a2744;color:#ffffff;border:2px solid #ffffff;box-shadow:0 2px 6px rgba(26,39,68,.35);font-size:12.5px;font-weight:700;display:flex;align-items:center;justify-content:center}
+.cg-mlab{position:absolute;background:#ffffff;border:1px solid #e4e2db;border-radius:6px;padding:2px 7px;font-size:11.5px;font-weight:600;color:#1a2744;white-space:nowrap}
+.cg-venue{display:grid;grid-template-columns:24px minmax(0,1fr);gap:10px;align-items:start;padding:9px 0;border-bottom:1px solid #ecebe6;font-size:13px;line-height:1.45;color:#3d4556}
+.cg-venue:last-of-type{border-bottom:0}
+.cg-venue b{color:#1a2744;font-weight:600;font-size:14px}
+.cg-vno{width:24px;height:24px;border-radius:50%;background:#1a2744;color:#ffffff;font-size:11.5px;font-weight:700;display:flex;align-items:center;justify-content:center}
+.cg-ev{display:grid;grid-template-columns:58px minmax(0,1fr) 128px;gap:16px;align-items:start;padding:11px 0;border-bottom:1px solid #e4e2db}
+.cg-ev:last-of-type{border-bottom:0}
+.cg-dt{display:flex;flex-direction:column;gap:6px;align-items:flex-start}
+.cg-dt .k-date{width:58px;min-height:58px}
+.cg-dt .k-date b{font-size:21px;color:inherit}
+.cg-dtt{font-size:12.5px;font-weight:600;line-height:1.3;color:#1a2744}
+.cg-ev h3{font-size:17px;line-height:1.3;font-weight:600;margin:0;color:#1a2744}
+.cg-ev p{margin:0}
+.cg-ev .k-row-sm{margin-bottom:3px}
+.cg-act{display:flex;flex-direction:column;align-items:flex-end;gap:8px;padding-top:4px}
+.cg-out{color:#1a2744;font-size:13.5px;font-weight:600;text-decoration:underline;text-decoration-color:#9aa1b0;text-underline-offset:3px;text-align:right}
+.cg-fill{display:inline-block;width:100px;height:6px;border-radius:3px;background:#e6e5de;vertical-align:middle;margin-left:8px;overflow:hidden}
+.cg-fill i{display:block;height:100%;background:#2f6b4f}
+.cg-empty{border:1.5px dashed #b9b7ad;border-radius:10px;background:#fbfbf8;padding:8px 12px;font-size:13px;color:#3d4556;margin:10px 0 0}
+.cg-post{padding:10px 0;border-bottom:1px solid #e4e2db;display:flex;flex-direction:column;gap:4px}
+.cg-post:last-of-type{border-bottom:0}
+.cg-post h3{font-size:17px;line-height:1.3;font-weight:600;margin:0}
+.cg-post h3 a{color:#1a2744;text-decoration:none}
+.cg-post p{margin:0}
+.cg-photos{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:18px;margin-top:16px}
+.cg-ph{display:flex;flex-direction:column;gap:7px}
+.cg-ph .k-img,.cg-ph img{width:100%;height:124px;border-radius:10px;display:block;object-fit:cover}
+.cg-ph span{font-size:13.5px;line-height:1.4;color:#1a2744}
+.cg-ph small{font-size:11.5px;color:#555c6b}
+.cg-ts{display:flex;align-items:center;gap:12px;width:250px;height:46px;padding:0 14px;border:1px solid #d6d5cd;border-radius:6px;background:#fafaf7;font-size:13.5px;color:#3d4556}
+.cg-ts i{display:block;width:22px;height:22px;border:2px solid #858b99;border-radius:4px;background:#ffffff;flex:none}
+.cg-ts span{margin-left:auto;font-size:11px;color:#555c6b;text-align:right;line-height:1.25}
+.cg-near{display:flex;flex-direction:column;gap:0;padding:6px 0;border-bottom:1px solid #ecebe6;font-size:12.5px;line-height:1.4;color:#3d4556}
+.cg-near:last-of-type{border-bottom:0}
+.cg-near a{font-weight:600;color:#1a2744;font-size:14.5px}
+.cg-sitefoot{background:#edf4f0;border-top:1px solid #d6e3db}
+.cg-sitefoot-in{display:flex;align-items:center;gap:12px;min-height:56px;font-size:13.5px;color:#3d4556}
+.cg-sitefoot-in b{color:#1a2744}
+.cg-minilogo{width:30px;height:30px;border-radius:8px;background:#ffffff;border:1px solid #d6e3db;padding:3px;flex:none}
+.cg-minilogo .k-img{width:100%;height:100%;border-radius:5px;padding:0}
+/* search and sharing panel */
+.cg-panel{margin:14px 40px 0;background:#ffffff;border:1px solid #dddcd4;border-radius:14px;padding:14px 18px 16px}
+.cg-pgrid{display:grid;grid-template-columns:236px 296px 424px minmax(0,1fr);gap:14px;margin-top:10px;align-items:start}
+.cg-tile{border:1px solid #e4e2db;border-radius:10px;padding:10px 12px;background:#fbfbf8;display:flex;flex-direction:column;gap:7px}
+.cg-tl{font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#555c6b;margin:0}
+.cg-tile p{margin:0;font-size:12px;line-height:1.45;color:#3d4556}
+.cg-tile p b{color:#1a2744;font-weight:600}
+.cg-codebox{font-family:"Geist Mono",ui-monospace,monospace;font-size:11px;overflow-wrap:anywhere;line-height:1.45;color:#1a2744;background:#ffffff;border:1px solid #e4e2db;border-radius:7px;padding:6px 9px;margin:0}
+.cg-serp{background:#ffffff;border:1px solid #e4e2db;border-radius:8px;padding:10px 12px;font-family:Arial,Helvetica,sans-serif}
+.cg-serp-src{display:flex;align-items:center;gap:8px}
+.cg-fav{width:26px;height:26px;border-radius:50%;background:#1a2744;display:flex;align-items:center;justify-content:center;flex:none}
+.cg-fav svg{width:15px;height:15px;fill:#ffffff}
+.cg-serp-site{font-size:13px;color:#202124;line-height:1.25}
+.cg-serp-url{font-size:12px;color:#4d5156;line-height:1.25}
+.cg-serp .cg-serp-t{font-size:16px;line-height:1.3;color:#1a0dab;margin:6px 0 3px}
+.cg-serp .cg-serp-d{font-size:12.5px;line-height:1.45;color:#4d5156}
+.cg-og{width:400px;border:1px solid #d6d5cd;border-radius:8px;overflow:hidden;background:#ffffff}
+.cg-og-img{position:relative;width:100%;height:210px;overflow:hidden;background:#2f6b4f}
+.cg-og-img img{width:100%;height:100%;object-fit:cover;display:block}
+.cg-og-img .cg-shade{background:linear-gradient(180deg,rgba(16,24,43,0) 40%,rgba(28,64,48,.9) 100%)}
+.cg-og-cap{position:absolute;left:14px;bottom:12px;right:14px;color:#ffffff}
+.cg-og-cap b{display:block;font-size:20px;line-height:1.15}
+.cg-og-cap span{font-size:13px}
+.cg-og-meta{padding:8px 12px;background:#f0f2f5;font-family:Arial,Helvetica,sans-serif}
+.cg-og-meta small{display:block;font-size:11px;color:#606770;text-transform:uppercase;letter-spacing:.02em}
+.cg-og-meta b{display:block;font-size:14.5px;color:#1d2129;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cg-og-meta span{display:block;font-size:12.5px;color:#606770;line-height:1.35}
+.cg-bub{display:flex;gap:10px;align-items:center;background:#e9e9eb;border-radius:16px;padding:8px 12px 8px 8px;width:300px}
+.cg-bub-img{width:52px;height:52px;border-radius:9px;overflow:hidden;flex:none}
+.cg-bub-img img{width:100%;height:100%;object-fit:cover;display:block}
+.cg-bub b{display:block;font-size:13px;color:#111111;line-height:1.25}
+.cg-bub span{display:block;font-size:11.5px;color:#6b6b70}
+.cg-checks{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.cg-checks li{display:grid;grid-template-columns:20px minmax(0,1fr);gap:7px;font-size:12px;line-height:1.4;color:#3d4556}
+.cg-checks li b{color:#1a2744;font-weight:600}
+.cg-tick{width:20px;height:20px;border-radius:50%;background:#e1f0e7;color:#145b3a;display:flex;align-items:center;justify-content:center;margin-top:1px}
+</style>
+</helmet>
+<div class="cg-root" style="width:1440px;height:3400px">
+
+<section class="cg-doc" aria-label="About this board">
+<div class="cg-doc-top">
+<div>
+<div class="k-row-sm" style="gap:10px"><p class="k-kicker" style="margin:0">9 · Club page · round 3 · option G · part 1 of 2</p><span class="cg-round">ROUND 3</span></div>
+<h1 class="cg-title">Club page · G · Club site</h1>
+<p class="cg-ml" style="margin-top:5px"><b>Built from:</b> Club-B's mini-site (band, tint, logo, Follow, anchor tabs, About, two-venue map, X of Y events, news, relay Contact, Nearby, Share), Club-D's brackets, Club-E's stuck jump links, Club-F's one template.</p>
+<p class="cg-ml"><b>Replaces:</b> Club-D, Club-E, Club-F. Dropped: Next at the club, Next: and Tonight lines, Off tonight, Meets today, Checked / Overdue, Fix, 7 of 8, calendar buttons, skipped dates, Visit steps, Report outdated info, Club facts.</p>
+<p class="cg-ml"><b>K's feedback applied:</b> Fri, Oct 9 "I like the club mini site vision … i dont think we will do a leaderboard" · Tue, Oct 13 "advertise their club well without having to have their own website (so SEO is a must here …)"</p>
+<p class="cg-ml"><b>Shown:</b> /clubs/baton-rouge-chess-club at 1440, Tue, Oct 13, 2026, signed out; search and sharing below. Part 2: editor, thin club, phone, states.</p>
+<p class="cg-ml" style="margin-top:5px"><span class="k-sample">Sample data: colour, logo, photos, Marcus T., Camille Broussard, the club's wording, links, address, club events, news</span></p>
+</div>
+<aside class="cg-grey" aria-label="Board note">
+<div><p><b>What</b>Round-3 option G: Club-B's mini-site drawn as the club's own one-page website: a cover, a nav of its sections, the club's words, photos, events, news and contact. Nothing is computed from a schedule; the club says how it meets in its own words.</p><p><b>Built from</b>Club-B's mini-site, Club-D's brackets, Club-E's stuck jump links, Club-F's one template.</p><p><b>K's feedback applied</b>The club's own advertisement, SEO drawn on the board, no weekly claims, no leaderboard.</p></div>
+<div><p><b>Open for K</b></p><ol><li>Proposal reopening question 20: the club's own rep keeps the page (Marcus T. here); Camille Broussard, the South Central Louisiana representative, and LCA admins can edit any club page. Today's default is that only regional representatives edit; say which.</li><li>A rep's Save publishes at once (drawn), with an email to Camille naming what changed. OK?</li><li>The address is made from the club's name once and kept on rename (old addresses redirect). OK?</li></ol></div>
+</aside>
+</div>
+<div class="cg-lbox">
+<p class="k-label" style="margin:0">Notes on this board</p>
+<ol class="cg-notes">
+<li><span class="k-num-badge">1</span><span><b>Cover, logo, colour and photos are the club's.</b> Cover = photo 1 cropped 1440 × 340, alt = the rep's caption; no photo, the colour tint with the logo. Colour never sets text.</span></li>
+<li><span class="k-num-badge">2</span><span><b>The club's voice is text the rep typed,</b> shown as its statement. No computed next meeting, Tonight, Meets today or freshness badge; the one generated line is "Chess club in {city}, Louisiana".</span></li>
+<li><span class="k-num-badge">3</span><span><b>Proposal, open for K (question 20):</b> the club's rep keeps the page; the regional representative and LCA admins can edit any club page. Today's default would read "Kept by Camille Broussard, the South Central Louisiana representative, with the club".</span></li>
+<li><span class="k-num-badge">4</span><span><b>Events on louisianachess.org carry exact dates and weekdays</b> because they live here; partner events say "Registers on the organizer's site ↗". Follow emails new news and events; no follower count.</span></li>
+<li><span class="k-num-badge">5</span><span><b>Nothing personal is published:</b> no leaderboard, roster, member count, officers or personal emails. Contact relays to the club's private contact, else to the regional representative.</span></li>
+<li><span class="k-num-badge">6</span><span><b>Search and sharing:</b> the panel under the frame. functions/clubs/[id].ts injects og tags today; functions/clubs/[slug].ts also writes the page's HTML and JSON-LD before any script runs.</span></li>
+</ol>
+<p class="cg-data"><b>Data:</b> <code>clubs.slug</code> (stable on rename; <code>club_slug_history</code> 301s old slugs), <code>about_text</code>, <code>how_we_meet_text</code>, <code>cost_text</code>, <code>welcome_text</code>, <code>told_updated_at</code>, <code>club_places</code> (up to two, geocoded once), <code>club_photos</code> (caption = alt), <code>contact_email</code> (private), <code>facebook_url</code>, <code>rep_member_id</code> (proposal), <code>club_follows</code>, <code>club_reports</code>. No club_schedules or last_confirmed_at. New: <code>functions/clubs/[slug].ts</code>, <code>functions/sitemap.xml.ts</code>.</p>
+</div>
+</section>
+
+<div class="cg-flab"><span class="cg-code">A</span><h2>Desktop · Baton Rouge Chess Club · the whole page</h2><span class="k-meta">Tue, Oct 13, 2026, signed out</span><span class="cg-urlchip">/clubs/baton-rouge-chess-club</span></div>
+<div class="cg-frame">
+<div class="k-browser-bar"><i></i><i></i><i></i><div class="k-browser-url">louisianachess.org/clubs/baton-rouge-chess-club</div></div>
+<div>
+<header class="k-header cg-hd">
+<div class="k-wrap-wide k-header-in cg-hd-in">
+<a class="k-brand" href="#" aria-label="Louisiana Chess Association, home"><svg class="cg-rook" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span class="k-brand-name" aria-hidden="true"><b>Louisiana Chess</b><span>Association</span></span></a>
+<nav class="k-navlinks cg-nav" aria-label="Main"><a href="#">Tournaments</a><a class="k-nav-on" href="#" aria-current="page">Clubs</a><a href="#">Scholastic</a><a href="#">News</a><a href="#">Membership</a><button class="cg-navbtn" type="button" aria-expanded="false" aria-haspopup="true">About<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></button></nav>
+<a class="cg-sbtn" href="#"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg><span>Search</span><kbd class="cg-kbd" aria-hidden="true">&#8984;K</kbd></a>
+<div class="k-utility cg-util"><a class="k-ulink" href="#">Donate</a><a class="k-ulink" href="#">Log in</a><a class="k-btn k-btn-gold k-btn-sm" href="#">Join LCA</a></div>
+</div>
+</header>
+
+<main>
+<div class="cg-band"></div>
+<div class="k-wrap-wide"><nav class="cg-crumbs" aria-label="Breadcrumb"><a href="#">Clubs</a><span aria-hidden="true">/</span><a href="#">South Central Louisiana</a><span aria-hidden="true">/</span><span aria-current="page">Baton Rouge Chess Club</span></nav></div>
+
+<section class="cg-cover" aria-label="Baton Rouge Chess Club">
+<img src="/_blob/31327c563c905dc86de6c8fa4018ecd0" alt="Saturday long games at Jones Creek Branch Library">
+<div class="cg-shade"></div>
+<span class="cg-photolab"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"></rect><circle cx="9" cy="10" r="1.6"></circle><path d="M21 16l-5-5-8 8"></path></svg>Photo 1 of 4 · alt: Saturday long games at Jones Creek Branch Library</span>
+<span class="k-sample cg-covtag">Sample data: colour, logo, photo</span>
+<div class="cg-cover-in">
+<div class="k-wrap-wide cg-cover-row">
+<div class="cg-idrow">
+<div class="cg-logo"><div class="k-img">Club logo</div><span class="k-num-badge cg-nb">1</span></div>
+<div>
+<h1 class="cg-h1">Baton Rouge Chess Club</h1>
+<p class="cg-city">Chess club in Baton Rouge, Louisiana · South Central Louisiana</p>
+</div>
+</div>
+<div class="cg-cbtns">
+<a class="k-btn k-btn-gold" href="#"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 16v-5a6 6 0 0 1 12 0v5l1.5 2h-15L6 16zM10 20.5a2 2 0 0 0 4 0"></path></svg>Follow this club</a>
+<a class="k-btn cg-btn-wline" href="#contact"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="M3.5 6.5l8.5 6.5 8.5-6.5"></path></svg>Contact the club</a>
+<a class="k-btn cg-btn-wghost" href="#"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V4M8 8l4-4 4 4M5 13v6.5h14V13"></path></svg>Share</a>
+</div>
+</div>
+</div>
+</section>
+
+<div class="cg-author">
+<div class="k-wrap-wide cg-author-in">
+<span class="cg-ok" aria-hidden="true"><svg class="k-i-sm" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span>
+<span><b>Kept by the club's rep, Marcus T.</b></span>
+<span class="cg-sep" aria-hidden="true"></span>
+<span>As told by the club, updated September 2026</span>
+<span class="cg-sep" aria-hidden="true"></span>
+<a class="cg-sug" href="#">Suggest an update</a>
+<span class="cg-prop">Proposal · question 20</span>
+<span class="k-num-badge cg-nb">3</span>
+<span class="k-sample" style="margin-left:auto">Sample data: rep name, month</span>
+</div>
+</div>
+
+<nav class="cg-snav" aria-label="On this page">
+<div class="k-wrap-wide cg-snav-in">
+<div class="cg-sl"><a class="on" href="#about" aria-current="true">About</a><a href="#when-and-where">When and where</a><a href="#events">Events <span class="k-chip-count">3</span></a><a href="#news">News <span class="k-chip-count">3</span></a><a href="#photos">Photos</a><a href="#contact">Contact</a></div>
+<p class="cg-anno" style="max-width:600px"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true" style="flex:none;margin-top:2px"><path d="M12 3v12M8 7l4-4 4 4M5 21h14"></path></svg><span><b>Sticks under the header.</b> Anchors on one page: /clubs/baton-rouge-chess-club#when-and-where can be shared. A section with nothing behind it isn't rendered.</span></p>
+</div>
+</nav>
+
+<section id="about" class="cg-sec">
+<div class="k-wrap-wide cg-two">
+<div class="cg-about">
+<div class="k-between" style="margin-bottom:10px"><h2 class="k-h2 cg-h"><span class="cg-bar"></span>About Baton Rouge Chess Club</h2><span class="k-sample">Sample data: the club's words</span></div>
+<p>We've been meeting in Baton Rouge since 2009. Most Saturdays you'll find fifteen to twenty of us at the Jones Creek library playing long, slow games, with a few boards of blitz in the corner for anyone waiting.</p>
+<p>Wednesdays are the opposite: casual games and coffee-shop chess at Boba ParTea, where nobody keeps score and people wander in from 6:00 PM until the shop closes. Beginners sit down with 2000-rated players every week, and nobody minds.</p>
+<p>Come once and you'll know whether it's your kind of club.</p>
+</div>
+<div class="cg-side">
+<div class="cg-sc" style="display:grid;grid-template-columns:0.8fr 1.2fr;gap:14px"><div><span class="k-label">Cost</span><p style="margin-top:3px">Free. Saturday rated games are $5 toward the room.</p></div><div><span class="k-label">Find us online</span><p style="margin-top:3px"><a class="k-link" href="#">Facebook: Baton Rouge Chess Club ↗</a></p><p class="cg-muted-i" style="font-size:12.5px;line-height:1.35">Website: this page is our website</p></div></div>
+<div class="cg-sc"><div class="k-between"><span class="k-label">Who is welcome</span><span class="k-meta" style="display:inline-flex;align-items:center;gap:5px"><span class="k-num-badge cg-nbs">5</span>no member count or roster</span></div><p>All ages and all levels. Kids under 12 come with a parent. You don't need an LCA or US Chess membership for a club night. Bring a board and clock if you have them, and ask for Marcus at the front table.</p></div>
+</div>
+</div>
+</section>
+
+<section id="when-and-where" class="cg-sec cg-cream">
+<div class="k-wrap-wide">
+<h2 class="k-h2 cg-h" style="margin-bottom:12px"><span class="cg-bar"></span>When and where Baton Rouge Chess Club meets</h2>
+<div class="cg-two">
+<div>
+<div class="cg-say">
+<span class="k-label">In the club's words</span>
+<p>Saturdays from 10:00 AM at Jones Creek Branch Library: long games, 90 minutes each plus 30 seconds a move, usually done by 2:00 PM. Wednesdays from 6:00 PM at Boba ParTea on O'Neil Lane: casual games, no clock needed, until the shop closes. We skip holiday weekends. Check our Facebook page before your first visit in case a Saturday moves.</p>
+</div>
+<p class="cg-told"><span>As told by the club, updated September 2026</span><span aria-hidden="true">·</span><a class="cg-sug" style="font-size:13px" href="#">Suggest an update</a><span class="k-num-badge cg-nbs">2</span></p>
+<p class="k-meta" style="margin:8px 0 0"><b style="color:#1a2744">No next date, no Tonight, no Meets today anywhere.</b> The pattern is the club's text; the site repeats it and never turns it into dates. The day words beside each place are the rep's text too.</p>
+</div>
+<div>
+<div class="k-map cg-map" role="img" aria-label="Map of Baton Rouge with the club's two places, 1 Jones Creek Branch Library and 2 Boba ParTea">
+<span class="cg-river" style="left:-40px;top:130px;width:200px;height:260px;transform:rotate(18deg)"></span>
+<span class="cg-road" style="left:0;top:104px;width:420px;height:8px"></span>
+<span class="cg-road" style="left:250px;top:0;width:8px;height:220px"></span>
+<span class="cg-road" style="left:120px;top:30px;width:8px;height:200px;transform:rotate(-28deg)"></span>
+<span class="cg-mpin" style="left:330px;top:66px">1</span>
+<span class="cg-mlab" style="left:228px;top:84px">Jones Creek Branch Library</span>
+<span class="cg-mpin" style="left:200px;top:118px">2</span>
+<span class="cg-mlab" style="left:216px;top:108px">Boba ParTea</span>
+</div>
+<div style="margin-top:4px">
+<div class="cg-venue"><span class="cg-vno">1</span><span><b>Jones Creek Branch Library</b> · Saturdays<br>6222 Jones Creek Rd, Baton Rouge, LA 70817 <span class="cg-muted-i">(to confirm)</span> · Meeting room past the front desk · <a class="k-link" href="#">Directions ↗</a></span></div>
+<div class="cg-venue"><span class="cg-vno">2</span><span><b>Boba ParTea</b> · Wednesdays<br>O'Neil Lane, Baton Rouge · Tables at the back · <a class="k-link" href="#">Directions ↗</a></span></div>
+</div>
+</div>
+</div>
+</div>
+</section>
+
+<section class="cg-sec">
+<div class="k-wrap-wide" style="display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:48px;align-items:start">
+<div id="events">
+<div class="k-between" style="margin-bottom:2px"><h2 class="k-h2 cg-h"><span class="cg-bar"></span>Events</h2><div class="k-row-sm"><span class="k-sample">Sample data: the two club events</span><span class="k-num-badge cg-nb">4</span></div></div>
+<div class="cg-ev">
+<span class="k-date" style="width:58px;min-height:58px"><b style="font-size:21px">24</b><span>Oct</span></span>
+<div>
+<div class="k-row-sm"><h3>The Baton Rouge Classic</h3><span class="k-tag k-tag-ext">Partner event</span></div>
+<p class="k-meta" style="font-size:13px"><b style="color:#1a2744">Sat–Sun, Oct 24–25, 2026</b> · In Baton Rouge · organized by Downriver Chess · classical · all ages</p>
+</div>
+<div class="cg-act"><a class="cg-out" href="#">Registers on the organizer's site ↗</a></div>
+</div>
+<div class="cg-ev">
+<span class="k-date k-date-navy" style="width:58px;min-height:58px"><b style="font-size:21px">7</b><span>Nov</span></span>
+<div>
+<div class="k-row-sm"><h3>Saturday Quads</h3><span class="k-tag">Club event</span></div>
+<p class="k-meta" style="font-size:13px"><b style="color:#1a2744">Sat, Nov 7, 2026</b> · Jones Creek Branch Library · groups of four by rating, 3 games each</p>
+<p class="k-small" style="margin-top:3px;display:flex;align-items:center;gap:8px"><span class="k-tag k-tag-open">Registration open</span><span><b>6 of 16</b> registered</span><span class="cg-fill" style="margin-left:0" aria-hidden="true"><i style="width:37.5%"></i></span></p>
+</div>
+<div class="cg-act"><a class="k-btn k-btn-gold k-btn-sm" href="#">Register</a><a class="k-link k-small" href="#">Add to calendar</a></div>
+</div>
+<div class="cg-ev">
+<span class="k-date k-date-navy" style="width:58px;min-height:58px"><b style="font-size:21px">21</b><span>Nov</span></span>
+<div>
+<div class="k-row-sm"><h3>Baton Rouge Club Championship</h3><span class="k-tag">Club event</span></div>
+<p class="k-meta" style="font-size:13px"><b style="color:#1a2744">Sat–Sun, Nov 21–22, 2026</b> · Jones Creek Branch Library · 5 rounds of long games</p>
+<p class="k-small" style="margin-top:3px;display:flex;align-items:center;gap:8px"><span class="k-tag k-tag-open">Registration open</span><span><b>18 of 40</b> registered</span><span class="cg-fill" style="margin-left:0" aria-hidden="true"><i style="width:45%"></i></span></p>
+</div>
+<div class="cg-act"><a class="k-btn k-btn-gold k-btn-sm" href="#">Register</a><a class="k-link k-small" href="#">Add to calendar</a></div>
+</div>
+<p class="k-meta" style="margin:2px 0 0;padding-top:8px;border-top:1px solid #e4e2db">Club events register here, so these dates are reliable; partner events open the organizer's site. <span class="cg-empty" style="display:inline;padding:1px 6px;margin:0">Empty: "No events listed. When the club runs an event on louisianachess.org it shows here."</span></p>
+</div>
+<div id="news">
+<div class="k-between" style="margin-bottom:2px"><h2 class="k-h2 cg-h"><span class="cg-bar"></span>Club news</h2><span class="k-sample">Sample data</span></div>
+<article class="cg-post">
+<span class="k-meta" style="display:flex;gap:8px;align-items:center">Mon, Sep 28 · Marcus T., club rep <span class="k-tag k-tag-gold">Also on LCA News › From the clubs</span></span>
+<h3><a href="#">Wednesday casual nights: what to expect</a></h3>
+<p class="k-small" style="color:#3d4556">How a casual night at Boba ParTea works, from finding a free board to joining a game already going.</p>
+</article>
+<article class="cg-post">
+<span class="k-meta">Sat, Sep 19 · Marcus T., club rep</span>
+<h3><a href="#">September Saturday results</a></h3>
+<p class="k-small" style="color:#3d4556;display:flex;align-items:center;gap:6px">The crosstable and two games worth replaying.<span class="k-meta" style="display:inline-flex;align-items:center;gap:6px"><span class="k-num-badge cg-nbs">5</span>News, not a ranking.</span></p>
+</article>
+<article class="cg-post">
+<span class="k-meta">Tue, Sep 8 · Marcus T., club rep</span>
+<h3><a href="#">Two more clocks needed</a></h3>
+<p class="k-small" style="color:#3d4556">Saturdays are filling up. If you have a spare digital clock, bring it along.</p>
+</article>
+<p class="k-meta" style="margin:2px 0 0;padding-top:8px;border-top:1px solid #e4e2db">Newest first. With no posts, this section and its nav link are not rendered.</p>
+</div>
+</div>
+</section>
+
+<section id="photos" class="cg-sec cg-cream">
+<div class="k-wrap-wide">
+<div class="k-between"><h2 class="k-h2 cg-h"><span class="cg-bar"></span>Photos from Baton Rouge Chess Club</h2><div class="k-row-sm"><span class="k-meta">Photos and captions by the club; captions are the alt text. Photo 1 is the cover and the share image. Up to 6.</span><span class="k-num-badge cg-nb">1</span><span class="k-sample">Sample data</span></div></div>
+<div class="cg-photos" style="margin-top:12px">
+<figure class="cg-ph" style="margin:0"><img src="/_blob/31327c563c905dc86de6c8fa4018ecd0" alt="Saturday long games at Jones Creek Branch Library"><span>Saturday long games at Jones Creek Branch Library</span></figure>
+<figure class="cg-ph" style="margin:0"><div class="k-img">Photo 2</div><span>Wednesday casual night at Boba ParTea</span></figure>
+<figure class="cg-ph" style="margin:0"><div class="k-img">Photo 3</div><span>The 2025 club championship prize table</span></figure>
+<figure class="cg-ph" style="margin:0"><div class="k-img">Photo 4</div><span>The beginners' table on a Saturday morning</span></figure>
+</div>
+</div>
+</section>
+
+<section id="contact" class="cg-sec">
+<div class="k-wrap-wide cg-two">
+<div class="k-card k-card-pad k-stack" style="gap:10px;padding:18px 20px">
+<div class="k-stack-sm" style="gap:4px">
+<h2 class="k-h2 cg-h"><span class="cg-bar"></span>Contact Baton Rouge Chess Club</h2>
+<p class="k-small" style="margin:0;display:flex;align-items:center;gap:8px">Your message goes to the club's rep by email. Their address stays private. Spam-checked. <span class="k-num-badge cg-nbs">5</span></p>
+</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+<div class="k-field"><label for="cg-name">Your name</label><input id="cg-name" class="k-input" placeholder="First and last name"></div>
+<div class="k-field"><label for="cg-email">Your email</label><input id="cg-email" class="k-input" placeholder="So the club can reply"></div>
+</div>
+<div class="k-field"><label for="cg-msg">Message</label><textarea id="cg-msg" class="k-input" rows="2" style="padding:8px 12px;min-height:64px" placeholder="e.g. I just moved to Baton Rouge. Is a Wednesday a good first visit?"></textarea></div>
+<div class="k-between"><div class="cg-ts" role="img" aria-label="Turnstile spam check"><i></i>Verify you're a person<span>Turnstile<br>spam check</span></div><button class="k-btn k-btn-navy" type="button">Send message</button></div>
+
+</div>
+<div class="cg-side" style="gap:8px">
+<div class="cg-sc" style="padding:10px 16px 8px;gap:2px">
+<h2 class="k-h3 cg-h" style="font-size:18px;margin-bottom:2px"><span class="cg-bar" style="height:20px"></span>Chess clubs near Baton Rouge</h2>
+<div class="cg-near"><a href="#">Bluebonnet Chess Club</a><span>Baton Rouge · about 5 mi · "Meets at Bluebonnet Library on the 1st and 3rd Sunday of the month, 4:30 PM to 5:30 PM", as the club says</span></div>
+<div class="cg-near"><a href="#">Gonzales Chess Club</a><span>Gonzales · about 20 mi · hasn't said how it meets yet</span></div>
+<div class="cg-near"><a href="#">Heart of Worship Church Chess</a><span>Opelousas · about 60 mi · "Fridays 5:30 PM to 7:00 PM before church. Open to anyone", as the club says</span></div>
+<div class="k-row" style="gap:16px;padding-top:2px"><a class="k-link k-small" href="#">All South Central Louisiana clubs</a><a class="k-link k-small" href="#">Clubs near you</a></div>
+</div>
+<p class="k-meta" style="margin:0;display:flex;align-items:center;gap:6px;padding:0 4px"><span><b style="color:#1a2744">Out of date?</b> <a class="cg-sug" style="font-size:12.5px" href="#">Suggest an update</a> reaches Marcus T., then Camille Broussard if unanswered after 14 days.</span><span class="k-num-badge cg-nbs">3</span></p>
+
+</div>
+</div>
+</section>
+
+<div class="cg-sitefoot">
+<div class="k-wrap-wide cg-sitefoot-in">
+<span class="cg-minilogo"><span class="k-img"></span></span>
+<b>Baton Rouge Chess Club</b><span aria-hidden="true">·</span><span>Baton Rouge, Louisiana</span><span aria-hidden="true">·</span><span>a club listed by the Louisiana Chess Association</span><span aria-hidden="true">·</span><span class="cg-mono" style="font-size:12.5px">louisianachess.org/clubs/baton-rouge-chess-club</span>
+<a class="k-btn k-btn-line k-btn-sm" href="#" style="margin-left:auto"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2"></rect><path d="M16 8V5a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3"></path></svg>Copy link</a>
+</div>
+</div>
+</main>
+
+<footer class="k-footer cg-foot">
+<div class="k-wrap-wide cg-foot-in">
+<div class="k-row-sm" style="gap:10px"><svg class="cg-rook cg-rook-sm" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><b style="font-size:15px">Louisiana Chess Association</b></div>
+<span class="k-meta">US Chess state affiliate · Louisiana's chess community since 1915</span>
+<nav class="k-row" aria-label="Footer" style="gap:18px"><a href="#">Contact</a><a href="#">Website help</a><a href="#">Bylaws &amp; rules</a><a href="#">Donate</a></nav>
+</div>
+</footer>
+</div>
+</div>
+
+<section class="cg-panel" aria-labelledby="cg-seo-h">
+<div class="k-between"><h2 class="k-h3 cg-h" id="cg-seo-h" style="font-size:21px"><span class="cg-bar" style="background:#1a2744"></span>How this page is found and shared</h2><div class="k-row-sm"><span class="k-meta">What crawlers and link previews get for /clubs/baton-rouge-chess-club</span><span class="k-num-badge cg-nb">6</span></div></div>
+<div class="cg-pgrid">
+<div class="cg-tile">
+<p class="cg-tl">a · Address and title</p>
+<p class="cg-codebox">louisianachess.org/clubs/baton-rouge-chess-club</p>
+<p>Slug from the name, kept on rename; /clubs/baton-rouge and old slugs 301 here; canonical link to it.</p>
+<p class="cg-codebox">&lt;title&gt;Baton Rouge Chess Club · Chess club in Baton Rouge, Louisiana · Louisiana Chess Association&lt;/title&gt;</p>
+<p>Replaces "Name | Louisiana Chess Association". Meta description: About's first 155 characters.</p>
+</div>
+<div class="cg-tile">
+<p class="cg-tl">b · In a search and a text</p>
+<div class="cg-serp">
+<div class="cg-serp-src"><span class="cg-fav"><svg viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg></span><span><span class="cg-serp-site" style="display:block">Louisiana Chess Association</span><span class="cg-serp-url">louisianachess.org › clubs › baton-rouge-chess-club</span></span></div>
+<p class="cg-serp-t">Baton Rouge Chess Club · Chess club in Baton Rouge, Louisi…</p>
+<p class="cg-serp-d" style="margin:0">We've been meeting in Baton Rouge since 2009. Most Saturdays you'll find fifteen to twenty of us at the Jones Creek library playing long, slow games…</p>
+</div>
+<p>Name and city lead, so they survive the cut at about 60 characters. In a text message:</p>
+<div class="cg-bub" style="width:100%;padding:5px 10px 5px 5px"><span class="cg-bub-img" style="width:34px;height:34px"><img src="/_blob/31327c563c905dc86de6c8fa4018ecd0" alt=""></span><span><b>Baton Rouge Chess Club</b><span>louisianachess.org</span></span></div>
+</div>
+<div class="cg-tile">
+<p class="cg-tl">c · Shared · 1200 × 630, drawn at 400 × 210</p>
+<div class="cg-og">
+<div class="cg-og-img"><img src="/_blob/31327c563c905dc86de6c8fa4018ecd0" alt="Saturday long games at Jones Creek Branch Library"><div class="cg-shade"></div><div class="cg-og-cap"><b>Baton Rouge Chess Club</b><span>Chess club in Baton Rouge, Louisiana</span></div></div>
+<div class="cg-og-meta"><small>louisianachess.org</small><b>Baton Rouge Chess Club · Chess club in Baton Rouge…</b></div>
+</div>
+<p>og:image = photo 1's share crop. No photo: the logo as a small square, as today; neither: og-default.jpg.</p>
+</div>
+<div class="cg-tile">
+<p class="cg-tl">d · For crawlers</p>
+<ul class="cg-checks">
+<li><span class="cg-tick"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span><span><b>JSON-LD SportsClub:</b> name, sport Chess, description, url, image, address (street, Baton Rouge, LA, postal code), sameAs the Facebook URL, memberOf LCA; an Event per club event (Saturday Quads, startDate 2026-11-07, Sat, Nov 7).</span></li>
+<li><span class="cg-tick"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span><span><b>Server-rendered body:</b> h1, city line, About, When and where, places, cost, who is welcome, events with dates and links, written before any script runs, not only the og tags.</span></li>
+<li><span class="cg-tick"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span><span><b>sitemap.xml</b> entry, lastmod = told_updated_at; image alt from captions.</span></li>
+<li><span class="cg-tick"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span><span><b>Headings carry name and city:</b> the h1 is the name; every h2 names the club or Baton Rouge.</span></li>
+</ul>
+</div>
+</div>
+</section>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":3400}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

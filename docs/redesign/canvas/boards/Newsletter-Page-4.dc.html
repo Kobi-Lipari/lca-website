@@ -1,0 +1,842 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Newsletter · the page · The letter on the desk</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/6107adb451dbab26ee5d89f4189b81f8">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&amp;display=swap">
+<style>
+body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1a2744}
+.p4-root{width:1440px;margin:0 auto;box-sizing:border-box;padding:24px 0 24px;background:#ecebe6;color:#1a2744;font-family:Geist,system-ui,sans-serif}
+.p4-root *{box-sizing:border-box}
+.p4-col{width:1200px;margin:0 auto}
+
+/* label strip */
+.p4-strip{display:flex;justify-content:space-between;align-items:flex-start;gap:24px;padding:16px 24px 17px;background:#fbfaf6;border:1px solid #d9d8d1;border-radius:14px}
+.p4-kick{margin:0;font-size:12.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#866a1e}
+.p4-name{margin:6px 0 0;font-size:34px;line-height:1.1;font-weight:700;letter-spacing:-.018em;color:#1a2744}
+.p4-say{margin:8px 0 0;font-size:16px;line-height:1.45;color:#3d4556}
+.p4-tag{flex:none;margin-top:2px;white-space:nowrap}
+
+.p4-fig{margin:0}
+.p4-col>.p4-fig{margin-top:18px}
+.p4-cap{display:flex;align-items:baseline;gap:10px;margin-top:10px;font-size:14px;line-height:1.45;color:#555c6b}
+.p4-cap b{font-size:15px;font-weight:600;color:#1a2744;white-space:nowrap}
+.p4-fcap{margin:12px 0 0;font-size:14px;line-height:1.45;color:#555c6b}
+.p4-fcap b{display:block;font-size:15px;font-weight:600;color:#1a2744;margin-bottom:2px}
+
+/* browser */
+.p4-browser{width:1200px;box-shadow:0 18px 44px rgba(16,24,43,.12)}
+.p4-browser .k-browser-url{max-width:640px}
+.p4-view{position:relative;display:flex;flex-direction:column;height:1098px;overflow:hidden;background:#efe9da}
+.p4-view>header,.p4-view>.p4-phead{flex:none}
+
+/* decided header, signed in */
+.p4-hin{padding:0 24px;gap:0;height:68px;min-height:68px}
+.p4-brand{margin-right:18px;min-height:44px}
+.p4-rook{width:30px;height:30px;fill:#ffffff;flex:none}
+.p4-nav{gap:0}
+.p4-nav a{padding:0 9px;white-space:nowrap}
+.p4-navbtn{display:inline-flex;align-items:center;gap:4px;min-height:44px;padding:0 9px;border:0;background:transparent;color:#ffffff;font:inherit;font-size:15px;font-weight:500;white-space:nowrap}
+.p4-search{display:inline-flex;align-items:center;gap:8px;height:44px;padding:0 14px 0 12px;margin-right:12px;border-radius:8px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.45);color:#ffffff;text-decoration:none;font-size:14.5px;font-weight:500;flex:none}
+.p4-util{gap:8px}
+.p4-util .k-ulink{padding:0 6px}
+.p4-my{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 8px;border:0;border-radius:8px;background:transparent;color:#ffffff;font:inherit;font-size:14px;font-weight:500}
+
+/* crumb and page head */
+.p4-phead{background:#ffffff;border-bottom:1px solid #e0dccf}
+.p4-phead .k-btn-sm{min-height:44px}
+.p4-phead-in{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:10px 24px 11px}
+.p4-crumb{display:flex;align-items:center;gap:8px;margin:0;font-size:14px;color:#555c6b}
+.p4-crumb a{color:#1a2744;font-weight:500;text-decoration:underline;text-decoration-color:#9aa1b0;text-underline-offset:3px}
+.p4-crumb span[aria-current]{color:#1a2744;font-weight:600}
+.p4-sep{color:#858b99}
+.p4-tline{display:flex;align-items:baseline;gap:18px;margin-top:6px}
+.p4-phead h1{margin:0;font-size:30px;line-height:1.15;font-weight:700;letter-spacing:-.015em}
+.p4-quiettxt{display:inline-flex;align-items:center;gap:6px;font-size:15px;color:#555c6b}
+.p4-quiettxt b{color:#1a2744;font-weight:600}
+.p4-quiettxt .k-i-sm{color:#145b3a}
+
+/* the desk */
+.p4-desk{flex:1;min-height:0;display:grid;grid-template-columns:806px 312px;column-gap:32px;justify-content:center;align-items:stretch;padding:10px 0 10px}
+.p4-writecol{display:flex;flex-direction:column;align-items:stretch;min-height:0}
+.p4-stepline{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0}
+.p4-stepline .p4-start{flex:1 1 auto;width:auto;min-width:0}
+.p4-step{display:inline-flex;align-items:center;gap:8px;font-size:15px;font-weight:700;color:#1a2744;white-space:nowrap}
+.p4-n{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:#1a2744;color:#ffffff;font-size:13px;font-weight:700;line-height:1;flex:none}
+.p4-stephint{margin-left:6px;font-size:14px;font-weight:400;color:#555c6b}
+.p4-big{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 14px;border:1px solid #c9c4b2;border-radius:8px;background:#ffffff;color:#1a2744;font:inherit;font-size:14.5px;font-weight:600;white-space:nowrap}
+
+/* A. the Pick a template button */
+.p4-start{display:flex;align-items:center;gap:12px;width:100%;height:48px;padding:0 14px 0 9px;border:1.5px solid #1a2744;border-radius:10px;background:#ffffff;color:#1a2744;font:inherit;text-align:left;box-shadow:0 4px 12px rgba(16,24,43,.06)}
+.p4-start .k-i{color:#1a2744}
+.p4-sic{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:7px;background:#1a2744;flex:none}
+.p4-start .p4-sic .k-i,.pp-start .p4-sic .k-i{color:#ffffff}
+.p4-start b{font-size:15.5px;font-weight:700;white-space:nowrap}
+.p4-start span{font-size:14px;color:#555c6b;white-space:nowrap}
+.p4-start .p4-chev{margin-left:auto}
+
+/* tools */
+.p4-tbar{display:flex;align-items:center;gap:8px;margin-top:10px;padding:6px;background:#ffffff;border:1px solid #ddd7c4;border-radius:12px;box-shadow:0 6px 18px rgba(16,24,43,.08),0 1px 2px rgba(16,24,43,.06)}
+.p4-tool{display:inline-flex;align-items:center;gap:6px;height:44px;padding:0 7px;white-space:nowrap;border:0;border-radius:8px;background:transparent;color:#1a2744;font:inherit;font-size:14.5px;font-weight:600}
+.p4-add{margin-left:auto;border:1px solid #c9c4b2;background:#fbfaf6;padding:0 9px 0 10px}
+
+/* the sheet */
+.p4-sheet{position:relative;margin-top:10px;background:#ffffff;border-radius:3px 3px 0 0;box-shadow:0 1px 0 rgba(16,24,43,.06),0 2px 6px rgba(16,24,43,.06),0 22px 48px rgba(60,48,20,.13)}
+.p4-subj{display:flex;align-items:center;gap:10px;height:48px;padding:0 60px;border-bottom:1px dashed #ddd7c4;font-family:Geist,Arial,sans-serif}
+.p4-from{display:flex;align-items:center;gap:10px;height:48px;padding:0 24px 0 60px;border-bottom:1px dashed #ddd7c4;font-family:Geist,Arial,sans-serif}
+.p4-from>span{font-size:14px;font-weight:600;color:#6b7180;flex:none}
+.p4-sheet>.p4-from>span,.p4-sheet>.p4-subj>span{min-width:58px}
+.p4-sel{display:inline-flex;align-items:center;gap:10px;height:36px;padding:0 9px 0 11px;border:1px solid #b9b4a3;border-radius:7px;background:#fdfcf8;color:#1a2744;font:inherit;font-size:15px;font-weight:600;white-space:nowrap;flex:none}
+.p4-sel .k-i{color:#1a2744}
+.p4-from small{font-size:13.5px;line-height:1.3;color:#555c6b;min-width:0}
+.p4-subj span{font-size:14px;font-weight:600;color:#6b7180}
+.p4-subj b{font-size:16px;font-weight:600;color:#1a2744}
+.p4-writecol>.p4-sheet{flex:1;min-height:0;display:flex;flex-direction:column;margin-top:0;border-radius:0}
+.p4-writecol>.p4-tbar,.p4-mbdesk .p4-tbar,.tb-tools,.pp-tbar{border-radius:12px 12px 0 0}
+.p4-mbdesk .p4-sheet{margin-top:0;border-radius:0}
+.p4-body{position:relative;flex:1;min-height:0;overflow:hidden}
+.p4-flow{position:absolute;left:0;right:0;top:0}
+.p4-fade{position:absolute;left:0;right:0;bottom:0;height:36px;background:linear-gradient(rgba(255,255,255,0),#ffffff 80%)}
+.p4-sheet .em-in{padding:22px 52px 18px;font-size:17px;line-height:1.62}
+.p4-sheet .em-in p{margin-bottom:10px}
+.p4-sheet .em-h{margin-top:24px}
+.p4-sheet .em-in>.em-h:first-child{margin-top:0}
+.p4-scroll{position:absolute;top:8px;bottom:8px;right:6px;width:6px;border-radius:3px;background:#f1eee6}
+.p4-scroll i{position:absolute;left:0;top:0;display:block;width:6px;height:34%;border-radius:3px;background:#b9b4a3}
+.p4-pull{flex:none;display:flex;flex-direction:row;align-items:center;justify-content:center;gap:12px;height:44px;background:#fbfaf6;border:1px solid #ddd7c4;border-top:1px solid #e7e2d4;border-radius:0 0 10px 10px;box-shadow:0 16px 30px rgba(60,48,20,.10);font-size:14px;font-weight:600;color:#3d4556}
+.p4-pull i{display:block;width:56px;height:5px;border-radius:3px;background:#a9a496}
+
+/* the email look, option 1 (navy band) */
+.em{font-family:"Source Serif 4",Georgia,"Times New Roman",serif;font-size:16px;line-height:1.7;color:#1f2a40}
+.em p{margin:0 0 12px;text-wrap:pretty}
+.em a{white-space:nowrap;color:#1a2744;text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:1px}
+.em-band{display:flex;align-items:center;gap:18px;height:100px;padding:0 60px;background:#1a2744;border-bottom:3px solid #c8a94a;border-radius:3px 3px 0 0;font-family:Geist,Arial,sans-serif}
+.em-band svg{width:52px;height:52px;fill:#ffffff;flex:none}
+.em-band small{display:block;font-size:17px;line-height:1;letter-spacing:.08em;font-weight:700;color:#efd98a;margin-bottom:9px}
+.em-band strong{display:block;font-size:36px;line-height:1;font-weight:700;letter-spacing:-.015em;color:#ffffff}
+.em-h{margin:34px 0 10px;font-family:Geist,Arial,sans-serif;font-size:20px;line-height:1.25;font-weight:700;letter-spacing:-.005em;color:#1a2744}
+.em-h:before{content:"";display:block;width:32px;height:3px;background:#866a1e;margin-bottom:12px}
+.em-l{margin:0 0 10px}
+.em .em-last{margin-bottom:0}
+.p4-caret{display:inline-block;width:2px;height:22px;margin-left:3px;vertical-align:-5px;background:#1a2744}
+
+/* the side: on a phone */
+.p4-side{display:flex;flex-direction:column;align-items:center;min-height:0}
+.p4-sidehead{width:100%;margin:0 0 10px}
+.p4-sidectl{width:100%;display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 0 12px}
+.p4-seg button{min-height:44px;padding:0 16px;font-size:14px}
+.p4-sidehead h2{margin:0;font-size:17px;line-height:1.25;font-weight:700;letter-spacing:-.005em}
+.p4-sub{margin:2px 0 0;font-size:13.5px;line-height:1.4;color:#555c6b}
+.p4-hide{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 12px;border:1px solid #c9c4b2;border-radius:8px;background:#ffffff;color:#1a2744;font:inherit;font-size:14px;font-weight:600;white-space:nowrap}
+.p4-mini{position:relative;flex:1;min-height:0;width:258px;border-radius:36px;border:9px solid #10182b;background:#ffffff;overflow:hidden;box-shadow:0 22px 40px rgba(16,24,43,.20)}
+.p4-mini-scr{position:absolute;inset:0;overflow:hidden}
+.p4-mini-in{width:390px;transform:scale(.6154);transform-origin:0 0}
+.p4-mini-in .pm-band small{font-size:21px;margin-bottom:9px}
+.p4-sidenote{margin:10px 0 0;width:100%;text-align:center;font-size:13.5px;line-height:1.45;color:#555c6b}
+.p4-reach{flex:none;width:100%;margin-top:14px;padding:14px 16px 16px;background:#ffffff;border:1px solid #ddd7c4;border-radius:12px;box-shadow:0 6px 18px rgba(16,24,43,.07)}
+.p4-reach .p4-who{align-items:flex-start;white-space:normal}
+.p4-reach .p4-who .k-i{margin-top:2px}
+.p4-reach .p4-who b{font-size:17px;line-height:1.3}
+.p4-reach .p4-who small{font-size:14px;margin-top:1px}
+.p4-reachbtn{width:100%;justify-content:center;margin-top:12px}
+
+/* the bar fixed at the foot of the window */
+.p4-dock{position:relative;flex:none;z-index:5;display:flex;align-items:center;justify-content:space-between;gap:16px;height:70px;padding:0 24px;background:#ffffff;border-top:1px solid #ddd7c4;box-shadow:0 -10px 28px rgba(16,24,43,.10)}
+.p4-dl{display:flex;align-items:center;gap:12px}
+.p4-who{display:inline-flex;align-items:center;gap:10px;color:#3d4556;white-space:nowrap}
+.p4-who .k-i{color:#1a2744}
+.p4-who span{display:flex;flex-direction:column;line-height:1.3}
+.p4-who b{font-size:15.5px;color:#1a2744;font-weight:700}
+.p4-who small{font-size:13.5px;color:#555c6b}
+.p4-vsep{display:block;width:1px;height:30px;background:#e0dccf}
+.p4-btn2{display:inline-flex;align-items:center;gap:7px;min-height:44px;padding:0 13px;border:1px solid #1a2744;border-radius:8px;background:#ffffff;color:#1a2744;font:inherit;font-size:14.5px;font-weight:600;white-space:nowrap}
+.p4-more{white-space:nowrap;display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 12px;border:1px solid #c9c4b2;border-radius:8px;background:#fbfaf6;color:#1a2744;font:inherit;font-size:14.5px;font-weight:600}
+.p4-dr{display:flex;align-items:center;gap:20px}
+.p4-saved{display:inline-flex;align-items:center;gap:7px;margin:0;font-size:14.5px;color:#3d4556;white-space:nowrap}
+.p4-saved .k-i-sm{color:#145b3a}
+.p4-act{display:flex;align-items:center;gap:8px}
+.p4-test{min-height:46px;padding:0 15px}
+.p4-split{display:inline-flex;align-items:stretch;flex:none}
+.p4-send{min-height:46px;padding:0 20px;font-size:16px;border-radius:8px 0 0 8px}
+.p4-arrow{display:inline-flex;align-items:center;justify-content:center;width:42px;min-height:46px;padding:0;border:1px solid #c8a94a;border-left:1px solid #8f7a35;border-radius:0 8px 8px 0;background:#c8a94a;color:#1a2744}
+
+/* email at phone width (option 1) */
+.pm-head{padding:12px 18px 12px;border-bottom:1px solid #ecebe4}
+.pm-subj{margin:0;font-size:20px;line-height:1.25;font-weight:600;color:#1a2744}
+.pm-who{display:grid;grid-template-columns:36px minmax(0,1fr);gap:12px;align-items:center;margin-top:10px}
+.pm-av{display:flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:50%;background:#1a2744}
+.pm-av svg{width:20px;height:20px;fill:#ffffff}
+.pm-who b{display:block;font-size:14.5px;color:#1a2744}
+.pm-who small{display:block;font-size:13px;color:#555c6b}
+.pm-em{font-family:"Source Serif 4",Georgia,serif;font-size:16px;line-height:1.65;color:#1f2a40}
+.pm-em p{margin:0 0 11px;text-wrap:pretty}
+.pm-em a{white-space:nowrap;color:#1a2744;text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:1px}
+.pm-band{display:flex;align-items:center;gap:13px;height:92px;padding:0 20px;background:#1a2744;border-bottom:3px solid #c8a94a;font-family:Geist,Arial,sans-serif}
+.pm-band svg{width:38px;height:38px;fill:#ffffff;flex:none}
+.pm-band small{display:block;font-size:15px;line-height:1;letter-spacing:.08em;font-weight:700;color:#efd98a;margin-bottom:8px}
+.pm-band strong{display:block;font-size:27px;line-height:1;font-weight:700;letter-spacing:-.01em;color:#ffffff}
+.pm-in{padding:24px 20px 16px}
+.pm-em .em-h{margin:26px 0 8px;font-size:19px}
+.pm-em .em-h:before{margin-bottom:10px;width:28px}
+.pm-in>.em-h:first-child{margin-top:0}
+.pm-em .em-l{margin:0 0 10px}
+.pm-em .em-last{margin-bottom:0}
+
+/* the row of three smaller pictures */
+.p4-three{display:grid;grid-template-columns:468px 320px 364px;gap:24px;margin-top:32px;align-items:start}
+.p4-panel{background:#ffffff;border:1px solid #d9d4c4;border-radius:14px;box-shadow:0 18px 40px rgba(16,24,43,.13);overflow:hidden}
+.p4-panhead{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:16px 16px 14px 20px;border-bottom:1px solid #ebe7da}
+.p4-panhead h3{margin:0;font-size:18px;line-height:1.3;font-weight:700;letter-spacing:-.005em;color:#1a2744}
+.p4-panhead p{margin:3px 0 0;font-size:13.5px;line-height:1.4;color:#555c6b}
+.p4-x{display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;margin:-6px -4px 0 0;flex:none;border:0;border-radius:8px;background:#f3f1ea;color:#1a2744;padding:0}
+.p4-panbody{padding:14px 20px 18px}
+.p4-glabel{margin:0 0 8px;font-size:12.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#555c6b}
+.p4-glabel+.p4-tpl{margin-top:0}
+.p4-tpls{display:flex;flex-direction:column;gap:8px}
+.p4-tpls+.p4-glabel{margin-top:18px}
+.p4-tpl{display:grid;grid-template-columns:44px minmax(0,1fr) auto;gap:12px;align-items:center;padding:6px 10px;border:1px solid #e0dccf;border-radius:10px;background:#fdfcf8}
+.p4-tpl b{display:block;font-size:15px;line-height:1.3;font-weight:600;color:#1a2744}
+.p4-tpl small{display:block;margin-top:1px;font-size:13px;line-height:1.35;color:#555c6b}
+.p4-use{display:inline-flex;align-items:center;min-height:40px;padding:0 13px;border:1px solid #1a2744;border-radius:8px;background:#ffffff;color:#1a2744;font:inherit;font-size:14px;font-weight:600;white-space:nowrap}
+.p4-thumb{position:relative;display:block;width:44px;height:54px;border:1px solid #d6d1c1;border-radius:4px;background:#ffffff;overflow:hidden}
+.p4-thumb i{position:absolute;left:6px;height:3px;border-radius:2px;background:#cfd2da}
+.p4-thumb .t-band{left:0;right:0;top:0;height:11px;border-radius:0;background:#1a2744}
+.p4-thumb .t-h{height:3px;background:#866a1e;width:10px}
+.p4-thumb .t-btn{height:7px;width:20px;border-radius:2px;background:#c8a94a}
+.p4-thumb .t-row{height:5px;background:#e6e3d9;border-radius:1px}
+.p4-pannote{margin:14px 0 0;font-size:13.5px;line-height:1.45;color:#555c6b}
+.p4-pannote+.p4-pannote{margin-top:6px}
+
+/* make bigger: a smaller window, drawn at half size */
+.p4-mbwrap{width:320px;height:480px;overflow:hidden;border-radius:9px;box-shadow:0 14px 34px rgba(16,24,43,.14)}
+.p4-mb{width:800px;transform:scale(.4);transform-origin:0 0;border-radius:18px}
+.p4-mbview{position:relative;height:1160px;overflow:hidden;background:#efe9da}
+.p4-mbtop{display:flex;align-items:center;justify-content:space-between;gap:12px;height:68px;padding:0 20px;background:#ffffff;border-bottom:1px solid #e0dccf}
+.p4-mbtop b{display:block;font-size:18px;font-weight:700;color:#1a2744}
+.p4-mbtop small{display:block;margin-top:2px;font-size:14px;color:#555c6b}
+.p4-mbtop div:last-child{display:flex;gap:10px}
+.p4-mbdesk{padding:16px 20px 0}
+.p4-mbdesk .p4-fields{margin-top:0}
+.p4-mbdesk .p4-tool{padding:0 8px}
+.p4-mbdesk .p4-sheet .em-band{padding:0 40px}
+.p4-mbdesk .p4-subj{padding:0 40px}
+.p4-mbdesk .p4-from{padding:0 24px 0 40px}
+.p4-mbdesk .p4-sheet .em-in{padding:24px 40px}
+.p4-mbdock{position:absolute;left:0;right:0;bottom:0;display:flex;align-items:center;justify-content:space-between;gap:12px;height:76px;padding:0 20px;background:#ffffff;border-top:1px solid #ddd7c4;box-shadow:0 -10px 28px rgba(16,24,43,.10)}
+
+/* add or review people */
+.p4-total{display:flex;align-items:center;gap:10px;padding:14px 20px 0}
+.p4-total .k-i-lg{color:#1a2744}
+.p4-total b{font-size:22px;line-height:1.2;font-weight:700;letter-spacing:-.01em;color:#1a2744}
+.p4-total small{display:block;font-size:13.5px;color:#555c6b}
+.p4-tabs{display:flex;gap:2px;margin:12px 20px 0;border-bottom:1px solid #e0dccf}
+.p4-tab{display:inline-flex;align-items:center;min-height:44px;padding:0 8px;border:0;background:transparent;color:#3d4556;font:inherit;font-size:14px;font-weight:600;white-space:nowrap;position:relative}
+.p4-tab-on{color:#1a2744;font-weight:700}
+.p4-tab-on:after{content:"";position:absolute;left:8px;right:8px;bottom:-1px;height:3px;border-radius:3px 3px 0 0;background:#1a2744}
+.p4-plist{margin:0;padding:4px 20px 0;list-style:none}
+.p4-plist li{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:7px 0;border-bottom:1px solid #eeeae0}
+.p4-plist b{display:block;font-size:15px;line-height:1.3;font-weight:600;color:#1a2744}
+.p4-plist small{display:block;font-size:13px;line-height:1.35;color:#555c6b}
+.p4-rm{display:inline-flex;align-items:center;min-height:40px;padding:0 10px;border:0;border-radius:8px;background:#f3f1ea;color:#1a2744;font:inherit;font-size:13.5px;font-weight:600}
+.p4-showall{display:block;padding:10px 20px 0;font-size:14px;font-weight:600;color:#1a2744;text-decoration:underline;text-underline-offset:3px}
+.p4-addh{margin:16px 20px 10px;font-size:16px;line-height:1.3;font-weight:700;color:#1a2744}
+.p4-ways{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:0 20px}
+.p4-way{display:flex;flex-direction:column;gap:6px;padding:12px;border:1px solid #e0dccf;border-radius:10px;background:#fdfcf8}
+.p4-way b{font-size:14px;line-height:1.3;font-weight:700;color:#1a2744}
+.p4-way small{font-size:12.5px;line-height:1.35;color:#555c6b}
+.p4-ta{height:68px;margin-top:2px;padding:8px 10px;border:1px solid #858b99;border-radius:8px;background:#ffffff;font-size:13px;line-height:1.35;color:#6b7180}
+.p4-way .k-btn{min-height:40px;padding:0 12px;font-size:14px;margin-top:auto}
+.p4-result{display:flex;align-items:flex-start;gap:8px;margin:12px 20px 0;padding:10px 12px;border-radius:8px;background:#e1f0e7;font-size:13.5px;line-height:1.4;color:#145b3a}
+.p4-result .k-i-sm{margin-top:2px}
+.p4-result b{font-weight:700}
+.p4-tick{margin:12px 20px 0;font-size:14.5px;line-height:1.4;color:#1a2744;font-weight:600}
+.p4-tickbox{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;flex:none;border-radius:5px;background:#1a2744;color:#ffffff}
+.p4-pfoot{margin:10px 20px 0;padding-bottom:16px}
+.p4-pfoot p{margin:0 0 4px;font-size:13px;line-height:1.45;color:#555c6b}
+
+/* the template chooser: tag on a card */
+.cx-ct .cx-ctag{display:inline-flex;margin-top:4px;padding:3px 8px;font-size:12px;color:#2d3a52}
+
+/* the second row: From, and the club template */
+.p4-two{display:grid;grid-template-columns:488px minmax(0,1fr);gap:24px;margin-top:32px;align-items:start}
+.p4-fpan .p4-from{height:60px;padding:0 18px;border-bottom:1px solid #e3e2dc}
+.p4-sel-open{border:2px solid #1a2744;padding:0 8px 0 10px;background:#ffffff}
+.p4-menu{padding:12px 12px 4px}
+.p4-menu .cx-gh{margin:8px 6px 8px}
+.p4-opts{margin:0 0 14px;padding:0;list-style:none;display:flex;flex-direction:column;gap:2px}
+.p4-opt{display:flex;align-items:center;gap:12px;min-height:56px;padding:5px 10px;border-radius:8px}
+.p4-opt-on{background:#f1efe7}
+.p4-oav{display:flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;background:#1a2744;flex:none}
+.p4-oav svg{width:18px;height:18px;fill:#ffffff}
+.p4-opt b{display:block;font-size:15px;line-height:1.3;font-weight:600;color:#1a2744}
+.p4-opt small{display:block;font-size:13px;line-height:1.35;color:#555c6b}
+.p4-ock{display:inline-flex;align-items:center;gap:5px;margin-left:auto;font-size:13.5px;font-weight:600;color:#1a2744}
+.p4-find{display:flex;align-items:center;gap:8px;height:48px;margin:0 6px 6px;padding:0 12px;border:1px solid #858b99;border-radius:8px;background:#ffffff;font-size:14.5px;color:#6b7180}
+.p4-find .k-i{color:#3d4556}
+.p4-club{display:flex;align-items:center;gap:12px;min-height:52px;padding:0 12px;border-radius:8px;font-size:15px;font-weight:500;color:#1a2744}
+.p4-cdot{display:inline-block;width:12px;height:12px;border-radius:50%;flex:none}
+.p4-fpan .p4-fnotes{padding:0 18px 16px}
+.p4-fpan .cx-fine:first-child{margin-top:0}
+
+.p4-ctpl{position:relative;padding:18px 20px 0;background:#efe9da;border:1px solid #ddd7c4;border-radius:14px;box-shadow:0 18px 40px rgba(16,24,43,.10);overflow:hidden}
+.p4-ctpl .p4-sheet{margin-top:0;border-radius:3px}
+.p4-ctpl .em-band{height:78px;padding:0 40px}
+.p4-ctpl .em-band svg{width:44px;height:44px}
+.p4-ctpl .em-band small{font-size:15px;margin-bottom:8px}
+.p4-ctpl .em-band strong{font-size:28px;color:rgba(255,255,255,.62)}
+.p4-from-need{gap:8px;height:62px;margin:6px 8px 0;padding:0 12px 0 30px;border:2px solid #1a2744;border-radius:8px;background:#ffffff}
+.p4-from-need .p4-sel{border-color:#1a2744}
+.p4-need{font-size:12.5px;padding:5px 10px;flex:none}
+.p4-ctpl .p4-subj{padding:0 40px}
+.p4-ctpl .p4-subj b{color:#6b7180;font-weight:500}
+.p4-blanks{padding:16px 40px 20px;font-family:"Source Serif 4",Georgia,serif;font-size:17px;line-height:1.5;color:#6b7180}
+.p4-blanks p{margin:0 0 5px}
+.p4-blanks p:last-child{margin-bottom:0}
+.p4-cdock{display:flex;align-items:center;justify-content:flex-end;gap:10px;height:76px;margin:14px -20px 0;padding:0 20px;background:#ffffff;border-top:1px solid #ddd7c4}
+.p4-off{display:inline-flex;align-items:center;gap:8px;min-height:46px;padding:0 18px;border:1px solid #d3d0c6;border-radius:8px 0 0 8px;background:#e9e7e0;color:#4a5160;font:inherit;font-size:15.5px;font-weight:600;white-space:nowrap}
+.p4-offarr{display:inline-flex;align-items:center;justify-content:center;width:42px;min-height:46px;padding:0;border:1px solid #d3d0c6;border-left:0;border-radius:0 8px 8px 0;background:#e9e7e0;color:#4a5160}
+
+.p4-three .cx-card{padding:6px 8px}
+.p4-three .cx-cards{gap:6px}
+.p4-three .cx-use{padding:0 11px}
+
+/* tablet */
+.p4-tabrow{display:grid;grid-template-columns:minmax(0,1fr) 852px;gap:48px;margin-top:36px;align-items:start}
+.p4-pcap{padding-top:24px}
+.p4-pk{margin:0;font-size:22px;line-height:1.2;font-weight:700;color:#1a2744;letter-spacing:-.01em}
+.p4-ph{margin:8px 0 0;font-size:15.5px;line-height:1.5;color:#3d4556}
+.p4-tabcrop{position:relative;width:852px;height:850px;overflow:hidden}
+.p4-tablet{width:852px;height:990px;border:16px solid #10182b;border-radius:40px;background:#efe9da;overflow:hidden;box-shadow:0 26px 50px rgba(16,24,43,.18)}
+.p4-tabfade{position:absolute;left:0;right:0;bottom:0;height:44px;background:linear-gradient(rgba(236,235,230,0),#ecebe6 88%)}
+.tb-hd{display:flex;align-items:center;justify-content:space-between;height:60px;padding:0 18px 0 20px;background:#1a2744;color:#ffffff}
+.tb-brand{display:flex;align-items:center;gap:10px;color:#ffffff;text-decoration:none}
+.tb-brand svg{width:30px;height:30px;fill:#ffffff}
+.tb-brand b{font-size:16px;font-weight:700}
+.tb-hr{display:flex;gap:10px}
+.tb-hbtn{display:inline-flex;align-items:center;gap:7px;height:44px;padding:0 13px;border:1.5px solid rgba(255,255,255,.55);border-radius:9px;background:transparent;color:#ffffff;font:inherit;font-size:15px;font-weight:600}
+.tb-pg{padding:14px 20px 0}
+.tb-top{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:4px}
+.tb-tl{display:flex;align-items:baseline;gap:16px}
+.tb-tl .pp-saved{margin:0}
+.tb-top h1{margin:0;font-size:30px;line-height:1.15;font-weight:700;letter-spacing:-.015em}
+.tb-see{min-height:50px;padding:0 20px;font-size:16px}
+.tb-pg .p4-start{height:52px;margin-top:12px}
+.tb-tools{display:flex;align-items:center;gap:8px;margin-top:10px;padding:7px;background:#ffffff;border:1px solid #ddd7c4;border-radius:12px;box-shadow:0 6px 18px rgba(16,24,43,.08)}
+.tb-tools .p4-tool{height:48px;padding:0 8px;font-size:14.5px}
+.tb-tools .p4-tool .k-i{width:19px;height:19px}
+.tb-tools .p4-add{margin-left:auto}
+.tb-sheet{margin-top:0;background:#ffffff;border-radius:3px;box-shadow:0 2px 6px rgba(16,24,43,.06),0 20px 40px rgba(60,48,20,.12)}
+.tb-sheet .em-band{height:74px;padding:0 40px}
+.tb-sheet .em-band small{margin-bottom:7px}
+.tb-sheet .em-band strong{font-size:32px}
+.tb-sheet .p4-subj{padding:0 40px}
+.tb-sheet .p4-from{padding:0 24px 0 40px}
+.tb-sheet .em-in{position:relative;padding:14px 40px 30px;font-size:18px;line-height:1.7}
+.tb-sheet .em-in p{margin-bottom:12px}
+
+/* phones */
+.p4-phones{display:grid;grid-template-columns:minmax(0,1fr) 390px 390px;gap:36px;margin-top:36px;align-items:start}
+.p4-pc{flex-wrap:wrap;row-gap:2px;margin-top:10px}
+.hp-app{flex:none;display:flex;align-items:center;justify-content:space-between;gap:8px;height:56px;padding:0 10px 0 16px;background:#1a2744;color:#ffffff}
+.hp-brand{display:flex;align-items:center;gap:9px;color:#ffffff;text-decoration:none;min-height:44px}
+.hp-rook{width:28px;height:28px;fill:#ffffff;flex:none}
+.hp-bn{display:flex;flex-direction:column;line-height:1.12}
+.hp-bn b{font-size:14px;font-weight:700}
+.hp-bn span{font-size:11px;font-weight:500;color:rgba(255,255,255,.8)}
+.hp-sbtn{display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;border:1.5px solid rgba(255,255,255,.55);border-radius:9px;color:#ffffff;box-sizing:border-box}
+.hp-i20{width:20px;height:20px;flex:none;fill:none;stroke:currentColor;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round}
+.hp-tabs{flex:none;display:grid;grid-template-columns:repeat(4,1fr);height:56px;background:#ffffff;border-top:1px solid #d9d8d1}
+.hp-tab{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;min-height:44px;border:0;background:transparent;padding:0;color:#555c6b;text-decoration:none;font:inherit;font-size:12px;font-weight:500;line-height:1.1}
+.hp-tab-on{color:#1a2744;font-weight:700}
+.hp-tab-on:before{content:"";position:absolute;top:0;left:22%;right:22%;height:3px;border-radius:0 0 3px 3px;background:#866a1e}
+.hp-safe{flex:none;height:24px;background:#ffffff;display:flex;align-items:flex-end;justify-content:center;padding-bottom:7px}
+.hp-safe i{display:block;width:124px;height:5px;border-radius:3px;background:#10182b}
+
+.pp-scroll{background:#efe9da;padding:12px 12px 0}
+.pp-crumb{display:flex;gap:8px;margin:0;font-size:13.5px;color:#555c6b}
+.pp-crumb a{color:#1a2744;font-weight:500;text-decoration:underline;text-decoration-color:#9aa1b0;text-underline-offset:3px}
+.pp-crumb span[aria-current]{color:#1a2744;font-weight:600}
+.pp-h1{margin:6px 0 0;font-size:26px;line-height:1.15;font-weight:700;letter-spacing:-.015em}
+.pp-saved{display:flex;flex-wrap:wrap;align-items:center;gap:2px 6px;margin:4px 0 0;font-size:13.5px;color:#555c6b}
+.pp-saved b{color:#1a2744;font-weight:600}
+.pp-saved .k-i-sm{color:#145b3a}
+.pp-sv{display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.pp-svl{flex-basis:100%}
+.pp-start{display:flex;align-items:center;gap:11px;width:100%;min-height:52px;margin-top:10px;padding:8px 12px 8px 9px;border:1.5px solid #1a2744;border-radius:10px;background:#ffffff;color:#1a2744;font:inherit;text-align:left}
+.pp-start span{display:flex;flex-direction:column;line-height:1.3}
+.pp-start b{font-size:15px;font-weight:700}
+.pp-start small{font-size:13px;line-height:1.35;color:#555c6b}
+.pp-start .p4-chev{margin-left:auto}
+.pp-tbar{display:grid;grid-template-columns:repeat(6,1fr);align-items:center;margin-top:10px;padding:6px 6px 8px;row-gap:6px;column-gap:8px;background:#ffffff;border:1px solid #ddd7c4;border-radius:12px;box-shadow:0 6px 16px rgba(16,24,43,.08)}
+.p4-ptool{display:inline-flex;align-items:center;justify-content:center;height:48px;border:0;background:transparent;color:#1a2744;padding:0}
+.p4-ptool .k-i{width:20px;height:20px}
+.pp-add{grid-column:1 / -1;justify-self:start;display:inline-flex;align-items:center;gap:6px;height:44px;margin:0 0 0 4px;padding:0 12px;border:1px solid #c9c4b2;border-radius:8px;background:#fbfaf6;color:#1a2744;font:inherit;font-size:14.5px;font-weight:600}
+.pp-sheet{margin-top:0;background:#ffffff;border-radius:3px;box-shadow:0 2px 6px rgba(16,24,43,.06),0 16px 32px rgba(60,48,20,.12)}
+.pp-sheet .pm-band{height:76px;padding:0 16px;gap:11px;border-radius:3px 3px 0 0}
+.pp-sheet .pm-band svg{width:32px;height:32px}
+.pp-sheet .pm-band small{margin-bottom:7px}
+.pp-sheet .pm-band strong{font-size:23px}
+.pp-from{display:flex;align-items:center;gap:8px;padding:8px 12px 8px 16px;border-bottom:1px dashed #ddd7c4;font-family:Geist,Arial,sans-serif}
+.pp-from>span{font-size:12.5px;font-weight:600;color:#6b7180;flex:none}
+.pp-sel{display:flex;align-items:center;justify-content:space-between;gap:6px;width:100%;min-width:0;height:46px;padding:0 8px 0 10px;border:1px solid #9aa1b0;border-radius:9px;background:#ffffff;color:#1a2744;font:inherit;text-align:left}
+.pp-sel span{min-width:0;font-size:14px;font-weight:400;line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pp-subj{display:flex;align-items:center;gap:8px;height:52px;padding:0 16px;border-bottom:1px dashed #ddd7c4;font-family:Geist,Arial,sans-serif}
+.pp-subj span{font-size:12.5px;font-weight:600;color:#6b7180}
+.pp-subj b{font-size:14px;font-weight:600;color:#1a2744}
+.pp-sheet .pm-in{padding:18px 16px 16px;font-size:17px}
+.pp-sheet.pm-em a{white-space:normal}
+.pp-dock{flex:none;position:relative;z-index:2;padding:10px 14px;background:#ffffff;border-top:1px solid #ddd7c4;box-shadow:0 -6px 14px rgba(16,24,43,.07)}
+.pp-see{min-height:50px;font-size:16px}
+.pp-dim{position:absolute;left:0;right:0;top:56px;bottom:0;background:rgba(16,24,43,.55)}
+.pp-over{position:absolute;left:0;right:0;top:100px;bottom:0;z-index:3;display:flex;flex-direction:column;background:#ffffff;border-radius:18px 18px 0 0;overflow:hidden;box-shadow:0 -10px 30px rgba(16,24,43,.25)}
+.pp-grab{display:flex;justify-content:center;padding:8px 0 2px;flex:none}
+.pp-grab i{display:block;width:40px;height:5px;border-radius:3px;background:#c9c8c0}
+.pp-shead{flex:none;display:flex;align-items:flex-start;justify-content:space-between;gap:10px;padding:6px 18px 12px;border-bottom:1px solid #e3e2dc}
+.pp-shead h2{margin:0;font-size:19px;line-height:1.25;font-weight:700}
+.pp-shead p{margin:3px 0 0;font-size:13.5px;line-height:1.4;color:#555c6b}
+.pp-sbody{flex:1;overflow:hidden;background:#ffffff}
+
+.tb-sel{position:relative;background:#cddcf3;border-radius:2px;padding:1px 1px}
+.tb-sheet .em-h:before{margin-bottom:10px}
+.tb-k{position:absolute;top:100%;width:2px;height:12px;background:#1a5fd1}
+.tb-k i{position:absolute;top:10px;left:-11px;display:block;width:24px;height:24px;border-radius:50%;background:#1a5fd1;box-shadow:0 2px 5px rgba(16,24,43,.25)}
+.tb-k1{left:-1px}
+.tb-k2{right:-1px}
+.tb-pop{position:absolute;left:50%;bottom:calc(100% + 12px);transform:translateX(-50%);display:flex;align-items:center;height:50px;padding:0 4px;border-radius:10px;background:#10182b;box-shadow:0 10px 24px rgba(16,24,43,.3);font-family:Geist,Arial,sans-serif;white-space:nowrap;z-index:2}
+.tb-pop button{display:inline-flex;align-items:center;gap:6px;height:44px;padding:0 13px;border:0;background:transparent;color:#ffffff;font:inherit;font-size:15px;font-weight:600;line-height:1}
+.tb-pop i{display:block;width:1px;height:24px;background:rgba(255,255,255,.25)}
+.pp-start .p4-chev{display:none}
+
+/* shared set pieces */
+.cx-fig{margin:0;font-family:Geist,system-ui,sans-serif;color:#1a2744}
+.cx-fig *{box-sizing:border-box}
+.cx-cap{margin-top:12px;font-size:14px;line-height:1.45;color:#555c6b}
+.cx-cap b{display:block;font-size:15px;font-weight:600;color:#1a2744;margin-bottom:2px}
+.cx-pan{background:#ffffff;border:1px solid #cfcec6;border-radius:14px;box-shadow:0 18px 40px rgba(16,24,43,.14);overflow:hidden}
+.cx-panh{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:16px 16px 12px 18px;border-bottom:1px solid #e3e2dc}
+.cx-panh-in{border-bottom:0;padding:14px 18px 6px}
+.cx-panh h3{margin:0;font-size:18px;line-height:1.3;font-weight:700;letter-spacing:-.005em;color:#1a2744}
+.cx-panh p{margin:3px 0 0;font-size:13.5px;line-height:1.4;color:#555c6b}
+.cx-panh .cx-kick{margin:0 0 2px;font-size:13px;font-weight:600;color:#555c6b}
+.cx-panh h3.cx-total{font-size:23px;line-height:1.2;letter-spacing:-.01em}
+.cx-x{display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;flex:none;border:1px solid #dcdad2;border-radius:8px;background:#ffffff;color:#1a2744;margin:-4px -4px 0 0;padding:0}
+.cx-panb{padding:12px 18px 16px}
+.cx-gh{display:flex;align-items:center;gap:7px;margin:4px 0 8px;font-size:12.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#3d4556}
+.cx-gh svg{color:#1a2744}
+.cx-gh+.cx-cards{margin-bottom:14px}
+.cx-cards{display:flex;flex-direction:column;gap:8px}
+.cx-card{display:flex;align-items:center;gap:12px;padding:8px;border:1px solid #dcdad2;border-radius:10px;background:#ffffff}
+.cx-mini{position:relative;width:42px;height:54px;flex:none;border:1px solid #c9c8c0;border-radius:4px;background:#ffffff;overflow:hidden;padding:0 5px}
+.cx-mini .b{display:block;height:11px;margin:0 -5px 5px;background:#1a2744}
+.cx-mini .h{display:block;width:60%;height:3px;margin:4px 0 3px;background:#866a1e;border-radius:1px}
+.cx-mini .l{display:block;height:2px;margin:0 0 3px;background:#c9c8c0;border-radius:1px}
+.cx-mini .s{width:70%}
+.cx-mini .k{display:block;width:70%;height:7px;margin:4px 0;border-radius:2px;background:#1a2744}
+.cx-ct{flex:1;min-width:0}
+.cx-ct b{display:block;font-size:15px;line-height:1.3;font-weight:600;color:#1a2744}
+.cx-ct span{display:block;font-size:13px;line-height:1.35;color:#555c6b}
+.cx-use{display:inline-flex;align-items:center;min-height:42px;padding:0 13px;border:1px solid #1a2744;border-radius:8px;background:#ffffff;color:#1a2744;font:inherit;font-size:14px;font-weight:600;white-space:nowrap;flex:none}
+.cx-fine{margin:12px 0 0;padding-top:12px;border-top:1px solid #e3e2dc;font-size:13px;line-height:1.45;color:#555c6b}
+.cx-fine+.cx-fine{margin-top:6px;padding-top:0;border-top:0}
+.cx-tabs{display:flex;gap:4px;margin:0;padding:0 12px;border-bottom:1px solid #dcdad2}
+.cx-tab{display:inline-flex;align-items:center;min-height:44px;padding:0 9px;border:0;border-bottom:3px solid transparent;background:transparent;color:#3d4556;font:inherit;font-size:14px;font-weight:600;white-space:nowrap;margin-bottom:-1px}
+.cx-tab-on{color:#1a2744;font-weight:700;border-bottom-color:#1a2744}
+.cx-plist{margin:0;padding:0;list-style:none}
+.cx-plist li{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:44px;padding:3px 0;border-bottom:1px solid #ecebe4}
+.cx-plist b{display:block;font-size:14.5px;font-weight:600;color:#1a2744}
+.cx-plist span{display:block;font-size:12.5px;color:#555c6b;line-height:1.35}
+.cx-rm{display:inline-flex;align-items:center;min-height:44px;padding:0 4px 0 10px;border:0;background:transparent;color:#1a2744;font:inherit;font-size:13.5px;font-weight:600;text-decoration:underline;text-underline-offset:3px;flex:none}
+.cx-more12{margin:8px 0 0;font-size:13.5px;color:#3d4556}
+.cx-more12 a{color:#1a2744;font-weight:600;text-decoration:underline;text-underline-offset:3px}
+.cx-addh{margin:12px 0 8px;font-size:16px;font-weight:700;color:#1a2744}
+.cx-ways{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.cx-way{border:1px solid #dcdad2;border-radius:10px;padding:10px;background:#fbfaf6}
+.cx-way b{display:block;font-size:14px;line-height:1.3;font-weight:700;color:#1a2744}
+.cx-way span{display:block;margin-top:2px;font-size:12.5px;line-height:1.35;color:#555c6b}
+.cx-ta{height:58px;margin-top:8px;padding:8px 9px;border:1px solid #858b99;border-radius:8px;background:#ffffff;font-size:13.5px;line-height:1.45;color:#1a2744}
+.cx-way .k-btn{margin-top:8px;width:100%;min-height:44px;font-size:14px;padding:0 10px}
+.cx-res{display:flex;align-items:flex-start;gap:8px;margin:10px 0 0;padding:9px 11px;border-radius:8px;background:#eef6f1;border:1px solid #cfe3d7;font-size:13.5px;line-height:1.45;color:#1f2a40}
+.cx-res svg{color:#145b3a;margin-top:2px}
+.cx-res span i{font-style:normal;white-space:nowrap}
+.cx-tick{display:flex;align-items:flex-start;gap:10px;margin-top:12px;font-size:14.5px;line-height:1.4;font-weight:600;color:#1a2744}
+.cx-box{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:5px;background:#1a2744;color:#ffffff;flex:none}
+.cx-addbtn{margin-top:12px;width:100%}
+/* D. the From row, on the desk */
+.p4-frow{display:flex;align-items:center;gap:12px;margin-top:10px;height:48px;font-family:Geist,Arial,sans-serif}
+.p4-flabel{flex:none;width:44px;font-size:15px;font-weight:600;color:#3d4556}
+.p4-fsel{display:flex;align-items:center;justify-content:space-between;gap:12px;flex:0 0 440px;height:48px;padding:0 14px 0 15px;border:1px solid #9aa1b0;border-radius:9px;background:#ffffff;color:#1a2744;font:inherit;font-size:15.5px;font-weight:600;white-space:nowrap;text-align:left;box-shadow:0 1px 2px rgba(16,24,43,.05)}
+.p4-fsel .k-i{color:#1a2744;flex:none}
+.p4-frow small{font-size:14px;line-height:1.35;color:#555c6b;min-width:0}
+.p4-frow-need{height:64px;margin:0 0 14px;padding:0 14px 0 16px;border:2px solid #1a2744;border-radius:10px;background:#ffffff}
+.p4-fsel-need{flex:1 1 auto;border-color:#1a2744}
+.pp-frow{margin-top:10px}
+.pp-fhead{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin-bottom:6px}
+.pp-flabel{flex:none;font-size:14px;font-weight:600;color:#3d4556}
+.pp-fnote{font-size:13px;line-height:1.35;color:#555c6b}
+
+/* From and Subject: an email's own fields, as option 5 draws them */
+.p4-fields{display:grid;grid-template-columns:minmax(0,1fr);gap:8px;align-items:center;margin-top:10px}
+.p4-fld{display:flex;align-items:stretch;width:100%;height:46px;margin:0;padding:0;border:1px solid #858b99;border-radius:8px;background:#ffffff;color:#1a2744;font:inherit;text-align:left;overflow:hidden;cursor:text}
+button.p4-fld{cursor:pointer}
+.p4-fld-l{flex:none;display:flex;align-items:center;min-width:76px;padding:0 12px;background:#f6f5f0;border-right:1px solid #dddcd4;font-size:13.5px;font-weight:600;color:#3d4556}
+.p4-fld-v{flex:1;min-width:0;display:flex;align-items:center;padding:0 10px 0 12px;font-size:16px;font-weight:400;color:#1a2744;white-space:nowrap;overflow:hidden}
+.p4-fld-i{flex:none;display:flex;align-items:center;padding:0 13px 0 4px;color:#555c6b}
+.p4-fld-i .k-i{color:#1a2744}
+.p4-fld-ph{color:#6b7180}
+.p4-fld-on{border-color:#1a2744;outline:2px solid #1a2744;outline-offset:2px}
+.p4-fld-on .p4-fld-l{background:#eef0f4}
+.p4-fld-need{border:2px solid #1a2744}
+.p4-fld-need .p4-fld-v{font-weight:600}
+.p4-fld-need .p4-need{align-self:center;margin-right:6px}
+.p4-fld-open{border:2px solid #1a2744}
+.p4-fhelp{margin:0;font-size:13.5px;line-height:1.4;color:#555c6b}
+.p4-fcaret{display:inline-block;width:2px;height:21px;margin-left:2px;background:#1a2744}
+
+/* signs that the letter is typed on */
+.em p.p4-editing{position:relative;z-index:2;margin:4px -14px 12px;padding:9px 12.5px;border:1.5px solid #1a2744;border-radius:8px;background:#f7f8fb;box-shadow:0 0 0 4px rgba(26,39,68,.08)}
+.p4-etag{position:absolute;top:-12px;right:12px;display:inline-flex;align-items:center;gap:5px;height:24px;padding:0 9px;border-radius:6px;background:#1a2744;color:#ffffff;font-family:Geist,Arial,sans-serif;font-size:12px;font-weight:600;line-height:1;letter-spacing:.01em}
+.p4-etag .k-i-sm{width:13px;height:13px}
+.p4-hov{position:relative}
+.p4-hov:after{content:"";position:absolute;top:-8px;left:-9px;right:-9px;bottom:-4px;border:1px dashed #858b99;border-radius:4px;pointer-events:none}
+.p4-chip{display:inline-flex;align-items:center;gap:5px;height:28px;padding:0 10px 0 8px;border:1px solid #c9c4b2;border-radius:999px;background:#ffffff;color:#1a2744;font-family:Geist,Arial,sans-serif;font-size:12.5px;font-weight:600;line-height:1;letter-spacing:0;white-space:nowrap;box-shadow:0 2px 6px rgba(16,24,43,.08)}
+.p4-chip .k-i-sm{width:14px;height:14px}
+.p4-hov .p4-chip{position:absolute;right:0;bottom:3px}
+.p4-ptr{position:absolute;right:118px;bottom:-14px;width:18px;height:22px}
+.p4-mchip svg,.p4-bsheet .pm-band .p4-mchip svg{width:14px;height:14px;fill:none}
+.p4-mchip{margin-left:14px;vertical-align:5px;border-color:rgba(255,255,255,.5);background:rgba(255,255,255,.1);color:#ffffff;box-shadow:none}
+.p4-next{display:flex;align-items:center;gap:10px;margin-top:14px}
+.p4-nbox{flex:1;display:flex;align-items:center;gap:8px;min-height:48px;padding:0 16px;border:1.5px dashed #a9a496;border-radius:8px;background:#fdfcf8;font-family:Geist,Arial,sans-serif;font-size:15.5px;line-height:1.3;color:#6b7180}
+.p4-next .p4-add{margin-left:0;flex:none;height:44px;font-family:Geist,Arial,sans-serif;font-size:14px;line-height:1.2}
+
+/* the email's In this issue strip on the letter sheet, as Newsletter-Email-6 has it */
+.em-toc{padding:20px 52px 22px;background:#f8f4e8;border-bottom:1px solid #ebe3c9;font-family:Geist,Arial,sans-serif}
+.em-toc-h{display:flex;align-items:baseline;justify-content:space-between;gap:16px;margin:0 0 10px}
+.em .em-toc-k,.pm-em .em-toc-k{margin:0;font-size:13px;line-height:1.2;letter-spacing:.12em;font-weight:700;text-transform:uppercase;color:#866a1e}
+.em .em-toc-note,.pm-em .em-toc-note{margin:0;font-size:13px;line-height:1.3;color:#555c6b;white-space:nowrap}
+.em-toc ul{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:1fr 1fr;grid-auto-flow:column;grid-template-rows:repeat(3,auto);gap:6px 32px}
+.em-toc li{font-size:16px;line-height:1.5}
+.em .em-toc a{font-weight:500;color:#1a2744;text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:1px}
+.p4-mbdesk .em-toc,.tb-sheet .em-toc{padding-left:40px;padding-right:40px}
+.pp-sheet .pm-toc{padding-bottom:10px}
+.pp-sheet .em-toc-note{display:block;margin:0 0 0;text-align:right;font-size:12.5px}
+
+/* the email's In this issue strip, as Newsletter-Email-6 has it (phone width) */
+.pm-toc{padding:16px 20px 6px;background:#f8f4e8;border-bottom:1px solid #ebe3c9;font-family:Geist,Arial,sans-serif}
+.pm-toc-k{margin:0 0 2px;font-size:13px;line-height:1.2;letter-spacing:.12em;font-weight:700;text-transform:uppercase;color:#866a1e}
+.pm-toc ul{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:max-content max-content;justify-content:space-between;grid-auto-flow:column;grid-template-rows:repeat(3,auto);column-gap:16px}
+.pm-toc li{font-size:15px;line-height:22px}
+.pm-em .pm-toc a{display:inline-block;padding:11px 0;font-weight:500;color:#1a2744;text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:1px}
+
+.p4-manage{display:flex;align-items:center;gap:10px;min-height:56px;padding:0 18px;border-top:1px solid #e3e2dc;color:#1a2744;font-size:14.5px;font-weight:600;text-decoration:none}
+.p4-manage span{text-decoration:underline;text-underline-offset:3px;text-decoration-color:#9aa1b0}
+.p4-manage .p4-chev{margin-left:auto}
+.p4-fpan .p4-fnotes{padding-bottom:18px}
+.p4-mline{margin:-2px 2px 0;font-size:13.5px;line-height:1.4;color:#555c6b}
+.p4-mline a{color:#1a2744;font-weight:600;text-decoration:underline;text-underline-offset:3px}
+
+/* After clicking Subject */
+.p4-sfocus{padding:18px 18px 14px;background:#efe9da;border:1px solid #ddd7c4;border-radius:14px;box-shadow:0 18px 40px rgba(16,24,43,.10)}
+.p4-sfocus .p4-fld{background:#ffffff}
+.p4-pcol{display:flex;flex-direction:column;gap:36px;min-width:0}
+.p4-sfocus-fit{display:grid;grid-template-columns:minmax(0,1fr);column-gap:16px;align-items:center;padding:16px 16px 12px}
+.p4-count{grid-column:1;display:flex;justify-content:flex-end;margin:10px 2px 0;font-size:13.5px;line-height:1.4;color:#555c6b}
+
+/* The letter before anything is written */
+.p4-blank{padding:14px;background:#efe9da;border:1px solid #ddd7c4;border-radius:14px;box-shadow:0 18px 40px rgba(16,24,43,.10)}
+.p4-bsheet{background:#ffffff;border-radius:3px;box-shadow:0 2px 6px rgba(16,24,43,.06),0 14px 28px rgba(60,48,20,.12);overflow:hidden}
+.p4-bsheet .pm-band{height:68px;padding:0 14px;gap:10px}
+.p4-bsheet .pm-band svg{width:30px;height:30px}
+.p4-bsheet .pm-band small{font-size:12.5px;margin-bottom:6px}
+.p4-bsheet .pm-band strong{display:flex;align-items:center;gap:8px;font-size:21px}
+.p4-bsheet .p4-mchip{margin-left:0;height:24px;width:24px;padding:0;justify-content:center;vertical-align:0}
+.p4-bbody{display:flex;flex-direction:column;gap:10px;padding:16px 14px 18px}
+.p4-bbody .p4-nbox{min-height:48px;padding:0 13px;font-size:14.5px}
+.p4-stack{display:flex;flex-direction:column;gap:20px;min-width:0}
+.p4-stack-f{gap:24px}
+.p4-fopen{padding:12px 12px 12px;border-bottom:1px solid #e3e2dc}
+.p4-fopen .p4-fld-v{padding:0 6px 0 12px}
+.p4-fopen .p4-fld-i{padding:0 10px 0 2px}
+.p4-cfields{grid-template-columns:minmax(0,1fr);gap:10px;margin:0 0 14px}
+.pp-fields{display:flex;flex-direction:column;gap:8px;margin-top:10px}
+.pp-fld .p4-fld-l{min-width:62px;padding:0 8px;font-size:13px}
+.pp-fld:first-child{height:auto;min-height:52px}
+.pp-fld:first-child .p4-fld-v{padding:6px 4px 6px 10px;font-size:15px;line-height:1.3;white-space:normal}
+.pp-fld .p4-fld-v{display:block;padding:0 2px 0 10px;font-size:15px;line-height:44px}
+.pp-fld .p4-fld-i{padding:0 10px 0 6px}
+.pp-fhelp{margin:4px 2px 8px;font-size:13px;line-height:1.35;color:#555c6b}
+.pp-fields .pp-fhelp:last-child{margin-bottom:0}
+.tb-pg .p4-fields{margin-top:10px}
+.tb-sheet .p4-mchip{vertical-align:4px}
+.p4-hbtns{display:flex;align-items:center;gap:10px}
+.tb-help{display:inline-flex;align-items:center;justify-content:center;align-self:center;width:44px;height:44px;flex:none;padding:0;border:1px solid #c9c4b2;border-radius:9px;background:#ffffff;color:#1a2744}
+.pp-tl{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:6px}
+.pp-tl .pp-h1{margin:0}
+.pp-help{margin:-6px 0}
+.tb-tl .tb-help{margin:0 -8px}
+.tb-tl .pp-saved{flex-wrap:nowrap;white-space:nowrap}
+
+/* After pressing Help: the top of the page, dimmed, with the Subject field lit */
+.p4-help{position:relative;height:262px;overflow:hidden;background:#efe9da;border:1px solid #ddd7c4;border-radius:14px;box-shadow:0 18px 40px rgba(16,24,43,.10)}
+.p4-hscale{position:absolute;left:20px;top:12px;width:806px;transform:scale(.8);transform-origin:0 0}
+.p4-hdim{position:absolute;left:-60px;right:-60px;top:-40px;bottom:-200px;z-index:2;background:rgba(16,24,43,.34)}
+.p4-help .em-band>*{visibility:hidden}
+.p4-help .p4-fld.p4-hring{position:relative;z-index:3;box-shadow:0 0 0 4px #ffffff,0 0 0 8px #c8a94a}
+.p4-hcard{position:absolute;left:20px;right:20px;top:154px;z-index:4;display:flex;align-items:flex-end;justify-content:space-between;gap:16px;padding:14px 16px 16px 18px;background:#ffffff;border-radius:12px;box-shadow:0 14px 34px rgba(16,24,43,.30)}
+.p4-hptr{position:absolute;top:-8px;left:150px;width:16px;height:16px;background:#ffffff;transform:rotate(45deg);border-radius:2px}
+.p4-htext{min-width:0}
+.p4-hstep{margin:0;font-size:12.5px;line-height:1.3;font-weight:600;color:#555c6b}
+.p4-htitle{margin:3px 0 0;font-size:18px;line-height:1.25;font-weight:700;color:#1a2744}
+.p4-hsay{margin:4px 0 0;font-size:14.5px;line-height:1.45;color:#3d4556}
+.p4-hbtnrow{display:flex;align-items:center;gap:8px;flex:none}
+.p4-hskip{display:inline-flex;align-items:center;min-height:44px;padding:0 10px;border:0;background:transparent;color:#555c6b;font:inherit;font-size:14.5px;font-weight:600;text-decoration:underline;text-underline-offset:3px;text-decoration-color:#9aa1b0}
+.p4-hb{min-height:44px;padding:0 16px;font-size:14.5px}
+.p4-hsteps{margin:8px 0 0;padding:0;list-style:none;display:grid;grid-template-columns:1fr 1fr;grid-auto-flow:column;grid-template-rows:repeat(3,auto);gap:5px 24px;counter-reset:hs}
+.p4-hsteps li{position:relative;padding-left:20px;font-size:13px;line-height:1.4;color:#3d4556;counter-increment:hs}
+.p4-hsteps li:before{content:counter(hs) ".";position:absolute;left:0;top:0;font-weight:700;color:#1a2744}
+.p4-tstep{display:inline-flex;align-items:center;gap:8px;padding:0 4px 0 6px;font-size:15px;font-weight:500;color:#1a2744;white-space:nowrap;flex:none}
+.p4-tdiv{display:block;width:1px;height:26px;background:#e0dccf;flex:none}
+.p4-undo{padding:0 10px}
+.p4-writecol>.p4-fields{margin-top:0}
+.p4-writecol>.p4-tbar{gap:6px}
+.p4-sbtn{display:inline-flex;align-items:center;gap:8px;min-height:46px;padding:0 12px 0 13px;border:1px solid #1a2744;border-radius:8px;background:#ffffff;color:#1a2744;font:inherit;font-size:14.5px;font-weight:600;white-space:nowrap;flex:none}
+.p4-sbtn .k-i{color:#1a2744;flex:none}
+.p4-hsaved{margin-left:-4px}
+.p4-pull{display:grid;grid-template-columns:1fr auto 1fr;height:52px;padding:0 6px 0 12px}
+.p4-pullmid{grid-column:2;display:flex;align-items:center;gap:12px}
+.p4-pbig{grid-column:3;justify-self:end;min-height:40px;padding:0 12px;background:#ffffff}
+.p4-blankrow{margin:4px 0 14px}
+.p4-mbdesk>.p4-pull{border-radius:0 0 10px 10px}
+.p4-mbdock{height:70px}
+.p4-cgap{flex:1;min-width:0}
+.p4-help .p4-hcard{left:242px;right:16px;top:104px;flex-direction:column;align-items:stretch;gap:6px;padding-bottom:14px}
+.p4-help .p4-hptr{left:120px}
+.p4-help .p4-hbtnrow{justify-content:flex-end}
+.pp-dock2{display:flex;gap:8px}
+.pp-dock2:before{content:"";position:absolute;left:0;right:0;bottom:100%;height:22px;background:linear-gradient(rgba(255,255,255,0),#ffffff 85%);pointer-events:none}
+.pp-sfrom{flex:0 0 auto;min-height:50px;padding:0 14px;justify-content:center}
+.pp-dock2 .pp-see{flex:1 1 auto;min-width:0;justify-content:center}
+
+/* Pick a template: larger words, the first thing to press in the bar */
+.p4-dock{height:76px}
+.p4-pick{gap:10px;min-height:52px;padding:0 15px 0 14px;border:1.5px solid #1a2744;font-size:17.5px;font-weight:600}
+.p4-pick>.k-i{width:21px;height:21px}
+.p4-pick>.k-i-sm{width:18px;height:18px}
+.p4-cdock .p4-pick{min-height:50px;gap:8px;padding:0 12px 0 12px;font-size:16px}
+.p4-cdock .p4-pick>.k-i{width:19px;height:19px}
+.p4-cdock .p4-pick>.k-i-sm{width:16px;height:16px}
+.p4-cdock .p4-pick{margin-right:auto}
+.pp-dock2 .p4-pick{flex:0 0 auto;min-height:50px;gap:7px;padding:0 12px;font-size:16px}
+.pp-dock2 .p4-pick>.k-i{width:19px;height:19px}
+
+/* When the page opens: the wiggle, drawn still */
+.p4-three{row-gap:20px}
+.p4-wig{grid-column:1 / -1;display:grid;grid-template-columns:468px minmax(0,1fr);column-gap:24px;align-items:center}
+.p4-wig .cx-cap{margin-top:0;max-width:660px}
+.p4-wpic{position:relative;height:92px;overflow:hidden;background:#efe9da;border:1px solid #ddd7c4;border-radius:14px;box-shadow:0 18px 40px rgba(16,24,43,.10)}
+.p4-wbar{position:absolute;left:0;right:0;bottom:0;height:76px;background:#ffffff;border-top:1px solid #ddd7c4;box-shadow:0 -10px 28px rgba(16,24,43,.10)}
+.p4-wbtn{position:absolute;left:48px;top:11.5px}
+.p4-wtilt{position:relative;z-index:1;transform:rotate(-2deg)}
+.p4-wghost{position:absolute;left:0;top:0;z-index:0;transform:rotate(2deg);background:transparent;border-color:rgba(26,39,68,.26);color:transparent;box-shadow:none}
+.p4-wghost .k-i{visibility:hidden}
+.p4-wmk{position:absolute;top:50%;width:26px;height:40px;margin-top:-20px;fill:none;stroke:#858b99;stroke-width:2;stroke-linecap:round}
+.p4-wml{left:-34px;transform:translateY(5px)}
+.p4-wmr{right:-34px;transform:translateY(-5px)}
+
+/* Revision 14: option A applied. One row of From and Subject; the bar at the foot respaced */
+.p4-row1{display:grid;grid-template-columns:max-content minmax(0,1fr);gap:8px;align-items:stretch}
+.p4-row1 .p4-fld{height:46px}
+.p4-row1 .p4-r1l{min-width:0;padding:0 10px}
+.p4-r1from .p4-fld-v{padding:0 2px 0 10px}
+.p4-r1from .p4-fld-i{padding:0 10px 0 4px}
+.p4-r1subj .p4-fld-v{padding:0 6px 0 10px}
+.p4-r1subj .p4-fld-i{padding:0 11px 0 2px}
+.p4-writecol>.p4-r1tbar{gap:8px}
+.p4-quiet{display:inline-flex;align-items:center;gap:6px;height:44px;min-height:44px;padding:0 10px;margin-left:-10px;border:0;border-radius:8px;background:transparent;color:#555c6b;font:inherit;font-size:14px;font-weight:600;white-space:nowrap;flex:none}
+.p4-quiet .k-i-sm{width:16px;height:16px}
+.p4-quiet:focus-visible{outline:2px solid #1a2744;outline-offset:2px}
+.p4-flow3{gap:26px}
+.p4-mbflow{justify-content:flex-end;gap:26px}
+.p4-help .p4-hcard{top:70px}
+.p4-help .p4-hptr{left:200px}
+.p4-wgrp{display:inline-flex;align-items:center;gap:8px}
+.p4-wgrp.p4-wghost{position:absolute;left:0;top:0;z-index:0;transform:rotate(2deg)}
+.p4-wghost .p4-sbtn{background:transparent;border-color:rgba(26,39,68,.26);color:transparent;box-shadow:none}
+.p4-wghost .p4-n{visibility:hidden}
+.p4-wgrp.p4-wtilt{position:relative;z-index:1;transform:rotate(-2deg)}
+
+/* Revision 15: the bar at the foot. More options a bordered button, larger step marks, the four controls spread across the bar */
+.p4-mopt{display:inline-flex;align-items:center;gap:7px;height:46px;min-height:46px;padding:0 12px 0 11px;border:1.5px solid #858b99;border-radius:8px;background:#ffffff;color:#1a2744;font:inherit;font-size:15.5px;font-weight:600;line-height:1;white-space:nowrap;flex:none}
+.p4-mopt .k-i-sm{width:16px;height:16px;color:#1a2744}
+.p4-mopt .p4-msl{width:18px;height:18px}
+.p4-mopt:focus-visible{outline:2px solid #1a2744;outline-offset:2px}
+.p4-n{width:32px;height:32px;font-size:17px}
+.p4-act{gap:10px}
+.p4-wgrp{gap:10px}
+.p4-dock15{justify-content:space-between;gap:16px}
+.p4-dock15 .p4-pick{padding:0 10px 0 9px}
+.p4-dock15 .p4-send{padding:0 14px}
+.p4-cdock15{justify-content:space-between}
+.p4-cdock15 .p4-pick{margin-right:0;padding:0 9px}
+.p4-cdock15 .p4-off{padding:0 14px}
+.p4-mopt-s{flex-direction:column;justify-content:center;gap:3px;padding:0 9px;font-size:13.5px}
+</style>
+</helmet>
+<div class="p4-root" style="width:1440px;height:5500px">
+<div class="p4-col">
+<header class="p4-strip" aria-label="About this option"><div><p class="p4-kick">LCA Newsletter · The page</p><h1 class="p4-name">The letter on the desk</h1><p class="p4-say">The page looks like the letter itself lying on a desk: you click on it and type, exactly as members will read it.</p></div><span class="k-sample p4-tag">Sample data</span></header>
+
+<figure class="p4-fig"><div class="k-browser p4-browser"><div class="k-browser-bar"><i></i><i></i><i></i><div class="k-browser-url">louisianachess.org/admin/newsletter</div></div>
+<div class="p4-view">
+<header class="k-header p4-hd"><div class="k-header-in p4-hin"><a class="k-brand p4-brand" href="#" aria-label="Louisiana Chess Association, home"><svg class="p4-rook" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg></a><nav class="k-navlinks p4-nav" aria-label="Main"><a href="#">Tournaments</a><a href="#">Clubs</a><a href="#">Scholastic</a><a href="#">News</a><a href="#">Membership</a><button class="p4-navbtn" type="button" aria-haspopup="true" aria-expanded="false">About<svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></button></nav><a class="p4-search" href="#"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg><span>Search</span></a><div class="k-utility p4-util"><a class="k-ulink" href="#">Donate</a><button class="p4-my" type="button" aria-haspopup="menu" aria-expanded="false"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4.5 21c1-4 4-6 7.5-6s6.5 2 7.5 6"></path></svg><span>My LCA</span><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></button></div></div></header>
+<div class="p4-phead"><div class="p4-phead-in"><div><nav aria-label="Breadcrumb"><p class="p4-crumb"><a href="#">Admin</a><span class="p4-sep" aria-hidden="true">/</span><span aria-current="page">Newsletter</span></p></nav><div class="p4-tline"><h1>Newsletter</h1><span class="p4-quiettxt"><b>December 2026</b> · Draft</span><span class="p4-quiettxt p4-hsaved"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7"></path></svg>Saved automatically at 2:15 PM</span></div></div><div class="p4-hbtns"><button class="k-btn k-btn-soft k-btn-sm" type="button" aria-haspopup="dialog"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M9.6 9.4a2.5 2.5 0 0 1 4.9.7c0 1.7-2.5 2.1-2.5 3.7"></path><path d="M12 17.3h.01"></path></svg>Help</button><button class="k-btn k-btn-soft k-btn-sm" type="button"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"></path></svg>Admin sections</button></div></div></div>
+<div class="p4-desk">
+<div class="p4-writecol">
+<div class="p4-row1" role="group" aria-label="Who it is from and its subject"><button class="p4-fld p4-r1from" type="button" aria-haspopup="listbox" aria-expanded="false"><span class="p4-fld-l p4-r1l">From</span><span class="p4-fld-v">Louisiana Chess Association · LCA Newsletter</span><span class="p4-fld-i"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></span></button><label class="p4-fld p4-r1subj"><span class="p4-fld-l p4-r1l">Subject</span><span class="p4-fld-v">LCA Newsletter · December 2026</span><span class="p4-fld-i"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"></path><path d="M13.5 6.5l4 4"></path></svg></span></label></div>
+<div class="p4-tbar p4-r1tbar" role="toolbar" aria-label="Writing tools"><button class="p4-tool" type="button"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5h6a3.5 3.5 0 0 1 0 7H7zM7 12h7a3.5 3.5 0 0 1 0 7H7z"></path></svg>Bold</button><button class="p4-tool" type="button"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 5h8M6 19h8M14 5l-4 14"></path></svg>Italic</button><button class="p4-tool" type="button"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 5v14M18 5v14M6 12h12"></path></svg>Heading</button><button class="p4-tool" type="button"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6h11M9 12h11M9 18h11M4.5 6h.01M4.5 12h.01M4.5 18h.01"></path></svg>List</button><button class="p4-tool" type="button"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"></path></svg>Link</button><button class="p4-tool" type="button"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 14L4 9l5-5M4 9h10a6 6 0 0 1 0 12h-3"></path></svg>Undo</button><button class="p4-tool p4-add" type="button" aria-haspopup="menu" aria-expanded="false"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>Add a photo, event or line<svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></button></div>
+<article class="p4-sheet em" aria-label="The December 2026 letter, being written"><div class="p4-body"><div class="p4-flow"><div class="em-band"><svg class="" viewBox="0 0 100 100" role="img" aria-label="LCA rook"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span><small>LCA NEWSLETTER</small><strong>December 2026<span class="p4-chip p4-mchip"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"></path><path d="M13.5 6.5l4 4"></path></svg>Click to edit</span></strong></span></div><nav class="em-toc" aria-label="In this issue"><div class="em-toc-h"><p class="em-toc-k">In this issue</p><p class="em-toc-note">Made from your headings. Updates by itself.</p></div><ul><li><a href="#p4w-s1">A note from the president</a></li><li><a href="#p4w-s2">Coming up</a></li><li><a href="#p4w-s3">Results</a></li><li><a href="#p4w-s4">From the clubs</a></li><li><a href="#p4w-s5">Scholastic</a></li><li><a href="#p4w-s6">Board business</a></li></ul></nav><div class="em-in"><h4 class="em-h p4-hov" id="p4w-s1">A note from the president<span class="p4-chip"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"></path><path d="M13.5 6.5l4 4"></path></svg>Click to edit</span><svg class="p4-ptr" viewBox="0 0 18 22" aria-hidden="true"><path d="M1.5 1.5v16.2l4.3-4.1 2.9 6.6 2.9-1.3-2.9-6.4h6z" fill="#ffffff" stroke="#10182b" stroke-width="1.4" stroke-linejoin="round"></path></svg></h4>
+<p>Dear members,</p>
+<p>Thank you for a great year of chess in Louisiana, and to every volunteer who made it happen.</p>
+<p>The new year brings more chances to play, to learn and to meet new people at the board.</p>
+<p class="p4-editing">One ask: please <a href="#">renew your membership</a>, and bring one new player to a club night.<span class="p4-caret" aria-hidden="true"></span><span class="p4-etag"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"></path><path d="M13.5 6.5l4 4"></path></svg>Editing</span></p>
+<p class="em-last">See you over the board,<br>LCA President</p>
+<h4 class="em-h" id="p4w-s2">Coming up</h4>
+<p class="em-l">Sat,&nbsp;Jan&nbsp;9,&nbsp;2027 · Sample Winter Open · Sample&nbsp;City · <a href="#">Register on King Registration ↗</a></p></div></div><div class="p4-fade" aria-hidden="true"></div><div class="p4-scroll" aria-hidden="true"><i></i></div></div></article>
+<div class="p4-pull"><span class="p4-pullmid" role="separator" aria-label="Pull to make the letter taller"><i></i>Pull to make taller<i></i></span><button class="p4-big p4-pbig" type="button"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"></path></svg>Make bigger</button></div>
+</div>
+<aside class="p4-side" aria-label="What members will get, and who gets it"><div class="p4-sidehead"><h2>What members will get</h2></div><div class="p4-sidectl"><div class="k-seg p4-seg" role="group" aria-label="Show the email on"><button class="k-seg-on" type="button" aria-pressed="true">Phone</button><button type="button" aria-pressed="false">Computer</button></div><button class="p4-hide" type="button"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3l18 18M10.6 5.2A9.9 9.9 0 0 1 12 5c6 0 9.5 7 9.5 7a17 17 0 0 1-3 3.8M6.4 6.5C3.9 8.2 2.5 12 2.5 12s3.5 7 9.5 7a9.6 9.6 0 0 0 4.4-1.1M9.9 9.9a3 3 0 0 0 4.2 4.2"></path></svg>Hide</button></div>
+<div class="p4-mini"><div class="p4-mini-scr"><div class="p4-mini-in"><div class="pm-head"><p class="pm-subj">LCA Newsletter · December 2026</p><div class="pm-who"><span class="pm-av"><svg class="" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg></span><span><b>Louisiana Chess Association</b><small>to you</small></span></div></div><div class="pm-em"><div class="pm-band"><svg class="" viewBox="0 0 100 100" role="img" aria-label="LCA rook"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span><small>LCA NEWSLETTER</small><strong>December 2026</strong></span></div><nav class="pm-toc" aria-label="In this issue"><p class="pm-toc-k">In this issue</p><ul><li><a href="#p4m-s1">A note from the president</a></li><li><a href="#p4m-s2">Coming up</a></li><li><a href="#p4m-s3">Results</a></li><li><a href="#p4m-s4">From the clubs</a></li><li><a href="#p4m-s5">Scholastic</a></li><li><a href="#p4m-s6">Board business</a></li></ul></nav><div class="pm-in"><h4 class="em-h" id="p4m-s1">A note from the president</h4>
+<p>Dear members,</p>
+<p>Thank you for a great year of chess in Louisiana, and to every volunteer who made it happen.</p>
+<p>The new year brings more chances to play, to learn and to meet new people at the board.</p>
+<p>One ask: please <a href="#">renew your membership</a>, and bring one new player to a club night.</p>
+<p class="em-last">See you over the board,<br>LCA President</p>
+<h4 class="em-h" id="p4m-s2">Coming up</h4>
+<p class="em-l">Sat,&nbsp;Jan&nbsp;9,&nbsp;2027 · Sample Winter Open · Sample&nbsp;City · <a href="#">Register on King Registration ↗</a></p><p class="em-l">Sat to Sun, Feb&nbsp;6&nbsp;to&nbsp;7,&nbsp;2027 · Example Memorial · Anytown · run by Example Chess Club · <a href="#">Registers on the organizer's site ↗</a></p></div></div></div></div></div>
+<div class="p4-reach"><span class="p4-who"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.5"></circle><path d="M2.5 20c.8-3.6 3.3-5.5 6.5-5.5s5.7 1.9 6.5 5.5"></path><path d="M16 4.8a3.5 3.5 0 0 1 0 6.4M18.5 14.8c1.6.8 2.6 2.5 3 5.2"></path></svg><span><b>167 people will get it</b><small>155 members and 12 you added</small></span></span><button class="p4-btn2 p4-reachbtn" type="button" aria-haspopup="dialog"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.5"></circle><path d="M2.5 20c.8-3.6 3.3-5.5 6.5-5.5s5.7 1.9 6.5 5.5"></path><path d="M19 8v6M16 11h6"></path></svg>Add or review people</button></div></aside>
+</div>
+<div class="p4-dock p4-dock15" role="region" aria-label="Pick, check and send"><button class="p4-mopt" type="button" aria-haspopup="menu" aria-expanded="false"><svg class="k-i k-i-sm p4-msl" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"></path><circle cx="15" cy="7" r="2"></circle><circle cx="9" cy="17" r="2"></circle></svg>More options<svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 15l6-6 6 6"></path></svg></button><div class="p4-act"><span class="p4-n" aria-label="Step 1, pick a template">1</span><button class="p4-sbtn p4-pick" type="button" aria-haspopup="dialog" aria-expanded="false"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3.5h8a1.5 1.5 0 0 1 1.5 1.5v15.5L12 17l-5.5 3.5V5A1.5 1.5 0 0 1 8 3.5z"></path></svg>Pick a template to start from<svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 15l6-6 6 6"></path></svg></button></div><div class="p4-act"><span class="p4-n" aria-label="Step 2, check it">2</span><button class="k-btn k-btn-line p4-test" type="button"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="M3.5 6.5L12 13l8.5-6.5"></path></svg>Send a test to me</button></div><div class="p4-act"><span class="p4-n" aria-label="Step 3, send it">3</span><div class="p4-split" role="group" aria-label="Send"><button class="k-btn k-btn-gold p4-send" type="button"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 3L10 14M21 3l-7 18-4-7-7-4z"></path></svg>Send to 167 people</button><button class="p4-arrow" type="button" aria-haspopup="menu" aria-expanded="false" aria-label="Other ways to send, such as later"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></button></div></div></div>
+</div></div>
+<figcaption class="p4-cap"><b>On a computer</b><span>Mon, Nov 23, 2026, 2:15 PM: the media manager part way through the December issue. Send asks once to confirm.</span></figcaption></figure>
+<div class="p4-three">
+<figure class="cx-fig" aria-label="After pressing Pick a template to start from">
+<div class="cx-pan" role="dialog" aria-label="Pick a template to start from">
+<div class="cx-panh"><div><h3>Pick a template to start from</h3></div><button class="cx-x" type="button" aria-label="Close"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></button></div>
+<div class="cx-panb">
+<div class="cx-cards p4-blankrow"><div class="cx-card"><span class="cx-mini" aria-hidden="true"><i class="b"></i></span><span class="cx-ct"><b>Blank letter</b><span>Just the month's band and an empty page.</span></span><button class="cx-use" type="button">Use this</button></div></div>
+<p class="cx-gh"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4h6l-1 6 3 3H7l3-3zM12 13v7"></path></svg>Pinned templates</p>
+<div class="cx-cards">
+<div class="cx-card"><span class="cx-mini" aria-hidden="true"><i class="b"></i><i class="h"></i><i class="l"></i><i class="h"></i><i class="l"></i><i class="h"></i><i class="l s"></i></span><span class="cx-ct"><b>Monthly newsletter</b><span>The usual six headings</span></span><button class="cx-use" type="button">Use this</button></div>
+<div class="cx-card"><span class="cx-mini" aria-hidden="true"><i class="b"></i><i class="h"></i><i class="l"></i><i class="l s"></i><i class="k"></i></span><span class="cx-ct"><b>Club tournament announcement</b><span>For a club's event. Asks which club.</span><span class="k-tag k-tag-ext cx-ctag">For a club</span></span><button class="cx-use" type="button">Use this</button></div>
+<div class="cx-card"><span class="cx-mini" aria-hidden="true"><i class="b"></i><i class="h"></i><i class="l"></i><i class="l s"></i><i class="k"></i></span><span class="cx-ct"><b>LCA tournament announcement</b><span>For an LCA event</span></span><button class="cx-use" type="button">Use this</button></div>
+<div class="cx-card"><span class="cx-mini" aria-hidden="true"><i class="b"></i><i class="h"></i><i class="l"></i><i class="l"></i><i class="l"></i><i class="l s"></i></span><span class="cx-ct"><b>Results and thanks</b><span>After a tournament weekend</span></span><button class="cx-use" type="button">Use this</button></div>
+<div class="cx-card"><span class="cx-mini" aria-hidden="true"><i class="l" style="margin-top:8px"></i><i class="l"></i><i class="l s"></i></span><span class="cx-ct"><b>Short notice</b><span>A few lines, no sections</span></span><button class="cx-use" type="button">Use this</button></div>
+</div>
+<p class="cx-gh"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"></circle><path d="M12 7.5V12l3 2"></path></svg>Your last newsletters</p>
+<div class="cx-cards">
+<div class="cx-card"><span class="cx-mini" aria-hidden="true"><i class="b"></i><i class="h"></i><i class="l"></i><i class="h"></i><i class="l"></i><i class="l s"></i></span><span class="cx-ct"><b>Example: November 2026</b><span>Sent Mon, Nov 16, 2026 to 155 members</span></span><button class="cx-use" type="button">Use this</button></div>
+<div class="cx-card"><span class="cx-mini" aria-hidden="true"><i class="b"></i><i class="h"></i><i class="l"></i><i class="h"></i><i class="l s"></i></span><span class="cx-ct"><b>December 2026, as it is now</b><span>Draft</span></span><button class="cx-use" type="button">Use this</button></div>
+</div>
+<p class="cx-fine">Like one you sent? Pin it as a template from its menu.</p>
+<p class="cx-fine">If you have already written something, we ask before replacing it, and keep your words in History.</p>
+</div>
+</div>
+<figcaption class="cx-cap"><b>After pressing Pick a template to start from</b>A blank letter, then pinned templates, then the last ones you sent.</figcaption></figure>
+<div class="p4-stack"><figure class="p4-fig"><div class="p4-mbwrap"><div class="k-browser p4-mb"><div class="k-browser-bar"><i></i><i></i><i></i><div class="k-browser-url">louisianachess.org/admin/newsletter</div></div><div class="p4-mbview"><div class="p4-mbtop"><div><b>December 2026 · Draft</b><small>Saved automatically at 2:15 PM</small></div><div><button class="p4-hide" type="button"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 12s3.5-6.5 9.5-6.5 9.5 6.5 9.5 6.5-3.5 6.5-9.5 6.5S2.5 12 2.5 12z"></path><circle cx="12" cy="12" r="2.6"></circle></svg>Show the email</button></div></div><div class="p4-mbdesk"><div class="p4-fields"><button class="p4-fld" type="button" aria-haspopup="listbox" aria-expanded="false"><span class="p4-fld-l">From</span><span class="p4-fld-v">Louisiana Chess Association · LCA Newsletter</span><span class="p4-fld-i"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></span></button><label class="p4-fld"><span class="p4-fld-l">Subject</span><span class="p4-fld-v">LCA Newsletter · December 2026</span><span class="p4-fld-i"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"></path><path d="M13.5 6.5l4 4"></path></svg></span></label></div><div class="p4-tbar" role="toolbar" aria-label="Writing tools"><button class="p4-tool" type="button"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5h6a3.5 3.5 0 0 1 0 7H7zM7 12h7a3.5 3.5 0 0 1 0 7H7z"></path></svg>Bold</button><button class="p4-tool" type="button"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 5h8M6 19h8M14 5l-4 14"></path></svg>Italic</button><button class="p4-tool" type="button"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 5v14M18 5v14M6 12h12"></path></svg>Heading</button><button class="p4-tool" type="button"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6h11M9 12h11M9 18h11M4.5 6h.01M4.5 12h.01M4.5 18h.01"></path></svg>List</button><button class="p4-tool" type="button"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"></path></svg>Link</button><button class="p4-tool" type="button"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 14L4 9l5-5M4 9h10a6 6 0 0 1 0 12h-3"></path></svg>Undo</button><button class="p4-tool p4-add" type="button" aria-haspopup="menu" aria-expanded="false"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>Add a photo, event or line<svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></button></div><article class="p4-sheet em" aria-label="The letter, made bigger"><div class="em-band"><svg class="" viewBox="0 0 100 100" role="img" aria-label="LCA rook"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span><small>LCA NEWSLETTER</small><strong>December 2026<span class="p4-chip p4-mchip"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"></path><path d="M13.5 6.5l4 4"></path></svg>Click to edit</span></strong></span></div><nav class="em-toc" aria-label="In this issue"><div class="em-toc-h"><p class="em-toc-k">In this issue</p><p class="em-toc-note">Made from your headings. Updates by itself.</p></div><ul><li><a href="#p4b-s1">A note from the president</a></li><li><a href="#p4b-s2">Coming up</a></li><li><a href="#p4b-s3">Results</a></li><li><a href="#p4b-s4">From the clubs</a></li><li><a href="#p4b-s5">Scholastic</a></li><li><a href="#p4b-s6">Board business</a></li></ul></nav><div class="em-in"><h4 class="em-h" id="p4b-s1">A note from the president</h4>
+<p>Dear members,</p>
+<p>Thank you for a great year of chess in Louisiana, and to every volunteer who made it happen.</p>
+<p>The new year brings more chances to play, to learn and to meet new people at the board.</p>
+<p>One ask: please <a href="#">renew your membership</a>, and bring one new player to a club night.</p>
+<p class="em-last">See you over the board,<br>LCA President</p>
+<h4 class="em-h" id="p4b-s2">Coming up</h4>
+<p class="em-l">Sat,&nbsp;Jan&nbsp;9,&nbsp;2027 · Sample Winter Open · Sample&nbsp;City · <a href="#">Register on King Registration ↗</a></p><div class="p4-next"><span class="p4-nbox">Click here to write the next part</span><button class="p4-tool p4-add" type="button" aria-haspopup="menu" aria-expanded="false"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>Add a photo, event or line<svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></button></div></div></article><div class="p4-pull"><span class="p4-pullmid" role="separator" aria-label="Pull to make the letter taller"><i></i>Pull to make taller<i></i></span><button class="p4-big p4-pbig" type="button"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5"></path></svg>Make smaller</button></div></div><div class="p4-mbdock p4-mbflow p4-dock15" role="region" aria-label="Pick, check and send"><button class="p4-mopt p4-mopt-s" type="button" aria-haspopup="menu" aria-expanded="false" aria-label="More options"><svg class="k-i k-i-sm p4-msl" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"></path><circle cx="15" cy="7" r="2"></circle><circle cx="9" cy="17" r="2"></circle></svg>Options</button><button class="p4-sbtn p4-pick" type="button" aria-haspopup="dialog" aria-expanded="false"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3.5h8a1.5 1.5 0 0 1 1.5 1.5v15.5L12 17l-5.5 3.5V5A1.5 1.5 0 0 1 8 3.5z"></path></svg>Pick a template<svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 15l6-6 6 6"></path></svg></button><button class="k-btn k-btn-line p4-test" type="button"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="M3.5 6.5L12 13l8.5-6.5"></path></svg>Send a test to me</button><div class="p4-split" role="group" aria-label="Send"><button class="k-btn k-btn-gold p4-send" type="button"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 3L10 14M21 3l-7 18-4-7-7-4z"></path></svg>Send to 167 people</button><button class="p4-arrow" type="button" aria-haspopup="menu" aria-expanded="false" aria-label="Other ways to send, such as later"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></button></div></div></div></div></div><figcaption class="p4-fcap"><b>After pressing Make bigger</b>The letter fills the window, with Make smaller at its foot and the bar in reach.</figcaption></figure>
+<figure class="cx-fig" aria-label="The letter before anything is written"><div class="p4-blank"><article class="p4-bsheet pm-em" aria-label="An empty letter, ready to fill"><div class="pm-band"><svg viewBox="0 0 100 100" role="img" aria-label="LCA rook"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span><small>LCA NEWSLETTER</small><strong>December 2026<span class="p4-chip p4-mchip" aria-label="Click to edit"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"></path><path d="M13.5 6.5l4 4"></path></svg></span></strong></span></div><div class="p4-bbody"><span class="p4-nbox">Write your opening here</span><span class="p4-nbox">Add what is coming up</span><span class="p4-nbox">Add results or club news</span></div></article></div><figcaption class="cx-cap"><b>The letter before anything is written</b>What a blank start looks like. Click a box and type.</figcaption></figure>
+</div>
+<figure class="cx-fig" aria-label="After pressing Add or review people">
+<div class="cx-pan" role="dialog" aria-label="Add or review people">
+<div class="cx-panh"><div><p class="cx-kick">Add or review people</p><h3 class="cx-total">167 people will get it</h3><p>155 members and 12 you added</p></div><button class="cx-x" type="button" aria-label="Close"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></button></div>
+<div class="cx-tabs" role="tablist"><button class="cx-tab" type="button" role="tab" aria-selected="false">Members · 155</button><button class="cx-tab cx-tab-on" type="button" role="tab" aria-selected="true">Added by you · 12</button><button class="cx-tab" type="button" role="tab" aria-selected="false">Left out · 3</button></div>
+<div class="cx-panb">
+<ul class="cx-plist">
+<li><span><b>pat@example.com</b><span>Typed in today</span></span><button class="cx-rm" type="button">Remove</button></li>
+<li><span><b>coach.rivers@example.com</b><span>From the list imported Mon, Nov 23, 2026</span></span><button class="cx-rm" type="button">Remove</button></li>
+</ul>
+<p class="cx-more12">and 10 more · <a href="#">Show all 12</a></p>
+<p class="cx-addh">Add people</p>
+<div class="cx-ways">
+<div class="cx-way"><b>Type or paste email addresses</b><span>one per line, or separated by commas</span><div class="cx-ta">sam@example.com<br>lee@example.com</div></div>
+<div class="cx-way"><b>Import a list</b><span>a spreadsheet or CSV file with an Email column</span><button class="k-btn k-btn-line" type="button"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 16V4M7 9l5-5 5 5M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"></path></svg>Choose a file</button></div>
+</div>
+<p class="cx-res"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7"></path></svg><span><i>14 found</i> · <i>12 added</i> · <i>1 is already a member</i> · <i>1 unsubscribed earlier, so left out</i></span></p>
+<button class="k-btn k-btn-navy cx-addbtn" type="button">Add these people</button>
+<p class="cx-fine">People you add are kept in LCA's email bank, so they are here next time.</p>
+<p class="cx-fine">Everyone can unsubscribe with one click.</p>
+</div>
+</div>
+<figcaption class="cx-cap"><b>After pressing Add or review people</b>Type, paste or import addresses. The total updates as you add.</figcaption></figure>
+<figure class="cx-fig p4-wig" aria-label="When the page opens on an empty letter"><div class="p4-wpic" aria-hidden="true"><div class="p4-wbar"><div class="p4-wbtn"><span class="p4-wgrp p4-wghost"><span class="p4-n">1</span><span class="p4-sbtn p4-pick"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3.5h8a1.5 1.5 0 0 1 1.5 1.5v15.5L12 17l-5.5 3.5V5A1.5 1.5 0 0 1 8 3.5z"></path></svg>Pick a template to start from<svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 15l6-6 6 6"></path></svg></span></span><span class="p4-wgrp p4-wtilt"><span class="p4-n">1</span><span class="p4-sbtn p4-pick"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3.5h8a1.5 1.5 0 0 1 1.5 1.5v15.5L12 17l-5.5 3.5V5A1.5 1.5 0 0 1 8 3.5z"></path></svg>Pick a template to start from<svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 15l6-6 6 6"></path></svg></span></span><svg class="p4-wmk p4-wml" viewBox="0 0 26 40"><path d="M23 9Q15 20 23 31"></path><path d="M15 12Q9 20 15 28"></path><path d="M7 15Q3 20 7 25"></path></svg><svg class="p4-wmk p4-wmr" viewBox="0 0 26 40"><path d="M3 9Q11 20 3 31"></path><path d="M11 12Q17 20 11 28"></path><path d="M19 15Q23 20 19 25"></path></svg></div></div></div><figcaption class="cx-cap"><b>When the page opens on an empty letter</b>The button wiggles once, for about a second, so nobody misses where to start. Once something is written it stays still. It also keeps still for anyone who has turned motion off on their device, and shows a gold ring for a moment instead.</figcaption></figure>
+</div>
+<div class="p4-two">
+<div class="p4-stack p4-stack-f"><figure class="cx-fig" aria-label="After pressing From">
+<div class="cx-pan p4-fpan">
+<div class="p4-fopen"><button class="p4-fld p4-fld-open" type="button" aria-haspopup="listbox" aria-expanded="true"><span class="p4-fld-l">From</span><span class="p4-fld-v">Louisiana Chess Association · LCA Newsletter</span><span class="p4-fld-i"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 15l6-6 6 6"></path></svg></span></button></div>
+<div class="p4-menu" role="listbox" aria-label="Who the email is from">
+<p class="cx-gh">From LCA</p>
+<ul class="p4-opts">
+<li class="p4-opt p4-opt-on" role="option" aria-selected="true"><span class="p4-oav"><svg viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg></span><span><b>LCA Newsletter</b></span><span class="p4-ock"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7"></path></svg>Chosen</span></li>
+<li class="p4-opt" role="option" aria-selected="false"><span class="p4-oav"><svg viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg></span><span><b>LCA Tournaments</b></span></li>
+</ul>
+<p class="cx-gh">On behalf of a club</p>
+<div class="p4-find"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg>Find a club</div>
+<ul class="p4-opts"><li class="p4-club" role="option" aria-selected="false"><i class="p4-cdot" style="background:#2f6b4f" aria-hidden="true"></i>Example Chess Club</li><li class="p4-club" role="option" aria-selected="false"><i class="p4-cdot" style="background:#7a4a9a" aria-hidden="true"></i>Sample City Chess Club</li><li class="p4-club" role="option" aria-selected="false"><i class="p4-cdot" style="background:#2f6f9f" aria-hidden="true"></i>Anytown Chess Club</li><li class="p4-club" role="option" aria-selected="false"><i class="p4-cdot" style="background:#6b3f8f" aria-hidden="true"></i>Demo Town Chess Club</li><li class="p4-club" role="option" aria-selected="false"><i class="p4-cdot" style="background:#b5532c" aria-hidden="true"></i>Test Valley Chess Club</li></ul>
+</div>
+<div class="p4-fnotes"><p class="cx-fine">Members see the club's name as the sender, and their replies go to the club.</p>
+<p class="cx-fine">LCA's footer and one-click unsubscribe stay on every email.</p></div>
+<a class="p4-manage" href="#"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"></path><circle cx="15" cy="7" r="2"></circle><circle cx="9" cy="17" r="2"></circle></svg><span>Manage senders and where replies go</span><svg class="k-i k-i-sm p4-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"></path></svg></a>
+</div>
+<figcaption class="cx-cap"><b>After pressing From</b>LCA's own senders first, then the clubs.</figcaption></figure>
+<figure class="cx-fig" aria-label="After clicking Subject"><div class="p4-sfocus p4-sfocus-fit"><label class="p4-fld p4-fld-on"><span class="p4-fld-l">Subject</span><span class="p4-fld-v">LCA Newsletter · December 2026<span class="p4-fcaret" aria-hidden="true"></span></span></label><p class="p4-count"><span>30 of 60 letters</span></p></div><figcaption class="cx-cap"><b>After clicking Subject</b>The field is outlined, the caret waits after the last word, and the count shows the room left.</figcaption></figure></div>
+<div class="p4-stack p4-stack-f"><figure class="cx-fig" aria-label="After choosing Club tournament announcement">
+<div class="p4-ctpl">
+<div class="p4-fields p4-cfields"><button class="p4-fld p4-fld-need" type="button" aria-haspopup="listbox" aria-expanded="false"><span class="p4-fld-l">From</span><span class="p4-fld-v">Choose the club this is sent for</span><span class="k-tag k-tag-soon p4-need">Needed before you can send</span><span class="p4-fld-i"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></span></button><p class="p4-mline">Club not in the list, or its reply address missing? <a href="#">Manage senders</a></p><label class="p4-fld"><span class="p4-fld-l">Subject</span><span class="p4-fld-v p4-fld-ph">[Tournament name] · [Day and date] · registration is open</span><span class="p4-fld-i"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"></path><path d="M13.5 6.5l4 4"></path></svg></span></label></div>
+<article class="p4-sheet em" aria-label="The club tournament template, not filled in yet"><div class="em-band"><svg viewBox="0 0 100 100" role="img" aria-label="LCA rook"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span><small>TOURNAMENT</small><strong>[Tournament name]</strong></span></div>
+<div class="p4-blanks"><p>[Tournament name]</p><p>[Day and date]</p><p>[City]</p><p>[Sections and time control]</p><p>[Entry fee]</p><p>[Paste the King Registration link]</p><p>[A line or two from the club]</p></div>
+</article>
+<div class="p4-cdock p4-cdock15"><button class="p4-sbtn p4-pick" type="button" aria-haspopup="dialog" aria-expanded="false"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3.5h8a1.5 1.5 0 0 1 1.5 1.5v15.5L12 17l-5.5 3.5V5A1.5 1.5 0 0 1 8 3.5z"></path></svg>Pick a template<svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 15l6-6 6 6"></path></svg></button><button class="k-btn k-btn-line p4-test" type="button"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="M3.5 6.5L12 13l8.5-6.5"></path></svg>Send a test to me</button><div class="p4-split" role="group" aria-label="Send"><button class="p4-off" type="button" disabled="disabled"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="9.5" rx="2"></rect><path d="M8 11V8a4 4 0 0 1 8 0v3"></path></svg>Choose a club first</button><button class="p4-offarr" type="button" disabled="disabled" aria-label="Other ways to send, such as later"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></button></div></div>
+</div>
+<figcaption class="cx-cap"><b>After choosing Club tournament announcement</b>Pick the club and the sender, the preview and the footer change with it.</figcaption></figure>
+<figure class="cx-fig" aria-label="After pressing Help"><div class="p4-help"><div class="p4-hscale" aria-hidden="true"><div class="p4-writecol"><div class="p4-row1"><button class="p4-fld p4-r1from" type="button" aria-haspopup="listbox" aria-expanded="false"><span class="p4-fld-l p4-r1l">From</span><span class="p4-fld-v">Louisiana Chess Association · LCA Newsletter</span><span class="p4-fld-i"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></span></button><label class="p4-fld p4-r1subj p4-hring"><span class="p4-fld-l p4-r1l">Subject</span><span class="p4-fld-v">LCA Newsletter · December 2026</span><span class="p4-fld-i"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"></path><path d="M13.5 6.5l4 4"></path></svg></span></label></div><div class="p4-tbar p4-r1tbar" role="toolbar" aria-label="Writing tools"><button class="p4-tool" type="button"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5h6a3.5 3.5 0 0 1 0 7H7zM7 12h7a3.5 3.5 0 0 1 0 7H7z"></path></svg>Bold</button><button class="p4-tool" type="button"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 5h8M6 19h8M14 5l-4 14"></path></svg>Italic</button><button class="p4-tool" type="button"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 5v14M18 5v14M6 12h12"></path></svg>Heading</button><button class="p4-tool" type="button"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6h11M9 12h11M9 18h11M4.5 6h.01M4.5 12h.01M4.5 18h.01"></path></svg>List</button><button class="p4-tool" type="button"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"></path></svg>Link</button><button class="p4-tool" type="button"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 14L4 9l5-5M4 9h10a6 6 0 0 1 0 12h-3"></path></svg>Undo</button><button class="p4-tool p4-add" type="button" aria-haspopup="menu" aria-expanded="false"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>Add a photo, event or line<svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></button></div><div class="p4-sheet em"><div class="em-band"><svg class="" viewBox="0 0 100 100" role="img" aria-label="LCA rook"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span><small>LCA NEWSLETTER</small><strong>December 2026<span class="p4-chip p4-mchip"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"></path><path d="M13.5 6.5l4 4"></path></svg>Click to edit</span></strong></span></div></div></div><i class="p4-hdim"></i></div><div class="p4-hcard" role="dialog" aria-label="Help, step 3 of 6"><i class="p4-hptr" aria-hidden="true"></i><div class="p4-htext"><p class="p4-hstep">3 of 6</p><p class="p4-htitle">Subject</p><p class="p4-hsay">The line people see in their inbox. Click it to change it.</p></div><div class="p4-hbtnrow"><button class="p4-hskip" type="button">Skip</button><button class="k-btn k-btn-line p4-hb" type="button">Back</button><button class="k-btn k-btn-navy p4-hb" type="button">Next</button></div></div></div><figcaption class="cx-cap"><b>After pressing Help</b>A short walkthrough, one step at a time. It opens by itself the first time someone uses the page, and from Help after that.</figcaption><ol class="p4-hsteps"><li>Pick a template to start from, in the bar at the foot: a blank letter, a template or a past newsletter. It saves time: pick one, then change the words.</li><li>From is who members see as the sender.</li><li>Subject is the line people see in their inbox. Click it to change it.</li><li>Click anywhere on the letter and type. It saves by itself.</li><li>The side shows what members will get. It changes as you type.</li><li>Send a test to yourself first. Then send.</li></ol></figure></div>
+</div>
+<div class="p4-tabrow"><div class="p4-pcap"><p class="p4-pk">On a tablet, by touch</p><p class="p4-ph">From and Subject sit at the top. The letter fills the width and every tool is big enough for a finger. Hold a word to select it, then drag the round handles. &ldquo;See the email&rdquo; is one button at the top. The bar at the foot holds More options, Pick a template, Send a test and Send, as on a computer.</p></div>
+<figure class="p4-fig"><div class="p4-tabcrop"><div class="p4-tablet"><header class="tb-hd"><a class="tb-brand" href="#"><svg class="" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><b>Louisiana Chess Association</b></a><div class="tb-hr"><button class="tb-hbtn" type="button" aria-label="Search"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg></button><button class="tb-hbtn" type="button" aria-expanded="false"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"></path></svg>Menu</button></div></header><div class="tb-pg"><p class="pp-crumb"><a href="#">Admin</a><span aria-hidden="true">/</span><span aria-current="page">Newsletter</span></p><div class="tb-top"><div class="tb-tl"><h1>Newsletter</h1><button class="tb-help" type="button" aria-haspopup="dialog" aria-label="Help"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M9.6 9.4a2.5 2.5 0 0 1 4.9.7c0 1.7-2.5 2.1-2.5 3.7"></path><path d="M12 17.3h.01"></path></svg></button><p class="pp-saved"><b>December 2026</b> · Draft · <span class="pp-sv"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7"></path></svg>Saved automatically at 2:15 PM</span></p></div><button class="k-btn k-btn-navy tb-see" type="button"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 12s3.5-6.5 9.5-6.5 9.5 6.5 9.5 6.5-3.5 6.5-9.5 6.5S2.5 12 2.5 12z"></path><circle cx="12" cy="12" r="2.6"></circle></svg>See the email</button></div><div class="p4-fields"><button class="p4-fld" type="button" aria-haspopup="listbox" aria-expanded="false"><span class="p4-fld-l">From</span><span class="p4-fld-v">Louisiana Chess Association · LCA Newsletter</span><span class="p4-fld-i"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></span></button><label class="p4-fld"><span class="p4-fld-l">Subject</span><span class="p4-fld-v">LCA Newsletter · December 2026</span><span class="p4-fld-i"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"></path><path d="M13.5 6.5l4 4"></path></svg></span></label></div><div class="tb-tools" role="toolbar" aria-label="Writing tools"><button class="p4-tool" type="button"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5h6a3.5 3.5 0 0 1 0 7H7zM7 12h7a3.5 3.5 0 0 1 0 7H7z"></path></svg>Bold</button><button class="p4-tool" type="button"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 5h8M6 19h8M14 5l-4 14"></path></svg>Italic</button><button class="p4-tool" type="button"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 5v14M18 5v14M6 12h12"></path></svg>Heading</button><button class="p4-tool" type="button"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6h11M9 12h11M9 18h11M4.5 6h.01M4.5 12h.01M4.5 18h.01"></path></svg>List</button><button class="p4-tool" type="button"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"></path></svg>Link</button><button class="p4-tool" type="button"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 14L4 9l5-5M4 9h10a6 6 0 0 1 0 12h-3"></path></svg>Undo</button><button class="p4-tool p4-add" type="button" aria-haspopup="menu" aria-expanded="false"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>Add a photo, event or line<svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></button></div><article class="tb-sheet em"><div class="em-band"><svg class="" viewBox="0 0 100 100" role="img" aria-label="LCA rook"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span><small>LCA NEWSLETTER</small><strong>December 2026<span class="p4-chip p4-mchip"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"></path><path d="M13.5 6.5l4 4"></path></svg>Tap to edit</span></strong></span></div><nav class="em-toc" aria-label="In this issue"><div class="em-toc-h"><p class="em-toc-k">In this issue</p><p class="em-toc-note">Made from your headings. Updates by itself.</p></div><ul><li><a href="#p4t-s1">A note from the president</a></li><li><a href="#p4t-s2">Coming up</a></li><li><a href="#p4t-s3">Results</a></li><li><a href="#p4t-s4">From the clubs</a></li><li><a href="#p4t-s5">Scholastic</a></li><li><a href="#p4t-s6">Board business</a></li></ul></nav><div class="em-in"><h4 class="em-h" id="p4t-s1">A note from the <span class="tb-sel">president<span class="tb-pop" role="menu" aria-label="For the selected word"><button type="button"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5h6a3.5 3.5 0 0 1 0 7H7zM7 12h7a3.5 3.5 0 0 1 0 7H7z"></path></svg>Bold</button><i></i><button type="button"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 5h8M6 19h8M14 5l-4 14"></path></svg>Italic</button><i></i><button type="button"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"></path></svg>Link</button></span><span class="tb-k tb-k1" aria-hidden="true"><i></i></span><span class="tb-k tb-k2" aria-hidden="true"><i></i></span></span></h4><p>Dear members,</p><p>Thank you for a great year of chess in Louisiana, and to every volunteer who made it happen.</p><p>The new year brings more chances to play, to learn and to meet new people at the board.</p></div></article></div></div><div class="p4-tabfade" aria-hidden="true"></div></div><figcaption class="p4-cap"><b>On a tablet</b><span>The top of the page, at a true tablet width.</span></figcaption></figure></div>
+<div class="p4-phones"><div class="p4-pcap"><p class="p4-pk">On a phone</p><p class="p4-ph">The same letter sheet fills the screen, with From and Subject above large tools. Two buttons sit at the foot: &ldquo;Pick a template&rdquo; opens the templates, past newsletters and a blank letter, and &ldquo;See the email&rdquo; brings up the email as members will get it. &ldquo;Back to writing&rdquo; closes it. More options is at the end of the page, under the letter.</p></div>
+<figure class="p4-fig" aria-label="The page on a phone"><div class="k-phone"><div class="k-phone-screen"><header class="hp-app"><a class="hp-brand" href="#" aria-label="Louisiana Chess Association, home"><svg class="hp-rook" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span class="hp-bn" aria-hidden="true"><b>Louisiana Chess</b><span>Association</span></span></a><a class="hp-sbtn" href="#" aria-label="Search"><svg class="hp-i20" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg></a></header><main class="k-phone-scroll pp-scroll"><p class="pp-crumb"><a href="#">Admin</a><span aria-hidden="true">/</span><span aria-current="page">Newsletter</span></p><div class="pp-tl"><h1 class="pp-h1">Newsletter</h1><button class="tb-help pp-help" type="button" aria-haspopup="dialog" aria-label="Help"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M9.6 9.4a2.5 2.5 0 0 1 4.9.7c0 1.7-2.5 2.1-2.5 3.7"></path><path d="M12 17.3h.01"></path></svg></button></div><p class="pp-saved"><b>December 2026</b> · Draft<span class="pp-sv pp-svl"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7"></path></svg>Saved automatically at 2:15 PM</span></p><div class="pp-fields"><button class="p4-fld pp-fld" type="button" aria-haspopup="listbox" aria-expanded="false"><span class="p4-fld-l">From</span><span class="p4-fld-v">Louisiana Chess Association · LCA&nbsp;Newsletter</span><span class="p4-fld-i"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></span></button><label class="p4-fld pp-fld"><span class="p4-fld-l">Subject</span><span class="p4-fld-v">LCA Newsletter · December 2026</span><span class="p4-fld-i"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"></path><path d="M13.5 6.5l4 4"></path></svg></span></label></div><div class="pp-tbar" role="toolbar" aria-label="Writing tools"><button class="p4-ptool" type="button" aria-label="Bold"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5h6a3.5 3.5 0 0 1 0 7H7zM7 12h7a3.5 3.5 0 0 1 0 7H7z"></path></svg></button><button class="p4-ptool" type="button" aria-label="Italic"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 5h8M6 19h8M14 5l-4 14"></path></svg></button><button class="p4-ptool" type="button" aria-label="Heading"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 5v14M18 5v14M6 12h12"></path></svg></button><button class="p4-ptool" type="button" aria-label="List"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6h11M9 12h11M9 18h11M4.5 6h.01M4.5 12h.01M4.5 18h.01"></path></svg></button><button class="p4-ptool" type="button" aria-label="Link"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"></path></svg></button><button class="p4-ptool" type="button" aria-label="Undo"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 14L4 9l5-5M4 9h10a6 6 0 0 1 0 12h-3"></path></svg></button><button class="pp-add" type="button" aria-haspopup="menu" aria-expanded="false"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>Add a photo, event or line<svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></button></div><article class="pp-sheet pm-em" aria-label="The letter, being written"><div class="pm-band"><svg class="" viewBox="0 0 100 100" role="img" aria-label="LCA rook"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span><small>LCA NEWSLETTER</small><strong>December 2026</strong></span></div><nav class="pm-toc" aria-label="In this issue"><p class="pm-toc-k">In this issue</p><ul><li><a href="#p4p-s1">A note from the president</a></li><li><a href="#p4p-s2">Coming up</a></li><li><a href="#p4p-s3">Results</a></li><li><a href="#p4p-s4">From the clubs</a></li><li><a href="#p4p-s5">Scholastic</a></li><li><a href="#p4p-s6">Board business</a></li></ul><p class="em-toc-note">Made from your headings. Updates by itself.</p></nav><div class="pm-in"><h4 class="em-h" id="p4p-s1">A note from the president</h4>
+<p>Dear members,</p>
+<p>Thank you for a great year of chess in Louisiana, and to every volunteer who made it happen.</p>
+<p>The new year brings more chances to play, to learn and to meet new people at the board.</p>
+<p>One ask: please <a href="#">renew your membership</a>, and bring one new player to a club night.</p>
+<p class="em-last">See you over the board,<br>LCA President</p></div></article></main><div class="pp-dock pp-dock2"><button class="p4-sbtn pp-sfrom p4-pick" type="button" aria-haspopup="dialog" aria-expanded="false"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3.5h8a1.5 1.5 0 0 1 1.5 1.5v15.5L12 17l-5.5 3.5V5A1.5 1.5 0 0 1 8 3.5z"></path></svg>Pick a template</button><button class="k-btn k-btn-navy pp-see" type="button"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 12s3.5-6.5 9.5-6.5 9.5 6.5 9.5 6.5-3.5 6.5-9.5 6.5S2.5 12 2.5 12z"></path><circle cx="12" cy="12" r="2.6"></circle></svg>See the email</button></div><nav class="hp-tabs" aria-label="Main"><a class="hp-tab" href="#"><svg class="hp-i20" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4.5" width="18" height="16" rx="2"></rect><path d="M3 9.5h18M8 2.5v4M16 2.5v4"></path></svg><span>Tournaments</span></a><a class="hp-tab" href="#"><svg class="hp-i20" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"></path><circle cx="12" cy="9.5" r="2.5"></circle></svg><span>Clubs</span></a><a class="hp-tab hp-tab-on" href="#" aria-current="page"><svg class="hp-i20" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4.5 21c1-4 4-6 7.5-6s6.5 2 7.5 6"></path></svg><span>My LCA</span></a><button class="hp-tab" type="button" aria-expanded="false"><svg class="hp-i20" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"></path></svg><span>Menu</span></button></nav><div class="hp-safe" aria-hidden="true"><i></i></div></div></div><figcaption class="p4-cap p4-pc"><b>The page</b><span>Pick a template and See the email at the foot.</span></figcaption></figure>
+<figure class="p4-fig" aria-label="After pressing See the email"><div class="k-phone"><div class="k-phone-screen"><header class="hp-app"><a class="hp-brand" href="#" aria-label="Louisiana Chess Association, home"><svg class="hp-rook" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span class="hp-bn" aria-hidden="true"><b>Louisiana Chess</b><span>Association</span></span></a><a class="hp-sbtn" href="#" aria-label="Search"><svg class="hp-i20" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg></a></header><div class="k-phone-scroll pp-scroll" aria-hidden="true"><p class="pp-crumb"><span>Admin</span><span>/</span><span>Newsletter</span></p></div><div class="pp-dim" aria-hidden="true"></div><section class="pp-over" role="dialog" aria-modal="true" aria-labelledby="pp-sh"><div class="pp-grab" aria-hidden="true"><i></i></div><div class="pp-shead"><div><h2 id="pp-sh">What members will get</h2></div></div><div class="pp-sbody"><div class="pm-head"><p class="pm-subj">LCA Newsletter · December 2026</p><div class="pm-who"><span class="pm-av"><svg class="" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg></span><span><b>Louisiana Chess Association</b><small>to you</small></span></div></div><div class="pm-em"><div class="pm-band"><svg class="" viewBox="0 0 100 100" role="img" aria-label="LCA rook"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span><small>LCA NEWSLETTER</small><strong>December 2026</strong></span></div><nav class="pm-toc" aria-label="In this issue"><p class="pm-toc-k">In this issue</p><ul><li><a href="#p4o-s1">A note from the president</a></li><li><a href="#p4o-s2">Coming up</a></li><li><a href="#p4o-s3">Results</a></li><li><a href="#p4o-s4">From the clubs</a></li><li><a href="#p4o-s5">Scholastic</a></li><li><a href="#p4o-s6">Board business</a></li></ul></nav><div class="pm-in"><h4 class="em-h" id="p4o-s1">A note from the president</h4>
+<p>Dear members,</p>
+<p>Thank you for a great year of chess in Louisiana, and to every volunteer who made it happen.</p>
+<p>The new year brings more chances to play, to learn and to meet new people at the board.</p>
+<p>One ask: please <a href="#">renew your membership</a>, and bring one new player to a club night.</p>
+<p class="em-last">See you over the board,<br>LCA President</p>
+<h4 class="em-h" id="p4o-s2">Coming up</h4>
+<p class="em-l">Sat,&nbsp;Jan&nbsp;9,&nbsp;2027 · Sample Winter Open · Sample&nbsp;City · <a href="#">Register on King Registration ↗</a></p><p class="em-l">Sat to Sun, Feb&nbsp;6&nbsp;to&nbsp;7,&nbsp;2027 · Example Memorial · Anytown · run by Example Chess Club · <a href="#">Registers on the organizer's site ↗</a></p></div></div></div><div class="pp-dock"><button class="k-btn k-btn-navy k-btn-block pp-see" type="button"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 18l-6-6 6-6"></path></svg>Back to writing</button></div><div class="hp-safe" aria-hidden="true"><i></i></div></section></div></div><figcaption class="p4-cap p4-pc"><b>After pressing See the email</b><span>Back to writing closes it.</span></figcaption></figure>
+</div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":5500}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

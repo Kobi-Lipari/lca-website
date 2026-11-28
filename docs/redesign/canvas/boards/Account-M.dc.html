@@ -1,0 +1,297 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>My LCA · M · Your region, the checks first (round 2)</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/6107adb451dbab26ee5d89f4189b81f8">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1a2744}
+.am-root{box-sizing:border-box;padding:24px 40px 32px;background:#ecebe6;color:#1a2744}
+.am-root *{box-sizing:border-box}
+.am-title{display:block;background:#1a2744;color:#ffffff;border-radius:14px;padding:18px 24px 18px;border-bottom:4px solid #c8a94a}
+.am-title .k-kicker{color:#e6cf86;margin:0}
+.am-title h1{font-size:30px;line-height:1.12;font-weight:700;letter-spacing:-.015em;margin:6px 0 10px}
+.am-tmeta{display:grid;grid-template-columns:auto 1fr;gap:3px 14px;font-size:13px;line-height:1.4;margin:0;max-width:1040px}
+.am-tmeta dt{font-weight:600;color:#e6cf86;white-space:nowrap}
+.am-tmeta dd{margin:0;color:#ffffff}
+.am-tside{display:flex;flex-direction:column;align-items:flex-end;gap:8px;flex:none;width:250px}
+.am-tag-r2{display:inline-flex;align-items:center;height:26px;padding:0 10px;border-radius:6px;background:#c8a94a;color:#1a2744;font-size:12.5px;font-weight:700;letter-spacing:.04em}
+.am-tag-frame{display:inline-flex;align-items:center;height:26px;padding:0 10px;border-radius:6px;border:1px solid rgba(255,255,255,.6);color:#ffffff;font-size:12.5px;font-weight:600}
+.am-tside .k-meta{color:rgba(255,255,255,.82);text-align:right}
+.am-legend{margin-top:12px}
+.am-title .am-grey{flex:none;width:500px}
+.am-lbox{background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:14px 18px}
+.am-notes{list-style:none;margin:10px 0 0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px 24px}
+.am-notes li{display:flex;gap:9px;align-items:flex-start;font-size:12.5px;line-height:1.4;color:#2b3446}
+.am-notes .k-num-badge{width:22px;height:22px;font-size:11.5px}
+.am-notes b{font-weight:600;color:#1a2744}
+.am-grey{background:#efefea;border:1px solid #dfded6;border-radius:12px;padding:12px 14px;display:grid;grid-template-columns:1fr 1fr;gap:8px 16px;align-content:start}
+.am-grey p{font-size:12px;line-height:1.4;color:#2b3446;margin:0}
+.am-grey p + p{margin-top:7px}
+.am-grey b.am-gh{display:block;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#555c6b;margin-bottom:2px}
+.am-grey ol{margin:0;padding-left:16px;font-size:12px;line-height:1.4;color:#2b3446}
+.am-grey li{margin-bottom:3px}
+/* frame labels */
+.am-flab{display:flex;align-items:center;gap:12px;margin:18px 0 8px;flex-wrap:nowrap}
+.am-flab h2{margin:0;font-size:18px;line-height:1.2;font-weight:600;letter-spacing:-.01em;white-space:nowrap}
+.am-code{display:inline-flex;align-items:center;justify-content:center;min-width:28px;height:28px;padding:0 9px;border-radius:7px;background:#c8a94a;color:#1a2744;font-weight:700;font-size:13px;flex:none}
+.am-url{white-space:nowrap;font-family:"Geist Mono",ui-monospace,monospace;font-size:12px;color:#3d4556;background:#ffffff;border:1px solid #d9d8d1;border-radius:6px;padding:3px 8px}
+.am-fmeta{font-size:13px;color:#555c6b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.am-frame{position:relative;border:1px solid #cfcec6;border-radius:12px;overflow:hidden;background:#f5f5f2;box-shadow:0 14px 34px rgba(16,24,43,.10)}
+/* decided header */
+.am-hd-in{display:flex;align-items:center;height:68px;padding:0 24px}
+.am-brand{margin-right:16px}
+.am-rook{width:30px;height:30px;fill:#ffffff;flex:none}
+.am-rook-sm{width:22px;height:22px;fill:#ffffff;flex:none}
+.am-nav{gap:0}
+.am-nav a{padding:0 8px !important;white-space:nowrap}
+.am-navbtn{display:inline-flex;align-items:center;gap:4px;min-height:44px;padding:0 8px;border:0;background:transparent;color:#ffffff;font-size:15px;font-weight:500}
+.am-search{display:inline-flex;align-items:center;gap:8px;width:220px;height:44px;padding:0 8px 0 12px;margin-right:16px;border-radius:8px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.45);color:#ffffff;text-decoration:none;font-size:14.5px;font-weight:500;flex:none}
+.am-kbd{margin-left:auto;font-family:"Geist Mono",ui-monospace,monospace;font-size:12px;color:#e8ecf4;border:1px solid rgba(255,255,255,.4);border-radius:5px;padding:2px 6px;line-height:1.2}
+.am-util{gap:12px}
+.am-util .k-ulink{padding:0 4px}
+.am-my{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 8px;border:0;border-radius:8px;background:transparent;color:#ffffff;font-size:14px;font-weight:500}
+.am-count{display:inline-flex;align-items:center;justify-content:center;min-width:20px;height:20px;padding:0 6px;border-radius:999px;background:#fbfaf6;color:#1a2744;font-size:12px;font-weight:700}
+.am-foot-in{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:18px 24px 20px}
+.am-foot .k-meta{color:rgba(255,255,255,.78)}
+.am-foot nav a{font-size:14px}
+/* hub band */
+.am-band{background:#fbfaf6;border-bottom:1px solid #e6e3d8;padding:12px 24px 12px}
+.am-band-top{display:flex;justify-content:space-between;align-items:flex-end;gap:20px}
+.am-name{font-size:32px;line-height:1.1;font-weight:700;letter-spacing:-.015em;margin:4px 0 0}
+.am-roles{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;align-items:center}
+.am-rchip{display:inline-flex;align-items:center;gap:8px;border-radius:999px;padding:5px 14px 5px 5px;font-size:14px;border:1px solid #d9d6cb;background:#ffffff;color:#1a2744;text-decoration:none;min-height:44px}
+.am-rchip-on{border-color:#1a2744;box-shadow:inset 0 0 0 1px #1a2744}
+.am-role{display:inline-flex;align-items:center;border-radius:999px;padding:4px 10px;font-size:12px;font-weight:600;white-space:nowrap;line-height:1.2}
+.am-r-td{background:#1a2744;color:#ffffff}
+.am-r-rep{background:#f6efd9;color:#5e4a12}
+.am-r-board{background:#e4e9f3;color:#1a2744}
+.am-r-parent{background:#e3efe6;color:#1f4d33}
+.am-r-member{background:#ecebe5;color:#1a2744}
+/* layout */
+.am-layout{display:grid;grid-template-columns:220px minmax(0,1fr);gap:30px;align-items:start;padding:16px 24px 20px}
+.am-railcard{background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:14px 12px}
+.am-rnav{display:flex;flex-direction:column;gap:2px;margin-top:8px}
+.am-rnav a{display:flex;justify-content:space-between;align-items:center;padding:0 10px;border-radius:8px;color:#1a2744;text-decoration:none;font-size:14px;min-height:40px}
+.am-rnav a.am-on{background:#efede6;font-weight:600;box-shadow:inset 3px 0 0 #1a2744}
+.am-rc{font-size:12px;font-weight:700;color:#3d4556;background:#eceef2;border-radius:999px;padding:1px 8px}
+.am-col{display:flex;flex-direction:column;gap:8px;min-width:0}
+.am-coll{display:flex;align-items:center;gap:12px;height:48px;padding:0 16px;background:#ffffff;border:1px solid #dddcd4;border-radius:10px;font-size:14.5px}
+.am-coll b{font-weight:600}
+.am-coll .am-cm{color:#555c6b}
+.am-coll .am-show{margin-left:auto;display:inline-flex;align-items:center;gap:6px;font-size:13.5px;font-weight:600;color:#1a2744}
+/* the section */
+.am-sec{background:#ffffff;border:1px solid #c9c8c0;border-radius:12px;padding:18px 20px 0;margin:6px 0}
+.am-sh{display:flex;justify-content:space-between;align-items:flex-start;gap:16px}
+.am-sh h2{margin:0;font-size:24px;line-height:1.2;font-weight:700;letter-spacing:-.01em;display:flex;align-items:center;gap:10px}
+.am-chip-dir{display:inline-flex;align-items:center;border-radius:999px;padding:4px 11px;font-size:12.5px;font-weight:600;background:#1a2744;color:#ffffff;line-height:1.2}
+.am-subl{font-size:15px;line-height:1.45;color:#555c6b;margin:4px 0 0}
+.am-anchor{font-family:"Geist Mono",ui-monospace,monospace;font-size:12px;color:#555c6b}
+.am-row{display:grid;grid-template-columns:72px minmax(0,1fr) 220px;gap:10px 18px;padding:17px 0;border-top:1px solid #eeede7}
+.am-sh + .am-row{margin-top:14px}
+.am-date{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;width:72px;min-height:74px;padding:8px 2px;border:1px solid #d6d5cd;border-radius:10px;background:#ffffff;line-height:1;text-align:center}
+.am-date b{font-size:24px;font-weight:600;letter-spacing:-.02em}
+.am-date span{font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#555c6b;white-space:nowrap}
+.am-date-navy{background:#1a2744;border-color:#1a2744;color:#ffffff}
+.am-date-navy span{color:#e6cf86}
+.am-date-done{background:#efefea;border-color:#dddcd4}
+.am-main{display:flex;flex-direction:column;gap:7px;min-width:0}
+.am-tl{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.am-tl b{font-size:20px;line-height:1.25;font-weight:600}
+.am-det{font-size:14px;line-height:1.45;color:#555c6b;margin:0}
+.am-cnt{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:15px}
+.am-cnt > b{font-weight:600;margin-right:4px}
+.am-pill{display:inline-flex;align-items:center;gap:5px;height:24px;padding:0 9px;border-radius:999px;background:#f1f0eb;color:#3d4556;font-size:12.5px;font-weight:500}
+.am-pill i{font-style:normal;font-weight:700;color:#1a2744}
+.am-flags{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.am-t{display:inline-flex;align-items:center;gap:6px;padding:4px 9px;border-radius:6px;font-size:13px;font-weight:600;line-height:1.2;white-space:nowrap}
+.am-t::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor;flex:none}
+.am-t-nodot::before{display:none}
+.am-t-green{background:#e3efe6;color:#1f4d33}
+.am-t-amber{background:#f6efd9;color:#5e4a12}
+.am-t-navy{background:#e4e9f3;color:#1a2744}
+.am-t-red{background:#fbe9e4;color:#9a3b1b}
+.am-t-grey{background:#ecebe5;color:#3d4555}
+.am-next{font-size:14px;font-weight:600;margin:0;display:flex;align-items:center;gap:8px}
+.am-next span{font-weight:500;color:#555c6b}
+.am-btns{display:flex;flex-direction:column;gap:8px;align-items:stretch}
+.am-btns .k-btn{width:100%}
+.am-btn-muted{background:#ffffff;border:1px solid #c9c8c0;color:#5d6371;flex-direction:column;gap:2px;min-height:52px}
+.am-btn-muted small{font-size:12px;font-weight:500;color:#5d6371}
+.am-plink{font-size:13px;font-weight:600;color:#1a2744;text-align:center;text-decoration:underline;text-underline-offset:3px;text-decoration-color:#9aa1b0;margin-top:2px}
+/* inline decisions */
+.am-dec{grid-column:2 / 4;background:#f5f5f2;border-radius:10px;padding:4px 14px}
+.am-sub{display:flex;align-items:center;gap:14px;min-height:48px;font-size:13.5px;line-height:1.35;border-top:1px solid #e6e5df}
+.am-sub:first-child{border-top:0}
+.am-sub > .am-st{flex:1;min-width:0}
+.am-sub b{font-weight:600}
+.am-sub .k-btn{min-height:36px;padding:0 14px;font-size:13.5px;flex:none}
+.am-after{grid-column:2 / 4;display:flex;align-items:center;gap:10px;font-size:12.5px;color:#555c6b;margin-top:-2px}
+.am-done{display:inline-flex;align-items:center;gap:8px;padding:5px 10px;border-radius:8px;background:#e3efe6;color:#1f4d33;font-size:12.5px;font-weight:600}
+.am-done u{color:#1a2744;text-underline-offset:2px}
+/* checks */
+.am-check{display:flex;gap:8px;align-items:flex-start;font-size:13.5px;line-height:1.4;margin:0}
+.am-ok{color:#1f4d33;font-weight:700;flex:none;width:14px}
+.am-bad{color:#9a3b1b;font-weight:700;flex:none;width:14px}
+.am-checks{display:flex;flex-direction:column;gap:3px;padding:8px 12px;border:1px solid #ecebe5;border-radius:8px;background:#fdfdfb}
+.am-checks .k-label{margin-bottom:2px}
+.am-tap{font-weight:600;color:#1a2744;text-decoration:underline;text-decoration-color:#c8a94a;text-decoration-thickness:2px;text-underline-offset:3px}
+.am-sec-foot{display:flex;align-items:center;gap:10px;margin:0 -20px;padding:12px 20px;background:#fbfaf6;border-top:1px solid #eeede7;border-radius:0 0 12px 12px;font-size:14px}
+.am-sec-foot b{font-weight:600;white-space:nowrap}
+.am-sec-foot .k-sample{white-space:nowrap}
+/* live */
+.am-strip{display:flex;align-items:center;gap:12px;height:44px;padding:0 6px 0 24px;background:#0e1526;color:#f3f5f9;border-top:2px solid #c8a94a;font-size:14px;white-space:nowrap}
+.am-livetag{display:inline-flex;align-items:center;gap:5px;padding:4px 9px;border-radius:6px;background:#ff4757;color:#070b14;font-size:12px;font-weight:700;line-height:1.2;flex:none}
+.am-evname{font-weight:700;color:#f3f5f9;text-decoration:underline;text-decoration-color:#c8a94a;text-underline-offset:3px}
+.am-ps{color:#b9c2d3}
+.am-ps b{color:#f3f5f9;font-weight:600}
+.am-hide{margin-left:auto;display:inline-flex;align-items:center;justify-content:center;width:44px;height:38px;border-radius:8px;border:1px solid rgba(243,245,249,.3);color:#f3f5f9;font-size:13px;font-weight:600;padding:0 10px;width:auto}
+.am-liveband{background:#0e1526;color:#f3f5f9;border-top:2px solid #c8a94a;border-radius:10px;padding:14px 18px;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px 20px;align-items:center;margin-top:14px}
+.am-liveband .am-l1{font-size:16px;font-weight:600;line-height:1.35;margin:6px 0 0}
+.am-liveband .am-l1 span{color:#b9c2d3;font-weight:500}
+.am-liveband .am-l2{font-size:14px;line-height:1.45;color:#d5dbe6;margin:6px 0 0;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.am-lbtns{display:flex;gap:8px}
+.am-btn-light{background:transparent;color:#f3f5f9;border:1px solid rgba(243,245,249,.7)}
+.am-shrunk{font-size:14px;line-height:1.5;color:#3d4556;padding:10px 0 14px;margin:0}
+/* phone */
+.am-phone{width:360px;height:640px;flex:none;border-radius:34px;border:10px solid #10182b;background:#fbfaf6;overflow:hidden;position:relative;box-shadow:0 20px 44px rgba(16,24,43,.2)}
+.am-pbar{display:flex;align-items:center;justify-content:space-between;height:52px;padding:0 14px;background:#1a2744;color:#ffffff;font-size:16px;font-weight:600}
+.am-pbody{padding:10px 12px 0;display:flex;flex-direction:column;gap:7px}
+.am-ptabs{position:absolute;left:0;right:0;bottom:0;height:56px;background:#ffffff;border-top:1px solid #dddcd4;display:grid;grid-template-columns:repeat(4,1fr);font-size:11px;font-weight:600;color:#555c6b;text-align:center;align-items:center}
+.am-ptabs .am-pon{color:#1a2744;box-shadow:inset 0 2px 0 #1a2744;height:100%;display:flex;align-items:center;justify-content:center}
+/* insets */
+.am-inset{background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:12px 14px}
+.am-ilab{font-size:11.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#555c6b;margin:0 0 8px}
+.am-mrow{display:flex;justify-content:space-between;align-items:center;gap:10px;min-height:32px;padding:3px 10px;border-radius:7px;font-size:14px;font-weight:500}
+.am-mrow-todo{background:#fbf7e9}
+.am-mrow-cur{background:#f3eedc;font-weight:600}
+.am-mrow-ev{font-weight:600}
+.am-msep{height:1px;background:#e3e2dc;margin:4px 2px}
+.am-msub{font-size:12px;color:#555c6b;font-weight:400}
+.am-crumbs{display:grid;grid-template-columns:52px minmax(0,1fr);gap:8px 10px;font-size:13.5px;line-height:1.4;align-items:baseline}
+.am-crumbs .am-fn{font-size:12px;font-weight:700;color:#555c6b}
+.am-crumbs .am-cr a{color:#1a2744;text-decoration:underline;text-underline-offset:3px;text-decoration-color:#9aa1b0}
+.am-console{display:flex;align-items:center;justify-content:space-between;gap:10px;height:56px;padding:0 14px;margin-top:12px;border-radius:10px;background:#1a2744;color:#ffffff;font-size:13.5px}
+.am-console a{color:#ffffff}
+.am-exit{display:inline-flex;align-items:center;height:36px;padding:0 12px;border-radius:8px;border:1px solid rgba(255,255,255,.7);font-weight:600;font-size:13px;color:#ffffff;flex:none}
+.am-cap{font-size:13px;line-height:1.45;color:#3d4556;margin:8px 0 0}
+.am-cap b{color:#1a2744;font-weight:600}
+.am-lookup{display:flex;align-items:center;gap:8px;width:420px;height:44px;padding:0 12px;border:1px solid #858b99;border-radius:8px;background:#ffffff;font-size:15px;color:#1a2744}
+.am-res{display:flex;align-items:center;gap:10px;padding:8px 12px;border:1px solid #ecebe5;border-radius:8px;font-size:14px;width:420px}
+.am-row > .am-date{align-self:start}
+.am-plrow{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:2px}
+.am-nolook{display:flex;align-items:center;gap:8px;font-size:13px;color:#555c6b;margin-left:12px}
+.am-tbody{display:flex;justify-content:space-between;align-items:flex-start;gap:28px}
+.am-tbody > div{flex:1;min-width:0}
+.am-after > span{white-space:nowrap}
+
+/* region section, option M */
+.am-btnrow{display:flex;gap:8px;flex:none;align-items:center}
+.am-chip-rep{display:inline-flex;align-items:center;border-radius:999px;padding:4px 11px;font-size:12.5px;font-weight:600;background:#e4e9f3;color:#1a2744;line-height:1.2}
+.am-sec h2{font-size:28px;font-weight:600}
+.am-blk{border-top:1px solid #e6e5df;padding:18px 0 14px}
+.am-sh + .am-blk{margin-top:16px}
+.am-bh{display:flex;align-items:center;gap:10px;margin:0}
+.am-bh b{font-size:18px;font-weight:600;line-height:1.3}
+.am-bsub{font-size:13px;line-height:1.4;color:#555c6b;margin:3px 0 8px}
+.am-crow{display:grid;grid-template-columns:6px minmax(0,1fr) auto;gap:0 14px;align-items:center;min-height:64px;padding:10px 0;border-top:1px solid #eeede7}
+.am-crow:first-of-type{border-top:0}
+.am-cband{align-self:stretch;border-radius:3px;min-height:44px}
+.am-cmain{display:flex;flex-direction:column;gap:4px;min-width:0}
+.am-cl1{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.am-cl1 b{font-size:16px;font-weight:600}
+.am-city{font-size:14px;color:#555c6b}
+.am-stmt{font-size:13px;line-height:1.4;color:#3d4556;margin:0}
+.am-stmt i{font-style:normal;color:#555c6b}
+.am-cbtns{display:flex;gap:8px;align-items:center}
+.am-cbtns .k-btn{min-height:40px;padding:0 14px;font-size:14px}
+.am-cbtns-col{display:flex;flex-direction:column;align-items:flex-end;gap:6px}
+.am-btn-dis{background:#efefea;color:#5d6371;border-color:#dddcd4}
+.am-navytag{display:inline-flex;align-items:center;gap:5px;padding:3px 8px;border-radius:6px;background:#1a2744;color:#ffffff;font-size:12px;font-weight:600;line-height:1.2;white-space:nowrap}
+.am-healthy{font-size:13px;line-height:1.5;color:#555c6b;margin:6px 0 0;padding:10px 12px;background:#fbfaf6;border-radius:8px}
+.am-healthy b{color:#1a2744;font-weight:600}
+.am-rrow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 18px;padding:13px 0;border-top:1px solid #eeede7;align-items:center}
+.am-rrow:first-of-type{border-top:0}
+.am-kind{display:inline-flex;align-items:center;padding:3px 8px;border-radius:6px;font-size:12px;font-weight:600;line-height:1.2;white-space:nowrap}
+.am-kind-navy{background:#e4e9f3;color:#1a2744}
+.am-kind-grey{background:#ecebe5;color:#3d4555}
+.am-quote{font-size:15px;line-height:1.4;color:#1a2744;margin:0}
+.am-from{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:13px;color:#555c6b;margin:0}
+.am-redw{color:#9a3b1b;font-weight:600}
+.am-rmain{display:flex;flex-direction:column;gap:5px;min-width:0}
+.am-rbtns{display:flex;gap:8px;align-items:center}
+.am-rbtns .k-btn{min-height:40px;padding:0 14px;font-size:14px}
+.am-tlink{font-size:14px;font-weight:600;color:#1a2744;text-decoration:underline;text-decoration-color:#9aa1b0;text-underline-offset:3px;white-space:nowrap;padding:0 4px}
+.am-erow{display:grid;grid-template-columns:52px minmax(0,1fr) auto;gap:0 16px;align-items:center;min-height:56px;padding:10px 0;border-top:1px solid #eeede7}
+.am-erow:first-of-type{border-top:0}
+.am-d48{display:flex;flex-direction:column;align-items:center;justify-content:center;width:52px;height:52px;border:1px solid #d6d5cd;border-radius:9px;line-height:1;gap:2px}
+.am-d48 b{font-size:19px;font-weight:600}
+.am-d48 span{font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#555c6b}
+.am-etitle{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.am-etitle b{font-size:16px;font-weight:600}
+.am-edet{font-size:13.5px;color:#555c6b;margin:3px 0 0}
+.am-monthly{display:flex;align-items:center;gap:12px;padding:12px 14px;background:#fbfaf6;border:1px solid #eeede7;border-radius:10px;font-size:14.5px;line-height:1.4}
+.am-monthly b{font-weight:600}
+.am-greyline{font-size:13px;color:#555c6b;margin:8px 0 0}
+.am-cap{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:12.5px;color:#555c6b;margin:4px 0 0 20px}
+.am-due{display:flex;align-items:center;gap:14px;min-height:64px;padding:10px 16px;background:#f6efd9;border:1px solid #e8dcb2;border-radius:10px;margin-top:14px}
+.am-due .am-dt{font-size:16px;font-weight:600;color:#5e4a12}
+.am-due .am-dt span{font-weight:500}
+.am-due .k-meta{color:#5e4a12}
+.am-ask{font-size:12.5px;line-height:1.4;color:#3d4556;background:#ffffff;border:1px solid #e8dcb2;border-radius:8px;padding:6px 10px;max-width:360px}
+.am-side{display:flex;flex-direction:column;gap:12px}
+.am-ok-line{display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:10px;background:#e3efe6;color:#1f4d33;font-size:15px;font-weight:600;line-height:1.4}
+/* phone */
+.am-pbody{padding:10px 12px 70px;display:flex;flex-direction:column;gap:6px}
+.am-pbody h3{margin:0;font-size:18px;line-height:1.2;font-weight:600}
+.am-pcard{background:#ffffff;border:1px solid #dddcd4;border-radius:10px;padding:10px 10px 10px 16px;position:relative}
+.am-pcard .am-pb{position:absolute;left:0;top:0;bottom:0;width:6px;border-radius:10px 0 0 10px}
+.am-p2{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px}
+.am-p2 .k-btn,.am-pbody .k-btn{min-height:44px;padding:0 10px;font-size:14px}
+/* room band */
+.am-roomband{display:flex;align-items:center;gap:14px;min-height:56px;padding:0 14px;margin-top:12px;border-radius:10px;background:#1a2744;color:#ffffff;font-size:13.5px;white-space:nowrap}
+.am-roomband .am-back{display:inline-flex;align-items:center;height:36px;padding:0 12px;border-radius:8px;border:1px solid rgba(255,255,255,.7);font-weight:600;font-size:13px;color:#ffffff;flex:none}
+.am-roomband .am-rt{font-weight:600}
+.am-roomband .am-tabs{display:flex;gap:4px;margin-left:auto}
+.am-roomband .am-tabs span{padding:6px 9px;border-radius:6px;color:#d5dbe6}
+.am-roomband .am-tabs span.on{background:rgba(255,255,255,.14);color:#ffffff;font-weight:600}
+.am-crumbs{display:grid;grid-template-columns:52px minmax(0,1fr);gap:8px 10px;font-size:13.5px;line-height:1.4;align-items:baseline}
+.am-crumbs .am-fn{font-size:12px;font-weight:700;color:#555c6b}
+.am-crumbs a{color:#1a2744;text-decoration:underline;text-underline-offset:3px;text-decoration-color:#9aa1b0}
+.am-row3{display:flex;gap:24px;align-items:flex-start;margin-top:4px}
+</style>
+</helmet>
+<div class="am-root" style="width:1440px;height:2750px">
+<section class="am-title" aria-label="About this board"><div class="am-thead">
+<div class="k-row-sm" style="gap:10px"><p class="k-kicker">14 · My LCA · round 2 · option M · Your region</p><span class="am-tag-r2">ROUND 2</span><span class="am-tag-frame">Frame: Int-A, swappable</span><span class="k-sample">Sample data · seat term, the three-region grant, check months, report texts, the November Saturday G/90, counts, times</span></div>
+<h1>My LCA · M · Your region, the checks first (round 2)</h1></div><div class="am-tbody"><div>
+<dl class="am-tmeta">
+<dt>Built from</dt><dd>Account-C's club block, redrawn for a region: the one-tap check, reports and club events from Work-B, under replan 3.3 and 4.2 (listings kept by the region's representative; My region replaces the club rep workspace). The decided header (Nav-Header-Final).</dd>
+<dt>Replaces</dt><dd>Account-C's "Baton Rouge Chess Club" club-rep card (page views, home-club count, co-representative) and the Workspace Club tab (Work-B); today's "My region's clubs" menu row.</dd>
+<dt>Shown</dt><dd>/dashboard#region for Chris Arceneaux, South Central Louisiana (keeping Central Louisiana and the Bayou Region too), at 1440px on Mon, Oct 5, 2026, 8:10 AM. Part 2 (Account-M-2) holds Frame B (Mon, Nov 2, 2026, 8:00 AM, the monthly check landing), C (empty), D (phone) and E (rail, menu and the way back).</dd>
+<dt>Differs</dt><dd>From Account-N: here the tasks come first and the healthy clubs are one line; N shows every club as a tile.</dd>
+<dt>Frame</dt><dd>Int-A: Open My region, Post club news and Add a club event open the rooms at /workspace/region/...; the word Workspace appears nowhere on screen.</dd>
+<dt>K's feedback applied</dt><dd>A good default, every section drawn in full, roles hosted in My LCA, options for each (Tue, Oct 13).</dd>
+</dl></div>
+<aside class="am-grey" aria-label="Board note">
+<div><p><b class="am-gh">What</b>Option M for Your region in My LCA: the section leads with what needs doing, the clubs to check with one-tap Still accurate, open reports with their age, club events in review, then the monthly check line and the buttons into My region.</p><p><b class="am-gh">Built from</b>Account-C's club block, Work-B's report and events, replan 3.3 and 4.2, the shared nine-club region of Work-G.</p></div>
+<div><p><b class="am-gh">K's feedback applied</b>The representative's work lives in My LCA, never the admin panel; drawn default, busy, empty, on a phone and with the way in and back.</p><p><b class="am-gh">Open for K</b></p><ol><li>Tasks first (M) or every club as a tile (N)?</li><li>May Apply this take a club's own suggestion in one tap, or open the room?</li><li>Keep the seat on Central Louisiana and the Bayou Region while their seats are open?</li></ol></div>
+</aside></div>
+</section><div class="am-legend"><div class="am-lbox"><p class="k-label" style="margin:0">Notes on this board</p><ol class="am-notes"><li><span class="k-num-badge">1</span><span><b>The checks first:</b> each club not checked in 90 days gets one row with Still accurate (one tap, written as "Checked Oct 2026 · by you") and Update (the room); a club with an open report is answered first. Healthy clubs are one line.</span></li><li><span class="k-num-badge">2</span><span><b>Reports carry their age in words on a 14-day clock;</b> at 14 days the same item is also an admin item. Reply opens the room; Not an issue and Apply this are one tap.</span></li><li><span class="k-num-badge">3</span><span><b>Club events:</b> the representative creates a club's event in the setup checklist and names its TD (P2.19); LCA reviews it before it goes public, and the row reads "In LCA review" until then.</span></li><li><span class="k-num-badge">4</span><span><b>The room, My region</b> at /workspace/region and /workspace/region/clubs/:id (Listing · Tonight · News · Events; no members list; a club states how it meets in its own words, never a computed next date), reached from Open My region, Update or Reply; "Back to My LCA" in its band.</span></li><li><span class="k-num-badge">5</span><span><b>Not here:</b> creating, renaming, re-regioning or deleting a club, seats and seat regions (the three-region grant on this seat was set there), approving a submitted event, an open seat's clubs with no such grant (they fall to the admin queue, P2.16). Those are /admin, lca_admin only.</span></li><li><span class="k-num-badge">6</span><span><b>Drawn inside Int-A</b> (My LCA as the hub, rooms open from each section). The frame is swappable: under Int-B this section is the page the left rail opens; under Int-C it is a card on Your work. The room itself does not change; only the breadcrumb, the way back and the menu row do. Pick the frame on Account-Int-A, B or C.</span></li></ol></div></div><div class="am-flab"><span class="am-code">A</span><h2>Default for Chris · Mon, Oct 5, 2026 · 8:10 AM</h2><span class="am-url">louisianachess.org/dashboard#region</span><span class="k-row-sm" style="gap:6px;flex:none"><span class="k-num-badge">6</span><span class="am-fmeta">Int-A, swappable</span></span><span class="am-fmeta">Other sections collapsed; each remembers its state per device.</span></div><div class="am-frame"><header class="k-header"><div class="am-hd-in"><a class="k-brand am-brand" href="#" aria-label="Louisiana Chess Association, home"><svg class="am-rook" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span class="k-brand-name" aria-hidden="true"><b>Louisiana Chess</b><span>Association</span></span></a><nav class="k-navlinks am-nav" aria-label="Main"><a href="#">Tournaments</a><a href="#">Clubs</a><a href="#">Scholastic</a><a href="#">News</a><a href="#">Membership</a><button class="am-navbtn" type="button" aria-expanded="false" aria-haspopup="true">About<svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"></path></svg></button></nav><a class="am-search" href="#"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg><span>Search</span><kbd class="am-kbd" aria-hidden="true">&#8984;K</kbd></a><div class="k-utility am-util"><a class="k-ulink" href="#">Donate</a><button class="am-my" type="button" aria-haspopup="menu" aria-expanded="false" aria-label="My LCA, 1 thing to do"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4.5 21c1-4 4-6 7.5-6s6.5 2 7.5 6"></path></svg><span>My LCA</span><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"></path></svg><span class="am-count" aria-hidden="true">1</span></button></div></div></header><section class="am-band"><div class="am-band-top"><div><span class="k-kicker">My LCA</span><h1 class="am-name">Chris Arceneaux</h1></div><a class="k-btn k-btn-line" href="#"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="3.5" width="7" height="7"></rect><rect x="13.5" y="3.5" width="7" height="7"></rect><rect x="3.5" y="13.5" width="7" height="7"></rect><path d="M13.5 13.5h3v3h-3zM18 18h2.5v2.5H18z"></path></svg>Show my card</a></div>
+<div class="am-roles" aria-label="Your roles"><a class="am-rchip" href="#"><span class="am-role am-r-member">Member</span>Adult</a><a class="am-rchip" href="#"><span class="am-role am-r-parent">Parent</span>Ella</a><a class="am-rchip" href="#"><span class="am-role am-r-td">Director</span>The Baton Rouge Classic</a><a class="am-rchip am-rchip-on" href="#"><span class="am-role am-r-rep">Representative</span>South Central Louisiana</a><a class="am-rchip" href="#"><span class="am-role am-r-board">Treasurer</span>board seat</a><span class="k-small k-muted" style="margin-left:8px">Sections appear for the roles LCA has given you. <a class="k-link" href="#">Role looks wrong?</a></span></div>
+</section><div class="am-layout"><aside><div class="am-railcard"><div class="k-label" style="padding:0 10px">On this page</div><nav class="am-rnav" aria-label="Sections"><a class="" href="#"><span>Today</span><span class="am-rc">9</span></a><a class="" href="#"><span>You</span></a><a class="" href="#"><span>Family</span><span class="am-rc">1</span></a><a class="" href="#"><span>Events you direct</span><span class="am-rc">3</span></a><a class="am-on" aria-current="location" href="#"><span>Your region</span><span class="am-rc">4</span></a><a class="" href="#"><span>Board</span><span class="am-rc">7</span></a></nav></div></aside><div class="am-col"><div class="am-coll"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg><b>Today · 9</b><span class="am-cm">· Mon, Oct 5</span><span class="am-show">Show</span></div><div class="am-coll"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg><b>You</b><span class="am-cm">· Adult · renews automatically Mon, Nov 2</span><span class="am-show">Show</span></div><div class="am-coll"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg><b>Family · 1</b><span class="am-cm">· Ella</span><span class="am-show">Show</span></div><div class="am-coll"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg><b>Events you direct · 3</b><span class="am-cm">· The Baton Rouge Classic, Sat, Oct 24</span><span class="am-show">Show</span></div><section class="am-sec" id="region" aria-labelledby="am-reg-h"><div class="am-sh"><h2 id="am-reg-h">Your region · South Central Louisiana <span class="am-chip-rep">Representative</span></h2><span class="am-anchor">#region</span></div><div class="am-sh" style="align-items:flex-end;margin-top:6px"><p class="am-subl" style="margin:0;max-width:600px">Baton Rouge / East Central Representative seat · term ends Wed, Jun 30, 2027 · 9 clubs: the five in South Central Louisiana, and Bunkie, Pineville, Houma and Morgan City while the Central Louisiana and Bayou Region seats are open<span class="k-num-badge" style="width:22px;height:22px;font-size:11px;vertical-align:middle;margin-left:4px">5</span> <span class="k-sample" style="vertical-align:middle;margin-left:4px">Sample data · term end, three-region grant</span></p><div class="am-btnrow"><span class="k-num-badge">4</span><a class="k-btn k-btn-navy" href="#">Open My region</a><a class="k-btn k-btn-line" href="#">Post club news</a><a class="k-btn k-btn-line" href="#">Add a club event</a></div></div><div class="am-blk"><p class="am-bh"><b>Needs a check · 4 of 9 clubs not checked in 90 days</b><span class="k-num-badge">1</span><span class="k-sample">Sample data · check months</span></p><p class="am-bsub">LCA asks once a month; a club that answers nothing for 90 days turns amber on the Clubs page.</p><div class="am-crow"><span class="am-cband" style="background:#2f6f73"></span><div class="am-cmain"><div class="am-cl1"><b>Bunkie Chess Club</b><span class="am-city">Bunkie</span><span class="am-t am-t-amber">Not checked since Jun 2026</span></div><p class="am-stmt">Tuesdays 4:00–6:00 PM at the Bunkie Library</p></div><div class="am-cbtns-col"><span class="am-navytag">Answer the suggestion first</span><div class="am-cbtns"><span class="k-btn am-btn-dis" aria-disabled="true">Still accurate</span><a class="k-btn k-btn-line" href="#">Update</a></div></div></div><div class="am-crow"><span class="am-cband" style="background:#8a3b2e"></span><div class="am-cmain"><div class="am-cl1"><b>Gonzales Chess Club</b><span class="am-city">Gonzales</span><span class="am-t am-t-amber">Not checked since Jun 2026</span></div><p class="am-stmt"><i>Schedule not listed</i></p></div><div class="am-cbtns"><a class="k-btn k-btn-gold" href="#">Still accurate</a><a class="k-btn k-btn-line" href="#">Update</a></div></div><div class="am-crow"><span class="am-cband" style="background:#5b3f8c"></span><div class="am-cmain"><div class="am-cl1"><b>Heart of Worship Church Chess</b><span class="am-city">Opelousas</span><span class="am-t am-t-amber">Not checked since Jun 2026</span></div><p class="am-stmt">Fridays 5:30–7:00 PM, church hall</p></div><div class="am-cbtns"><a class="k-btn k-btn-gold" href="#">Still accurate</a><a class="k-btn k-btn-line" href="#">Update</a></div></div><div class="am-crow"><span class="am-cband" style="background:#5d6b22"></span><div class="am-cmain"><div class="am-cl1"><b>Pineville Homeschool Chess Club</b><span class="am-city">Pineville</span><span class="am-t am-t-amber">Not checked since Jun 2026</span></div><p class="am-stmt">Monthly, for CCHSA homeschool families</p></div><div class="am-cbtns"><a class="k-btn k-btn-gold" href="#">Still accurate</a><a class="k-btn k-btn-line" href="#">Update</a></div></div><div class="am-cap"><span>After a tap:</span><span class="am-done"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Checked Oct 2026 · by you, 8:16 AM · <u>Undo</u></span><span>The row leaves the block on the next load.</span></div><p class="am-healthy"><b>Checked in the last 90 days:</b> Baton Rouge Chess Club (Sep 2026) · Bluebonnet Chess Club (Aug 2026) · Houma Chess Club (Sep 2026) · Lafayette Chess Club (Sep 2026 · schedule not listed · <a class="k-link" href="#">Add their meeting statement</a>) · Morgan City Chess Club (Jul 2026)</p></div><div class="am-blk"><p class="am-bh"><b>Open reports · 2</b><span class="k-num-badge">2</span><span class="k-sample">Sample data · report texts and dates</span></p><p class="am-bsub">Answer within 14 days; after that the report also goes to LCA admins. Not an issue asks once: "Close this report? The visitor is thanked by email."</p><div class="am-rrow"><div class="am-rmain"><div class="am-cl1"><span class="am-kind am-kind-navy">Report outdated info</span><b style="font-size:15px">Houma Chess Club</b></div><p class="am-quote">"The library closes at 8 PM on Mondays now. Are you still meeting until 8:30?"</p><p class="am-from">from a visitor · Sat, Sep 26 · <span class="am-t am-t-amber">no answer in 9 days</span></p></div><div class="am-rbtns"><a class="k-btn k-btn-line" href="#">Reply</a><a class="k-btn k-btn-line" href="#">Update the listing</a><a class="am-tlink" href="#">Not an issue</a></div></div><div class="am-rrow"><div class="am-rmain"><div class="am-cl1"><span class="am-kind am-kind-grey">Suggest an update</span><b style="font-size:15px">Bunkie Chess Club</b></div><p class="am-quote">"The club moved to the Bunkie Public Library"</p><p class="am-from">from the club · Sun, Oct 4 · <span class="am-t am-t-amber">no answer in 1 day</span></p></div><div class="am-rbtns"><a class="k-btn k-btn-gold" href="#">Apply this</a><a class="k-btn k-btn-line" href="#">Reply</a><a class="k-btn k-btn-line" href="#">Update the listing</a><a class="am-tlink" href="#">Not an issue</a></div></div><p class="am-greyline">Apply this writes the proposed line to Bunkie's listing and marks the club checked, in one tap.</p></div><div class="am-blk"><p class="am-bh"><b>Club events · 2</b><span class="k-num-badge">3</span><span class="k-sample">Sample data · the November Saturday G/90, 31 registered</span></p><p class="am-bsub">You create a club's event in the setup checklist and name its TD; LCA reviews it before it goes public.</p><div class="am-erow"><div class="am-d48"><span>Sat</span><b>7</b><span>Nov</span></div><div><div class="am-etitle"><b>Baton Rouge Chess Club November Saturday G/90</b><span class="am-t am-t-amber">In LCA review</span></div><p class="am-edet">Sat, Nov 7, 2026 · 10:00 AM · G/90 · submitted Sat, Oct 3</p></div><div class="am-rbtns"><a class="k-btn k-btn-line" href="#">Edit</a><a class="am-tlink" href="#">Withdraw</a></div></div><div class="am-erow"><div class="am-d48"><span>Sat</span><b>10</b><span>Oct</span></div><div><div class="am-etitle"><b>Lafayette Open 2026</b><span class="am-t am-t-green">Published</span></div><p class="am-edet">Sat–Sun, Oct 10–11, 2026 · Lafayette Chess Club · 31 registered · TD named</p></div><div class="am-rbtns"><a class="k-btn k-btn-line" href="#">Open</a></div></div></div><div class="am-blk" style="padding-bottom:18px"><div class="am-monthly"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15" rx="2"></rect><path d="M3.5 10h17M8 3v4M16 3v4"></path></svg><span><b>Next monthly check lands Mon, Nov 2.</b> One email lists all 9 clubs, each with Still accurate and Update; no login needed.</span></div><p class="am-greyline">The seat's inbox is in the Board section below.</p></div></section><div class="am-coll"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg><b>Board · 7</b><span class="am-cm">· Treasurer</span><span class="am-show">Show</span></div></div></div><footer class="k-footer am-foot"><div class="am-foot-in"><div class="k-row-sm" style="gap:10px"><svg class="am-rook-sm" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><b style="font-size:15px">Louisiana Chess Association</b></div><span class="k-meta">US Chess state affiliate · Louisiana's chess community since 1915</span><nav class="k-row" aria-label="Footer" style="gap:18px"><a href="#">Contact</a><a href="#">Website help</a><a href="#">Bylaws &amp; rules</a><a href="#">Donate</a></nav></div></footer></div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":2750}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

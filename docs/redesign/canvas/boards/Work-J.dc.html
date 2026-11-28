@@ -1,0 +1,306 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Admin · J · A dashboard home, the queue beside it (round 2)</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/6107adb451dbab26ee5d89f4189b81f8">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1a2744}
+.wj-root{width:1440px;margin:0 auto;box-sizing:border-box;padding:28px 40px 40px;background:#ecebe6;color:#1a2744;font-family:Geist,system-ui,sans-serif}
+.wj-root *{box-sizing:border-box}
+.wj-vh{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+.wj-doc{background:#fbfaf6;border:1px solid #d9d8d1;border-radius:14px;padding:24px 26px 26px}
+.wj-title{font-size:32px;line-height:1.15;font-weight:700;letter-spacing:-.015em;margin:6px 0 0}
+.wj-meta{font-size:14.5px;line-height:1.5;color:#3d4556;margin:2px 0 0;max-width:1120px}
+.wj-meta b{color:#1a2744;font-weight:600}
+.wj-quote{margin:10px 0 0;padding:10px 14px;border-left:3px solid #866a1e;background:#ffffff;border-radius:0 8px 8px 0;font-size:13.5px;line-height:1.5;color:#3d4556;max-width:1120px}
+.wj-quote b{color:#1a2744}
+.wj-legend{display:grid;grid-template-columns:minmax(0,1fr) 460px;gap:20px;margin-top:18px}
+.wj-lbox{background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:18px 20px}
+.wj-notes{list-style:none;margin:12px 0 0;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 26px}
+.wj-notes li{display:flex;gap:10px;align-items:flex-start;font-size:13.5px;line-height:1.45}
+.wj-notes b{font-weight:600}
+.wj-grey{background:#f1f0eb;border:1px solid #dddcd4;border-radius:12px;padding:16px 18px;font-size:13px;line-height:1.5;color:#3d4556}
+.wj-grey p{margin:0 0 8px}
+.wj-grey p:last-child{margin:0}
+.wj-grey b{color:#1a2744;font-weight:600}
+.wj-frameline{margin:14px 0 0;padding:10px 12px;border-radius:8px;background:#f5f5f2;font-size:13px;line-height:1.5;color:#3d4556}
+.wj-crumbs3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:10px}
+.wj-c3{border:1px solid #dddcd4;border-radius:8px;padding:8px 10px;background:#ffffff;font-size:12.5px;line-height:1.45;color:#555c6b}
+.wj-c3 b{display:block;color:#1a2744;font-size:13px;font-weight:600}
+.wj-c3 code{font-family:"Geist Mono",ui-monospace,monospace;font-size:11.5px;color:#3d4556}
+
+.wj-sec{margin-top:30px}
+.wj-flab{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:0 0 12px}
+.wj-flab h2{margin:0;font-size:20px;line-height:1.2;font-weight:600;letter-spacing:-.01em}
+.wj-code{display:inline-flex;align-items:center;justify-content:center;min-width:28px;height:28px;padding:0 9px;border-radius:7px;background:#c8a94a;color:#1a2744;font-weight:700;font-size:13px}
+.wj-cap{font-size:14px;line-height:1.5;color:#3d4556;max-width:1180px;margin:12px 0 0}
+.wj-browser{width:100%;box-shadow:0 14px 34px rgba(16,24,43,.10)}
+.wj-browser .k-browser-url{max-width:760px}
+.wj-view{position:relative;background:#f5f5f2;overflow:hidden}
+.wj-b{position:relative;z-index:2;box-shadow:0 0 0 3px #ffffff}
+
+/* header */
+.wj-hd .k-brand{margin-right:16px}
+.wj-rook{width:30px;height:30px;fill:#ffffff;flex:none}
+.wj-rook-sm{width:24px;height:24px}
+.wj-nav{gap:0}
+.wj-nav a{padding:0 10px;white-space:nowrap}
+.wj-navbtn{display:inline-flex;align-items:center;gap:4px;min-height:44px;padding:0 10px;border:0;background:transparent;color:#ffffff;font:inherit;font-size:15px;font-weight:500}
+.wj-sbtn{display:inline-flex;align-items:center;gap:8px;width:220px;height:44px;padding:0 8px 0 12px;margin-right:16px;border-radius:8px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.45);color:#ffffff;text-decoration:none;font-size:14.5px;font-weight:500;flex:none}
+.wj-kbd{margin-left:auto;font-family:"Geist Mono",ui-monospace,monospace;font-size:12px;color:#e8ecf4;border:1px solid rgba(255,255,255,.4);border-radius:5px;padding:2px 6px;line-height:1.2}
+.wj-util{gap:12px}
+.wj-my{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 8px;border:0;border-radius:8px;background:transparent;color:#ffffff;font:inherit;font-size:14px;font-weight:500}
+.wj-foot-in{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px;padding-top:20px;padding-bottom:22px}
+.wj-foot .k-meta{color:rgba(255,255,255,.78)}
+.wj-foot nav a{font-size:14px}
+
+/* crumb */
+.wj-crumbbar{background:#ffffff;border-bottom:1px solid #e3e2dc}
+.wj-crumbin{display:flex;justify-content:space-between;align-items:center;gap:16px;min-height:46px}
+.wj-crumb{display:flex;align-items:center;gap:8px;margin:0;font-size:14px;color:#555c6b}
+.wj-crumb a{color:#1a2744;font-weight:500;text-decoration:underline;text-decoration-color:#9aa1b0;text-underline-offset:3px}
+.wj-crumb span[aria-current]{color:#1a2744;font-weight:600}
+.wj-sep{color:#858b99}
+.wj-backlink{display:inline-flex;align-items:center;gap:6px;min-height:44px;color:#1a2744;font-size:14px;font-weight:600;text-decoration:underline;text-decoration-color:#9aa1b0;text-underline-offset:3px}
+
+/* admin layout */
+.wj-layout{display:grid;grid-template-columns:220px minmax(0,1fr);gap:24px;align-items:start;padding-top:22px;padding-bottom:30px}
+.wj-side{background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:12px 8px 12px}
+.wj-side-h{padding:4px 10px 10px;border-bottom:1px solid #ecebe4;margin-bottom:6px}
+.wj-side-h b{display:block;font-size:17px}
+.wj-side-h a{font-size:13.5px;font-weight:600;color:#1a2744;text-decoration:underline;text-decoration-color:#9aa1b0;text-underline-offset:3px}
+.wj-srow{display:flex;align-items:center;gap:8px;min-height:34px;padding:4px 10px;line-height:1.3;border-radius:7px;color:#1a2744;text-decoration:none;font-size:14px;font-weight:500;border-left:3px solid transparent}
+.wj-srow.wj-on{background:#f3eedc;border-left-color:#866a1e;font-weight:700}
+.wj-scnt{margin-left:auto;font-size:12px;font-weight:700;background:#1a2744;color:#ffffff;border-radius:99px;padding:2px 8px;line-height:1.3}
+.wj-snote{display:block;font-size:12px;font-weight:600;color:#664c0c;margin-top:1px}
+.wj-sgroup{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#555c6b;padding:12px 10px 3px}
+.wj-sfoot{margin:10px 6px 0;padding:10px 6px 0;border-top:1px solid #ecebe4;font-size:12.5px;line-height:1.45;color:#555c6b;display:flex;gap:8px;align-items:flex-start}
+.wj-sfoot svg{flex:none;margin-top:1px}
+
+.wj-top{display:flex;justify-content:space-between;align-items:flex-end;gap:20px}
+.wj-top h1{margin:0;font-size:32px;line-height:1.15;font-weight:700;letter-spacing:-.015em}
+.wj-jump{width:420px}
+.wj-jump .k-input{font-size:14.5px}
+.wj-short{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px;align-items:center}
+.wj-cols{display:grid;grid-template-columns:minmax(0,1fr) 392px;gap:20px;margin-top:20px;align-items:start}
+.wj-card{background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:18px 20px}
+.wj-card h2,.wj-card h3{margin:0}
+.wj-ch{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.wj-ch h2{font-size:20px;font-weight:700;letter-spacing:-.01em}
+.wj-ch h3{font-size:17px;font-weight:600}
+.wj-csub{font-size:13.5px;color:#555c6b;margin:3px 0 0}
+.wj-q{list-style:none;margin:12px 0 0;padding:0}
+.wj-q li{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 16px;align-items:center;padding:13px 0;border-top:1px solid #ecebe4}
+.wj-qt{margin:0;font-size:15px;line-height:1.35;font-weight:600}
+.wj-qs{margin:2px 0 0;font-size:13.5px;line-height:1.4;color:#555c6b}
+.wj-qm{display:flex;flex-wrap:wrap;gap:6px 12px;align-items:center;margin-top:7px;font-size:13px;color:#3d4556}
+.wj-qm .wj-dot{color:#9aa1b0}
+.wj-qact{align-self:center}
+.wj-tag-club{background:#e3eef0;color:#1f4d57}
+.wj-tag-red{background:#fbe4e2;color:#8f1d16}
+.wj-cfoot{display:flex;justify-content:space-between;align-items:center;gap:14px;padding-top:14px;border-top:1px solid #ecebe4;margin-top:2px}
+.wj-cfoot .k-check{font-size:14px;align-items:center}
+.wj-cfoot .k-check input{margin:0}
+.wj-as{list-style:none;margin:10px 0 0;padding:0}
+.wj-as li{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:center;padding:10px 0;border-top:1px solid #ecebe4;font-size:14.5px}
+.wj-as li p{margin:0}
+.wj-as small{display:block;font-size:13px;color:#555c6b;margin-top:2px}
+.wj-right{display:flex;flex-direction:column;gap:20px}
+.wj-strip{background:#1a2744;color:#ffffff;border-radius:8px;padding:10px 14px;font-size:14px;display:flex;justify-content:space-between;gap:10px;align-items:center;margin-top:12px}
+.wj-strip a{color:#c8a94a;font-weight:600}
+.wj-health{list-style:none;margin:8px 0 0;padding:0}
+.wj-health li{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:1px 10px;padding:9px 0;border-bottom:1px solid #ecebe4}
+.wj-health li:last-child{border-bottom:0}
+.wj-health b{font-size:14.5px}
+.wj-health .k-tag{grid-row:1 / span 2;grid-column:2;align-self:center}
+.wj-audit{list-style:none;margin:8px 0 10px;padding:0}
+.wj-audit li{padding:9px 0;border-bottom:1px solid #ecebe4;font-size:13.5px;line-height:1.45}
+.wj-audit time{display:block;font-size:12.5px;color:#555c6b;font-weight:600}
+.wj-anno{display:flex;gap:10px;align-items:flex-start;font-size:13px;line-height:1.45;color:#3d4556;margin-top:12px}
+
+/* states and insets */
+.wj-row{display:grid;gap:20px}
+.wj-panel{background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:16px 18px;display:flex;flex-direction:column;gap:10px}
+.wj-panel h3{margin:0;font-size:16px;font-weight:600}
+.wj-ptag{font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#555c6b;margin:0}
+.wj-pnote{margin:0;font-size:13px;line-height:1.5;color:#555c6b}
+.wj-mini{border:1px solid #dddcd4;border-radius:10px;padding:12px 14px;background:#ffffff}
+.wj-mini h4{margin:0;font-size:14.5px;font-weight:700}
+.wj-mini p{margin:4px 0 0;font-size:13px;line-height:1.45;color:#3d4556}
+.wj-mrow{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:7px 0;border-top:1px solid #ecebe4;font-size:13px}
+.wj-mrow:first-of-type{border-top:0}
+.wj-tab{border:1px solid #cfcec6;border-radius:14px;background:#f5f5f2;overflow:hidden}
+.wj-tabhd{display:flex;justify-content:space-between;align-items:center;background:#1a2744;color:#ffffff;padding:8px 12px;font-size:12.5px;font-weight:600}
+.wj-tabin{padding:10px 12px;display:flex;flex-direction:column;gap:8px}
+.wj-sel{display:flex;justify-content:space-between;align-items:center;min-height:40px;padding:0 12px;border:1px solid #858b99;border-radius:8px;background:#ffffff;font-size:14px;font-weight:600}
+.wj-lock{display:flex;flex-direction:column;align-items:flex-start;gap:10px;padding:22px 20px;border:1px solid #dddcd4;border-radius:10px;background:#ffffff}
+.wj-lock h4{margin:0;font-size:18px;font-weight:700}
+.wj-lock p{margin:0;font-size:14px;line-height:1.5;color:#3d4556}
+.wj-count{display:inline-flex;align-items:center;justify-content:center;min-width:20px;height:20px;padding:0 6px;border-radius:999px;background:#fbfaf6;color:#1a2744;font-size:12px;font-weight:700}
+.wj-tiles{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px;margin-top:16px}
+.wj-tile{display:flex;flex-direction:column;gap:2px;padding:10px 12px;border:1px solid #dddcd4;border-radius:10px;background:#ffffff;color:#1a2744;text-decoration:none}
+.wj-tile b{font-size:26px;line-height:1.1}
+.wj-tile .k-label{font-size:11px}
+.wj-tile.wj-zero{background:#f5f5f2;color:#555c6b}
+.wj-chips{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:14px}
+.wj-qtable td{height:64px;padding-top:8px;padding-bottom:8px}
+.wj-qtable td b{display:block;font-size:14.5px;line-height:1.3}
+.wj-qtable td .k-small{display:block;line-height:1.35}
+.wj-legend3{display:grid;grid-template-columns:minmax(0,1fr) 430px;gap:20px;margin-top:16px}
+.wj-notes3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.wj-sheet{border:1px solid #dddcd4;border-radius:12px;background:#ffffff;box-shadow:0 12px 28px rgba(16,24,43,.12);padding:16px 18px;display:flex;flex-direction:column;gap:10px}
+.wj-sheet h4{margin:0;font-size:17px;font-weight:700}
+.wj-dl{display:grid;grid-template-columns:auto minmax(0,1fr);gap:6px 14px;margin:0;font-size:13.5px}
+.wj-dl dt{color:#555c6b;font-weight:600}
+.wj-dl dd{margin:0}
+.wj-backstrip{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:8px 12px;background:#866a1e;color:#ffffff;font-size:13px;font-weight:600}
+.wj-cband{background:#1a2744;color:#ffffff;padding:12px 14px 14px}
+.wj-cband p{margin:0}
+.wj-ccrumb{font-size:12px;color:#d8dde8}
+.wj-ccrumb a{color:#ffffff;text-decoration:underline;text-underline-offset:2px}
+.wj-exit{display:inline-flex;align-items:center;min-height:32px;padding:0 10px;border:1px solid rgba(255,255,255,.7);border-radius:7px;color:#ffffff;font-size:12.5px;font-weight:600;white-space:nowrap}
+.wj-dd{background:#ffffff;border:1px solid #d9d8d1;border-radius:12px;box-shadow:0 12px 28px rgba(16,24,43,.14);padding:8px}
+.wj-ddrow{display:flex;justify-content:space-between;align-items:center;gap:12px;min-height:34px;padding:4px 12px;border-radius:8px;font-size:14.5px;font-weight:500;color:#1a2744}
+.wj-ddsep{height:1px;background:#e3e2dc;margin:4px 4px}
+.wj-cur{background:#f3eedc;font-weight:600}
+.wj-rchip{display:inline-flex;align-items:center;padding:4px 10px;border-radius:999px;font-size:12.5px;font-weight:600;line-height:1.2;background:#e8e3f3;color:#3f2a73}
+
+</style>
+</helmet>
+<div class="wj-root" style="width:1440px;height:3150px">
+<section class="wj-doc" aria-label="About this board">
+<div class="k-between"><p class="k-kicker">15 · Workspace and admin · round 2 · part 1 of 2</p><span class="k-sample">Sample data · queue items, names, counts, times</span></div>
+<h1 class="wj-title">Admin · J · A dashboard home, the queue beside it (round 2)</h1>
+<p class="wj-meta" style="margin-top:10px"><b>Built from:</b> Work-C (the admin home, its banner, automations, audit log and Log in as), WS08 as amended by the replan 4.6, Work-I's queue data and sidebar, the decided header and footer (Nav-Header-Final, Nav-IA-Final)</p>
+<p class="wj-meta"><b>Replaces:</b> Work-C, with Work-I as the other option: Work-J opens on a dashboard of panels with the queue's top five; Work-I opens on the whole queue and nothing else</p>
+<p class="wj-meta"><b>Round 2 · Frame:</b> Int-A, swappable · <b>K's feedback applied:</b> the screens joined to the whole, with options for each</p>
+<p class="wj-meta"><b>Shown:</b> /admin and /admin/needs-attention on Mon, Oct 5, 2026 at 8:12 AM, signed in with a second factor as Denise Fontenot, LCA admin. Part 2 (Work-J-2) draws the full queue page, the review sheet, the backstop strip, Log in as and the way in from My LCA.</p>
+<p class="wj-quote"><b>K, page 15, Tue, Oct 13, 2026:</b> "for 15, it seems all the pages here are all their separate ideas and are good on their own right, i think its proper to think about how we plan to integrate each of them into the whole and also get mockup options for each to pin down a good vision."</p>
+<div class="wj-legend"><div class="wj-lbox"><p class="k-label">Notes on this board</p><ol class="wj-notes">
+<li><span class="k-num-badge">1</span><span><b>The home is an overview.</b> The five most urgent items, what is live, what ran, what changed, and five shortcuts, on one screen.</span></li>
+<li><span class="k-num-badge">2</span><span><b>The full queue is one click away.</b> "Open the queue (12)" lands on /admin/needs-attention, the same table as Work-I (part 2).</span></li>
+<li><span class="k-num-badge">3</span><span><b>Counts as filters,</b> on the queue page: each source tile filters the table; no vanity stats on the home (part 2).</span></li>
+<li><span class="k-num-badge">4</span><span><b>Approvals and open seats.</b> Approvals are the club events representatives submit; champion submissions are gone (P2.36). An open seat's club reports land here (P2.16), and so does any report unanswered for 14 days.</span></li>
+<li><span class="k-num-badge">5</span><span><b>Assigned to you</b> names the admin's own work on the home, one line each, with its action.</span></li>
+<li><span class="k-num-badge">6</span><span><b>The trade-off, in words.</b> An admin sees the shape of the day at a glance, but the queue is one click further than on Work-I.</span></li>
+</ol>
+<p class="wj-frameline">Drawn inside Int-A (My LCA as the hub, rooms open from each section). The frame is swappable: under Int-B Admin stays a separate area reached from the header; under Int-C it is a card on Your work. Admin itself does not change; only the breadcrumb, the way back and the menu row do. Pick the frame on Account-Int-A, B or C.</p><div class="wj-crumbs3">
+<div class="wj-c3"><b>Int-A · the baseline drawn here</b>My LCA › Admin<br><code>/admin</code> · from the LCA admin section or the menu row</div>
+<div class="wj-c3"><b>Int-B · My LCA with a left rail</b>My LCA › Admin<br><code>/admin</code> · reached from the header only, never a rail row</div>
+<div class="wj-c3"><b>Int-C · Your work beside My LCA</b>My LCA › Your work › Admin<br><code>/admin</code> · from the Admin card on Your work</div></div></div>
+<aside class="wj-grey" aria-label="Note for the canvas"><p class="k-label">Note for the canvas</p>
+<p><b>What:</b> /admin opens on an overview: the queue's five most urgent rows with "Open the queue (12)", the items assigned to this admin, the live banner, the automations health, the latest audit lines and five shortcuts. Needs attention is its own full page one click away (part 2).</p>
+<p><b>Built from:</b> Work-C's home shape (banner, automations, audit log, Log in as on the home); WS08 with replan 4.6 (one merged queue over six sources, the grouped sidebar); Work-I's twelve queue items, sidebar, states and insets.</p>
+<p><b>K's feedback applied:</b> page 15, "think about how we plan to integrate each of them into the whole and also get mockup options for each". Admin is lca_admin only, reached from the LCA admin section of My LCA and the menu row "Admin · 12 need attention", with "Back to My LCA" in the crumb and the sidebar; option J against Work-I.</p>
+<p><b>Open for K:</b> Work-I (the queue is the home) or Work-J (an overview with its top five). With Account-Q's summary on My LCA, this home repeats part of it; with Account-R's one row, this home carries the summary instead. "Assigned to you" shows 2: the shared data gives row 6 to Chris, so it is drawn as one you handed on.</p></aside></div></section><section class="wj-sec" aria-labelledby="wj-fa">
+<div class="wj-flab"><span class="wj-code">A</span><h2 id="wj-fa">/admin · the home, an overview</h2><span class="k-meta">Mon, Oct 5, 2026 · 8:12 AM · Denise Fontenot, LCA admin · five of the 12 rows with the panels beside them; Work-I opens on all 12 and nothing else</span><span class="k-num-badge">6</span></div>
+<div class="k-browser wj-browser"><div class="k-browser-bar"><i></i><i></i><i></i><div class="k-browser-url">louisianachess.org/admin</div></div>
+<div class="wj-view">
+<header class="k-header wj-hd"><div class="k-wrap-wide k-header-in"><a class="k-brand" href="#" aria-label="Louisiana Chess Association, home"><svg class="wj-rook" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span class="k-brand-name" aria-hidden="true"><b>Louisiana Chess</b><span>Association</span></span></a>
+<nav class="k-navlinks wj-nav" aria-label="Main"><a href="#">Tournaments</a><a href="#">Clubs</a><a href="#">Scholastic</a><a href="#">News</a><a href="#">Membership</a><button class="wj-navbtn" type="button" aria-haspopup="true" aria-expanded="false">About<svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></button></nav><a class="wj-sbtn" href="#"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg><span>Search</span><kbd class="wj-kbd" aria-hidden="true">&#8984;K</kbd></a>
+<div class="k-utility wj-util"><a class="k-ulink" href="#">Donate</a><button class="wj-my" type="button" aria-haspopup="menu" aria-expanded="false" aria-label="My LCA, nothing to do"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4.5 21c1-4 4-6 7.5-6s6.5 2 7.5 6"></path></svg><span>My LCA</span><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></button></div></div></header>
+<div class="wj-crumbbar"><div class="k-wrap-wide wj-crumbin"><nav aria-label="Breadcrumb"><p class="wj-crumb"><a href="#">My LCA</a><span class="wj-sep" aria-hidden="true">›</span><span aria-current="page">Admin</span></p></nav><a class="wj-backlink" href="#"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6"></path></svg>Back to My LCA</a></div></div>
+<div class="k-wrap-wide wj-layout"><nav class="wj-side" aria-label="Admin sections"><div class="wj-side-h"><b>Admin</b><a href="#">Back to My LCA</a></div><a class="wj-srow wj-on" href="#" aria-current="page">Home</a><a class="wj-srow" href="#">Needs attention<span class="wj-scnt">12</span></a><div class="wj-sgroup">Members</div><a class="wj-srow" href="#">Members &amp; export</a><a class="wj-srow" href="#">Roles &amp; access</a><a class="wj-srow" href="#">Log in as a member</a><div class="wj-sgroup">Tournaments</div><a class="wj-srow" href="#">Tournaments</a><a class="wj-srow" href="#">New tournament</a><a class="wj-srow" href="#">Season schedule</a><div class="wj-sgroup">Clubs</div><a class="wj-srow" href="#">Clubs</a><div class="wj-sgroup">Content</div><a class="wj-srow" href="#">News</a><a class="wj-srow" href="#">Site banner<span class="k-tag k-tag-live" style="margin-left:auto">Live</span></a><a class="wj-srow" href="#">Festivals</a><div class="wj-sgroup">Board</div><a class="wj-srow" href="#">Board seats &amp; regions</a><a class="wj-srow" href="#">Board inbox (every seat)</a><div class="wj-sgroup">Email</div><a class="wj-srow" href="#">Group email &amp; history</a><div class="wj-sgroup">Site</div><a class="wj-srow" href="#">Membership required for all</a><a class="wj-srow" href="#"><span>Automations &amp; health<span class="wj-snote">1 needs a look</span></span></a><div class="wj-sgroup">Audit</div><a class="wj-srow" href="#">Audit log</a><p class="wj-sfoot"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l7.5 3v5.5c0 4.6-3.2 8.2-7.5 9.5-4.3-1.3-7.5-4.9-7.5-9.5V6L12 3z"></path></svg><span>Signed in with your second factor · Denise Fontenot</span></p></nav><div>
+<div class="wj-top"><div><p class="k-kicker" style="margin:0">LCA admin</p><h1>Admin · Mon, Oct 5, 2026 <span class="k-num-badge wj-b" style="width:24px;height:24px;font-size:12px;vertical-align:middle">1</span></h1></div>
+<div class="k-field wj-jump"><label for="wj-q">Jump to</label><input id="wj-q" class="k-input" placeholder="A member, tournament, club, ticket or email · press /"></div></div>
+<div class="wj-short" aria-label="Shortcuts"><span class="k-label" style="margin-right:4px">Shortcuts</span>
+<a class="k-btn k-btn-line k-btn-sm" href="#"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>New tournament</a>
+<a class="k-btn k-btn-line k-btn-sm" href="#"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 16v-5a6 6 0 0 1 12 0v5l1.5 2h-15L6 16zM10 20.5a2 2 0 0 0 4 0"></path></svg>Post a site banner</a>
+<a class="k-btn k-btn-line k-btn-sm" href="#"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="M3.5 6.5L12 13l8.5-6.5"></path></svg>Email a group</a>
+<a class="k-btn k-btn-line k-btn-sm" href="#"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4.5 21c1-4 4-6 7.5-6s6.5 2 7.5 6"></path></svg>Log in as a member</a>
+<a class="k-btn k-btn-line k-btn-sm" href="#"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"></path></svg>Export members</a></div>
+<div class="wj-cols">
+<div style="display:flex;flex-direction:column;gap:20px">
+<section class="wj-card" aria-labelledby="wj-na"><div class="wj-ch"><div><h2 id="wj-na">Needs attention · 12 · oldest 9 days</h2><p class="wj-csub">The five that rank first: longest waiting, then the source's own deadline</p></div></div>
+<ul class="wj-q">
+<li><div><p class="wj-qt">Casa de Ajedrez · "Now meets at the Sulphur library, not the church" <span class="k-num-badge wj-b" style="width:24px;height:24px;font-size:12px;vertical-align:middle">4</span></p><p class="wj-qs">From a visitor · Sat, Sep 26 · the Southwest Louisiana seat is open, so it is yours</p>
+<div class="wj-qm"><span class="k-tag wj-tag-club">Club report</span><span class="k-tag k-tag-soon">Waiting 9 days</span><span>Owner: <a class="k-link" href="#">Assign</a></span></div></div>
+<a class="k-btn k-btn-line k-btn-sm wj-qact" href="#">Reply or Update listing</a></li>
+<li><div><p class="wj-qt">Champions: missing years 1987 to 1991</p><p class="wj-qs">From the Champions tab · board inbox</p>
+<div class="wj-qm"><span class="k-tag k-tag-ext">Board inbox</span><span>Waiting 6 days</span><span>Owner: <b>[Secretary]</b></span></div></div>
+<a class="k-btn k-btn-line k-btn-sm wj-qact" href="#">Open</a></li>
+<li><div><p class="wj-qt">Bid to host the 2027 State Championship</p><p class="wj-qs">[Club or organizer] · board inbox</p>
+<div class="wj-qm"><span class="k-tag k-tag-ext">Board inbox</span><span>Waiting 4 days</span><span>Owner: <b>Full board</b></span></div></div>
+<a class="k-btn k-btn-line k-btn-sm wj-qact" href="#">Open</a></li>
+<li><div><p class="wj-qt">US Chess ID lookup can't find me</p><p class="wj-qs">Jordan Lee · support ticket</p>
+<div class="wj-qm"><span class="k-tag">Support</span><span>Waiting 3 days</span><span>Owner: <a class="k-link" href="#">Assign</a></span></div></div>
+<a class="k-btn k-btn-line k-btn-sm wj-qact" href="#">Reply</a></li>
+<li><div><p class="wj-qt">Baton Rouge Chess Club November Saturday G/90 <span class="k-num-badge wj-b" style="width:24px;height:24px;font-size:12px;vertical-align:middle">4</span></p><p class="wj-qs">Club event submitted by Chris Arceneaux, South Central Louisiana representative</p>
+<div class="wj-qm"><span class="k-tag k-tag-gold">Approval</span><span>Waiting 2 days</span><span>Owner: <a class="k-link" href="#">Assign</a></span></div></div>
+<a class="k-btn k-btn-navy k-btn-sm wj-qact" href="#">Review</a></li>
+</ul>
+<div class="wj-cfoot"><a class="k-btn k-btn-navy" href="#">Open the queue (12) <span class="k-num-badge wj-b" style="width:24px;height:24px;font-size:12px;vertical-align:middle">2</span></a><label class="k-check"><input type="checkbox" checked><span>Email me this queue weekdays at 7:00 AM</span></label></div>
+</section>
+<section class="wj-card" aria-labelledby="wj-as"><div class="wj-ch"><h3 id="wj-as">Assigned to you · 2 <span class="k-num-badge wj-b" style="width:24px;height:24px;font-size:12px;vertical-align:middle">5</span></h3><a class="k-link k-small" href="#">See them in the queue</a></div>
+<ul class="wj-as">
+<li><p><b>Monroe Chess Club Quick Quads</b> <span class="k-tag k-tag-gold">Approval</span><small>Submitted by [North Louisiana representative] · waiting 1 day</small></p><a class="k-btn k-btn-navy k-btn-sm" href="#">Review</a></li>
+<li><p><b>Can't add my son to our family account</b> <span class="k-tag">Support</span><small>Danielle Robichaux · waiting 2 days</small></p><a class="k-btn k-btn-line k-btn-sm" href="#">Reply</a></li>
+</ul><p class="k-label" style="margin:12px 0 0">Handed on by you · 1</p><ul class="wj-as" style="margin-top:6px"><li><p><b>Wrong section on my registration</b> <span class="k-tag">Support</span><small>Isaac Dupre · waiting 1 day · now with Chris Arceneaux (treasurer, LCA officer)</small></p><a class="k-btn k-btn-line k-btn-sm" href="#">Open</a></li>
+</ul></section>
+</div>
+<div class="wj-right">
+<section class="wj-card" aria-labelledby="wj-bn"><div class="wj-ch"><h3 id="wj-bn">Site banner</h3><span class="k-tag k-tag-live">Live now</span></div>
+<div class="wj-strip"><span>Lafayette Open this weekend · <span style="white-space:nowrap">Sat–Sun, Oct 10–11</span></span><a href="#">Details</a></div>
+<p class="wj-csub" style="margin-top:10px">Ends by itself Sun, Oct 11 · 6:00 PM · shown to everyone</p>
+<div class="k-row-sm" style="margin-top:12px"><button class="k-btn k-btn-line k-btn-sm" type="button">Take down now</button><a class="k-link k-small" href="#">Edit in Content</a></div></section>
+<section class="wj-card" aria-labelledby="wj-au"><div class="wj-ch"><h3 id="wj-au">Automations</h3><span class="k-tag k-tag-soon">1 needs a look</span></div>
+<ul class="wj-health">
+<li><b>Gulf South event sync</b><span class="k-small k-muted">Ran 5:00 AM</span><span class="k-tag k-tag-open">OK</span></li>
+<li><b>Daily emails</b><span class="k-small k-muted">Ran 6:00 AM · 41 sent, 2 failed</span><span class="k-tag k-tag-soon">Check</span></li>
+<li><b>Stripe payments</b><span class="k-small k-muted">Last webhook 8:04 AM</span><span class="k-tag k-tag-open">OK</span></li>
+<li><b>Facebook mirror</b><span class="k-small k-muted">Refreshed 7:00 AM</span><span class="k-tag k-tag-open">OK</span></li>
+<li><b>Monthly club check emails</b><span class="k-small k-muted">Next run Mon, Nov 2</span><span class="k-tag">Scheduled</span></li>
+</ul><p class="wj-csub">A missed run joins the queue and the morning email.</p></section>
+<section class="wj-card" aria-labelledby="wj-lg"><div class="wj-ch"><h3 id="wj-lg">Latest in the audit log</h3></div>
+<ul class="wj-audit">
+<li><time>Mon, Oct 5 · 8:02 AM</time><b>You</b> · Posted site banner "Lafayette Open this weekend"</li>
+<li><time>Sat, Oct 3 · 2:30 PM</time><b>You</b> · Marked board seat "Bayou Region representative" vacant</li>
+<li><time>Sat, Oct 3 · 9:05 AM</time><b>Chris Arceneaux</b> · Submitted "Baton Rouge Chess Club November Saturday G/90" for LCA review</li>
+<li><time>Fri, Oct 2 · 4:10 PM</time><b>You</b> · Approved Gonzales Fall Quads</li>
+</ul><a class="k-link k-small" href="#">Open the audit log</a></section>
+</div></div></div></div>
+<footer class="k-footer wj-foot"><div class="k-wrap-wide wj-foot-in"><div class="k-row-sm" style="gap:10px"><svg class="wj-rook wj-rook-sm" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><b style="font-size:15px">Louisiana Chess Association</b></div><span class="k-meta">US Chess state affiliate · Louisiana's chess community since 1915</span><nav class="k-row" aria-label="Footer" style="gap:18px"><a href="#">Contact</a><a href="#">Website help</a><a href="#">Bylaws &amp; rules</a><a href="#">Donate</a></nav></div></footer>
+</div></div>
+<p class="wj-cap"><b>Against Work-I,</b> whose home is the whole table: here the top five, ranked longest waiting first, so Casa de Ajedrez (9 days, an open seat) leads. Row 4 also waits 2 days but sits under Assigned to you, so the fifth slot goes to the Baton Rouge club event. The header shows no count: Denise has nothing personal to do, and queue items never count there.</p>
+</section><section class="wj-sec" aria-labelledby="wj-st">
+<div class="wj-flab"><span class="wj-code">S</span><h2 id="wj-st">States of the home, and the tablet</h2><span class="k-meta">the same home on a quiet day, on a heavy day, and for an admin without a second factor · and at 1024 wide</span></div>
+<div class="wj-row" style="grid-template-columns:repeat(4,minmax(0,1fr))">
+<div class="wj-panel"><p class="wj-ptag">Empty · the queue is clear</p>
+<div class="wj-mini"><h4>Needs attention · 0</h4><p>The queue is empty. Last change: you marked the Bayou Region seat vacant, Sat, Oct 3, 2:30 PM.</p><div class="wj-cfoot" style="margin-top:10px;padding-top:10px"><a class="k-btn k-btn-line k-btn-sm" href="#">Open the queue (0)</a></div></div>
+<div class="wj-mini"><div class="wj-mrow"><b>Site banner</b><span class="k-tag k-tag-live">Live now</span></div><div class="wj-mrow"><b>Automations</b><span class="k-tag k-tag-open">OK · all five ran</span></div><div class="wj-mrow"><b>Latest in the audit log</b><span class="k-small k-muted">4 lines</span></div></div>
+<p class="wj-pnote">The right column and the shortcuts stay. Assigned to you leaves when it holds nothing; the digest checkbox keeps its setting.</p></div>
+<div class="wj-panel"><p class="wj-ptag">Busy · 40 in the queue, an automation failed</p>
+<div class="wj-mini"><h4>Needs attention · 40 · oldest 12 days</h4><p><span class="k-tag k-tag-soon">Waiting 2+ days · 14</span></p>
+<div style="margin-top:6px"><div class="wj-mrow"><span>Casa de Ajedrez</span><span class="k-small k-muted" style="white-space:nowrap">12 days</span></div><div class="wj-mrow"><span>Champions: missing years</span><span class="k-small k-muted" style="white-space:nowrap">9 days</span></div><div class="wj-mrow"><span>State Championship bid</span><span class="k-small k-muted" style="white-space:nowrap">7 days</span></div><div class="wj-mrow"><span>US Chess ID lookup</span><span class="k-small k-muted" style="white-space:nowrap">6 days</span></div><div class="wj-mrow"><span>Baton Rouge club event</span><span class="k-small k-muted" style="white-space:nowrap">5 days</span></div></div>
+<div class="wj-cfoot" style="margin-top:6px;padding-top:10px"><a class="k-btn k-btn-navy k-btn-sm" href="#">Open the queue (40)</a></div></div>
+<div class="wj-mini"><h4>Automations · 1 failed</h4><div class="wj-mrow"><span><b>Daily emails</b><br>no run at 6:00 AM</span><span class="k-row-sm" style="flex-wrap:nowrap"><span class="k-tag wj-tag-red">Failed to run</span><a class="k-btn k-btn-line k-btn-sm" href="#">Check</a></span></div></div>
+<p class="wj-pnote">The home never grows a longer list: five rows and the count on the button. Red always carries the words.</p></div>
+<div class="wj-panel"><p class="wj-ptag">Not enrolled · no second factor yet</p>
+<div class="wj-lock"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l7.5 3v5.5c0 4.6-3.2 8.2-7.5 9.5-4.3-1.3-7.5-4.9-7.5-9.5V6L12 3z"></path></svg><h4>Set up your second factor to open Admin</h4><p>Admin holds members' details, payments and group email, so it asks for a code from your phone as well as your password.</p><a class="k-btn k-btn-navy k-btn-sm" href="#">Set it up at /account/security</a><a class="k-link k-small" href="#">Back to My LCA</a></div>
+<p class="wj-pnote">Nothing else of Admin shows: no sidebar, no counts, no shortcuts.</p></div>
+<div class="wj-panel"><p class="wj-ptag">J1 · the home on a tablet, 1024 wide</p>
+<div class="wj-tab"><div class="wj-tabhd"><span>Louisiana Chess</span><span>My LCA ▾</span></div>
+<div class="wj-tabin"><p class="k-small" style="margin:0;color:#555c6b"><a class="k-link" href="#">My LCA</a> › Admin</p>
+<div class="wj-sel"><span>Admin section: Home</span><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></div>
+<div class="wj-mini"><h4>Needs attention · 12</h4><div class="wj-mrow"><span>Casa de Ajedrez</span><span class="k-small k-muted">9 days</span></div><div class="wj-mrow"><span>Champions: missing years</span><span class="k-small k-muted">6 days</span></div><p style="margin-top:2px">and 3 more · <a class="k-link" href="#">Open the queue (12)</a></p></div>
+<div class="wj-mini"><h4>Assigned to you · 2</h4></div>
+<div class="wj-mini"><h4>Site banner · Live now</h4></div>
+<div class="wj-mini"><h4>Automations · 1 needs a look</h4></div></div></div>
+<p class="wj-pnote">The sidebar becomes a select; the columns stack, the queue card first. Drawn small.</p></div>
+</div></section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":3150}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

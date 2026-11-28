@@ -1,0 +1,469 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>My LCA · J-2 · Family timeline: event day, empty, busy and the phone (round 2)</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/6107adb451dbab26ee5d89f4189b81f8">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+
+body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1a2744}
+.aj-root{box-sizing:border-box;padding:24px 40px 32px;background:#ecebe6;color:#1a2744}
+.aj-root *{box-sizing:border-box}
+.aj-title{display:block;background:#1a2744;color:#ffffff;border-radius:14px;padding:18px 24px 18px;border-bottom:4px solid #c8a94a}
+.aj-title .k-kicker{color:#e6cf86;margin:0}
+.aj-title h1{font-size:30px;line-height:1.12;font-weight:700;letter-spacing:-.015em;margin:6px 0 10px}
+.aj-tmeta{display:grid;grid-template-columns:auto 1fr;gap:3px 14px;font-size:13px;line-height:1.4;margin:0;max-width:1040px}
+.aj-tmeta dt{font-weight:600;color:#e6cf86;white-space:nowrap}
+.aj-tmeta dd{margin:0;color:#ffffff}
+.aj-tside{display:flex;flex-direction:column;align-items:flex-end;gap:8px;flex:none;width:250px}
+.aj-tag-r2{display:inline-flex;align-items:center;height:26px;padding:0 10px;border-radius:6px;background:#c8a94a;color:#1a2744;font-size:12.5px;font-weight:700;letter-spacing:.04em}
+.aj-tag-frame{display:inline-flex;align-items:center;height:26px;padding:0 10px;border-radius:6px;border:1px solid rgba(255,255,255,.6);color:#ffffff;font-size:12.5px;font-weight:600}
+.aj-tside .k-meta{color:rgba(255,255,255,.82);text-align:right}
+.aj-legend{margin-top:12px}
+.aj-title .aj-grey{flex:none;width:500px}
+.aj-lbox{background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:14px 18px}
+.aj-notes{list-style:none;margin:10px 0 0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px 24px}
+.aj-notes li{display:flex;gap:9px;align-items:flex-start;font-size:12.5px;line-height:1.4;color:#2b3446}
+.aj-notes .k-num-badge{width:22px;height:22px;font-size:11.5px}
+.aj-notes b{font-weight:600;color:#1a2744}
+.aj-grey{background:#efefea;border:1px solid #dfded6;border-radius:12px;padding:12px 14px;display:grid;grid-template-columns:1fr 1fr;gap:8px 16px;align-content:start}
+.aj-grey p{font-size:12px;line-height:1.4;color:#2b3446;margin:0}
+.aj-grey p + p{margin-top:7px}
+.aj-grey b.aj-gh{display:block;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#555c6b;margin-bottom:2px}
+.aj-grey ol{margin:0;padding-left:16px;font-size:12px;line-height:1.4;color:#2b3446}
+.aj-grey li{margin-bottom:3px}
+/* frame labels */
+.aj-flab{display:flex;align-items:center;gap:12px;margin:18px 0 8px;flex-wrap:nowrap}
+.aj-flab h2{margin:0;font-size:18px;line-height:1.2;font-weight:600;letter-spacing:-.01em;white-space:nowrap}
+.aj-code{display:inline-flex;align-items:center;justify-content:center;min-width:28px;height:28px;padding:0 9px;border-radius:7px;background:#c8a94a;color:#1a2744;font-weight:700;font-size:13px;flex:none}
+.aj-url{white-space:nowrap;font-family:"Geist Mono",ui-monospace,monospace;font-size:12px;color:#3d4556;background:#ffffff;border:1px solid #d9d8d1;border-radius:6px;padding:3px 8px}
+.aj-fmeta{font-size:13px;color:#555c6b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.aj-frame{position:relative;border:1px solid #cfcec6;border-radius:12px;overflow:hidden;background:#f5f5f2;box-shadow:0 14px 34px rgba(16,24,43,.10)}
+/* decided header */
+.aj-hd-in{display:flex;align-items:center;height:68px;padding:0 24px}
+.aj-brand{margin-right:16px}
+.aj-rook{width:30px;height:30px;fill:#ffffff;flex:none}
+.aj-rook-sm{width:22px;height:22px;fill:#ffffff;flex:none}
+.aj-nav{gap:0}
+.aj-nav a{padding:0 8px !important;white-space:nowrap}
+.aj-navbtn{display:inline-flex;align-items:center;gap:4px;min-height:44px;padding:0 8px;border:0;background:transparent;color:#ffffff;font-size:15px;font-weight:500}
+.aj-search{display:inline-flex;align-items:center;gap:8px;width:220px;height:44px;padding:0 8px 0 12px;margin-right:16px;border-radius:8px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.45);color:#ffffff;text-decoration:none;font-size:14.5px;font-weight:500;flex:none}
+.aj-kbd{margin-left:auto;font-family:"Geist Mono",ui-monospace,monospace;font-size:12px;color:#e8ecf4;border:1px solid rgba(255,255,255,.4);border-radius:5px;padding:2px 6px;line-height:1.2}
+.aj-util{gap:12px}
+.aj-util .k-ulink{padding:0 4px}
+.aj-my{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 8px;border:0;border-radius:8px;background:transparent;color:#ffffff;font-size:14px;font-weight:500}
+.aj-count{display:inline-flex;align-items:center;justify-content:center;min-width:20px;height:20px;padding:0 6px;border-radius:999px;background:#fbfaf6;color:#1a2744;font-size:12px;font-weight:700}
+.aj-foot-in{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:18px 24px 20px}
+.aj-foot .k-meta{color:rgba(255,255,255,.78)}
+.aj-foot nav a{font-size:14px}
+/* hub band */
+.aj-band{background:#fbfaf6;border-bottom:1px solid #e6e3d8;padding:12px 24px 12px}
+.aj-band-top{display:flex;justify-content:space-between;align-items:flex-end;gap:20px}
+.aj-name{font-size:32px;line-height:1.1;font-weight:700;letter-spacing:-.015em;margin:4px 0 0}
+.aj-roles{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;align-items:center}
+.aj-rchip{display:inline-flex;align-items:center;gap:8px;border-radius:999px;padding:5px 14px 5px 5px;font-size:14px;border:1px solid #d9d6cb;background:#ffffff;color:#1a2744;text-decoration:none;min-height:44px}
+.aj-rchip-on{border-color:#1a2744;box-shadow:inset 0 0 0 1px #1a2744}
+.aj-role{display:inline-flex;align-items:center;border-radius:999px;padding:4px 10px;font-size:12px;font-weight:600;white-space:nowrap;line-height:1.2}
+.aj-r-td{background:#1a2744;color:#ffffff}
+.aj-r-rep{background:#f6efd9;color:#5e4a12}
+.aj-r-board{background:#e4e9f3;color:#1a2744}
+.aj-r-parent{background:#e3efe6;color:#1f4d33}
+.aj-r-member{background:#ecebe5;color:#1a2744}
+/* layout */
+.aj-layout{display:grid;grid-template-columns:220px minmax(0,1fr);gap:30px;align-items:start;padding:16px 24px 20px}
+.aj-railcard{background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:14px 12px}
+.aj-rnav{display:flex;flex-direction:column;gap:2px;margin-top:8px}
+.aj-rnav a{display:flex;justify-content:space-between;align-items:center;padding:0 10px;border-radius:8px;color:#1a2744;text-decoration:none;font-size:14px;min-height:40px}
+.aj-rnav a.aj-on{background:#efede6;font-weight:600;box-shadow:inset 3px 0 0 #1a2744}
+.aj-rc{font-size:12px;font-weight:700;color:#3d4556;background:#eceef2;border-radius:999px;padding:1px 8px}
+.aj-col{display:flex;flex-direction:column;gap:8px;min-width:0}
+.aj-coll{display:flex;align-items:center;gap:12px;height:48px;padding:0 16px;background:#ffffff;border:1px solid #dddcd4;border-radius:10px;font-size:14.5px}
+.aj-coll b{font-weight:600}
+.aj-coll .aj-cm{color:#555c6b}
+.aj-coll .aj-show{margin-left:auto;display:inline-flex;align-items:center;gap:6px;font-size:13.5px;font-weight:600;color:#1a2744}
+/* the section */
+.aj-sec{background:#ffffff;border:1px solid #c9c8c0;border-radius:12px;padding:18px 20px 0;margin:6px 0}
+.aj-sh{display:flex;justify-content:space-between;align-items:flex-start;gap:16px}
+.aj-sh h2{margin:0;font-size:24px;line-height:1.2;font-weight:700;letter-spacing:-.01em;display:flex;align-items:center;gap:10px}
+.aj-chip-dir{display:inline-flex;align-items:center;border-radius:999px;padding:4px 11px;font-size:12.5px;font-weight:600;background:#1a2744;color:#ffffff;line-height:1.2}
+.aj-subl{font-size:15px;line-height:1.45;color:#555c6b;margin:4px 0 0}
+.aj-anchor{font-family:"Geist Mono",ui-monospace,monospace;font-size:12px;color:#555c6b}
+.aj-row{display:grid;grid-template-columns:72px minmax(0,1fr) 220px;gap:10px 18px;padding:17px 0;border-top:1px solid #eeede7}
+.aj-sh + .aj-row{margin-top:14px}
+.aj-date{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;width:72px;min-height:74px;padding:8px 2px;border:1px solid #d6d5cd;border-radius:10px;background:#ffffff;line-height:1;text-align:center}
+.aj-date b{font-size:24px;font-weight:600;letter-spacing:-.02em}
+.aj-date span{font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#555c6b;white-space:nowrap}
+.aj-date-navy{background:#1a2744;border-color:#1a2744;color:#ffffff}
+.aj-date-navy span{color:#e6cf86}
+.aj-date-done{background:#efefea;border-color:#dddcd4}
+.aj-main{display:flex;flex-direction:column;gap:7px;min-width:0}
+.aj-tl{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.aj-tl b{font-size:20px;line-height:1.25;font-weight:600}
+.aj-det{font-size:14px;line-height:1.45;color:#555c6b;margin:0}
+.aj-cnt{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:15px}
+.aj-cnt > b{font-weight:600;margin-right:4px}
+.aj-pill{display:inline-flex;align-items:center;gap:5px;height:24px;padding:0 9px;border-radius:999px;background:#f1f0eb;color:#3d4556;font-size:12.5px;font-weight:500}
+.aj-pill i{font-style:normal;font-weight:700;color:#1a2744}
+.aj-flags{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.aj-t{display:inline-flex;align-items:center;gap:6px;padding:4px 9px;border-radius:6px;font-size:13px;font-weight:600;line-height:1.2;white-space:nowrap}
+.aj-t::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor;flex:none}
+.aj-t-nodot::before{display:none}
+.aj-t-green{background:#e3efe6;color:#1f4d33}
+.aj-t-amber{background:#f6efd9;color:#5e4a12}
+.aj-t-navy{background:#e4e9f3;color:#1a2744}
+.aj-t-red{background:#fbe9e4;color:#9a3b1b}
+.aj-t-grey{background:#ecebe5;color:#3d4555}
+.aj-next{font-size:14px;font-weight:600;margin:0;display:flex;align-items:center;gap:8px}
+.aj-next span{font-weight:500;color:#555c6b}
+.aj-btns{display:flex;flex-direction:column;gap:8px;align-items:stretch}
+.aj-btns .k-btn{width:100%}
+.aj-btn-muted{background:#ffffff;border:1px solid #c9c8c0;color:#5d6371;flex-direction:column;gap:2px;min-height:52px}
+.aj-btn-muted small{font-size:12px;font-weight:500;color:#5d6371}
+.aj-plink{font-size:13px;font-weight:600;color:#1a2744;text-align:center;text-decoration:underline;text-underline-offset:3px;text-decoration-color:#9aa1b0;margin-top:2px}
+/* inline decisions */
+.aj-dec{grid-column:2 / 4;background:#f5f5f2;border-radius:10px;padding:4px 14px}
+.aj-sub{display:flex;align-items:center;gap:14px;min-height:48px;font-size:13.5px;line-height:1.35;border-top:1px solid #e6e5df}
+.aj-sub:first-child{border-top:0}
+.aj-sub > .aj-st{flex:1;min-width:0}
+.aj-sub b{font-weight:600}
+.aj-sub .k-btn{min-height:36px;padding:0 14px;font-size:13.5px;flex:none}
+.aj-after{grid-column:2 / 4;display:flex;align-items:center;gap:10px;font-size:12.5px;color:#555c6b;margin-top:-2px}
+.aj-done{display:inline-flex;align-items:center;gap:8px;padding:5px 10px;border-radius:8px;background:#e3efe6;color:#1f4d33;font-size:12.5px;font-weight:600}
+.aj-done u{color:#1a2744;text-underline-offset:2px}
+/* checks */
+.aj-check{display:flex;gap:8px;align-items:flex-start;font-size:13.5px;line-height:1.4;margin:0}
+.aj-ok{color:#1f4d33;font-weight:700;flex:none;width:14px}
+.aj-bad{color:#9a3b1b;font-weight:700;flex:none;width:14px}
+.aj-checks{display:flex;flex-direction:column;gap:3px;padding:8px 12px;border:1px solid #ecebe5;border-radius:8px;background:#fdfdfb}
+.aj-checks .k-label{margin-bottom:2px}
+.aj-tap{font-weight:600;color:#1a2744;text-decoration:underline;text-decoration-color:#c8a94a;text-decoration-thickness:2px;text-underline-offset:3px}
+.aj-sec-foot{display:flex;align-items:center;gap:10px;margin:0 -20px;padding:12px 20px;background:#fbfaf6;border-top:1px solid #eeede7;border-radius:0 0 12px 12px;font-size:14px}
+.aj-sec-foot b{font-weight:600;white-space:nowrap}
+.aj-sec-foot .k-sample{white-space:nowrap}
+/* live */
+.aj-strip{display:flex;align-items:center;gap:12px;height:44px;padding:0 6px 0 24px;background:#0e1526;color:#f3f5f9;border-top:2px solid #c8a94a;font-size:14px;white-space:nowrap}
+.aj-livetag{display:inline-flex;align-items:center;gap:5px;padding:4px 9px;border-radius:6px;background:#ff4757;color:#070b14;font-size:12px;font-weight:700;line-height:1.2;flex:none}
+.aj-evname{font-weight:700;color:#f3f5f9;text-decoration:underline;text-decoration-color:#c8a94a;text-underline-offset:3px}
+.aj-ps{color:#b9c2d3}
+.aj-ps b{color:#f3f5f9;font-weight:600}
+.aj-hide{margin-left:auto;display:inline-flex;align-items:center;justify-content:center;width:44px;height:38px;border-radius:8px;border:1px solid rgba(243,245,249,.3);color:#f3f5f9;font-size:13px;font-weight:600;padding:0 10px;width:auto}
+.aj-liveband{background:#0e1526;color:#f3f5f9;border-top:2px solid #c8a94a;border-radius:10px;padding:14px 18px;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px 20px;align-items:center;margin-top:14px}
+.aj-liveband .aj-l1{font-size:16px;font-weight:600;line-height:1.35;margin:6px 0 0}
+.aj-liveband .aj-l1 span{color:#b9c2d3;font-weight:500}
+.aj-liveband .aj-l2{font-size:14px;line-height:1.45;color:#d5dbe6;margin:6px 0 0;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.aj-lbtns{display:flex;gap:8px}
+.aj-btn-light{background:transparent;color:#f3f5f9;border:1px solid rgba(243,245,249,.7)}
+.aj-shrunk{font-size:14px;line-height:1.5;color:#3d4556;padding:10px 0 14px;margin:0}
+/* phone */
+.aj-phone{width:360px;height:640px;flex:none;border-radius:34px;border:10px solid #10182b;background:#fbfaf6;overflow:hidden;position:relative;box-shadow:0 20px 44px rgba(16,24,43,.2)}
+.aj-pbar{display:flex;align-items:center;justify-content:space-between;height:52px;padding:0 14px;background:#1a2744;color:#ffffff;font-size:16px;font-weight:600}
+.aj-pbody{padding:10px 12px 0;display:flex;flex-direction:column;gap:7px}
+.aj-ptabs{position:absolute;left:0;right:0;bottom:0;height:56px;background:#ffffff;border-top:1px solid #dddcd4;display:grid;grid-template-columns:repeat(4,1fr);font-size:11px;font-weight:600;color:#555c6b;text-align:center;align-items:center}
+.aj-ptabs .aj-pon{color:#1a2744;box-shadow:inset 0 2px 0 #1a2744;height:100%;display:flex;align-items:center;justify-content:center}
+/* insets */
+.aj-inset{background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:12px 14px}
+.aj-ilab{font-size:11.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#555c6b;margin:0 0 8px}
+.aj-mrow{display:flex;justify-content:space-between;align-items:center;gap:10px;min-height:32px;padding:3px 10px;border-radius:7px;font-size:14px;font-weight:500}
+.aj-mrow-todo{background:#fbf7e9}
+.aj-mrow-cur{background:#f3eedc;font-weight:600}
+.aj-mrow-ev{font-weight:600}
+.aj-msep{height:1px;background:#e3e2dc;margin:4px 2px}
+.aj-msub{font-size:12px;color:#555c6b;font-weight:400}
+.aj-crumbs{display:grid;grid-template-columns:52px minmax(0,1fr);gap:8px 10px;font-size:13.5px;line-height:1.4;align-items:baseline}
+.aj-crumbs .aj-fn{font-size:12px;font-weight:700;color:#555c6b}
+.aj-crumbs .aj-cr a{color:#1a2744;text-decoration:underline;text-underline-offset:3px;text-decoration-color:#9aa1b0}
+.aj-console{display:flex;align-items:center;justify-content:space-between;gap:10px;height:56px;padding:0 14px;margin-top:12px;border-radius:10px;background:#1a2744;color:#ffffff;font-size:13.5px}
+.aj-console a{color:#ffffff}
+.aj-exit{display:inline-flex;align-items:center;height:36px;padding:0 12px;border-radius:8px;border:1px solid rgba(255,255,255,.7);font-weight:600;font-size:13px;color:#ffffff;flex:none}
+.aj-cap{font-size:13px;line-height:1.45;color:#3d4556;margin:8px 0 0}
+.aj-cap b{color:#1a2744;font-weight:600}
+.aj-lookup{display:flex;align-items:center;gap:8px;width:420px;height:44px;padding:0 12px;border:1px solid #858b99;border-radius:8px;background:#ffffff;font-size:15px;color:#1a2744}
+.aj-res{display:flex;align-items:center;gap:10px;padding:8px 12px;border:1px solid #ecebe5;border-radius:8px;font-size:14px;width:420px}
+.aj-row > .aj-date{align-self:start}
+.aj-plrow{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:2px}
+.aj-nolook{display:flex;align-items:center;gap:8px;font-size:13px;color:#555c6b;margin-left:12px}
+.aj-tbody{display:flex;justify-content:space-between;align-items:flex-start;gap:28px}
+.aj-tbody > div{flex:1;min-width:0}
+.aj-after > span{white-space:nowrap}
+
+
+/* J: family timeline */
+.aj-av{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;background:#1a2744;color:#ffffff;font-size:12px;font-weight:700;flex:none;letter-spacing:.02em}
+.aj-av-sm{width:24px;height:24px;font-size:10px}
+.aj-av-line{background:#ffffff;color:#1a2744;box-shadow:inset 0 0 0 1.5px #1a2744}
+.aj-av-gold{background:#c8a94a;color:#1a2744}
+.aj-pc{display:inline-flex;align-items:center;gap:6px;height:28px;padding:0 10px 0 2px;border-radius:999px;background:#ecebe5;font-size:13px;font-weight:600;color:#1a2744;white-space:nowrap}
+.aj-who{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.aj-sh-btns{display:flex;align-items:center;gap:10px;flex:none}
+.aj-sentence{font-size:15px;line-height:1.5;color:#555c6b;margin:10px 0 0;max-width:860px}
+.aj-people{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px;margin-top:16px;align-items:stretch}
+.aj-tile{background:#ffffff;border:1px solid #e6e3d8;border-top:6px solid #1a2744;border-radius:12px;padding:12px 14px 12px;display:flex;flex-direction:column;gap:4px;font-size:13px;line-height:1.4;color:#1a2744;min-width:0}
+.aj-tile-top{display:flex;align-items:center;gap:10px;margin-bottom:4px}
+.aj-tile-top b{font-size:16px;font-weight:600}
+.aj-tile p{margin:0}
+.aj-tile .aj-g{color:#555c6b}
+.aj-need{display:block;width:fit-content;align-items:center;gap:6px;background:#f6efd9;color:#5e4a12;border-radius:6px;padding:3px 8px;font-weight:600;align-self:flex-start}
+.aj-ok{display:block;width:fit-content;align-items:center;gap:6px;background:#e3efe6;color:#1f4d33;border-radius:6px;padding:3px 8px;font-weight:600;align-self:flex-start}
+.aj-key{display:flex;align-items:center;gap:6px}
+.aj-tlinks{margin-top:auto;padding-top:6px;font-size:13px;font-weight:600}
+.aj-tlinks a{color:#1a2744;text-decoration:underline;text-decoration-color:#9aa1b0;text-underline-offset:3px}
+.aj-tile-add{border:1.5px dashed #b9b7ad;border-top:1.5px dashed #b9b7ad;background:#fbfaf6;align-items:center;justify-content:center;text-align:center;gap:6px}
+.aj-tile-add b{font-size:15px;font-weight:600}
+.aj-chips{display:flex;align-items:center;gap:8px;margin-top:18px;flex-wrap:wrap}
+.aj-chips .k-chip{min-height:44px;padding:0 16px 0 8px;gap:8px}
+.aj-chips .k-chip-all{padding:0 16px}
+.aj-two{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:40px;align-items:start;margin-top:18px;padding-bottom:20px}
+.aj-tlh{display:flex;align-items:baseline;gap:10px;margin:0 0 4px}
+.aj-tlh b{font-size:18px;font-weight:600}
+.aj-tlh span{font-size:13px;color:#555c6b}
+.aj-row{display:grid;grid-template-columns:64px minmax(0,1fr);gap:16px;padding:16px 0;border-top:1px solid #eeede7}
+.aj-row-rule{border-left:4px solid #d1a43a;padding-left:12px;background:#fdfaf0;margin-left:-16px;padding-right:12px}
+.aj-row-red{border-left:4px solid #c0392b;padding-left:12px;background:#fdf3f1;margin-left:-16px;padding-right:12px}
+.aj-row-grey .aj-tm{color:#555c6b}
+.aj-db{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;width:64px;min-height:68px;padding:7px 2px;border:1px solid #d6d5cd;border-radius:10px;background:#ffffff;line-height:1;text-align:center;align-self:start}
+.aj-db b{font-size:22px;font-weight:600;letter-spacing:-.02em;white-space:nowrap}
+.aj-db span{font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#555c6b;white-space:nowrap}
+.aj-db-navy{background:#1a2744;border-color:#1a2744;color:#ffffff}
+.aj-db-navy span{color:#e6cf86}
+.aj-db-grey{background:#efefea;border-color:#dddcd4}
+.aj-tm{display:flex;flex-direction:column;gap:7px;min-width:0}
+.aj-tt{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+.aj-tt b{font-size:16px;font-weight:600;line-height:1.3}
+.aj-tt span{font-size:14px;color:#555c6b}
+.aj-p{font-size:14px;line-height:1.45;margin:0}
+.aj-say{display:inline-flex;align-items:center;gap:6px;align-self:flex-start;padding:5px 10px;border-radius:7px;font-size:13.5px;line-height:1.35;margin:0}
+.aj-amber{background:#f6efd9;color:#5e4a12}
+.aj-green{background:#e3efe6;color:#1f4d33}
+.aj-navyt{background:#e4e9f3;color:#1a2744}
+.aj-acts{font-size:14px;margin:0;color:#555c6b}
+.aj-acts a{color:#1a2744;font-weight:600;text-decoration:underline;text-decoration-color:#9aa1b0;text-underline-offset:3px}
+.aj-trk{display:flex;align-items:flex-start;margin:2px 0 0}
+.aj-st{position:relative;display:flex;flex-direction:column;align-items:center;gap:4px;width:112px;font-size:12px;line-height:1.25;text-align:center;color:#555c6b}
+.aj-st::before{content:"";position:absolute;top:12px;right:50%;width:100%;height:2px;background:#cfd3dc}
+.aj-st:first-child::before{display:none}
+.aj-st-done::before{background:#1a2744}
+.aj-node{position:relative;z-index:1;display:flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;border:2px solid #9aa1b0;background:#ffffff;font-size:13px;font-weight:700;color:#ffffff}
+.aj-st-done{color:#1a2744;font-weight:600}
+.aj-st-done .aj-node{background:#1a2744;border-color:#1a2744}
+.aj-st small{font-size:11px;font-weight:500;color:#555c6b}
+.aj-trk-sm .aj-st{width:92px;font-size:11.5px}
+.aj-trk-sm .aj-st::before{top:9px}
+.aj-trk-sm .aj-node{width:20px;height:20px;font-size:11px}
+.aj-sub{display:grid;grid-template-columns:96px minmax(0,1fr);gap:4px 12px;align-items:start;padding:10px 12px;border-radius:10px;background:#f7f6f2}
+.aj-sub + .aj-sub{margin-top:2px}
+.aj-sub-who{display:flex;flex-direction:column;gap:3px;font-size:13px;font-weight:600}
+.aj-sub-who span{font-weight:500;color:#555c6b}
+.aj-rslt{border-top:1px solid #eeede7;padding:12px 0 0;display:flex;flex-direction:column;gap:6px}
+.aj-rslth{display:flex;align-items:center;gap:8px;font-size:15px;font-weight:600}
+.aj-rslth a{margin-left:auto;font-size:14px}
+.aj-rsltline{display:flex;gap:10px;font-size:14px;align-items:baseline;flex-wrap:wrap}
+.aj-rsltline .k-res{height:24px;min-width:40px;font-size:12px}
+.aj-guard{background:#fbfaf6;border:1px solid #e6e3d8;border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:12px;position:sticky;top:16px}
+.aj-guard h3{margin:0;font-size:18px;font-weight:600;display:flex;align-items:center;gap:8px}
+.aj-gr{display:flex;flex-direction:column;gap:4px;padding-top:12px;border-top:1px solid #e6e3d8;font-size:13.5px;line-height:1.4}
+.aj-gr b{font-weight:600}
+.aj-dis{color:#7a7f8b;font-size:13px;text-decoration:underline dotted;text-underline-offset:3px}
+.aj-swrow{display:flex;align-items:center;gap:8px;font-size:13.5px;min-height:28px}
+.aj-sw{position:relative;display:inline-block;width:36px;height:20px;border-radius:999px;background:#1a2744;flex:none}
+.aj-sw::after{content:"";position:absolute;top:3px;right:3px;width:14px;height:14px;border-radius:50%;background:#ffffff}
+.aj-sw-dis{background:#a9aebb}
+.aj-help{font-size:12.5px;line-height:1.4;color:#555c6b;margin:0}
+.aj-plan{background:#ffffff;border:1px solid #e6e3d8;border-radius:10px;padding:10px 12px;font-size:13px;line-height:1.5}
+.aj-plan b{font-weight:600}
+.aj-req{background:#f6efd9;color:#5e4a12;border-radius:10px;padding:10px 12px;font-size:13px;line-height:1.4;display:flex;flex-direction:column;gap:8px}
+.aj-req .k-btn{min-height:36px;padding:0 14px;font-size:13.5px}
+/* event day */
+.aj-evstrip{display:flex;align-items:center;gap:12px;height:52px;padding:0 8px 0 24px;background:#fbf7e9;border-bottom:1px solid #e6dcb8;font-size:14px;color:#1a2744;white-space:nowrap}
+.aj-evstrip b{font-weight:600}
+.aj-evstrip .aj-hide2{margin-left:auto;display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:8px;border:1px solid #c9c8c0;background:#ffffff;font-size:13px;font-weight:600}
+.aj-tagnow{display:inline-flex;align-items:center;padding:3px 8px;border-radius:6px;background:#ff4757;color:#070b14;font-size:12px;font-weight:700;line-height:1.2;white-space:nowrap}
+.aj-day{border:1px solid #e6e3d8;border-top:2px solid #c8a94a;border-radius:12px;background:#ffffff;padding:14px 16px}
+.aj-lanes{display:grid;grid-template-columns:104px repeat(2,minmax(0,1fr)) 62px repeat(2,minmax(0,1fr)) 66px;gap:6px;margin-top:12px}
+.aj-lh{font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:#555c6b;padding:0 2px 2px;line-height:1.25}
+.aj-c{background:#f5f5f2;border-radius:8px;padding:8px;font-size:12.5px;line-height:1.35;min-height:78px}
+.aj-c b{font-weight:600}
+.aj-c .aj-g{color:#555c6b}
+.aj-c-who{background:transparent;padding:4px 0 0}
+.aj-c-live{background:#ffffff;box-shadow:inset 0 0 0 2px #1a2744}
+.aj-c-break{background:#efefea;color:#555c6b;text-align:center;display:flex;align-items:center;justify-content:center}
+.aj-c-next{background:#ffffff;box-shadow:inset 0 0 0 1px #d6d5cd;color:#555c6b}
+.aj-res-tag{display:inline-flex;padding:2px 7px;border-radius:5px;font-size:11.5px;font-weight:700;margin-bottom:4px}
+.aj-won{background:#e3efe6;color:#1f4d33}
+.aj-lost{background:#ecebe5;color:#3d4555}
+.aj-daynote{font-size:13.5px;line-height:1.5;margin:10px 0 0}
+.aj-daygrey{font-size:12.5px;color:#555c6b;margin:4px 0 0}
+.aj-split{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:20px;align-items:start}
+.aj-crop{font-family:"Geist Mono",ui-monospace,monospace;font-size:12px;color:#555c6b;padding:8px 16px;background:#ecebe5;border-bottom:1px solid #dddcd4}
+.aj-sec2{background:#ffffff;padding:18px 20px 4px}
+/* phones */
+.aj-phone{width:360px;flex:none;border-radius:34px;border:10px solid #10182b;background:#fbfaf6;overflow:hidden;position:relative;box-shadow:0 20px 44px rgba(16,24,43,.2)}
+.aj-pbar{display:flex;align-items:center;justify-content:space-between;height:52px;padding:0 14px;background:#1a2744;color:#ffffff;font-size:16px;font-weight:600}
+.aj-pscroll{display:flex;gap:10px;overflow:hidden;margin:0 -12px;padding:0 12px}
+.aj-pscroll .aj-tile{width:240px;flex:none}
+.aj-prow{display:grid;grid-template-columns:52px minmax(0,1fr);gap:10px;padding:10px 0;border-top:1px solid #e6e3d8}
+.aj-prow .aj-db{width:52px;min-height:58px}
+.aj-prow .aj-db b{font-size:18px}
+.aj-prow .aj-db span{font-size:10px}
+.aj-pmore{display:inline-flex;align-items:center;justify-content:center;min-height:36px;padding:0 12px;border-radius:8px;border:1px solid #c9c8c0;background:#ffffff;font-size:13px;font-weight:600;color:#1a2744;align-self:flex-start}
+.aj-pblk{background:#ffffff;border:1px solid #e6e3d8;border-radius:10px;padding:8px 10px;font-size:12.5px;line-height:1.4;display:flex;flex-direction:column;gap:3px}
+.aj-pblk b{font-weight:600}
+.aj-db[style*="width:56px"] span{letter-spacing:.01em}
+.aj-inset2{background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:12px 14px}
+.aj-tlh .k-num-badge{color:#ffffff;font-size:13px;align-self:center}
+.aj-chips a.k-chip{text-decoration:none}
+.aj-narrow .aj-hd-in{padding:0 14px}.aj-narrow .aj-search{width:116px;margin-right:12px}.aj-narrow .aj-kbd{display:none}.aj-narrow .aj-nav a{padding:0 6px !important;font-size:14px}.aj-narrow .aj-navbtn{font-size:14px;padding:0 6px}.aj-narrow .aj-brand{margin-right:10px}
+
+</style>
+</helmet>
+<div class="aj-root" style="padding-bottom:4px;width:1440px;height:2950px">
+<section class="aj-title" aria-label="About this board"><div class="aj-thead">
+<div class="k-row-sm" style="gap:10px"><p class="k-kicker">14 · My LCA · round 2 · option J · Family · part 2 of 2</p><span class="aj-tag-r2">ROUND 2</span><span class="aj-tag-frame">Frame: Int-A, swappable</span><span class="k-sample">Sample data · co-guardian, third child, dates of requests, times, venue and room names</span></div>
+<h1>My LCA · J-2 · Family timeline: event day, empty, busy and the phone</h1></div><div class="aj-tbody"><div>
+<dl class="aj-tmeta">
+<dt>Built from</dt><dd>Account-B (day view, guardians), Account-A's Next up, Account-C's hub; WS13, WS06 and replan 7.3 (the claimed teen).</dd>
+<dt>Replaces</dt><dd>Account-B's day view card with "Text me" and the phone number, and its "Share this view" link.</dd>
+<dt>Shown</dt><dd>Frame B: Danielle on Sat, Nov 14, 2026, 11:04 AM. Frame C: a parent with no children yet, Mon, Oct 5. Frame D: three children, Sat, Nov 14, 11:04 AM. E: the phone on both days. Part 1 is Account-J.</dd>
+<dt>K's feedback applied</dt><dd>A good default, every section drawn in full, roles hosted in My LCA, options for each (Tue, Oct 13).</dd>
+<dt>Sample data</dt><dd>Marc R., Noah and his ID, the request date, all times, "Updated 11:04 AM", names in brackets, the Ken Ferguson Memorial Scholastic entry.</dd>
+</dl></div>
+<aside class="aj-grey" aria-label="Board note">
+<div><p><b class="aj-gh">What</b>Part 2 of option J: the family timeline on event day (today's row opens as the day view), empty, busy with three children and a teen asking her guardian to pay, and on a phone.</p><p><b class="aj-gh">Built from</b>Account-B, Account-A, Account-C; WS13 and WS06.</p></div>
+<div><p><b class="aj-gh">K's feedback applied</b>Every state of the section drawn; the hub never becomes a console; nothing here opens Admin.</p><p><b class="aj-gh">Open for K</b></p><ol><li>Day view inside Family (drawn) or its own section on event day?</li><li>Text me stays hidden until SMS exists (D8): confirm.</li></ol></div>
+</aside></div>
+</section><div class="aj-legend"><div class="aj-lbox"><p class="k-label" style="margin:0">Notes on this board</p><ol class="aj-notes">
+<li><span class="k-num-badge">1</span><span><b>On event day today's row becomes the day view:</b> round, board, colour, result and Updated time per child; no Text me until SMS exists (D8). The menu gains the event line.</span></li>
+<li><span class="k-num-badge">2</span><span><b>Empty:</b> one dashed tile and one dashed row, no chips, no guardians panel; the rail row reads "Family" with no count and the header count shows nothing.</span></li>
+<li><span class="k-num-badge">3</span><span><b>A teen's "Ask my guardian to pay"</b> lands as the family's first dated row, with a red rule and the word Unpaid: Pay $25 or Not this time, one tap each.</span></li>
+<li><span class="k-num-badge">4</span><span><b>Guardians, busy:</b> a co-guardian with Remove (owner only; a co-guardian sees Leave), a request on amber with Approve and Decline; copies switch on once a child has a login.</span></li>
+<li><span class="k-num-badge">5</span><span><b>The phone:</b> the people strip scrolls sideways; each row keeps one primary as a full-width button and puts the rest under More.</span></li>
+<li><span class="k-num-badge">6</span><span><b>Int-A, swappable.</b> Drawn inside Int-A (My LCA as the hub, rooms open from each section). The frame is swappable: under Int-B this section is the page the left rail opens; under Int-C it is a card on Your work. The room itself does not change; only the breadcrumb, the way back and the menu row do. Pick the frame on Account-Int-A, B or C.</span></li>
+</ol></div></div><div class="aj-flab"><span class="aj-code">B</span><h2>Event day · Sat, Nov 14, 2026 · 11:04 AM · the November Meet</h2><span class="aj-url">/dashboard#family</span><span class="k-row-sm" style="gap:6px;flex:none"><span class="k-num-badge">6</span><span class="aj-fmeta">Int-A, swappable</span></span><span class="k-sample">Sample data · times, Updated 11:04 AM, venue and room names</span></div>
+<div style="display:flex;gap:24px;align-items:flex-start"><div class="aj-frame aj-narrow" style="width:976px;flex:none"><header class="k-header"><div class="aj-hd-in"><a class="k-brand aj-brand" href="#" aria-label="Louisiana Chess Association, home"><svg class="aj-rook" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span class="k-brand-name" aria-hidden="true"><b>Louisiana Chess</b><span>Association</span></span></a><nav class="k-navlinks aj-nav" aria-label="Main"><a href="#">Tournaments</a><a href="#">Clubs</a><a href="#">Scholastic</a><a href="#">News</a><a href="#">Membership</a><button class="aj-navbtn" type="button" aria-expanded="false" aria-haspopup="true">About<svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"></path></svg></button></nav><a class="aj-search" href="#"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg><span>Search</span><kbd class="aj-kbd" aria-hidden="true">&#8984;K</kbd></a><div class="k-utility aj-util"><a class="k-ulink" href="#">Donate</a><button class="aj-my" type="button" aria-haspopup="menu" aria-expanded="false" aria-label="My LCA, nothing to do"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4.5 21c1-4 4-6 7.5-6s6.5 2 7.5 6"></path></svg><span>My LCA</span><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"></path></svg></button></div></div></header>
+<div class="aj-evstrip"><b>Today · New Orleans Youth Chess November Meet</b><span>Maya: Board 4, White</span><span>Leo: Board 12, Black</span><a class="k-link" href="#">Pairings</a><span class="aj-hide2">Hide</span></div>
+<section class="aj-band" style="padding:8px 24px"><div class="k-row" style="gap:14px"><span class="k-kicker">My LCA</span><b style="font-size:20px">Danielle Robichaux</b><span class="aj-role aj-r-member">Member</span><span class="aj-role aj-r-parent">Parent</span></div></section><div class="aj-crop">Cropped: band at half height; the rail (Today · 1, Family · 1) sits at the left as in Frame A.</div>
+<div style="padding:16px 24px 20px"><section class="aj-sec" aria-label="Family, event day">
+<div class="aj-sh"><div><h2>Family <span class="aj-role aj-r-parent">Parent</span></h2><p class="aj-subl">Family membership · valid through Sun, Mar 14, 2027 · covers you, Maya and Leo</p></div><div class="aj-sh-btns"><a class="k-btn k-btn-gold" href="#">Register all</a><span class="aj-anchor">#family</span></div></div>
+<div class="aj-people" style="grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-top:12px">
+<div class="aj-tile" style="padding:9px 12px"><div class="aj-tile-top" style="margin:0"><span class="aj-av aj-av-gold">MR</span><div><b>Maya Robichaux</b><p class="aj-g">1102 · K–8 · No login</p></div></div></div>
+<div class="aj-tile" style="padding:9px 12px"><div class="aj-tile-top" style="margin:0"><span class="aj-av aj-av-line">LR</span><div><b>Leo Robichaux</b><p class="aj-g">Unrated · K–3 · No login</p></div></div></div>
+<a class="aj-tile aj-tile-add" href="#" style="padding:9px 12px"><b>+ Add a family member</b><span class="k-meta">1 spot open</span></a></div>
+<div class="aj-chips" style="margin-top:12px"><a class="k-chip k-chip-on k-chip-all" href="#" aria-pressed="true">Everyone</a><a class="k-chip" href="#"><span class="aj-av aj-av-sm aj-av-gold">MR</span>Maya</a><a class="k-chip" href="#"><span class="aj-av aj-av-sm aj-av-line">LR</span>Leo</a></div>
+<div style="margin-top:12px"><div class="aj-tlh"><b>Coming up for the family</b><span>in date order · today's row opens as the day view</span></div>
+<div class="aj-row" style="grid-template-columns:64px minmax(0,1fr)">
+<div class="aj-db aj-db-navy"><span>Sat</span><b>14</b><span>Today</span></div>
+<div class="aj-day"><div class="k-between" style="align-items:flex-start"><div><div class="k-row-sm" style="gap:8px"><span class="k-num-badge">1</span><b style="font-size:18px">Today · New Orleans Youth Chess November Meet</b></div>
+<p class="k-meta" style="margin:2px 0 0">[Venue name], New Orleans · Updated 11:04 AM <span class="k-sample" style="margin-left:4px">Sample data</span></p></div><div class="aj-who"><span class="aj-pc"><span class="aj-av aj-av-sm aj-av-gold">MR</span>Maya</span><span class="aj-pc"><span class="aj-av aj-av-sm aj-av-line">LR</span>Leo</span></div></div>
+<div class="aj-lanes">
+<div class="aj-lh"></div><div class="aj-lh">Round 1 · 9:30 AM</div><div class="aj-lh">Round 2 · 11:00 AM</div><div class="aj-lh">Lunch · 12:15–1:15 PM</div><div class="aj-lh">Round 3 · 1:30 PM</div><div class="aj-lh">Round 4 · 3:00 PM</div><div class="aj-lh">Awards</div>
+<div class="aj-c aj-c-who"><div class="aj-who"><span class="aj-pc"><span class="aj-av aj-av-sm aj-av-gold">MR</span>Maya</span></div><div class="aj-g" style="margin-top:4px">K–8 · 1 / 1</div></div>
+<div class="aj-c"><span class="aj-res-tag aj-won">Won</span><div>Board 6 · Black</div><div class="aj-g">vs Rosa Mendez</div></div>
+<div class="aj-c aj-c-live"><span class="aj-tagnow">Playing now</span><div style="margin-top:4px"><b>Board 4 · White</b></div><div class="aj-g">vs Elise Fontenot · [Room name]</div></div>
+<div class="aj-c aj-c-break">Lunch</div>
+<div class="aj-c aj-c-next">Paired after round 2</div>
+<div class="aj-c aj-c-next">Paired after round 3</div>
+<div class="aj-c aj-c-break">About 4:30 PM</div>
+<div class="aj-c aj-c-who"><div class="aj-who"><span class="aj-pc"><span class="aj-av aj-av-sm aj-av-line">LR</span>Leo</span></div><div class="aj-g" style="margin-top:4px">K–3 · 0 / 1</div></div>
+<div class="aj-c"><span class="aj-res-tag aj-lost">Lost</span><div>Board 9 · White</div><div class="aj-g">first rated game</div></div>
+<div class="aj-c aj-c-live"><span class="aj-tagnow">Playing now</span><div style="margin-top:4px"><b>Board 12 · Black</b></div><div class="aj-g">[Room name]</div></div>
+<div class="aj-c aj-c-break">Lunch</div>
+<div class="aj-c aj-c-next">Paired after round 2</div>
+<div class="aj-c aj-c-next">Paired after round 3</div>
+<div class="aj-c aj-c-break">About 4:30 PM</div>
+</div>
+<p class="aj-daynote"><b>Right now:</b> both are playing round 2. Maya started 11:02 AM, Leo 11:04 AM.</p>
+<p class="aj-acts" style="margin-top:4px"><a href="#">Pairings and standings</a> · <a href="#">Both cards</a> · <a href="#">Marc R. sees this view too</a> <span class="k-sample" style="margin-left:4px">Sample data · Marc R.</span></p>
+<p class="aj-daygrey">Round emails come to you and Marc R.; each line starts with the child's name.</p></div></div><div class="aj-row aj-row-grey">
+<div class="aj-db aj-db-grey"><span>Sun</span><b>17</b><span>Jan 2027</span></div>
+<div class="aj-tm"><div class="aj-tt"><b style="color:#3d4556">Ken Ferguson Memorial Scholastic</b><span>New Orleans · saved · nobody entered yet</span><span class="k-sample">Sample data</span></div>
+<p class="aj-p">Reminder set: Sat, Jan 9 by email · <a class="aj-tap" href="#">Change</a> · <a class="aj-tap" href="#">Stop</a></p>
+<a class="k-btn k-btn-line k-btn-sm" href="#" style="align-self:flex-start">Register all for this day</a></div></div><div class="aj-row">
+<div class="aj-db"><span>Sun</span><b>14</b><span>Mar 2027</span></div>
+<div class="aj-tm"><div class="aj-tt"><b>Family membership renews</b><span>$25 · auto-renew on · covers you, Maya and Leo</span></div>
+<p class="aj-acts"><a href="#">Change who's covered</a></p></div></div></div>
+<div class="aj-crop" style="margin:0 -20px;border-radius:0 0 12px 12px;border-bottom:0;border-top:1px solid #dddcd4">Cropped: the guardians panel continues below, unchanged from Frame A.</div>
+</section></div>
+</div>
+<div style="display:flex;flex-direction:column;gap:16px;width:376px"><div class="k-row-sm" style="gap:8px"><span class="aj-code">E</span><b style="font-size:16px">The phone · Mon, Oct 5, 2026</b><span class="k-num-badge">5</span></div><div class="aj-phone" style="height:720px"><div class="aj-pbar"><span>My LCA</span><span style="font-size:13px;font-weight:500">Family</span></div>
+<div class="aj-pbody" style="gap:6px">
+<div class="k-between"><div><b style="font-size:20px">Family</b><p class="k-meta" style="margin:0">Family plan · 1 spot open</p></div><a class="k-btn k-btn-gold k-btn-sm" href="#">Register all</a></div>
+<div class="aj-pscroll">
+<div class="aj-tile" style="padding:8px 10px;gap:2px;font-size:12px"><div class="aj-tile-top" style="margin:0"><span class="aj-av aj-av-sm aj-av-gold">MR</span><b style="font-size:14px">Maya Robichaux</b></div><p>1102 · No login</p></div>
+<div class="aj-tile" style="padding:8px 10px;gap:2px;font-size:12px"><div class="aj-tile-top" style="margin:0"><span class="aj-av aj-av-sm aj-av-line">LR</span><b style="font-size:14px">Leo Robichaux</b></div><p class="aj-need" style="font-size:11.5px">No US Chess ID yet</p></div></div>
+<div class="aj-chips" style="margin:0;gap:6px"><a class="k-chip k-chip-on k-chip-all" href="#" style="min-height:40px">Everyone</a><a class="k-chip" href="#" style="min-height:40px">Maya</a><a class="k-chip" href="#" style="min-height:40px">Leo</a></div>
+<div class="aj-prow"><div class="aj-db aj-db-navy"><span>Sat–Sun</span><b style="font-size:14px">24–25</b><span>Oct</span></div>
+<div class="aj-tm" style="gap:4px;font-size:12.5px"><div class="aj-who"><span class="aj-pc"><span class="aj-av aj-av-sm aj-av-gold">MR</span>Maya</span><span class="aj-pmore" style="margin-left:auto;min-height:32px">More</span></div><b style="font-size:14px">The Baton Rouge Classic</b><span class="aj-g">Registered ✓ · Paid ✓</span><span class="aj-say aj-amber" style="font-size:12px;padding:4px 8px">Waiting · ½-point bye, round 5</span></div></div>
+<div class="aj-prow"><div class="aj-db"><span>Sat</span><b>14</b><span>Nov</span></div>
+<div class="aj-tm" style="gap:4px;font-size:12.5px"><div class="aj-who"><span class="aj-pc"><span class="aj-av aj-av-sm aj-av-gold">MR</span>Maya</span><span class="aj-pc"><span class="aj-av aj-av-sm aj-av-line">LR</span>Leo</span><span class="aj-pmore" style="margin-left:auto;min-height:32px">More</span></div><b style="font-size:13.5px;line-height:1.25">New Orleans Youth Chess November Meet</b><span class="aj-g">Maya K–8 · Leo K–3 · both registered ✓ and paid ✓</span></div></div>
+<div class="aj-prow" style="background:#fdfaf0;box-shadow:inset 3px 0 0 #d1a43a;padding-left:6px"><div class="aj-db"><span>By Sat</span><b>14</b><span>Nov</span></div>
+<div class="aj-tm" style="gap:5px;font-size:12.5px"><div class="aj-who"><span class="aj-pc"><span class="aj-av aj-av-sm aj-av-line">LR</span>Leo</span></div><b style="font-size:14px">Leo needs a US Chess ID</b><a class="k-btn k-btn-navy k-btn-block k-btn-sm" href="#">Add his ID</a></div></div>
+</div><div class="aj-ptabs"><span>Tournaments</span><span>Clubs</span><span class="aj-pon">My LCA</span><span>Menu</span></div></div><div class="aj-inset" style="width:300px"><p class="aj-ilab">My LCA ▾ menu · Sat, Nov 14</p>
+<div class="aj-mrow aj-mrow-todo"><span>To do · nothing today</span></div>
+<div class="aj-msep"></div>
+<div class="aj-mrow"><span>My LCA</span></div>
+<div class="aj-mrow aj-mrow-ev"><span>November Meet · Maya and Leo's boards</span></div>
+<div class="aj-mrow"><span>Family</span></div>
+<div class="aj-mrow"><span>Membership card</span></div>
+<div class="aj-msep"></div>
+<div class="aj-mrow"><span>Log out</span></div>
+<p class="aj-cap">The event line opens the day view at <b>/dashboard#family</b>; the header count shows nothing because no personal item is due.</p></div></div>
+</div><div class="aj-flab"><span class="aj-code">C</span><h2>Empty</h2><span class="aj-code">D</span><h2>Busy, three children, one with her own login</h2><span class="k-sample">Sample data · Noah, Marc R., the request, the Ken Ferguson entry</span></div>
+<div style="display:flex;gap:24px;align-items:flex-start"><div style="display:flex;flex-direction:column;gap:14px;width:500px"><div class="aj-frame" style="width:500px;flex:none;background:#ffffff"><div class="aj-crop">C · Empty · Mon, Oct 5, 2026 · /dashboard#family</div>
+<div class="aj-sec2">
+<div class="k-between" style="align-items:flex-start"><div><div class="k-row-sm" style="gap:10px"><b style="font-size:24px">Family</b><span class="aj-role aj-r-parent">Parent</span></div><p class="aj-subl" style="font-size:14px">Family membership · valid through Sun, Mar 14, 2027 · 3 spots open</p></div><span class="k-num-badge">2</span></div>
+<p class="aj-sentence" style="font-size:14px"><b style="color:#1a2744">No one else on your account yet.</b> Children don't need an email or a login. You register and pay for them and get their emails.</p>
+<a class="aj-tile aj-tile-add" href="#" style="margin-top:14px;width:300px;min-height:96px"><b>+ Add a family member</b><span class="k-meta">3 spots open on your Family plan</span></a>
+<div class="aj-tlh" style="margin-top:18px"><b>Coming up for the family</b></div>
+<div style="border:1.5px dashed #b9b7ad;border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:12px;align-items:flex-start;background:#fbfaf6"><p class="aj-p">Nothing yet. Add a family member to see their events, deadlines and results here.</p><a class="k-btn k-btn-gold" href="#"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>Add a family member</a></div>
+<div style="display:flex;gap:16px;align-items:flex-start;margin:18px 0 16px">
+<div class="aj-inset" style="width:220px;padding:10px"><p class="aj-ilab">Rail row</p><nav class="aj-rnav" aria-label="Sections, empty" style="margin:0"><a href="#"><span>Today</span></a><a href="#"><span>You</span></a><a class="aj-on" href="#" aria-current="location"><span>Family</span></a></nav></div>
+<p class="aj-cap" style="margin:0;flex:1">No count on the rail row and none on the header: nothing is due. No guardians panel until there is a child to guard.</p></div>
+</div></div><div class="k-row-sm" style="gap:8px;margin-top:6px"><span class="aj-code">E</span><b style="font-size:16px">The phone on event day · Sat, Nov 14, 11:04 AM</b></div><div style="display:flex;gap:14px;align-items:flex-start"><div class="aj-phone" style="height:300px;border-radius:26px"><div class="aj-pbar" style="height:40px;font-size:14px"><span>My LCA</span><span style="font-size:12px;font-weight:500">Sat, Nov 14 · 11:04 AM</span></div>
+<div class="aj-pbody" style="gap:6px;padding-top:8px">
+<p style="margin:0;font-size:12.5px"><b>Today · November Meet</b> <span class="aj-g">· Updated 11:04 AM</span></p>
+<div class="aj-pblk"><b>Maya · K–8 · 1 / 1</b><span><span class="aj-tagnow">Playing now</span> Board 4 · White · vs Elise Fontenot · [Room name]</span><span class="aj-g">Round 1 · Won · Board 6 · Black</span></div>
+<div class="aj-pblk"><b>Leo · K–3 · 0 / 1</b><span><span class="aj-tagnow">Playing now</span> Board 12 · Black · [Room name]</span><span class="aj-g">Round 1 · Lost · Board 9 · White</span></div>
+</div></div><p class="aj-cap" style="margin:0">The day row as a stacked list, one block per child, the playing round first.</p></div></div><div class="aj-frame" style="width:836px;flex:none;background:#ffffff"><div class="aj-crop">D · Busy · Sat, Nov 14, 2026 · 11:04 AM · three children · /dashboard#family</div>
+<div class="aj-sec2">
+<div class="k-between" style="align-items:flex-start"><div><div class="k-row-sm" style="gap:10px"><b style="font-size:24px">Family</b><span class="aj-role aj-r-parent">Parent</span></div><p class="aj-subl" style="font-size:14px">Family membership · through Sun, Mar 14, 2027 · covers you, Maya, Leo and Noah · full</p></div><div class="aj-sh-btns"><a class="k-btn k-btn-gold k-btn-sm" href="#">Register all</a><a class="k-btn k-btn-line k-btn-sm" href="#">Add a family member</a></div></div>
+<div class="aj-people" style="gap:12px;margin-top:12px">
+<div class="aj-tile" style="padding:9px 11px"><div class="aj-tile-top" style="margin:0"><span class="aj-av aj-av-gold">MR</span><b style="font-size:15px">Maya Robichaux</b></div><p class="aj-g">1102 · US Chess ID 30522917</p><p class="aj-ok">Own login since Sat, Oct 10</p><p class="aj-g">Send me copies · On</p></div>
+<div class="aj-tile" style="padding:9px 11px"><div class="aj-tile-top" style="margin:0"><span class="aj-av aj-av-line">LR</span><b style="font-size:15px">Leo Robichaux</b></div><p class="aj-g">Unrated · US Chess ID on file</p><p class="aj-ok">On your Family plan</p><p class="aj-g">No login · emails come to you</p></div>
+<div class="aj-tile" style="padding:9px 11px"><div class="aj-tile-top" style="margin:0"><span class="aj-av">NR</span><b style="font-size:15px">Noah Robichaux</b></div><p class="aj-g">611 · US Chess ID 30744120</p><p class="aj-ok">On your Family plan</p><p class="aj-g">No login · emails come to you</p><span class="k-sample" style="align-self:flex-start">Sample data</span></div></div>
+<div class="aj-chips" style="margin-top:10px"><a class="k-chip k-chip-on k-chip-all" href="#" aria-pressed="true">Everyone</a><a class="k-chip" href="#"><span class="aj-av aj-av-sm aj-av-gold">MR</span>Maya</a><a class="k-chip" href="#"><span class="aj-av aj-av-sm aj-av-line">LR</span>Leo</a><a class="k-chip" href="#"><span class="aj-av aj-av-sm">NR</span>Noah</a></div>
+<div class="aj-two" style="grid-template-columns:minmax(0,1fr) 262px;gap:20px;margin-top:12px;padding-bottom:16px"><div><div class="aj-row" style="grid-template-columns:56px minmax(0,1fr);padding-top:10px">
+<div class="aj-db aj-db-navy" style="width:56px"><span>Sat</span><b>14</b><span>Today</span></div>
+<div class="aj-day" style="padding:12px"><b style="font-size:16px">Today · New Orleans Youth Chess November Meet</b><p class="k-meta" style="margin:2px 0 8px">[Venue name], New Orleans · Updated 11:04 AM</p>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><div class="aj-pblk" style="gap:6px"><div class="k-row-sm" style="gap:8px"><span class="aj-pc"><span class="aj-av aj-av-sm aj-av-gold">MR</span>Maya</span><span class="aj-g">K–8 · 1 / 1</span></div><div><span class="aj-res-tag aj-won">Won</span> R1 · Board 6 · Black</div><div style="padding:6px;border-radius:7px;box-shadow:inset 0 0 0 2px #1a2744"><span class="aj-tagnow">Playing now</span><br><b>Round 2 · Board 4 · White</b><br><span class="aj-g">vs Elise Fontenot</span></div><div class="aj-g">Round 3 · 1:30 PM</div></div><div class="aj-pblk" style="gap:6px"><div class="k-row-sm" style="gap:8px"><span class="aj-pc"><span class="aj-av aj-av-sm aj-av-line">LR</span>Leo</span><span class="aj-g">K–3 · 0 / 1</span></div><div><span class="aj-res-tag aj-lost">Lost</span> R1 · Board 9 · White</div><div style="padding:6px;border-radius:7px;box-shadow:inset 0 0 0 2px #1a2744"><span class="aj-tagnow">Playing now</span><br><b>Round 2 · Board 12 · Black</b><br><span class="aj-g">[Room name]</span></div><div class="aj-g">Round 3 · 1:30 PM</div></div></div>
+<div class="k-row-sm" style="gap:8px;margin-top:8px;font-size:13px"><span class="aj-pc"><span class="aj-av aj-av-sm">NR</span>Noah</span><span>Not playing today · next: Ken Ferguson Memorial Scholastic, Sun, Jan 17, 2027 · not entered yet</span></div></div></div><div class="aj-row aj-row-red" style="grid-template-columns:56px minmax(0,1fr)">
+<div class="aj-db" style="width:56px"><span>Sun</span><b>17</b><span>Jan 2027</span></div>
+<div class="aj-tm"><div class="aj-who"><span class="aj-pc"><span class="aj-av aj-av-sm aj-av-gold">MR</span>Maya</span><span class="aj-say" style="background:#fbe9e4;color:#9a3b1b;padding:3px 8px;font-size:12.5px;font-weight:600">Unpaid</span><span class="k-num-badge" style="margin-left:auto">3</span></div>
+<div class="aj-tt"><b>Ken Ferguson Memorial Scholastic</b><span>K–8 · Maya asked you to pay</span></div>
+<div class="k-row-sm" style="gap:8px"><a class="k-btn k-btn-gold k-btn-sm" href="#">Pay $25</a><a class="k-btn k-btn-line k-btn-sm" href="#">Not this time</a></div></div></div><div class="aj-row" style="grid-template-columns:56px minmax(0,1fr)">
+<div class="aj-db" style="width:56px"><span>Sun</span><b>14</b><span>Mar 2027</span></div>
+<div class="aj-tm"><div class="aj-tt"><b>Family membership renews</b></div><p class="aj-p" style="color:#555c6b">Maya ✓ · Leo ✓ · Noah ✓ · full</p></div></div></div><aside class="aj-guard" aria-label="Guardians, busy" style="padding:14px"><h3>Guardians <span class="k-num-badge">4</span></h3>
+<a class="k-btn k-btn-line k-btn-block k-btn-sm" href="#"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>Invite a guardian</a>
+<div class="aj-gr"><span><b>Danielle Robichaux</b> · owner · you</span><a class="k-link" href="#" style="font-size:13px">Hand ownership to another guardian</a></div>
+<div class="aj-gr"><span><b>Marc R.</b> · guardian · since Sun, Oct 11</span><span class="k-meta">Copies for Maya, Leo and Noah</span><a class="k-link" href="#" style="font-size:13px;align-self:flex-start">Remove</a></div>
+<div class="aj-req"><span><b>Waiting</b> · A parent or guardian asks to be added for Leo · Sat, Nov 7 · waiting 7 days</span><div class="k-row-sm" style="gap:8px"><a class="k-btn k-btn-gold" href="#">Approve</a><a class="k-btn k-btn-line" href="#">Decline</a></div><span style="font-size:12px">After Approve, for ten seconds: "Approved · they now see Leo · Undo"</span></div>
+<div class="aj-gr"><b>Send me copies</b>
+<div class="aj-swrow"><span class="aj-sw" aria-hidden="true"></span>Maya · On</div>
+<div class="aj-swrow"><span class="aj-sw aj-sw-dis" aria-hidden="true"></span>Leo · On</div>
+<div class="aj-swrow"><span class="aj-sw aj-sw-dis" aria-hidden="true"></span>Noah · On</div></div>
+<div class="aj-plan"><b>Family plan</b> · Maya ✓ · Leo ✓ · Noah ✓ · full</div>
+</aside></div>
+</div></div></div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":2950}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

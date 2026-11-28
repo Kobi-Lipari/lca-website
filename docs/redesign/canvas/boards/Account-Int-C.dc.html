@@ -1,0 +1,394 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Integration · Int-C · My LCA personal, Your work beside it (round 2)</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/6107adb451dbab26ee5d89f4189b81f8">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;font-family:"Geist",system-ui,sans-serif;color:#1a2744;background:#ecebe6}
+.ic-root{width:1440px;box-sizing:border-box;padding:40px 48px 56px;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1a2744}
+.ic-c{font-family:"Geist Mono",ui-monospace,monospace;font-size:.9em}
+.ic-title{display:flex;justify-content:space-between;align-items:flex-start;gap:24px;background:#1a2744;color:#ffffff;border-radius:14px;padding:22px 26px;border-bottom:4px solid #c8a94a}
+.ic-kick{font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#e6cf86}
+.ic-title h1{font-size:34px;line-height:1.1;font-weight:700;letter-spacing:-.015em;margin:6px 0 12px}
+.ic-tmeta{display:grid;grid-template-columns:auto 1fr;gap:4px 14px;font-size:14px;line-height:1.42;max-width:1040px;margin:0}
+.ic-tmeta dt{font-weight:600;color:#e6cf86}
+.ic-tmeta dd{margin:0;color:#ffffff}
+.ic-tside{display:flex;flex-direction:column;align-items:flex-end;gap:10px;flex:none;width:250px}
+.ic-tside p{font-size:13px;line-height:1.45;color:rgba(255,255,255,.8);text-align:right;margin:0}
+.ic-sample{display:inline-flex;align-items:center;padding:4px 10px;border-radius:999px;background:#c8a94a;color:#1a2744;font-size:12px;font-weight:700;line-height:1.2;white-space:nowrap}
+.ic-legend{display:grid;grid-template-columns:1fr 480px;gap:20px;margin-top:20px;align-items:start}
+.ic-lbox{background:#fbfaf6;border:1px solid #d9d8d1;border-radius:12px;padding:18px 20px}
+.ic-lh{font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#555c6b;margin:0}
+.ic-lgrid{display:grid;grid-template-columns:1fr 1fr;gap:11px 24px;margin-top:12px}
+.ic-lgrid3{grid-template-columns:1fr 1fr 1fr}
+.ic-li{display:flex;gap:10px;align-items:flex-start;font-size:13.5px;line-height:1.42}
+.ic-n{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;background:#c8a94a;color:#1a2744;font-size:13px;font-weight:700;flex:none;line-height:1}
+.ic-rel{position:relative}
+.ic-mk{position:absolute;z-index:6;box-shadow:0 0 0 3px #ffffff}
+.ic-q{display:flex;gap:10px;align-items:flex-start;font-size:13.5px;line-height:1.42;margin-top:10px}
+.ic-qn{display:inline-flex;align-items:center;justify-content:center;min-width:30px;height:22px;padding:0 6px;border-radius:6px;background:#c8a94a;color:#1a2744;font-size:12px;font-weight:700;flex:none}
+.ic-def{color:#145b3a;font-weight:600}
+.ic-body{font-size:13.5px;line-height:1.45;margin:8px 0 0;color:#1a2744}
+.ic-it{font-size:13px;line-height:1.45;font-style:italic;color:#3d4556;margin:12px 0 0}
+.ic-key{display:grid;grid-template-columns:1fr 1fr;gap:8px 20px;margin-top:10px}
+.ic-key > div{display:flex;align-items:center;gap:10px;font-size:12.5px;line-height:1.35;color:#3d4556}
+.ic-key .ic-tg{min-width:112px;justify-content:center;box-sizing:border-box}
+.ic-tg{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:6px;font-size:11.5px;font-weight:600;line-height:1.2;white-space:nowrap;border:1px solid transparent;flex:none}
+.ic-tg-today{background:#ffffff;border-color:#145b3a;color:#145b3a}
+.ic-tg-dec{background:#1a2744;color:#ffffff}
+.ic-tg-new{background:#c8a94a;color:#1a2744}
+.ic-tg-prop{background:#ffffff;border-color:#b7791f;color:#8a5a00}
+.ic-tg-adm{background:#ffffff;border-color:#a12d2d;color:#a12d2d}
+.ic-tg-role{background:#ffffff;border-color:#8a8f9c;color:#3d4556}
+.ic-tg-red{background:#e3e2dc;color:#3d4556}
+.ic-tg-later{background:#f5ecd2;color:#664c0c}
+.ic-tg-unpaid{background:#f5ecd2;color:#664c0c}
+.ic-tg-first{background:#fdebd6;color:#7a3d00}
+.ic-tg-live{background:#ff4757;color:#070b14;font-weight:700}
+.ic-sec{margin-top:36px}
+.ic-lab{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:0 0 6px}
+.ic-lab h2{margin:0;font-size:20px;line-height:1.2;font-weight:600;letter-spacing:-.01em}
+.ic-code{display:inline-flex;align-items:center;justify-content:center;min-width:28px;height:28px;padding:0 9px;border-radius:7px;background:#c8a94a;color:#1a2744;font-weight:700;font-size:13px;box-sizing:border-box}
+.ic-sub{font-size:13.5px;color:#3d4556;line-height:1.45;margin:0 0 14px;max-width:1100px}
+.ic-note{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:22px;background:#e3e2dc;border:1px solid #cfcec6;border-radius:12px;padding:16px 20px;margin-top:36px}
+.ic-note h4{margin:0 0 6px;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#3d4556}
+.ic-note p{margin:0;font-size:13px;line-height:1.45;color:#1a2744}
+.ic-acols{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;align-items:start}
+.ic-col{display:flex;flex-direction:column;gap:16px;min-width:0}
+.ic-cell{position:relative;background:#ffffff;border:1px solid #dddcd4;border-radius:12px}
+.ic-chd{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;padding:12px 14px 10px}
+.ic-chd b{font-size:14px;font-weight:700;display:block;line-height:1.3}
+.ic-who{font-size:12.5px;color:#555c6b;line-height:1.35;display:block;margin-top:2px}
+.ic-who2{font-size:12px;color:#3d4556;line-height:1.35;display:block;margin-top:3px}
+.ic-mbar{background:#1a2744;height:68px;box-sizing:border-box;padding:8px 10px 7px;display:flex;flex-direction:column;justify-content:space-between;border-bottom:3px solid #c8a94a}
+.ic-mrow1{display:flex;align-items:center;gap:7px;color:rgba(255,255,255,.9);font-size:10.5px;font-weight:500;white-space:nowrap}
+.ic-mrow1 svg{width:18px;height:18px;fill:#ffffff;flex:none;margin-right:2px}
+.ic-mrow1 .ic-on{color:#e6cf86;box-shadow:inset 0 -1px 0 #c8a94a}
+.ic-mrow2{display:flex;align-items:center;gap:10px}
+.ic-msearch{flex:1;height:24px;box-sizing:border-box;border:1px solid rgba(255,255,255,.4);border-radius:6px;background:rgba(255,255,255,.08);color:rgba(255,255,255,.92);font-size:11px;display:flex;align-items:center;padding:0 8px;gap:6px}
+.ic-msearch svg{width:12px;height:12px;fill:none;stroke:#ffffff;stroke-width:2}
+.ic-mdon{color:#ffffff;font-size:12px;font-weight:500}
+.ic-trig{display:inline-flex;align-items:center;gap:5px;height:26px;padding:0 8px;border-radius:6px;background:rgba(255,255,255,.16);color:#ffffff;font-size:12.5px;font-weight:600;border:0;font-family:inherit}
+.ic-pill{display:inline-flex;align-items:center;justify-content:center;min-width:18px;height:18px;padding:0 5px;border-radius:999px;background:#c8a94a;color:#1a2744;font-size:11px;font-weight:700;box-sizing:border-box}
+.ic-stage{background:#f5f5f2;padding:6px 10px 10px;display:flex;flex-direction:column;align-items:flex-end;border-bottom:1px solid #ecebe5}
+.ic-menu{width:100%;max-width:390px;box-sizing:border-box;background:#ffffff;border:1px solid #d9d8d1;border-radius:12px;box-shadow:0 14px 30px rgba(16,24,43,.16);padding:6px;position:relative}
+.ic-mr{display:flex;justify-content:space-between;align-items:center;gap:10px;min-height:32px;padding:3px 10px;border-radius:8px;box-sizing:border-box}
+.ic-mt{font-size:13.5px;font-weight:600;color:#1a2744;line-height:1.3;display:block}
+.ic-ms{font-size:11.5px;color:#555c6b;line-height:1.35;display:block;margin-top:1px}
+.ic-rt{font-family:"Geist Mono",ui-monospace,monospace;font-size:11px;color:#3d4556;background:#f3f2ed;border-radius:4px;padding:0 4px;white-space:nowrap}
+.ic-mr-todo{background:#fbf7e9;margin-bottom:3px}
+.ic-mr-hov{background:#f3eedc}
+.ic-mr-dash{border:1px dashed #8a8f9c;margin-top:2px}
+.ic-mg{font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:#555c6b;padding:7px 10px 3px;display:flex;justify-content:space-between;align-items:center}
+.ic-msep{height:1px;background:#ecebe5;margin:5px 4px}
+.ic-cap{font-size:12.5px;line-height:1.42;color:#3d4556;padding:9px 14px 12px;margin:0}
+.ic-tcard{padding:14px 16px 16px}
+.ic-tcard h3{margin:0 0 6px;font-size:15px;font-weight:700}
+.ic-tcard p{margin:6px 0 0;font-size:13px;line-height:1.45;color:#1a2744}
+.ic-rules{margin:6px 0 0;padding:0 0 0 18px;font-size:13px;line-height:1.45}
+.ic-rules li{margin-top:3px}
+.ic-wtab{width:100%;border-collapse:collapse;font-size:12.5px;line-height:1.4;margin-top:8px}
+.ic-wtab th{text-align:left;font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#555c6b;padding:6px 8px;background:#fbfbf8;border-bottom:1px solid #d6d5cd}
+.ic-wtab td{padding:7px 8px;border-bottom:1px solid #ecebe5;vertical-align:top}
+.ic-wtab tr:last-child td{border-bottom:0}
+.ic-wtab s{text-decoration-color:#8f1d24}
+/* phone */
+.ic-phone{width:390px;margin:0 auto;border:10px solid #10182b;border-radius:34px;overflow:hidden;background:#ffffff}
+.ic-pbar{display:flex;align-items:center;gap:9px;height:56px;padding:0 6px 0 14px;background:#1a2744}
+.ic-pbar svg.ic-rk{width:24px;height:24px;fill:#ffffff;flex:none}
+.ic-pbn{display:flex;flex-direction:column;line-height:1.05}
+.ic-pbn b{font-size:14px;color:#ffffff;font-weight:700}
+.ic-pbn span{font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:#d9c27c;font-weight:600}
+.ic-psrch{margin-left:auto;width:40px;height:40px;border-radius:8px;border:1px solid rgba(255,255,255,.45);display:flex;align-items:center;justify-content:center}
+.ic-psrch svg{width:16px;height:16px;fill:none;stroke:#ffffff;stroke-width:2}
+.ic-sheet{padding:8px 14px 10px}
+.ic-secs{display:grid;grid-template-columns:1fr 1fr 1fr;column-gap:14px}
+.ic-secs span{display:flex;justify-content:space-between;align-items:center;height:28px;border-bottom:1px solid #ecebe5;font-size:12.5px;font-weight:600}
+.ic-secs span i{font-style:normal;color:#555c6b;font-weight:400}
+.ic-pbtns{display:flex;gap:8px;margin:10px 0 4px}
+.ic-pbtns span{flex:1;display:flex;align-items:center;justify-content:center;height:34px;border-radius:8px;font-size:14px;font-weight:600}
+.ic-pb-line{border:1px solid #1a2744;color:#1a2744}
+.ic-pb-navy{background:#1a2744;color:#ffffff}
+.ic-prow{display:flex;justify-content:space-between;align-items:center;min-height:28px;border-bottom:1px solid #ecebe5;font-size:12.5px;font-weight:600}
+.ic-prow small{font-size:12px;color:#555c6b;font-weight:400}
+.ic-prow-plain{font-weight:500}
+.ic-pseg{display:inline-flex;border:1px solid #858b99;border-radius:7px;overflow:hidden;font-size:12px}
+.ic-pseg span{padding:3px 8px}
+.ic-pseg span.on{background:#1a2744;color:#ffffff}
+.ic-ptabs{display:grid;grid-template-columns:repeat(4,1fr);height:56px;border-top:1px solid #d9d8d1;background:#ffffff}
+.ic-ptab{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:11.5px;color:#3d4556;font-weight:500}
+.ic-ptab svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.ic-ptab-on{color:#1a2744;font-weight:700}
+.ic-ptab-on::before{content:"";position:absolute;top:-1px;left:14px;right:14px;height:3px;background:#866a1e;border-radius:0 0 2px 2px}
+.ic-ptab .ic-pc{position:absolute;top:5px;left:calc(50% + 6px);min-width:16px;height:16px;border-radius:999px;background:#1a2744;color:#ffffff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center}
+/* B */
+.ic-bgrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;align-items:start}
+.ic-card{position:relative;background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:14px 16px 14px;min-width:0}
+.ic-chead{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding-bottom:10px;border-bottom:1px solid #ecebe5}
+.ic-apill{display:inline-flex;align-items:center;height:28px;padding:0 11px;border-radius:7px;background:#1a2744;color:#ffffff;font-size:14px;font-weight:600;line-height:1;white-space:nowrap}
+.ic-csub{font-size:12.5px;color:#555c6b;line-height:1.35;width:100%}
+.ic-pages{list-style:none;margin:0;padding:0}
+.ic-pages li{padding:8px 0;border-bottom:1px solid #f0efea}
+.ic-pages li:last-child{border-bottom:0}
+.ic-l1{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
+.ic-l1 b{font-size:14.5px;font-weight:600;line-height:1.3}
+.ic-l2{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 8px;margin-top:3px;font-size:12.5px;line-height:1.4;color:#555c6b}
+.ic-cfoot{font-size:12.5px;line-height:1.45;color:#555c6b;margin:8px 0 0;padding-top:9px;border-top:1px solid #ecebe5}
+.ic-strip{background:#fbfaf6;border:1px solid #d9d8d1;border-radius:12px;padding:14px 18px;margin-top:16px}
+.ic-sgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px 28px;margin-top:10px}
+.ic-sgrid > div{display:flex;gap:10px;align-items:flex-start;font-size:13px;line-height:1.45}
+.ic-e{display:grid;grid-template-columns:760px minmax(0,1fr);gap:24px;align-items:start}
+.ic-dots{list-style:none;margin:0;padding:16px 20px;background:#ffffff;border:1px solid #dddcd4;border-radius:12px}
+.ic-dots li{position:relative;padding:4px 0 4px 18px;font-size:13.5px;line-height:1.45}
+.ic-dots li::before{content:"";position:absolute;left:2px;top:11px;width:7px;height:7px;border-radius:50%;background:#1a2744}
+.ic-bk{border:1px solid #d9d8d1;border-radius:12px;overflow:hidden;background:#ffffff}
+.ic-amber{display:flex;align-items:center;gap:8px;min-height:44px;padding:6px 14px;background:#fbf7e9;border-bottom:1px solid #866a1e;font-size:13px;line-height:1.35;color:#1a2744;box-sizing:border-box}
+.ic-amber b{font-weight:600}
+.ic-amber a{color:#1a2744;font-weight:600;margin-left:auto;white-space:nowrap}
+.ic-cband{display:flex;align-items:center;gap:12px;height:52px;padding:0 14px;background:#1a2744;color:rgba(255,255,255,.9);font-size:13px}
+.ic-cband .ic-x{margin-left:auto;display:inline-flex;align-items:center;height:36px;padding:0 12px;border:1px solid rgba(255,255,255,.7);border-radius:8px;color:#ffffff;font-weight:600;font-size:13px;white-space:nowrap}
+.ic-cfill{height:34px;background:#f5f5f2;display:flex;align-items:center;padding:0 14px;font-size:12px;color:#555c6b}
+.ic-b3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;align-items:start}
+.ic-bcol{display:flex;flex-direction:column;gap:16px;min-width:0}
+.ic-brow{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr);gap:16px;align-items:start;margin-top:16px}
+.ic-brow .ic-strip{margin-top:0}
+.ic-sgrid1{grid-template-columns:1fr}
+.ic-ctab{width:100%;border-collapse:separate;border-spacing:0;font-size:12px;line-height:1.4;background:#ffffff;border:1px solid #dddcd4;border-radius:12px;overflow:hidden;table-layout:fixed}
+.ic-ctab th{text-align:left;font-size:12px;font-weight:600;color:#ffffff;background:#1a2744;padding:9px 12px;vertical-align:middle}
+.ic-ctab td{padding:6px 10px;border-top:1px solid #ecebe5;vertical-align:top}
+.ic-ctab tr:nth-child(even) td{background:#fbfaf6}
+.ic-ctab td:first-child{font-weight:600;font-size:13px}
+.ic-ctab td:first-child small{display:block;font-weight:400;font-size:11.5px;color:#555c6b;margin-top:2px}
+.ic-ctab tr.ic-grey td{color:#555c6b;background:#f1f0eb}
+.ic-ctab .ic-rt{font-size:11px}
+.ic-d{display:grid;grid-template-columns:870px minmax(0,1fr);gap:24px;align-items:start}
+.ic-bands{display:flex;flex-direction:column;gap:10px}
+.ic-bandrow{display:grid;grid-template-columns:104px minmax(0,1fr);gap:12px;align-items:start}
+.ic-bl{font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#555c6b;padding-top:20px;line-height:1.3}
+.ic-band{display:flex;align-items:center;gap:12px;min-height:56px;padding:0 12px;border-radius:10px;box-sizing:border-box;font-size:13.5px;white-space:nowrap}
+.ic-band-navy{background:#1a2744;color:rgba(255,255,255,.92)}
+.ic-band-navy a{color:#ffffff}
+.ic-band-light{background:#fbfaf6;border:1px solid #d9d8d1;color:#1a2744}
+.ic-band-done{background:#e8f3ec;border:1px solid #145b3a;color:#1a2744}
+.ic-crumb a{color:inherit;text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:1px}
+.ic-crumb .sep{opacity:.7;margin:0 5px}
+.ic-band .ic-mid{font-size:12px;color:rgba(255,255,255,.85);margin-left:auto;white-space:nowrap}
+.ic-band .ic-exit{display:inline-flex;align-items:center;height:44px;padding:0 12px;border:1px solid rgba(255,255,255,.75);border-radius:8px;color:#ffffff;font-weight:600;font-size:14px;white-space:nowrap}
+.ic-band .ic-back{margin-left:auto;font-weight:600;color:#1a2744;text-decoration:underline;text-decoration-color:#866a1e;text-decoration-thickness:2px;text-underline-offset:4px;white-space:nowrap}
+.ic-bsub{font-size:12px;color:#555c6b;margin:4px 0 0 2px;line-height:1.4}
+.ic-evs{display:flex;align-items:center;gap:12px;min-height:44px;padding:0 0 0 14px;background:#0e1526;color:#f3f5f9;border-top:2px solid #c8a94a;border-radius:8px;font-size:13.5px;white-space:nowrap;margin-top:16px}
+.ic-evs b{font-weight:700;text-decoration:underline;text-decoration-color:#c8a94a;text-underline-offset:3px}
+.ic-evs .ic-dim{color:#b9c2d3}
+.ic-evs .ic-tdc{display:inline-flex;align-items:center;height:32px;padding:0 12px;border-radius:7px;background:#c8a94a;color:#1a2744;font-weight:700;font-size:13px}
+.ic-evs a{color:#f3f5f9}
+.ic-evs .ic-hidebtn{margin-left:auto;width:44px;height:44px;display:flex;align-items:center;justify-content:center;border-left:1px solid rgba(243,245,249,.2)}
+.ic-evs .ic-hidebtn svg{width:16px;height:16px;fill:none;stroke:#f3f5f9;stroke-width:2}
+.ic-flow{display:flex;flex-direction:column;align-items:stretch;gap:0;background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:14px 16px}
+.ic-fbox{border:1.5px solid #1a2744;border-radius:9px;padding:8px 12px;font-size:13px;line-height:1.4;background:#ffffff}
+.ic-fbox b{font-weight:700}
+.ic-farr{display:flex;align-items:center;gap:8px;height:26px;padding-left:22px;font-size:12px;color:#555c6b}
+.ic-farr::before{content:"\2193";font-size:16px;color:#1a2744;font-weight:700}
+.ic-fret{display:flex;align-items:center;gap:8px;margin-top:8px;padding:7px 10px;border-radius:8px;background:#e8f3ec;border:1px solid #145b3a;font-size:12.5px;color:#1a2744}
+.ic-fret::before{content:"\21BA";font-size:16px;font-weight:700}
+.ic-flines p{margin:8px 0 0;font-size:13px;line-height:1.45}
+.ic-keyrow{display:flex;flex-wrap:wrap;gap:8px 18px;align-items:center;background:#fbfaf6;border:1px solid #d9d8d1;border-radius:12px;padding:10px 16px;margin:0 0 14px;font-size:12.5px;color:#3d4556}
+.ic-keyrow > span{display:inline-flex;align-items:center;gap:7px}
+.ic-b2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;align-items:start}
+.ic-l1a{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 10px}
+.ic-legend2{display:grid;grid-template-columns:1fr 600px;gap:20px;margin-top:20px;align-items:start}
+.ic-legend2 .ic-li{font-size:13px}
+.ic-legend2 .ic-body{font-size:13px;line-height:1.42}
+.ic-b2 .ic-pages li.ic-g3{display:grid;grid-template-columns:300px minmax(0,1fr) auto;gap:2px 12px;align-items:baseline;padding:5px 0}
+.ic-b2 .ic-l1a{flex-direction:row;flex-wrap:wrap;align-items:baseline;gap:1px 8px}
+.ic-b2 .ic-l1a b{font-size:14px}
+.ic-l2n{font-size:12px;line-height:1.38;color:#555c6b}
+.ic-l3{justify-self:end}
+.ic-flow{padding:12px 14px}
+.ic-fbox{padding:6px 10px;font-size:12.5px}
+.ic-farr{height:22px}
+.ic-flines p{margin:6px 0 0;font-size:12.5px;line-height:1.42}
+.ic-strip .ic-sgrid{grid-template-columns:1fr 1fr 1fr;gap:8px 20px}
+.ic-strip .ic-sgrid > div{font-size:12.5px;line-height:1.42}
+.ic-keyrow{padding:8px 14px;gap:6px 14px;margin-bottom:12px}
+.ic-band-navy{font-size:13px}
+.ic-band-navy .ic-crumb .sep{margin:0 3px}
+.ic-ctab{font-size:12px;line-height:1.36}
+.ic-b2 .ic-l1a b{font-size:13.5px}
+.ic-b2 .ic-pages li.ic-g3{padding:4px 0}
+.ic-cfoot{margin-top:6px;padding-top:7px;font-size:12px}
+.ic-legend3{display:grid;grid-template-columns:1fr 470px;gap:16px;margin-top:20px;align-items:stretch}
+.ic-key2{display:grid;grid-template-columns:1fr 1fr;gap:6px 14px;margin-top:10px}
+.ic-key2 > div{display:flex;align-items:center;gap:8px;font-size:12px;line-height:1.3;color:#3d4556}
+.ic-key2 .ic-tg{min-width:96px;justify-content:center;box-sizing:border-box}
+.ic-legend3 .ic-li{font-size:13px}
+.ic-flow .ic-fbox{padding:5px 10px}
+.ic-flines p{font-size:12px}
+.ic-tkey{display:grid;grid-template-columns:1fr 1fr;gap:5px 10px;width:330px}
+.ic-tkey > div{display:flex;flex-direction:column;align-items:flex-start;gap:2px;font-size:11.5px;line-height:1.25;color:rgba(255,255,255,.82)}
+.ic-b2l{display:flex;flex-direction:column;gap:3px}
+.ic-mid2{font-size:12px;color:rgba(255,255,255,.8)}
+.ic-tg-ren{background:#dfe2e8;color:#1a2744;border:1px dashed #6b7385}
+.ic-pillw{display:inline-flex;align-items:center;height:22px;padding:0 9px;border-radius:999px;background:#c8a94a;color:#1a2744;font-size:12px;font-weight:700;white-space:nowrap;flex:none}
+.ic-mr-work{background:#f3eedc;border:1px solid #d9c27c}
+.ic-tbox{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.ic-ehome{position:relative;background:#ffffff;border:1px solid #dddcd4;border-radius:12px;overflow:visible;min-width:0}
+.ic-ehh{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px 12px;background:#f5f5f2;border-bottom:1px solid #ecebe5;border-radius:12px 12px 0 0;font-size:12px;font-weight:600;color:#3d4556}
+.ic-ehb{padding:12px 14px 12px}
+.ic-eh1{font-size:21px;font-weight:700;letter-spacing:-.01em;margin:0;line-height:1.2}
+.ic-quiet{font-size:13.5px;color:#3d4556;margin:4px 0 0;line-height:1.4}
+.ic-quiet a{color:#1a2744;font-weight:600;text-decoration:underline;text-decoration-color:#866a1e;text-decoration-thickness:2px;text-underline-offset:3px}
+.ic-th{display:flex;align-items:baseline;gap:8px;margin:12px 0 2px;flex-wrap:wrap}
+.ic-th b{font-size:15.5px;font-weight:700}
+.ic-th span{font-size:12.5px;color:#555c6b}
+.ic-thsub{font-size:12.5px;color:#555c6b;margin:0 0 4px}
+.ic-trow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 10px;align-items:center;padding:7px 0;border-top:1px solid #f0efea}
+.ic-trow:first-of-type{border-top:0}
+.ic-tt{font-size:12.5px;line-height:1.35;min-width:0}
+.ic-tt b{font-weight:600;display:block}
+.ic-tt i{font-style:normal;color:#555c6b;display:block;font-size:11.5px;margin-top:1px}
+.ic-chip{display:inline-flex;align-items:center;padding:1px 7px;border-radius:5px;font-size:10.5px;font-weight:700;line-height:1.5;margin-bottom:3px;color:#1a2744;white-space:nowrap}
+.ic-ch-you{background:#f5ecd2}
+.ic-ch-dir{background:#1a2744;color:#ffffff}
+.ic-ch-rep{background:#dcefe3}
+.ic-ch-bd{background:#dfe8f5}
+.ic-ch-off{background:#e3e2dc}
+.ic-btn{display:inline-flex;align-items:center;justify-content:center;height:30px;padding:0 11px;border-radius:7px;font-size:12px;font-weight:600;white-space:nowrap;box-sizing:border-box}
+.ic-btn-gold{background:#c8a94a;color:#1a2744}
+.ic-btn-navy{background:#1a2744;color:#ffffff}
+.ic-btn-line{border:1px solid #1a2744;color:#1a2744;background:#ffffff}
+.ic-bact{display:flex;align-items:center;gap:8px}
+.ic-bact a{font-size:12px;color:#1a2744;font-weight:600;text-decoration:underline;text-underline-offset:3px}
+.ic-more{display:inline-flex;margin-top:6px;font-size:12.5px;font-weight:600;color:#1a2744;text-decoration:underline;text-underline-offset:3px}
+.ic-stubs{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.ic-stub{display:inline-flex;align-items:center;gap:5px;border:1px solid #c9c8bf;border-radius:8px;padding:4px 9px;font-size:12px;font-weight:600;background:#ffffff;color:#1a2744;white-space:nowrap}
+.ic-stub-off{color:#555c6b;background:#f1f0eb;border-style:dashed;font-weight:500}
+.ic-glab{font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:#555c6b;margin:12px 0 0}
+.ic-ecols{display:grid;grid-template-columns:300px minmax(0,1fr);gap:16px;align-items:start}
+.ic-ecap{font-size:13px;line-height:1.45;color:#3d4556;margin:12px 0 0}
+.ic-ndots{list-style:none;margin:12px 0 0;padding:12px 16px;background:#ffffff;border:1px solid #dddcd4;border-radius:12px}
+.ic-ndots li{position:relative;padding:3px 0 3px 16px;font-size:13px;line-height:1.45}
+.ic-ndots li::before{content:"";position:absolute;left:2px;top:10px;width:6px;height:6px;border-radius:50%;background:#1a2744}
+.ic-slice{background:#ffffff;border:1px solid #dddcd4;border-radius:10px;padding:10px 14px;box-sizing:border-box}
+.ic-slice .ic-eh1{font-size:22px}
+.ic-b3c{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;align-items:start}
+.ic-r{padding:7px 0;border-bottom:1px solid #f0efea}
+.ic-r:last-child{border-bottom:0}
+.ic-r1{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.ic-r1 > span:first-child{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 8px;min-width:0}
+.ic-r1 b{font-size:14px;font-weight:600;line-height:1.3}
+.ic-r2{font-size:12px;line-height:1.38;color:#555c6b;margin-top:2px}
+.ic-e3{display:grid;grid-template-columns:250px minmax(0,1fr) 360px;gap:16px;align-items:start}
+.ic-trow-w{grid-template-columns:128px minmax(0,1fr) auto;gap:10px;padding:5px 0}
+.ic-trow-w .ic-tt b{display:inline}
+.ic-trow-w .ic-tt i{display:block}
+.ic-trow-w .ic-chip{margin-bottom:0;white-space:normal}
+.ic-tmeta{max-width:1060px}
+.ic-legend{grid-template-columns:1fr 390px}
+.ic-root{padding-bottom:40px}
+.ic-sec{margin-top:30px}
+.ic-note{margin-top:30px}
+.ic-stub{font-size:11.5px;padding:3px 8px}
+.ic-tags{display:flex;flex-direction:column;align-items:flex-end;gap:3px}
+.ic-tside{width:470px;align-items:stretch}
+.ic-glance{width:100%;box-sizing:border-box;border:1px solid rgba(255,255,255,.22);border-radius:10px;padding:10px 12px;background:rgba(255,255,255,.04)}
+.ic-gh{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#e6cf86;margin:0 0 8px}
+.ic-gwrap{display:flex;gap:12px;align-items:flex-start}
+.ic-gcol{display:flex;flex-direction:column;gap:5px;min-width:0}
+.ic-gpage{background:#fbfaf6;border-radius:6px;overflow:hidden;color:#1a2744}
+.ic-gtop{display:flex;justify-content:space-between;align-items:center;gap:6px;height:20px;padding:0 7px;background:#e3e2dc;font-size:10.5px;font-weight:700;color:#1a2744;white-space:nowrap}
+.ic-gtop i{font-style:normal;font-weight:400;font-family:"Geist Mono",ui-monospace,monospace;font-size:9.5px;color:#3d4556}
+.ic-grow{display:flex;align-items:center;height:21px;padding:0 7px;border-top:1px solid #e3e2dc;font-size:11px;font-weight:600;box-sizing:border-box;white-space:nowrap}
+.ic-grow-q{background:#f3eedc;font-weight:500;color:#1a2744;text-decoration:underline;text-decoration-color:#866a1e;text-underline-offset:2px}
+.ic-garr{align-self:center;color:#e6cf86;font-size:15px;font-weight:700;padding-top:20px}
+.ic-grooms{display:flex;flex-direction:column;padding-top:41px}
+.ic-groom{display:flex;align-items:center;gap:4px;height:21px;font-size:10.5px;white-space:nowrap;color:#e6cf86}
+.ic-groom b{display:inline-flex;align-items:center;height:16px;padding:0 5px;border-radius:4px;background:#c8a94a;color:#1a2744;font-weight:700}
+.ic-tside .ic-gcap{font-size:11.5px;line-height:1.35;color:rgba(255,255,255,.85);margin:0;text-align:left}
+.ic-tside .ic-gfoot{text-align:left;font-size:11.5px;line-height:1.4;color:#ffffff;margin:9px 0 0;padding-top:7px;border-top:1px solid rgba(255,255,255,.18)}
+.ic-tside .ic-gsam{text-align:left;font-size:11px;line-height:1.4;color:rgba(255,255,255,.75);margin:5px 0 0}
+
+</style>
+</helmet>
+<div class="ic-root" style="width:1440px"><div class="ic-title"><div><div class="ic-kick">Integration · Round 2 · Option Int-C · part 1 of 2 · the header, the menu and the two homes</div><h1>My LCA personal, Your work beside it</h1><dl class="ic-tmeta"><dt>Built from</dt><dd>Account-C&#8217;s Today list and role sections, moved whole onto Your work; Account-A and B as the personal My LCA; Nav-IA-Final&#8217;s bar and menu with the Workspace row renamed.</dd><dt>Replaces</dt><dd>Nothing yet: an option beside Int-A and Int-B. The section and screen boards are drawn inside Int-A.</dd><dt>K&#8217;s feedback applied</dt><dd>A good default (a plain member sees You only, never Your work) · every section drawn in full, as a card on Your work · roles one click from My LCA, never in the admin panel · options for each</dd><dt>Source</dt><dd>K, Tue, Oct 13, 2026 (pages 14 and 15) · WS02, WS08, WS13 · replan 4.2, 4.6, 4.8 · src/App.tsx lines 113 to 133</dd></dl></div><div class="ic-tside"><div class="ic-glance"><div class="ic-gh"><span>At a glance · two homes</span><span class="ic-sample" style="text-transform:none;letter-spacing:0">Sample data</span></div><div class="ic-gwrap"><div class="ic-gcol" style="width:84px"><div class="ic-gpage"><div class="ic-gtop">My LCA</div><div class="ic-grow">Today</div><div class="ic-grow">You</div></div><p class="ic-gcap">Avery, a plain member: one home</p></div><div class="ic-gcol"><div style="display:flex;gap:5px;align-items:flex-start"><div class="ic-gpage" style="width:96px"><div class="ic-gtop">My LCA</div><div class="ic-grow">Today · 1</div><div class="ic-grow">You</div><div class="ic-grow">Family · Ella</div><div class="ic-grow ic-grow-q">8 things ›</div></div><span class="ic-garr">&#8594;</span><div class="ic-gpage" style="width:118px"><div class="ic-gtop">Your work <i>/work</i></div><div class="ic-grow">Today · 9</div><div class="ic-grow">Events you direct</div><div class="ic-grow">My region</div><div class="ic-grow">Board</div><div class="ic-grow">Support tickets</div><div class="ic-grow">Member lookup</div></div><div class="ic-grooms" style="padding-top:41px"><span class="ic-groom">&#8594; <b>Setup</b><b>Event day</b></span><span class="ic-groom">&#8594; <b>My region</b></span><span class="ic-groom">&#8594; <b>Board inbox</b></span><span class="ic-groom">&#8594; <b>Tickets</b></span><span class="ic-groom">&#8594; <b>Lookup</b></span></div></div><p class="ic-gcap">Chris, Mon, Oct 5: his work is one click away, on its own page</p></div></div><p class="ic-gfoot">No role sections on My LCA (Int-A), no left rail (Int-B). Only lca_admin opens <span class="ic-c">/admin</span>.</p><p class="ic-gsam">Sample data: counts, sub-lines and the volunteers in A4 to A6. Role rules are real.</p></div></div></div><div class="ic-legend">
+<div class="ic-lbox"><div class="ic-lh">Notes on this board</div><div class="ic-lgrid"><div class="ic-li"><span class="k-num-badge ic-n">1</span><span><span class="ic-c">/dashboard</span>, My LCA, is personal for everyone: You and Family only, with the personal row headed Today. A member with no grants never sees anything else.</span></div><div class="ic-li"><span class="k-num-badge ic-n">2</span><span><span class="ic-c">/work</span>, Your work, is the volunteer&#8217;s home: Today across roles (the personal items repeated, so Chris&#8217;s Monday is one list), one card per room, the rooms under it.</span></div><div class="ic-li"><span class="k-num-badge ic-n">3</span><span>The cards are the same section boards drawn as cards, with their counts and one-tap decisions; the rooms are the same screens. The pick costs no redraw.</span></div><div class="ic-li"><span class="k-num-badge ic-n">4</span><span>The menu keeps the WS02 order; one row, Your work · 6, replaces Workspace, Board inbox and My region&#8217;s clubs, and Admin · 12 is for lca_admin. The trigger count stays personal (Q7).</span></div><div class="ic-li"><span class="k-num-badge ic-n">5</span><span>Admin stays at <span class="ic-c">/admin</span>, with a card on Your work for lca_admin. Your work shows no personal money or family items beyond the repeated Today rows; My LCA shows no volunteer queues.</span></div><div class="ic-li"><span class="k-num-badge ic-n">6</span><span>Two homes, no switcher: the same header on both, one account. One quiet line on My LCA (8 things across your roles · Open Your work) is the only sign of the second page.</span></div></div>
+<p class="ic-it" style="margin-top:12px">The section boards (Account-D to S) and screen boards (Work-E to L) are drawn inside Int-A and say the frame is swappable: under this option a section is a card on Your work and a crumb reads Your work &#8250; ...; the room itself does not change. Key and sections B to D: Account-Int-C-2.</p></div>
+<div class="ic-lbox"><div class="ic-lh">Open for K</div>
+<div class="ic-q"><span class="ic-qn">Q1</span><span>Pick the frame: Int-A, Int-B or Int-C (this board). The pick changes only the breadcrumb, the way back and the menu row on every section and screen board. <span class="ic-def">Int-A is the baseline; Int-C is the pick if the personal page must stay plain at any cost.</span></span></div>
+<div class="ic-q"><span class="ic-qn">Q2</span><span>The word Workspace goes with the rename: the page is Your work at <span class="ic-c">/work</span>, and <span class="ic-c">/workspace/*</span> redirects. <span class="ic-def">Confirm.</span></span></div>
+<div class="ic-q"><span class="ic-qn">Q7</span><span>A second count in the menu (Your work · 6) beside the personal trigger count, against WS02. <span class="ic-def">Default here: yes, in words on the row, never on the trigger.</span></span></div>
+</div></div><section class="ic-sec" aria-labelledby="ic-a"><div class="ic-lab"><span class="ic-code">A</span><h2 id="ic-a">The header and the My LCA&nbsp;&#9662; menu with its second count, six people</h2></div>
+<p class="ic-sub">The bar does not change. Every role, seat and assignment collapses into one menu row, Your work, with its own count in words.</p>
+<div class="ic-acols">
+<div class="ic-col"><div class="ic-cell"><span class="k-num-badge ic-n ic-mk" style="top:-12px;left:-12px">1</span><div class="ic-chd"><span><b>Member · Avery Thibodeaux</b><span class="ic-who">Mon, Oct 5, 2026 · 9:10 AM · on <span class="ic-c">/tournaments</span></span></span></div><div class="ic-mbar"><div class="ic-mrow1"><svg viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span class="ic-on">Tournaments</span><span>Clubs</span><span>Scholastic</span><span>News</span><span>Membership</span><span>About&nbsp;&#9662;</span></div><div class="ic-mrow2"><span class="ic-msearch"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg>Search</span><span class="ic-mdon">Donate</span><button class="ic-trig" type="button" aria-expanded="true" aria-label="My LCA, 3 things to do">My LCA&nbsp;&#9662;<span class="ic-pill" aria-hidden="true">3</span></button></div></div><div class="ic-stage"><div class="ic-menu" role="menu" aria-label="My LCA"><div class="ic-mg"><span>To do · 3</span></div><div class="ic-mr ic-mr-todo"><span><span class="ic-mt">Finish payment · The Baton Rouge Classic</span><span class="ic-ms">$60 · Open section · by Sat, Oct 17</span></span><span class="ic-tg ic-tg-unpaid">Unpaid</span></div><div class="ic-mr ic-mr-todo"><span><span class="ic-mt">Renew US Chess before the Ken Ferguson Memorial Open</span><span class="ic-ms">Ends Thu, Dec 31 · the event is Sat–Mon, Jan 16–18, 2027</span></span><span class="ic-tg ic-tg-first">Ends first</span></div><div class="ic-mr ic-mr-todo"><span><span class="ic-mt">Renew membership</span><span class="ic-ms">Ends Mon, Oct 26 · Adult $15</span></span><span class="ic-tg ic-tg-unpaid">Due soon</span></div><div class="ic-msep"></div><div class="ic-mr ic-mr-hov"><span><span class="ic-mt">My LCA</span><span class="ic-ms">Your dashboard · <span class="ic-rt">/dashboard</span></span></span></div><div class="ic-mr "><span><span class="ic-mt">Membership card</span><span class="ic-ms">Show at the TD table · <span class="ic-rt">/dashboard#you</span></span></span></div><div class="ic-msep"></div><div class="ic-mr "><span><span class="ic-mt">Log out</span></span></div></div></div><p class="ic-cap">Identical under all three options: a member with no grants never sees Your work, so the default page and its menu are the same board whichever frame K picks.</p></div><div class="ic-cell"><div class="ic-chd"><span><b>Representative · Priya Shah</b><span class="ic-who">the North Louisiana seat · members.role is member · Mon, Oct 5, 2026 · 9:10 AM</span></span><span class="ic-sample">Sample data</span></div><div class="ic-mbar"><div class="ic-mrow1"><svg viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span>Tournaments</span><span class="ic-on">Clubs</span><span>Scholastic</span><span>News</span><span>Membership</span><span>About&nbsp;&#9662;</span></div><div class="ic-mrow2"><span class="ic-msearch"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg>Search</span><span class="ic-mdon">Donate</span><button class="ic-trig" type="button" aria-expanded="true" aria-label="My LCA, 1 thing to do">My LCA&nbsp;&#9662;<span class="ic-pill" aria-hidden="true">1</span></button></div></div><div class="ic-stage"><div class="ic-menu" role="menu" aria-label="My LCA"><div class="ic-mg"><span>To do · 1</span></div><div class="ic-mr ic-mr-todo"><span><span class="ic-mt">Finish payment · The Baton Rouge Classic</span><span class="ic-ms">$60 · Open section · by Sat, Oct 17</span></span><span class="ic-tg ic-tg-unpaid">Unpaid</span></div><div class="ic-msep"></div><div class="ic-mr "><span><span class="ic-mt">My LCA</span><span class="ic-ms">You · <span class="ic-rt">/dashboard</span></span></span></div><div class="ic-mr "><span><span class="ic-mt">Membership card</span><span class="ic-ms">Show at the TD table</span></span></div><div class="ic-msep"></div><div class="ic-mr ic-mr-work ic-mr-hov"><span><span class="ic-mt">Your work</span><span class="ic-ms">My region 1 · Board inbox 1 · <span class="ic-rt">/work</span></span></span><span class="ic-pillw">2 things</span></div><div class="ic-msep"></div><div class="ic-mr "><span><span class="ic-mt">Log out</span></span></div></div></div><p class="ic-cap">A seat alone earns the row: Your work shows for anyone with a role, a seat or a directed event (getMySeats, directedTournaments, <span class="ic-c">AuthContext.tsx</span> lines 51 to 69). Today&#8217;s <span class="ic-c">/workspace</span> turns her away (<span class="ic-c">App.tsx</span> line 126); <span class="ic-c">/work</span> admits her.</p></div><div class="ic-cell ic-tcard"><h3>Two more people, no cell</h3>
+<p><b>Auditor (lca_auditor):</b> Your work with the Member lookup card alone; the row reads Your work with no number, because a lookup is never a thing to do.</p>
+<p><b>Club representative (club_rep), only if K keeps the role (question 20):</b> a Your club card on Your work opening <span class="ic-rt">/work/region/clubs/:id</span> scoped to Houma Chess Club; retired under P2.18 there is no card and no row.</p>
+<h3 style="margin-top:14px">Rules of the menu</h3>
+<ol class="ic-rules"><li>The WS02 order never changes: to-dos, My LCA, the event line, Family, Membership card, Your work, Admin, Log out.</li><li>The Your work row carries its count in words and never pushes the trigger count.</li><li>The row is gated on the same flag as <span class="ic-c">/work</span>, so no menu holds a dead link.</li><li>One label per destination, from <span class="ic-c">nav.ts</span>.</li><li>Nothing reads Workspace or Admin panel.</li></ol></div></div>
+<div class="ic-col"><div class="ic-cell"><div class="ic-chd"><span><b>Parent · Danielle Robichaux</b><span class="ic-who">Sat, Nov 14, 2026 · 11:10 AM · event day · on <span class="ic-c">/news</span></span></span></div><div class="ic-mbar"><div class="ic-mrow1"><svg viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span>Tournaments</span><span>Clubs</span><span>Scholastic</span><span class="ic-on">News</span><span>Membership</span><span>About&nbsp;&#9662;</span></div><div class="ic-mrow2"><span class="ic-msearch"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg>Search</span><span class="ic-mdon">Donate</span><button class="ic-trig" type="button" aria-expanded="true" aria-label="My LCA">My LCA&nbsp;&#9662;</button></div></div><div class="ic-stage"><div class="ic-menu" role="menu" aria-label="My LCA"><div class="ic-mr "><span><span class="ic-mt">My LCA</span><span class="ic-ms">Your dashboard · <span class="ic-rt">/dashboard</span></span></span></div><div class="ic-mr ic-mr-hov"><span><span class="ic-mt">New Orleans Youth Chess November Meet · Maya and Leo&#8217;s boards</span><span class="ic-ms">Today · both playing round 2 · Updated 11:04 AM · <span class="ic-rt">/dashboard#family</span></span></span><span class="ic-tg ic-tg-live">Live · Round 2</span></div><div class="ic-mr "><span><span class="ic-mt">Family</span><span class="ic-ms">Maya and Leo · <span class="ic-rt">/dashboard#family</span></span></span></div><div class="ic-mr "><span><span class="ic-mt">Membership card</span><span class="ic-ms">Family card · show at the desk</span></span></div><div class="ic-msep"></div><div class="ic-mr "><span><span class="ic-mt">Log out</span></span></div></div></div><p class="ic-cap">Family stays on My LCA: a parent is not a volunteer, so no Your work row. The empty count on the trigger, as on Int-A: both entries are paid and no membership is ending.</p></div><div class="ic-cell"><div class="ic-chd"><span><b>Officer · Camille Broussard</b><span class="ic-who">the Secretary seat with the lca_officer role · Mon, Oct 5, 2026 · 9:10 AM</span></span><span class="ic-sample">Sample data</span></div><div class="ic-mbar"><div class="ic-mrow1"><svg viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span>Tournaments</span><span>Clubs</span><span class="ic-on">Scholastic</span><span>News</span><span>Membership</span><span>About&nbsp;&#9662;</span></div><div class="ic-mrow2"><span class="ic-msearch"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg>Search</span><span class="ic-mdon">Donate</span><button class="ic-trig" type="button" aria-expanded="true" aria-label="My LCA">My LCA&nbsp;&#9662;</button></div></div><div class="ic-stage"><div class="ic-menu" role="menu" aria-label="My LCA"><div class="ic-mr "><span><span class="ic-mt">My LCA</span><span class="ic-ms">You · <span class="ic-rt">/dashboard</span></span></span></div><div class="ic-mr "><span><span class="ic-mt">Membership card</span><span class="ic-ms">Show at the TD table</span></span></div><div class="ic-msep"></div><div class="ic-mr ic-mr-work ic-mr-hov"><span><span class="ic-mt">Your work</span><span class="ic-ms">Board inbox 2 · Support tickets 4 · <span class="ic-rt">/work</span></span></span><span class="ic-pillw">6 things</span></div><div class="ic-msep"></div><div class="ic-mr "><span><span class="ic-mt">Log out</span></span></div></div></div><p class="ic-cap">No Admin row for an officer (Q3): the tickets, the documents she keeps and the lookup are cards on Your work with rooms under /work. The president&#8217;s menu is the same; the Email card appears on Your work for lca_observer only.</p></div><div class="ic-cell"><div class="ic-chd"><span><b>Phones · the Menu sheet · Chris</b><span class="ic-who">Sun, Oct 25, 2026 · 9:14 AM · under 768px</span></span><span class="ic-sample">Sample data</span></div><div style="padding:4px 14px 0"><div class="ic-phone">
+<div class="ic-pbar"><svg class="ic-rk" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span class="ic-pbn"><b>Louisiana Chess</b><span>Association</span></span><span class="ic-psrch"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg></span></div>
+<div class="ic-sheet">
+<div class="ic-secs"><span>Tournaments <i>&#9662;</i></span><span>Clubs <i>&#9662;</i></span><span>Scholastic <i>&#9662;</i></span><span>News <i>&#9662;</i></span><span>Membership <i>&#9662;</i></span><span>About <i>&#9662;</i></span></div>
+<div class="ic-pbtns"><span class="ic-pb-line">Donate</span><span class="ic-pb-navy">My LCA</span></div>
+<div class="ic-mg" style="padding:8px 0 2px">Your rooms</div>
+<div class="ic-prow">Your work<span class="ic-pillw">6 things</span></div>
+<div class="ic-prow ic-prow-plain" style="color:#555c6b">An admin also sees: Admin · 12 need attention</div>
+<div class="ic-prow ic-prow-plain">LCA on Facebook &#8599; · Contact · Website help</div>
+<div class="ic-prow ic-prow-plain">Appearance<span class="ic-pseg"><span class="on">System</span><span>Light</span><span>Dark</span></span></div>
+<div class="ic-prow ic-prow-plain" style="border-bottom:0">Hide event bar until the next update</div>
+</div>
+<div class="ic-ptabs"><span class="ic-ptab"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15" rx="2"></rect><path d="M3.5 10h17M8 3v4M16 3v4"></path></svg>Tournaments</span><span class="ic-ptab"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"></path><circle cx="12" cy="9.5" r="2.5"></circle></svg>Clubs</span><span class="ic-ptab" aria-label="My LCA, 1 thing to do"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4 20c1.5-4 4.5-5.5 8-5.5s6.5 1.5 8 5.5"></path></svg>My LCA<span class="ic-pc" aria-hidden="true">1</span></span><span class="ic-ptab ic-ptab-on"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg>Close</span></div>
+</div></div><p class="ic-cap">One role row on phones, whatever a person holds. The My LCA tab keeps the personal count; the docked event bar&#8217;s TD console button still deep-links to the console at <span class="ic-c">/work/tournaments/:id/live</span>.</p></div></div>
+<div class="ic-col"><div class="ic-cell"><div class="ic-chd"><span><b>Many roles · Chris Arceneaux</b><span class="ic-who">Sun, Oct 25, 2026 · 9:14 AM · day 2 of The Baton Rouge Classic · on <span class="ic-c">/news</span></span><span class="ic-who2">member · parent of Ella · director of The Baton Rouge Classic · South Central Louisiana representative · treasurer with the lca_officer role</span></span><span class="ic-sample">Sample data</span></div><div class="ic-mbar"><div class="ic-mrow1"><svg viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span>Tournaments</span><span>Clubs</span><span>Scholastic</span><span class="ic-on">News</span><span>Membership</span><span>About&nbsp;&#9662;</span></div><div class="ic-mrow2"><span class="ic-msearch"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg>Search</span><span class="ic-mdon">Donate</span><button class="ic-trig" type="button" aria-expanded="true" aria-label="My LCA, 1 thing to do">My LCA&nbsp;&#9662;<span class="ic-pill" aria-hidden="true">1</span></button></div></div><div class="ic-stage"><div class="ic-menu" role="menu" aria-label="My LCA"><div class="ic-mg"><span>To do · 1</span></div><div class="ic-mr ic-mr-todo"><span><span class="ic-mt">Finish payment · Ella · New Orleans Youth Chess November Meet</span><span class="ic-ms">$20 · K–5 section · Sat, Nov 14</span></span><span class="ic-tg ic-tg-unpaid">Unpaid</span></div><div class="ic-msep"></div><div class="ic-mr "><span><span class="ic-mt">My LCA</span><span class="ic-ms">You and Family · <span class="ic-rt">/dashboard</span></span></span></div><div class="ic-mr "><span><span class="ic-mt">The Baton Rouge Classic · Open event day</span><span class="ic-ms">Today · Round 4 pairs at 9:30 AM · <span class="ic-rt">/work/tournaments/:id/live</span></span></span></div><div class="ic-mr "><span><span class="ic-mt">Family</span><span class="ic-ms">Ella · <span class="ic-rt">/dashboard#family</span></span></span></div><div class="ic-mr "><span><span class="ic-mt">Membership card</span><span class="ic-ms">Show at the TD table</span></span></div><div class="ic-msep"></div><div class="ic-rel"><span class="k-num-badge ic-n ic-mk" style="top:4px;left:-40px">4</span><div class="ic-mr ic-mr-work"><span><span class="ic-mt">Your work</span><span class="ic-ms">Director 3 · Representative 1 · Treasurer 1 · LCA office 1 · <span class="ic-rt">/work</span></span></span><span class="ic-pillw">6 things</span></div></div><div class="ic-msep"></div><div class="ic-mr "><span><span class="ic-mt">Log out</span></span></div></div></div><p class="ic-cap">The busy state is on Your work, not in the menu: one row with six things in words. The trigger says 1 (Ella&#8217;s entry); the row&#8217;s 6 is the second count (Q7). Board inbox and My region&#8217;s clubs no longer have rows; they are cards on Your work.</p></div><div class="ic-cell"><div class="ic-chd"><span><b>Admin · Ren&#233;e Ortego</b><span class="ic-who">lca_admin · second factor on · Mon, Oct 5, 2026 · 9:10 AM</span></span><span class="ic-sample">Sample data</span></div><div class="ic-mbar"><div class="ic-mrow1"><svg viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span>Tournaments</span><span>Clubs</span><span>Scholastic</span><span class="ic-on">News</span><span>Membership</span><span>About&nbsp;&#9662;</span></div><div class="ic-mrow2"><span class="ic-msearch"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg>Search</span><span class="ic-mdon">Donate</span><button class="ic-trig" type="button" aria-expanded="true" aria-label="My LCA">My LCA&nbsp;&#9662;</button></div></div><div class="ic-stage"><div class="ic-menu" role="menu" aria-label="My LCA"><div class="ic-mr "><span><span class="ic-mt">My LCA</span><span class="ic-ms">You · <span class="ic-rt">/dashboard</span></span></span></div><div class="ic-mr "><span><span class="ic-mt">Membership card</span><span class="ic-ms">Show at the TD table</span></span></div><div class="ic-msep"></div><div class="ic-mr ic-mr-work"><span><span class="ic-mt">Your work</span><span class="ic-ms">2 queue items assigned to you · <span class="ic-rt">/work</span></span></span><span class="ic-pillw">2 things</span></div><div class="ic-rel"><span class="k-num-badge ic-n ic-mk" style="top:4px;left:-40px">5</span><div class="ic-mr ic-mr-hov"><span><span class="ic-mt">Admin · 12 need attention</span><span class="ic-ms">oldest 3 days · <span class="ic-rt">/admin</span></span></span><span class="ic-tg ic-tg-adm">Admin only</span></div></div><div class="ic-msep"></div><div class="ic-mr "><span><span class="ic-mt">Log out</span></span></div></div></div><p class="ic-cap">An admin holds two rows: Your work (the Admin card with the items assigned to her by name) and Admin (the area). Twelve things wait and the trigger shows nothing: the count is personal only. requireAdmin needs aal2 (<span class="ic-c">auth.ts</span> lines 141 to 161).</p></div><div class="ic-cell ic-tcard"><h3>What changed from Nav-IA-Final frame B</h3>
+<table class="ic-wtab"><thead><tr><th scope="col">Was</th><th scope="col">Is</th></tr></thead><tbody>
+<tr><td><s>Workspace</s> · <span class="ic-rt">/workspace</span> · By role</td><td>Your work · <span class="ic-rt">/work</span> · By role, with a count in words <span class="ic-tg ic-tg-new">New in Int-C</span></td></tr>
+<tr><td><s>Board inbox</s> · <span class="ic-rt">/board/inbox</span></td><td>A card on Your work; the route is unchanged</td></tr>
+<tr><td><s>My region&#8217;s clubs</s> · <span class="ic-rt">/dashboard</span></td><td>A card on Your work; the room is <span class="ic-rt">/work/region</span></td></tr>
+<tr><td>Admin · <span class="ic-rt">/admin</span></td><td>Unchanged, plus an Admin card on Your work</td></tr>
+</tbody></table></div></div>
+</div></section><section class="ic-sec" aria-labelledby="ic-e"><div class="ic-lab"><span class="ic-code">E</span><h2 id="ic-e">Two homes, no switcher: what reads as a mode and what does not</h2><span class="ic-sample">Sample data</span></div>
+<p class="ic-sub">Chris&#8217;s Monday, Mon, Oct 5, 2026 · 9:10 AM, on both homes: Account-G&#8217;s list heads Your work; My LCA keeps only the personal row. Sections B to D: part 2.</p>
+<div class="ic-e3"><div class="ic-ehome"><span class="k-num-badge ic-n ic-mk" style="top:-12px;left:-12px">6</span><div class="ic-ehh"><span>My LCA</span><span class="ic-rt">/dashboard</span></div><div class="ic-ehb">
+<p class="ic-eh1">Chris Arceneaux</p>
+<p class="ic-quiet">8 things across your roles · <a href="#">Open Your work</a></p>
+<div class="ic-th"><b>Today</b><span>Mon, Oct 5 · 1 thing</span></div>
+<div class="ic-trow"><div class="ic-tt"><b>Ella&#8217;s November Meet entry isn&#8217;t paid yet</b><i>K–5 · Sat, Nov 14 · early price ends today</i></div><div class="ic-bact"><span class="ic-btn ic-btn-gold">Pay $20</span></div></div>
+<p class="ic-glab">Then, as on Account-D to F</p>
+<div class="ic-stubs"><span class="ic-stub">Membership</span><span class="ic-stub">Next up</span><span class="ic-stub">Family · Ella</span><span class="ic-stub">Receipts</span><span class="ic-stub">Settings</span></div>
+<p class="ic-quiet" style="font-size:12px;margin-top:10px">No role labels, no volunteer rows: the page Avery sees, plus Family and the one quiet line.</p>
+</div></div><div><div class="ic-ehome"><span class="k-num-badge ic-n ic-mk" style="top:-12px;right:-12px">2</span><div class="ic-ehh"><span>Your work</span><span class="ic-rt">/work</span></div><div class="ic-ehb">
+<div class="ic-th" style="margin-top:0"><b>Today across your roles</b><span>Mon, Oct 5</span></div>
+<p class="ic-thsub">9 things · 1 is yours</p>
+<div class="ic-trow ic-trow-w"><span><span class="ic-chip ic-ch-you">Ella</span></span><div class="ic-tt"><b>Ella&#8217;s November Meet entry isn&#8217;t paid yet</b><i>early price ends today, Mon, Oct 5 · also on My LCA</i></div><div class="ic-bact"><span class="ic-btn ic-btn-gold">Pay $20</span></div></div>
+<div class="ic-trow ic-trow-w"><span><span class="ic-chip ic-ch-rep">Representative · South Central Louisiana</span></span><div class="ic-tt"><b>Houma Chess Club: &#8220;The library closes at 8:00 PM on Mondays now&#8221;</b><i>Report outdated info from a visitor · Sat, Sep 26 · no answer in 9 days</i></div><div class="ic-bact"><span class="ic-btn ic-btn-line">Reply</span></div></div>
+<div class="ic-trow ic-trow-w"><span><span class="ic-chip ic-ch-dir">Director · The Baton Rouge Classic</span></span><div class="ic-tt"><b>Bye request: Maya Robichaux, ½ point in round 5</b><i>Requested Fri, Oct 2 · within the 2-bye limit</i></div><div class="ic-bact"><span class="ic-btn ic-btn-navy">Approve</span><a href="#">Decline</a></div></div>
+<div class="ic-trow ic-trow-w"><span><span class="ic-chip ic-ch-bd">Treasurer</span></span><div class="ic-tt"><b>3 messages waiting in the Treasurer inbox</b><i>Oldest Fri, Oct 2 · waiting 3 days</i></div><div class="ic-bact"><span class="ic-btn ic-btn-line">Open inbox</span></div></div>
+<div class="ic-trow ic-trow-w"><span><span class="ic-chip ic-ch-rep">Representative · South Central Louisiana</span></span><div class="ic-tt"><b>Bunkie Chess Club: &#8220;The club moved to the Bunkie Public Library&#8221;</b><i>Suggest an update · Sun, Oct 4 · no answer in 1 day</i></div><div class="ic-bact"><span class="ic-btn ic-btn-navy">Apply this</span><a href="#">Reply</a></div></div>
+<div class="ic-trow ic-trow-w"><span><span class="ic-chip ic-ch-off">LCA office</span></span><div class="ic-tt"><b>Support ticket assigned to you: &#8220;Wrong section on my registration&#8221;</b><i>Isaac Dupre · Sun, Oct 4 · waiting 1 day</i></div><div class="ic-bact"><span class="ic-btn ic-btn-line">Answer</span></div></div>
+<div class="ic-trow ic-trow-w"><span><span class="ic-chip ic-ch-dir">Director · Baton Rouge Chess Club Saturday G/90</span></span><div class="ic-tt"><b>Rating report due Sat, Oct 10</b><i>Finished Sat, Oct 3 · 14 players · 1 check to fix</i></div><div class="ic-bact"><span class="ic-btn ic-btn-line">Open rating report</span></div></div>
+<a class="ic-more" href="#">Show 2 more &#9662;</a>
+<div class="ic-rel" style="margin-top:10px"><span class="k-num-badge ic-n ic-mk" style="top:-6px;left:-44px">3</span><p class="ic-glab" style="margin:0">Then one card per room, each opening its room</p>
+<div class="ic-stubs"><span class="ic-stub">Events you direct · 3</span><span class="ic-stub">My region · 4</span><span class="ic-stub">Board · 3</span><span class="ic-stub">Support tickets · 4</span><span class="ic-stub">Member lookup</span><span class="ic-stub ic-stub-off">Admin, lca_admin only</span></div></div>
+</div></div>
+<p class="ic-ecap">The work list repeats the personal items so his morning is one list; without the repeat it starts on two pages. Two homes with the same header read as a mode even with no switcher: K&#8217;s sentence puts the roles in My LCA, and this option puts them one click away.</p></div>
+<div><div class="ic-bk"><div class="ic-amber"><span><b>You&#8217;re here as an LCA admin</b> · Chris Arceneaux directs The Baton Rouge Classic · your changes are logged</span><a href="#">Back to Admin</a></div>
+<div class="ic-cband"><span>My LCA &#8250; Your work &#8250; The Baton Rouge Classic &#8250; Event day</span><span class="ic-x">Exit console</span></div>
+<div class="ic-cfill"><span class="ic-c">/work/tournaments/:id/live</span></div></div>
+<p class="ic-cap" style="padding:8px 2px 0">Reached from /admin &#8250; Tournaments; the only crossing (D6, D17; <span class="ic-c">permissions.ts</span> lines 63 and 141). An admin backstopping the event never passes through Your work. The rule otherwise: one header on both homes, one account; a room is a page, not a mode; only the hall TV and print leave the chrome; on event day Your work pins the live event under its Today and My LCA shows only the event line; the console never takes either home over (Q12).</p>
+<div class="ic-lbox" style="margin-top:12px"><div class="ic-lh">Trade-off of Int-C</div>
+<p class="ic-body" style="font-size:13px;line-height:1.42">K asked for My LCA to host a member&#8217;s roles; this puts them one click away, and two homes read as a mode even with no switcher. Chris&#8217;s Monday would start on two pages (Ella&#8217;s entry on one, the bye request on the other) unless the work list repeats the personal items, which it does here. The menu needs a second count, against WS02&#8217;s single personal count. In return the default page for the 300+ stays plain, Your work can be dense without worrying a member, and the cards and rooms are the same boards as Int-A.</p>
+</div></div></div></section><div class="ic-note"><div><h4>What</h4><p>Int-C, the third way to join My LCA, the rooms and Admin: My LCA stays personal for everyone; a role, a seat or a directed event adds Your work at <span class="ic-c">/work</span> (the Today list across roles, a card per room, the rooms). Part 1: the menu and the two homes. Part 2: routes, what each home holds, the way there and back.</p></div><div><h4>Built from</h4><p>Account-C (the Today list and role sections, moved to Your work), Account-A and B (the personal My LCA), Account-G (Chris&#8217;s Monday list), Work-A (the console band), Nav-Header-Final (the bar and the menu) and Nav-IA-Final (the routes, Workspace renamed), checked against the role inventory.</p></div><div><h4>K&#8217;s feedback applied</h4><p>A good default: Avery&#8217;s page and menu are the same under every option. Every section drawn in full: each role is a card on Your work with its inline part, its room and its admin-only part (part 2, section C). Only lca_admin sees Admin. Options for each: the third frame beside Int-A and Int-B.</p></div><div><h4>Open for K</h4><p>Q1 pick the frame (Int-A is the baseline; Int-C if the personal page must stay plain at any cost). Q2 Workspace renamed Your work at /work; confirm. Q7 a second count in the menu, Your work · 6, beside the personal trigger count; default yes, on the row only.</p></div></div></div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":3400}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

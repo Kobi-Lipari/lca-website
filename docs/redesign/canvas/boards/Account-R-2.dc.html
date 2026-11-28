@@ -1,0 +1,313 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>My LCA · R-2 · LCA admin: one row, its states and the way in (round 2)</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/6107adb451dbab26ee5d89f4189b81f8">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1a2744}
+.ar-root{width:1440px;box-sizing:border-box;padding:16px 0 24px;background:#ecebe6;color:#1a2744}
+.ar-root *{box-sizing:border-box}
+.ar-root p{margin:0}
+.ar-doc{margin:0 40px;background:#fbfaf6;border:1px solid #d9d8d1;border-radius:14px;padding:16px 22px 16px}
+.ar-doc-top{display:flex;justify-content:space-between;align-items:flex-start;gap:24px}
+.ar-title{font-size:30px;line-height:1.15;font-weight:700;letter-spacing:-.015em;margin:6px 0 0}
+.ar-round{display:inline-flex;align-items:center;height:26px;padding:0 10px;border-radius:6px;background:#1a2744;color:#ffffff;font-size:12.5px;font-weight:700;letter-spacing:.04em}
+.ar-ml{font-size:13px;line-height:1.45;color:#3d4556;margin:3px 0 0}
+.ar-ml b{color:#1a2744;font-weight:600}
+.ar-frameline{margin-top:10px;background:#fbf7e9;border:1px solid #866a1e;border-radius:8px;padding:8px 12px;font-size:13px;line-height:1.45;color:#1a2744}
+.ar-frameline b{font-weight:700}
+.ar-grey{flex:none;width:520px;background:#efefea;border:1px solid #dfded6;border-radius:10px;padding:12px 14px;display:grid;grid-template-columns:1fr 1fr;gap:10px 16px}
+.ar-grey p{font-size:12px;line-height:1.42;color:#2b3446;margin:0}
+.ar-grey p + p{margin-top:8px}
+.ar-grey b{display:block;font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#555c6b;margin-bottom:2px}
+.ar-grey ol{margin:0;padding-left:16px;font-size:12px;line-height:1.42;color:#2b3446}
+.ar-grey li{margin-bottom:4px}
+.ar-lbox{background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:12px 16px 12px;margin-top:12px}
+.ar-notes{list-style:none;margin:10px 0 0;padding:0;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:12px 18px}
+.ar-notes li{display:flex;gap:8px;align-items:flex-start;font-size:12px;line-height:1.42;color:#2b3446}
+.ar-notes .k-num-badge{width:22px;height:22px;font-size:11.5px}
+.ar-notes b{font-weight:600;color:#1a2744}
+.ar-flab{display:flex;align-items:center;gap:12px;margin:18px 40px 8px}
+.ar-flab h2{white-space:nowrap;margin:0;font-size:19px;line-height:1.2;font-weight:600;letter-spacing:-.01em}
+.ar-code{display:inline-flex;align-items:center;justify-content:center;min-width:28px;height:28px;padding:0 9px;border-radius:7px;background:#c8a94a;color:#1a2744;font-weight:700;font-size:13px}
+.ar-urlchip{white-space:nowrap;font-family:"Geist Mono",ui-monospace,monospace;font-size:12px;color:#3d4556;background:#ffffff;border:1px solid #d9d8d1;border-radius:7px;padding:4px 10px;margin-left:auto}
+.ar-frame{width:1440px;background:#ffffff;border-top:1px solid #cfcec6;border-bottom:1px solid #cfcec6;box-shadow:0 20px 50px rgba(16,24,43,.10)}
+.ar-page{background:#f5f5f2;position:relative}
+/* header */
+.ar-hd-in{gap:0;position:relative;min-height:64px;max-width:1440px;padding:0 40px}
+.ar-hd .k-brand{margin-right:16px}
+.ar-rook{width:30px;height:30px;fill:#ffffff;flex:none}
+.ar-rook-sm{width:24px;height:24px}
+.ar-nav{gap:0}
+.ar-nav a{padding:0 10px;white-space:nowrap}
+.ar-navbtn{display:inline-flex;align-items:center;gap:4px;min-height:44px;padding:0 10px;border:0;background:transparent;color:#ffffff;font:inherit;font-size:15px;font-weight:500}
+.ar-sbtn{display:inline-flex;align-items:center;gap:8px;width:220px;height:44px;padding:0 8px 0 12px;margin-right:16px;border-radius:8px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.45);color:#ffffff;text-decoration:none;font-size:14.5px;font-weight:500;flex:none}
+.ar-kbd{margin-left:auto;font-family:"Geist Mono",ui-monospace,monospace;font-size:12px;color:#e8ecf4;border:1px solid rgba(255,255,255,.4);border-radius:5px;padding:2px 6px;line-height:1.2}
+.ar-util{gap:12px}
+.ar-util .k-ulink{padding:0 4px}
+.ar-my{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 8px;border:0;border-radius:8px;background:transparent;color:#ffffff;font:inherit;font-size:14px;font-weight:600}
+.ar-count{display:inline-flex;align-items:center;justify-content:center;min-width:20px;height:20px;padding:0 6px;border-radius:999px;background:#fbfaf6;color:#1a2744;font-size:12px;font-weight:700}
+.ar-hb{display:inline-flex;margin-left:6px}
+/* page head */
+.ar-band{background:#fbfaf6;border-bottom:1px solid #e6e3d8}
+.ar-in{width:1200px;margin:0 auto}
+.ar-head{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;padding:26px 0 22px}
+.ar-h1{font-size:38px;line-height:1.1;font-weight:700;letter-spacing:-.015em;margin:6px 0 0}
+.ar-roles{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;align-items:center}
+.ar-rchip{display:inline-flex;align-items:center;gap:8px;border-radius:999px;padding:6px 14px 6px 6px;font-size:14px;border:1px solid #d9d6cb;background:#ffffff;color:#1a2744;text-decoration:none;min-height:44px}
+.ar-role{display:inline-flex;align-items:center;border-radius:999px;padding:4px 10px;font-size:12px;font-weight:600;white-space:nowrap;line-height:1.2}
+.ar-r-member{background:#ecebe5;color:#1a2744}
+.ar-r-admin{background:#eef1f8;color:#1a2744;border:1px solid #c9d0df}
+.ar-r-you{background:#1a2744;color:#ffffff}
+/* layout */
+.ar-body{display:grid;grid-template-columns:232px 936px;gap:32px;align-items:start;padding:28px 0 32px}
+.ar-rail{display:flex;flex-direction:column;gap:12px}
+.ar-railnav{display:flex;flex-direction:column;gap:2px;margin-top:8px}
+.ar-railnav a{display:flex;justify-content:space-between;align-items:center;padding:10px 10px;border-radius:8px;color:#1a2744;text-decoration:none;font-size:14px;min-height:44px;border-left:3px solid transparent}
+.ar-railnav a.ar-on{background:#f3eedc;font-weight:600;border-left-color:#c8a94a}
+.ar-cnt{font-size:12px;font-weight:700;color:#1a2744;background:#eceef3;border-radius:999px;padding:2px 8px}
+.ar-col{display:flex;flex-direction:column;gap:20px;min-width:0}
+.ar-card{background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:22px 24px}
+.ar-sh{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;margin-bottom:6px}
+.ar-h2{font-size:24px;line-height:1.2;font-weight:700;letter-spacing:-.01em;margin:0;display:flex;align-items:center;gap:10px}
+.ar-sub{font-size:13px;color:#555c6b}
+.ar-today{list-style:none;margin:6px 0 0;padding:0}
+.ar-today li{display:grid;grid-template-columns:96px minmax(0,1fr) auto;gap:16px;align-items:center;min-height:64px;padding:11px 0;border-top:1px solid #eeede7}
+.ar-today li b{font-size:15px;font-weight:600;line-height:1.35}
+.ar-tline{font-size:13.5px;color:#555c6b;line-height:1.4;margin-top:2px}
+.ar-foot13{font-size:13px;line-height:1.45;color:#555c6b}
+.ar-fail{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:#b42318;background:#fdecea;border-radius:6px;padding:3px 8px;margin-right:6px;vertical-align:1px}
+.ar-fail i{display:block;width:8px;height:8px;border-radius:50%;background:#b42318}
+/* you section */
+.ar-mline{font-size:15px;color:#1a2744;margin-top:6px}
+.ar-two{display:grid;grid-template-columns:300px minmax(0,1fr);gap:28px;margin-top:16px;align-items:start}
+.ar-mcard{width:300px;height:180px;background:#fbf7e9;border:1px solid #e3d8b4;border-radius:14px;padding:14px 16px;display:flex;justify-content:space-between;gap:10px;position:relative}
+.ar-logo{width:30px;height:30px;display:block;object-fit:contain;border-radius:4px}
+.ar-mlab{font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#866a1e;margin-top:10px}
+.ar-mname{font-size:18px;font-weight:700;margin-top:2px}
+.ar-msm{font-size:12.5px;color:#3d4556;margin-top:3px}
+.ar-qr{align-self:flex-end;background:#ffffff;border-radius:6px;padding:4px;line-height:0;border:1px solid #e3d8b4}
+.ar-kv{display:grid;grid-template-columns:auto 1fr;gap:8px 16px;margin:8px 0 0;font-size:14px}
+.ar-kv dt{color:#555c6b}
+.ar-kv dd{margin:0;color:#1a2744}
+.ar-h3{font-size:16px;font-weight:700;margin:22px 0 10px;display:flex;align-items:center;gap:10px}
+.ar-entry .k-date,.ar-saved .k-date{align-self:start}
+.ar-entry{display:grid;grid-template-columns:64px minmax(0,1fr);gap:16px;padding:16px 18px;border:2px solid #1a2744;border-radius:12px}
+.ar-saved{display:grid;grid-template-columns:64px minmax(0,1fr) auto;gap:16px;align-items:center;padding:12px 18px;border:1px solid #e3e1d8;border-radius:12px;margin-top:10px}
+.ar-label{font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#555c6b}
+.ar-track{list-style:none;margin:14px 0 4px;padding:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr))}
+.ar-track li{position:relative;padding:32px 12px 0 0;font-size:12.5px;line-height:1.35;color:#555c6b}
+.ar-track li b{display:block;color:#1a2744;font-size:13px;font-weight:600}
+.ar-track li:before{content:"";position:absolute;top:11px;left:0;right:0;height:3px;background:#e3e1d8}
+.ar-track li.ar-done:before{background:#1a2744}
+.ar-track li:last-child:before{right:auto;width:25px}
+.ar-dot{position:absolute;top:0;left:0;width:25px;height:25px;border-radius:50%;background:#ffffff;border:2px solid #c9c6ba;display:flex;align-items:center;justify-content:center;z-index:1}
+.ar-done .ar-dot{background:#1a2744;border-color:#1a2744;color:#ffffff}
+.ar-now .ar-dot{background:#f6efd9;border-color:#866a1e;color:#866a1e}
+.ar-rc{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:center;padding:10px 0;border-top:1px solid #eeede7;font-size:14px}
+.ar-sets{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.ar-set{display:flex;gap:10px;align-items:flex-start;border:1px solid #e3e1d8;border-radius:10px;padding:12px;font-size:13px;line-height:1.4}
+.ar-set b{font-size:14px}
+.ar-ico{width:32px;height:32px;border-radius:9px;background:#f1efe8;display:flex;align-items:center;justify-content:center;flex:none;color:#1a2744}
+/* admin row */
+.ar-arow{display:flex;align-items:center;gap:18px;background:#ffffff;border:1px solid #dddcd4;border-left:5px solid #1a2744;border-radius:12px;padding:18px 22px;min-height:96px}
+.ar-arow-t{flex:1;min-width:0}
+.ar-asent{font-size:18px;font-weight:700;color:#1a2744;line-height:1.3}
+.ar-asub{font-size:15px;color:#555c6b;margin-top:3px;line-height:1.4}
+.ar-red{color:#b42318;font-weight:600}
+/* footer */
+.ar-foot-in{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px;padding:18px 40px 20px}
+.ar-foot .k-meta{color:rgba(255,255,255,.78)}
+.ar-foot nav a{font-size:14px}
+/* states */
+.ar-states{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px;margin:0 40px;background:#f6f6f2;border:1px solid #dddcd4;border-radius:14px;padding:18px}
+.ar-st h3{font-size:14px;font-weight:700;margin:0 0 8px;display:flex;align-items:center;gap:8px}
+.ar-st .ar-arow{padding:14px 16px;min-height:120px;gap:14px;align-items:center}
+.ar-st .ar-asent{font-size:17px}
+.ar-st .ar-asub{font-size:13px}
+.ar-stmeta{font-size:12.5px;color:#3d4556;margin-top:8px;line-height:1.45}
+.ar-stmeta b{font-weight:600;color:#1a2744}
+.ar-wk{display:inline-flex;align-items:center;font-size:12px;font-weight:700;color:#664c0c;background:#f5ecd2;border-radius:6px;padding:3px 8px;margin-bottom:5px}
+.ar-over{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:#b42318;background:#fdecea;border-radius:6px;padding:3px 8px;margin-bottom:5px}
+.ar-over i{display:block;width:8px;height:8px;border-radius:50%;background:#b42318}
+/* way in */
+.ar-cgrid{display:grid;grid-template-columns:600px minmax(0,1fr);gap:20px;margin:0 40px}
+.ar-panel{background:#ffffff;border:1px solid #dddcd4;border-radius:14px;padding:16px 18px}
+.ar-panel h3{font-size:15px;font-weight:700;margin:0 0 10px;display:flex;align-items:center;gap:8px}
+.ar-thumb{width:100%;height:268px;border:1px solid #cfcec6;border-radius:10px;overflow:hidden;background:#f5f5f2;display:flex;flex-direction:column}
+.ar-thd{height:26px;background:#1a2744;display:flex;align-items:center;gap:6px;padding:0 10px;color:#ffffff;font-size:9.5px;font-weight:600}
+.ar-thd svg{width:14px;height:14px;fill:#ffffff}
+.ar-thd span:last-child{margin-left:auto;font-weight:500}
+.ar-tcrumb{display:flex;justify-content:space-between;align-items:center;padding:6px 10px;font-size:10.5px;color:#3d4556;background:#ffffff;border-bottom:1px solid #e3e2dc}
+.ar-tcrumb a{color:#1a2744;font-weight:600;text-decoration:underline;text-underline-offset:2px}
+.ar-tbody{display:grid;grid-template-columns:118px minmax(0,1fr);gap:8px;padding:8px;flex:1;min-height:0}
+.ar-tside{background:#ffffff;border:1px solid #e3e2dc;border-radius:6px;padding:5px;display:flex;flex-direction:column;gap:1px}
+.ar-tside span{font-size:10px;padding:2px 6px;border-radius:4px;color:#1a2744;display:flex;justify-content:space-between}
+.ar-tside .ar-ton{background:#1a2744;color:#ffffff;font-weight:600}
+.ar-ttab{background:#ffffff;border:1px solid #e3e2dc;border-radius:6px;overflow:hidden}
+.ar-ttab table{width:100%;border-collapse:collapse;font-size:9.5px}
+.ar-ttab th{text-align:left;font-size:8.5px;letter-spacing:.06em;text-transform:uppercase;color:#555c6b;padding:4px 6px;background:#fbfbf8;border-bottom:1px solid #ecebe5}
+.ar-ttab td{padding:4px 6px;border-bottom:1px solid #f0efe9;color:#1a2744;vertical-align:top}
+.ar-ttag{display:inline-block;font-size:8.5px;font-weight:600;border-radius:3px;padding:1px 4px;background:#eceef2;color:#2b3446}
+.ar-ttag-a{background:#f5ecd2;color:#664c0c}
+.ar-ttag-f{background:#fdecea;color:#8a1c12}
+.ar-tbtn{display:inline-block;font-size:8.5px;font-weight:600;border-radius:3px;padding:1px 5px;background:#1a2744;color:#ffffff}
+.ar-pnote{font-size:13px;line-height:1.45;color:#3d4556;margin-top:10px}
+.ar-mini li{grid-template-columns:72px minmax(0,1fr) auto;min-height:56px;padding:9px 0}
+/* insets */
+.ar-igrid{display:grid;grid-template-columns:300px 400px minmax(0,1fr);gap:20px;margin:0 40px;align-items:start}
+.ar-menu{background:#ffffff;border:1px solid #d9d8d1;border-radius:12px;box-shadow:0 18px 40px rgba(16,24,43,.16);padding:8px}
+.ar-mrow{display:flex;justify-content:space-between;align-items:center;gap:12px;min-height:44px;padding:4px 12px;border-radius:8px;color:#1a2744;font-size:15px;font-weight:500}
+.ar-mrow small{font-size:12.5px;color:#555c6b;font-weight:400}
+.ar-msub{display:block;font-size:12.5px;color:#555c6b;font-weight:400;margin-top:1px}
+.ar-mtodo{background:#fbf7e9;margin-bottom:4px}
+.ar-mlabel{font-size:11.5px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:#555c6b;padding:8px 12px 4px}
+.ar-msep{height:1px;background:#e3e2dc;margin:6px 4px}
+.ar-ring{box-shadow:0 0 0 2px #c8a94a;background:#fbf7e9}
+.ar-why{background:#ffffff;border:1px solid #dddcd4;border-radius:14px;padding:16px 18px;font-size:13px;line-height:1.5;color:#3d4556}
+.ar-why b{color:#1a2744;font-weight:600}
+.ar-why ul{margin:8px 0 0;padding-left:18px}
+.ar-why li{margin-bottom:6px}
+</style>
+</helmet>
+<div class="ar-root" style="width:1440px;height:1700px">
+<section class="ar-doc" aria-label="About this board">
+<div class="ar-doc-top">
+<div>
+<div class="k-row-sm" style="gap:10px"><p class="k-kicker">14 · My LCA · round 2 · option R, part 2</p><span class="ar-round">ROUND 2</span></div>
+<h1 class="ar-title">My LCA · R-2 · LCA admin: one row, its states and the way in (round 2)</h1>
+<p class="ar-ml" style="margin-top:8px"><b>Built from:</b> Account-R's one-row section (frame A is on Account-R), Account-C's rail and Today rows, Work-C's queue drawn small as the place Open Admin lands, the decided My LCA ▾ menu from Nav-Header-Final.</p>
+<p class="ar-ml"><b>Replaces:</b> the Workspace and Admin panel rows of the first-round menu, and Account-C's "Admin in the header" line.</p>
+<p class="ar-ml"><b>Round 2 · Frame: Int-A, swappable.</b> <b>K's feedback applied (Tue, Oct 13):</b> a good default, every section drawn in full (here its empty, busy and second-factor states), roles hosted in My LCA, options for each (Q and R), the screens joined to the whole (the way into Admin and back).</p>
+<p class="ar-frameline"><b>Frame.</b> Drawn inside Int-A (My LCA as the hub, rooms open from each section). The frame is swappable: under Int-B this section is the page the left rail opens; under Int-C it is a card on Your work. The room itself does not change; only the breadcrumb, the way back and the menu row do. Pick the frame on Account-Int-A, B or C.</p>
+<p style="margin-top:8px"><span class="k-sample">Sample data · the admin's name, counts, times and queue items are invented; routes and roles are real</span></p>
+</div>
+<aside class="ar-grey" aria-label="Board note">
+<div>
+<p><b>What</b>The rest of option R: the row empty, busy and before the second factor; where Open Admin lands; what Today keeps; the rail row and the menu row.</p>
+<p><b>Built from</b>Account-R frame A, Work-C, Nav-Header-Final; the sibling is Account-Q.</p>
+<p><b>K's feedback applied</b>Nobody but an admin sees Admin, and an admin reaches it from one row.</p>
+</div>
+<div>
+<p><b>Open for K</b></p>
+<ol>
+<li>One row (this board) or Account-Q's summary for the admin section?</li>
+<li>The row says "More than a week" (amber, as on Account-Q-2) once anything waits 7 days; keep that, or name the oldest item instead?</li>
+<li>Should Admin's "Back to My LCA" return to the Admin row (#admin, drawn) or to the top of the page?</li>
+</ol>
+</div>
+</aside>
+</div>
+<div class="ar-lbox">
+<p class="k-label">Notes on this board</p>
+<ol class="ar-notes">
+<li><span class="k-num-badge">1</span><span><b>One row in every state:</b> a count, one sentence and one button. Nothing of the queue's shape appears, even when it is busy.</span></li>
+<li><span class="k-num-badge">2</span><span><b>Other roles add their own rows</b> like anyone else's: an admin who directs an event or holds a seat gets those sections and menu rows above Admin.</span></li>
+<li><span class="k-num-badge">3</span><span><b>Today keeps four admin lines</b> (two assigned items, a failed automation, the queue line), identical to Account-Q.</span></li>
+<li><span class="k-num-badge">4</span><span><b>Before the second factor</b> the row shows no number and asks her to confirm it's you; the rest of My LCA works as normal.</span></li>
+<li><span class="k-num-badge">5</span><span><b>Open Admin is the only door</b> and lands on Needs attention; Admin's own crumb and "Back to My LCA" lead home.</span></li>
+<li><span class="k-num-badge">6</span><span><b>The menu keeps the personal count (1)</b> and adds one row, "Admin · 12 need attention", after the personal rows. Never Admin panel, never Workspace.</span></li>
+</ol>
+</div>
+</section>
+
+<div class="ar-flab"><span class="ar-code">B</span><h2>States of the row</h2><span class="k-num-badge" style="width:24px;height:24px;font-size:12px">1</span><span class="k-meta">the one-row card at 1:1, with its rail row and menu row</span></div>
+<div class="ar-states">
+<div class="ar-st">
+<h3>Empty</h3>
+<div class="ar-arow"><div class="ar-arow-t"><p class="ar-asent">Nothing needs attention in Admin</p><p class="ar-asub">Last change: you marked the Bayou Region seat vacant, Sat, Oct 3, 2:30 PM</p></div><a class="k-btn k-btn-navy k-btn-sm" href="#">Open Admin</a></div>
+<p class="ar-stmeta"><b>Rail:</b> "Admin", no count · <b>Menu:</b> "Admin"</p>
+</div>
+<div class="ar-st">
+<h3>Busy</h3>
+<div class="ar-arow"><div class="ar-arow-t"><span class="ar-wk">More than a week</span><p class="ar-asent">31 need attention in Admin</p><p class="ar-asub">oldest 12 days · 5 assigned to you · 2 automations <span class="ar-red">failed</span> (<span class="ar-red">Daily emails</span>, <span class="ar-red">Stripe payments</span>)</p></div><a class="k-btn k-btn-navy k-btn-sm" href="#">Open Admin</a></div>
+<p class="ar-stmeta"><b>Rail:</b> "Admin · 31" · <b>Menu:</b> "Admin · 31 need attention"</p>
+</div>
+<div class="ar-st">
+<h3><span class="k-num-badge" style="width:22px;height:22px;font-size:11.5px">4</span>Second factor not confirmed this session</h3>
+<div class="ar-arow"><div class="ar-arow-t"><p class="ar-asent">Admin · confirm it's you to see the count</p><p class="ar-asub">Admin reads need the second factor (requireAdmin, auth.ts lines 141 to 161)</p></div><a class="k-btn k-btn-navy k-btn-sm" href="#">Confirm it's you</a></div>
+<p class="ar-stmeta"><b>Rail:</b> "Admin", no count · <b>Goes to</b> /account/security · Your own You section is unaffected.</p>
+</div>
+</div>
+
+<div class="ar-flab"><span class="ar-code">C</span><h2>The way in, and what Today still carries</h2><span class="k-meta">Open Admin is the only door; Today keeps her own items</span></div>
+<div class="ar-cgrid">
+<div class="ar-panel">
+<h3><span class="k-num-badge" style="width:22px;height:22px;font-size:11.5px">5</span>Open Admin lands on Needs attention</h3>
+<div class="ar-thumb" aria-label="Thumbnail of /admin">
+<div class="ar-thd"><svg viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span>Louisiana Chess Association</span><span>Donate · My LCA ▾</span></div>
+<div class="ar-tcrumb"><a href="#">‹ Back to My LCA</a><span>My LCA › Admin › Needs attention</span></div>
+<div class="ar-tbody">
+<div class="ar-tside"><span class="ar-ton">Needs attention <b>12</b></span><span>Members</span><span>Tournaments</span><span>Clubs</span><span>Content</span><span>Board</span><span>Email</span><span>Site</span><span>Audit</span></div>
+<div class="ar-ttab"><table><thead><tr><th>Item</th><th>Type</th><th>Waiting</th><th>Owner</th><th></th></tr></thead><tbody>
+<tr><td>Casa de Ajedrez · visitor report</td><td><span class="ar-ttag ar-ttag-a">Club report</span></td><td>9 days</td><td>Assign</td><td><span class="ar-tbtn">Reply</span></td></tr>
+<tr><td>Champions: missing years 1987 to 1991</td><td><span class="ar-ttag">Board inbox</span></td><td>6 days</td><td>Secretary</td><td><span class="ar-tbtn">Open</span></td></tr>
+<tr><td>Bid to host the 2027 State Championship</td><td><span class="ar-ttag">Board inbox</span></td><td>4 days</td><td>Full board</td><td><span class="ar-tbtn">Open</span></td></tr>
+<tr><td>US Chess ID lookup can't find me</td><td><span class="ar-ttag">Support</span></td><td>3 days</td><td>Assign</td><td><span class="ar-tbtn">Reply</span></td></tr>
+<tr><td>Can't add my son to our family account</td><td><span class="ar-ttag">Support</span></td><td>2 days</td><td>You</td><td><span class="ar-tbtn">Reply</span></td></tr>
+<tr><td colspan="5" style="color:#555c6b">7 more rows, longest waiting first</td></tr>
+</tbody></table></div>
+</div>
+</div>
+<p class="ar-pnote">Admin is the only place the queue, the assigned items, the automations panel and the banner editor appear (Work-I, J). "Back to My LCA" sits at its top left; the crumb reads My LCA › Admin › Needs attention.</p>
+</div>
+<div class="ar-panel">
+<h3><span class="k-num-badge" style="width:22px;height:22px;font-size:11.5px">3</span>Today still carries the admin's own items</h3>
+<ul class="ar-today ar-mini" style="margin:0">
+<li><span><span class="ar-role ar-r-admin">Admin</span></span><div><b>Support ticket assigned to you: "Can't add my son to our family account".</b><div class="ar-tline">Danielle Robichaux · waiting 2 days</div></div><a class="k-btn k-btn-line k-btn-sm" href="#">Reply</a></li>
+<li><span><span class="ar-role ar-r-admin">Admin</span></span><div><b>Approval assigned to you: Monroe Chess Club Quick Quads, a club event.</b><div class="ar-tline">Submitted by the North Louisiana representative · waiting 1 day</div></div><a class="k-btn k-btn-line k-btn-sm" href="#">Review</a></li>
+<li><span><span class="ar-role ar-r-admin">Admin</span></span><div><b><span class="ar-fail"><i></i>Failed</span>Daily emails: 2 of 43 failed at 6:00 AM.</b><div class="ar-tline">Membership receipt to n***@[domain], mailbox full · group email, 3 addresses bounced</div></div><a class="k-btn k-btn-line k-btn-sm" href="#">Check</a></li>
+<li><span><span class="ar-role ar-r-admin">Admin</span></span><div><b>12 items need attention in Admin.</b><div class="ar-tline">Oldest 9 days · 2 assigned to you</div></div><a class="k-btn k-btn-navy k-btn-sm" href="#">Open Admin</a></li>
+</ul>
+<p class="ar-pnote">The row is the section; Today keeps the queue line, the items assigned by name and a failed automation, because those are things to finish today. This is the same on Account-Q.</p>
+</div>
+</div>
+
+<div class="ar-flab"><span class="ar-code">D</span><h2>Rail row and menu row</h2><span class="k-meta">both at 1:1</span></div>
+<div class="ar-igrid">
+<div class="ar-panel">
+<h3>Rail row</h3>
+<nav class="ar-railnav" aria-label="On this page, inset" style="margin:0">
+<a href="#">Today <span class="ar-cnt">5</span></a>
+<a href="#">You</a>
+<a class="ar-on" href="#">Admin <span class="ar-cnt">12</span></a>
+</nav>
+<p class="ar-pnote">The row word is "Admin" here, since the section is one row; on Account-Q it reads "LCA admin · 12".</p>
+</div>
+<div class="ar-menu" role="menu" aria-label="My LCA menu, inset">
+<div class="ar-mlabel">To do · 1</div>
+<div class="ar-mrow ar-mtodo"><span>Pay $60 · The Baton Rouge Classic<span class="ar-msub">U1800 · by Sat, Oct 17</span></span><span class="k-tag k-tag-soon">Unpaid</span></div>
+<div class="ar-msep"></div>
+<div class="ar-mrow"><span>My LCA</span><small>Your dashboard</small></div>
+<div class="ar-mrow"><span>Membership card</span><small>Show at the TD table</small></div>
+<div class="ar-msep"></div>
+<div class="ar-mrow ar-ring"><span>Admin · 12 need attention</span><span class="k-num-badge" style="width:22px;height:22px;font-size:11.5px">6</span></div>
+<div class="ar-msep"></div>
+<div class="ar-mrow"><span>Log out</span></div>
+</div>
+<div class="ar-why">
+<b>Why the menu reads this way</b>
+<ul>
+<li>The personal count stays 1: her unpaid entry. Admin items never count in the pill (WS02).</li>
+<li>The admin row comes after the personal rows and carries its own count in words. The word is Admin, never Admin panel (Nav-IA-Final).</li>
+<li><span class="k-num-badge" style="width:20px;height:20px;font-size:11px;vertical-align:-4px;margin-right:4px">2</span>No row reads Workspace. If Rachel also directed an event or held a seat, those rows would sit above Admin, as on any member's menu.</li>
+</ul>
+</div>
+</div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1700}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

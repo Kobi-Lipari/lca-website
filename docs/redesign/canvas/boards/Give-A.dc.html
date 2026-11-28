@@ -1,0 +1,306 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Giving · A · One plain page (round 2)</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/6107adb451dbab26ee5d89f4189b81f8">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1a2744}
+.gv-root{width:1440px;box-sizing:border-box;background:#ecebe6;color:#1a2744}
+.gv-root *{box-sizing:border-box}
+.gv-strip{height:56px;display:flex;align-items:center;justify-content:space-between;gap:24px;padding:0 40px;background:#ecebe6;border-bottom:1px solid #d9d8d1}
+.gv-strip-l{font-size:15px;font-weight:700;letter-spacing:-.005em;white-space:nowrap}
+.gv-strip-r{font-size:14px;font-weight:600;color:#866a1e;text-align:right}
+.gv-doc{padding:10px 40px 12px;display:grid;grid-template-columns:minmax(0,1fr) 540px;gap:20px;align-items:start}
+.gv-meta{font-size:13.5px;line-height:1.45;color:#3d4556;margin:0}
+.gv-meta b{color:#1a2744;font-weight:600}
+.gv-lbox{background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:10px 16px 12px;margin-top:8px}
+.gv-notes{list-style:none;margin:6px 0 0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px 18px}
+.gv-notes li{display:flex;gap:9px;align-items:flex-start;font-size:12.5px;line-height:1.4}
+.gv-notes .k-num-badge{width:22px;height:22px;font-size:11.5px}
+.gv-grey{background:#efefea;border:1px solid #dddcd4;border-radius:12px;padding:10px 16px;display:flex;flex-direction:column;gap:4px}
+.gv-grey p{margin:0;font-size:12.5px;line-height:1.42;color:#2b3446}
+.gv-grey p b{font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:#555c6b;margin-right:6px}
+.gv-grey ol{margin:2px 0 0;padding-left:18px;font-size:12.5px;line-height:1.42;color:#2b3446}
+
+.gv-page{background:#ffffff}
+/* decided header */
+.gv-hd-in{gap:0;position:relative;min-height:64px}
+.gv-hd .k-brand{margin-right:16px}
+.gv-rook{width:30px;height:30px;fill:#ffffff;flex:none}
+.gv-rook-sm{width:24px;height:24px;fill:#c8a94a}
+.gv-nav{gap:0}
+.gv-nav a{padding:0 10px;white-space:nowrap}
+.gv-navbtn{display:inline-flex;align-items:center;gap:4px;min-height:44px;padding:0 10px;border:0;background:transparent;color:#ffffff;font:inherit;font-size:15px;font-weight:500;cursor:pointer}
+.gv-sbtn{display:inline-flex;align-items:center;gap:8px;width:220px;height:44px;padding:0 8px 0 12px;margin-right:16px;border-radius:8px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.45);color:#ffffff;text-decoration:none;font-size:14.5px;font-weight:500;flex:none}
+.gv-kbd{margin-left:auto;font-family:"Geist Mono",ui-monospace,monospace;font-size:12px;color:#e8ecf4;border:1px solid rgba(255,255,255,.4);border-radius:5px;padding:2px 6px;line-height:1.2}
+.gv-util{gap:12px}
+.gv-util .k-ulink{padding:0 4px}
+.gv-donate-on{text-decoration:underline !important;text-underline-offset:5px;text-decoration-thickness:2px;text-decoration-color:#c8a94a !important}
+.gv-mk{position:absolute;z-index:20;width:24px;height:24px;font-size:12px;box-shadow:0 0 0 3px #ffffff}
+
+/* body */
+.gv-body{display:grid;grid-template-columns:760px minmax(0,1fr);gap:0 20px;padding-top:8px;padding-bottom:8px;align-items:start}
+.gv-side{display:flex;flex-direction:column;gap:12px;padding-top:4px}
+.gv-left{display:flex;flex-direction:column;gap:16px;position:relative}
+.gv-head{display:flex;flex-direction:column;gap:8px;position:relative}
+.gv-head .k-h1{margin:0}
+.gv-lead{font-size:18px;line-height:1.55;color:#2b3446;margin:0;max-width:700px}
+.gv-form{padding:20px 24px;display:flex;flex-direction:column;gap:14px;position:relative}
+.gv-frow{display:grid;grid-template-columns:minmax(0,1fr) 280px;gap:20px;align-items:end}
+.gv-form .k-seg{align-self:flex-start}
+.gv-flabel{font-size:14px;font-weight:600;color:#1a2744;margin:0}
+.gv-chips{display:flex;gap:10px;flex-wrap:wrap}
+.gv-chips .k-chip{min-height:44px;min-width:70px;justify-content:center;font-size:15px;font-weight:600}
+.gv-sel{position:relative}
+.gv-sel select{appearance:none;-webkit-appearance:none;padding-right:40px;cursor:pointer}
+.gv-sel svg{position:absolute;right:12px;top:12px;pointer-events:none}
+.gv-lock{display:flex;gap:9px;align-items:flex-start;font-size:13.5px;line-height:1.45;color:#3d4556;margin:0}
+.gv-lock svg{flex:none;margin-top:1px}
+.gv-money{display:flex;gap:16px;align-items:flex-start;padding:16px 20px;border:1px solid #e6e3d8;border-radius:12px;position:relative}
+.gv-money .ico{width:40px;height:40px;flex:0 0 40px;border-radius:10px;background:#f1efe7;display:flex;align-items:center;justify-content:center}
+.gv-other{display:flex;flex-direction:column;gap:6px;font-size:14px;line-height:1.5;color:#3d4556}
+.gv-other p{margin:0}
+.gv-olinks{display:flex;flex-wrap:wrap;gap:4px 18px}
+.gv-olinks a{color:#1a2744;font-weight:600;text-decoration:underline;text-underline-offset:3px}
+
+/* phone (WS02 chrome) */
+.gv-pcol{display:flex;flex-direction:column;gap:10px;align-items:center}
+.gv-pcol .gv-cap{width:520px;text-align:center}
+.gv-phone{width:390px;height:844px;box-sizing:content-box !important;border:10px solid #10182b;border-radius:52px;background:#10182b;position:relative;box-shadow:0 24px 50px rgba(16,24,43,.2);flex:none}
+.gv-scr{position:absolute;inset:0;border-radius:42px;overflow:hidden;display:flex;flex-direction:column;background:#ffffff}
+.gv-status{flex:none;height:47px;background:#1a2744;color:#ffffff;display:flex;align-items:center;justify-content:space-between;padding:4px 26px 0 34px;font-size:14px;font-weight:600;position:relative}
+.gv-island{position:absolute;left:50%;top:11px;width:120px;height:34px;margin-left:-60px;border-radius:20px;background:#000000}
+.gv-statr{display:flex;align-items:center;gap:6px}
+.gv-sig{display:inline-flex;align-items:flex-end;gap:1.5px;height:11px}
+.gv-sig i{display:block;width:3px;background:currentColor;border-radius:1px}
+.gv-sig i:nth-child(1){height:4px}.gv-sig i:nth-child(2){height:6px}.gv-sig i:nth-child(3){height:8.5px}.gv-sig i:nth-child(4){height:11px}
+.gv-batt{display:inline-flex;width:24px;height:12px;border:1.5px solid currentColor;border-radius:4px;padding:1.5px}
+.gv-batt i{display:block;width:70%;background:currentColor;border-radius:1.5px}
+.gv-app{flex:none;height:56px;background:#1a2744;display:flex;align-items:center;gap:8px;padding:0 10px 0 14px;color:#ffffff;border-bottom:1px solid rgba(255,255,255,.12)}
+.gv-brand{display:flex;align-items:center;gap:8px;color:#ffffff;text-decoration:none;min-height:44px;min-width:0}
+.gv-mark{width:28px;height:28px;fill:#ffffff;flex:none}
+.gv-bname{display:flex;flex-direction:column;line-height:1.12}
+.gv-bname b{font-size:14px;font-weight:700;white-space:nowrap}
+.gv-bname span{font-size:11px;font-weight:500;color:rgba(255,255,255,.78)}
+.gv-psbtn{display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;border:1.5px solid rgba(255,255,255,.6);border-radius:9px;color:#ffffff;margin-left:auto;flex:none}
+.gv-main{flex:1;min-height:0;overflow:hidden;position:relative;background:#ffffff;padding:12px 16px 0;display:flex;flex-direction:column;gap:10px}
+.gv-tabs{flex:none;background:#ffffff;border-top:1px solid #d9d8d1;position:relative;z-index:5}
+.gv-tabs-in{display:grid;grid-template-columns:repeat(4,1fr);height:55px}
+.gv-tab{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;min-height:44px;padding:0;border:0;background:transparent;color:#1a2744;font:inherit;font-size:12px;font-weight:500;line-height:1.2;text-decoration:none}
+.gv-tab svg{width:20px;height:20px}
+.gv-safe{height:34px;position:relative}
+.gv-homeind{position:absolute;left:50%;bottom:8px;width:134px;height:5px;margin-left:-67px;border-radius:3px;background:#10182b}
+.gv-ph1{font-size:28px;line-height:1.12;font-weight:700;letter-spacing:-.015em;margin:0}
+.gv-plead{font-size:15px;line-height:1.45;color:#2b3446;margin:0}
+.gv-pform{border:1px solid #dddcd4;border-radius:12px;padding:12px 14px;display:flex;flex-direction:column;gap:8px}
+.gv-pform .k-seg{display:flex}
+.gv-pform .k-seg button{flex:1;min-height:44px}
+.gv-pchips{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.gv-pchips .k-chip{justify-content:center;min-height:44px;font-size:15px;font-weight:600}
+.gv-pmeta{font-size:12.5px;line-height:1.42;color:#555c6b;margin:0}
+.gv-cap{font-size:12.5px;line-height:1.45;color:#3d4556;margin:0}
+.gv-cap b{color:#1a2744}
+
+/* footer */
+.gv-foot-in{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px;padding-top:12px;padding-bottom:12px}
+.gv-foot .k-meta{color:rgba(255,255,255,.78)}
+.gv-foot nav a{font-size:14px}
+
+/* states (board) */
+.gv-states{padding:8px 40px 8px;display:grid;grid-template-columns:500px 360px minmax(0,1fr);gap:18px;align-items:start}
+.gv-zoom{zoom:.84}
+.gv-fr{display:flex;flex-direction:column;gap:8px}
+.gv-frh{display:flex;align-items:center;gap:8px;font-size:13.5px;font-weight:700;margin:0}
+.gv-oc{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:6px;background:#ffffff;border:1px solid #c4c3bb;font-size:12px;font-weight:700;flex:none}
+.gv-box{background:#ffffff;border:1px solid #d9d8d1;border-radius:12px;box-shadow:0 8px 20px rgba(16,24,43,.06)}
+.gv-sa{padding:14px 16px;display:grid;grid-template-columns:180px 200px minmax(0,1fr);gap:12px 14px;align-items:start}
+.gv-sa .k-seg{align-self:flex-start}
+.gv-sa .k-chip{min-height:36px;font-size:14px;font-weight:600;padding:0 12px}
+.gv-sa .k-input{min-height:40px;font-size:15px}
+.gv-thx{padding:16px 18px;display:flex;flex-direction:column;gap:10px}
+.gv-thx h2{margin:0}
+.gv-thin{font-size:12px;line-height:1.4;color:#2b3446}
+.gv-thin ul{margin:0;padding-left:16px}
+.gv-thin li{margin-bottom:3px}
+.gv-thin b{color:#1a2744}
+.gv-annot{position:relative;border:1px dashed #8a7a4a;background:#fffaf0;color:#664c0c;border-radius:10px;padding:8px 12px 8px 22px;font-size:12.5px;line-height:1.45;font-weight:500}
+.gv-annot b{color:#664c0c}
+</style>
+</helmet>
+<div class="gv-root" style="width:1440px;height:1550px">
+
+<div class="gv-strip"><span class="gv-strip-l">Page 13 · Give · A · The plain /give page</span><span class="gv-strip-r">K: service-first; people mainly give by taking part; giving is there as an option. One sentence, one form, one link.</span></div>
+
+<section class="gv-doc" aria-label="About this board">
+<div>
+<div class="k-row k-row-sm" style="gap:12px;margin:0 0 4px"><h1 class="k-h2" style="margin:0">Giving · A · One plain page</h1><span class="k-tag k-tag-lca">Round 2</span><span class="k-kicker" style="font-size:12px">13 · Membership · Give A</span></div>
+<p class="gv-meta"><b>Built from:</b> Member-B (its volunteer-board sentence, 300+ and the Give line) and the brief's Donate scope · Round 2 · <b>Replaces:</b> Member-C · <b>K's feedback applied (Tue, Oct 13):</b> service first, giving quiet · <b>Shown:</b> /give, signed out; Once, $25, General.</p>
+<div class="gv-lbox">
+<p class="k-label">Notes on this board</p>
+<ol class="gv-notes">
+<li><span class="k-num-badge">1</span><span><b>First sentence:</b> LCA runs on joining and playing; the form comes after it.</span></li>
+<li><span class="k-num-badge">2</span><span><b>Once or monthly,</b> four amounts and Other; no goal or bar.</span></li>
+<li><span class="k-num-badge">3</span><span><b>Where the money goes</b> is the treasurer's report, as on Membership.</span></li>
+<li><span class="k-num-badge">4</span><span><b>Stripe Checkout</b> takes the email; the one receipt is LCA's (D14).</span></li>
+<li><span class="k-num-badge">5</span><span><b>No tax claim</b> until the board confirms LCA's status (WS12).</span></li>
+<li><span class="k-num-badge">6</span><span><b>Donate stays</b> in header and footer (WS02); two taps on phones.</span></li>
+</ol>
+</div>
+</div>
+<aside class="gv-grey" aria-label="Board note">
+<p><b>What</b>The giving option K asked for: a short /give page. One sentence on how LCA is supported, one form, one report link.</p>
+<p><b>Built from</b>Member-B's wording, the brief's Donate scope, the decided chrome. From Member-C only the form: no funds, goals, bars, money table, trust tiles, sponsored entries, add-on, cover the fee, tribute, thank-you wall, appeal or tax line.</p>
+<p><b>K's feedback applied</b>Service first, giving quiet: no urgency, no goals, no second ask.</p>
+<p><b>Open for K</b>(1) Right amounts? Keep Put it toward, or General only? (2) Board: the check address and LCA's tax status.</p>
+</aside>
+</section>
+
+<div class="gv-page">
+
+<header class="k-header gv-hd"><div class="k-wrap-wide k-header-in gv-hd-in"><a class="k-brand" href="#" aria-label="Louisiana Chess Association, home"><svg class="gv-rook" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span class="k-brand-name" aria-hidden="true"><b>Louisiana Chess</b><span>Association</span></span></a><nav class="k-navlinks gv-nav" aria-label="Main"><a href="#">Tournaments</a><a href="#">Clubs</a><a href="#">Scholastic</a><a href="#">News</a><a href="#">Membership</a><button class="gv-navbtn" type="button" aria-expanded="false" aria-haspopup="true">About<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></button></nav><a class="gv-sbtn" href="/search" aria-keyshortcuts="Meta+K Control+K"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg><span>Search</span><kbd class="gv-kbd" aria-hidden="true">&#8984;K</kbd></a><div class="k-utility gv-util"><a class="k-ulink gv-donate-on" href="/give" aria-current="page">Donate</a><a class="k-ulink" href="#">Log in</a><a class="k-btn k-btn-gold k-btn-sm" href="#">Join LCA</a></div><span class="k-num-badge gv-mk" style="right:196px;top:-12px">6</span></div></header>
+
+<div class="k-wrap-wide gv-body">
+<div class="gv-left">
+
+<div class="gv-head">
+<span class="k-kicker">Give</span>
+<h1 class="k-h1">Give to Louisiana chess</h1>
+<p class="gv-lead">Most people support LCA by joining and playing: dues and entry fees pay for nearly everything a volunteer board and 300+ members do. If you'd like to give beyond that, this is the place, and thank you.</p>
+<span class="k-num-badge gv-mk" style="left:-36px;top:96px">1</span>
+</div>
+
+<form class="k-card gv-form" action="#" onsubmit="return false">
+<div class="k-row" style="gap:16px;flex-wrap:nowrap">
+<div class="k-seg" role="group" aria-label="How often" style="flex:none"><button class="k-seg-on" type="button" aria-pressed="true">Once</button><button type="button" aria-pressed="false">Monthly</button></div>
+<p class="k-hint" style="margin:0;line-height:1.4">Monthly gifts let the board plan the season. Cancel any time from your receipt email or My LCA.</p>
+</div>
+<div class="gv-frow">
+<div class="k-stack-sm" style="gap:6px">
+<p class="gv-flabel" id="gv-amt">Amount</p>
+<div class="gv-chips" role="group" aria-labelledby="gv-amt"><button class="k-chip" type="button" aria-pressed="false">$10</button><button class="k-chip k-chip-on" type="button" aria-pressed="true">$25</button><button class="k-chip" type="button" aria-pressed="false">$50</button><button class="k-chip" type="button" aria-pressed="false">$100</button><button class="k-chip" type="button" aria-pressed="false">Other</button></div>
+</div>
+<div class="k-field">
+<label for="gv-put">Put it toward (optional)</label>
+<div class="gv-sel"><select id="gv-put" class="k-input"><option selected>General</option><option>Scholastic program</option><option>Equipment</option></select><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></div>
+</div>
+</div>
+<p class="k-hint" style="margin:-4px 0 0">General lets the board use it where it's needed most. No goals, no targets; the treasurer's report says what each year's gifts paid for.</p>
+<button class="k-btn k-btn-gold k-btn-block k-btn-lg" type="submit" style="margin-top:2px">Continue to Stripe · $25</button>
+<div class="k-stack-sm" style="gap:6px">
+<p class="gv-lock"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="10.5" width="14" height="10" rx="2"></rect><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"></path></svg><span>You pay on Stripe's secure checkout, which asks for your email and card. LCA never sees or stores your card number.</span></p>
+<p class="gv-lock"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="10.5" width="14" height="10" rx="2"></rect><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"></path></svg><span>Your receipt comes by email from LCA, right away.</span></p>
+</div>
+<span class="k-num-badge gv-mk" style="left:-36px;top:84px">2</span>
+<span class="k-num-badge gv-mk" style="left:-36px;bottom:40px">4</span>
+</form>
+
+<div class="k-cream gv-money">
+<div class="ico"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3H6.5A1.5 1.5 0 0 0 5 4.5v15A1.5 1.5 0 0 0 6.5 21h11a1.5 1.5 0 0 0 1.5-1.5V8l-5-5zM14 3v5h5M8.5 13h7M8.5 17h5"></path></svg></div>
+<div class="k-stack-sm" style="gap:6px;flex:1">
+<h2 class="k-h4" style="margin:0">Where the money goes</h2>
+<p class="k-small" style="margin:0">Every dollar, dues and gifts alike, is in the treasurer's report, [fiscal year], published with the minutes as a web page with a PDF copy.</p>
+<div class="k-row k-row-sm" style="gap:12px;margin-top:2px"><a class="k-btn k-btn-line k-btn-sm" href="#">Read the report</a><a class="k-link k-small" href="#">PDF</a></div>
+</div>
+<span class="k-num-badge gv-mk" style="left:-36px;top:16px">3</span>
+</div>
+
+<div class="gv-other">
+<span class="k-label">Most help isn't money</span>
+<div class="gv-olinks"><a href="#">Join LCA →</a><a href="#">Enter a tournament →</a><a href="#">Bring someone to club night →</a><span><a href="mailto:LouisianaChess@gmail.com">Volunteer at a scholastic event →</a> (write to LouisianaChess@gmail.com)</span></div>
+<p>Prefer a check? Payable to Louisiana Chess Association, [mailing address: board to supply].</p>
+</div>
+<div class="gv-annot"><span class="k-num-badge gv-mk" style="left:-12px;top:-12px">5</span><b>Board note, not page copy:</b> no tax-status line until the board confirms LCA's status (brief WS12).</div>
+
+</div>
+
+<div class="gv-pcol">
+<div class="gv-phone" aria-label="The /give page on a phone">
+<div class="gv-scr">
+<div class="gv-status" aria-hidden="true"><span>7:12 PM</span><span class="gv-island"></span><span class="gv-statr"><span class="gv-sig"><i></i><i></i><i></i><i></i></span><span class="gv-batt"><i></i></span></span></div>
+<div class="gv-app"><a class="gv-brand" href="#" aria-label="Louisiana Chess Association, home"><svg class="gv-mark" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span class="gv-bname"><b>Louisiana Chess</b><span>Association</span></span></a><a class="gv-psbtn" href="#" aria-label="Search"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg></a></div>
+<main class="gv-main">
+<div class="k-stack-sm" style="gap:6px">
+<span class="k-kicker" style="font-size:12px">Give</span>
+<h1 class="gv-ph1">Give to Louisiana chess</h1>
+<p class="gv-plead">Most people support LCA by joining and playing: dues and entry fees pay for nearly everything a volunteer board and 300+ members do. If you'd like to give beyond that, this is the place, and thank you.</p>
+</div>
+<div class="gv-pform">
+<div class="k-seg" role="group" aria-label="How often"><button class="k-seg-on" type="button" aria-pressed="true">Once</button><button type="button" aria-pressed="false">Monthly</button></div>
+<p class="gv-flabel">Amount</p>
+<div class="gv-pchips"><button class="k-chip" type="button">$10</button><button class="k-chip k-chip-on" type="button">$25</button><button class="k-chip" type="button">$50</button><button class="k-chip" type="button">$100</button><button class="k-chip" type="button">Other</button></div>
+<div class="k-field" style="gap:5px"><label for="gv-pput">Put it toward (optional)</label><div class="gv-sel"><select id="gv-pput" class="k-input"><option selected>General</option><option>Scholastic program</option><option>Equipment</option></select><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></div></div>
+<button class="k-btn k-btn-gold k-btn-block" type="button" style="min-height:48px">Continue to Stripe · $25</button>
+<p class="gv-pmeta">You pay on Stripe's secure checkout. LCA never sees or stores your card number. Your receipt comes by email from LCA, right away.</p>
+</div>
+<div class="k-cream gv-money" style="padding:10px 14px;gap:12px"><div class="ico" style="width:34px;height:34px;flex-basis:34px"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3H6.5A1.5 1.5 0 0 0 5 4.5v15A1.5 1.5 0 0 0 6.5 21h11a1.5 1.5 0 0 0 1.5-1.5V8l-5-5zM14 3v5h5M8.5 13h7M8.5 17h5"></path></svg></div><div class="k-stack-sm" style="gap:4px"><h2 class="k-h4" style="margin:0;font-size:16px">Where the money goes</h2><a class="k-link k-small" href="#">Read the treasurer's report</a></div></div>
+</main>
+<nav class="gv-tabs" aria-label="Main"><div class="gv-tabs-in"><a class="gv-tab" href="#"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4.5" width="18" height="16" rx="2"></rect><path d="M3 9.5h18M8 2.5v4M16 2.5v4"></path></svg><span>Tournaments</span></a><a class="gv-tab" href="#"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"></path><circle cx="12" cy="9.5" r="2.5"></circle></svg><span>Clubs</span></a><a class="gv-tab" href="#"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4.5 21c1-4 4-6 7.5-6s6.5 2 7.5 6"></path></svg><span>Log in</span></a><button class="gv-tab" type="button" aria-expanded="false"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg><span>Menu</span></button></div><div class="gv-safe"><span class="gv-homeind"></span></div></nav>
+</div>
+<span class="k-num-badge gv-mk" style="left:-40px;top:150px">1</span>
+<span class="k-num-badge gv-mk" style="right:-14px;top:806px">6</span>
+</div>
+<p class="gv-cap"><b>Phone</b> · one screen to the button; Other and the select use the native keyboard and picker. Donate is two taps away under Menu (WS02); this page is where it lands.</p>
+</div>
+</div>
+
+<footer class="k-footer gv-foot"><div class="k-wrap-wide gv-foot-in"><div class="k-row-sm" style="gap:10px;display:flex;align-items:center"><svg class="gv-rook gv-rook-sm" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><b style="font-size:15px">Louisiana Chess Association</b></div><span class="k-meta">US Chess state affiliate · Louisiana's chess community since 1915</span><nav class="k-row" aria-label="Footer" style="gap:18px"><a href="#">Contact</a><a href="#">Website help</a><a href="#">Bylaws &amp; rules</a><a href="/give">Donate</a></nav></div></footer>
+
+</div>
+
+<section class="gv-states" aria-label="States">
+<div class="gv-fr">
+<p class="gv-frh"><span class="gv-oc">a</span>Monthly, Other amount <span class="k-sample">Sample data</span></p>
+<div class="gv-box gv-sa gv-zoom">
+<div class="k-stack-sm" style="gap:8px">
+<div class="k-seg" role="group" aria-label="How often"><button type="button" aria-pressed="false">Once</button><button class="k-seg-on" type="button" aria-pressed="true">Monthly</button></div>
+<div class="k-row k-row-sm" style="gap:6px;flex-wrap:wrap"><button class="k-chip" type="button">$10</button><button class="k-chip" type="button">$25</button><button class="k-chip" type="button">$50</button><button class="k-chip" type="button">$100</button><button class="k-chip k-chip-on" type="button">Other</button></div>
+</div>
+<div class="k-stack-sm" style="gap:8px">
+<div class="k-field" style="gap:4px"><label for="gv-oth" style="font-size:13px">Other amount</label><input id="gv-oth" class="k-input" inputmode="numeric" value="$15"><span class="k-hint" style="font-size:12px">$1 or more</span></div>
+<div class="k-field" style="gap:4px"><label for="gv-sput" style="font-size:13px">Put it toward (optional)</label><div class="gv-sel"><select id="gv-sput" class="k-input"><option>General</option><option selected>Scholastic program</option><option>Equipment</option></select><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true" style="top:9px"><path d="M6 9l6 6 6-6"></path></svg></div></div>
+</div>
+<div class="k-stack-sm" style="gap:8px;padding-top:22px">
+<button class="k-btn k-btn-gold k-btn-block" type="button" style="white-space:normal;line-height:1.25;padding:8px 12px">Continue to Stripe · $15 a month</button>
+<p class="k-hint" style="margin:0;font-size:12.5px">Cancel any time from your receipt email or My LCA.</p>
+</div>
+</div>
+</div>
+
+<div class="gv-fr">
+<p class="gv-frh"><span class="gv-oc">b</span>Thank-you page, /give/thanks <span class="k-sample">Sample data</span></p>
+<div class="gv-box gv-thx gv-zoom">
+<h2 class="k-h3">Thank you</h2>
+<p class="k-small" style="margin:0">Your $25 gift to the Scholastic program is in. Your receipt is on its way from LCA to danielle@example.com.</p>
+<div class="k-row k-row-sm" style="gap:8px"><a class="k-btn k-btn-navy k-btn-sm" href="#">See upcoming tournaments</a><a class="k-btn k-btn-ghost k-btn-sm" href="#">Back to Membership</a></div>
+<p class="k-meta" style="margin:0">The existing DonationSuccessPage, rewritten. No name wall, no share buttons, no second ask.</p>
+</div>
+</div>
+
+<div class="gv-fr gv-thin">
+<p class="gv-frh"><span class="gv-oc">c</span>Thin states</p>
+<ul>
+<li><b>Other under $1 or blank:</b> the button is off; "$1 or more" shows under the field.</li>
+<li><b>Stripe failed or cancelled:</b> back to /give, choices kept, one quiet line: "Nothing was charged. Try again when you're ready."</li>
+<li><b>Signed in:</b> the email on file goes to Stripe; Put it toward keeps the last choice.</li>
+<li><b>No report published yet:</b> the card reads "The treasurer publishes a report after each fiscal year; the latest is on the Minutes page." with no buttons.</li>
+<li><b>A monthly giver returns:</b> one line above the form, "You give $15 a month to the Scholastic program · Change or cancel", not a second ask. The page has no data, so no empty state.</li>
+</ul>
+</div>
+</section>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1550}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

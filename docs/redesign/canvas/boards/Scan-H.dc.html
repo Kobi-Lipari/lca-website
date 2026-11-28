@@ -1,0 +1,671 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Scanner · H · Review: photo, moves and board, with the game checks: Three panes (round 2)</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/6107adb451dbab26ee5d89f4189b81f8">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1a2744}
+.sh-root{box-sizing:border-box;padding:14px 0 16px;background:#ecebe6;color:#1a2744;overflow:hidden}
+.sh-root *{box-sizing:border-box}
+.sh-root .k-phone{box-sizing:content-box}
+.sh-rel{position:relative}
+.sh-mk{position:absolute;z-index:6;width:24px;height:24px;font-size:12px;box-shadow:0 0 0 3px #ffffff}
+.sh-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.sh-mono{font-family:"Geist Mono",ui-monospace,monospace}
+/* board document */
+.sh-doc{margin:0 40px;background:#fbfaf6;border:1px solid #d9d8d1;border-radius:14px;padding:18px 22px 18px}
+.sh-doc-top{display:flex;justify-content:space-between;align-items:flex-start;gap:28px}
+.sh-title{font-size:24px;line-height:1.2;font-weight:700;letter-spacing:-.015em;margin:6px 0 0;max-width:780px}
+.sh-ml{font-size:13px;line-height:1.42;color:#3d4556;margin:2px 0 0;max-width:780px}
+.sh-ml b{color:#1a2744;font-weight:600}
+.sh-round{display:inline-flex;align-items:center;height:26px;padding:0 10px;border-radius:6px;background:#1a2744;color:#ffffff;font-size:12.5px;font-weight:700;letter-spacing:.04em}
+.sh-grey{flex:none;width:660px;background:#efefea;border:1px solid #dfded6;border-radius:10px;padding:12px 14px;display:grid;grid-template-columns:1fr 1fr 1.3fr;gap:10px 16px}
+.sh-grey > div > p + p{margin-top:8px}
+.sh-grey p{font-size:12px;line-height:1.4;color:#2b3446;margin:0}
+.sh-grey b{display:block;font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#555c6b;margin-bottom:2px}
+.sh-grey ol{margin:0;padding-left:16px;font-size:12px;line-height:1.4;color:#2b3446}
+.sh-grey li{margin-bottom:3px}
+.sh-lbox{background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:10px 16px 12px;margin-top:12px}
+.sh-notes{list-style:none;margin:8px 0 0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px 24px}
+.sh-notes li{display:flex;gap:8px;align-items:flex-start;font-size:12px;line-height:1.4;color:#2b3446}
+.sh-notes .k-num-badge{width:22px;height:22px;font-size:11.5px}
+.sh-notes b{font-weight:600;color:#1a2744}
+.sh-notes code,.sh-grey code{font-family:"Geist Mono",ui-monospace,monospace;font-size:11.5px;color:#1a2744;background:#efeee8;border-radius:4px;padding:0 3px}
+.sh-flab{display:flex;align-items:center;gap:12px;margin:14px 40px 6px}
+.sh-flab h2{white-space:nowrap;margin:0;font-size:19px;line-height:1.2;font-weight:600;letter-spacing:-.01em}
+.sh-code{display:inline-flex;align-items:center;justify-content:center;min-width:28px;height:28px;padding:0 9px;border-radius:7px;background:#c8a94a;color:#1a2744;font-weight:700;font-size:13px}
+.sh-urlchip{white-space:nowrap;font-family:"Geist Mono",ui-monospace,monospace;font-size:12px;color:#3d4556;background:#ffffff;border:1px solid #d9d8d1;border-radius:7px;padding:4px 10px;margin-left:auto}
+.sh-frame{width:1440px;background:#ffffff;border-top:1px solid #cfcec6;border-bottom:1px solid #cfcec6;box-shadow:0 20px 50px rgba(16,24,43,.10)}
+.sh-frame .k-browser-url{max-width:760px}
+.sh-page{background:#f5f5f2;position:relative}
+/* decided header */
+.sh-hd{position:relative;z-index:20}
+.sh-hd-in{padding:0 24px;gap:0;height:68px;min-height:68px}
+.sh-brand{margin-right:16px}
+.sh-rook{width:30px;height:30px;fill:#ffffff;flex:none}
+.sh-nav{gap:0}
+.sh-nav a,.sh-navbtn{padding:0 8px !important;white-space:nowrap}
+.sh-navbtn{display:inline-flex;align-items:center;gap:4px;min-height:44px;border:0;background:transparent;color:#ffffff;font-size:15px;font-weight:500;cursor:pointer}
+.sh-search{display:inline-flex;align-items:center;gap:8px;width:220px;height:44px;padding:0 8px 0 12px;margin-right:16px;border-radius:8px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.45);color:#ffffff;text-decoration:none;font-size:14.5px;font-weight:500;flex:none}
+.sh-search span{color:rgba(255,255,255,.9)}
+.sh-kbd{margin-left:auto;font-family:"Geist Mono",ui-monospace,monospace;font-size:12px;color:#e8ecf4;border:1px solid rgba(255,255,255,.4);border-radius:5px;padding:2px 6px;line-height:1.2}
+.sh-util .k-ulink{padding:0 4px}
+.sh-my{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 8px;border:0;border-radius:8px;background:transparent;color:#ffffff;font-size:14px;font-weight:500;cursor:pointer}
+/* page head */
+.sh-band{background:#ffffff;border-bottom:1px solid #dddcd4}
+.sh-band-in{padding:12px 24px 12px}
+.sh-stepper{display:flex;flex-wrap:wrap;gap:8px;list-style:none;margin:4px 0 0;padding:0}
+.sh-stepper li{display:inline-flex;align-items:center;gap:6px;min-height:34px;padding:0 12px;border-radius:99px;border:1px solid #dddcd4;font-size:14px;color:#555c6b;background:#ffffff;white-space:nowrap}
+.sh-stepper li.sh-done{color:#2f6b45;border-color:#b9d3c1;background:#f1f7f2}
+.sh-stepper li.sh-now{color:#ffffff;background:#1a2744;border-color:#1a2744;font-weight:600}
+.sh-stepper li.sh-off{background:#f3f3f0;color:#555c6b}
+.sh-tdonly{display:inline-flex;align-items:center;gap:8px;border:1px dashed #9aa1b0;border-radius:10px;padding:2px 8px 2px 2px;background:#f3f3f0}
+.sh-tdonly .k-btn{color:#6b7180}
+.sh-tdtag{display:inline-flex;align-items:center;padding:2px 7px;border-radius:5px;background:#e6e5df;color:#3d4555;font-size:11.5px;font-weight:600;white-space:nowrap}
+.sh-opened{font-size:13px;color:#555c6b;margin:8px 0 0;display:flex;align-items:center;gap:6px}
+/* main grid */
+.sh-main{padding:16px 16px 16px}
+.sh-grid{display:grid;grid-template-columns:400px 520px 440px;gap:24px;align-items:start}
+.sh-col{padding:14px 16px 16px;position:relative}
+.sh-phead{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.sh-phead h2{margin:0;font-size:19px;line-height:1.3;font-weight:600}
+.sh-photo{background:#3b4150;border-radius:10px;padding:16px 14px}
+.sh-sheet{background:#fbfaf3;border-radius:3px;transform:rotate(-1.2deg);box-shadow:0 10px 22px rgba(0,0,0,.35);padding:10px 12px 12px}
+.sh-sh-h{display:flex;justify-content:space-between;gap:8px;font-size:10.5px;color:#6b6f78;border-bottom:1px solid #cfccbd;padding:3px 0}
+.sh-sh-h i{font-family:'Geist Mono',monospace;font-size:12.5px;color:#2b3a67}
+.sh-r{display:grid;grid-template-columns:24px 1fr 1fr;height:24px;align-items:center;border-bottom:1px solid #dcd9cb}
+.sh-r b{font-size:9.5px;color:#8b8a80;font-weight:500;text-align:center}
+.sh-r span{position:relative;height:100%;display:flex;align-items:center;padding-left:8px;box-shadow:inset 1px 0 0 #dcd9cb;font-family:'Geist Mono',monospace;font-style:italic;font-size:14px;color:#2b3a67}
+.sh-r span s{position:absolute;right:4px;top:2px;text-decoration:none;font-family:'Geist Mono',monospace;font-style:normal;font-size:8.5px;line-height:1;color:#5f6370;background:rgba(251,250,243,.85);padding:0 2px;border-radius:2px}
+.sh-r span.sh-hl{outline:2px solid #c8a94a;outline-offset:0;box-shadow:0 0 0 3.5px #1a2744;background:#f3e6bd;z-index:2}
+.sh-r span.sh-hlok{outline:1.5px solid #2f6b45;outline-offset:-1.5px}
+.sh-r span.sh-hlauto{outline:1.5px dashed #1a2744;outline-offset:-1.5px}
+.sh-smudge{position:absolute;left:5px;top:4px;width:30px;height:15px;border-radius:50%;background:rgba(60,62,72,.38);filter:blur(3px)}
+.sh-pkey{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:12px;color:#3d4556}
+.sh-pkey span{display:inline-flex;align-items:center;gap:5px}
+.sh-pkey i{display:inline-block;width:16px;height:11px;border-radius:2px;background:#fbfaf3}
+.sh-sw{display:inline-flex;align-items:center;gap:8px;font-size:14px;font-weight:500;color:#1a2744;border:0;background:transparent;padding:0;min-height:44px;cursor:pointer}
+.sh-sw i{display:block;width:36px;height:20px;border-radius:99px;background:#1a2744;position:relative;flex:none}
+.sh-sw i::after{content:"";position:absolute;top:3px;right:3px;width:14px;height:14px;border-radius:50%;background:#ffffff}
+.sh-game{border-radius:10px;background:#f5f5f2;padding:8px 12px;font-size:15px;color:#1a2744}
+.sh-chips{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.sh-chips .k-chip{min-height:32px;padding:0 9px;font-size:13px;gap:5px}
+.sh-mt th{padding:7px 8px;font-size:11.5px}
+.sh-mt td{padding:3px 8px;font-size:14px;height:35px;position:relative}
+.sh-mt td.sh-no{color:#555c6b;font-size:12px;width:26px;text-align:center;padding:5px 4px}
+.sh-mt td.sh-mv{font-family:'Geist Mono',monospace;font-weight:500;color:#1a2744;white-space:nowrap}
+.sh-mt td.sh-split{box-shadow:inset 2px 0 0 #dddcd4}
+.sh-mt td.sh-auto{outline:1.5px dashed #1a2744;outline-offset:-5px;box-shadow:none}
+.sh-mt td.sh-okc{background:#d7ead9}
+.sh-mt td.sh-chk{background:#f6e7b8;box-shadow:inset 0 0 0 2px #c8a94a,inset 0 0 0 4px #1a2744}
+.sh-lab{display:block;font-family:Geist,sans-serif;font-size:11px;font-weight:600;margin-top:1px;line-height:1.3}
+.sh-lab-auto{color:#1a2744}
+.sh-lab-ok{color:#1f5634}
+.sh-lab-chk{color:#5c450f}
+.sh-lab-sub{display:block;font-family:Geist,sans-serif;font-size:11px;font-weight:400;color:#5c450f;line-height:1.3}
+.sh-checks{list-style:none;margin:0;padding:0}
+.sh-checks li{display:flex;gap:8px;align-items:flex-start;font-size:14px;line-height:1.45;color:#1a2744;padding:2px 0}
+.sh-checks li.sh-warn{color:#664c0c;font-weight:600}
+.sh-ok{color:#2f6b45}
+.sh-warnic{color:#866a1e}
+.sh-gc{border-top:1px solid #ecebe5;padding-top:10px}
+/* board */
+.sh-bwrap{display:grid;grid-template-columns:12px 400px;grid-template-rows:auto 16px;column-gap:0}
+.sh-ranks{display:grid;grid-template-rows:repeat(8,1fr);align-items:center;text-align:center;font-size:11px;color:#555c6b}
+.sh-files{grid-column:2;display:grid;grid-template-columns:repeat(8,1fr);text-align:center;font-size:11px;color:#555c6b;padding-top:2px}
+.sh-bd > div{display:flex;align-items:center;justify-content:center}
+.pc{width:74%;height:74%;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;line-height:1;box-sizing:border-box;font-size:17px}
+.pw{background:#ffffff;color:#1a2744;border:2px solid #1a2744}
+.pb{background:#1a2744;color:#ffffff;border:2px solid #1a2744}
+.pp{width:54%;height:54%;font-size:11px}
+.k-sq-l.sh-ft{background:#e9d89a}
+.k-sq-d.sh-ft{background:#b9a86a}
+.sh-ring{box-shadow:inset 0 0 0 3px #c8a94a,inset 0 0 0 5px #1a2744}
+.sh-bd-t{width:120px;flex:none;border-width:1px}
+.sh-bd-t .pc{font-size:6px;border-width:1px}
+.sh-bd-t .pp{font-size:4px}
+.sh-bd-t .sh-ring{box-shadow:inset 0 0 0 2px #c8a94a}
+.sh-bd-p{width:176px;flex:none;border-width:1.5px}
+.sh-bd-p .pc{font-size:9px;border-width:1.5px}
+.sh-bd-p .pp{font-size:6px}
+.sh-bd-p .sh-ring{box-shadow:inset 0 0 0 2px #c8a94a,inset 0 0 0 3px #1a2744}
+.sh-bd-m{width:96px;flex:none;border-width:1px}
+.sh-bd-m .pc{font-size:5px;border-width:1px}
+.sh-bd-m .pp{font-size:3px}
+.sh-bd-m .sh-ring{box-shadow:inset 0 0 0 1.5px #c8a94a}
+.sh-nav2{display:flex;align-items:center;gap:6px}
+.sh-pill{display:inline-flex;align-items:center;gap:5px;height:26px;padding:0 10px;border-radius:99px;font-size:12.5px;font-weight:600;white-space:nowrap}
+.sh-pill-chk{background:#f6e7b8;color:#4d3a0b;border:1px solid #e0c97a}
+.sh-pill-ok{color:#1f5634;border:1px solid #b9d3c1;background:#e3f0e6}
+.sh-pill-now{color:#ffffff;background:#1a2744;border:1px solid #1a2744}
+.sh-pill-grey{background:#eceef2;color:#2b3446;border:1px solid #dddcd4}
+.sh-pill-red{background:#f6e3e3;color:#8f1d24;border:1px solid #e8c4c4}
+.sh-parttag{display:inline-flex;align-items:center;padding:3px 8px;border-radius:6px;background:#eceef2;color:#3d4555;font-size:12px;font-weight:600;white-space:nowrap}
+.sh-end{display:flex;gap:14px;align-items:center;padding-top:12px;border-top:1px solid #ecebe5}
+.sh-ul{display:inline-flex;align-items:center;gap:4px;color:#1a2744;font-weight:600;font-size:14px;text-decoration:underline;text-decoration-color:#c8a94a;text-decoration-thickness:2px;text-underline-offset:3px}
+/* bottom bar */
+.sh-bar{margin-top:16px;background:#e9e8e2;border:1px solid #d6d5cd;border-radius:12px;padding:12px 16px;display:flex;align-items:center;gap:12px;position:relative}
+.sh-bar h2{margin:0;font-size:16px;font-weight:600;white-space:nowrap}
+.k-btn[disabled],.sh-off{background:#dddcd5 !important;border-color:#dddcd5 !important;color:#5d6270 !important;cursor:not-allowed}
+.sh-lock{display:inline-flex;align-items:center;gap:6px;font-size:14px;font-weight:600;color:#2b3446}
+/* decided footer */
+.sh-foot{background:#1a2744;color:#ffffff;border-top:3px solid #c8a94a}
+.sh-foot a{color:#ffffff;text-decoration:none}
+.sh-din{padding:22px 48px 0}
+.sh-dgrid{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr) minmax(0,1fr) minmax(0,1fr) minmax(0,1.2fr);gap:36px}
+.sh-fbrand{display:flex;align-items:center;gap:12px}
+.sh-plate{display:flex;flex-direction:column;align-items:center;justify-content:center;width:44px;height:44px;border-radius:8px;background:#fbfaf6;color:#1a2744;flex:none;line-height:1}
+.sh-plate b{font-size:14px;font-weight:700;letter-spacing:.02em;color:#1a2744}
+.sh-plate small{font-size:7.5px;font-weight:600;color:#555c6b;margin-top:3px;white-space:nowrap}
+.sh-bname{font-size:17px;font-weight:700;line-height:1.25;color:#ffffff}
+.sh-bp{font-size:14px;line-height:1.45;color:rgba(255,255,255,.82);margin:10px 0 12px;max-width:270px}
+.sh-btns{display:flex;gap:10px}
+.sh-foot a.k-btn-gold{color:#1a2744}
+.sh-dh{font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#e6cf86;margin:4px 0 8px}
+.sh-dl{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.sh-dl li{display:flex;align-items:center;gap:8px;min-height:27px}
+.sh-dl a{display:inline-flex;align-items:center;gap:7px;font-size:14.5px;line-height:1.3}
+.sh-dbase{display:flex;justify-content:space-between;align-items:center;gap:24px;margin-top:14px;padding:12px 0 14px;border-top:1px solid rgba(255,255,255,.18)}
+.sh-trust{font-size:13.5px;line-height:1.5;color:rgba(255,255,255,.82);margin:0}
+.sh-trust a{color:#ffffff;text-decoration:underline;text-underline-offset:3px;text-decoration-color:rgba(255,255,255,.55)}
+.sh-app{display:flex;align-items:center;gap:10px;flex:none}
+.sh-applab{font-size:13.5px;color:rgba(255,255,255,.82)}
+.sh-seg{display:inline-flex;border:1px solid rgba(255,255,255,.45);border-radius:9px;overflow:hidden}
+.sh-seg button{display:inline-flex;align-items:center;gap:5px;min-height:36px;padding:0 13px;border:0;background:transparent;color:#ffffff;font:inherit;font-size:13.5px;font-weight:500;cursor:pointer}
+.sh-seg button + button{border-left:1px solid rgba(255,255,255,.25)}
+.sh-seg button[aria-checked="true"]{background:#c8a94a;color:#1a2744;font-weight:600}
+/* bottom band */
+.sh-bandx{display:grid;grid-template-columns:minmax(0,1fr) 414px;gap:32px;margin:18px 40px 0;align-items:start}
+.sh-blab{display:flex;align-items:center;gap:10px;margin:0 0 10px;white-space:nowrap}
+.sh-blab h2{margin:0;font-size:17px;line-height:1.2;font-weight:600}
+.sh-sgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px 16px;align-items:start}
+.sh-cap{display:flex;align-items:center;gap:7px;font-size:13px;font-weight:600;color:#1a2744;margin:0 0 5px;min-height:20px;white-space:nowrap}
+.sh-cap .sh-n{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:5px;background:#1a2744;color:#ffffff;font-size:11px;font-weight:700}
+.sh-dot{width:10px;height:10px;border-radius:50%;flex:none}
+.sh-dot-ok{background:#2f6b45}
+.sh-dot-chk{background:#c8a94a;box-shadow:0 0 0 1px #866a1e}
+.sh-dot-grey{background:#8b909c}
+.sh-dot-navy{background:#1a2744}
+.sh-dot-red{background:#b3202f}
+.sh-cap span.sh-cw{font-weight:400;color:#555c6b;font-size:12.5px}
+.sh-fr{background:#ffffff;border:1px solid #cfcec6;border-radius:12px;overflow:hidden;box-shadow:0 8px 22px rgba(16,24,43,.07);position:relative}
+.sh-st{height:272px;padding:11px 12px;display:flex;flex-direction:column;gap:7px}
+.sh-st > *{flex-shrink:0}
+.sh-mrow{display:grid;grid-template-columns:22px 1fr 1fr;align-items:center;min-height:26px;border-bottom:1px solid #ecebe5;font-size:13px}
+.sh-mrow b{font-size:11px;font-weight:500;color:#555c6b;text-align:center}
+.sh-mrow span{font-family:'Geist Mono',monospace;font-weight:500;padding-left:8px}
+.sh-msg{border-radius:9px;padding:8px 10px;font-size:12.5px;line-height:1.4}
+.sh-msg-red{background:#f6e3e3;color:#5e1218}
+.sh-msg-gold{background:#f6e7b8;color:#4d3a0b}
+.sh-msg-grey{background:#eceef2;color:#2b3446}
+.sh-msg-ok{background:#e3f0e6;color:#1f5634;font-weight:600}
+.sh-sk{display:block;height:10px;border-radius:5px;background:#e6e5df}
+.sh-spin{width:22px;height:22px;flex:none;border-radius:50%;border:3px solid #ece4c8;border-top-color:#c8a94a;border-right-color:#c8a94a}
+.sh-xs{font-size:12px;line-height:1.4;color:#3d4556}
+.sh-xs b{color:#1a2744}
+.sh-mchk{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px}
+.sh-mchk li{display:flex;gap:6px;align-items:flex-start;font-size:12px;line-height:1.35;color:#1a2744}
+.sh-mchk li svg{width:15px;height:15px;flex:none;margin-top:1px}
+.sh-mchk li.sh-warn{color:#664c0c;font-weight:600}
+.sh-btnrow{display:flex;gap:6px;flex-wrap:wrap;margin-top:auto}
+.sh-btnrow .k-btn{min-height:32px;padding:0 10px;font-size:12.5px;gap:5px}
+.sh-ff{display:grid;grid-template-columns:1fr 1fr;gap:4px 8px}
+.sh-ff label{display:flex;flex-direction:column;gap:1px;font-size:11px;font-weight:600;color:#3d4556}
+.sh-ff span{display:flex;align-items:center;min-height:24px;padding:0 7px;border:1px solid #858b99;border-radius:6px;background:#ffffff;font-size:12px;font-weight:400;color:#1a2744}
+.sh-ff span.sh-ph{color:#6b7180}
+.sh-noph{height:118px;border-radius:9px;background:#e6e5df;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:#3d4556;font-size:13px;font-weight:600}
+.sh-dis{opacity:.5}
+/* phone */
+.sh-pcol{display:flex;flex-direction:column;position:relative}
+.sh-pstatus{flex:none;height:44px;background:#1a2744;color:#ffffff;display:flex;align-items:center;justify-content:space-between;padding:4px 28px 0 36px;font-size:14px;font-weight:600;position:relative}
+.sh-island{position:absolute;left:50%;top:9px;width:110px;height:30px;margin-left:-55px;border-radius:18px;background:#000000}
+.sh-papp{flex:none;height:54px;background:#1a2744;display:flex;align-items:center;gap:8px;padding:0 10px 0 14px;color:#ffffff}
+.sh-pbname{display:flex;flex-direction:column;line-height:1.12;color:#ffffff}
+.sh-pbname b{font-size:14px;font-weight:700;white-space:nowrap}
+.sh-pbname span{font-size:11px;font-weight:500;color:rgba(255,255,255,.78)}
+.sh-psbtn{display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;border:1.5px solid rgba(255,255,255,.6);border-radius:9px;color:#ffffff;margin-left:auto;flex:none}
+.sh-pstrip{flex:none;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:6px 12px;background:#ffffff;border-bottom:1px solid #e2e1da}
+.sh-ptabs{flex:none;display:grid;grid-template-columns:repeat(3,1fr);background:#ffffff;border-bottom:1px solid #dddcd4}
+.sh-ptabs a{display:flex;align-items:center;justify-content:center;min-height:44px;font-size:14px;font-weight:500;color:#555c6b;text-decoration:none}
+.sh-ptabs a.on{color:#1a2744;font-weight:700;box-shadow:inset 0 -3px 0 #866a1e}
+.sh-sticky{flex:none;display:flex;gap:10px;padding:8px 12px;background:#ffffff;border-bottom:1px solid #d6d5cd;box-shadow:0 6px 12px rgba(16,24,43,.10);position:relative;z-index:2}
+.sh-pbody{flex:1;min-height:0;background:#f5f5f2;overflow:hidden;padding:8px 12px 6px;display:flex;flex-direction:column;gap:6px}
+.sh-pchips{display:flex;flex-wrap:wrap;gap:5px}
+.sh-pchips .k-chip{min-height:30px;padding:0 9px;font-size:12.5px}
+.sh-plist{background:#ffffff;border:1px solid #dddcd4;border-radius:10px;overflow:hidden}
+.sh-prow{display:grid;grid-template-columns:30px 1fr 1fr;min-height:32px;align-items:stretch;border-bottom:1px solid #ecebe5}
+.sh-prow:last-child{border-bottom:0}
+.sh-prow b{display:flex;align-items:center;justify-content:center;font-size:11.5px;font-weight:500;color:#555c6b}
+.sh-prow span{display:flex;align-items:center;gap:6px;padding:0 8px;font-family:'Geist Mono',monospace;font-size:14px;font-weight:500;color:#1a2744;white-space:nowrap}
+.sh-prow span small{font-family:Geist,sans-serif;font-size:11px;font-weight:600}
+.sh-prow span.sh-okc{background:#d7ead9}
+.sh-prow span.sh-okc small{color:#1f5634}
+.sh-prow span.sh-chk{background:#f6e7b8;box-shadow:inset 0 0 0 2px #c8a94a,inset 0 0 0 3.5px #1a2744}
+.sh-prow span.sh-chk small{color:#5c450f}
+.sh-fold{display:flex;align-items:center;justify-content:space-between;min-height:44px;padding:0 12px;border:1px solid #c4c3bb;border-radius:10px;background:#ffffff;color:#1a2744;font:inherit;font-size:14px;font-weight:600}
+.sh-tabbar{flex:none;background:#ffffff;border-top:1px solid #d9d8d1}
+.sh-tabbar-in{display:grid;grid-template-columns:repeat(4,1fr);height:54px}
+.sh-tab{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:#1a2744;font-size:12px;font-weight:500;line-height:1.2;text-decoration:none}
+.sh-tab svg{width:20px;height:20px}
+.sh-tab.on{font-weight:700}
+.sh-tab.on::before{content:"";position:absolute;top:0;left:22%;right:22%;height:3px;border-radius:0 0 3px 3px;background:#866a1e}
+.sh-safe{height:22px;position:relative}
+.sh-homeind{position:absolute;left:50%;bottom:7px;width:134px;height:5px;margin-left:-67px;border-radius:3px;background:#10182b}
+.sh-pcap{font-size:13px;line-height:1.4;color:#3d4556;margin:8px 0 0;max-width:414px}
+.sh-pcap b{color:#1a2744}
+.sh-ann{position:absolute;font-size:12px;line-height:1.35;color:#3d4556;background:#ffffff;border:1px solid #d9d8d1;border-radius:8px;padding:5px 8px;width:118px}
+.sh-pbody > *{flex-shrink:0}
+.sh-cellbtn{display:block;width:100%;padding:0;border:0;background:transparent;font:inherit;color:inherit;text-align:left;cursor:pointer}
+</style>
+</helmet>
+<div class="sh-root" style="width:1440px;height:2900px">
+
+<section class="sh-doc" aria-label="About this board">
+<div class="sh-doc-top">
+<div>
+<div class="k-row-sm" style="gap:10px"><p class="k-kicker" style="margin:0">16 · Scanner · part 3 of 8 · option 1 of 2</p><span class="sh-round">ROUND 2</span></div>
+<h1 class="sh-title">Scanner · H · Review: photo, moves and board, with the game checks: Three panes</h1>
+<p class="sh-ml" style="margin-top:6px"><b>Built from:</b> Scan-A panels 1, 2, 4 and the board of panel 3; today's Results, MoveList and MoveCell in ScannerPage.tsx; decided chrome.</p>
+<p class="sh-ml"><b>Replaces:</b> Scan-A panels 1 to 4. Option 2 for this part is Scan-I, Sheet as the list.</p>
+<p class="sh-ml"><b>Round 2, K's feedback applied:</b> one scanner in parts, with options per part (Tue, Oct 13, 2026).</p>
+</div>
+<aside class="sh-grey" aria-label="Board note">
+<div><p><b>What</b>Part 3, option 1: photo, move list and board side by side, all following one selected move; three tabs on a phone.</p><p><b>Versus Scan-I</b>Here the typed list is the centre; Scan-I makes the photo itself the list.</p></div>
+<div>
+<p><b>Built from</b>Scan-A panels 1, 2, 4 and the board of panel 3; today's MoveList and MoveCell.</p>
+<p><b>K's feedback applied</b>One scanner in parts, with options per part.</p>
+</div>
+<div>
+<p><b>Open for K</b></p>
+<ol>
+<li>This, Scan-I, or one per width.</li>
+<li>Photo kept 30 days (drawn) or only for the job (state 7).</li>
+<li>Limit reset: midnight UTC or Central.</li>
+<li>A guardian's OK per child or per game; Public at all.</li>
+</ol>
+</div>
+</aside>
+</div>
+<div class="sh-lbox">
+<div class="k-between"><p class="k-label" style="margin:0">Notes on this board</p><span class="k-sample">Sample data · players, ratings, round, board, scan count, times · moves are Morphy's Opera Game (1858)</span></div>
+<ol class="sh-notes">
+<li><span class="k-num-badge">1</span><span><b>Scan-A panel 1, linked three ways.</b> Tap a move on the photo or in the list, or step the board, and the other two follow; each cell is found from a crop box per ply (WS15 acceptance 2).</span></li>
+<li><span class="k-num-badge">2</span><span><b>Labels in words beside their colour</b> (Scan-A panel 2): Check this, Fixed automatically, You checked. Today's legend in ScannerPage.tsx maps onto them one to one.</span></li>
+<li><span class="k-num-badge">3</span><span><b>The board at the exact position</b> (<code>fenBefore</code>) with First, Back, Forward, Last. Scan-A's candidates and Confirm moved to part 4 (Scan-J or Scan-K).</span></li>
+<li><span class="k-num-badge">4</span><span><b>Game checks in words</b> (Scan-A panel 4): legal order, no threefold repetition, the written result against the final position. Only the decoder applies legality.</span></li>
+<li><span class="k-num-badge">5</span><span><b>Save and Export stay closed</b> until every Check this is resolved (WS15 acceptance 3); offline, checking still works. Scan-A panels 5 and 6 moved to parts 5 and 7.</span></li>
+<li><span class="k-num-badge">6</span><span><b>On a phone, Scan-B's review becomes Photo · Moves · Board tabs,</b> the board sticky while a flag is open. The photo sits beside the 8:00 PM draft only while kept: open for K.</span></li>
+</ol>
+</div>
+</section>
+
+<div class="sh-flab"><span class="sh-code">A</span><h2>Laptop · Marcus opens the draft from My games, 13...Rxd7 still open</h2><span class="k-meta">Sun, Sep 6, 8:00 PM, at home · 1440px</span><span class="sh-urlchip">/scanner/review/landry-shah-r4</span></div>
+<div class="sh-frame">
+<div class="k-browser-bar"><i></i><i></i><i></i><div class="k-browser-url">louisianachess.org/scanner/review/landry-shah-r4</div></div>
+<div class="sh-page">
+
+<header class="k-header sh-hd">
+<div class="k-header-in sh-hd-in">
+<a class="k-brand sh-brand" href="#" aria-label="Louisiana Chess Association, home"><svg class="sh-rook" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span class="k-brand-name" aria-hidden="true"><b>Louisiana Chess</b><span>Association</span></span></a>
+<nav class="k-navlinks sh-nav" aria-label="Main">
+<a class="k-nav-on" href="#" aria-current="page">Tournaments</a>
+<a href="#">Clubs</a>
+<a href="#">Scholastic</a>
+<a href="#">News</a>
+<a href="#">Membership</a>
+<button class="sh-navbtn" type="button" aria-expanded="false" aria-haspopup="true">About<svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"></path></svg></button>
+</nav>
+<a class="sh-search" href="#"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg><span>Search</span><kbd class="sh-kbd" aria-hidden="true">&#8984;K</kbd></a>
+<div class="k-utility sh-util" style="gap:12px">
+<a class="k-ulink" href="#">Donate</a>
+<button class="sh-my" type="button" aria-haspopup="menu" aria-expanded="false" aria-label="My LCA, signed in as Marcus Landry"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4.5 21c1-4 4-6 7.5-6s6.5 2 7.5 6"></path></svg><span>My LCA</span><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"></path></svg></button>
+</div>
+</div>
+</header>
+
+<div class="sh-band">
+<div class="sh-band-in">
+<div class="k-between" style="align-items:center;flex-wrap:nowrap">
+<div class="k-row-sm"><span class="k-kicker">Scoresheet scanner · members only</span><span class="k-sample">Sample data</span></div>
+<div class="k-row-sm">
+<a class="k-btn k-btn-line k-btn-sm" href="#"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8.5A1.5 1.5 0 0 1 5.5 7h2.3l1.4-2h5.6l1.4 2h2.3A1.5 1.5 0 0 1 20 8.5v9a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 17.5z"></path><circle cx="12" cy="13" r="3.5"></circle></svg>Scan another sheet</a>
+<span class="sh-tdonly"><a class="k-btn k-btn-ghost k-btn-sm" href="#" aria-disabled="true" style="border-color:#c4c3bb;background:#ffffff"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="7" height="7" rx="1"></rect><rect x="13" y="4" width="7" height="7" rx="1"></rect><rect x="4" y="13" width="7" height="7" rx="1"></rect><rect x="13" y="13" width="7" height="7" rx="1"></rect></svg>Directors: scan a whole round</a><span class="sh-tdtag">directors only</span></span>
+</div>
+</div>
+<div class="k-between" style="align-items:center;flex-wrap:nowrap;margin-top:2px">
+<div class="k-row" style="gap:16px;flex-wrap:nowrap"><h1 class="k-h1" style="margin:0;white-space:nowrap">Check your game</h1>
+<ol class="sh-stepper" aria-label="Progress" style="margin:4px 0 0;flex-wrap:nowrap">
+<li class="sh-done"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Photo<span class="sh-sr"> (done)</span></li>
+<li class="sh-done"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Read · 17 moves<span class="sh-sr"> (done)</span></li>
+<li class="sh-now" aria-current="step">Check · 1 move left</li>
+<li class="sh-off"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2"></rect><path d="M8 11V8a4 4 0 0 1 8 0v3"></path></svg>Save &amp; share<span class="sh-sr"> (closed)</span></li>
+</ol></div>
+<span class="k-small k-muted" style="white-space:nowrap"><b class="k-ink">16 of 20 scans left today</b> · resets at midnight</span>
+</div>
+<p class="sh-opened" style="margin:4px 0 0"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"></rect><circle cx="9" cy="10" r="2"></circle><path d="M21 16l-5-5-9 8"></path></svg>Opened from My games · Sun, Sep 6 · 8:00 PM · the photo is kept until Tue, Oct 6 unless you save the game.</p>
+</div>
+</div>
+
+<main class="sh-main">
+<div class="sh-grid">
+
+<section class="k-card sh-col k-stack-sm" aria-labelledby="sh-ph" style="gap:10px">
+<span class="k-num-badge sh-mk" style="top:-10px;left:-10px">1</span>
+<div class="sh-phead"><h2 id="sh-ph">Your photo</h2><span class="k-small k-muted">Sheet 1 of 1</span></div>
+<div class="sh-photo" role="img" aria-label="Photo of the handwritten scoresheet, moves 1 to 17, with the read moves typed faintly over each cell. Black's move 13 is smudged and ringed in gold as the selected move; Black's move 9 has a thin green ring; White's move 7, written Qb8, has a dashed navy ring.">
+<div class="sh-sheet">
+<div class="sh-sh-h"><span>White <i>M. Landry</i></span><span>Black <i>P. Shah</i></span></div>
+<div class="sh-sh-h"><span>Event <i>LA State Ch.</i></span><span>Rd <i>4</i> · Bd <i>6</i></span></div>
+<div class="sh-r"><b>1</b><span>e4<s>e4</s></span><span>e5<s>e5</s></span></div>
+<div class="sh-r"><b>2</b><span>Nf3<s>Nf3</s></span><span>d6<s>d6</s></span></div>
+<div class="sh-r"><b>3</b><span>d4<s>d4</s></span><span>Bg4<s>Bg4</s></span></div>
+<div class="sh-r"><b>4</b><span>dxe5<s>dxe5</s></span><span>Bxf3<s>Bxf3</s></span></div>
+<div class="sh-r"><b>5</b><span>Qxf3<s>Qxf3</s></span><span>dxe5<s>dxe5</s></span></div>
+<div class="sh-r"><b>6</b><span>Bc4<s>Bc4</s></span><span>Nf6<s>Nf6</s></span></div>
+<div class="sh-r"><b>7</b><span class="sh-hlauto">Qb8<s>Qb8</s></span><span>Qe7<s>Qe7</s></span></div>
+<div class="sh-r"><b>8</b><span>Nc3<s>Nc3</s></span><span>c6<s>c6</s></span></div>
+<div class="sh-r"><b>9</b><span>Bg5<s>Bg5</s></span><span class="sh-hlok"><em class="sh-smudge"></em>b5<s>b5</s></span></div>
+<div class="sh-r"><b>10</b><span>Nxb5<s>Nxb5</s></span><span>cxb5<s>cxb5</s></span></div>
+<div class="sh-r"><b>11</b><span>Bxb5+<s>Bxb5+</s></span><span>Nbd7<s>Nbd7</s></span></div>
+<div class="sh-r"><b>12</b><span>O-O-O<s>O-O-O</s></span><span>Rd8<s>Rd8</s></span></div>
+<div class="sh-r"><b>13</b><span>Rxd7<s>Rxd7</s></span><span class="sh-hl"><em class="sh-smudge"></em>Rxd7<s>Rxd7</s></span></div>
+<div class="sh-r"><b>14</b><span>Rd1<s>Rd1</s></span><span>Qe6<s>Qe6</s></span></div>
+<div class="sh-r"><b>15</b><span>Bxd7+<s>Bxd7+</s></span><span>Nxd7<s>Nxd7</s></span></div>
+<div class="sh-r"><b>16</b><span>Qb8+<s>Qb8+</s></span><span>Nxb8<s>Nxb8</s></span></div>
+<div class="sh-r"><b>17</b><span>Rd8#<s>Rd8#</s></span><span></span></div>
+<div class="sh-r"><b>18</b><span></span><span></span></div>
+<div class="sh-sh-h" style="border-bottom:0"><span>Result <i>1-0</i></span><span>Signed <i>ML</i> · <i>PS</i></span></div>
+</div>
+</div>
+<div class="k-row-sm" style="gap:6px">
+<button class="k-iconbtn" type="button" aria-label="Zoom out"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"></path></svg></button>
+<button class="k-iconbtn" type="button" aria-label="Zoom in"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg></button>
+<button class="k-iconbtn" type="button" aria-label="Reset zoom"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.3-5.6M20 4v5h-5"></path></svg></button>
+<label class="k-check" style="margin-left:8px;align-items:center;font-size:14px;font-weight:500"><input type="checkbox" checked="checked" style="margin:0"><span>Show what we read</span></label>
+</div>
+<div class="sh-pkey" aria-label="Rings on the photo">
+<span><i style="outline:2px solid #c8a94a;box-shadow:0 0 0 3.5px #1a2744"></i>Selected</span>
+<span><i style="outline:1.5px solid #2f6b45"></i>You checked</span>
+<span><i style="outline:1.5px dashed #1a2744"></i>Fixed automatically</span>
+</div>
+<span class="k-small k-muted">Tap a move on the sheet or in the list; the other side follows.</span>
+</section>
+
+<section class="k-card sh-col k-stack" aria-labelledby="sh-mh" style="gap:10px">
+<span class="k-num-badge sh-mk" style="top:-10px;left:-10px">2</span>
+<div class="sh-phead"><h2 id="sh-mh">Moves</h2><a class="k-link k-small" href="#">Edit game details</a></div>
+<div class="sh-game"><b>Marcus Landry</b> <span class="k-muted">2014</span> vs <b>Priya Shah</b> <span class="k-muted">1803</span> · <b>1-0</b><div class="k-small k-muted" style="font-size:13px;line-height:1.4">Louisiana State Championship 2026 · Open · Round 4 · Board 6 · Sun, Sep 6 · names and colours matched from the pairings</div></div>
+<div class="sh-chips" role="group" aria-label="Show moves">
+<button class="k-chip k-chip-on" type="button" aria-pressed="true">All moves <span class="k-chip-count">17</span></button>
+<button class="k-chip" type="button" aria-pressed="false">Needs a look <span class="k-chip-count">1</span></button>
+<button class="k-chip" type="button" aria-pressed="false">Fixed automatically <span class="k-chip-count">1</span></button>
+<button class="k-chip" type="button" aria-pressed="false">You checked <span class="k-chip-count">1</span></button>
+</div>
+<div class="k-tablebox" style="overflow:visible">
+<table class="k-table sh-mt">
+<thead><tr><th class="k-c">#</th><th>White</th><th>Black</th><th class="k-c">#</th><th>White</th><th>Black</th></tr></thead>
+<tbody>
+<tr><td class="sh-no">1</td><td class="sh-mv"><button class="sh-cellbtn" type="button" aria-label="1. e4. Change this move">e4</button></td><td class="sh-mv"><button class="sh-cellbtn" type="button" aria-label="1… e5. Change this move">e5</button></td><td class="sh-no sh-split">10</td><td class="sh-mv"><button class="sh-cellbtn" type="button" aria-label="10. Nxb5. Change this move">Nxb5</button></td><td class="sh-mv"><button class="sh-cellbtn" type="button" aria-label="10… cxb5. Change this move">cxb5</button></td></tr>
+<tr><td class="sh-no">2</td><td class="sh-mv"><button class="sh-cellbtn" type="button" aria-label="2. Nf3. Change this move">Nf3</button></td><td class="sh-mv"><button class="sh-cellbtn" type="button" aria-label="2… d6. Change this move">d6</button></td><td class="sh-no sh-split">11</td><td class="sh-mv"><button class="sh-cellbtn" type="button" aria-label="11. Bxb5+. Change this move">Bxb5+</button></td><td class="sh-mv"><button class="sh-cellbtn" type="button" aria-label="11… Nbd7. Change this move">Nbd7</button></td></tr>
+<tr><td class="sh-no">3</td><td class="sh-mv"><button class="sh-cellbtn" type="button" aria-label="3. d4. Change this move">d4</button></td><td class="sh-mv"><button class="sh-cellbtn" type="button" aria-label="3… Bg4. Change this move">Bg4</button></td><td class="sh-no sh-split">12</td><td class="sh-mv"><button class="sh-cellbtn" type="button" aria-label="12. O-O-O. Change this move">O-O-O</button></td><td class="sh-mv"><button class="sh-cellbtn" type="button" aria-label="12… Rd8. Change this move">Rd8</button></td></tr>
+<tr><td class="sh-no">4</td><td class="sh-mv"><button class="sh-cellbtn" type="button" aria-label="4. dxe5. Change this move">dxe5</button></td><td class="sh-mv"><button class="sh-cellbtn" type="button" aria-label="4… Bxf3. Change this move">Bxf3</button></td><td class="sh-no sh-split">13</td><td class="sh-mv"><button class="sh-cellbtn" type="button" aria-label="13. Rxd7. Change this move">Rxd7</button></td><td class="sh-mv sh-chk" aria-selected="true"><button class="sh-cellbtn" type="button" aria-label="13… Rxd7, needs a look. Change this move">Rxd7<span class="sh-lab sh-lab-chk">Check this</span><span class="sh-lab-sub">smudged on the sheet</span></button></td></tr>
+<tr><td class="sh-no">5</td><td class="sh-mv"><button class="sh-cellbtn" type="button" aria-label="5. Qxf3. Change this move">Qxf3</button></td><td class="sh-mv"><button class="sh-cellbtn" type="button" aria-label="5… dxe5. Change this move">dxe5</button></td><td class="sh-no sh-split">14</td><td class="sh-mv"><button class="sh-cellbtn" type="button" aria-label="14. Rd1. Change this move">Rd1</button></td><td class="sh-mv"><button class="sh-cellbtn" type="button" aria-label="14… Qe6. Change this move">Qe6</button></td></tr>
+<tr><td class="sh-no">6</td><td class="sh-mv"><button class="sh-cellbtn" type="button" aria-label="6. Bc4. Change this move">Bc4</button></td><td class="sh-mv"><button class="sh-cellbtn" type="button" aria-label="6… Nf6. Change this move">Nf6</button></td><td class="sh-no sh-split">15</td><td class="sh-mv"><button class="sh-cellbtn" type="button" aria-label="15. Bxd7+. Change this move">Bxd7+</button></td><td class="sh-mv"><button class="sh-cellbtn" type="button" aria-label="15… Nxd7. Change this move">Nxd7</button></td></tr>
+<tr><td class="sh-no">7</td><td class="sh-mv sh-auto"><button class="sh-cellbtn" type="button" aria-label="7. Qb3, fixed automatically. Change this move">Qb3<span class="sh-lab sh-lab-auto">Fixed automatically</span></button></td><td class="sh-mv"><button class="sh-cellbtn" type="button" aria-label="7… Qe7. Change this move">Qe7</button></td><td class="sh-no sh-split">16</td><td class="sh-mv"><button class="sh-cellbtn" type="button" aria-label="16. Qb8+. Change this move">Qb8+</button></td><td class="sh-mv"><button class="sh-cellbtn" type="button" aria-label="16… Nxb8. Change this move">Nxb8</button></td></tr>
+<tr><td class="sh-no">8</td><td class="sh-mv"><button class="sh-cellbtn" type="button" aria-label="8. Nc3. Change this move">Nc3</button></td><td class="sh-mv"><button class="sh-cellbtn" type="button" aria-label="8… c6. Change this move">c6</button></td><td class="sh-no sh-split">17</td><td class="sh-mv"><button class="sh-cellbtn" type="button" aria-label="17. Rd8#. Change this move">Rd8#</button></td><td class="sh-mv"></td></tr>
+<tr><td class="sh-no">9</td><td class="sh-mv"><button class="sh-cellbtn" type="button" aria-label="9. Bg5. Change this move">Bg5</button></td><td class="sh-mv sh-okc"><button class="sh-cellbtn" type="button" aria-label="9… b5, you checked. Change this move">b5<span class="sh-lab sh-lab-ok">You checked</span></button></td><td class="sh-no sh-split"></td><td class="sh-mv"></td><td class="sh-mv"></td></tr>
+</tbody>
+</table>
+</div>
+<div style="display:flex;gap:12px;align-items:flex-start"><span class="k-small k-muted" style="font-size:13px;line-height:1.42;flex:1">7. Qb3 was read as "Qb8", which isn't a legal move there; Qb3 is the only legal match, so it was fixed without asking.</span><div class="k-stack-sm" style="align-items:flex-end;gap:2px;flex:none"><button class="k-btn k-btn-ghost k-btn-sm" type="button" style="border-color:#c4c3bb"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 14L4 9l5-5"></path><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"></path></svg>Undo last change</button><span class="k-meta" style="font-size:12px">Last change: you checked 9...b5</span></div></div>
+<div class="sh-gc sh-rel k-stack-sm" style="gap:6px">
+<div class="k-row-sm"><span class="k-num-badge" style="width:24px;height:24px;font-size:12px">4</span><h3 class="k-label" style="margin:0">Game checks</h3></div>
+<ul class="sh-checks" style="display:grid;grid-template-columns:auto auto;column-gap:22px;justify-content:start">
+<li><svg class="k-i sh-ok" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg><span>Every move is legal in order</span></li>
+<li><svg class="k-i sh-ok" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg><span>No position repeated three times</span></li>
+<li style="grid-column:1 / -1;font-size:13.5px"><svg class="k-i sh-ok" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg><span>17. Rd8# is checkmate, which matches the result written on the sheet, 1-0</span></li>
+<li class="sh-warn" style="grid-column:1 / -1"><svg class="k-i sh-warnic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7.5v5.5M12 16.5v.5"></path></svg><span>Checks run on the moves as read so far · 1 move still to check</span></li>
+</ul>
+</div>
+</section>
+
+<section class="k-card sh-col k-stack" aria-labelledby="sh-bh" style="gap:10px;padding-left:12px;padding-right:12px">
+<span class="k-num-badge sh-mk" style="top:-10px;left:-10px">3</span>
+<div class="sh-phead"><h2 id="sh-bh">Board · After 13...Rxd7</h2><span class="sh-pill sh-pill-chk"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7.5v5.5M12 16.5v.5"></path></svg>Check this</span></div>
+<div class="sh-bwrap">
+<div class="sh-ranks" aria-hidden="true"><span>8</span><span>7</span><span>6</span><span>5</span><span>4</span><span>3</span><span>2</span><span>1</span></div>
+<div class="k-board sh-bd " role="img" aria-label="Position after 13...Rxd7, White to move. White: king c1, queen b3, rook h1, bishops b5 and g5, pawns a2 b2 c2 e4 f2 g2 h2. Black: king e8, queen e7, rooks d7 and h8, knight f6, bishop f8, pawns a7 e5 f7 g7 h7. The move from d8 to d7 is tinted, d7 ringed in gold as the selected move.">
+<div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d sh-ft"></div><div class="k-sq-l"><span class="pc pb">K</span></div><div class="k-sq-d"><span class="pc pb">B</span></div><div class="k-sq-l"></div><div class="k-sq-d"><span class="pc pb">R</span></div>
+<div class="k-sq-d"><span class="pc pb pp">P</span></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l sh-ft sh-ring"><span class="pc pb">R</span></div><div class="k-sq-d"><span class="pc pb">Q</span></div><div class="k-sq-l"><span class="pc pb pp">P</span></div><div class="k-sq-d"><span class="pc pb pp">P</span></div><div class="k-sq-l"><span class="pc pb pp">P</span></div>
+<div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"><span class="pc pb">N</span></div><div class="k-sq-l"></div><div class="k-sq-d"></div>
+<div class="k-sq-d"></div><div class="k-sq-l"><span class="pc pw">B</span></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"><span class="pc pb pp">P</span></div><div class="k-sq-l"></div><div class="k-sq-d"><span class="pc pw">B</span></div><div class="k-sq-l"></div>
+<div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"><span class="pc pw pp">P</span></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div>
+<div class="k-sq-d"></div><div class="k-sq-l"><span class="pc pw">Q</span></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div>
+<div class="k-sq-l"><span class="pc pw pp">P</span></div><div class="k-sq-d"><span class="pc pw pp">P</span></div><div class="k-sq-l"><span class="pc pw pp">P</span></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"><span class="pc pw pp">P</span></div><div class="k-sq-l"><span class="pc pw pp">P</span></div><div class="k-sq-d"><span class="pc pw pp">P</span></div>
+<div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"><span class="pc pw">K</span></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"><span class="pc pw">R</span></div>
+</div>
+<div class="sh-files" aria-hidden="true"><span>a</span><span>b</span><span>c</span><span>d</span><span>e</span><span>f</span><span>g</span><span>h</span></div>
+</div>
+<div class="sh-nav2">
+<button class="k-iconbtn" type="button" aria-label="First move"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 5v14M18 5l-7 7 7 7"></path></svg></button>
+<button class="k-iconbtn" type="button" aria-label="Previous move"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"></path></svg></button>
+<button class="k-iconbtn" type="button" aria-label="Next move"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></button>
+<button class="k-iconbtn" type="button" aria-label="Last move"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 5v14M6 5l7 7-7 7"></path></svg></button>
+<span class="k-small" style="margin-left:auto;font-weight:600">Move 13 · Black</span>
+</div>
+<a class="k-link k-small" href="#" style="align-self:flex-start">Show the position before this move <span class="k-muted">(after 13. Rxd7)</span></a>
+<div class="k-stack-sm" style="gap:6px">
+<div class="k-row-sm" style="gap:8px"><button class="k-btn k-btn-gold" type="button">Check this move</button><button class="k-btn k-btn-ghost" type="button" style="text-decoration:underline;text-underline-offset:3px">Skip for now</button></div>
+<span class="sh-parttag" style="align-self:flex-start">Opens the fix step · part 4 (Scan-J or Scan-K)</span>
+</div>
+<div class="sh-end">
+<div class="k-board sh-bd sh-bd-t" role="img" aria-label="Final position after 17. Rd8 checkmate. White: king c1, rook d8, bishop g5, pawns a2 b2 c2 e4 f2 g2 h2. Black: king e8, queen e6, bishop f8, knight b8, rook h8, pawns a7 e5 f7 g7 h7.">
+<div class="k-sq-l"></div><div class="k-sq-d"><span class="pc pb">N</span></div><div class="k-sq-l"></div><div class="k-sq-d sh-ring"><span class="pc pw">R</span></div><div class="k-sq-l"><span class="pc pb">K</span></div><div class="k-sq-d"><span class="pc pb">B</span></div><div class="k-sq-l"></div><div class="k-sq-d"><span class="pc pb">R</span></div>
+<div class="k-sq-d"><span class="pc pb pp">P</span></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"><span class="pc pb pp">P</span></div><div class="k-sq-d"><span class="pc pb pp">P</span></div><div class="k-sq-l"><span class="pc pb pp">P</span></div>
+<div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"><span class="pc pb">Q</span></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div>
+<div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"><span class="pc pb pp">P</span></div><div class="k-sq-l"></div><div class="k-sq-d"><span class="pc pw">B</span></div><div class="k-sq-l"></div>
+<div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"><span class="pc pw pp">P</span></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div>
+<div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div>
+<div class="k-sq-l"><span class="pc pw pp">P</span></div><div class="k-sq-d"><span class="pc pw pp">P</span></div><div class="k-sq-l"><span class="pc pw pp">P</span></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"><span class="pc pw pp">P</span></div><div class="k-sq-l"><span class="pc pw pp">P</span></div><div class="k-sq-d"><span class="pc pw pp">P</span></div>
+<div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"><span class="pc pw">K</span></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div>
+</div>
+<div class="k-stack-sm" style="gap:4px"><span class="k-label">Move 17</span><b style="font-size:15px">17. Rd8# · checkmate</b><a class="sh-ul" href="#">Jump to the end</a></div>
+</div>
+</section>
+</div>
+<section class="sh-bar" aria-labelledby="sh-sv">
+<span class="k-num-badge sh-mk" style="top:-10px;left:-10px">5</span>
+<h2 id="sh-sv">Save &amp; share</h2>
+<button class="k-btn k-btn-sm" type="button" disabled="disabled"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2"></rect><path d="M8 11V8a4 4 0 0 1 8 0v3"></path></svg>Save to My games</button>
+<button class="k-btn k-btn-sm" type="button" disabled="disabled">Open in lichess<svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"></path></svg></button>
+<button class="k-btn k-btn-sm" type="button" disabled="disabled"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"></path></svg>Download PGN</button>
+<span class="sh-lock" style="margin-left:8px"><svg class="k-i k-i-sm sh-warnic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7.5v5.5M12 16.5v.5"></path></svg>Resolve 1 flagged move to save</span>
+<span class="sh-parttag" style="margin-left:auto">Part 5 opens here</span>
+</section>
+</main>
+
+<footer class="sh-foot">
+<div class="sh-din">
+<div class="sh-dgrid">
+<div>
+<a class="sh-fbrand" href="#" aria-label="Louisiana Chess Association, home"><span class="sh-plate" aria-hidden="true"><b>LCA</b><small>official logo</small></span><span class="sh-bname" aria-hidden="true">Louisiana Chess Association</span></a>
+<p class="sh-bp">Tournaments, clubs and scholastic chess across the state, run by volunteers.</p>
+<div class="sh-btns"><a class="k-btn k-btn-gold k-btn-sm" href="#">Join LCA</a><a class="k-btn k-btn-on-dark k-btn-sm" href="#">Donate</a></div>
+</div>
+<nav aria-labelledby="sh-d1"><h2 class="sh-dh" id="sh-d1">Play</h2><ul class="sh-dl"><li><a href="#">Tournaments</a></li><li><a href="#">Scholastic</a></li><li><a href="#">State champions</a></li><li><a href="#">Scoresheet scanner</a></li></ul></nav>
+<nav aria-labelledby="sh-d2"><h2 class="sh-dh" id="sh-d2">Community</h2><ul class="sh-dl"><li><a href="#">Clubs</a></li><li><a href="#">Club map</a></li><li><a href="#">List or update your club</a></li><li><a href="#">News</a></li><li><a href="#" target="_blank" rel="noopener noreferrer">LCA on Facebook ↗<span class="sh-sr"> (opens in a new tab)</span></a></li></ul></nav>
+<nav aria-labelledby="sh-d3"><h2 class="sh-dh" id="sh-d3">About LCA</h2><ul class="sh-dl"><li><a href="#">About LCA</a></li><li><a href="#">Board &amp; regions</a></li><li><a href="#">Bylaws &amp; rules</a></li><li><a href="#">Minutes</a></li><li><a href="#">Annual meeting</a></li></ul></nav>
+<nav aria-labelledby="sh-d4"><h2 class="sh-dh" id="sh-d4">Contact</h2><ul class="sh-dl"><li><a href="mailto:LouisianaChess@gmail.com"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="M3.5 6.5L12 13l8.5-6.5"></path></svg>LouisianaChess@gmail.com</a></li><li><a href="#">Contact</a></li><li><a href="#">Membership help</a></li><li><a href="#">Website help</a></li><li><a href="#">Donate</a></li></ul></nav>
+</div>
+<div class="sh-dbase">
+<p class="sh-trust">US Chess state affiliate · Louisiana's chess community since 1915 · <a href="#">Bylaws &amp; rules</a> · <a href="#">Minutes</a> · Site last updated Sun, Sep 6, 2026</p>
+<div class="sh-app"><span class="sh-applab" id="sh-ap">Appearance:</span><div class="sh-seg" role="radiogroup" aria-labelledby="sh-ap"><button type="button" role="radio" aria-checked="true"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7"></path></svg>System</button><button type="button" role="radio" aria-checked="false">Light</button><button type="button" role="radio" aria-checked="false">Dark</button></div></div>
+</div>
+</div>
+</footer>
+</div>
+</div>
+
+<div class="sh-bandx">
+<div>
+<div class="sh-blab"><span class="sh-code">B</span><h2>The review in every state</h2><span class="k-meta">each a cut of the laptop review, title in words beside its colour</span></div>
+<div class="sh-sgrid">
+<div><p class="sh-cap"><span class="sh-n">1</span><span class="sh-dot sh-dot-ok" aria-hidden="true"></span>All clear<span class="sh-cw">no flags</span></p>
+<div class="sh-fr sh-st">
+<div class="k-row-sm" style="gap:6px"><span class="sh-pill sh-pill-ok"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Check · done</span><span class="k-chip" style="min-height:26px;padding:0 9px;font-size:12px">Needs a look <span class="k-chip-count">0</span></span></div>
+<div class="sh-msg sh-msg-ok">Every move checked. Nothing to fix.</div>
+<ul class="sh-mchk">
+<li><svg class="k-i sh-ok" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Every move is legal in order</li>
+<li><svg class="k-i sh-ok" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>No position repeated three times</li>
+<li><svg class="k-i sh-ok" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>17. Rd8# is checkmate, matching 1-0 on the sheet</li>
+<li><svg class="k-i sh-ok" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>All 17 moves checked</li>
+</ul>
+<div class="sh-btnrow"><button class="k-btn k-btn-gold" type="button">Save to My games</button><button class="k-btn k-btn-line" type="button">Open in lichess<svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"></path></svg></button><button class="k-btn k-btn-line" type="button">Download PGN</button></div>
+</div></div>
+<div><p class="sh-cap"><span class="sh-n">2</span><span class="sh-dot sh-dot-chk" aria-hidden="true"></span>Flags open<span class="sh-cw">the drawn moment, frame A</span></p>
+<div class="sh-fr sh-st">
+<div class="k-row-sm" style="gap:6px"><span class="sh-pill sh-pill-now">Check · 1 move left</span><span class="k-chip" style="min-height:26px;padding:0 9px;font-size:12px">Needs a look <span class="k-chip-count">1</span></span></div>
+<div class="sh-mrow"><b>12</b><span>O-O-O</span><span>Rd8</span></div>
+<div class="sh-mrow" style="border-bottom:0"><b>13</b><span>Rxd7</span><span style="background:#f6e7b8;box-shadow:inset 0 0 0 2px #c8a94a,inset 0 0 0 3.5px #1a2744;padding:3px 8px;display:flex;flex-direction:column;align-items:flex-start;gap:0">Rxd7<small style="font-family:Geist,sans-serif;font-size:10.5px;font-weight:600;color:#5c450f">Check this</small></span></div>
+<ul class="sh-mchk"><li class="sh-warn"><svg class="k-i sh-warnic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7.5v5.5M12 16.5v.5"></path></svg>Checks run on the moves as read so far · 1 move still to check</li></ul>
+<p class="sh-xs" style="margin:0"><b>Resolve 1 flagged move to save</b></p>
+<div class="sh-btnrow" style="flex-wrap:nowrap;gap:5px"><button class="k-btn" type="button" disabled="disabled" style="padding:0 8px"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2"></rect><path d="M8 11V8a4 4 0 0 1 8 0v3"></path></svg>Save to My games</button><button class="k-btn" type="button" disabled="disabled" style="padding:0 8px">Download PGN</button></div>
+</div></div>
+<div><p class="sh-cap"><span class="sh-n">3</span><span class="sh-dot sh-dot-grey" aria-hidden="true"></span>Loading<span class="sh-cw">opened from a Reading row</span></p>
+<div class="sh-fr sh-st">
+<div class="k-row-sm" style="gap:8px" role="status"><span class="sh-spin" aria-hidden="true"></span><b style="font-size:14px">Still reading · 12 of 17 moves</b></div>
+<div style="display:flex;gap:10px">
+<div class="k-stack-sm" style="flex:1;gap:8px;padding-top:4px"><span class="sh-sk" style="width:90%"></span><span class="sh-sk" style="width:70%"></span><span class="sh-sk" style="width:84%"></span><span class="sh-sk" style="width:60%"></span><span class="sh-sk" style="width:78%"></span></div>
+<div style="width:92px;height:92px;border-radius:6px;border:2px dashed #c4c3bb;background:#f3f3f0;display:flex;align-items:center;justify-content:center;font-size:11px;color:#555c6b;text-align:center;padding:6px">Board space kept</div>
+</div>
+<p class="sh-xs" style="margin:0">The page fills in as the reading job ends. You can close it; the draft waits in My games.</p>
+<div class="sh-btnrow" style="flex-wrap:nowrap;gap:5px"><button class="k-btn" type="button" disabled="disabled" style="padding:0 8px"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2"></rect><path d="M8 11V8a4 4 0 0 1 8 0v3"></path></svg>Save to My games</button><button class="k-btn" type="button" disabled="disabled" style="padding:0 8px">Download PGN</button></div>
+</div></div>
+<div><p class="sh-cap"><span class="sh-n">4</span><span class="sh-dot sh-dot-chk" aria-hidden="true"></span>Game cut short<span class="sh-cw">another game</span></p>
+<div class="sh-fr sh-st">
+<div class="k-row-sm" style="justify-content:space-between"><span class="sh-pill sh-pill-now">Check · move 25</span><span class="k-sample" style="font-size:11px;padding:2px 8px">Sample data</span></div>
+<div class="sh-mrow"><b>23</b><span>Rfe1</span><span>Kh8</span></div>
+<div class="sh-mrow"><b>24</b><span>Qh5</span><span>g6</span></div>
+<div class="sh-mrow" style="border-bottom:1px dashed #c4c3bb;color:#555c6b"><b>25</b><span style="font-family:Geist,sans-serif;font-weight:500;font-size:12px;color:#555c6b">not followed</span><span></span></div>
+<div class="sh-msg sh-msg-gold">We could follow the game to move 24. Keep the first 24 moves, or fix move 25.</div>
+<div class="sh-btnrow"><button class="k-btn k-btn-line" type="button">Keep 24 moves</button><button class="k-btn k-btn-gold" type="button">Fix move 25</button></div>
+</div></div>
+<div><p class="sh-cap"><span class="sh-n">5</span><span class="sh-dot sh-dot-chk" aria-hidden="true"></span>Result mismatch<span class="sh-cw">the third check</span></p>
+<div class="sh-fr sh-st">
+<ul class="sh-mchk">
+<li><svg class="k-i sh-ok" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Every move is legal in order</li>
+<li><svg class="k-i sh-ok" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>No position repeated three times</li>
+<li class="sh-warn"><svg class="k-i sh-warnic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7.5v5.5M12 16.5v.5"></path></svg>The sheet says 1-0, and the last move isn't checkmate. Resignations happen.</li>
+</ul>
+<div class="sh-btnrow" style="margin-top:0"><button class="k-btn k-btn-line" type="button">Keep 1-0 as written</button><button class="k-btn k-btn-ghost" type="button" style="text-decoration:underline;text-underline-offset:3px">Change the result</button></div>
+<p class="sh-xs" style="margin:4px 0 0;padding-top:8px;border-top:1px solid #ecebe5"><b>Its twin, a draw written:</b></p>
+<ul class="sh-mchk"><li class="sh-warn"><svg class="k-i sh-warnic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7.5v5.5M12 16.5v.5"></path></svg>The sheet says ½-½ but the last move is checkmate; check the result.</li></ul>
+</div></div>
+<div><p class="sh-cap"><span class="sh-n">6</span><span class="sh-dot sh-dot-grey" aria-hidden="true"></span>No header read<span class="sh-cw">Edit game details opens</span></p>
+<div class="sh-fr sh-st">
+<p class="sh-xs" style="margin:0"><b>Names not read from the sheet</b></p>
+<div class="sh-ff">
+<label>White<span class="sh-ph">Name</span></label>
+<label>Black<span class="sh-ph">Name</span></label>
+<label>Event<span>Club night</span></label>
+<label>Round<span class="sh-ph">optional</span></label>
+<label>Board<span class="sh-ph">optional</span></label>
+<label>Date<span>Wed, Sep 9, 2026</span></label>
+<label>Result<span>1-0</span></label>
+<label style="justify-content:flex-end"><button class="k-btn k-btn-navy" type="button" style="min-height:28px;font-size:12.5px;padding:0 10px">Use these details</button></label>
+</div>
+<p class="sh-xs" style="margin:0">No event in the system: a club night fills "Club night".</p>
+</div></div>
+<div><p class="sh-cap"><span class="sh-n">7</span><span class="sh-dot sh-dot-grey" aria-hidden="true"></span>No photo<span class="sh-cw">expired, or saved without it</span></p>
+<div class="sh-fr sh-st">
+<div class="sh-noph" role="img" aria-label="Photo not kept"><svg class="k-i k-i-lg" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"></rect><circle cx="9" cy="10" r="2"></circle><path d="M21 16l-5-5-9 8"></path></svg><span>Photo not kept</span></div>
+<p class="sh-xs" style="margin:0">The sheet highlight is off. Moves and board still work, and so do Check this and Undo.</p>
+<div class="sh-mrow" style="border-bottom:0"><b>13</b><span>Rxd7</span><span style="background:#f6e7b8;padding:3px 8px">Rxd7 <small style="font-family:Geist,sans-serif;font-size:10.5px;font-weight:600;color:#5c450f">Check this</small></span></div>
+</div></div>
+<div><p class="sh-cap"><span class="sh-n">8</span><span class="sh-dot sh-dot-grey" aria-hidden="true"></span>Offline<span class="sh-cw">the decoder runs in the browser</span></p>
+<div class="sh-fr sh-st">
+<div class="sh-msg sh-msg-grey" style="display:flex;gap:8px;align-items:flex-start"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"style="flex:none;margin-top:2px"><path d="M3 3l18 18"></path><path d="M8.5 16.5a5 5 0 0 1 7 0M5 12.5a10 10 0 0 1 4.2-2.4M19 12.5a10 10 0 0 0-3-2M12 20h.01"></path></svg><span>You're offline. Checking and fixing work here; Save waits for a connection.</span></div>
+<div class="sh-mrow" style="border-bottom:0"><b>13</b><span>Rxd7</span><span style="background:#f6e7b8;padding:3px 8px">Rxd7 <small style="font-family:Geist,sans-serif;font-size:10.5px;font-weight:600;color:#5c450f">Check this</small></span></div>
+<div class="sh-btnrow" style="margin-top:0"><button class="k-btn k-btn-gold" type="button">Check this move</button></div>
+<p class="sh-xs" style="margin:auto 0 0"><b>Save waits for a connection</b></p>
+<div class="sh-btnrow" style="flex-wrap:nowrap;gap:5px"><button class="k-btn" type="button" disabled="disabled" style="padding:0 8px"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2"></rect><path d="M8 11V8a4 4 0 0 1 8 0v3"></path></svg>Save to My games</button><button class="k-btn" type="button" disabled="disabled" style="padding:0 8px">Download PGN</button></div>
+</div></div>
+<div><p class="sh-cap"><span class="sh-n">9</span><span class="sh-dot sh-dot-navy" aria-hidden="true"></span>Private · a junior's game<span class="sh-cw">guardian view</span></p>
+<div class="sh-fr sh-st" style="height:196px;gap:6px">
+<div class="k-row-sm" style="justify-content:space-between"><span class="sh-xs">Nisha Shah, Priya's guardian</span><span class="k-sample" style="font-size:11px;padding:2px 8px">Sample data</span></div>
+<p class="sh-xs" style="margin:0;padding:6px 9px;border-radius:8px;background:#e8edf4;color:#1a2744"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"style="vertical-align:-3px"><rect x="5" y="11" width="14" height="9" rx="2"></rect><path d="M8 11V8a4 4 0 0 1 8 0v3"></path></svg> <b>Priya's game</b> · only you and your family can see it</p>
+<p class="sh-xs" style="margin:0"><b>Priya Shah</b> 1803 vs <b>Marcus Landry</b> 2014 · <b>0-1</b></p>
+<div class="sh-btnrow" style="margin-top:0;gap:4px;flex-wrap:nowrap" role="radiogroup" aria-label="Who can see it"><button class="k-btn k-btn-navy" type="button" role="radio" aria-checked="true" style="padding:0 8px">Only me</button><button class="k-btn" type="button" role="radio" aria-checked="false" disabled="disabled" style="padding:0 8px">Anyone with the link</button><button class="k-btn" type="button" role="radio" aria-checked="false" disabled="disabled" style="padding:0 8px">Public</button></div>
+<p class="sh-xs" style="margin:0">Sharing a junior's game needs a guardian's OK.</p>
+</div>
+<p class="sh-cap"><span class="sh-n">10</span><span class="sh-dot sh-dot-red" aria-hidden="true"></span>Couldn't load</p>
+<div class="sh-fr" style="padding:9px 12px;display:flex;align-items:center;gap:10px">
+<span class="sh-msg sh-msg-red" style="flex:1;padding:6px 9px;font-weight:600">Couldn't load this game</span><button class="k-btn k-btn-line k-btn-sm" type="button"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.3-5.6M20 4v5h-5"></path></svg>Try again</button>
+</div>
+</div>
+</div>
+</div>
+
+<div class="sh-pcol">
+<div class="sh-blab"><span class="sh-code">C</span><h2>The phone, 390px</h2><span class="k-meta">same draft, Moves tab</span></div>
+<div class="sh-rel">
+<span class="k-num-badge sh-mk" style="top:-10px;left:-10px;z-index:30">6</span>
+<div class="k-phone"><div class="k-phone-screen">
+<div class="sh-pstatus" aria-hidden="true"><span>8:00</span><span class="sh-island"></span><span>5G</span></div>
+<div class="sh-papp"><a class="k-row-sm" href="#" style="gap:8px;text-decoration:none" aria-label="Louisiana Chess Association, home"><svg class="sh-rook" viewBox="0 0 100 100" aria-hidden="true" style="width:28px;height:28px"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span class="sh-pbname"><b>Louisiana Chess</b><span>Association</span></span></a><a class="sh-psbtn" href="#" aria-label="Search"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg></a></div>
+<div class="sh-pstrip"><span class="sh-pill sh-pill-now">Check · 1 move left</span><span class="k-meta" style="font-size:12px">16 of 20 scans left today</span></div>
+<nav class="sh-ptabs" aria-label="Review"><a href="#">Photo</a><a class="on" href="#" aria-current="page">Moves</a><a href="#">Board</a></nav>
+<div class="sh-sticky">
+<div class="k-board sh-bd sh-bd-p" role="img" aria-label="Position after 13...Rxd7, White to move. White: king c1, queen b3, rook h1, bishops b5 and g5, pawns a2 b2 c2 e4 f2 g2 h2. Black: king e8, queen e7, rooks d7 and h8, knight f6, bishop f8, pawns a7 e5 f7 g7 h7. The move from d8 to d7 is tinted, d7 ringed in gold as the selected move.">
+<div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d sh-ft"></div><div class="k-sq-l"><span class="pc pb">K</span></div><div class="k-sq-d"><span class="pc pb">B</span></div><div class="k-sq-l"></div><div class="k-sq-d"><span class="pc pb">R</span></div>
+<div class="k-sq-d"><span class="pc pb pp">P</span></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l sh-ft sh-ring"><span class="pc pb">R</span></div><div class="k-sq-d"><span class="pc pb">Q</span></div><div class="k-sq-l"><span class="pc pb pp">P</span></div><div class="k-sq-d"><span class="pc pb pp">P</span></div><div class="k-sq-l"><span class="pc pb pp">P</span></div>
+<div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"><span class="pc pb">N</span></div><div class="k-sq-l"></div><div class="k-sq-d"></div>
+<div class="k-sq-d"></div><div class="k-sq-l"><span class="pc pw">B</span></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"><span class="pc pb pp">P</span></div><div class="k-sq-l"></div><div class="k-sq-d"><span class="pc pw">B</span></div><div class="k-sq-l"></div>
+<div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"><span class="pc pw pp">P</span></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div>
+<div class="k-sq-d"></div><div class="k-sq-l"><span class="pc pw">Q</span></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div>
+<div class="k-sq-l"><span class="pc pw pp">P</span></div><div class="k-sq-d"><span class="pc pw pp">P</span></div><div class="k-sq-l"><span class="pc pw pp">P</span></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"><span class="pc pw pp">P</span></div><div class="k-sq-l"><span class="pc pw pp">P</span></div><div class="k-sq-d"><span class="pc pw pp">P</span></div>
+<div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"><span class="pc pw">K</span></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"><span class="pc pw">R</span></div>
+</div>
+<div class="k-stack-sm" style="flex:1;min-width:0;gap:6px">
+<b style="font-size:15px;line-height:1.25">After 13...Rxd7</b>
+<span class="sh-pill sh-pill-chk" style="align-self:flex-start"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7.5v5.5M12 16.5v.5"></path></svg>Check this</span>
+<span class="k-meta" style="font-size:12px">Move 13 · Black</span>
+<div class="k-row-sm" style="gap:6px"><button class="k-iconbtn" type="button" aria-label="Previous move"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"></path></svg></button><button class="k-iconbtn" type="button" aria-label="Next move"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></button></div>
+</div>
+</div>
+<div class="sh-pbody">
+<div class="sh-pchips" role="group" aria-label="Show moves"><button class="k-chip k-chip-on" type="button" aria-pressed="true">All moves <span class="k-chip-count">17</span></button><button class="k-chip" type="button" aria-pressed="false">Needs a look <span class="k-chip-count">1</span></button><button class="k-chip" type="button" aria-pressed="false">Fixed automatically <span class="k-chip-count">1</span></button><button class="k-chip" type="button" aria-pressed="false">You checked <span class="k-chip-count">1</span></button></div>
+<div class="sh-plist">
+<div class="sh-prow"><b>9</b><span>Bg5</span><span class="sh-okc">b5<small>You checked</small></span></div><div class="sh-prow"><b>10</b><span>Nxb5</span><span>cxb5</span></div><div class="sh-prow"><b>11</b><span>Bxb5+</span><span>Nbd7</span></div><div class="sh-prow"><b>12</b><span>O-O-O</span><span>Rd8</span></div><div class="sh-prow"><b>13</b><span>Rxd7</span><span class="sh-chk" aria-selected="true">Rxd7<small>Check this</small></span></div><div class="sh-prow"><b>14</b><span>Rd1</span><span>Qe6</span></div><div class="sh-prow"><b>15</b><span>Bxd7+</span><span>Nxd7</span></div>
+</div>
+<button class="sh-fold" type="button" aria-expanded="false"><span>Game checks · 3 of 4</span><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"></path></svg></button>
+<div class="k-row-sm" style="gap:6px;font-size:12.5px;font-weight:600;color:#2b3446"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2"></rect><path d="M8 11V8a4 4 0 0 1 8 0v3"></path></svg>Resolve 1 flagged move to save</div>
+</div>
+<nav class="sh-tabbar" aria-label="Main"><div class="sh-tabbar-in">
+<a class="sh-tab on" href="#" aria-current="page"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4.5" width="18" height="16" rx="2"></rect><path d="M3 9.5h18M8 2.5v4M16 2.5v4"></path></svg><span>Tournaments</span></a>
+<a class="sh-tab" href="#"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"></path><circle cx="12" cy="9.5" r="2.5"></circle></svg><span>Clubs</span></a>
+<a class="sh-tab" href="#"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4.5 21c1-4 4-6 7.5-6s6.5 2 7.5 6"></path></svg><span>My LCA</span></a>
+<button class="sh-tab" type="button" aria-expanded="false" style="border:0;background:transparent;font:inherit;font-size:12px"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg><span>Menu</span></button>
+</div><div class="sh-safe"><span class="sh-homeind"></span></div></nav>
+</div></div>
+</div>
+<p class="sh-pcap"><b>One selected move shared by the three tabs; the board stays at the top while a flag is open.</b> Photo and Board tabs show the same ring.</p>
+</div>
+</div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":2900}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

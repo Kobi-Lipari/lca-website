@@ -1,0 +1,294 @@
+{
+ "label": "scanner-1",
+ "results": [
+  {
+   "board": {
+    "file": "Scan-D.dc.html",
+    "title": "Scanner · D · Getting in and capture: Page first, guide frame (round 2)",
+    "width": 1960,
+    "page": "scanner",
+    "name": "Page first, guide frame",
+    "idea": "The /scanner page comes first with the step strip, the count and the whose-game chips, and one gold Take a photo button opens an in-page camera with the gold guide frame that shoots on its own when the sheet is steady.",
+    "differs": "Scan-D opens the camera from the page and draws the camera itself (getUserMedia, gold guide frame, auto-shoot, corner marks skip the crop); Scan-E opens the phone's own camera first and checks the photo afterwards with four draggable corners."
+   },
+   "drawn": {
+    "file": "Scan-D.dc.html",
+    "title": "Scanner · D · Getting in and capture: Page first, guide frame (round 2)",
+    "width": 1960,
+    "height": 2550,
+    "second_file": "",
+    "second_title": "",
+    "second_height": 0,
+    "note": "What: Part 1 of the scanner (getting in and capture), option D, \"Page first, guide frame\". A row of six ways in leads to /scanner. Four phones show: signed out, the signed-in page (step strip, \"17 of 20 scans left today\", privacy line, one gold Take a photo), the in-page camera with the gold guide frame plus an inset for a printed LCA sheet, and pages chosen with the sheet's QR details. Below them sit a 1180px laptop drop zone and ten states. The other option for this part is Scan-E.\n\nBuilt from: Scan-A (step strip, count, Directors button), Scan-B screen 1 (Capture) as drawn, Scan-C (TD-table card and sheet QR as ways in), and today's ScannerPage.tsx (SignInPrompt, HowItWorks, PhotoPicker, PhotoButtons, PageStrip). It uses the decided header, footer, phone app bar and tab bar. Replaces Scan-B screen 1. The \"3 of 5\" sample count is redrawn as the real 20 a day.\n\nK's feedback applied: Scan-A, B and C are treated as parts of one scanner and nothing from them is dropped. This part is drawn end to end, with D and E to pick from. Open for K: photo retention (\"never stored\" today, or kept 30 days unless saved as drawn); who may scan and when the 20 a day resets (midnight UTC or Central); whose 20 a guardian's scan for a child counts against; and the pick between D and E.",
+    "unresolved": [
+     "Scan-A's My games row 'vs Sam Nguyen · drew · Houma Chess Club night · Mon, Sep 28' falls after the drawn moment (Sun, Sep 6, 3:38 PM), so it is drawn as 'Mon, Aug 31' (still Sample data).",
+     "The spec's laptop header lists 'Donate · My LCA · Marcus Landry'. The board uses the decided signed-in header ('Donate · My LCA' with a chevron, no name), to match Tourn-List-Final and Nav-Header-Final.",
+     "The spec puts the printed-LCA-sheet inset at the bottom right of phone 3, but there it would cover the Back side button and the guide frame. It hangs off the phone's top right instead, over the empty right side of the app bar.",
+     "To keep the board under 2600px, the ten state cards sit in two columns beside the laptop (640px wide) instead of five across under it. Rendered content is 2511px; declared height and $preview are 2550.",
+     "Phone 1 (signed out) is taller than the screen: How it works steps 3 and 4 and the Print the notation kit link sit under a scroll fade marked 'Scroll for steps 3 and 4 and Print the notation kit'.",
+     "The privacy line, the How it works rail and the rules use WS15's 30-day wording ('Photos are kept 30 days unless you save the game'). Today's page, API and migration say 'never stored'; this is named as open for K in note 3 and the grey note."
+    ]
+   },
+   "review": {
+    "file": "Scan-D.dc.html",
+    "height": 2550,
+    "second_height": 0,
+    "counts": "Final size is 1960 x 2550. The content renders at 2549px, which rounds up to 2550, under the 2600 limit. The root height and $preview are both 2550. There is one file and no second part.\n\nThe board has these regions:\n- **Title strip:** kicker, ROUND 2 badge, Built from, Replaces, K's feedback applied, Shown (Sun, Sep 6, 2026 at 3:38 PM) and the Sample data badge.\n- **Grey note:** What / Built from / K's feedback applied / Open for K, with 4 open items.\n- **Legend:** 6 numbered notes. On the design there are 10 badges: 1 x2, 2 x1, 3 x2, 4 x1, 5 x1, 6 x3.\n- **A, Ways in:** 6 cards (the QR card highlighted, WS07 tagged Proposed) and a connector line into phones 1 and 2.\n- **B, Phones:** 4 phones at 414px: Signed out, Signed in page, Camera with guide frame plus the printed-sheet inset, and Pages chosen.\n- **C, Laptop:** 1180px, with the decided desktop header and footer (matched to Tourn-List-Final), a drop zone and no camera.\n- **D, States:** 10 cards, each with a coloured dot and the state in words: Loading, Empty, Page limit, Blurry or dark, Camera refused or absent, Not a photo, Daily limit reached, Offline, A guardian's page, A director's page.\n\nRule checks:\n- **Copy:** 0 em or en dashes, 0 USCF, 0 copy \".5\" (only SVG path numbers), 0 AI references, 0 grade or birthdate.\n- **Gold:** #c8a94a appears 5 times, only on the dark camera ground, the shutter ring, the step pill dot and the section-code chip. Gold-ink text uses #866a1e.\n- **Dates:** every date has a weekday (Sun, Sep 6; Sat, Sep 5; Mon, Aug 31, the same as Scan-G and Scan-L). Times read 3:38 PM to 3:40 PM and 8:00 PM.\n- **Count:** in words, \"17 of 20 scans left today · resets at midnight\", and \"0 of 20\" in the limit state.\n- **Same game as the other parts:** Marcus Landry 2014 vs Priya Shah 1803, Board 6, Round 4, Open, Louisiana State Championship 2026, Sun, Sep 6, under the same step strip (Photo · Read · Check · Save & share).\n- **Decoder contract:** \"We read the handwriting · Exactly as written, mistakes included\" and \"Chess rules check every move\". Nothing says the reader corrected a move. Save and Export are not on this part.\n- **Privacy:** the guardian state shows \"Priya\" by first name only and \"private until you allow sharing\". There is no child email or grade.\n- **Markup:** tags balance, the skeleton matches the template, and nothing is animated, no iframes, no {{holes}}.\n- **Overflow:** after the fixes the measurement script finds no overflowing or clipped element.",
+    "changes": [
+     "Phone 1 (signed out): the content was 122px taller than the screen, so How it works steps 3 and 4 and 'Print the notation kit' were hidden behind a 'Scroll for...' fade. Fixed by putting 'Log in to scan' and 'Create an account' side by side and tightening the spacing and type on that phone. All four steps and the link now show, and the fade is removed.",
+     "Phone 3 inset (printed LCA sheet): it covered the phone's status bar and top-right corner. It is now a compact 196 x 160 card in the caption band above phone 3, clear of the ways-in connector and the phone. The pill 'LCA sheet found · straightening on the corner marks' is kept. The text is shortened to 'Event, round, board and names fill in from the sheet's QR.'",
+     "To make room for the inset, phone captions grew from 66px to 104px, and phone 3's caption narrowed to 258px. The board still renders at 2549px and stays declared at 2550.",
+     "Step pills: the row was 2px wider than the phone screen, so 'Save & share' was clipped. Pill padding dropped from 12px to 11px and all four pills now fit.",
+     "Grey 'What' note: added 'Scan-E instead opens the phone's own camera first and checks the photo with four draggable corners.' This makes the difference from Scan-E clear at a glance. I tried it in the title strip first, but it pushed the board past 2550."
+    ],
+    "remaining_concerns": [
+     "The spec asks for the printed-sheet inset 'at the bottom right of the phone'. There was no clear spot there: it would hide the Back side button or run into the States panel. It now sits above phone 3's top right instead, which is a small departure from the spec.",
+     "The guardian's 'Whose game is this? You · Priya' chips appear only as state card 9, not on a phone, as the spec lays out. A guardian looking at the phones alone will not see them.",
+     "The legend says Scan-A's Directors button heads the page 'at every width'. On the phone it appears only in state card 10, and on the laptop it is in the right rail with a 'directors only' tag (both as the spec says), not up with the step strip.",
+     "Photo retention is drawn as WS15's 30-day version throughout (sign-in rules, privacy lines, laptop rail). This is flagged in the grey note and in legend note 3 as open for K. If K picks 'never stored', every one of those lines needs redrawing.",
+     "My games shows 'Mon, Aug 31' rather than the spec's 'Mon, Sep 28', because Sep 28 comes after the drawn moment (Sun, Sep 6). Scan-G and Scan-L use the same Aug 31 date, so I left it."
+    ]
+   }
+  },
+  {
+   "board": {
+    "file": "Scan-E.dc.html",
+    "title": "Scanner · E · Getting in and capture: Camera first, check the photo (round 2)",
+    "width": 1960,
+    "page": "scanner",
+    "name": "Camera first, check the photo",
+    "idea": "On a phone the scanner opens straight into the phone's own camera, and the photo is checked afterwards with four draggable corners and 'Is the whole grid in the frame?', with whose game asked at Save from the names read off the sheet.",
+    "differs": "Scan-E keeps no camera code (today's capture=environment input) and adds a photo check with four draggable corners that works on any sheet, in poor light and at every width; Scan-D draws its own camera with a guide frame and auto-shoot and asks whose game before shooting."
+   },
+   "drawn": {
+    "file": "Scan-E.dc.html",
+    "title": "Scanner · E · Getting in and capture: Camera first, check the photo (round 2)",
+    "width": 1960,
+    "height": 2550,
+    "second_file": "",
+    "second_title": "",
+    "second_height": 0,
+    "note": "What: Part 1 of the scanner (getting in and capture), option 2 of 2, camera first. On a phone, Scoresheet scanner opens straight into the phone's own camera. Back on the page, the photo is checked with four draggable gold corners and the question \"Is the whole grid in the frame?\". The phone shows the page strip with today's \"Does the game continue\" copy, and whose game is asked at Save, where the names read off the sheet suggest the profile (\"This looks like Priya's game\"). The board also has the six ways in, a 1180px laptop with the same check (the drop zone shown as an inset) and the ten states. The drawn moment is Sun, Sep 6, 3:38 PM, Board 6, Round 4.\n\nBuilt from: Scan-A's step strip, the count (redrawn as the real limit, \"17 of 20 scans left today\") and the Directors button. Today's ScannerPage.tsx: the capture=environment input, PhotoButtons, PageStrip, SignInPrompt and HowItWorks copy. Scan-C's sheet QR as a way in (state 9). The decided header, footer, app bar and tab bar. It replaces Scan-B screen 1. Scan-D is option 1 for this part.\n\nK's feedback applied, and what is open for K: the board treats the scanner as one tool in parts, with two options per part, and nothing from Scan-A, B or C is turned down. The six numbered notes show where each part landed. Open for K: how long the photo is kept (the board draws WS15's 30 days unless the game is saved; today's page says photos are never stored); who may scan, and whether the 20-a-day limit resets at midnight Central; whether a guardian's scan is filed under the child and stays private until sharing is allowed; and which option to pick for part 1, this board or Scan-D.",
+    "unresolved": [
+     "States are drawn two across, in five rows beside the laptop, instead of five across. Five across would have pushed the board past the 2600px limit; the states section label says where they are.",
+     "Scan-D was not in the project folder when I drew this, so Row 1 (Ways in) copies the six cards from Scan-D's spec text, not from its file. Check that the two rows match once Scan-D exists.",
+     "The spec puts the count 'in the app bar'. To keep the decided app bar unchanged, phone 1 shows it on a navy sub-bar under the app bar: 'Scoresheet scanner · 17 of 20 scans left today'.",
+     "On phone 2 the count shares the step-strip row, as the spec asks, but at 390px it has to wrap to two lines ('17 of 20 scans / left today').",
+     "The spec asks for the laptop drop zone and the four-corner check in the same main column. The drop zone is shown as a tagged inset ('Before a photo is chosen · shared with Scan-D') inside the check card's side column, not as a separate full-width zone.",
+     "The board is 2550px tall when rendered, so the declared height and $preview are both 2550, under the 2600px limit. No second board was needed."
+    ]
+   },
+   "review": {
+    "file": "Scan-E.dc.html",
+    "height": 2550,
+    "second_height": 0,
+    "counts": "Scan-E is a single file with no second part, so second_height is 0. The board renders at 2546px, so the declared height and $preview are 2550, under the 2600 limit. Nothing clips at 1960px. The only overflow is in thumbnails that crop on purpose: the page 1 thumbnail and the blurry-photo mini.\n\nWhat is on the board: a legend of 6 numbered notes, and 14 badges on the design for those 6 notes (some notes are badged more than once). Regions: Ways in has 6 cards, the same text as Scan-D, with the Proposed tag. There are 4 phones, 1 laptop at 1180px and 10 state cards, each with its status in words beside its colour dot.\n\nCopy scan of the rendered text found 0 of each of the following: em or en dashes, USCF, '.5', AI or model words, grade or birthdate, {{holes}}, iframes, animation or transition CSS, gold #c8a94a used as text colour, and times without AM or PM. All 9 dates carry a weekday: 8 say \"Sun, Sep 6\" and 1 says \"Tue, Oct 13\". Every tag is balanced and every attribute is quoted.\n\nThe skeleton matches the template: support.js, the kit blob link, helmet with the fonts link and one style block, and the data-dc-script block. The laptop header and footer match Tourn-List-Final link for link. The same game, names, event, step strip (Photo · Read · Check · Save & share) and daily count (\"17 of 20 scans left today\", \"0 of 20 scans left today\") appear as in the other parts.",
+    "changes": [
+     "Phone 4, the rest of the Save card: the whole section was at 55% opacity, which left the key privacy line 'Sharing a junior's game needs a guardian's OK' and the 'Who can see it' choices too faint to read. The section is now a dashed, grey-ground card. Only the photo checkbox and the Save button are dimmed, because they belong to part 5.",
+     "Phone 4: the guardian line is now full-contrast navy with a lock icon and reads 'Sharing a junior's game needs a guardian's OK. Link and Public are off until then.' The disabled 'Anyone with the link' and 'Public' buttons get a hatched ground and readable grey text, so their off state no longer depends on fading.",
+     "Phone 4: removed disabled from 'Save to Priya's games'. On the Save step every flag is already resolved, so a closed Save button would have contradicted the decoder contract (Save and Export unlock once all flags are resolved). Only the two sharing choices stay disabled.",
+     "Title strip: added a 'Differs from Scan-D' line so the difference shows at a glance: no camera of our own, the phone's camera opens at once, four draggable corners check the photo afterwards, and whose game is asked at Save, against Scan-D's own camera with a guide frame and auto-shoot that asks whose game before shooting.",
+     "Title strip: shortened 'Built from' to one line, and the root's bottom padding went from 24px to 20px, so the new line fits and the render stays at 2546px. Declared height and $preview stay at 2550."
+    ],
+    "remaining_concerns": [
+     "The spec asks for the ten state cards five across in a row of their own. The designer put them two across beside the laptop. A separate row would add about 450px and push the board past the 2600px limit, so I left the layout as drawn. The cards and their copy match the spec.",
+     "The count copy follows the parts spec: 'resets at midnight'. Today's code resets at midnight UTC, which is 7:00 PM in Louisiana in summer, and moving it to midnight Central is still an open question for K. The board lists it under Open for K but does not name the UTC time.",
+     "The guardian in phone 4, Nisha Shah, and the 15-year-old in state 10 are invented sample people. Both carry Sample tags and the title strip has the Sample data badge. Confirm the guardian's name matches whatever the other parts use (for example Scan-H and Scan-I on Save).",
+     "The laptop row is set at 8:00 PM, with Marcus at home choosing a photo. That matches Scan-D's laptop, but the flow has Marcus scanning at the venue at 3:40 PM and only opening the draft at 8:00 PM, so the laptop is really a second scenario rather than the drawn moment.",
+     "The canvas sticky can reuse the grey note's What line: 'Camera first: the phone's own camera opens at once, four corners check the photo, Save asks whose game.'"
+    ]
+   }
+  },
+  {
+   "board": {
+    "file": "Scan-F.dc.html",
+    "title": "Scanner · F · The reading job and its progress: Moves stream in (round 2)",
+    "width": 1960,
+    "page": "scanner",
+    "name": "Moves stream in",
+    "idea": "The moves appear on the phone as they are read, with the unclear cell flagged the instant it is reached, and the page hands straight over to the review when the job is done.",
+    "differs": "Scan-F streams the moves and the four stage rows live on the screen (Scan-B screen 2 as drawn) and opens the review itself when done; Scan-G shows one quiet card, streams nothing, and hands the job off to My games, an email and a to-do so the player can scan the next sheet at once."
+   },
+   "drawn": {
+    "file": "Scan-F.dc.html",
+    "title": "Scanner · F · The reading job and its progress: Moves stream in (round 2)",
+    "width": 1960,
+    "height": 2450,
+    "second_file": "",
+    "second_title": "",
+    "second_height": 0,
+    "note": "What: Part 2 of the scanner, option F. Reading is a job. The moves appear on the phone as they are read, the unclear cell is flagged the moment the reading line reaches it, and the review opens by itself when the job ends. The board has the job drawn as a six-stop track, four phones (Sending, Reading, Checking every move is legal, Ready), the My games rows while the job runs, and twelve states, each with its colour and the state in words.\n\nBuilt from: Scan-B screen 2 (Reading) as drawn, today's working, unreadable and error stages and their copy (ScannerPage.tsx, functions/api/scan), and WS15's async job (POST /api/scan/jobs, GET /api/scan/jobs/:id) with My games. It replaces Scan-B screen 2. The \"3 of 5\" sample count is redrawn as the real 20 (16 of 20 after the scan is held), the old app bar now uses the decided chrome, and today's single in-request scan becomes the async job.\n\nK's feedback applied: Scan-A, B and C are parts of one scanner, not rivals, and nothing from them is turned down. This part is drawn in full, with F and G to pick from. Open for K: photo retention (drawn as kept for the job and then 30 days unless saved; today says never stored); the count (a scan is held when the job starts and handed back if the read fails; reset at midnight UTC or midnight Central); a guardian's scan for Priya (whose 20 it counts against, first name only, family only); pick F or G.",
+    "unresolved": [
+     "Phone 3 needed tighter spacing to fit all 17 moves and the four stage rows above the tab bar. Its sheet has no '#, White, Black' header row (phone 2 keeps it), and its progress bar sits inside the 'Checking every move is legal' row, as on Scan-B, instead of on its own line. The 'Matching names' row shows only the status word 'Waiting', not a second 'Waiting' sub-line.",
+     "The 'Partly decoded' state card shows moves 22 to 24 from another game, because the sample game ends at move 17. The card is labelled 'another sheet' and falls under the board's Sample data badge.",
+     "The caption under phone 4 is placed absolutely below the phone, so the board stays under 2500px. It does not overlap anything in the render."
+    ]
+   },
+   "review": {
+    "file": "Scan-F.dc.html",
+    "height": 2450,
+    "second_height": 0,
+    "counts": "There is one file at 1960 x 2450, and no second part is needed. The content ends at 2429px, plus 18px of padding, which gives 2447 and rounds up to 2450. The root height and $preview both say 1960 x 2450, under the 2500 limit.\n\nRegions: the title strip, the grey note (What / Built from / K's feedback applied / Open for K, with 4 items) and the legend with 6 numbered notes. Six numbered badges are on the design (3 and 5 on the track, 6 on phone 1, 1 on phone 2, 2 on phone 3, 4 on the Unreadable state). The job track has 6 stops, with the two grey endpoint and contract lines under it. There are 4 phones (Sending, Reading with the moves streaming in, Checking every move is legal, Ready and straight to the review), each with the decided app bar and tab bar and Tournaments current. The My games band has 2 rows and the line about another device. There are 12 state cards, 6 across in 2 rows; card 12 is split into Daily limit and A junior's game.\n\nRule checks: 0 em or en dashes, 0 USCF, 0 \".5\" in copy, 0 AI or model references, 0 {{holes}}, iframes or animations, and 0 grade, birthdate, email or Register. Every date (5) carries \"Sun\". Gold #c8a94a appears only as fills, borders, the reading line and the spinner stroke, never as text on a light ground; the kicker uses #866a1e. Every coloured dot or cell has a word beside it (Done, Reading, Next, Waiting, Checking, Error, Not read, Warning, Offline, Family, Check this, Fixed automatically). The count is in words: \"16 of 20 scans left today\" once a scan is claimed, and \"17 of 20\" when nothing is counted. The Opera Game moves match the real game through 17. Rd8#.\n\nDecoder contract: only the decoder and the chess rules fix anything (\"Fixed automatically · read Qb8\"). The reading step \"never corrects\" (said twice). This part has no Save or Export; the Save & share step stays closed while 2 moves are left. The phone chrome matches Nav-Mobile-Final and Tourn-Phones-Final.",
+    "changes": [
+     "Phone 2 (Reading) was clipping its last line, 'You can leave this screen. The draft waits in My games.' (its content was 676px in a 651px screen). I closed the main gap from 9px to 6px and switched its stage rows to the tight variant, so the line now shows in full.",
+     "Replaced the title strip line 'Round 2 · K's feedback applied: ... The other pick for this part is Scan-G.' with 'Differs from Scan-G: here the moves and the four stage rows stream in live on the phone and the review opens by itself when the job is done. Scan-G shows one quiet card, streams nothing, and hands the job off to My games, an email and a to-do so the player can scan the next sheet at once.' The difference between the options now shows at a glance, as on Scan-E. K's feedback stays in the grey note.",
+     "The phone 4 caption ('When the job ends on the same device the review opens here (Scan-H or Scan-I).') ran into the 'Meanwhile in My games' section label. I added 14px of padding under the phones row and cut the section label top margins from 16px to 13px and the root top padding from 28px to 24px, so the caption now clears the My games band and the height stays 2450.",
+     "Junior's game card: the meta line now reads 'A guardian's scan for Priya: first name only, private until you allow sharing.' This puts the private-by-default and guardian's-OK rule on the board."
+    ],
+    "remaining_concerns": [
+     "Phone 2: as the spec asks, the gold reading line crosses row 9, which leaves 'Bg5' and the row number hard to read under the glow. The unclear move is still named in words in the move strip ('9...? unclear').",
+     "State 9 ('Read, but no legal game') says 'The decoder's warnings, word for word.' but shows no sample warning text. I did not invent one.",
+     "State 12's split card is narrow, so the small status words ('0 left', 'Family') wrap onto their own line under each heading. They are readable but not in line with the headings.",
+     "Phone 4 says 'resets at midnight' without a time zone, because UTC versus Central is open for K (the grey note names it).",
+     "The board has no desktop header or footer; the spec calls for four phones only, so the decided chrome appears as the phone app bar and tab bar.",
+     "Note for the canvas sticky: Part 2, option F, 'Moves stream in'. The moves and four stage rows appear live on the phone, 9...? is flagged as soon as it is reached, and Check 2 moves opens the review on the same phone. The other pick is Scan-G (one quiet card, handed off to My games). Open for K: photo retention, the reset time zone, and the guardian's count for Priya."
+    ]
+   }
+  },
+  {
+   "board": {
+    "file": "Scan-G.dc.html",
+    "title": "Scanner · G · The reading job and its progress: Hand-off (round 2)",
+    "width": 1960,
+    "page": "scanner",
+    "name": "Hand-off",
+    "idea": "One quiet card with the four stages and nothing streaming: the moment the upload lands the job is a Reading row in My games, the page offers Scan the next sheet, and an email and a My LCA to-do say when the game is ready to check.",
+    "differs": "Scan-G hands the job off (Reading row, Scan the next sheet, ready email, to-do) and renders only four stage words with 'This usually takes 10 to 30 seconds'; Scan-F keeps the player on the screen watching moves stream in and opens the review itself."
+   },
+   "drawn": {
+    "file": "Scan-G.dc.html",
+    "title": "Scanner · G · The reading job and its progress: Hand-off (round 2)",
+    "width": 1960,
+    "height": 2450,
+    "second_file": "",
+    "second_title": "",
+    "second_height": 0,
+    "note": "What: Part 2 of the scanner (the reading job), option G, Hand-off. One quiet card shows the four stages in words, with \"This usually takes 10 to 30 seconds.\" Nothing streams. As soon as the upload lands, the job becomes a Reading row in My games and the page offers Scan the next sheet. When the game is ready to check, an email and a My LCA to-do say so. The board shows the job as a six-stop track (the same as Scan-F), four phones (the quiet card, Sent, My games at 3:41 PM, the ready email and the to-do), the laptop at 8:00 PM opening the row into part 3, and twelve states.\n\nBuilt from: Scan-B screen 2 (its four stage names, dimmed photo and leave line); today's working, unreadable and error copy in ScannerPage.tsx; WS15's async job (POST /api/scan/jobs, GET /api/scan/jobs/:id) and My games; Scan-A's step strip and count, redrawn as the real limit (\"16 of 20 scans left today\"). Replaces Scan-B screen 2.\n\nK's feedback applied: one scanner in parts, with options per part. Nothing from Scan-A, B or C is turned down, and this part is drawn in full with F and G to pick from. Open for K: how long the photo is kept (the email says 30 days unless saved, today's page says never stored); whether a failed read sends an email (drawn as no); a junior's game emails the guardian and uses Priya's first name only; and pick F (moves stream in) or G (hand-off).",
+    "unresolved": [
+     "The spec gives Sam Nguyen's saved game as 'Mon, Sep 28'. That date is after the drawn moment (Sun, Sep 6, 3:41 PM), so I drew it as 'Mon, Aug 31', as sibling board Scan-D does. Change it back if K wants the spec date.",
+     "The laptop at 8:00 PM leaves out the scan count on purpose. Today's reset is at midnight UTC, which is 7:00 PM Central in summer, so at 8:00 PM the count would already be back to 20 of 20. That reset time is still open for K (it is listed on Scan-D), so any count drawn there could be wrong.",
+     "The spec puts the My LCA Today to-do strip 'under the mail view'. To keep the board under 2500px I drew it inside phone 4, below the email, behind a dashed divider labelled 'Under the mail · louisianachess.org › My LCA', not as a separate card below the phone.",
+     "The evening band is about 330px tall, not the 200px in the spec, because the decided desktop header alone takes 62px. The laptop view is cropped after two rows, with a short fade at the bottom.",
+     "The board renders at 2440px. Declared height and $preview are both 2450."
+    ]
+   },
+   "review": {
+    "file": "Scan-G.dc.html",
+    "height": 2450,
+    "second_height": 0,
+    "counts": "Board is 1960 x 2450 declared (root style and $preview match). It renders at 2426px natural, under the 2500 cap. There is no second part, so second_height is 0. The board has 6 legend notes, and numbered badges 1 to 6 all sit on the design: 1 on phone 2, 2 on phone 1, 3 on the track, 4 on state 3, 5 on phone 4 and on the laptop row, 6 on phone 4's 30-day line. Regions found: row A track with 6 stops; row B with 4 phones (414px, 64px gaps, decided app bar and tab bar, mail app on phone 4); row C laptop at 1100px with the decided signed-in header, now with the decided short footer; row D with 12 state cards, six across. Every state card and every colour dot has a word beside it. Dates: 10 x Sun, Sep 6; 2 x Sat, Sep 5; 2 x Mon, Aug 31 (weekdays checked against the 2026 calendar). Every date has its weekday. 19 times, all written as 3:40 PM style. Text scan found 0 em or en dashes, 0 USCF, 0 AI or model words, 0 '.5', 0 grade or birthdate, 0 {{holes}}, 0 iframes, 0 animation. Gold is used only as a fill, or as text on navy. Gold-ink text uses #866a1e or #664c0c. Sample badges: 2 (title strip, and the guardian scan in States). The daily count reads '16 of 20 scans left today' after the scan and '17 of 20' when a failed read is handed back. Tag balance check: clean. Overflow check on the phone screens and the page: none.",
+    "changes": [
+     "Track stop 6 now reads 'Ready to check · 2 moves', the same label as Scan-F, so the two boards' row A match. Its sub-line names the hand-off: 'on any device, from the My games row or the email'.",
+     "Phone 1: the two pending stage rows now carry a grey 'Waiting' word chip beside their empty circles. Before this, the colour state had no word. Main gap tightened to 9px so the count line clears the tab bar by 16px.",
+     "Laptop (row C): removed the fixed 272px height and fade that cut off the second row. Added the decided short F1 footer (rook, 'Louisiana Chess Association', 'US Chess state affiliate · Louisiana's chess community since 1915', Contact · Website help · Bylaws & rules · Donate) so the header and footer chrome match Tourn-List-Final.",
+     "Decoder contract: the laptop's Ready to check row now says 'Save and Export open once checked' under the status word, so Save and Export are visibly closed while flags are open.",
+     "Privacy: state 12 (A junior's game) now adds 'Private until her guardian allows sharing.'",
+     "Re-aimed the 'Part 3 · Scan-H or Scan-I opens from here' arrow and tag at the highlighted laptop row.",
+     "Tightened spacing to absorb the footer and keep the board under the cap: section labels, doc padding, legend box, state grid and cards, phone caption block, track box, laptop body and h1. The natural height went 2440 to 2426. Declared height and $preview stay at 2450."
+    ],
+    "remaining_concerns": [
+     "Sticky note text: 'Scan-G · Hand-off (part 2, option G). One quiet card with four stage words and no streaming. The moment the upload lands the job becomes a Reading row in My games, and the page offers Scan the next sheet. A ready email and a My LCA to-do say when the game is ready to check, and the laptop picks it up at 8:00 PM. Pick F (moves stream in) or G (hand-off). Open for K: photo retention, no email on a failed read, the junior email to the guardian by first name.'",
+     "Phone 3's saved row 'Houma Chess Club night' is dated Mon, Aug 31. The spec says Mon, Sep 28, but that falls after the drawn moment (Sun, Sep 6), so the earlier designer's correction was kept. Houma Chess Club and the opponent names are covered only by the title strip's general Sample data badge.",
+     "Row C is about 355px tall, not the spec's 200px band. It needs that height to show the decided header, two rows and the footer at 1100px.",
+     "The page thumbnail on phone 1 is dimmed to 40% as the spec says, so its 'Page 1' badge is faint. The same words appear at full contrast beside it ('Page 1 of 1').",
+     "Phone 2's privacy line ('Photos are kept 30 days unless you save the game') and the email's 30-day line follow the spec's draft for the photo retention question. Note 6 marks this as open for K, and today's page still says photos are never stored."
+    ]
+   }
+  },
+  {
+   "board": {
+    "file": "Scan-H.dc.html",
+    "title": "Scanner · H · Review: photo, moves and board, with the game checks: Three panes (round 2)",
+    "width": 1440,
+    "page": "scanner",
+    "name": "Three panes",
+    "idea": "Photo left, scoresheet-shaped move list centre, board right on a laptop, all three following one selected move, and on a phone three tabs (Photo · Moves · Board) with the board sticky while a flag is open.",
+    "differs": "Scan-H keeps the typed move list as the centre of the review with the photo and the board at its sides (Scan-A as drawn); Scan-I makes the photo itself the list, with the read moves typed over each cell and the typed list in a drawer."
+   },
+   "drawn": {
+    "file": "Scan-H.dc.html",
+    "title": "Scanner · H · Review: photo, moves and board, with the game checks: Three panes (round 2)",
+    "width": 1440,
+    "height": 2900,
+    "second_file": "",
+    "second_title": "",
+    "second_height": 0,
+    "note": "What: Part 3 of the scanner, option 1 of 2 (Three panes). Marcus opens the draft from My games on his laptop on Sun, Sep 6 at 8:00 PM. The photo is on the left, the move list in scoresheet columns is in the centre and the board is on the right, and all three follow one selected move (13...Rxd7, still to check). 9...b5 is already marked You checked, and the game checks sit under the list. Save & share stays closed with \"Resolve 1 flagged move to save\". Below that are ten states (All clear, Flags open, Loading, Game cut short, Result mismatch, No header read, No photo, Offline, a junior's private game, Couldn't load) and a 390px phone with Photo · Moves · Board tabs, where the board stays at the top while a flag is open.\n\nBuilt from: Scan-A panels 1, 2 and 4 and the board of panel 3; today's Results, MoveList and MoveCell in ScannerPage.tsx, whose legend maps one to one onto Check this · Fixed automatically · You checked; the decided header, footer and phone chrome. Scan-A's candidates and Confirm moved to part 4 (Scan-J or Scan-K). Its Save, crosstable and TD panels moved to parts 5 and 7. Replaces Scan-A panels 1 to 4.\n\nK's feedback applied: one scanner in parts, with options per part. Option 2 for this part is Scan-I, Sheet as the list. Open for K: pick this, Scan-I or one per width. Photo retention: drawn as kept 30 days, until Tue, Oct 6; if K picks \"only for the job\", the draft looks like state 7, Photo not kept. Whether the limit resets at midnight UTC or Central. Whether a guardian gives OK once per child or once per game. Whether Public should exist at all.",
+    "unresolved": [
+     "The scan count reads '16 of 20 scans left today' because this board's spec says 16 (one more scan used since the capture step). The round brief's shared line says '17 of 20', so check it matches the sibling boards.",
+     "Photo retention is still open for K. The board draws the WS15 30-day keep ('kept until Tue, Oct 6'), but today's page and API say photos are never stored. State 7 (Photo not kept) shows what the other answer looks like.",
+     "In state 9, Nisha Shah (Priya's guardian) is invented and carries a Sample data badge. Her sharing choices are drawn disabled with 'Sharing a junior's game needs a guardian's OK', as the spec says. How she gives that OK (once per child or once per game) is left to part 5 and to K.",
+     "State 4 (Game cut short) uses invented moves 23 and 24 from another game, marked Sample data, because the Opera Game ends at move 17.",
+     "The rendered content is 2883px tall, declared as 2900, which is right at the 2900 limit. Any later addition needs a trim elsewhere."
+    ]
+   },
+   "review": {
+    "file": "Scan-H.dc.html",
+    "height": 2900,
+    "second_height": 0,
+    "counts": "Single file, no second part (second_height 0). It renders 2897px tall with height:auto, declared at 2900 on both the root and $preview, which is at the 2900 limit and not over it. The legend has 6 numbered notes, and the design carries 6 badges: 1 photo, 2 moves, 3 board, 4 game checks, 5 save bar, 6 phone (12 k-num-badge in all). Frame A shows three panes in a 400/520/440 grid. Frame B has 9 state cards plus the folded tenth, \"Couldn't load\", and each title has a word beside its coloured dot. Frame C is one phone with a 390px viewport (414px with the bezel). The tag check found 0 unclosed or mismatched tags. None of these appear: {{holes}}, iframes, animations or transitions. In the visible text and aria-labels there are 0 em or en dashes, 0 USCF, 0 AI or model references, 0 grade or birthdate fields, 0 need questions and 0 \".5\". Each of the 7 dates has its weekday: Tue, Oct 13, 2026; Sun, Sep 6 (several times); Tue, Oct 6; Wed, Sep 9, 2026; Sun, Sep 6, 2026 in the footer. The only time shown is 8:00 PM. Brand gold never appears as a text colour on a light ground: it is used only for fills, rings and underlines. Sample-data badges are on the legend, the page kicker, state 4 and state 9. The daily count reads in words: \"16 of 20 scans left today · resets at midnight\" on the laptop and \"16 of 20 scans left today\" on the phone. The decoder contract holds: 7. Qb3 is \"read as Qb8 ... the only legal match, so it was fixed\", the photo overlay shows the raw read text Qb8, and legality is credited to the decoder. Save, Open in lichess and Download PGN are closed with \"Resolve 1 flagged move to save\" in the main frame, the phone and states 2, 3 and 8, and they open only in state 1, All clear. The privacy rules hold: state 9 shows Only me selected, the other two sharing choices disabled, \"Sharing a junior's game needs a guardian's OK\", and no child email or grade. Overflow and clipping scan: only the intended screen-reader-only spans clip, and the 9 state cards fit their fixed height with no clipping.",
+    "changes": [
+     "Added a 'Versus Scan-I' paragraph to the grey 'What' column of the title strip: 'Here the typed list is the centre; Scan-I makes the photo itself the list.' This makes the option's idea and its difference from the sibling readable at a glance. The doc block grew 14px and the board now renders 2897px, still inside the declared 2900.",
+     "Nothing else needed fixing. The header (Tournaments · Clubs · Scholastic · News · Membership · About, Search, Donate, My LCA) and the footer (Play / Community / About LCA / Contact, the US Chess state affiliate line, the Appearance switch) match the decided chrome. Every region the spec names is present with its copy and states: step strip, directors-only button, count, opened-from line, the three panes, the bottom bar, the phone and states 1 to 9 plus the tenth card. The game, names, event, Board 6 / Round 4 and step strip are the same as in the other parts."
+    ],
+    "remaining_concerns": [
+     "Height is 2897 of 2900, so any later addition to this board will need a split or a trim.",
+     "The phone label reads 'The phone, 390px', which is the kit's viewport. The spec says a 414px phone, which is the outer bezel width. I left the label as it is because it is accurate, but the canvas sticky should say 390px viewport if K compares the two.",
+     "The opened-from line follows the spec word for word: 'the photo is kept until Tue, Oct 6 unless you save the game'. Under WS15 a saved game keeps the photo only if 'Keep the scoresheet photo with this game' is ticked, so the wording may promise more than part 5 does. Photo retention is already listed as open for K.",
+     "The signed-in header shows 'My LCA' without the to-do count that Nav-Header-Final carries ('My LCA, 2 things to do'). The spec does not call for a count, so I did not add one.",
+     "Who may scan is not in this board's Open for K list. Of that question, only the reset time is there; the gate and the limit live on the capture part.",
+     "Canvas sticky text: Scan-H, Three panes (part 3, option 1 of 2). The photo is on the left, the typed scoresheet-shaped move list in the centre and the board on the right, all following one selected move (13...Rxd7, Check this). The game checks sit under the list. Save and Export stay closed until every flag is resolved. On a phone it becomes Photo · Moves · Board tabs with the board sticky while a flag is open. Nine states plus Couldn't load. Versus Scan-I: here the typed list is the centre; Scan-I makes the photo itself the list."
+    ]
+   }
+  },
+  {
+   "board": {
+    "file": "Scan-I.dc.html",
+    "title": "Scanner · I · Review: photo, moves and board, with the game checks: Sheet as the list (round 2)",
+    "width": 1440,
+    "page": "scanner",
+    "name": "Sheet as the list",
+    "idea": "The scoresheet photo is the main view at every width, with the read moves typed over each cell and a word per cell, and tapping a cell opens a strip beneath it with the board; the typed column list is a drawer.",
+    "differs": "Scan-I makes the photo the list (read moves typed over the handwriting, a word per cell, the board in a strip under the tapped row) so a parent compares the reading with the handwriting in place; Scan-H keeps the typed list in the centre with the photo and board at its sides."
+   },
+   "drawn": {
+    "file": "Scan-I.dc.html",
+    "title": "Scanner · I · Review: photo, moves and board, with the game checks: Sheet as the list (round 2)",
+    "width": 1440,
+    "height": 2850,
+    "second_file": "Scan-I-2.dc.html",
+    "second_title": "Scanner · I-2 · Review, Sheet as the list: the phone and every state (round 2)",
+    "second_height": 1600,
+    "note": "What: Part 3, option 2, Sheet as the list. The scoresheet photo is the main view, with each read move typed beside the handwriting. Flagged cells carry a word next to their colour: Fixed automatically for 7. Qb3, You checked for 9...b5, and Check this for 13...Rxd7. Tapping a cell opens a strip under its row with the 3x crop, the board after 13...Rxd7, First, Back, Forward and Last, and Check this move or Skip for now. The typed list is a drawer. Under the sheet are the game checks in words, and Save & share stays closed until the last flag is resolved (\"Resolve 1 flagged move to save\"). Board 1 (Scan-I) is the laptop at 8:00 PM on Sun, Sep 6, opened from My games. Board 2 (Scan-I-2) holds the 414px phone with the bottom sheet at 60%, nine states and a failure card.\n\nBuilt from: Scan-A panels 1 and 4, its labels and chips and the board of panel 3, Scan-B screen 3's crop and screen 2's hand-off, plus today's MoveCell aria-labels and legend in ScannerPage.tsx. The header and footer are the decided ones, the same as Scan-K. Replaces Scan-A panels 1 to 4. Option 1 for this part is Scan-H, Three panes.\n\nK's feedback applied: one scanner in parts, with options per part. It is the same game, step strip, count and privacy rules as the other parts, and nothing from Scan-A, B or C was dropped. Each legend note says where its part came from. Open for K: pick this, Scan-H, or each by width; photo retention, which this option leans on because without the photo the list becomes the page (drawn kept until Tue, Oct 6); a junior's game needs the guardian's OK once per child or once per game; and whether the daily limit resets at midnight UTC or Central.",
+    "unresolved": [
+     "The spec names no second board, but the phone inset and the nine states would not fit under 2900px beside the full laptop frame and the decided footer. They are on Scan-I-2.dc.html (1440 x 1600), which carries its own title strip, legend and grey note. The canvas index needs both entries on page 'scanner'.",
+     "Scan-H was not in the project folder while I drew, so the header, details line and states follow Scan-H's spec text and Scan-K's drawn chrome rather than a rendered Scan-H.",
+     "The spec's count '16 of 20 scans left today' is drawn as specified. The flow text elsewhere says '17 of 20', so check that the parts agree.",
+     "Invented content carries a 'Sample data' badge: moves 23 to 25 in the cut-short state, the club-night form values (Wed, Sep 9, Round 1, Board 3), and the 112-move three-page game. The guardian in state 9 has no name.",
+     "The spec's grey line 'the photo is kept until Tue, Oct 6 unless you save the game' is drawn word for word, but it reads as if saving deletes the photo. K may want it reworded to 'unless you keep it with the game'."
+    ]
+   },
+   "review": {
+    "file": "Scan-I.dc.html (main, unchanged) and Scan-I-2.dc.html (second, fixed)",
+    "height": 2850,
+    "second_height": 1750,
+    "counts": "Scan-I renders at 2815px of content, so the declared 2850 stays (limit 2900). Scan-I-2 rendered at 1554px before my fixes and 1704px after, so it is declared at 1750 (limit 3000). I checked both at 1440px. After the fixes neither board has clipped or overflowing elements; the only hit left is the intended screen-reader-only span. The legend has 6 numbered notes on each board, and badges 1 to 6 sit on the design: on Scan-I, 1 is the sheet, 2 the strip, 3 the drawer, 4 the game checks, 5 the Save bar and 6 the opened-from line; on Scan-I-2, 1 and 2 are on the phone and 3, 5 and 6 are on states 7, 2 and 9. Scan-I-2 has 9 state cards plus the Failure card, and the phone is 414px. Scan-I has 34 sheet cells with aria-labels in today's MoveCell form. The drawer list has 17 rows, the game checks have 3 green lines and 1 amber line, and the Save bar has 3 export buttons, all disabled. Dates on the two boards: Sun, Sep 6 (5 times), Tue, Oct 6 (3), Tue, Oct 13 (2) and Wed, Sep 9 (1), each with the correct weekday for 2026. The copy scan found 0 em or en dashes, 0 decimal halves, 0 USCF, 0 AI or model references, 0 grade, birthdate or financial-need fields, 0 {{holes}}, iframes or animation, and 0 brand-gold text on a light ground (#e6cf86 appears only for the footer headings on navy). The skeleton, kit link, helmet, one style block and $preview match the template. The header matches the signed-in Nav-Header-Final (Search ⌘K, Donate, My LCA). The footer matches Nav-Footer-Final and Scan-H, including the Appearance switch. Both boards show the same game, names, event and step strip (Photo · Read · Check · Save & share) as the other parts. The count reads \"16 of 20 scans left today · resets at midnight\", which is the spec's figure for the moment after this scan.",
+    "changes": [
+     "Scan-I-2: raised the state cards from 262px to 312px. 'All clear' was clipping its third live button (Download PGN) and 'Result mismatch' was clipping the bottom of its draw-twin line; both now show in full.",
+     "Scan-I-2: the state 5 caption 'the written result vs the board' was cut off with an ellipsis; it now reads 'the sheet's result'.",
+     "Scan-I-2: the state 9 caption 'Offline | A junior's private game' now uses the board's separator: 'Offline · A junior's private game'.",
+     "Scan-I-2: set the root height and $preview from 1600 to 1750 to match the render (1704px rounded up).",
+     "Scan-I: no changes needed. Its 2850 declared height already matches the render, and every region the spec names is there with its copy: the details row, the chips, the Moves list button, the 'always on' toggle, the 880px sheet with typed plates and the three word tags, the strip under row 13 (crop, 300px board at the spec FEN, First/Back/Forward/Last, 'Check this move' tagged as part 4, Skip, Close), the 380px drawer with the Qb8 to Qb3 note and Undo, the game checks, and the Save bar with 'Resolve 1 flagged move to save'.",
+     "Sticky note for the canvas (Scan-I and Scan-I-2, part 3, option 2, Sheet as the list): The scoresheet photo is the list. Each handwritten cell shows the read move typed beside it, and the three settled or flagged cells carry a word (Fixed automatically · You checked · Check this). Tapping a cell opens a strip under its row with the crop and the board at that move; on a phone it is a bottom sheet. The typed list becomes a drawer. A parent compares the reading with the handwriting in place. It is weaker on a three-page game, and without a kept photo the list becomes the page, so it leans on photo retention (open for K). Save and Export stay closed until every Check this is resolved."
+    ],
+    "remaining_concerns": [
+     "State 6 'No header read' on Scan-I-2 uses an invented club-night game (Wed, Sep 9, Round 1, Board 3) instead of the Landry and Shah game. It is labelled only by a small 'Sample data: a club night, filled by hand.' line, not a k-sample badge. I left it because the spec leaves the fields open, but K may expect the same game.",
+     "State 9 on Scan-I-2 shows a guardian reviewing Priya's game with the sharing choices disabled and 'Sharing a junior's game needs a guardian's OK'. Shown to the guardian, this reads as asking them for their own OK. It is drawn as the spec words it; the once-per-child or once-per-game consent stays open for K.",
+     "The Loading state reads 'Still reading · 12 of 17 moves', which assumes the total is known while reading is still running. I kept the spec's copy.",
+     "The footer's Play column leaves out Calendar (with WS04) and Results (with WS10), which Nav-Footer-Final carries as future items. I kept the omission to match Scan-H and the other scanner parts.",
+     "The spec's 30-day keep date 'Tue, Oct 6' assumes WS15 retention, which is still open for K. The grey note and legend note 3 say so."
+    ]
+   }
+  }
+ ]
+}

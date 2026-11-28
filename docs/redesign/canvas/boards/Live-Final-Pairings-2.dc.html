@@ -1,0 +1,497 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Tournament day · decided · TD results queue, part 2</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/6107adb451dbab26ee5d89f4189b81f8">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1a2744}
+.tl-root{width:100%;max-width:1440px;margin:0 auto;box-sizing:border-box;padding:36px 40px 56px;background:#ecebe6;color:#1a2744}
+.tl-root *{box-sizing:border-box}
+.tl-doc{background:#fbfaf6;border:1px solid #d9d8d1;border-radius:14px;padding:24px 26px 26px}
+.tl-doc-top{display:flex;justify-content:space-between;align-items:flex-start;gap:24px}
+.tl-title{font-size:34px;line-height:1.15;font-weight:700;letter-spacing:-.015em;margin:6px 0 0}
+.tl-meta-line{font-size:14.5px;line-height:1.5;color:#3d4556;margin:2px 0 0;max-width:1000px}
+.tl-meta-line b{color:#1a2744;font-weight:600}
+.tl-legend{display:grid;grid-template-columns:minmax(0,1fr) 440px;gap:20px;margin-top:20px}
+.tl-lbox{background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:18px 20px}
+.tl-notes{list-style:none;margin:12px 0 0;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 26px}
+.tl-notes li,.tl-fb li{display:flex;gap:10px;align-items:flex-start;font-size:13.5px;line-height:1.45}
+.tl-notes b,.tl-fb b{font-weight:600}
+.tl-fb{background:#ffffff;border:1px solid #dddcd4;border-left:4px solid #c8a94a;border-radius:12px;padding:18px 20px}
+.tl-fb ol{list-style:none;margin:12px 0 0;padding:0;display:flex;flex-direction:column;gap:11px}
+.tl-fbk{display:inline-flex;align-items:center;justify-content:center;min-width:28px;height:24px;padding:0 5px;border-radius:6px;background:#f4ecd4;color:#664c0c;font-size:12px;font-weight:700;flex:none}
+.tl-fb-sub{font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#555c6b;margin:16px 0 0}
+.tl-fb-r1{font-size:12.5px;line-height:1.5;color:#555c6b;margin:6px 0 0}
+.tl-sec{margin-top:34px}
+.tl-flab{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:0 0 12px}
+.tl-flab h2{margin:0;font-size:20px;line-height:1.2;font-weight:600;letter-spacing:-.01em}
+.tl-code{display:inline-flex;align-items:center;justify-content:center;min-width:28px;height:28px;padding:0 9px;border-radius:7px;background:#c8a94a;color:#1a2744;font-weight:700;font-size:13px}
+.tl-cap{font-size:14px;line-height:1.5;color:#3d4556;max-width:1080px;margin:12px 0 0}
+.tl-browser .k-browser-url{max-width:820px}
+.tl-browser{width:100%;box-shadow:0 14px 34px rgba(16,24,43,.10)}
+.tl-view{position:relative;background:#f5f5f2;overflow:hidden}
+.tl-b{position:relative;z-index:2;box-shadow:0 0 0 3px #ffffff}
+.tl-hd-in{gap:0;position:relative}
+.tl-hd .k-brand{margin-right:16px}
+.tl-rook{width:30px;height:30px;fill:#ffffff;flex:none}
+.tl-rook-sm{width:24px;height:24px}
+.tl-nav{gap:0}
+.tl-nav a{padding:0 10px;white-space:nowrap}
+.tl-navbtn{display:inline-flex;align-items:center;gap:4px;min-height:44px;padding:0 10px;border:0;background:transparent;color:#ffffff;font:inherit;font-size:15px;font-weight:500;cursor:pointer}
+.tl-sbtn{display:inline-flex;align-items:center;gap:8px;width:220px;height:44px;padding:0 8px 0 12px;margin-right:16px;border-radius:8px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.45);color:#ffffff;text-decoration:none;font-size:14.5px;font-weight:500;flex:none}
+.tl-kbd{margin-left:auto;font-family:"Geist Mono",ui-monospace,monospace;font-size:12px;color:#e8ecf4;border:1px solid rgba(255,255,255,.4);border-radius:5px;padding:2px 6px;line-height:1.2}
+.tl-util{gap:12px}
+.tl-util .k-ulink{padding:0 4px}
+.tl-my{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 8px;border:0;border-radius:8px;background:transparent;color:#ffffff;font:inherit;font-size:14px;font-weight:500;cursor:pointer}
+.tl-foot-in{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px;padding-top:22px;padding-bottom:24px}
+.tl-foot .k-meta{color:rgba(255,255,255,.78)}
+.tl-foot nav a{font-size:14px}
+.tl-vnote{border:1px dashed #b9b7ad;border-radius:12px;padding:18px 20px;background:#fbfbf8}
+.tl-vnote ul{margin:10px 0 0;padding-left:18px;font-size:14px;line-height:1.5;color:#3d4556}
+.tl-vnote li{margin-bottom:8px}
+.tl-vcap{display:flex;align-items:center;gap:8px;margin:0 0 10px;font-size:15px;font-weight:600}
+
+/* page */
+.mono{font-family:'Geist Mono',monospace}
+.lp-phead{background:#ffffff;border-bottom:1px solid #e3e2dc}
+.lb-tabs{display:flex;gap:2px}
+.lb-tabs a{padding:10px 14px;color:#3d4454;text-decoration:none;font-weight:500;border-bottom:3px solid transparent;white-space:nowrap}
+.lb-tabs a.on{color:#1a2744;font-weight:600;border-bottom-color:#c8a94a}
+.lb-banner{display:flex;align-items:center;gap:14px;flex-wrap:wrap;background:#1a2744;color:#ffffff;border-radius:14px;padding:14px 18px}
+.pc{display:inline-flex;align-items:center;justify-content:center;min-width:24px;height:24px;padding:0 4px;border-radius:5px;font-family:'Geist Mono',monospace;font-weight:500;font-size:13px;line-height:1;box-sizing:border-box;flex:none}
+.pc-w{background:#ffffff;color:#1a2744;border:1.5px solid #1a2744}
+.pc-b{background:#1a2744;color:#ffffff;border:1.5px solid #1a2744}
+.lb-tbl{width:100%;border-collapse:separate;border-spacing:0;font-size:17px}
+.lb-tbl th{font-size:13px;font-weight:600;color:#555c6b;text-align:left;padding:10px;border-bottom:1px solid #d9d8d2;background:#fafaf7;white-space:nowrap}
+.lb-tbl td{padding:11px 10px;border-bottom:1px solid #eeede8;vertical-align:middle;background:#ffffff}
+.lb-tbl .bd{position:sticky;left:0;z-index:1;width:52px;text-align:center;font-weight:700;font-size:18px}
+.lb-tbl th.bd{z-index:2;background:#fafaf7;font-size:13px}
+.lb-tbl .num{font-family:'Geist Mono',monospace;font-size:15px;color:#3d4454;text-align:right;white-space:nowrap}
+.lb-tbl th.num{font-family:Geist,system-ui,sans-serif;font-size:13px}
+.lb-tbl .res{text-align:center;white-space:nowrap}
+.lb-tbl .nm{font-weight:600;color:#1a2744;white-space:nowrap}
+.lb-tbl tr.me td{background:#fbf3d9}
+.lb-tbl tr.hit td{background:#fffaf0}
+.lb-tbl tr.hit td.bd{box-shadow:inset 4px 0 0 #c8a94a}
+.lb-tbl tr.hit td:last-child{box-shadow:inset -2px 0 0 #c8a94a}
+.lb-tbl tr.hit td{border-top:2px solid #c8a94a;border-bottom:2px solid #c8a94a}
+.lp-hiticon{display:inline-flex;vertical-align:-3px;margin-right:6px;color:#1a2744}
+.rbox{display:inline-flex;align-items:center;justify-content:center;min-width:56px;height:28px;padding:0 8px;border-radius:7px;font-family:'Geist Mono',monospace;font-size:15px;font-weight:500;background:#ecebe6;color:#1a2744;box-sizing:border-box}
+.rbox-blank{background:transparent;border:1px dashed #b4b7bf}
+.rbox-pend{background:#ffffff;border:1.5px dashed #8a6d1c;color:#3d4454}
+.sec-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:14px 18px}
+.prog{display:inline-block;height:6px;border-radius:3px;background:#e6e5df;overflow:hidden;width:120px;vertical-align:middle}
+.prog i{display:block;height:100%;background:#1a2744}
+mark.hl{background:#f3e3a6;color:inherit;border-radius:2px;padding:0 1px}
+.you{display:inline-block;margin-left:6px;padding:1px 6px;border-radius:4px;background:#1a2744;color:#ffffff;font-size:11px;font-weight:600;vertical-align:middle}
+.lg dt{display:flex;align-items:center}
+.lg dd{margin:0;align-self:center}
+.lp-ctl{padding:14px 18px}
+.lp-ctl-row{display:flex;align-items:center;justify-content:space-between;gap:14px}
+.lp-ctl-row + .lp-ctl-row{margin-top:12px;padding-top:12px;border-top:1px solid #eeede8;align-items:flex-end}
+.lp-aa{display:inline-flex;align-items:center;gap:4px;height:44px;padding:0 10px 0 12px;border:1px solid #858b99;border-radius:10px;background:#ffffff;color:#1a2744;font:inherit;font-weight:600;cursor:pointer;line-height:1}
+.lp-aa[aria-expanded="true"]{border-color:#1a2744;box-shadow:0 0 0 2px #1a2744}
+.lp-find{position:relative;width:300px}
+.lp-find .k-input{width:100%;padding-left:40px;padding-right:44px}
+.lp-find .lp-mg{position:absolute;left:12px;bottom:12px;display:flex;color:#555c6b}
+.lp-find .lp-x{position:absolute;right:4px;bottom:2px;display:flex;align-items:center;justify-content:center;width:40px;height:40px;border:0;background:transparent;color:#555c6b}
+.lp-rel{position:relative}
+.lp-bab{position:absolute;z-index:4}
+
+/* status pills: words beside every tint */
+.st{display:inline-flex;align-items:center;gap:6px;min-height:26px;padding:2px 10px;border-radius:999px;font-size:13px;font-weight:600;white-space:nowrap;line-height:1.2}
+.st .k-i{width:15px;height:15px}
+.st-ok{background:#e8ebf2;color:#1a2744}
+.st-agree{background:#e2f0e5;color:#1d5a31}
+.st-wait{background:#fbefd2;color:#5e4300}
+.st-bad{background:#f6e3e1;color:#8b2a21}
+.st-none{background:#f0efea;color:#4a5160}
+
+/* insets */
+.lp-insets{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px;margin-top:22px;align-items:start}
+.lp-inset{background:#f5f5f2;border:1px solid #d9d8d1;border-radius:14px;padding:18px;position:relative}
+.lp-menu{width:250px;background:#ffffff;border:1px solid #cfcec6;border-radius:12px;box-shadow:0 18px 40px rgba(16,24,43,.18);padding:8px;margin:10px 0 0 auto}
+.lp-mi{display:flex;align-items:center;gap:10px;min-height:44px;padding:0 10px;border-radius:8px;font-size:15px}
+.lp-mi-on{background:#eef1f7;font-weight:600}
+.lp-mi .lp-tick{width:18px;display:flex;color:#1a2744}
+.lp-mi .lp-ex{margin-left:auto;font-weight:600;color:#1a2744}
+.lp-sheet{background:#ffffff;border:1px solid #cfcec6;border-radius:14px;box-shadow:0 18px 40px rgba(16,24,43,.16);padding:18px 18px 16px}
+.lp-pick{display:flex;flex-direction:column;gap:8px;margin-top:12px}
+.lp-opt{display:flex;align-items:center;gap:12px;min-height:52px;padding:0 14px;border:1.5px solid #c4c3bb;border-radius:10px;background:#ffffff;font-size:16px;font-weight:600;color:#1a2744}
+.lp-opt .rbox{margin-left:auto}
+.lp-opt-on{border-color:#1a2744;box-shadow:inset 0 0 0 1px #1a2744;background:#f3f5f9}
+.lp-radio{width:20px;height:20px;border-radius:50%;border:2px solid #858b99;flex:none;background:#ffffff}
+.lp-opt-on .lp-radio{border-color:#1a2744;box-shadow:inset 0 0 0 4px #ffffff;background:#1a2744}
+.lp-hist{list-style:none;margin:8px 0 0;padding:0;border:1px solid #e6e5de;border-radius:10px;overflow:hidden}
+.lp-hist li{display:flex;gap:10px;align-items:flex-start;padding:9px 12px;border-bottom:1px solid #eeede8;font-size:13.5px;line-height:1.45;background:#ffffff}
+.lp-hist li:last-child{border-bottom:0}
+.lp-hist .lp-t{font-family:'Geist Mono',monospace;font-size:12.5px;color:#555c6b;width:64px;flex:none;padding-top:1px}
+.lp-hist li.lp-new{background:#fbfaf6}
+
+/* TD queue */
+.lp-tdbar{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:14px;padding:10px 14px;border-radius:12px;background:#eef1f7;border:1px solid #d3d8e3}
+.lp-q{padding:0;overflow:hidden}
+.lp-qhead{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;padding:16px 20px;border-bottom:1px solid #e3e2dc}
+.lp-qbar{display:flex;height:10px;border-radius:5px;overflow:hidden;background:#f0efea;width:340px;margin-top:10px}
+.lp-qbar i{display:block;height:100%}
+.lp-qkey{display:flex;gap:14px;flex-wrap:wrap;margin-top:8px;font-size:13px;color:#3d4454}
+.lp-qkey span{display:inline-flex;align-items:center;gap:6px}
+.lp-sw{display:inline-block;width:14px;height:10px;border-radius:2px}
+.lp-qrow{display:grid;grid-template-columns:64px minmax(0,1fr) 248px 214px 256px;gap:16px;align-items:center;padding:16px 20px;border-bottom:1px solid #eeede8;background:#ffffff}
+.lp-qrow:last-child{border-bottom:0}
+.lp-qrow-bad{background:#fffafa;box-shadow:inset 4px 0 0 #b3202f}
+.lp-qbd{font-size:13px;color:#555c6b;font-weight:600;text-align:center;line-height:1.1}
+.lp-qbd b{display:block;font-size:30px;color:#1a2744;font-weight:700}
+.lp-qp{display:flex;align-items:center;gap:8px;font-size:16px;font-weight:600;white-space:nowrap}
+.lp-qp + .lp-qp{margin-top:6px}
+.lp-qp .mono{font-size:13px;color:#555c6b;font-weight:400}
+.lp-qrep{font-size:14px;line-height:1.45;color:#3d4454}
+.lp-qrep b{color:#1a2744}
+.lp-qrep .rbox{height:26px;min-width:48px;font-size:14px;margin-right:6px}
+.lp-qline{display:flex;align-items:flex-start;gap:6px}
+.lp-qline .rbox{margin-top:1px}
+.lp-qline .lp-who{display:block}
+.nw{white-space:nowrap}
+.lp-qline + .lp-qline{margin-top:6px}
+.lp-qact{display:flex;flex-direction:column;align-items:stretch;gap:8px}
+.lp-qact .k-btn{justify-content:center}
+.lp-qact-2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.lp-qact-2 .k-btn{padding:0 8px}
+.lp-qact-2 .lp-full{grid-column:1 / -1}
+.lp-tdtbl .st{font-size:12.5px}
+.lp-edit{font-size:14px;font-weight:600;color:#1a2744;text-decoration:underline;text-underline-offset:3px;white-space:nowrap}
+.lp-pair{display:grid;grid-template-columns:600px minmax(0,1fr);gap:28px;margin-top:22px;align-items:start}
+.lp-doc-top{display:grid;grid-template-columns:minmax(0,1fr) 440px;gap:28px;align-items:start}
+.lp-grey{background:#efefea;border:1px solid #dfded6;border-radius:10px;padding:14px 16px;display:flex;flex-direction:column;gap:9px}
+.lp-grey p{font-size:12.5px;line-height:1.45;color:#2b3446;margin:0}
+.lp-grey b{display:block;font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#555c6b;margin-bottom:2px}
+.lp-grey ol{margin:0;padding-left:18px;font-size:12.5px;line-height:1.45;color:#2b3446}
+.lp-grey li{margin-bottom:3px}
+</style>
+</helmet>
+<div class="tl-root" style="width:1440px;height:4000px">
+
+<section class="tl-doc" aria-label="About this board">
+  <div class="lp-doc-top">
+    <div>
+      <p class="k-kicker">7 · Tournament day · decided design · part 2 of 2</p>
+      <h1 class="tl-title">Tournament day · decided · TD results queue, part 2</h1>
+      <p class="tl-meta-line" style="margin-top:8px"><b>Built from:</b> Live-B's pairings page (part 1) seen by a TD · Work-A's round results list ("Both players reported", "Reports disagree", tap a result) moved above the table as a queue · Live-A's "the TD's entry is final" rule · the decided header and footer from Tourn-List-Final</p>
+      <p class="tl-meta-line"><b>Replaces:</b> Live-B, with part 1. The TD console (WS08) uses this same queue.</p>
+      <p class="tl-meta-line"><b>K's feedback applied:</b> page 7, Fri, Oct 9, 2026, items K4 and K6 (the TD sees a one-sided report at once, checks it easily and overrides it), and K5 from the TD's side. K1 to K3 are in part 1.</p>
+      <p class="tl-meta-line"><b>Shown:</b> the same page at 1440px on Sat, Jun 12, 2027, 9:31 PM, signed in as the Chief TD, Chris Arceneaux, with U1800 picked (frame B), then the override sheet the TD opens for board 1 at 9:34 PM, after talking to both players (inset B1).</p>
+      <p class="tl-meta-line" style="margin-top:8px"><span class="k-sample">Sample data · event, players, results, times, TD name</span></p>
+    </div>
+    <aside class="lp-grey" aria-label="Board note">
+      <p><b>What</b>The TD's view of Round 3: a Reported results queue above the table, counts in words, a Status column, and the sheet for entering a different result with every report kept.</p>
+      <p><b>Built from</b>Part 1's page, Work-A's results list, Live-A's final-entry rule.</p>
+      <p><b>K's feedback applied</b>K4 and K6; K5 from the TD's side.</p>
+      <div><p><b>Open for K</b></p>
+        <ol>
+          <li>When both players report the same result, should the TD still tap Confirm (drawn), or may it post by itself?</li>
+          <li>Should the TD view sit on the public pairings page behind a switch (drawn), or only in the TD console?</li>
+        </ol>
+      </div>
+    </aside>
+  </div>
+  <div class="tl-legend">
+    <div class="tl-lbox">
+      <p class="k-label">Notes on this board</p>
+      <ol class="tl-notes">
+        <li><span class="k-num-badge">10</span><span><b>TD view on the same page.</b> A TD of this event, or an LCA admin, gets a TD view | Public view switch. The same queue sits in the TD console's round results (WS08).</span></li>
+        <li><span class="k-num-badge">11</span><span><b>"Reported results" queue above the table.</b> A single report lands here the moment it is sent, usually the winner's. Each row: board, the players, the result reported, by whom and when, and the opponent's side in words with a matching tint. Disagreements sit on top.</span></li>
+        <li><span class="k-num-badge">12</span><span><b>Confirm in one tap; Enter a different result for anything else.</b> A confirm posts to the public pairings, standings and hall TV within a minute and tells both players on their card.</span></li>
+        <li><span class="k-num-badge">13</span><span><b>Counts in words and a three-part bar:</b> "8 of 13 confirmed · 3 reported, waiting · 2 not reported". Pairing Round 4 waits until every Round 3 result is confirmed.</span></li>
+        <li><span class="k-num-badge">14</span><span><b>Status column in the TD's table,</b> words beside every tint: Confirmed by TD, Reported by White, Both agree, Reports disagree, Not reported. Confirmed rows keep an Edit link.</span></li>
+        <li><span class="k-num-badge">15</span><span><b>The override sheet keeps the history.</b> Both players' reports stay on the record with names and times; the TD's entry is added under them, final, with an optional note. Nothing is deleted.</span></li>
+      </ol>
+      <p class="tl-fb-r1" style="margin-top:14px">Notes 1 to 9 are in part 1 (Live-Final-Pairings).</p>
+    </div>
+    <aside class="tl-fb" aria-labelledby="lp-fbh2">
+      <p id="lp-fbh2" class="k-label-gold">K's feedback, and where it landed</p>
+      <p class="tl-fb-sub" style="margin-top:10px">Page 7 · Fri, Oct 9 · applied on this part</p>
+      <ol>
+        <li><span class="tl-fbk">K4</span><span><b>"The TD should be able to see that report even when both players have not gotten done reporting."</b> Board 7 in the queue: Devin reported at 9:12 PM, Sam has not, and the row is already there (note 11).</span></li>
+        <li><span class="tl-fbk">K5</span><span><b>"This should not determine the match result."</b> The Status column says what the public sees: boards 1, 4 and 7 stay blank until confirmed (note 14).</span></li>
+        <li><span class="tl-fbk">K6</span><span><b>"Easily check this and override if necessary."</b> Confirm in one tap or Enter a different result on every row (note 12); inset B1 is the override, with both reports kept (note 15).</span></li>
+      </ol>
+      <p class="tl-fb-sub">In part 1</p>
+      <p class="tl-fb-r1">K1 no search result text beside the box · K2 the "Aa" text size menu · K3 Report your result for signed-in players in the round · K5 from the player's and the public's side.</p>
+    </aside>
+  </div>
+</section>
+
+<!-- ======================= FRAME B ======================= -->
+<section class="tl-sec" aria-labelledby="fb">
+  <div class="tl-flab">
+    <span class="tl-code">B</span>
+    <h2 id="fb">The TD's view of the same round · Reported results queue above the table</h2>
+    <span class="k-meta">Sat, Jun 12, 2027 · 9:31 PM · Chris Arceneaux, Chief TD · U1800 picked</span>
+  </div>
+  <div class="k-browser tl-browser">
+    <div class="k-browser-bar"><i></i><i></i><i></i><div class="k-browser-url">louisianachess.org/tournaments/2027-paul-morphy-open/pairings?round=3&amp;section=u1800&amp;view=td</div></div>
+    <div class="tl-view">
+<header class="k-header tl-hd"><div class="k-wrap-wide k-header-in tl-hd-in"><a class="k-brand" href="#" aria-label="Louisiana Chess Association, home"><svg class="tl-rook" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span class="k-brand-name" aria-hidden="true"><b>Louisiana Chess</b><span>Association</span></span></a><nav class="k-navlinks tl-nav" aria-label="Main"><a class="k-nav-on" href="#" aria-current="page">Tournaments</a><a href="#">Clubs</a><a href="#">Scholastic</a><a href="#">News</a><a href="#">Membership</a><button class="tl-navbtn" type="button" aria-expanded="false" aria-haspopup="true">About<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></button></nav><a class="tl-sbtn" href="/search" aria-keyshortcuts="Meta+K Control+K"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg><span>Search</span><kbd class="tl-kbd" aria-hidden="true">&#8984;K</kbd></a><div class="k-utility tl-util"><a class="k-ulink" href="#">Donate</a><button class="tl-my" type="button" aria-haspopup="menu" aria-expanded="false"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4.5 21c1-4 4-6 7.5-6s6.5 2 7.5 6"></path></svg><span>My LCA</span><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></button></div></div></header>
+<main>
+<section class="lp-phead">
+  <div class="k-wrap" style="padding-top:22px">
+    <nav aria-label="Breadcrumb" class="k-small k-muted"><a class="k-link-plain" href="#">Tournaments</a> / <a class="k-link-plain" href="#">2027 Paul Morphy Open</a> / <span>Live</span></nav>
+    <div class="k-between" style="margin-top:12px;align-items:flex-end;gap:16px">
+      <div>
+        <div class="k-row-sm"><span class="k-tag k-tag-live">Live · Round 3</span><span class="k-tag k-tag-lca">LCA event</span><span class="k-sample">Sample data</span></div>
+        <h2 class="k-h1" style="margin:10px 0 0">2027 Paul Morphy Open</h2>
+      </div>
+      <div class="k-row-sm">
+        <a class="k-btn k-btn-line k-btn-sm" href="#">Hall TV mode</a>
+        <a class="k-btn k-btn-line k-btn-sm" href="#">Print &amp; QR kit</a>
+        <a class="k-btn k-btn-navy k-btn-sm" href="#">Open TD console</a>
+      </div>
+    </div>
+    <div class="lp-tdbar lp-rel">
+      <span class="k-num-badge tl-b lp-bab" style="top:-12px;left:-12px">10</span>
+      <div class="k-row-sm"><span style="display:flex;color:#1a2744"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l7 3v5c0 4.5-3 8.2-7 10-4-1.8-7-5.5-7-10V6l7-3z"></path><path d="M8.5 12l2.5 2.5 4.5-5"></path></svg></span><span class="k-small"><b>You're a TD for this event.</b> Players' reports come to you here; nothing posts publicly until you confirm it.</span></div>
+      <div class="k-seg" role="group" aria-label="View"><button class="k-seg-on" type="button" aria-pressed="true">TD view</button><button type="button">Public view</button></div>
+    </div>
+    <nav class="lb-tabs" aria-label="Live tournament pages" style="margin-top:12px">
+      <a class="on" href="#" aria-current="page">Pairings</a><a href="#">Standings</a><a href="#">Crosstable</a><a href="#">Prizes</a><a href="#">Event info</a>
+    </nav>
+  </div>
+</section>
+
+<div class="k-wrap" style="padding-top:16px">
+  <section class="k-card lp-ctl" aria-label="Pairings controls">
+    <div class="lp-ctl-row">
+      <div class="k-row" style="gap:22px">
+        <div class="k-row-sm"><span class="k-small" style="font-weight:600">Round</span><div class="k-seg" role="group" aria-label="Round"><button type="button">Rd 1</button><button type="button">Rd 2</button><button class="k-seg-on" type="button" aria-pressed="true">Rd 3 · live</button><button type="button" disabled>Rd 4</button><button type="button" disabled>Rd 5</button></div></div>
+        <div class="k-row-sm"><span class="k-small" style="font-weight:600">Order</span><div class="k-seg" role="group" aria-label="Order"><button class="k-seg-on" type="button">By board</button><button type="button">A–Z by name</button></div></div>
+      </div>
+      <div class="k-row-sm" style="gap:10px">
+        <span class="k-small">Updated just now</span>
+        <button class="k-iconbtn" type="button" aria-label="Refresh pairings now"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.3-5.6M20 4v5h-5"></path></svg></button>
+        <span style="width:1px;height:28px;background:#dddcd4"></span>
+        <button class="lp-aa" type="button" aria-haspopup="menu" aria-expanded="false" aria-label="Text size: Medium"><span style="font-size:14px">A</span><span style="font-size:19px">a</span><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></button>
+      </div>
+    </div>
+    <div class="lp-ctl-row">
+      <div class="k-row-sm" role="group" aria-label="Sections">
+        <button class="k-chip" type="button">All sections <span class="k-chip-count">96</span></button>
+        <button class="k-chip" type="button">Open <span class="k-chip-count">21</span></button>
+        <button class="k-chip k-chip-on" type="button">U1800 <span class="k-chip-count">28</span></button>
+        <button class="k-chip" type="button">U1400 <span class="k-chip-count">27</span></button>
+        <button class="k-chip" type="button">U1000 <span class="k-chip-count">20</span></button>
+      </div>
+      <div class="k-field lp-find"><label for="b-find">Find a player</label><input id="b-find" class="k-input" placeholder="Name"><span class="lp-mg"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg></span></div>
+    </div>
+  </section>
+</div>
+
+<div class="k-wrap" style="padding-top:16px">
+  <section class="k-card lp-q lp-rel" aria-labelledby="q-h" style="border:2px solid #1a2744">
+    <div class="lp-qhead">
+      <div>
+        <h3 class="k-h3" id="q-h" style="margin:0;display:flex;align-items:center;gap:10px"><span class="k-num-badge tl-b">11</span><span>Reported results · Round 3 · U1800 <span class="k-meta" style="font-weight:400">· 3 to check</span></span></h3>
+        <p class="k-small" style="margin:6px 0 0;color:#3d4556">Players' reports steer you; they never set a result. Disagreements first, then oldest first.</p>
+      </div>
+      <div class="lp-rel" style="text-align:right">
+        <div class="k-row-sm" style="justify-content:flex-end"><span class="k-num-badge tl-b">13</span><b style="font-size:16px">8 of 13 confirmed · 3 reported, waiting · 2 not reported</b></div>
+        <div class="lp-qbar" style="margin-left:auto" role="img" aria-label="8 confirmed, 3 reported and waiting, 2 not reported"><i style="width:61.5%;background:#1a2744"></i><i style="width:23.1%;background:repeating-linear-gradient(135deg,#d9b44a 0 4px,#f3e0a4 4px 8px)"></i><i style="width:15.4%;background:#f0efea"></i></div>
+        <div class="lp-qkey" style="justify-content:flex-end"><span><i class="lp-sw" style="background:#1a2744"></i>Confirmed by TD</span><span><i class="lp-sw" style="background:repeating-linear-gradient(135deg,#d9b44a 0 3px,#f3e0a4 3px 6px)"></i>Reported, waiting</span><span><i class="lp-sw" style="background:#f0efea;border:1px solid #c4c3bb"></i>Not reported</span></div>
+      </div>
+    </div>
+
+    <div class="lp-qrow lp-qrow-bad">
+      <div class="lp-qbd">Board<b>1</b></div>
+      <div>
+        <div class="lp-qp"><span class="pc pc-w">W</span>Camille Broussard <span class="mono">1744</span></div>
+        <div class="lp-qp"><span class="pc pc-b">B</span>Lauren Guillory <span class="mono">1641</span></div>
+      </div>
+      <div class="lp-qrep">
+        <div class="lp-qline"><span class="rbox rbox-pend">1–0</span><span><b>White won</b><span class="lp-who">Camille Broussard (White), <span class="nw">9:20 PM</span></span></span></div>
+        <div class="lp-qline"><span class="rbox rbox-pend">0–1</span><span><b>Black won</b><span class="lp-who">Lauren Guillory (Black), <span class="nw">9:21 PM</span></span></span></div>
+      </div>
+      <div><span class="st st-bad"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5L2.5 20h19L12 3.5z"></path><path d="M12 10v4.5M12 17.3v.2"></path></svg>Reports disagree</span><div class="k-small" style="margin-top:6px;color:#3d4556">Each says they won. Check with both.</div></div>
+      <div class="lp-qact lp-qact-2">
+        <button class="k-btn k-btn-line k-btn-sm" type="button">Confirm 1–0</button>
+        <button class="k-btn k-btn-line k-btn-sm" type="button">Confirm 0–1</button>
+        <button class="k-btn k-btn-navy k-btn-sm lp-full" type="button">Enter a different result</button>
+      </div>
+    </div>
+
+    <div class="lp-qrow">
+      <div class="lp-qbd">Board<b>7</b></div>
+      <div>
+        <div class="lp-qp"><span class="pc pc-w">W</span>Devin Batiste <span class="mono">1521</span></div>
+        <div class="lp-qp"><span class="pc pc-b">B</span>Sam Nguyen <span class="mono">1650</span></div>
+      </div>
+      <div class="lp-qrep">
+        <div class="lp-qline"><span class="rbox rbox-pend">1–0</span><span><b>White won</b><span class="lp-who">reported by Devin Batiste (White), <span class="nw">9:12 PM</span></span></span></div>
+      </div>
+      <div><span class="st st-wait"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg>Opponent has not reported</span><div class="k-small" style="margin-top:6px;color:#3d4556">Sam was asked at 9:12 PM.</div></div>
+      <div class="lp-qact lp-rel">
+        <span class="k-num-badge tl-b lp-bab" style="top:-14px;right:-14px">12</span>
+        <button class="k-btn k-btn-navy k-btn-sm" type="button"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Confirm 1–0</button>
+        <button class="k-btn k-btn-line k-btn-sm" type="button">Enter a different result</button>
+      </div>
+    </div>
+
+    <div class="lp-qrow">
+      <div class="lp-qbd">Board<b>4</b></div>
+      <div>
+        <div class="lp-qp"><span class="pc pc-w">W</span>Malik Johnson <span class="mono">1566</span></div>
+        <div class="lp-qp"><span class="pc pc-b">B</span>Grant Melancon <span class="mono">1731</span></div>
+      </div>
+      <div class="lp-qrep">
+        <div class="lp-qline"><span class="rbox rbox-pend">½–½</span><span><b>Draw</b><span class="lp-who">reported by Malik Johnson (White), <span class="nw">9:18 PM</span></span></span></div>
+      </div>
+      <div><span class="st st-agree"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M1.5 12.5l4 4L15 7M10 15.5l1 1L20.5 7"></path></svg>Opponent agrees</span><div class="k-small" style="margin-top:6px;color:#3d4556">Grant agreed at 9:19 PM.</div></div>
+      <div class="lp-qact">
+        <button class="k-btn k-btn-navy k-btn-sm" type="button"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Confirm ½–½</button>
+        <button class="k-btn k-btn-line k-btn-sm" type="button">Enter a different result</button>
+      </div>
+    </div>
+    <div class="k-small" style="display:flex;justify-content:space-between;gap:12px;padding:12px 20px;background:#fafaf7;border-top:1px solid #e3e2dc;color:#3d4556"><span>Not reported yet: boards 3 and 8. Results you enter in the TD console or from a paper sheet skip this queue.</span><a class="k-link" href="#">Reporting history for this round</a></div>
+  </section>
+</div>
+
+<div class="k-wrap k-section-sm">
+  <div class="k-split">
+    <div class="k-main k-stack">
+      <section class="k-card lp-rel" aria-labelledby="td18" style="padding:0">
+        <span class="k-num-badge tl-b lp-bab" style="top:-14px;right:-14px">14</span>
+        <div class="sec-head" style="border-bottom:1px solid #e3e2dc">
+          <h3 class="k-h3" id="td18" style="margin:0">U1800 <span class="k-meta" style="font-weight:400">· 13 boards · TD view</span></h3>
+          <span class="k-small">Public sees 8 results; boards 1, 4 and 7 stay blank until you confirm</span>
+        </div>
+        <div class="k-tablebox" role="region" aria-labelledby="td18-cap" tabindex="0" style="border:0;border-radius:0">
+          <table class="lb-tbl lp-tdtbl" style="font-size:16px">
+            <caption id="td18-cap" style="caption-side:top;text-align:left;padding:10px 18px;font-size:14px;color:#555c6b">U1800 · Round 3 · status of every result at 9:31 PM</caption>
+            <thead><tr><th scope="col" class="bd">Bd</th><th scope="col">White</th><th scope="col" class="res">Result</th><th scope="col">Black</th><th scope="col">Status</th><th scope="col"><span class="tl-vh" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Action</span></th></tr></thead>
+            <tbody>
+              <tr><td class="bd">1</td><td class="nm">Camille Broussard</td><td class="res"><span class="rbox rbox-blank" aria-label="No result yet"></span></td><td class="nm">Lauren Guillory</td><td><span class="st st-bad"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5L2.5 20h19L12 3.5z"></path><path d="M12 10v4.5M12 17.3v.2"></path></svg>Reports disagree</span></td><td><a class="lp-edit" href="#">Review</a></td></tr>
+              <tr><td class="bd">2</td><td class="nm">Kendall Pitre</td><td class="res"><span class="rbox">0–1</span></td><td class="nm">Isaac Dupre</td><td><span class="st st-ok"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Confirmed by TD</span></td><td><a class="lp-edit" href="#">Edit</a></td></tr>
+              <tr><td class="bd">3</td><td class="nm">Andre Charbonnet</td><td class="res"><span class="rbox rbox-blank" aria-label="No result yet"></span></td><td class="nm">Rachel Doucet</td><td><span class="st st-none"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 12h10"></path></svg>Not reported</span></td><td><a class="lp-edit" href="#">Enter</a></td></tr>
+              <tr><td class="bd">4</td><td class="nm">Malik Johnson</td><td class="res"><span class="rbox rbox-pend">½–½</span></td><td class="nm">Grant Melancon</td><td><span class="st st-agree"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M1.5 12.5l4 4L15 7M10 15.5l1 1L20.5 7"></path></svg>Both agree</span></td><td><a class="lp-edit" href="#">Review</a></td></tr>
+              <tr><td class="bd">5</td><td class="nm">Olivia Landreneau</td><td class="res"><span class="rbox">0–1</span></td><td class="nm">Minh Tran</td><td><span class="st st-ok"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Confirmed by TD</span></td><td><a class="lp-edit" href="#">Edit</a></td></tr>
+              <tr><td class="bd">6</td><td class="nm">Darius Washington</td><td class="res"><span class="rbox">1–0</span></td><td class="nm">Claire Boudreaux</td><td><span class="st st-ok"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Confirmed by TD</span></td><td><a class="lp-edit" href="#">Edit</a></td></tr>
+              <tr><td class="bd">7</td><td class="nm">Devin Batiste</td><td class="res"><span class="rbox rbox-pend">1–0</span></td><td class="nm">Sam Nguyen</td><td><span class="st st-wait"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg>Reported by White</span></td><td><a class="lp-edit" href="#">Review</a></td></tr>
+              <tr><td class="bd">8</td><td class="nm">Hannah Breaux</td><td class="res"><span class="rbox rbox-blank" aria-label="No result yet"></span></td><td class="nm">Jacob Romero</td><td><span class="st st-none"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 12h10"></path></svg>Not reported</span></td><td><a class="lp-edit" href="#">Enter</a></td></tr>
+              <tr><td class="bd">9</td><td class="nm">Elise Fontenot</td><td class="res"><span class="rbox">0–1</span></td><td class="nm">Victor Alvarez</td><td><span class="st st-ok"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Confirmed by TD</span></td><td><a class="lp-edit" href="#">Edit</a></td></tr>
+              <tr><td class="bd">10</td><td class="nm">Anh Pham</td><td class="res"><span class="rbox">½–½</span></td><td class="nm">Ethan Savoie</td><td><span class="st st-ok"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Confirmed by TD</span></td><td><a class="lp-edit" href="#">Edit</a></td></tr>
+              <tr><td class="bd">11</td><td class="nm">Reid Bergeron</td><td class="res"><span class="rbox">0–1</span></td><td class="nm">Tyler Daigle</td><td><span class="st st-ok"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Confirmed by TD</span></td><td><a class="lp-edit" href="#">Edit</a></td></tr>
+              <tr><td class="bd">12</td><td class="nm">Simone Arcement</td><td class="res"><span class="rbox">1–0</span></td><td class="nm">Mia LeJeune</td><td><span class="st st-ok"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Confirmed by TD</span></td><td><a class="lp-edit" href="#">Edit</a></td></tr>
+              <tr><td class="bd">13</td><td class="nm">Gabriel Ortiz</td><td class="res"><span class="rbox">0–1</span></td><td class="nm">Brandon Ledet</td><td><span class="st st-ok"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Confirmed by TD</span></td><td><a class="lp-edit" href="#">Edit</a></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="k-small" style="padding:12px 18px;border-top:1px solid #e3e2dc;background:#fafaf7"><b>Not playing this round:</b> Nora Hebert 1577, requested bye, ½ point · Henry Clement 1394, pairing bye (odd number of players), 1 point</div>
+      </section>
+    </div>
+
+    <aside class="k-side k-stack" aria-label="TD round information">
+      <section class="k-card k-card-pad" aria-labelledby="td-r4">
+        <h3 class="k-h4" id="td-r4" style="margin:0">Round 4 · Sun, Jun 13, 9:30 AM</h3>
+        <p class="k-small" style="margin:8px 0 0">Pair Round 4 in the TD console once every Round 3 result is confirmed.</p>
+        <ul style="list-style:none;margin:10px 0 0;padding:0" class="k-small">
+          <li class="k-between" style="padding:7px 0;border-bottom:1px solid #eeede8"><span>Open</span><span>8 of 10 confirmed</span></li>
+          <li class="k-between" style="padding:7px 0;border-bottom:1px solid #eeede8"><span><b>U1800</b></span><span><b>8 of 13 confirmed</b></span></li>
+          <li class="k-between" style="padding:7px 0;border-bottom:1px solid #eeede8"><span>U1400</span><span>9 of 13 confirmed</span></li>
+          <li class="k-between" style="padding:7px 0"><span>U1000</span><span>10 of 10 confirmed</span></li>
+        </ul>
+        <p class="k-small" style="margin:8px 0 0;font-weight:600">35 of 46 confirmed across all sections</p>
+      </section>
+      <section class="k-card k-card-pad" aria-labelledby="td-how">
+        <h3 class="k-h4" id="td-how" style="margin:0">How player reports work</h3>
+        <ul class="k-small" style="margin:10px 0 0;padding-left:18px;line-height:1.5">
+          <li style="margin-bottom:6px">Only a signed-in player paired in this round can report, and only for their own board.</li>
+          <li style="margin-bottom:6px">One report is enough to reach you. The opponent is asked to agree.</li>
+          <li style="margin-bottom:6px">The public pairings, standings and hall TV wait for your confirm.</li>
+          <li>Every report and every change keeps who, when and the old value.</li>
+        </ul>
+      </section>
+      <section class="k-card k-card-pad" aria-labelledby="td-pub">
+        <h3 class="k-h4" id="td-pub" style="margin:0">Players' cards right now</h3>
+        <p class="k-small" style="margin:8px 0 0">Boards 1, 4 and 7: "Reported, awaiting TD", seen by those six players only. Boards 3 and 8: "Report your result".</p>
+        <a class="k-btn k-btn-line k-btn-sm k-btn-block" href="#" style="margin-top:10px">Switch to Public view</a>
+      </section>
+    </aside>
+  </div>
+</div>
+</main>
+<footer class="k-footer tl-foot"><div class="k-wrap-wide tl-foot-in"><div class="k-row-sm" style="gap:10px"><svg class="tl-rook tl-rook-sm" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><b style="font-size:15px">Louisiana Chess Association</b></div><span class="k-meta">US Chess state affiliate · Louisiana's chess community since 1915</span><nav class="k-row" aria-label="Footer" style="gap:18px"><a href="#">Contact</a><a href="#">Website help</a><a href="#">Bylaws &amp; rules</a><a href="#">Donate</a></nav></div></footer>
+    </div>
+  </div>
+  <p class="tl-cap">The TD sees the same page with the queue on top and a Status column in the table. Board 7 is the case K described: only the winner has reported, and the row is already here. Board 4 is one tap. Board 1 needs a walk to the board, and the inset below shows the sheet the TD fills in after talking to both players.</p>
+</section>
+
+<!-- ======================= INSET B ======================= -->
+<section class="tl-sec" aria-labelledby="fb2">
+  <div class="tl-flab">
+    <span class="tl-code">B1</span>
+    <h2 id="fb2">Enter a different result · board 1, with the reporting history kept</h2>
+    <span class="k-meta">Sat, Jun 12, 2027 · 9:34 PM · opened from board 1's row in the queue</span>
+  </div>
+  <div class="lp-pair">
+    <div class="lp-inset" style="padding:22px">
+      <div class="lp-sheet lp-rel" role="dialog" aria-labelledby="ov-h" style="padding:20px 22px">
+        <span class="k-num-badge tl-b lp-bab" style="top:-14px;left:-14px">15</span>
+        <div class="k-between"><div><p class="k-label" style="margin:0">Round 3 · U1800 · Board 1</p><b id="ov-h" style="display:block;font-size:20px;margin-top:4px">Enter the result</b></div><button class="k-iconbtn" type="button" aria-label="Close"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></button></div>
+        <div style="margin-top:12px">
+          <div class="lp-qp"><span class="pc pc-w">W</span>Camille Broussard <span class="mono">1744</span></div>
+          <div class="lp-qp"><span class="pc pc-b">B</span>Lauren Guillory <span class="mono">1641</span></div>
+        </div>
+        <p class="k-small" style="margin:16px 0 0;font-weight:600">Reporting history</p>
+        <ol class="lp-hist">
+          <li><span class="lp-t">9:20 PM</span><span><b>Camille Broussard</b> (White) reported <span class="rbox rbox-pend" style="height:22px;min-width:40px;font-size:13px">1–0</span> White won</span></li>
+          <li><span class="lp-t">9:21 PM</span><span><b>Lauren Guillory</b> (Black) reported <span class="rbox rbox-pend" style="height:22px;min-width:40px;font-size:13px">0–1</span> Black won</span></li>
+          <li class="lp-new"><span class="lp-t">9:34 PM</span><span><b>Chris Arceneaux</b> (TD) is entering a result now. The two reports above stay on the record.</span></li>
+        </ol>
+        <p class="k-small" style="margin:16px 0 0;font-weight:600">Result</p>
+        <div class="lp-pick" role="radiogroup" aria-label="Result" style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">
+          <div class="lp-opt" role="radio" aria-checked="false" style="flex-direction:column;justify-content:center;gap:2px;min-height:64px"><span class="mono" style="font-size:17px">1–0</span><span class="k-small" style="font-weight:500">White won</span></div>
+          <div class="lp-opt lp-opt-on" role="radio" aria-checked="true" style="flex-direction:column;justify-content:center;gap:2px;min-height:64px"><span class="mono" style="font-size:17px">½–½</span><span class="k-small" style="font-weight:600">Draw · selected</span></div>
+          <div class="lp-opt" role="radio" aria-checked="false" style="flex-direction:column;justify-content:center;gap:2px;min-height:64px"><span class="mono" style="font-size:17px">0–1</span><span class="k-small" style="font-weight:500">Black won</span></div>
+        </div>
+        <p class="k-small" style="margin:8px 0 0"><a class="k-link" href="#">Forfeits and unplayed games</a> (1F–0F, 0F–1F, both forfeit)</p>
+        <div class="k-field" style="margin-top:14px"><label for="ov-note">Note for the record (optional)</label><textarea id="ov-note" class="k-input" rows="3" style="width:100%;min-height:76px;padding-top:10px;resize:none;font:inherit;font-size:15px">White's flag fell with Black down to a lone king and knight, so it is a draw. Spoke with both players at the board.</textarea></div>
+        <p class="k-small" style="margin:12px 0 0;color:#3d4556">Saving posts ½–½ to the public pairings, standings and hall TV, and shows "Result set by the TD: draw" on both players' cards.</p>
+        <div class="k-row-sm" style="margin-top:14px"><button class="k-btn k-btn-navy" type="button">Save ½–½ as the result</button><button class="k-btn k-btn-line" type="button">Cancel</button></div>
+      </div>
+    </div>
+    <div class="tl-vnote">
+      <p class="k-label">How the queue behaves</p>
+      <ul>
+        <li>A report appears in the queue the moment one player sends it. Usually that is the winner, as on board 7.</li>
+        <li>If the opponent sends the same result, the row turns to "Opponent agrees" and Confirm is one tap. A different result turns it to "Reports disagree" and moves it to the top.</li>
+        <li>Nothing posts publicly until a TD confirms. Players see "Reported, awaiting TD" on their own card only.</li>
+        <li>Enter a different result opens this sheet from any row. The players' reports are never edited or deleted; the TD's entry is added under them, final, with the TD's name and time.</li>
+        <li>A confirmed result can still be corrected from the table's Edit link. The old value stays in the history, and both players see the change on their card.</li>
+        <li>Results the TD enters in the console or from a paper sheet skip the queue and post on save.</li>
+        <li>The queue and the Status column are visible only to this event's TDs and LCA admins.</li>
+      </ul>
+      <p class="k-label" style="margin-top:16px">After saving</p>
+      <ol class="lp-hist" style="margin-top:10px">
+        <li><span class="lp-t">9:20 PM</span><span>Camille Broussard (White) reported 1–0</span></li>
+        <li><span class="lp-t">9:21 PM</span><span>Lauren Guillory (Black) reported 0–1</span></li>
+        <li class="lp-new"><span class="lp-t">9:35 PM</span><span><b>Chris Arceneaux (TD) set ½–½</b> · note kept · <span class="st st-ok" style="min-height:22px;font-size:12px"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Confirmed by TD</span></span></li>
+      </ol>
+      <p class="k-small" style="margin:10px 0 0;color:#3d4556">Board 1 leaves the queue; the count reads 9 of 13 confirmed · 2 reported, waiting · 2 not reported.</p>
+    </div>
+  </div>
+</section>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":4000}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

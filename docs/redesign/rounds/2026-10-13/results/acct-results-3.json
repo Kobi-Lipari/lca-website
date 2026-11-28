@@ -1,0 +1,298 @@
+{
+ "label": "acct-3",
+ "results": [
+  {
+   "board": {
+    "file": "Account-K.dc.html",
+    "title": "My LCA · K · Events you direct, rows with the next step (round 2)",
+    "width": 1440,
+    "page": "account",
+    "name": "Events you direct, rows with the next step",
+    "idea": "One row per event in date order, the live one pinned first: status, counts, flags and the next step in words, one-tap decisions inline, and the buttons Setup · Event day · Recap · Rating report only when they apply.",
+    "differs": "Account-L draws each event as a card with a five-stage track (Set up · Registration · Event day · Close out · Rating report); Account-K draws each event as one dense row with its next step as a sentence."
+   },
+   "drawn": {
+    "file": "Account-K.dc.html",
+    "title": "My LCA · K · Events you direct, rows with the next step (round 2)",
+    "width": 1440,
+    "height": 2950,
+    "second_file": "Account-K-2.dc.html",
+    "second_title": "My LCA · K-2 · Events you direct: the role, the phone and the way back (round 2)",
+    "second_height": 1450,
+    "note": "What: Option K for Events you direct in My LCA. Each event is one dense row in date order, and on the day the live event is pinned first. A row shows status, counts, flags and the next step in words (\"Next: publish the prize list · Setup 6 of 10\"). One-tap decisions sit inline: Approve or Decline a bye, Email both a reminder, Email him the renewal link. Setup, Event day, Recap and Rating report show only when they apply. Frame A is Chris on Mon, Oct 5, 8:10 AM. Frame B is Sun, Oct 25, 11:15 AM, with round 3 live. Part 2 (K-2) has the tournament_director role with no events and its one lookup line, the phone, and the rail and menu rows. It also has the way in and back under Int-A, B and C, with Exit console.\n\nBuilt from: Account-C's Events you direct, Work-A's console and Reported results queue, Work-D's setup checklist (10 steps per WS08), and replan 4.6's close-out, rating report and Recap. Chrome is the decided header and My LCA menu (Nav-Header-Final). The board is drawn inside Int-A, and the frame is swappable.\n\nK's feedback applied: roles live in My LCA, not Workspace or the admin panel. A plain member never sees this section, and a one-event director sees rows and rooms but no lookup. The section is drawn busy, live, empty and on a phone. Option L is the card version with a stage track. Open for K: rows (K) or stage cards (L); keep tournament_director as \"a director who can also look up members\" or fold it into assignments plus lca_auditor; may a standing TD start a draft for review (drawn: no).",
+    "unresolved": [
+     "The spec's frames (title 170, A about 1150, B 560, C/D 640, E 260, legend 160) don't fit under 3000px once drawn at real size: Frame A alone renders about 1560 tall. So Frames C, D and E moved to a second board, Account-K-2.dc.html (1450 tall). The main board has the title strip, the legend, Frame A and Frame B (2950 tall).",
+     "Legend note 5 on the main board points to the lookup line on Account-K-2. Badge 5 on the main board marks the foot line \"No member lookup here\". K-2 has its own legend of four notes with badges 1 to 4.",
+     "In Frame B the rail's Today count (3) is invented and badged Sample data: the spec gives only Events you direct · 2 for Sun, Oct 25. The header's personal count stays at 1, an assumption that Ella's November Meet entry is still unpaid.",
+     "Frame B is drawn at its natural height (about 616px including the section foot), not cropped to the spec's 560px.",
+     "Spec line \"Rosa Mendez's US Chess membership still ended\" is drawn as \"is still ended (since Mon, Oct 12)\"."
+    ]
+   },
+   "review": {
+    "file": "Account-K.dc.html (part 2: Account-K-2.dc.html)",
+    "height": 2950,
+    "second_height": 1450,
+    "counts": "Account-K renders to 2921.6px of content and is declared at 1440 x 2950, under the 3000 limit. Account-K-2 renders to 1448.8px and is declared at 1440 x 1450. On both boards the root height and $preview match. Legend: 6 numbered notes on K and 4 on K-2, and every badge number on the design has a matching note. Rows in Frame A: 3 (the Classic, the 2027 Paul Morphy Open draft, the G/90). Inline decisions on the Classic: 3 (the bye with Approve or Decline, Email both a reminder, Email a reminder for the unpaid entry), plus Email him the renewal link on the G/90 check. Rail counts are Today 9, Family 1, Events you direct 3, Your region 4 and Board 7 on Mon, Oct 5, and Events you direct 2 on Sun, Oct 25. Menu rows on K-2 follow the spec in order, including Events you direct (3), My region · 4 to check, Board inbox (3) and Support tickets (4). The header count is 1. Data matches sibling L and L-2: Maya Robichaux, Jordan Lee, Rosa Mendez, Theo Guidry, Sam Nguyen, Fontenot and Tran, past events 17, 18 and 6, and Gerald Landry. Rule checks: no em dashes, no USCF, no .5, no gold text on a light ground (gold appears only as underline colour and button fill), weekday on every date, Sample data badges on the invented items, no grade, birthdate or financial-need question, no {{holes}}, no iframes, no animation, and all tags balance. Frame-level checks: the word Workspace appears only in the notes and route paths, never in the drawn UI. There is no mode switch. Chris has the five chips from the baseline, and the lookup appears only in Frame C (the tournament_director role). The way in and the way back are drawn on K-2 Frame E, with the Int-A, B and C crumbs and the console band with Exit console.",
+    "changes": [
+     "Account-K: moved the count badge before the chevron in both headers' 'My LCA ▾' trigger (Frame A and Frame B) so it matches Nav-Header-Final.",
+     "Account-K: rewrote legend note 4 so the main board names the way back and what stays with admins: 'The crumb reads \"My LCA › ...\"; Exit console returns to #directing. Admins keep event creation, naming directors and the membership switch.' Also tightened the room list so the board stays at 2950.",
+     "Account-K-2: the phone's tab bar read 'Events · Clubs · Live · My LCA', which is not the decided bar. It now reads 'Tournaments · Clubs · My LCA (1) · Menu' as Nav-Mobile-Final has it: 12px navy labels, the active tab bold with the #866a1e top indicator, and the navy count bubble.",
+     "Re-rendered both boards and checked the PNGs and full-resolution crops after each change. Neither board has overflow, clipping or overlap, and both declared heights still match their renders."
+    ],
+    "remaining_concerns": [
+     "Frame A is about 3x as tall as the spec says, and the live band in Frame B is about 165px tall rather than 120, because the spec's region sizes don't hold the copy at the given type sizes. Board K is 2950 against the 3000 limit, so any later copy added to K will need a cut somewhere else.",
+     "Frame E on K-2 is laid out as a column of insets beside the phone, not the single 260px row of three insets (rail 260x120, menu 320x230, crumbs 760x120) that the spec draws. The crumbs and console band sit under Frame C instead. All the content is there, but the arrangement differs from the spec.",
+     "The title strip carries a plain 'Sample data' badge and a 'Sample data' row listing the invented items, rather than the spec's single long badge text. The spec also puts 'the lookup result' on part 1's badge, but the lookup is drawn on K-2 and is badged there.",
+     "Frame B still shows a Setup button on the 2027 Paul Morphy Open, whose registration is open. I kept it because the setup room is still reachable once registration opens, but K may want Event day or nothing there instead.",
+     "The note text for the canvas sticky is on board K's legend (six notes) and K-2's legend (four notes). The parent should copy the sticky text from those legends; nothing here has a separate sticky."
+    ]
+   }
+  },
+  {
+   "board": {
+    "file": "Account-L.dc.html",
+    "title": "My LCA · L · Events you direct, a stage track per event (round 2)",
+    "width": 1440,
+    "page": "account",
+    "name": "Events you direct, a stage track per event",
+    "idea": "Each event is a card with a five-stage track (Set up · Registration · Event day · Close out · Rating report) showing where it is in its life, with the current stage's work and buttons under the track.",
+    "differs": "Account-K lists events as dense rows with the next step as a sentence; Account-L gives each event a card with a five-stage track so a director sees at a glance which stage each event is in."
+   },
+   "drawn": {
+    "file": "Account-L.dc.html",
+    "title": "My LCA · L · Events you direct, a stage track per event (round 2)",
+    "width": 1440,
+    "height": 2900,
+    "second_file": "Account-L-2.dc.html",
+    "second_title": "My LCA · L · Events you direct, a stage track per event (round 2) · part 2",
+    "second_height": 2950,
+    "note": "What: Option L for Events you direct in My LCA. Each event Chris is named on is a card with the same five-stage track (Set up · Registration · Event day · Close out · Rating report). Gold marks the current stage, navy marks a done stage, and an amber dot marks a done stage that still has work. Every node also says its state in words. The panel under the track holds only the current stage's work and its one-tap decisions. Part 1 is Frame A, Mon, Oct 5, with the three events at three stages. Part 2 has Frame B (Sun, Oct 25, round 3 live), Frame C (the tournament_director role with no events), Frame D (phone) and Frame E (the rail row, the menu row, the crumbs under Int-A, B and C, and the console band with Exit console).\n\nBuilt from: Account-C's Events you direct (counts by section, flags, the bye decision, the reminder email, the rating report check); Work-D's 10 setup steps; Work-A and replan 4.6 for the results queue, close-out and rating report; Nav-Header-Final for the signed-in header, live strip and My LCA menu. The events and figures are the same as Account-K, so choosing between K and L changes no data.\n\nK's feedback applied and open for K: a plain member never sees this section; it appears only with a director assignment. The director's work is hosted in My LCA and opens its rooms (Setup, Event day, Recap, Rating report) from here, never through the admin panel, and the word Workspace is gone. The board is drawn inside Int-A and the frame is swappable. Open for K: K (rows) or L (track); the frame (Int-A, B or C); directors named only, with no create button; keep or fold the tournament_director role; the hub pins the live event but never becomes the console.",
+    "unresolved": [
+     "The spec's figures disagree: the Classic shows 38 of 60 registered on Mon, Oct 5, but Frame B shows Registration done with '27 entered · closed Fri, Oct 23' (26 playing, 13 boards). Both are drawn as the spec gives them. Someone should settle whether 11 entrants really leave between Oct 5 and the close.",
+     "The spec's 3000px limit could not hold Frames A to E on one board, so they are split. Account-L.dc.html (2900) has the title strip, the six-note legend, the grey note and Frame A. Account-L-2.dc.html (2950) has Frames B, C, D and E with the same title strip and legend, plus a one-line pointer to the grey note on part 1.",
+     "Frame B is cropped to the section column (a 1000px browser with the decided header's compact Search button), so its rail row and its My LCA menu (Sun, Oct 25) are drawn as insets beside it. The menu's to-do rows and the other rail counts for that morning are left out because no spec gives them.",
+     "The Frame D phone keeps the spec's 360x660 size; the Event day button sits just above the bezel and the other two cards are below the fold.",
+     "Under-18 names: Maya Robichaux appears in full in the bye decision because the viewer is the event's director, as Account-K's spec reasons. Confirm this exception to the first-name-and-initial rule for pre-event lists."
+    ]
+   },
+   "review": {
+    "file": "Account-L.dc.html (main) and Account-L-2.dc.html (second)",
+    "height": 2950,
+    "second_height": 2950,
+    "counts": "Main board renders at 2911px and is declared at 2950 (root and $preview). The second board renders at 2931px and is declared at 2950. Both are under the 3000 limit. Each file has six legend notes. Badges on the main board: 1, 2, 3, 4 and 6. Badges on the second board: 1, 2, 4, 5 and 6, with 4 used twice. The overflow scan found nothing clipped, overflowing or wider than the frame on either file after the fixes. Tags are balanced in both files. Neither file has an em dash, \"USCF\", a \".5\" score or gold text on a light ground (gold appears only as button and badge fills and as an underline colour). Every date carries its weekday. Main board: Frame A has three cards (Classic in Registration, 2027 Paul Morphy Open in Set up, G/90 in Rating report), each with the five-stage track and a panel for the current stage. The panels hold 3 one-tap sub-rows on the Classic, the 2 done/left setup lines on the Morphy draft, and 3 rating report checks on the G/90. The rail rows are Today 9, You, Family 1, Events you direct 3 (current), Your region 4, Board 7. The five role chips match Account-K. Second board: Frame B has two cards (the Classic live in Event day, the Morphy Open in Registration), with Past events 18, rail inset 2 and menu inset (2) plus the event line. Frame C is Gerald Landry with the lookup line. Frame D is the phone with the vertical track. Frame E has the rail row, the menu row and the three crumbs plus the console band with Exit console.",
+    "changes": [
+     "Main board: added the decided F1 footer (the same markup as Account-K and Tourn-List-Final) under Frame A's page. Its caption now says the footer is the decided one, drawn short. Every sibling section board draws this footer; L was the only one without it.",
+     "Both files: the title strip's Shown line now names Frame B's moment as well ('/dashboard#directing, Chris · Mon, Oct 5, 2026, 8:10 AM · B: Sun, Oct 25, 11:15 AM'), as the spec's line 3 asks.",
+     "Both files: changed the track column ratios on the Classic and Morphy cards in Frame A to 0.9/1.95/1/0.85/1.2. Each current node's state now sits on one line, as the spec asks ('Open · 38 of 60 · online entry closes Fri, Oct 23', 'opens with publish · Mon, Oct 12, 2026 · 9:00 AM'). Before, it wrapped.",
+     "Second board, Frame B: the live strip was cutting off 'Players see: ... pairings posted 10:58 AM' with an ellipsis. Narrowing the inset column (300 to 280px) and the strip gap fixed it, so the line now reads in full.",
+     "Second board, Frame B: the Classic track ratios changed to 0.65/1.3/1.8/0.7/0.85, so 'closed Fri, Oct 23' no longer breaks between Oct and 23.",
+     "Second board, Frame B menu inset: the header shows 'My LCA 1', but the menu left that to-do out with a note saying so. I added the row 'To do · Pay $20 · Ella · New Orleans Youth Chess November Meet · Sat, Nov 14' in WS02 order above My LCA, and replaced the note with 'The to-do row is the header's 1; volunteer work never counts there.'",
+     "Declared height and $preview: main board 2900 to 2950 (it rendered at 2911 after the footer). Second board stays at 2950 (renders at 2931)."
+    ],
+    "remaining_concerns": [
+     "Data from the spec that I left as written: Frame A shows '38 of 60 registered' on Mon, Oct 5, but Frame B's Registration node says '27 entered · closed Fri, Oct 23', with 26 playing on 13 boards. Losing 11 entrants in between is unexplained. The 13-board figure is fixed by the frame and Work-E, so the fix is probably on the 38 (or a withdrawals line). It needs a decision across K, L and the Classic's other boards, not a change on this board alone.",
+     "Frame A is about 2160px tall in the browser, against the spec's 'about 1200'. The three cards with full panels drive that. Both parts still fit under 3000, so I did not cut content.",
+     "Badge 5 in Frame C sits at x 27, left of the root's 40px padding, on the card's left edge. It is fully visible and does not cover text, so I left it.",
+     "The grey 'What / Built from / K's feedback applied / Open for K' note is only on the main board. Part 2 says so in a line under its legend. This follows the split-board pattern, but say if each part should carry its own copy.",
+     "The phone frame (D) has no bottom tab bar. L's spec does not ask for one, but Account-K's phone has one, so the two siblings' phones differ slightly."
+    ]
+   }
+  },
+  {
+   "board": {
+    "file": "Account-M.dc.html",
+    "title": "My LCA · M · Your region, the checks first (round 2)",
+    "width": 1440,
+    "page": "account",
+    "name": "Your region, the checks first",
+    "idea": "The section leads with what needs doing in the region: the clubs not checked in 90 days with one-tap Still accurate, the open reports with their age in words, the club events in review, then the monthly check line and the buttons into My region.",
+    "differs": "Account-N leads with every club in the region as a tile (the region at a glance) and lists the tasks under the grid; Account-M leads with the tasks and names the healthy clubs in one line."
+   },
+   "drawn": {
+    "file": "Account-M.dc.html",
+    "title": "My LCA · M · Your region, the checks first (round 2)",
+    "width": 1440,
+    "height": 2750,
+    "second_file": "Account-M-2.dc.html",
+    "second_title": "My LCA · M-2 · Your region: check day, empty, phone and the way back (round 2)",
+    "second_height": 2900,
+    "note": "What: Option M for the Your region section of My LCA, for Chris Arceneaux (South Central Louisiana seat, also covering Central Louisiana and the Bayou Region while those seats are open). The section starts with the work: the 4 of 9 clubs not checked in 90 days, each with one-tap Still accurate and Update (Bunkie waits until its suggestion is answered). Then come the open reports with their age in words, the club events in LCA review, and the line for the next monthly check. The healthy clubs share one line. Open My region, Post club news and Add a club event open the room. Part 2 (M-2) shows the monthly check day on Mon, Nov 2 with Confirm all 9, the empty state, a phone view, and the rail row, menu row and breadcrumbs under Int-A, B and C, with the room's \"Back to My LCA\" band.\n\nBuilt from: Account-C's club block, Work-B's report copy and events behind LCA review, replan 3.3 and 4.2, the nine-club region shared with Work-G, Account-N and Work-H, and the decided header and My LCA menu (Nav-Header-Final). The chrome, rail and collapsed sections match the round-2 Account-K.\n\nK's feedback applied, and what is open for K: The representative's work now lives in My LCA, never in the admin panel, and there is no mode switch. Every state is drawn (default, busy, empty, phone, way in and back), and the frame is marked swappable (Int-A). Open for K: tasks first (M) or every club as a tile (N)? Should Apply this take a club's own suggestion in one tap? Should the seat keep Central Louisiana and the Bayou Region while their seats are open? Should Confirm all 9 skip the clubs that have an open report? Should a report older than 14 days stay on the representative's list once it is also with LCA admins?",
+    "unresolved": [
+     "The spec asks for one board under 3000px. Drawn in full it came to about 4800px, so it is split: Frames A and the legend are in Account-M (2750), and Frames B to E are in Account-M-2 (2900), each with its own title strip, six-note legend and grey note.",
+     "Frame B's header has no My LCA count. The spec does not say what Chris's personal to-dos are on Mon, Nov 2, so no number was invented.",
+     "On the phone (Frame D), Post club news and Add a club event sit side by side under a full-width Open My region instead of all three stacked, so the open report's full-width Reply fits inside the 640px screen.",
+     "Frame E's breadcrumbs and room band are drawn as a separate 760px inset under the C, D and E row, not inside Frame E's 260px row as the spec lays it out."
+    ]
+   },
+   "review": {
+    "file": "Account-M.dc.html (part 2: Account-M-2.dc.html)",
+    "height": 2750,
+    "second_height": 2900,
+    "counts": "Rendered heights: Account-M is 2717px, declared 2750. Account-M-2 is 2888px, declared 2900. The root height and $preview already matched on both, and both are under the 3000px cap.\n\nLegend: six numbered notes on each part. Note badges on the design: 1 to 6 on M, and 1 to 6 on M-2 (B, C, D and E each carry one).\n\nFrame A (Mon, Oct 5, 8:10 AM):\n- **Header:** matches the decided header, with My LCA showing a count of 1.\n- **Chips:** five, the same as Account-K, N and O.\n- **Rail:** Today 9, You, Family 1, Events you direct 3, Your region 4 (current), Board 7.\n- **Collapsed sections:** four above the section (Today, You, Family, Events you direct) and Board 7 below it.\n- **Buttons:** Open My region, Post club news and Add a club event.\n- **Needs a check:** 4 of 9 clubs (Bunkie, Gonzales, Heart of Worship, Pineville). Bunkie has \"Answer the suggestion first\" and its Still accurate button is disabled. The after-tap state reads \"Checked Oct 2026 · by you, 8:16 AM · Undo\". The five healthy clubs are one line, with \"Add their meeting statement\" for Lafayette.\n- **Open reports:** 2. Houma has no answer in 9 days. Bunkie's suggestion carries Apply this.\n- **Club events:** 2. The G/90 is In LCA review; the Lafayette Open is Published with 31 registered.\n- **Monthly check line:** next check Mon, Nov 2, with the Board inbox pointer under it.\n- **Footer:** matches Tourn-List-Final.\n\nClub colour bands are the same as Account-N for all nine clubs. Every weekday checked against the calendar is correct (0 wrong). Em dashes: 0. USCF: 0. Gold text on a light ground: none. Grade, birthdate or financial-need questions: none. Admin-only items are in note 5. There is no mode switch. \"Workspace\" appears only in the notes and the title strip, never on the drawn screens.\n\nM-2:\n- **B (Mon, Nov 2):** the due band with Confirm all 9 and its confirm question, 3 clubs to check, Houma in red words (\"no answer in 37 days · also with LCA admins since Sat, Oct 10\"), the new Bunkie report, the G/90 Published with 11 registered, and the Quads In LCA review. Rail shows 5; menu shows \"My region · 3 to check\".\n- **C:** the empty state.\n- **D:** the phone.\n- **E:** the rail row, the menu with \"To do · Pay $20 · Ella · November Meet\", the three breadcrumbs, and the room band with \"Back to My LCA\" and no Members tab.\n\nCanvas sticky note: \"Account-M · Your region, the checks first (round 2). Representative section for Chris, South Central Louisiana plus Central Louisiana and the Bayou Region while their seats are open: 4 of 9 clubs to check with one-tap Still accurate, 2 open reports aged in words on the 14-day clock, 2 club events (one In LCA review), the monthly check line, and Open My region, Post club news, Add a club event into the room. Healthy clubs in one line; Account-N shows every club as a tile instead. Part 2 (Account-M-2): the Mon, Nov 2 check day, empty, phone, and the way into My region and back. Drawn inside Int-A; the frame is swappable.\"",
+    "changes": [
+     "Account-M-2 phone (Frame D): replaced the made-up 'My LCA | Your region' bar and the 'Events / Clubs / Live / My LCA' tabs with the decided mobile header and tabs from Nav-Mobile-Final. That is the navy app bar with the rook mark, 'Louisiana Chess / Association' and the 44px Search button, and the tabs Tournaments · Clubs · My LCA · Menu. My LCA is the current tab, with the gold-ink #866a1e top bar and a personal count of 1. The caption now says the chrome is the decided one.",
+     "Account-M-2 phone: changed the contradictory '· 3 more below' (Open reports follows straight after it) to a 'Show 3 more' link.",
+     "Account-M-2 title strip: the Sample data badge read 'the Nov 2 report', a date without its weekday, and that report is actually dated Thu, Oct 29. It now reads 'Sample data · the Thu, Oct 29 report, the Quads, counts, times'.",
+     "Account-M-2 Frame C: renamed the label 'Empty · after the monthly check' to 'Empty · every club checked, nothing waiting'. The old label clashed with the frame's own 'Next monthly check lands Mon, Nov 2'.",
+     "Account-M Frame A: added a Sample data badge ('term end, three-region grant') beside the seat sub-line. The term end and the three-region grant are invented, and the only badge for them was in the title strip.",
+     "Both files: darkened the disabled 'Still accurate' text from #6b707c to #5d6371 on #efefea so it reads clearly.",
+     "Re-rendered both files after the changes and measured the true heights (2717px and 2888px). The declared 2750 and 2900 already match, rounded up to the next 50, so no height change was needed."
+    ],
+    "remaining_concerns": [
+     "Account-N-2 and Account-K-2 still draw the old made-up phone bar ('My LCA' plus the section name) and non-decided tabs. I fixed only Account-M-2, so the phone frames across the sibling boards now differ until those are fixed the same way.",
+     "Frame B's menu inset shows only My LCA, Family, Membership card, 'My region · 3 to check', Board inbox (no count) and Log out, with the caption 'The other room rows as on Mon, Oct 5'. Events you direct and Support tickets are left out because the spec gives no Nov 2 counts for them. A reader may find the shortened menu a little unclear.",
+     "The phone in Frame D shows Gonzales first, but Frame A lists Bunkie first (Bunkie has the disabled Still accurate). The order differs on purpose so the phone can show the two half-width buttons, but it is not explained on the board.",
+     "The spec has the rail at 'Your region · 5' on Nov 2, counting the monthly confirm as its own item. The Today rules say 'clubs not checked in 90 days ... or the monthly confirm due', which reads as one item. I kept the spec's 5; K may want this settled across Account-G, M and N."
+    ]
+   }
+  },
+  {
+   "board": {
+    "file": "Account-N.dc.html",
+    "title": "My LCA · N · Your region, every club as a tile (round 2)",
+    "width": 1440,
+    "page": "account",
+    "name": "Your region, every club as a tile",
+    "idea": "The region at a glance: one tile per club with its meeting statement, its Checked month in words, its open reports and events, Still accurate on the amber ones, and the tasks listed under the grid.",
+    "differs": "Account-M leads with the tasks (clubs to check, reports, events) and names healthy clubs in one line; Account-N shows every club as a tile first, with the tasks under the grid."
+   },
+   "drawn": {
+    "file": "Account-N.dc.html",
+    "title": "My LCA · N · Your region, every club as a tile (round 2)",
+    "width": 1440,
+    "height": 2900,
+    "second_file": "Account-N-2.dc.html",
+    "second_title": "My LCA · N-2 · Your region: the check landing, empty, phone and the way back",
+    "second_height": 2900,
+    "note": "What: Option N shows Chris's Your region section in My LCA (/dashboard#region) as a view of the whole region first. There is one tile per club for all nine clubs, always in A to Z order. Each tile has the club's colour band, its meeting statement in its own words, the Checked month in words, open reports and events. Amber tiles get Still accurate. The to-do list sits under the grid (Houma's visitor report, Bunkie's suggestion, the November Saturday G/90 in LCA review, the monthly check). Part 2 covers Mon, Nov 2 when the monthly check lands (Confirm all 9 in the summary bar, Houma at 37 days also with LCA admins), the empty region, the phone, and the rail, menu and breadcrumb rows into My region and back.\n\nBuilt from: Account-C's club block, Work-B's visitor report and its 14-day rule, the colour bands and meeting statements from the clubs boards, and the nine-club region data shared with Account-M, Work-G and Work-H. Also replan 3.3 and 4.2 and the decided header (Nav-Header-Final). Drawn inside Int-A, with \"Frame: Int-A, swappable\" stated in the legend.\n\nK's feedback applied: the role is hosted in My LCA and never in the admin panel; the section is drawn busy, empty and on a phone; a plain member never sees it; Account-M is the tasks-first option to compare against. Open for K: tiles first (N) or tasks first (M)? Keep the fixed A to Z order or float the amber tiles up? May a club with an open suggestion be marked Still accurate (drawn: no, answer it first)?",
+    "unresolved": [
+     "Height: the spec's frames (A at 1400, B at 620, C/D, E) do not fit one 3000px board, and Frame B's nine tiles alone run past 620px. The board is split in two: part 1 holds the title strip, the legend and Frame A; part 2 (Account-N-2) holds Frames B, C, D and E. Both are 2900px.",
+     "Frame E is not one row. Its rail rows (Oct 5 '· 4', Nov 2 '· 5', Oct 28 no count), its My LCA menu and its breadcrumbs with the room's band are stacked in Frame B's left column, labelled E. That was the only way to keep part 2 under 3000px.",
+     "Frame D is drawn as two 360x640 phone screens: the top of the section, then scrolled to Still accurate and the to-do rows. One 640px screen cannot show the summary bar, the tiles and the to-do rows together.",
+     "Club colours come from Work-G's bands. src/areas/clubs/clubColors.ts only tints a colour stored per club and holds no values. They are listed under Sample data.",
+     "The 'Your region · 5' count on Mon, Nov 2 is explained as: monthly check due, 3 clubs to check as one item, 2 reports, 1 event. The Today rules say the club check 'or' the monthly confirm counts as an item, so K may want it to be 4.",
+     "Wed, Oct 28, 2026 is my own pick for the empty frame's date, and is marked as sample data. I dropped any 'next check Mon, Dec 7' line rather than make up a schedule."
+    ]
+   },
+   "review": {
+    "file": "Account-N.dc.html (part 2: Account-N-2.dc.html)",
+    "height": 2900,
+    "second_height": 2850,
+    "counts": "Main board: 1440 wide, renders 2893px tall, declared 2900 (root and $preview). It has 6 legend notes (badges 1 to 6, each placed on the design) and 9 tiles in A to Z order: 4 amber (Bunkie, Gonzales, Heart of Worship, Pineville), 3 of them with Still accurate and Bunkie's disabled with the words 'Answer the suggestion first'. The rail reads Today 9, You, Family 1, Events you direct 3, Your region 4 (current), Board 7. Chris has five chips. The to-do list holds 3 counted rows (Houma report, Bunkie suggestion, the G/90 in LCA review) plus the monthly check line, which isn't counted. Part 2: 1440 wide, renders 2815px, declared 2850. It has 5 legend notes; Frame B with 9 tiles (3 amber: Gonzales, Morgan City, Pineville) and a to-do of 4 including the check that lands that day; Frame C (empty, 9 grey tiles, only Open); Frame D (two 360x640 phones); and Frame E (rail row Your region 5/4/no count, the My LCA menu with 'My region · 4 to check' current, the three breadcrumbs and the room band with Back to My LCA and no Members tab). Both files: 0 em dashes, 0 {{holes}}, 0 iframes, nothing animated, every tag closed, no USCF, no AI references, no grade, birthdate or financial-need question. Gold #c8a94a appears only as fills, borders and underline colour, never as text on a light ground. Every date carries its weekday. The header, footer and chips are identical to Account-M's (the decided Nav-Header-Final chrome), and the phone tab bar matches Nav-Mobile-Final. Nothing clips or overflows in either file except the meeting statements, which the spec says to cut short with the full text in title.",
+    "changes": [
+     "Both files: the Houma visitor quote now reads 'The library closes at 8:00 PM on Mondays now. Are you still meeting until 8:30 PM?' (time rule; matches Work-G and Account-G). That is 1 place in the main file and 2 in part 2.",
+     "Main file, Frame A: 'To do in your region · 4' became '· 3'. The monthly check line has no action, so it isn't counted until it lands. Legend note 2 now says so and explains the rail's 4 as these 3 rows plus the amber tiles counted as one item, which matches part 2's rail inset and the Today rules.",
+     "Part 2, phone: 'To do in your region · 4' became '· 3' to match Frame A on the same date, Mon, Oct 5.",
+     "Part 2, Frame B: the Frame E insets (rail rows, menu, breadcrumbs and room band) used to sit inside Frame B's browser frame, between the site header and footer, where they looked like a sidebar on the page. They now sit outside it in their own labelled column, and Frame B is cropped to the section alone. Its label reads 'Section only; chrome as Frame A'. The heading became 'Busy · Mon, Nov 2, 2026 · 8:00 AM · check day' and the Sample data badge was shortened so the label no longer truncates or wraps.",
+     "Part 2, rail inset: now says how the Frame B count of 5 is made up: the monthly check due, the 3 clubs as one item, 2 reports and 1 event.",
+     "Part 2: the declared height went from 2900 to 2850 (root and $preview). It was 2900 against a natural 2950, so the bottom clipped. After the restructure the natural height is 2815."
+    ],
+    "remaining_concerns": [
+     "The sibling boards Account-M and Account-M-2 still quote the Houma report as '8 PM ... until 8:30?'. N, Work-G and Account-G now use '8:00 PM ... 8:30 PM?', so M needs the same fix in its own review.",
+     "The section H2 is 22px/700, not the 28px/600 in the spec. At 28px the title, the Representative chip and the three 44px buttons don't fit on one line in the 1038px section, so I left it.",
+     "Frame B's monthly check row is counted as a to-do but has no button of its own. Its action, 'Confirm all 9 still accurate', is in the amber summary bar above. A second button would duplicate it, so I left it.",
+     "Phone 1 crops off the bottom of the amber Bunkie tile and phone 2 crops the Bunkie suggestion, so 'Reply' isn't visible on the Bunkie row. This reads as scrolling and doesn't break the layout.",
+     "The main board's legend sits at the 6-note limit and part 2 has 5. The Frame B and C insets are folded into part 2's Frame E column instead of the separate 260px row the spec describes, because a separate row would push part 2 past 3000px."
+    ]
+   }
+  },
+  {
+   "board": {
+    "file": "Account-O.dc.html",
+    "title": "My LCA · O · Board: the work in the section, rooms behind it, no Admin (round 2)",
+    "width": 1440,
+    "page": "account",
+    "name": "Board, rooms and no Admin",
+    "idea": "The officer's Board section carries the seat's inbox preview, the next meeting, the documents and the LCA office rows, and every write opens a small named room (Board inbox, Support tickets, Edit in place on the About tabs, Email the members for the president), so an officer never sees an Admin row anywhere.",
+    "differs": "Account-P keeps today's view-only Admin panel as one row and shrinks the section to a short desk of links; Account-O withdraws Admin for officers entirely and gives the section the work, with rooms behind it."
+   },
+   "drawn": {
+    "file": "Account-O.dc.html",
+    "title": "My LCA · O · Board: the work in the section, rooms behind it, no Admin (round 2)",
+    "width": 1440,
+    "height": 2950,
+    "second_file": "Account-O-2.dc.html",
+    "second_title": "My LCA · O-2 · Board: states, the President and Secretary, the way in and back (round 2)",
+    "second_height": 1950,
+    "note": "What: Option O for the Board section of My LCA. It is drawn for Chris Arceneaux, Treasurer with the lca_officer role, on Mon, Oct 5, 2026 at 8:40 AM. The seat half holds the Treasurer inbox preview (the three newest messages, each with a Reply button), the next meeting on Tue, Nov 10 at 7:00 PM with Add to calendar, and the governance documents. The LCA office half holds the support tickets, the documents Chris keeps, a member count and a one-field lookup. Every write opens a small named room: Board inbox, Support tickets, Edit in place on the About › Minutes tab, and Email the members for the President. An officer never sees an Admin row anywhere. Part 2 (O-2) draws the section empty and busy, the President and Secretary insets, the rail and menu rows, and the way into and back from each room under Int-A, B and C.\n\nBuilt from: Account-C (the Board card, the role chips, the On this page rail, \"Role looks wrong?\"), Account-G's Today list for the same morning, the decided header and My LCA menu (Nav-Header-Final), the About tabs from About-Final, and the frame's board seat, lca_officer and lca_observer rows. The page chrome and classes match the sibling round-2 boards (Account-K, Account-M).\n\nK's feedback applied: Chris's extra roles and their work live in My LCA instead of the admin panel, which is K's own sentence drawn literally. Every state is drawn (default, empty, busy, President, Secretary). There is no mode switch, no Workspace and no votes. The legend says the frame is swappable. Open for K: should officers lose Admin (option O) or keep it view-only (option P)? Does the treasurer need the export or the payments list (drawn: no)? Does the President's email room need a second factor? Votes would be WS14 scope.",
+    "unresolved": [
+     "The spec's literal pixel map (rail 232px, Today card at x 384, row heights of 64px, Frame B and C positions) does not fit with the round-2 title strip and legend under 3000px. So the board follows the sibling Account-K layout (220px rail, 58px Today rows), and the spec's Frames B and C (states, variants, rail and menu insets) moved to a second file, Account-O-2.dc.html.",
+     "The spec's section footer quotes auth.ts line numbers as page copy. The page shows only the member-facing sentence 'Nothing here opens Admin. ...'; the code references and the 'no second factor' line moved to legend note 4.",
+     "The spec's Secretary Today row read 'September minutes not posted, 14 days after the meeting', but the meeting was 27 days ago. It is drawn as 'September minutes not posted yet.' with 'Meeting Tue, Sep 8 · 27 days ago · joins Today 14 days after a meeting'.",
+     "The President's last email is dated Thu, Oct 1 as the spec has it; the frame's role inventory says Thu, Oct 8, which falls after the drawn Monday. The subject was changed from 'Lafayette Open this weekend' to 'Lafayette Open, Sat–Sun, Oct 10–11', because the Lafayette Open is the weekend after Oct 1. It is badged Sample data.",
+     "The role pill colours follow Account-K's chip palette (parent green, representative cream, board blue-grey) instead of the spec's teal for Ella and #eef1f8 for LCA office, so that all the Chris boards match; LCA office uses the neutral grey pill.",
+     "The six busy-state inbox subjects and their waits, and the ticket counts, are invented and badged Sample data."
+    ]
+   },
+   "review": {
+    "file": "Account-O.dc.html (part 2: Account-O-2.dc.html)",
+    "height": 2950,
+    "second_height": 2000,
+    "counts": "Main board: 1440 wide, natural height 2941px, declared 2950 (under 3000). Part 2: natural height 1956px, so the declared height went from 1950 (which clipped 6px) to 2000. No element overflows or clips on either board, and every tag is balanced. Six numbered notes on each legend. Main board regions: title strip (Built from, Replaces, Shown, Differs, Frame, K's feedback applied, Sample data), grey note (What, Built from, K's feedback applied, three Open for K), the decided signed-in header with My LCA and count 1, the page head with the five role chips, \"Role looks wrong?\" and \"Show my card\" (no Workspace button), the On this page rail (Today 9, You, Family 1, Events you direct 3, Your region 4, Board 7 current), Today across your roles (seven ranked rows with worded labels, \"9 things · 1 is yours\", Show 2 more), four collapsed sections, then the Board section. That section has its head (term ends Wed, Jun 30, 2027), Open board inbox, Governance documents, a 3-row Treasurer inbox, the South Central Louisiana inbox line, the next meeting (Tue, Nov 10 · 7:00 PM, Add to calendar), the documents card, and an LCA office half with Support tickets, Documents you keep, Members (312, \"300+ members\" kept), and the lookup (Avery Thibodeaux, name, status and end date only). Footer is identical to Tourn-List-Final. Part 2: Empty, Busy (6 rows, two flagged in words on amber), President (Email the members room), Secretary (Post minutes plus its Today row), the rail row, the My LCA menu (Board inbox (3) and Support tickets (4) ringed, no Workspace or Admin or Member lookup row), breadcrumbs under Int-A, B and C for five rooms, the room band with Back to My LCA, and the About › Minutes edit-in-place strip. Copy scan: every date has its weekday, times are written like 7:00 PM, there are no em dashes, no USCF, no stray .5 in copy, no AI references, no grade, birthdate or financial-need question, and gold is never used as text colour. Invented data carries Sample badges.",
+    "changes": [
+     "Account-O legend note 4 now opens with 'The one difference from Account-P: nothing here opens Admin.' This puts the O-against-P contrast in the notes as well as the title strip, matching how P's note 1 is worded.",
+     "Account-O-2 Busy panel: the waits on the four newer inbox rows wrapped mid-phrase ('· 3 / days'). Each wait now sits on its own grey line ('Waiting 3 days', 'Waiting 1 day', 'Waiting since today'), the same layout as the two amber rows.",
+     "Account-O-2 title strip: added a 'Differs' line against Account-P-2. Here the President's Email the members and the Secretary's minutes open their own rooms; on P they open inside the view-only Admin panel.",
+     "Account-O-2 menu inset: added the 'By role' group label before the role rows, so the menu matches the decided Nav-Header-Final menu (to-dos, My LCA, Family, Membership card, By role, Log out).",
+     "Account-O-2 height: root height and $preview changed from 1950 to 2000 to match the 1956px render, rounded up to the next 50."
+    ],
+    "remaining_concerns": [
+     "Main board, Board section: the left inbox column ends about 100px above the right column (meeting and documents cards), which leaves a blank patch under the 'Reply opens the Board inbox room' note. It reads as whitespace, not a defect, so I left it.",
+     "The spec's 'Frame' line in a cream box under the title is drawn instead as legend note 6, plus a 'Frame' row in the title strip and a frame tag. The wording is the frame's exact swappable sentence, but the cream box itself is not there.",
+     "The spec asked for the President's last email to read 'Lafayette Open this weekend'. The designer wrote 'Lafayette Open, Sat–Sun, Oct 10–11' instead, which matches the Lafayette Open 2026 dates on the other boards (sent Thu, Oct 1, that weekend would be wrong). I kept it.",
+     "The board's section footer leaves out the spec's auth.ts line references. They appear in legend note 4 instead ('auth.ts lines 163 to 179; no second factor is asked of an officer').",
+     "Canvas sticky text (O): 'Option O, Board section for an officer: inbox preview, next meeting, documents and an LCA office half; every write opens a named room (Board inbox, Support tickets, Edit in place on About › Minutes, Email the members for the President); no Admin row anywhere. Drawn inside Int-A, frame swappable. Part 2 (O-2): empty, busy, President, Secretary, rail, menu and the way in and back.'"
+    ]
+   }
+  },
+  {
+   "board": {
+    "file": "Account-P.dc.html",
+    "title": "My LCA · P · Board: a short desk, with Admin (view only) kept (round 2)",
+    "width": 1440,
+    "page": "account",
+    "name": "Board desk with Admin (view only)",
+    "idea": "The officer's Board section is a short desk of one-line links (inbox, meeting, the report you keep, tickets) and keeps today's view-only Admin panel as one row, so the treasurer and the secretary can still read the members table, payments and the audit log.",
+    "differs": "Account-O withdraws Admin for officers and puts the work in the section with rooms behind it; Account-P keeps today's 'Admin (view only)' as one row and makes the section a short desk that sends the officer there."
+   },
+   "drawn": {
+    "file": "Account-P.dc.html",
+    "title": "My LCA · P · Board: a short desk, with Admin (view only) kept (round 2)",
+    "width": 1440,
+    "height": 2600,
+    "second_file": "Account-P-2.dc.html",
+    "second_title": "My LCA · P-2 · Board: what Open Admin shows, the states and the menu row (round 2)",
+    "second_height": 2500,
+    "note": "What: Option P for the Board section in My LCA. Chris Arceneaux (Treasurer with the lca_officer role) sees a short desk of six one-line rows: Treasurer inbox, the South Central Louisiana inbox, the next meeting (Tue, Nov 10 · 7:00 PM), the September treasurer's report, support tickets and the lookup. Below them, today's view-only Admin panel stays as one row with Open Admin. Part 2 (P-2) shows what Open Admin looks like to an officer: the queue, where only the Support rows have Reply and every other row says \"Admins only\". It also has the empty and busy states, the President and Secretary versions, the rail row, the menu row \"Admin (view only)\", and the way in and back under Int-A, B and C.\n\nBuilt from: Account-C (Board card, chips, rail, \"Role looks wrong?\", its footer line about officers seeing Admin), Account-G's Today list, Account-O (same officer, same morning), AdminPage.tsx lines 119 to 122, Work-I's queue and WS08 sidebar, Nav-Header-Final. Drawn inside Int-A. The frame can be swapped.\n\nK's feedback applied: roles live in My LCA and the Board section is the way in; every state of the section is drawn; this is the \"keep Admin view-only\" option against Account-O's \"withdraw Admin\". Open for K: keep or withdraw Admin (view only) for officers; whether the treasurer needs read access to payments and the members table (P says yes); no second factor for officers, and especially for the President's group email.",
+    "unresolved": [
+     "The spec's single-board layout came to 3346px with Frame B on it, over the 3000px limit. Frame B (what Open Admin shows an officer), Frame C (states and variants) and the rail and menu insets are on Account-P-2.dc.html. Part 1 holds the title strip, legend and Frame A.",
+     "Account-O.dc.html in the project folder still declares $preview height 0 and has no O-2 yet, so its sibling is unfinished. P copies O's Today rows, chips, rail and counts as they stand now; if O changes, P's Today card needs the same change.",
+     "Frame B's queue uses Work-I's sample rows. Work-I's placeholders ('[Club or organizer]') are replaced with 'from a club', and the Danielle Robichaux row's owner is Denise Fontenot (Work-I's sample admin) instead of 'You'. Everything in Frame B carries a Sample data badge.",
+     "The admin thumbnail is drawn smaller with readable 10.5 to 13px text, not at a literal 1/2 scale, because at half scale the table text would be about 6px."
+    ]
+   },
+   "review": {
+    "file": "Account-P.dc.html (part 2: Account-P-2.dc.html)",
+    "height": 2650,
+    "second_height": 2550,
+    "counts": "Account-P renders at 2610px, declared 2650 (limit 3000). Account-P-2 renders at 2505px, declared 2550 (limit 3000). Both are 1440 wide; root height and $preview match on both. Neither board has an element running past the right edge or clipped by overflow. Legend: 6 numbered notes on each board. Title strip has Built from, Replaces, Shown, Differs, Frame, K's feedback applied and Sample data; the grey note has What, Built from, K's feedback applied and Open for K. Today on P: 7 open rows plus \"Show 2 more\" (9 things, 1 is yours). They match Account-O row for row, and only the LCA office ticket row's button changes, to \"Answer in Admin\". Chips: 5, the same as O. Rail: Today 9, You, Family 1, Events you direct 3, Your region 4, Board 7 (current), the same as O. Collapsed strips: 4, the same as O. Desk: 6 rows (Treasurer inbox, South Central Louisiana inbox, next meeting, Treasurer's report, Support tickets, Look up a member) plus the Admin (view only) row and the admins-only footer. P-2 has these frames. Frame B: Admin view-only at reduced scale, with the WS08 sidebar (Email hidden for lca_officer), the View only pill, 8 of 12 queue rows, and the four Work-I support rows with Reply; every other row reads \"Admins only\". Frame C: Empty, Busy (Board · 17, 31 need attention), President, Secretary. Frame D: the rail row, the full menu (9 rows with Admin (view only) ringed in gold), and the way in and back under Int-A, B and C. Date check: every date (36 across both files) carries the right 2026 or 2027 weekday, and no date is missing one. No em dashes, no USCF, no decimal halves, no {{holes}}, iframes or animation. Gold #c8a94a appears only as fills, rules, rings and underline colour, never as text on a light ground. Queue names, subjects, waits and Denise Fontenot match Work-I. The President's Admin copy matches AdminPage.tsx line 119 word for word.",
+    "changes": [
+     "Account-P, Today, Houma row: the visitor quote read '8 PM' and 'until 8:30?'. Changed to '8:00 PM' and 'until 8:30 PM?', which is the time rule and Account-O's exact wording, so the Today rows really are identical.",
+     "Account-P, title strip: the Frame line said only 'Int-A, swappable. Round 2.' It now carries the spec's region 1 sentence: 'Int-A, swappable (note 6). Grows from Account-C. The same officer as Account-O; the section is a desk of links and today's view-only Admin stays as one row (open question 3, the alternative).'",
+     "Account-P, Frame A label: replaced 'Board open, the others collapsed (remembered per device).' with 'Board open, others collapsed. The difference from O: the Admin (view only) row (note 1).' This makes the difference from the sibling readable at a glance.",
+     "Account-P, legend note 2: the claim that the section 'stays under 500px for any officer' was false (the drawn section is about 700px). It now reads 'keeps the same height for any officer, quiet or busy'.",
+     "Account-P-2, Secretary variant: the Today row had no action button, which breaks the Today rule of exactly one action. Its wording also differed from Account-O-2. It now reads 'September minutes not posted yet.' with the line 'Meeting Tue, Sep 8 · 27 days ago · joins Today 14 days after a meeting' and a [Post minutes] button, as on O-2.",
+     "Account-P-2, Frame D, Int-B way in and back: the garbled 'My LCA rail › Board › Admin (view only), the menu row only; back to /my/board' contradicted Int-B, where the rail never shows Admin. It now reads 'From the Board page's Open Admin or the menu row; /admin keeps its own sidebar; \"Back to My LCA\" returns to /my/board'.",
+     "Declared heights and $preview updated: Account-P from 2600 to 2650, Account-P-2 from 2500 to 2550 (the Secretary row grew). Re-rendered and viewed after the changes."
+    ],
+    "remaining_concerns": [
+     "Spec region 1 asks for the frame sentence in a cream #fbf7e9 box under the title. The board uses the decided title-strip pattern instead: a 'Frame: Int-A, swappable' tag, the enriched Frame line, and legend note 6 with the full sentence word for word. I left it that way to match the decided boards rather than add a fourth header block.",
+     "This option keeps 'Admin (view only)' for officers, which deliberately departs from Int-A's 'Admin only for lca_admin' and from the menu rule 'No row ever reads ... Admin panel'. It is the open question 3 alternative and the legend says so, but K should read P as the alternative, not the baseline.",
+     "The Admin room is drawn with the crumb 'My LCA › Admin' and 'Back to My LCA'. Today's AdminPage has no such crumb (its hero is titled 'Admin panel'), so the crumb and the regrouped WS08 sidebar are proposals, not today's screen.",
+     "The Secretary variant's Today row wraps to five lines in its 400px panel. It is readable and does not overlap, but it is dense.",
+     "The account-specs.json entry for Account-P has no 'flow' field to check against, so I checked consistency against Account-O, O-2 and Work-I instead."
+    ]
+   }
+  }
+ ]
+}

@@ -1,0 +1,404 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Clubs · H · Clubs-H · One list, always whole (round 3)</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/6107adb451dbab26ee5d89f4189b81f8">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+
+body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1a2744}
+.ch-root{box-sizing:border-box;padding:16px 0 16px;background:#ecebe6;color:#1a2744}
+.ch-root *{box-sizing:border-box}
+.ch-root p{margin:0}
+.ch-mk{position:absolute;z-index:40;box-shadow:0 0 0 3px #ffffff}
+
+/* board doc */
+.ch-doc{margin:0 40px;background:#fbfaf6;border:1px solid #d9d8d1;border-radius:14px;padding:16px 22px 16px}
+.ch-doc-top{display:flex;justify-content:space-between;align-items:flex-start;gap:24px}
+.ch-title{font-size:32px;line-height:1.15;font-weight:700;letter-spacing:-.015em;margin:6px 0 0}
+.ch-ml{font-size:13px;line-height:1.45;color:#3d4556;margin:4px 0 0 !important}
+.ch-ml b{color:#1a2744;font-weight:600}
+.ch-round{display:inline-flex;align-items:center;height:26px;padding:0 10px;border-radius:6px;background:#1a2744;color:#ffffff;font-size:12.5px;font-weight:700;letter-spacing:.04em}
+.ch-grey{flex:none;background:#efefea;border:1px solid #dfded6;border-radius:10px;padding:12px 14px;display:grid;grid-template-columns:1fr 1fr;gap:10px 18px}
+.ch-grey p{font-size:12px;line-height:1.42;color:#2b3446;margin:0}
+.ch-grey p + p{margin-top:8px !important}
+.ch-grey b{display:block;font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#555c6b;margin-bottom:2px}
+.ch-grey ol{margin:0;padding-left:16px;font-size:12px;line-height:1.42;color:#2b3446}
+.ch-grey li{margin-bottom:4px}
+.ch-lbox{background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:12px 16px 14px;margin-top:12px}
+.ch-notes{list-style:none;margin:10px 0 0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px 24px}
+.ch-notes li{display:flex;gap:8px;align-items:flex-start;font-size:12.5px;line-height:1.45;color:#2b3446}
+.ch-notes .k-num-badge{width:22px;height:22px;font-size:11.5px}
+.ch-notes b{font-weight:600;color:#1a2744}
+
+/* frame label */
+.ch-flab{display:flex;align-items:center;gap:12px;margin:14px 40px 8px}
+.ch-flab h2{white-space:nowrap;margin:0;font-size:19px;line-height:1.2;font-weight:600;letter-spacing:-.01em}
+.ch-code{display:inline-flex;align-items:center;justify-content:center;min-width:28px;height:28px;padding:0 9px;border-radius:7px;background:#c8a94a;color:#1a2744;font-weight:700;font-size:13px}
+.ch-urlchip{white-space:nowrap;font-family:"Geist Mono",ui-monospace,monospace;font-size:12px;color:#3d4556;background:#ffffff;border:1px solid #d9d8d1;border-radius:7px;padding:4px 10px;margin-left:auto}
+.ch-urlchip b{font-weight:500;color:#1a2744;background:#f4ecd4;border-radius:3px;padding:0 2px}
+.ch-frame{width:1440px;background:#ffffff;border-top:1px solid #cfcec6;border-bottom:1px solid #cfcec6;box-shadow:0 20px 50px rgba(16,24,43,.10)}
+.ch-page{background:#f5f5f2;position:relative}
+
+/* header and footer (decided) */
+.ch-hd-in{gap:0;position:relative;min-height:64px;height:64px}
+.ch-hd .k-brand{margin-right:16px}
+.ch-rook{width:30px;height:30px;fill:#ffffff;flex:none}
+.ch-rook-sm{width:24px;height:24px}
+.ch-nav{gap:0}
+.ch-nav a{padding:0 10px;white-space:nowrap}
+.ch-navbtn{display:inline-flex;align-items:center;gap:4px;min-height:44px;padding:0 10px;border:0;background:transparent;color:#ffffff;font:inherit;font-size:15px;font-weight:500}
+.ch-sbtn{display:inline-flex;align-items:center;gap:8px;width:200px;height:44px;padding:0 8px 0 12px;margin-right:14px;border-radius:8px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.45);color:#ffffff;text-decoration:none;font-size:14.5px;font-weight:500;flex:none}
+.ch-kbd{margin-left:auto;font-family:"Geist Mono",ui-monospace,monospace;font-size:12px;color:#e8ecf4;border:1px solid rgba(255,255,255,.4);border-radius:5px;padding:2px 6px;line-height:1.2}
+.ch-util{gap:10px}
+.ch-util .k-ulink{padding:0 4px}
+.ch-foot-in{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px;padding-top:16px;padding-bottom:16px}
+.ch-foot .k-meta{color:rgba(255,255,255,.78)}
+.ch-foot nav a{font-size:14px}
+
+/* drawer controls */
+.ch-field{display:flex;align-items:center;gap:8px;height:44px;padding:0 12px;border:1px solid #858b99;border-radius:10px;background:#ffffff;color:#6b7180;font-size:15px}
+.ch-field svg{color:#555c6b}
+.ch-near{display:inline-flex;align-items:center;gap:6px;height:40px;padding:0 13px 0 11px;border:1.5px solid #1a2744;border-radius:8px;background:#ffffff;color:#1a2744;font-size:14px;font-weight:600;white-space:nowrap}
+.ch-near-on{background:#1a2744;color:#ffffff}
+.ch-seg{display:inline-flex;border:1px solid #858b99;border-radius:8px;overflow:hidden;background:#ffffff;height:40px}
+.ch-seg span{display:inline-flex;align-items:center;padding:0 13px;font-size:13.5px;font-weight:600;color:#1a2744;white-space:nowrap}
+.ch-seg span + span{border-left:1px solid #c9c8c0}
+.ch-seg .on{background:#1a2744;color:#ffffff}
+.ch-seg .off{color:#7a8090;background:#f4f4f1}
+.ch-filt{display:inline-flex;align-items:center;gap:6px;height:40px;padding:0 13px;margin-left:auto;border:1px solid #858b99;border-radius:8px;background:#ffffff;color:#1a2744;font-size:14px;font-weight:600;white-space:nowrap}
+.ch-pill{display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 5px 0 10px;border-radius:999px;background:#eceef3;color:#1a2744;font-size:13.5px;font-weight:600;white-space:nowrap}
+.ch-pill i{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:#ffffff;font-style:normal}
+
+/* cards */
+.ch-card{position:relative;display:block;height:84px;padding:11px 34px 0 18px;border-bottom:1px solid #ecebe5;background:#ffffff;text-decoration:none;color:#1a2744}
+.ch-sel{background:#fbf7e9;box-shadow:inset 3px 0 0 #c8a94a}
+.ch-l1{display:flex;align-items:baseline;gap:10px;height:21px}
+.ch-nm{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#1a2744}
+.ch-nm b{font-size:15px;font-weight:600;color:#1a2744}
+.ch-town{font-size:13px;color:#555c6b}
+.ch-mi{flex:none;font-size:13px;color:#555c6b;font-variant-numeric:tabular-nums;white-space:nowrap}
+.ch-chev{position:absolute;right:12px;top:32px;color:#8a8f9c;display:inline-flex}
+.ch-l23{margin-top:3px !important;font-size:13.5px;line-height:1.38;color:#2b3446;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.ch-l2{margin-top:3px !important;font-size:13.5px;line-height:1.38;color:#555c6b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ch-lnk{color:#1a2744;font-weight:600;text-decoration:underline;text-decoration-color:#9aa1b0;text-underline-offset:3px}
+.ch-l3{margin-top:1px !important;font-size:13px;line-height:1.42;color:#6b7180;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ch-div{display:flex;align-items:center;gap:10px;height:32px;padding:0 18px;background:#f6f6f3;border-bottom:1px solid #ecebe5;font-size:12.5px;font-weight:600;color:#555c6b}
+.ch-div::before,.ch-div::after{content:"";flex:1;height:1px;background:#d6d5cd}
+.ch-missing{display:flex;align-items:center;height:48px;padding:0 18px;font-size:14px}
+
+/* map */
+.ch-map{position:relative;width:980px;height:780px;overflow:hidden;background:#f7f6f1}
+.ch-map > svg{position:absolute;left:0;top:0}
+.ch-ov{position:absolute;z-index:5}
+.ch-shadow{box-shadow:0 2px 10px rgba(16,24,43,.18)}
+.ch-zoom{display:flex;flex-direction:column;border-radius:8px;background:#ffffff;overflow:hidden;border:1px solid #c9c8c0}
+.ch-zoom span{display:flex;align-items:center;justify-content:center;width:44px;height:44px;font-size:22px;font-weight:500;color:#1a2744}
+.ch-zoom span + span{border-top:1px solid #e3e2dc}
+.ch-all{display:inline-flex;align-items:center;gap:7px;height:40px;padding:0 14px 0 12px;border-radius:8px;background:#ffffff;border:1.5px solid #1a2744;font-size:14px;font-weight:600;color:#1a2744;white-space:nowrap}
+.ch-all-dis{border:1px solid #c9c8c0;color:#5f6576;background:#f6f6f3}
+.ch-mcap{display:flex;align-items:center;gap:8px;height:32px;padding:0 12px;border-radius:8px;background:#ffffff;border:1px solid #d9d8d1;font-size:12px;color:#2b3446;white-space:nowrap}
+.ch-mcap span{display:inline-flex;align-items:center;gap:6px}
+.ch-mcap i{font-style:normal;color:#8a8f9c}
+.ch-tip{position:absolute;z-index:6;background:#1a2744;color:#ffffff;font-size:12.5px;font-weight:600;line-height:1;border-radius:7px;padding:7px 10px;white-space:nowrap;box-shadow:0 6px 14px rgba(16,24,43,.25)}
+.ch-tip::after{content:"";position:absolute;left:50%;bottom:-5px;margin-left:-5px;width:10px;height:10px;background:#1a2744;transform:rotate(45deg)}
+.ch-ann{position:absolute;z-index:7;background:#fffaf0;border:1.5px dashed #8a7a4a;border-radius:10px;padding:9px 12px;font-size:13px;line-height:1.45;color:#3d2f08;box-shadow:0 6px 16px rgba(16,24,43,.10)}
+.ch-ann b{font-weight:700;color:#3d2f08}
+.ch-peek{margin-top:8px;background:#ffffff;border:1px solid #dddcd4;border-radius:8px;overflow:hidden;color:#1a2744}
+.ch-peek p{display:flex;align-items:baseline;gap:8px;height:27px;padding:0 10px;font-size:12.5px;line-height:27px;border-bottom:1px solid #ecebe5;white-space:nowrap}
+.ch-peek p b{font-weight:600}
+.ch-peek p span{color:#555c6b}
+.ch-peek p em{margin-left:auto;font-style:normal;color:#555c6b;font-variant-numeric:tabular-nums}
+.ch-peek .pd{justify-content:center;background:#f6f6f3;font-size:11.5px;font-weight:600;color:#555c6b}
+.ch-peek .pg{justify-content:center;height:18px;line-height:18px;color:#8a8f9c}
+.ch-peek p:last-child{border-bottom:0}
+
+.ch-doc{padding:14px 20px 14px}
+.ch-notes{gap:10px 22px}
+.ch-notes li{font-size:12px;line-height:1.42}
+.ch-lbox{padding:10px 16px 12px}
+/* title strip */
+.ch-strip{background:#ffffff;border-bottom:1px solid #e3e2dc;height:56px}
+.ch-strip-in{display:flex;align-items:center;gap:16px;height:56px}
+.ch-strip .k-kicker{font-size:12px}
+.ch-h1{font-size:28px;line-height:1;font-weight:700;letter-spacing:-.015em;margin:0;white-space:nowrap}
+.ch-slead{margin-left:auto;font-size:15px;color:#555c6b;white-space:nowrap}
+
+/* first screen */
+.ch-first{position:relative;display:grid;grid-template-columns:460px 980px;height:780px;border-bottom:1px solid #dddcd4}
+.ch-drawer{position:relative;background:#ffffff;border-right:1px solid #d6d5cd;overflow:hidden;display:flex;flex-direction:column;z-index:2;box-shadow:4px 0 14px rgba(16,24,43,.06)}
+.ch-top{flex:none;height:152px;padding:12px 18px 0;border-bottom:1px solid #e3e2dc;position:relative;background:#ffffff}
+.ch-row2{display:flex;align-items:center;gap:8px;margin-top:8px}
+.ch-cap{margin:7px 34px 0 0 !important;font-size:12.5px;line-height:1.38;color:#555c6b}
+.ch-list{flex:1;overflow:hidden;position:relative}
+.ch-scroll{position:absolute;right:3px;top:4px;width:5px;border-radius:3px;background:#c9c8c0;z-index:3}
+
+/* below the fold */
+.ch-band{padding:14px 0 14px}
+.ch-flab{margin:12px 40px 6px}
+.ch-title{font-size:30px}
+.ch-notes{gap:8px 22px}
+.ch-foot-in{padding-top:14px;padding-bottom:14px}
+.ch-cream{background:#fbfaf6;border-bottom:1px solid #e6e5de}
+.ch-bh{display:flex;align-items:baseline;gap:16px;margin-bottom:12px;position:relative}
+.ch-bh h2{margin:0;font-size:22px;line-height:1.2;font-weight:700;letter-spacing:-.01em;white-space:nowrap}
+.ch-bh p{font-size:14px;line-height:1.45;color:#3d4556;max-width:980px}
+.ch-reps{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));border-top:1px solid #e3e2dc;border-bottom:1px solid #e3e2dc}
+.ch-rep{padding:10px 12px 10px;font-size:13px;line-height:1.4;color:#2b3446}
+.ch-rep + .ch-rep{border-left:1px solid #e3e2dc}
+.ch-rep b{display:block;font-weight:600;color:#1a2744}
+.ch-rep span{display:block;color:#3d4556}
+.ch-rep span.open{color:#555c6b}
+.ch-rep a{color:#1a2744;font-weight:600;text-decoration:underline;text-decoration-color:#9aa1b0;text-underline-offset:3px}
+.ch-fn{margin-top:10px !important;font-size:12px;color:#555c6b;display:flex;align-items:center;gap:10px}
+.ch-fn .k-sample{font-size:11px;padding:2px 8px}
+.ch-three{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.ch-small{border:1px solid #e3e2dc;border-radius:12px;background:#ffffff;padding:12px 16px 13px}
+.ch-small h3{margin:0;font-size:16px;line-height:1.3;font-weight:700}
+.ch-small p{margin:3px 0 7px !important;font-size:13.5px;line-height:1.45;color:#3d4556}
+.ch-small a{font-size:14px;color:#1a2744;font-weight:600;text-decoration:underline;text-decoration-color:#c8a94a;text-decoration-thickness:2px;text-underline-offset:4px}
+.ch-missing a{color:#1a2744;font-weight:600;text-decoration:underline;text-decoration-color:#c8a94a;text-decoration-thickness:2px;text-underline-offset:4px}
+
+</style>
+</helmet>
+<div class="ch-root" style="width:1440px;height:2800px">
+<section class="ch-doc" aria-label="About this board">
+<div class="ch-doc-top">
+<div style="min-width:0">
+<div class="k-row-sm" style="gap:10px"><p class="k-kicker">8 · Clubs directory · round 3 · option H</p><span class="ch-round">ROUND 3</span></div>
+<h1 class="ch-title">Clubs · H · One list, always whole</h1>
+<p class="ch-ml" style="margin-top:8px !important"><b>Built from:</b> Clubs-E only. The map is the first screen with the directory beside it. Nothing from Clubs-F (regions as the structure) or Clubs-G (cards ranked by distance), nothing from round 1's A or B.</p>
+<p class="ch-ml"><b>Replaces:</b> Clubs-E. <b>Removes from E:</b> the viewport-mirrored drawer, the count chips, the toggle, the three sorts and the region menu, Search this area, Show regions and the inset map, the legend panel, both popovers, the rings, pin numbers, every Next: line and tonight state, Checked months, the forms on the first screen.</p>
+<p class="ch-ml"><b>K's feedback applied (Fri, Oct 9 and Tue, Oct 13):</b> no calendar or week grid; the map is central and answers near me; plainly simpler than E; every club in Louisiana is on the page without pressing anything; nothing computed weekly; each listing is written by the club's own representative (page 9) with the region's representative as backstop.</p>
+<p style="margin-top:10px"><span class="k-sample">Sample data: representative names, open seats, road miles. Club names, towns, venues and meeting lines are real (clubMapData.ts).</span></p>
+</div>
+<aside class="ch-grey" style="width:500px" aria-label="Board note">
+<div><p><b>What</b>Round-3 option H. The drawer lists all 25 clubs A to Z from the first paint beside a state-zoom map with every pin. Near me reorders and zooms; it never trims.</p><p><b>Built from</b>Clubs-E, with the decided header and footer. Phones, forms and states on Clubs-H-2.</p><p><b>K's feedback applied</b>Simpler than E; near me and the whole state served equally; no weekly claims.</p></div>
+<div><p><b>Open for K</b></p><ol><li>Keep the Farther than 75 miles divider, or set it at 60?</li><li>Miles by road (cached, as drawn) or straight line (replan question 12)?</li><li>Knight Light Chess and Strategic Thoughts NOLA meet at several sites: one approximate pin in New Orleans, as drawn, or list only?</li></ol></div>
+</aside>
+</div>
+<div class="ch-lbox">
+<p class="k-label">Notes on this board</p>
+<ol class="ch-notes">
+<li><span class="k-num-badge">1</span><span><b>Nothing is hidden.</b> The drawer holds all 25 clubs from the first paint and the map shows every pin at Louisiana zoom. Near me reorders and zooms; it never trims the list, so there is no Search this area and no count to explain.</span></li>
+<li><span class="k-num-badge">2</span><span><b>Two orders only:</b> A to Z (default) and Nearest (once a place is known). No Meets soonest, no tonight, no next date, no count of who meets when. A card carries the club's meeting line in the club's own words, or Schedule not listed (7 clubs).</span></li>
+<li><span class="k-num-badge">3</span><span><b>Location is read once, on tap,</b> and kept only in the address (<span style="white-space:nowrap">?near=70808</span>). A typed city or ZIP is sent only to find a point and never stored. Denied: the field takes focus with "We couldn't get your location. Type a city or ZIP."</span></li>
+<li><span class="k-num-badge">4</span><span><b>Map and list are one thing in two forms:</b> hover or focus a card and its pin lifts; click a pin and the drawer scrolls to its card and selects it. No popover on desktop. Pins carry no numbers; the two dense towns are count circles that open on click.</span></li>
+<li><span class="k-num-badge">5</span><span><b>Who keeps a listing is said once per region,</b> below the fold: the club's own representative writes it, the region's LCA representative is the backstop, and Suggest an update reaches them. No Checked month on this page. No club-manager claim path, no roster, no leaderboard, no member counts.</span></li>
+<li><span class="k-num-badge">6</span><span><b>Data:</b> a card reads clubs.meeting_text (the club's own line, written on its club page) and clubs.schedule_status; nothing here is computed from club_schedules. Road miles per club from one hub, cached in club_distances; zip_regions routes Suggest a club; club_reports carries every suggestion.</span></li>
+</ol>
+</div>
+</section>
+<div class="ch-flab"><span class="ch-code">A</span><h2>Landing · the curious visitor</h2><span class="k-meta">Desktop · landing, nothing pressed · signed out · 1440 × 900 · first screen 780 under the header and strip, sticky</span><span class="ch-urlchip">/clubs</span></div>
+<div class="ch-frame"><div class="ch-page">
+<header class="k-header ch-hd"><div class="k-wrap-wide k-header-in ch-hd-in"><a class="k-brand" href="#" aria-label="Louisiana Chess Association, home"><svg class="ch-rook" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span class="k-brand-name" aria-hidden="true"><b>Louisiana Chess</b><span>Association</span></span></a><nav class="k-navlinks ch-nav" aria-label="Main"><a href="#">Tournaments</a><a class="k-nav-on" href="#" aria-current="page">Clubs</a><a href="#">Scholastic</a><a href="#">News</a><a href="#">Membership</a><button class="ch-navbtn" type="button" aria-expanded="false" aria-haspopup="true">About<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></button></nav><a class="ch-sbtn" href="#"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg><span>Search</span><kbd class="ch-kbd" aria-hidden="true">&#8984;K</kbd></a><div class="k-utility ch-util"><a class="k-ulink" href="#">Donate</a><a class="k-ulink" href="#">Log in</a><a class="k-btn k-btn-gold k-btn-sm" href="#">Join LCA</a></div></div></header>
+<div class="ch-strip"><div class="k-wrap-wide ch-strip-in"><span class="k-kicker">Clubs</span><h1 class="ch-h1">Chess clubs in Louisiana</h1><span class="ch-slead">25 clubs · 7 regions · Find the nearest, or look around the whole state.</span></div></div>
+<div class="ch-first">
+<section class="ch-drawer" aria-label="All 25 clubs, A to Z">
+<div class="ch-top">
+<label class="ch-field" aria-label="City, ZIP or club name"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg><span>City, ZIP or club name</span></label>
+<div class="ch-row2">
+<span class="ch-near" role="button" aria-pressed="false"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"></circle><circle cx="12" cy="12" r="7.5"></circle><path d="M12 1.5v3M12 19.5v3M1.5 12h3M19.5 12h3"></path></svg>Near me</span>
+<span class="ch-seg" role="group" aria-label="Order"><span class="on" aria-pressed="true">A to Z</span><span class="off" aria-disabled="true" title="Press Near me, or type a place">Nearest</span></span>
+<span class="ch-filt" role="button" aria-haspopup="true"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16l-6 7.5V19l-4 1.5v-8L4 5z"></path></svg>Filters</span>
+</div>
+<p class="ch-cap" aria-live="polite">All 25 clubs, A to Z. Meeting times are as each club states them; confirm before a first visit.</p>
+<span class="k-num-badge ch-mk" style="left:8px;top:58px;width:24px;height:24px;font-size:12px">3</span>
+<span class="k-num-badge ch-mk" style="left:286px;top:72px;width:24px;height:24px;font-size:12px">2</span>
+<span class="k-num-badge ch-mk" style="right:10px;top:114px;width:24px;height:24px;font-size:12px">1</span>
+</div>
+<div class="ch-list" role="list">
+<span class="ch-scroll" style="height:182px"></span>
+<a class="ch-card" href="#" role="listitem"><div class="ch-l1"><span class="ch-nm"><b>Baton Rouge Chess Club</b><span class="ch-town"> · Baton Rouge</span></span></div><p class="ch-l23">Saturdays 10:00 AM at Jones Creek Branch Library, G/90+30. Casual meets Wednesdays 6:00 PM at Boba ParTea on O&#x27;Neil Lane.</p><span class="ch-chev"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></span><span class="k-num-badge ch-mk" style="right:44px;top:8px;width:24px;height:24px;font-size:12px">6</span></a><a class="ch-card" href="#" role="listitem"><div class="ch-l1"><span class="ch-nm"><b>Beauregard Parish Youth Chess</b><span class="ch-town"> · DeRidder</span></span></div><p class="ch-l23">Every Wednesday during the summer months, 1:00–2:00 PM.</p><span class="ch-chev"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></span></a><a class="ch-card" href="#" role="listitem"><div class="ch-l1"><span class="ch-nm"><b>Bluebonnet Chess Club</b><span class="ch-town"> · Baton Rouge</span></span></div><p class="ch-l23">Meets bi-weekly at Bluebonnet Library on the 1st and 3rd Sunday of the month, 4:30–5:30 PM.</p><span class="ch-chev"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></span></a><a class="ch-card ch-sel" href="#" role="listitem" aria-current="true"><div class="ch-l1"><span class="ch-nm"><b>Bunkie Chess Club</b><span class="ch-town"> · Bunkie</span></span></div><p class="ch-l23">Tuesdays 4:00–6:00 PM at the Bunkie Library. Open to all ages 8–108. Free to join.</p><span class="ch-chev"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></span></a><a class="ch-card" href="#" role="listitem"><div class="ch-l1"><span class="ch-nm"><b>Casa de Ajedrez</b><span class="ch-town"> · Sulphur</span></span></div><p class="ch-l2">Schedule not listed · Know when they meet? <span class="ch-lnk">Suggest an update</span></p><p class="ch-l3">Leisure and casual play, US Chess rated tournaments, online chess and lessons. Sulphur / Lake Charles area.</p><span class="ch-chev"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></span></a><a class="ch-card" href="#" role="listitem"><div class="ch-l1"><span class="ch-nm"><b>Downriver Chess Club</b><span class="ch-town"> · New Orleans</span></span></div><p class="ch-l23">Monday and Thursday evenings at 7:00 PM. Game 15, no delay. $1–2 entry with US Chess membership.</p><span class="ch-chev"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></span></a><a class="ch-card" href="#" role="listitem"><div class="ch-l1"><span class="ch-nm"><b>Gonzales Chess Club</b><span class="ch-town"> · Gonzales</span></span></div><p class="ch-l2">Schedule not listed · Know when they meet? <span class="ch-lnk">Suggest an update</span></p><span class="ch-chev"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></span></a><a class="ch-card" href="#" role="listitem"><div class="ch-l1"><span class="ch-nm"><b>Greater New Orleans Chess Club</b><span class="ch-town"> · New Orleans</span></span></div><p class="ch-l23">Tuesdays 7:00 PM. 5-round G/90 tournaments, one round per week. Arrive by 6:30 PM to register.</p><span class="ch-chev"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></span></a><a class="ch-card" href="#" role="listitem"><div class="ch-l1"><span class="ch-nm"><b>Heart of Worship Church Chess</b><span class="ch-town"> · Opelousas</span></span></div><p class="ch-l23">Fridays 5:30–7:00 PM. Open to anyone: join before church for chess.</p><span class="ch-chev"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></span></a><a class="ch-card" href="#" role="listitem"><div class="ch-l1"><span class="ch-nm"><b>Houma Chess Club</b><span class="ch-town"> · Houma</span></span></div><p class="ch-l23">Mondays 6:00–8:30 PM at Terrebonne Parish North Library.</p><span class="ch-chev"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></span></a><a class="ch-card" href="#" role="listitem"><div class="ch-l1"><span class="ch-nm"><b>Knight Light Chess</b><span class="ch-town"> · New Orleans</span></span></div><p class="ch-l2">Schedule not listed · Know when they meet? <span class="ch-lnk">Suggest an update</span></p><p class="ch-l3">Summer camps, after-school programs, private instruction and community tournaments.</p><span class="ch-chev"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></span></a><a class="ch-card" href="#" role="listitem"><div class="ch-l1"><span class="ch-nm"><b>Lafayette Chess Club</b><span class="ch-town"> · Lafayette</span></span></div><p class="ch-l2">Schedule not listed · Know when they meet? <span class="ch-lnk">Suggest an update</span></p><p class="ch-l3">Hosts the Louisiana Open every Memorial Day weekend and the Lafayette Open in October. All skill levels welcome.</p><span class="ch-chev"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></span></a><a class="ch-card" href="#" role="listitem"><div class="ch-l1"><span class="ch-nm"><b>Mandeville Chess Club</b><span class="ch-town"> · Mandeville</span></span></div><p class="ch-l23">Meets Mondays at 5:00 PM at George&#x27;s Mexican Restaurant.</p><span class="ch-chev"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></span></a><a class="ch-card" href="#" role="listitem"><div class="ch-l1"><span class="ch-nm"><b>Marrero Chess Organization</b><span class="ch-town"> · Marrero</span></span></div><p class="ch-l23">Wednesdays 6:00–10:00 PM at Chopsticks Buffet. No entry fee, all welcome. Skittles games only.</p><span class="ch-chev"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></span></a><a class="ch-card" href="#" role="listitem"><div class="ch-l1"><span class="ch-nm"><b>Metairie Chess Academy</b><span class="ch-town"> · Metairie</span></span></div><p class="ch-l2">Schedule not listed · Know when they meet? <span class="ch-lnk">Suggest an update</span></p><p class="ch-l3">Chess instruction and play for kids of all ages.</p><span class="ch-chev"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></span></a><a class="ch-card" href="#" role="listitem"><div class="ch-l1"><span class="ch-nm"><b>Monroe Chess Club</b><span class="ch-town"> · Monroe</span></span></div><p class="ch-l23">Monday evenings 5:30 PM at Enochs Pub and Grill. Saturday mornings 10:00 AM at Books-A-Million. All ages welcome.</p><span class="ch-chev"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></span></a><a class="ch-card" href="#" role="listitem"><div class="ch-l1"><span class="ch-nm"><b>Morgan City Chess Club</b><span class="ch-town"> · Morgan City</span></span></div><p class="ch-l23">1st, 3rd and 5th Tuesday evenings at 5:30 PM at First Baptist Church.</p><span class="ch-chev"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></span></a><a class="ch-card" href="#" role="listitem"><div class="ch-l1"><span class="ch-nm"><b>New Orleans Westbank Chess Club</b><span class="ch-town"> · Gretna</span></span></div><p class="ch-l23">US Chess rated tournaments Thursdays 7:30–11:30 PM. Beginners welcome.</p><span class="ch-chev"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></span></a><a class="ch-card" href="#" role="listitem"><div class="ch-l1"><span class="ch-nm"><b>North Kenner Library Chess Club</b><span class="ch-town"> · Kenner</span></span></div><p class="ch-l2">Schedule not listed · Know when they meet? <span class="ch-lnk">Suggest an update</span></p><p class="ch-l3">Skittles chess for all ages and abilities, in the Meeting Room, North Kenner Public Library.</p><span class="ch-chev"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></span></a><a class="ch-card" href="#" role="listitem"><div class="ch-l1"><span class="ch-nm"><b>Picayune Chess Club</b><span class="ch-town"> · Picayune, MS</span></span></div><p class="ch-l23">Mondays 6:00–10:00 PM at IHOP. Casual games. Quick-rated tournaments the 1st Monday of each month (4 rounds, G/20 d5).</p><span class="ch-chev"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></span></a><a class="ch-card" href="#" role="listitem"><div class="ch-l1"><span class="ch-nm"><b>Pineville Homeschool Chess Club</b><span class="ch-town"> · Pineville</span></span></div><p class="ch-l23">Meets monthly 12:30–2:30 PM at 300 Pearce Rd, Pineville. Must be a CCHSA homeschool group member.</p><span class="ch-chev"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></span></a><a class="ch-card" href="#" role="listitem"><div class="ch-l1"><span class="ch-nm"><b>Ruston Knights Chess Club</b><span class="ch-town"> · Ruston</span></span></div><p class="ch-l23">Tuesday nights at 6:00 PM at Utility Brewing Company.</p><span class="ch-chev"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></span></a><a class="ch-card" href="#" role="listitem"><div class="ch-l1"><span class="ch-nm"><b>Shreveport-Bossier Chess Club</b><span class="ch-town"> · Shreveport-Bossier</span></span></div><p class="ch-l23">Mondays at Gamers XP, 1:00–5:00 PM. Thursdays at Pierre Bossier Mall in the food court, 1:00–5:00 PM.</p><span class="ch-chev"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></span></a><a class="ch-card" href="#" role="listitem"><div class="ch-l1"><span class="ch-nm"><b>Slidell Chess Club</b><span class="ch-town"> · Slidell</span></span></div><p class="ch-l23">Fridays at 7:00 PM at St. Luke&#x27;s, 910 Cross Gates Blvd., Classroom 3.</p><span class="ch-chev"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></span></a><a class="ch-card" href="#" role="listitem"><div class="ch-l1"><span class="ch-nm"><b>Strategic Thoughts NOLA</b><span class="ch-town"> · New Orleans</span></span></div><p class="ch-l2">Schedule not listed · Know when they meet? <span class="ch-lnk">Suggest an update</span></p><p class="ch-l3">Youth chess programs in schools and NORD centers. Building a diverse chess community in New Orleans.</p><span class="ch-chev"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></span></a>
+<div class="ch-missing"><a class="k-link" href="#">Missing a club? Suggest it</a></div>
+</div>
+</section>
+<div class="ch-map">
+<svg width="980" height="780" viewBox="0 0 980 780" role="img" aria-labelledby="chA-t chA-d"><title id="chA-t">Map of every LCA club in Louisiana</title><desc id="chA-d">Louisiana at state zoom with 17 marks for 25 clubs: 15 single pins and count circles at Baton Rouge (2 clubs) and New Orleans (8 clubs). Solid pins list meeting times, hollow pins do not. Bunkie Chess Club is selected and its pin is gold.</desc>
+<rect x="0" y="0" width="980" height="780" fill="#d9e3ed"></rect>
+<path d="M-138.8 48.4 L138.5 48.4 L138.5 218.4 L168.2 282.7 L189.5 315.7 L210.7 352.0 L207.9 390.0 L197.9 431.2 L185.2 480.7 L183.8 530.2 L164.0 555.0 L166.8 596.2 L101.7 620.9 L16.8 662.2 L-138.8 777.7Z" fill="#ecebe4" stroke="#c9c8c0" stroke-width="1"></path>
+<path d="M-138.8 48.4 L138.5 48.4 L544.6 51.7 L544.6 -195.8 L-138.8 -195.8Z" fill="#ecebe4" stroke="#c9c8c0" stroke-width="1"></path>
+<path d="M480.9 381.7 L495.1 340.5 L500.8 307.5 L514.9 266.2 L533.3 236.5 L561.6 208.5 L578.6 175.5 L565.8 142.4 L544.6 109.5 L554.5 76.4 L544.6 51.7 L544.6 -195.8 L1134.7 -195.8 L1134.7 497.2 L908.3 487.3 L851.7 480.7 L809.2 493.9 L773.9 517.0 L766.8 513.7 L755.5 493.9 L744.1 472.5 L744.1 444.4 L741.3 414.7 L748.4 381.7Z" fill="#ecebe4" stroke="#c9c8c0" stroke-width="1"></path>
+<path d="M138.5 48.4 L544.6 51.7 L554.5 76.4 L544.6 109.5 L565.8 142.4 L578.6 175.5 L561.6 208.5 L533.3 236.5 L514.9 266.2 L500.8 307.5 L495.1 340.5 L480.9 381.7 L748.4 381.7 L741.3 414.7 L744.1 444.4 L744.1 472.5 L755.5 493.9 L766.8 513.7 L773.9 517.0 L759.7 538.4 L780.9 563.2 L795.1 588.0 L773.9 609.4 L795.1 637.5 L823.4 658.9 L844.6 678.7 L816.3 703.4 L795.1 720.0 L773.9 687.0 L738.5 662.2 L710.2 675.4 L696.0 695.2 L667.7 698.5 L632.4 691.9 L597.0 698.5 L568.7 682.0 L533.3 665.5 L512.1 637.5 L480.9 629.2 L448.4 620.9 L413.0 612.7 L377.7 620.9 L335.2 612.7 L285.7 591.2 L236.2 584.7 L186.6 591.2 L166.8 596.2 L164.0 555.0 L183.8 530.2 L185.2 480.7 L197.9 431.2 L207.9 390.0 L210.7 352.0 L189.5 315.7 L168.2 282.7 L138.5 218.4Z" fill="#f7f6f1" stroke="#9aa0ad" stroke-width="1.3" stroke-linejoin="round"></path>
+<ellipse cx="696.0" cy="518.6" rx="48.1" ry="22.3" fill="#d3e0ec"></ellipse>
+<ellipse cx="639.4" cy="503.8" rx="12.7" ry="9.9" fill="#d3e0ec"></ellipse>
+<ellipse cx="752.6" cy="541.7" rx="21.2" ry="13.2" fill="#d3e0ec"></ellipse>
+<ellipse cx="243.2" cy="569.8" rx="12.7" ry="11.6" fill="#d3e0ec"></ellipse>
+<ellipse cx="164.0" cy="569.8" rx="7.1" ry="14.8" fill="#d3e0ec"></ellipse>
+<ellipse cx="554.5" cy="566.5" rx="7.1" ry="11.6" fill="#d3e0ec"></ellipse>
+<ellipse cx="503.6" cy="551.7" rx="7.1" ry="9.9" fill="#d3e0ec"></ellipse>
+<ellipse cx="189.5" cy="332.2" rx="5.7" ry="36.3" fill="#d3e0ec"></ellipse>
+<path d="M544.6 2.2 L544.6 51.7 L554.5 76.4 L544.6 109.5 L565.8 142.4 L578.6 175.5 L561.6 208.5 L533.3 236.5 L514.9 266.2 L500.8 307.5 L495.1 340.5 L480.9 381.7 L495.1 414.7 L514.9 439.5 L533.3 455.9 L540.4 472.5 L540.4 493.9 L561.6 522.0 L589.9 535.2 L625.3 540.1 L656.4 546.7 L681.9 558.3 L705.9 556.6 L721.5 571.4 L745.6 604.5 L773.9 637.5 L802.2 670.5 L816.3 695.2" fill="none" stroke="#bfd0e3" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"></path>
+<path d="M138.5 18.7 L161.2 76.4 L181.0 126.0 L207.9 183.7 L250.3 233.2 L285.7 274.5 L328.1 302.5 L363.5 328.9 L398.9 353.6 L441.3 371.8 L475.3 380.0" fill="none" stroke="#bfd0e3" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round"></path>
+<path d="M466.8 381.7 L464.0 427.9 L469.6 472.5 L480.9 513.7 L505.0 555.0 L526.2 583.0 L540.4 602.8 L533.3 637.5" fill="none" stroke="#bfd0e3" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round"></path>
+<path d="M73.4 538.4 L172.5 525.3 L231.9 508.8 L257.4 507.1 L342.3 510.4 L424.3 512.0 L462.6 492.3 L505.0 480.7 L543.2 474.1 L561.6 484.0 L580.0 503.8 L625.3 530.2 L667.7 548.4 L700.3 553.3 L721.5 538.4 L741.3 503.8 L780.9 487.3 L880.0 477.4 L993.2 464.2" fill="none" stroke="#d6d3c8" stroke-width="3.8" stroke-linecap="round" stroke-linejoin="round"></path>
+<path d="M73.4 538.4 L172.5 525.3 L231.9 508.8 L257.4 507.1 L342.3 510.4 L424.3 512.0 L462.6 492.3 L505.0 480.7 L543.2 474.1 L561.6 484.0 L580.0 503.8 L625.3 530.2 L667.7 548.4 L700.3 553.3 L721.5 538.4 L741.3 503.8 L780.9 487.3 L880.0 477.4 L993.2 464.2" fill="none" stroke="#ffffff" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"></path>
+<path d="M561.6 475.8 L604.1 469.2 L645.1 467.5 L696.0 475.8 L738.5 497.2" fill="none" stroke="#d6d3c8" stroke-width="3.8" stroke-linecap="round" stroke-linejoin="round"></path>
+<path d="M561.6 475.8 L604.1 469.2 L645.1 467.5 L696.0 475.8 L738.5 497.2" fill="none" stroke="#ffffff" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"></path>
+<path d="M31.0 134.2 L179.6 137.5 L257.4 130.9 L336.6 129.2 L410.2 134.2 L483.8 147.4 L543.2 158.9 L653.6 163.9" fill="none" stroke="#d6d3c8" stroke-width="3.8" stroke-linecap="round" stroke-linejoin="round"></path>
+<path d="M31.0 134.2 L179.6 137.5 L257.4 130.9 L336.6 129.2 L410.2 134.2 L483.8 147.4 L543.2 158.9 L653.6 163.9" fill="none" stroke="#ffffff" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"></path>
+<path d="M179.6 147.4 L222.0 200.2 L272.9 256.3 L321.1 299.2 L363.5 332.2 L384.7 381.7 L410.2 423.0 L418.7 464.2 L424.3 510.4" fill="none" stroke="#d6d3c8" stroke-width="3.8" stroke-linecap="round" stroke-linejoin="round"></path>
+<path d="M179.6 147.4 L222.0 200.2 L272.9 256.3 L321.1 299.2 L363.5 332.2 L384.7 381.7 L410.2 423.0 L418.7 464.2 L424.3 510.4" fill="none" stroke="#ffffff" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"></path>
+<path d="M646.5 249.7 L646.5 381.7 L645.1 467.5 L643.7 535.2" fill="none" stroke="#d6d3c8" stroke-width="3.8" stroke-linecap="round" stroke-linejoin="round"></path>
+<path d="M646.5 249.7 L646.5 381.7 L645.1 467.5 L643.7 535.2" fill="none" stroke="#ffffff" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"></path>
+<text x="66.4" y="381.7" text-anchor="middle" font-size="10.5" font-weight="600" letter-spacing="2" fill="#a0a5b0">TEXAS</text>
+<text x="342.3" y="18.7" text-anchor="middle" font-size="10.5" font-weight="600" letter-spacing="2" fill="#a0a5b0">ARKANSAS</text>
+<text x="717.2" y="258.0" text-anchor="middle" font-size="10.5" font-weight="600" letter-spacing="2" fill="#a0a5b0">MISSISSIPPI</text>
+<text x="625.3" y="734.8" text-anchor="middle" font-size="11.5" font-weight="500" font-style="italic" fill="#7c8698">Gulf of Mexico</text>
+<text x="688.0" y="522.6" text-anchor="middle" font-size="10.5" font-weight="500" font-style="italic" fill="#6f7a8d">Lake Pontchartrain</text>
+<text x="353.5" y="334.6" text-anchor="end" font-size="11" font-weight="500" fill="#8a8f9c" stroke="#f7f6f1" stroke-width="3" paint-order="stroke">Alexandria</text>
+<circle cx="272.9" cy="256.3" r="2.2" fill="#a3a8b3"></circle><text x="272.9" y="249.3" text-anchor="middle" font-size="11" font-weight="500" fill="#8a8f9c" stroke="#f7f6f1" stroke-width="3" paint-order="stroke">Natchitoches</text>
+<circle cx="254.5" cy="508.8" r="2.2" fill="#a3a8b3"></circle><text x="260.5" y="500.8" text-anchor="start" font-size="11" font-weight="500" fill="#8a8f9c" stroke="#f7f6f1" stroke-width="3" paint-order="stroke">Lake Charles</text>
+<circle cx="645.1" cy="464.2" r="2.2" fill="#a3a8b3"></circle><text x="645.1" y="457.2" text-anchor="middle" font-size="11" font-weight="500" fill="#8a8f9c" stroke="#f7f6f1" stroke-width="3" paint-order="stroke">Hammond</text>
+<circle cx="594.1" cy="579.7" r="2.2" fill="#a3a8b3"></circle><text x="587.1" y="582.7" text-anchor="end" font-size="11" font-weight="500" fill="#8a8f9c" stroke="#f7f6f1" stroke-width="3" paint-order="stroke">Thibodaux</text>
+<text x="186.6" y="153.6" text-anchor="middle" font-size="11.5" font-weight="600" fill="#1a2744" stroke="#ffffff" stroke-width="3.4" paint-order="stroke" stroke-linejoin="round">Shreveport-Bossier</text>
+<text x="336.6" y="151.9" text-anchor="middle" font-size="11.5" font-weight="600" fill="#1a2744" stroke="#ffffff" stroke-width="3.4" paint-order="stroke" stroke-linejoin="round">Ruston</text>
+<text x="410.2" y="153.6" text-anchor="middle" font-size="11.5" font-weight="600" fill="#1a2744" stroke="#ffffff" stroke-width="3.4" paint-order="stroke" stroke-linejoin="round">Monroe</text>
+<text x="377.3" y="332.9" text-anchor="start" font-size="11.5" font-weight="600" fill="#1a2744" stroke="#ffffff" stroke-width="3.4" paint-order="stroke" stroke-linejoin="round">Pineville</text>
+<text x="401.7" y="412.0" text-anchor="middle" font-size="11.5" font-weight="600" fill="#1a2744" stroke="#ffffff" stroke-width="3.4" paint-order="stroke" stroke-linejoin="round">Bunkie</text>
+<text x="244.6" y="427.4" text-anchor="middle" font-size="11.5" font-weight="600" fill="#1a2744" stroke="#ffffff" stroke-width="3.4" paint-order="stroke" stroke-linejoin="round">DeRidder</text>
+<text x="415.9" y="480.2" text-anchor="middle" font-size="11.5" font-weight="600" fill="#1a2744" stroke="#ffffff" stroke-width="3.4" paint-order="stroke" stroke-linejoin="round">Opelousas</text>
+<text x="231.9" y="528.1" text-anchor="middle" font-size="11.5" font-weight="600" fill="#1a2744" stroke="#ffffff" stroke-width="3.4" paint-order="stroke" stroke-linejoin="round">Sulphur</text>
+<text x="424.3" y="531.4" text-anchor="middle" font-size="11.5" font-weight="600" fill="#1a2744" stroke="#ffffff" stroke-width="3.4" paint-order="stroke" stroke-linejoin="round">Lafayette</text>
+<text x="580.0" y="528.1" text-anchor="middle" font-size="11.5" font-weight="600" fill="#1a2744" stroke="#ffffff" stroke-width="3.4" paint-order="stroke" stroke-linejoin="round">Gonzales</text>
+<text x="696.3" y="475.3" text-anchor="middle" font-size="11.5" font-weight="600" fill="#1a2744" stroke="#ffffff" stroke-width="3.4" paint-order="stroke" stroke-linejoin="round">Mandeville</text>
+<text x="751.3" y="505.0" text-anchor="start" font-size="11.5" font-weight="600" fill="#1a2744" stroke="#ffffff" stroke-width="3.4" paint-order="stroke" stroke-linejoin="round">Slidell</text>
+<text x="772.4" y="447.2" text-anchor="middle" font-size="11.5" font-weight="600" fill="#1a2744" stroke="#ffffff" stroke-width="3.4" paint-order="stroke" stroke-linejoin="round">Picayune, MS</text>
+<text x="608.3" y="633.7" text-anchor="middle" font-size="11.5" font-weight="600" fill="#1a2744" stroke="#ffffff" stroke-width="3.4" paint-order="stroke" stroke-linejoin="round">Houma</text>
+<text x="539.0" y="617.2" text-anchor="middle" font-size="11.5" font-weight="600" fill="#1a2744" stroke="#ffffff" stroke-width="3.4" paint-order="stroke" stroke-linejoin="round">Morgan City</text>
+<text x="551.7" y="497.5" text-anchor="middle" font-size="11.5" font-weight="600" fill="#1a2744" stroke="#ffffff" stroke-width="3.4" paint-order="stroke" stroke-linejoin="round">Baton Rouge</text>
+<text x="700.3" y="581.0" text-anchor="middle" font-size="11.5" font-weight="600" fill="#1a2744" stroke="#ffffff" stroke-width="3.4" paint-order="stroke" stroke-linejoin="round">New Orleans</text>
+<circle cx="186.6" cy="132.6" r="6.5" fill="#1a2744" stroke="#ffffff" stroke-width="2"></circle>
+<circle cx="336.6" cy="130.9" r="6.5" fill="#1a2744" stroke="#ffffff" stroke-width="2"></circle>
+<circle cx="410.2" cy="132.6" r="6.5" fill="#1a2744" stroke="#ffffff" stroke-width="2"></circle>
+<circle cx="366.3" cy="328.9" r="6.5" fill="#1a2744" stroke="#ffffff" stroke-width="2"></circle>
+<ellipse cx="401.7" cy="396.0" rx="7" ry="2.6" fill="#1a2744" fill-opacity=".22"></ellipse><circle cx="401.7" cy="387.0" r="8" fill="#c8a94a" stroke="#1a2744" stroke-width="2.2"></circle>
+<circle cx="244.6" cy="406.4" r="6.5" fill="#1a2744" stroke="#ffffff" stroke-width="2"></circle>
+<circle cx="415.9" cy="459.2" r="6.5" fill="#1a2744" stroke="#ffffff" stroke-width="2"></circle>
+<circle cx="231.9" cy="507.1" r="6" fill="#ffffff" stroke="#1a2744" stroke-width="2.2"></circle>
+<circle cx="424.3" cy="510.4" r="6" fill="#ffffff" stroke="#1a2744" stroke-width="2.2"></circle>
+<circle cx="580.0" cy="507.1" r="6" fill="#ffffff" stroke="#1a2744" stroke-width="2.2"></circle>
+<circle cx="700.3" cy="487.3" r="6.5" fill="#1a2744" stroke="#ffffff" stroke-width="2"></circle>
+<circle cx="741.3" cy="500.5" r="6.5" fill="#1a2744" stroke="#ffffff" stroke-width="2"></circle>
+<circle cx="772.4" cy="459.2" r="6.5" fill="#1a2744" stroke="#ffffff" stroke-width="2"></circle>
+<circle cx="608.3" cy="612.7" r="6.5" fill="#1a2744" stroke="#ffffff" stroke-width="2"></circle>
+<circle cx="539.0" cy="596.2" r="6.5" fill="#1a2744" stroke="#ffffff" stroke-width="2"></circle>
+<circle cx="551.7" cy="472.5" r="12" fill="#1a2744" stroke="#ffffff" stroke-width="2"></circle><text x="551.7" y="477.0" text-anchor="middle" font-size="12.5" font-weight="700" fill="#ffffff">2</text>
+<circle cx="700.3" cy="555.0" r="12" fill="#1a2744" stroke="#ffffff" stroke-width="2"></circle><text x="700.3" y="559.5" text-anchor="middle" font-size="12.5" font-weight="700" fill="#ffffff">8</text>
+</svg>
+<div class="ch-tip" style="left:402px;top:349px;transform:translateX(-50%)">Bunkie Chess Club</div>
+<span class="k-num-badge ch-mk" style="left:470px;top:343px">4</span>
+<div class="ch-ov" style="right:16px;top:16px"><div class="ch-zoom ch-shadow"><span aria-label="Zoom in">+</span><span aria-label="Zoom out">&#8722;</span></div></div>
+<div class="ch-ov" style="right:16px;bottom:16px"><span class="ch-all ch-all-dis" role="button" aria-disabled="true"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4L3 6.5v13.5L9 17.5l6 2.5 6-2.5V4l-6 2.5L9 4z"></path><path d="M9 4v13.5M15 6.5V20"></path></svg>All of Louisiana</span></div>
+<div class="ch-ov ch-shadow" style="left:16px;bottom:16px;border-radius:8px"><div class="ch-mcap"><span><svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><circle cx="6" cy="6" r="5" fill="#1a2744"></circle></svg>meeting times listed</span><i>·</i><span><svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><circle cx="6" cy="6" r="4.4" fill="#ffffff" stroke="#1a2744" stroke-width="1.8"></circle></svg>schedule not listed</span><i>·</i><span><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="7.5" fill="#1a2744"></circle><text x="8" y="11.3" text-anchor="middle" font-size="9.5" font-weight="700" fill="#ffffff">2</text></svg>several clubs, click to open</span></div></div>
+</div>
+</div>
+<section class="ch-band ch-cream" aria-labelledby="ch-who">
+<div class="k-wrap-wide">
+<div class="ch-bh"><h2 id="ch-who">Who keeps these listings</h2><p>Each listing is written by the club's own representative. The LCA board's representative for the region is the backstop: they keep listings for clubs that have no one, and are copied on every Suggest an update.</p><span class="k-num-badge ch-mk" style="right:0;top:-4px">5</span></div>
+<div class="ch-reps"><div class="ch-rep"><b>North Louisiana</b><span>Marcus Landry</span><a href="#">Message</a></div><div class="ch-rep"><b>Central Louisiana</b><span class="open">Seat open · LCA admins keep these</span><a href="#">Volunteer</a></div><div class="ch-rep"><b>North of Lake Pontchartrain</b><span>Nora Hebert</span><a href="#">Message</a></div><div class="ch-rep"><b>New Orleans Metro</b><span>Isaac Dupre</span><a href="#">Message</a></div><div class="ch-rep"><b>South Central Louisiana</b><span>Camille Broussard</span><a href="#">Message</a></div><div class="ch-rep"><b>Bayou Region</b><span>Theo Guidry</span><a href="#">Message</a></div><div class="ch-rep"><b>Southwest Louisiana</b><span class="open">Seat open · LCA admins keep these</span><a href="#">Volunteer</a></div></div>
+<p class="ch-fn">Message is a relay form; no address is shown. Names are sample data. <span class="k-sample">Sample data</span></p>
+</div>
+</section>
+<section class="ch-band" style="background:#ffffff" aria-labelledby="ch-not">
+<div class="k-wrap-wide">
+<div class="ch-bh" style="margin-bottom:8px"><h2 id="ch-not">Not here?</h2></div>
+<div class="ch-three">
+<div class="ch-small"><h3>Missing a club?</h3><p>Tell us where and when it meets; the area's representative checks with the club, then it goes on the map.</p><a href="#">Suggest a club</a></div>
+<div class="ch-small"><h3>No club near you?</h3><p>Pick a regular night and a public place, like the libraries and cafés here; LCA helps plan the first night.</p><a href="#">Start a club</a></div>
+<div class="ch-small"><h3>Something out of date?</h3><p>Every card and club page has a Suggest an update link; it reaches the club's representative.</p><a href="#">How it works</a></div>
+</div>
+</div>
+</section>
+<footer class="k-footer ch-foot"><div class="k-wrap-wide ch-foot-in"><div class="k-row-sm" style="gap:10px"><svg class="ch-rook ch-rook-sm" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><b style="font-size:15px">Louisiana Chess Association</b></div><span class="k-meta">US Chess state affiliate · Louisiana's chess community since 1915</span><nav class="k-row" aria-label="Footer" style="gap:18px"><a href="#">Contact</a><a href="#">Website help</a><a href="#">Bylaws &amp; rules</a><a href="#">Donate</a></nav></div></footer>
+</div></div>
+<div class="ch-flab" style="margin-top:14px"><span class="ch-code">B</span><h2>Near me pressed from 70808 · the nearest-club visitor</h2><span class="k-meta">first screen only, 1440 × 780 · header and strip omitted · road miles</span><span class="k-sample" style="font-size:11px;padding:2px 8px">Sample data</span><span class="ch-urlchip">/clubs?<b>near=70808</b>&amp;<b>sort=nearest</b></span></div>
+<div class="ch-frame"><div class="ch-page"><div class="ch-first" style="border-bottom:0">
+<section class="ch-drawer" aria-label="All 25 clubs, nearest first">
+<div class="ch-top">
+<label class="ch-field" aria-label="City, ZIP or club name"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg><span class="ch-pill">Near you: Baton Rouge 70808<i aria-label="Clear location"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></i></span></label>
+<div class="ch-row2">
+<span class="ch-near ch-near-on" role="button" aria-pressed="true"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Near me</span>
+<span class="ch-seg" role="group" aria-label="Order"><span aria-pressed="false">A to Z</span><span class="on" aria-pressed="true">Nearest</span></span>
+<span class="ch-filt" role="button" aria-haspopup="true"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16l-6 7.5V19l-4 1.5v-8L4 5z"></path></svg>Filters</span>
+</div>
+<p class="ch-cap" aria-live="polite">All 25 clubs, nearest first from 70808. Meeting times are as each club states them.</p>
+<span class="k-num-badge ch-mk" style="left:304px;top:22px;width:24px;height:24px;font-size:12px">3</span>
+<span class="k-num-badge ch-mk" style="left:284px;top:72px;width:24px;height:24px;font-size:12px">2</span>
+</div>
+<div class="ch-list" role="list">
+<span class="ch-scroll" style="height:176px"></span>
+<a class="ch-card ch-sel" href="#" role="listitem" aria-current="true"><div class="ch-l1"><span class="ch-nm"><b>Baton Rouge Chess Club</b><span class="ch-town"> · Baton Rouge</span></span><span class="ch-mi">about 3 mi</span></div><p class="ch-l23">Saturdays 10:00 AM at Jones Creek Branch Library, G/90+30. Casual meets Wednesdays 6:00 PM at Boba ParTea on O&#x27;Neil Lane.</p><span class="ch-chev"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></span></a><a class="ch-card" href="#" role="listitem"><div class="ch-l1"><span class="ch-nm"><b>Bluebonnet Chess Club</b><span class="ch-town"> · Baton Rouge</span></span><span class="ch-mi">about 5 mi</span></div><p class="ch-l23">Meets bi-weekly at Bluebonnet Library on the 1st and 3rd Sunday of the month, 4:30–5:30 PM.</p><span class="ch-chev"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></span></a><a class="ch-card" href="#" role="listitem"><div class="ch-l1"><span class="ch-nm"><b>Gonzales Chess Club</b><span class="ch-town"> · Gonzales</span></span><span class="ch-mi">about 20 mi</span></div><p class="ch-l2">Schedule not listed · Know when they meet? <span class="ch-lnk">Suggest an update</span></p><span class="ch-chev"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></span></a><a class="ch-card" href="#" role="listitem"><div class="ch-l1"><span class="ch-nm"><b>Lafayette Chess Club</b><span class="ch-town"> · Lafayette</span></span><span class="ch-mi">about 55 mi</span></div><p class="ch-l2">Schedule not listed · Know when they meet? <span class="ch-lnk">Suggest an update</span></p><p class="ch-l3">Hosts the Louisiana Open every Memorial Day weekend and the Lafayette Open in October. All skill levels welcome.</p><span class="ch-chev"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></span></a><a class="ch-card" href="#" role="listitem"><div class="ch-l1"><span class="ch-nm"><b>Heart of Worship Church Chess</b><span class="ch-town"> · Opelousas</span></span><span class="ch-mi">about 60 mi</span></div><p class="ch-l23">Fridays 5:30–7:00 PM. Open to anyone: join before church for chess.</p><span class="ch-chev"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></span></a><a class="ch-card" href="#" role="listitem"><div class="ch-l1"><span class="ch-nm"><b>Houma Chess Club</b><span class="ch-town"> · Houma</span></span><span class="ch-mi">about 65 mi</span></div><p class="ch-l23">Mondays 6:00–8:30 PM at Terrebonne Parish North Library.</p><span class="ch-chev"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></span></a><a class="ch-card" href="#" role="listitem"><div class="ch-l1"><span class="ch-nm"><b>Morgan City Chess Club</b><span class="ch-town"> · Morgan City</span></span><span class="ch-mi">about 70 mi</span></div><p class="ch-l23">1st, 3rd and 5th Tuesday evenings at 5:30 PM at First Baptist Church.</p><span class="ch-chev"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></span></a><a class="ch-card" href="#" role="listitem"><div class="ch-l1"><span class="ch-nm"><b>Marrero Chess Organization</b><span class="ch-town"> · Marrero</span></span><span class="ch-mi">about 75 mi</span></div><p class="ch-l23">Wednesdays 6:00–10:00 PM at Chopsticks Buffet. No entry fee, all welcome. Skittles games only.</p><span class="ch-chev"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></span></a><div class="ch-div" role="separator">Farther than 75 miles</div><a class="ch-card" href="#" role="listitem"><div class="ch-l1"><span class="ch-nm"><b>North Kenner Library Chess Club</b><span class="ch-town"> · Kenner</span></span><span class="ch-mi">about 78 mi</span></div><p class="ch-l2">Schedule not listed · Know when they meet? <span class="ch-lnk">Suggest an update</span></p><p class="ch-l3">Skittles chess for all ages and abilities, in the Meeting Room, North Kenner Public Library.</p><span class="ch-chev"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></span></a><a class="ch-card" href="#" role="listitem"><div class="ch-l1"><span class="ch-nm"><b>Mandeville Chess Club</b><span class="ch-town"> · Mandeville</span></span><span class="ch-mi">about 80 mi</span></div><p class="ch-l23">Meets Mondays at 5:00 PM at George&#x27;s Mexican Restaurant.</p><span class="ch-chev"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></span></a><a class="ch-card" href="#" role="listitem"><div class="ch-l1"><span class="ch-nm"><b>Metairie Chess Academy</b><span class="ch-town"> · Metairie</span></span><span class="ch-mi">about 80 mi</span></div><p class="ch-l2">Schedule not listed · Know when they meet? <span class="ch-lnk">Suggest an update</span></p><p class="ch-l3">Chess instruction and play for kids of all ages.</p><span class="ch-chev"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></span></a><a class="ch-card" href="#" role="listitem"><div class="ch-l1"><span class="ch-nm"><b>Greater New Orleans Chess Club</b><span class="ch-town"> · New Orleans</span></span><span class="ch-mi">about 82 mi</span></div><p class="ch-l23">Tuesdays 7:00 PM. 5-round G/90 tournaments, one round per week. Arrive by 6:30 PM to register.</p><span class="ch-chev"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></span></a><a class="ch-card" href="#" role="listitem"><div class="ch-l1"><span class="ch-nm"><b>Downriver Chess Club</b><span class="ch-town"> · New Orleans</span></span><span class="ch-mi">about 82 mi</span></div><p class="ch-l23">Monday and Thursday evenings at 7:00 PM. Game 15, no delay. $1–2 entry with US Chess membership.</p><span class="ch-chev"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></span></a><a class="ch-card" href="#" role="listitem"><div class="ch-l1"><span class="ch-nm"><b>Knight Light Chess</b><span class="ch-town"> · New Orleans</span></span><span class="ch-mi">about 82 mi</span></div><p class="ch-l2">Schedule not listed · Know when they meet? <span class="ch-lnk">Suggest an update</span></p><p class="ch-l3">Summer camps, after-school programs, private instruction and community tournaments.</p><span class="ch-chev"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></span></a><a class="ch-card" href="#" role="listitem"><div class="ch-l1"><span class="ch-nm"><b>Strategic Thoughts NOLA</b><span class="ch-town"> · New Orleans</span></span><span class="ch-mi">about 82 mi</span></div><p class="ch-l2">Schedule not listed · Know when they meet? <span class="ch-lnk">Suggest an update</span></p><p class="ch-l3">Youth chess programs in schools and NORD centers. Building a diverse chess community in New Orleans.</p><span class="ch-chev"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></span></a><a class="ch-card" href="#" role="listitem"><div class="ch-l1"><span class="ch-nm"><b>New Orleans Westbank Chess Club</b><span class="ch-town"> · Gretna</span></span><span class="ch-mi">about 84 mi</span></div><p class="ch-l23">US Chess rated tournaments Thursdays 7:30–11:30 PM. Beginners welcome.</p><span class="ch-chev"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></span></a><a class="ch-card" href="#" role="listitem"><div class="ch-l1"><span class="ch-nm"><b>Bunkie Chess Club</b><span class="ch-town"> · Bunkie</span></span><span class="ch-mi">about 85 mi</span></div><p class="ch-l23">Tuesdays 4:00–6:00 PM at the Bunkie Library. Open to all ages 8–108. Free to join.</p><span class="ch-chev"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></span></a><a class="ch-card" href="#" role="listitem"><div class="ch-l1"><span class="ch-nm"><b>Slidell Chess Club</b><span class="ch-town"> · Slidell</span></span><span class="ch-mi">about 95 mi</span></div><p class="ch-l23">Fridays at 7:00 PM at St. Luke&#x27;s, 910 Cross Gates Blvd., Classroom 3.</p><span class="ch-chev"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></span></a><a class="ch-card" href="#" role="listitem"><div class="ch-l1"><span class="ch-nm"><b>Pineville Homeschool Chess Club</b><span class="ch-town"> · Pineville</span></span><span class="ch-mi">about 110 mi</span></div><p class="ch-l23">Meets monthly 12:30–2:30 PM at 300 Pearce Rd, Pineville. Must be a CCHSA homeschool group member.</p><span class="ch-chev"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></span></a><a class="ch-card" href="#" role="listitem"><div class="ch-l1"><span class="ch-nm"><b>Picayune Chess Club</b><span class="ch-town"> · Picayune, MS</span></span><span class="ch-mi">about 115 mi</span></div><p class="ch-l23">Mondays 6:00–10:00 PM at IHOP. Casual games. Quick-rated tournaments the 1st Monday of each month (4 rounds, G/20 d5).</p><span class="ch-chev"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></span></a><a class="ch-card" href="#" role="listitem"><div class="ch-l1"><span class="ch-nm"><b>Casa de Ajedrez</b><span class="ch-town"> · Sulphur</span></span><span class="ch-mi">about 135 mi</span></div><p class="ch-l2">Schedule not listed · Know when they meet? <span class="ch-lnk">Suggest an update</span></p><p class="ch-l3">Leisure and casual play, US Chess rated tournaments, online chess and lessons. Sulphur / Lake Charles area.</p><span class="ch-chev"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></span></a><a class="ch-card" href="#" role="listitem"><div class="ch-l1"><span class="ch-nm"><b>Beauregard Parish Youth Chess</b><span class="ch-town"> · DeRidder</span></span><span class="ch-mi">about 150 mi</span></div><p class="ch-l23">Every Wednesday during the summer months, 1:00–2:00 PM.</p><span class="ch-chev"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></span></a><a class="ch-card" href="#" role="listitem"><div class="ch-l1"><span class="ch-nm"><b>Monroe Chess Club</b><span class="ch-town"> · Monroe</span></span><span class="ch-mi">about 190 mi</span></div><p class="ch-l23">Monday evenings 5:30 PM at Enochs Pub and Grill. Saturday mornings 10:00 AM at Books-A-Million. All ages welcome.</p><span class="ch-chev"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></span></a><a class="ch-card" href="#" role="listitem"><div class="ch-l1"><span class="ch-nm"><b>Ruston Knights Chess Club</b><span class="ch-town"> · Ruston</span></span><span class="ch-mi">about 215 mi</span></div><p class="ch-l23">Tuesday nights at 6:00 PM at Utility Brewing Company.</p><span class="ch-chev"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></span></a><a class="ch-card" href="#" role="listitem"><div class="ch-l1"><span class="ch-nm"><b>Shreveport-Bossier Chess Club</b><span class="ch-town"> · Shreveport-Bossier</span></span><span class="ch-mi">about 250 mi</span></div><p class="ch-l23">Mondays at Gamers XP, 1:00–5:00 PM. Thursdays at Pierre Bossier Mall in the food court, 1:00–5:00 PM.</p><span class="ch-chev"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></span></a>
+<div class="ch-missing"><a class="k-link" href="#">Missing a club? Suggest it</a></div>
+</div>
+</section>
+<div class="ch-map">
+<svg width="980" height="780" viewBox="0 0 980 780" role="img" aria-labelledby="chB-t chB-d"><title id="chB-t">Map zoomed to about 75 miles around Baton Rouge</title><desc id="chB-d">A blue You dot at 70808. Baton Rouge Chess Club is selected and gold; Bluebonnet, Gonzales (hollow), Lafayette (hollow), Opelousas, Houma, Morgan City, Marrero, Gretna, Kenner and Metairie (hollow), a count circle of 4 on New Orleans and Mandeville are in view. Clubs outside the view are off-screen.</desc>
+<rect x="0" y="0" width="980" height="820" fill="#f7f6f1"></rect>
+<path d="M226.5 50.2 L990 50.2 L990 -10 L176.3 -10 Z" fill="#efeee7"></path>
+<path d="M1021.9 50.2 L990 50.2 L990 446.3 L1042.8 446.3 Z" fill="#efeee7"></path>
+<path d="M-95.8 919.6 L-95.8 716.7 L0.5 716.7 L38.1 668.4 L80.0 629.8 L134.4 634.6 L163.7 678.1 L197.2 716.7 L247.4 697.4 L293.5 736.1 L339.5 760.2 L385.6 740.9 L423.3 774.7 L469.3 823.0 L490.2 919.6Z" fill="#d3e0ec"></path>
+<path d="M498.6 919.6 L532.1 823.0 L574.0 798.8 L632.6 808.5 L691.2 827.8 L741.4 803.7 L804.2 818.2 L867.0 798.8 L929.8 823.0 L1034.4 832.7 L1076.3 919.6Z" fill="#d3e0ec"></path>
+<path d="M720.5 441.4 L758.1 402.8 L816.7 373.8 L875.3 364.1 L929.8 373.8 L992.6 407.6 L1026.0 455.9 L984.2 504.2 L917.2 518.7 L846.0 518.7 L791.6 504.2 L741.4 475.2Z" fill="#d3e0ec"></path>
+<path d="M649.3 412.4 L674.4 383.5 L720.5 383.5 L749.8 407.6 L733.0 436.6 L682.8 441.4Z" fill="#d3e0ec"></path>
+<path d="M1026.0 475.2 L1076.3 460.8 L1118.1 509.0 L1067.9 557.3 L1000.9 542.9Z" fill="#d3e0ec"></path>
+<ellipse cx="293.5" cy="547.7" rx="42" ry="28" fill="#d3e0ec"></ellipse>
+<ellipse cx="448.4" cy="600.8" rx="24.5" ry="35" fill="#d3e0ec"></ellipse>
+<ellipse cx="452.6" cy="678.1" rx="14" ry="11.200000000000001" fill="#d3e0ec"></ellipse>
+<ellipse cx="804.2" cy="668.4" rx="35" ry="24.5" fill="#d3e0ec"></ellipse>
+<ellipse cx="820.9" cy="615.3" rx="16.8" ry="12.6" fill="#d3e0ec"></ellipse>
+<ellipse cx="657.7" cy="789.2" rx="35" ry="16.8" fill="#d3e0ec"></ellipse>
+<ellipse cx="121.9" cy="591.2" rx="11.200000000000001" ry="8.4" fill="#d3e0ec"></ellipse>
+<path d="M214.0 -22.2 L260.0 74.3 L322.8 170.9 L364.7 243.4 L406.5 306.2 L398.1 364.1 L427.4 412.4 L481.9 475.2 L553.0 504.2 L615.8 509.0 L678.6 513.9 L741.4 542.9 L804.2 557.3 L846.0 567.0 L879.5 557.3 L917.2 571.8 L942.3 629.8 L980.0 702.2 L1034.4 798.8" fill="none" stroke="#c2d3e5" stroke-width="4.0" stroke-linecap="round" stroke-linejoin="round"></path>
+<path d="M134.4 -22.2 L155.4 98.5 L176.3 195.1 L197.2 291.7 L230.7 388.3 L280.9 484.9 L322.8 557.3 L385.6 653.9 L406.5 687.8 L385.6 750.5" fill="none" stroke="#c2d3e5" stroke-width="4.0" stroke-linecap="round" stroke-linejoin="round"></path>
+<path d="M414.9 306.2 L364.7 146.8 L314.4 -22.2" fill="none" stroke="#dcd9cf" stroke-width="4.2" stroke-linecap="round" stroke-linejoin="round"></path>
+<path d="M414.9 306.2 L364.7 146.8 L314.4 -22.2" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"></path>
+<path d="M38.1 277.2 L155.4 282.0 L280.9 301.4 L406.5 306.2" fill="none" stroke="#dcd9cf" stroke-width="4.2" stroke-linecap="round" stroke-linejoin="round"></path>
+<path d="M38.1 277.2 L155.4 282.0 L280.9 301.4 L406.5 306.2" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"></path>
+<path d="M63.3 431.8 L134.4 533.2 L218.1 581.5 L280.9 629.8 L406.5 682.9 L511.2 702.2 L594.9 702.2 L657.7 663.6 L741.4 620.1 L846.0 581.5" fill="none" stroke="#dcd9cf" stroke-width="4.6" stroke-linecap="round" stroke-linejoin="round"></path>
+<path d="M63.3 431.8 L134.4 533.2 L218.1 581.5 L280.9 629.8 L406.5 682.9 L511.2 702.2 L594.9 702.2 L657.7 663.6 L741.4 620.1 L846.0 581.5" fill="none" stroke="#ffffff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"></path>
+<path d="M63.3 431.8 L50.7 340.0 L38.1 267.5 L8.8 146.8 L-33.0 -22.2" fill="none" stroke="#dcd9cf" stroke-width="5.2" stroke-linecap="round" stroke-linejoin="round"></path>
+<path d="M63.3 431.8 L50.7 340.0 L38.1 267.5 L8.8 146.8 L-33.0 -22.2" fill="none" stroke="#ffffff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"></path>
+<path d="M720.5 -22.2 L720.5 195.1 L716.3 296.5 L720.5 388.3 L733.0 475.2 L720.5 504.2" fill="none" stroke="#dcd9cf" stroke-width="5.2" stroke-linecap="round" stroke-linejoin="round"></path>
+<path d="M720.5 -22.2 L720.5 195.1 L716.3 296.5 L720.5 388.3 L733.0 475.2 L720.5 504.2" fill="none" stroke="#ffffff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"></path>
+<path d="M456.7 325.5 L553.0 306.2 L657.7 296.5 L716.3 296.5 L825.1 330.3 L887.9 340.0 L971.6 378.6 L1076.3 388.3" fill="none" stroke="#dcd9cf" stroke-width="5.2" stroke-linecap="round" stroke-linejoin="round"></path>
+<path d="M456.7 325.5 L553.0 306.2 L657.7 296.5 L716.3 296.5 L825.1 330.3 L887.9 340.0 L971.6 378.6 L1076.3 388.3" fill="none" stroke="#ffffff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"></path>
+<path d="M-95.8 426.9 L63.3 431.8 L155.4 388.3 L280.9 340.0 L364.7 320.7 L414.9 320.7 L448.4 340.0 L490.2 364.1 L553.0 426.9 L615.8 475.2 L678.6 499.4 L741.4 513.9 L808.4 528.4 L867.0 542.9 L929.8 523.5 L992.6 484.9 L1076.3 436.6" fill="none" stroke="#dcd9cf" stroke-width="5.6" stroke-linecap="round" stroke-linejoin="round"></path>
+<path d="M-95.8 426.9 L63.3 431.8 L155.4 388.3 L280.9 340.0 L364.7 320.7 L414.9 320.7 L448.4 340.0 L490.2 364.1 L553.0 426.9 L615.8 475.2 L678.6 499.4 L741.4 513.9 L808.4 528.4 L867.0 542.9 L929.8 523.5 L992.6 484.9 L1076.3 436.6" fill="none" stroke="#ffffff" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"></path>
+<path d="M226.5 50.2 L1021.9 50.2 L1042.8 446.3" fill="none" stroke="#b9bcc4" stroke-width="1.2" stroke-dasharray="6 4"></path>
+<text x="494.4" y="488.9" text-anchor="middle" font-size="11" font-weight="500" fill="#8a8f9c" stroke="#f7f6f1" stroke-width="3" paint-order="stroke">Donaldsonville</text>
+<text x="565.6" y="633.8" text-anchor="middle" font-size="11" font-weight="500" fill="#8a8f9c" stroke="#f7f6f1" stroke-width="3" paint-order="stroke">Thibodaux</text>
+<text x="147.0" y="537.2" text-anchor="middle" font-size="11" font-weight="500" fill="#8a8f9c" stroke="#f7f6f1" stroke-width="3" paint-order="stroke">New Iberia</text>
+<text x="707.9" y="491.4" text-anchor="middle" font-size="11" font-weight="500" fill="#8a8f9c" stroke="#f7f6f1" stroke-width="3" paint-order="stroke">LaPlace</text>
+<text x="366.5" y="509.0" text-anchor="middle" font-size="11" font-weight="500" fill="#8a8f9c" font-style="italic" stroke="#f7f6f1" stroke-width="3" paint-order="stroke">Atchafalaya Basin</text>
+<text x="867.0" y="445.4" text-anchor="middle" font-size="11.5" font-weight="500" fill="#7c8698" font-style="italic" stroke="#f7f6f1" stroke-width="3" paint-order="stroke">Lake Pontchartrain</text>
+<text x="695.3" y="416.4" text-anchor="middle" font-size="10.5" font-weight="500" fill="#7c8698" font-style="italic" stroke="#f7f6f1" stroke-width="3" paint-order="stroke">Maurepas</text>
+<text x="660" y="762" text-anchor="middle" font-size="11.5" font-weight="500" fill="#7c8698" font-style="italic" stroke="#f7f6f1" stroke-width="3" paint-order="stroke">Gulf of Mexico</text>
+<text x="388.0" y="399.1" text-anchor="end" font-size="11" font-weight="500" fill="#8a8f9c" stroke="#f7f6f1" stroke-width="3" paint-order="stroke">Plaquemine</text>
+
+<circle cx="446" cy="362" r="6.5" fill="#1a2744" stroke="#ffffff" stroke-width="2"></circle><text x="458" y="366" text-anchor="start" font-size="11.5" font-weight="600" fill="#1a2744" stroke="#ffffff" stroke-width="3.4" paint-order="stroke" stroke-linejoin="round">Bluebonnet</text><circle cx="512" cy="408" r="6" fill="#ffffff" stroke="#1a2744" stroke-width="2.2"></circle><text x="512" y="429" text-anchor="middle" font-size="11.5" font-weight="600" fill="#1a2744" stroke="#ffffff" stroke-width="3.4" paint-order="stroke" stroke-linejoin="round">Gonzales</text><circle cx="66" cy="427" r="6" fill="#ffffff" stroke="#1a2744" stroke-width="2.2"></circle><text x="66" y="449" text-anchor="middle" font-size="11.5" font-weight="600" fill="#1a2744" stroke="#ffffff" stroke-width="3.4" paint-order="stroke" stroke-linejoin="round">Lafayette</text><circle cx="52" cy="277" r="6.5" fill="#1a2744" stroke="#ffffff" stroke-width="2"></circle><text x="52" y="299" text-anchor="middle" font-size="11.5" font-weight="600" fill="#1a2744" stroke="#ffffff" stroke-width="3.4" paint-order="stroke" stroke-linejoin="round">Opelousas</text><circle cx="406" cy="676" r="6.5" fill="#1a2744" stroke="#ffffff" stroke-width="2"></circle><text x="420" y="680" text-anchor="start" font-size="11.5" font-weight="600" fill="#1a2744" stroke="#ffffff" stroke-width="3.4" paint-order="stroke" stroke-linejoin="round">Morgan City</text><circle cx="582" cy="702" r="6.5" fill="#1a2744" stroke="#ffffff" stroke-width="2"></circle><text x="596" y="706" text-anchor="start" font-size="11.5" font-weight="600" fill="#1a2744" stroke="#ffffff" stroke-width="3.4" paint-order="stroke" stroke-linejoin="round">Houma</text><circle cx="858" cy="600" r="6.5" fill="#1a2744" stroke="#ffffff" stroke-width="2"></circle><text x="848" y="622" text-anchor="end" font-size="11.5" font-weight="600" fill="#1a2744" stroke="#ffffff" stroke-width="3.4" paint-order="stroke" stroke-linejoin="round">Marrero</text><circle cx="886" cy="600" r="6.5" fill="#1a2744" stroke="#ffffff" stroke-width="2"></circle><text x="896" y="622" text-anchor="start" font-size="11.5" font-weight="600" fill="#1a2744" stroke="#ffffff" stroke-width="3.4" paint-order="stroke" stroke-linejoin="round">Gretna</text><circle cx="776" cy="540" r="6" fill="#ffffff" stroke="#1a2744" stroke-width="2.2"></circle><text x="766" y="544" text-anchor="end" font-size="11.5" font-weight="600" fill="#1a2744" stroke="#ffffff" stroke-width="3.4" paint-order="stroke" stroke-linejoin="round">Kenner</text><circle cx="808" cy="546" r="6" fill="#ffffff" stroke="#1a2744" stroke-width="2.2"></circle><text x="808" y="530" text-anchor="middle" font-size="11.5" font-weight="600" fill="#1a2744" stroke="#ffffff" stroke-width="3.4" paint-order="stroke" stroke-linejoin="round">Metairie</text><circle cx="846" cy="570" r="12" fill="#1a2744" stroke="#ffffff" stroke-width="2"></circle><text x="846" y="574.5" text-anchor="middle" font-size="12.5" font-weight="700" fill="#ffffff">4</text><text x="864" y="574" text-anchor="start" font-size="11.5" font-weight="600" fill="#1a2744" stroke="#ffffff" stroke-width="3.4" paint-order="stroke" stroke-linejoin="round">New Orleans</text><circle cx="870" cy="362" r="6.5" fill="#1a2744" stroke="#ffffff" stroke-width="2"></circle><text x="882" y="366" text-anchor="start" font-size="11.5" font-weight="600" fill="#1a2744" stroke="#ffffff" stroke-width="3.4" paint-order="stroke" stroke-linejoin="round">Mandeville</text><circle cx="424" cy="326" r="20" fill="#2b6fd6" fill-opacity=".14"></circle><circle cx="424" cy="326" r="8" fill="#2b6fd6" stroke="#ffffff" stroke-width="3"></circle><text x="398" y="330" text-anchor="end" font-size="11.5" font-weight="700" fill="#24508f" stroke="#f7f6f1" stroke-width="3" paint-order="stroke">You</text><ellipse cx="478" cy="327" rx="7" ry="2.6" fill="#1a2744" fill-opacity=".22"></ellipse><circle cx="478" cy="318" r="8" fill="#c8a94a" stroke="#1a2744" stroke-width="2.2"></circle>
+</svg>
+<div class="ch-tip" style="left:478px;top:280px;transform:translateX(-50%)">Baton Rouge Chess Club</div>
+<div class="ch-ann" style="left:16px;top:16px;width:372px"><b>One tap back to everything:</b> ✕ on the pill restores A to Z and state zoom; All of Louisiana zooms out and keeps the nearest order, so the far clubs are read with their distances.</div>
+<div class="ch-ann" style="right:76px;top:16px;width:404px"><b>Scroll on: the same 25, never trimmed.</b> The drawer just past the fold:<div class="ch-peek"><p><b>Marrero Chess Organization</b><span>· Marrero</span><em>about 75 mi</em></p><p class="pd">Farther than 75 miles</p><p><b>North Kenner Library Chess Club</b><span>· Kenner</span><em>about 78 mi</em></p><p><b>Mandeville Chess Club</b><span>· Mandeville</span><em>about 80 mi</em></p><p class="pg">&#8942;</p><p><b>Shreveport-Bossier Chess Club</b><span>· 25th of 25</span><em>about 250 mi</em></p></div></div>
+<div class="ch-ov" style="right:16px;top:16px"><div class="ch-zoom ch-shadow"><span aria-label="Zoom in">+</span><span aria-label="Zoom out">&#8722;</span></div></div>
+<div class="ch-ov" style="right:16px;bottom:16px"><span class="ch-all ch-shadow" role="button"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4L3 6.5v13.5L9 17.5l6 2.5 6-2.5V4l-6 2.5L9 4z"></path><path d="M9 4v13.5M15 6.5V20"></path></svg>All of Louisiana</span></div>
+<div class="ch-ov ch-shadow" style="left:16px;bottom:16px;border-radius:8px"><div class="ch-mcap"><span><svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><circle cx="6" cy="6" r="5" fill="#1a2744"></circle></svg>meeting times listed</span><i>·</i><span><svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><circle cx="6" cy="6" r="4.4" fill="#ffffff" stroke="#1a2744" stroke-width="1.8"></circle></svg>schedule not listed</span><i>·</i><span><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="7.5" fill="#1a2744"></circle><text x="8" y="11.3" text-anchor="middle" font-size="9.5" font-weight="700" fill="#ffffff">2</text></svg>several clubs, click to open</span></div></div>
+<span class="k-num-badge ch-mk" style="right:166px;bottom:44px">1</span>
+</div>
+</div></div></div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":2800}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

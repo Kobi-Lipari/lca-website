@@ -1,0 +1,297 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Membership · I · Member-I · Compact (round 2)</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/6107adb451dbab26ee5d89f4189b81f8">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1a2744}
+.mi-root{width:1440px;box-sizing:border-box;background:#ecebe6;color:#1a2744}
+.mi-root *{box-sizing:border-box}
+.mi-strip{height:56px;display:flex;align-items:center;justify-content:space-between;gap:24px;padding:0 40px;background:#ecebe6;border-bottom:1px solid #d9d8d1}
+.mi-strip-l{font-size:15px;font-weight:700;letter-spacing:-.005em;white-space:nowrap}
+.mi-strip-r{font-size:14px;font-weight:600;color:#866a1e;text-align:right}
+.mi-doc{padding:14px 40px 16px;display:grid;grid-template-columns:minmax(0,1fr) 400px;gap:20px;align-items:start}
+.mi-meta{font-size:14px;line-height:1.5;color:#3d4556;margin:0}
+.mi-meta b{color:#1a2744;font-weight:600}
+.mi-lbox{background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:14px 18px;margin-top:12px}
+.mi-notes{list-style:none;margin:8px 0 0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px 22px}
+.mi-notes li{display:flex;gap:10px;align-items:flex-start;font-size:13px;line-height:1.45}
+.mi-notes .k-num-badge{width:24px;height:24px;font-size:12px}
+.mi-removed{margin:12px 0 0;padding-top:10px;border-top:1px solid #ecebe5;font-size:13px;line-height:1.5;color:#3d4556}
+.mi-removed b{color:#1a2744}
+.mi-grey{background:#efefea;border:1px solid #dddcd4;border-radius:12px;padding:14px 16px;display:flex;flex-direction:column;gap:7px}
+.mi-grey p{margin:0;font-size:12.5px;line-height:1.45;color:#2b3446}
+.mi-grey p b{display:block;font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:#555c6b;margin-bottom:1px}
+.mi-grey ol{margin:2px 0 0;padding-left:18px;font-size:12.5px;line-height:1.45;color:#2b3446}
+.mi-grey li{margin-bottom:2px}
+.mi-page{background:#ffffff;position:relative}
+
+/* decided header */
+.mi-hd-in{gap:0;position:relative}
+.mi-hd .k-brand{margin-right:16px}
+.mi-rook{width:30px;height:30px;fill:#ffffff;flex:none}
+.mi-rook-sm{width:24px;height:24px}
+.mi-nav{gap:0}
+.mi-nav a{padding:0 10px;white-space:nowrap}
+.mi-navbtn{display:inline-flex;align-items:center;gap:4px;min-height:44px;padding:0 10px;border:0;background:transparent;color:#ffffff;font:inherit;font-size:15px;font-weight:500;cursor:pointer}
+.mi-sbtn{display:inline-flex;align-items:center;gap:8px;width:220px;height:44px;padding:0 8px 0 12px;margin-right:16px;border-radius:8px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.45);color:#ffffff;text-decoration:none;font-size:14.5px;font-weight:500;flex:none}
+.mi-kbd{margin-left:auto;font-family:"Geist Mono",ui-monospace,monospace;font-size:12px;color:#e8ecf4;border:1px solid rgba(255,255,255,.4);border-radius:5px;padding:2px 6px;line-height:1.2}
+.mi-util{gap:12px}
+.mi-util .k-ulink{padding:0 4px}
+
+/* hero, 200px */
+.mi-hero{height:200px;display:grid;grid-template-columns:minmax(0,3fr) minmax(0,2fr);gap:48px;align-items:center}
+.mi-hero-l{display:flex;flex-direction:column;gap:8px}
+.mi-hero .mi-h1{font-size:36px;line-height:1.1;font-weight:700;letter-spacing:-.015em;color:#ffffff;margin:0;white-space:nowrap}
+.mi-lead{font-size:18px;line-height:1.45;color:#d5d9e3;margin:0}
+.mi-look{background:#ffffff;color:#1a2744;border-radius:12px;padding:16px 18px;display:flex;flex-direction:column;gap:10px}
+.mi-look .k-label{color:#555c6b}
+.mi-look-row{display:flex;gap:8px}
+.mi-look-row .k-input{flex:1;min-width:0}
+.mi-look .k-meta{color:#555c6b}
+
+/* tiers */
+.mi-sec{padding:22px 24px 20px}
+.mi-tiers{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;align-items:stretch}
+.mi-tier{background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:20px;display:flex;flex-direction:column;gap:10px}
+.mi-tier.pick{border:2px solid #1a2744;padding:19px}
+.mi-tier .k-h3{margin:0}
+.mi-tname{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
+.price{font-size:32px;font-weight:700;color:#1a2744;font-variant-numeric:tabular-nums;line-height:1}
+.mi-math{font-size:13px;line-height:1.45;color:#3d4556;margin:0}
+.mi-checks{display:flex;flex-wrap:wrap;align-items:center;gap:6px 14px;font-size:14px;line-height:1.5;color:#1a2744}
+.mi-checks b{font-weight:600}
+.mi-ck{display:inline-flex;align-items:center;gap:5px}
+.mi-ck svg{width:16px;height:16px;color:#145b3a;stroke-width:2.4}
+
+/* two small cards */
+.mi-two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px;align-items:stretch}
+.mi-sm{position:relative;z-index:1;background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:18px 20px;display:flex;flex-direction:column;gap:10px}
+.mi-smh{display:flex;align-items:center;gap:10px}
+.mi-smh .k-h4{margin:0}
+.ico{width:36px;height:36px;flex:0 0 36px;border-radius:9px;background:#f1efe7;color:#1a2744;display:flex;align-items:center;justify-content:center}
+.mi-sm p{margin:0}
+.mi-lines{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:7px}
+.mi-lines li{display:flex;gap:10px;align-items:flex-start;font-size:14px;line-height:1.45;color:#2b3446}
+.mi-lines li svg{flex:none;width:18px;height:18px;margin-top:1px;color:#1a2744}
+
+/* questions */
+.mi-q{max-width:880px;margin:0 auto}
+.mi-acc{border:1px solid #dddcd4;border-radius:12px;background:#ffffff;overflow:hidden}
+.mi-row{border-top:1px solid #e4e1d8}
+.mi-row:first-child{border-top:0}
+.mi-rowh{display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:56px;padding:0 10px 0 20px}
+.mi-rowh .k-h4{margin:0;font-size:16px}
+.mi-rowh .k-iconbtn{width:40px;height:40px;border:0}
+.mi-ans{margin:0;padding:0 64px 16px 20px;font-size:14px;line-height:1.5;color:#2b3446}
+
+/* give line */
+.mi-give{background:#fbfaf6;border-top:1px solid #e9e7df}
+.mi-give-in{height:72px;display:flex;align-items:center;justify-content:space-between;gap:24px}
+.mi-give-t{display:flex;align-items:center;gap:10px;font-size:14px;line-height:1.45;color:#3d4556;min-width:0}
+.mi-give-t b{color:#1a2744;font-weight:600}
+
+.mi-foot-in{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px;padding-top:22px;padding-bottom:24px}
+.mi-foot .k-meta{color:rgba(255,255,255,.78)}
+.mi-foot nav a{font-size:14px}
+
+/* fold guide (board only) */
+.mi-fold{position:absolute;left:0;right:0;top:900px;height:0;border-top:2px dashed #b3261e;z-index:0;pointer-events:none}
+.mi-foldlab{position:absolute;left:88px;top:889px;z-index:22;pointer-events:none}
+.mi-foldlab span{display:inline-block;background:#fff4f2;border:1px solid #b3261e;color:#8a1c16;border-radius:999px;padding:3px 10px;font-size:12px;font-weight:600;line-height:1.2;white-space:nowrap;box-shadow:0 0 0 3px #ffffff}
+.mi-mk{position:absolute;z-index:21;box-shadow:0 0 0 3px #ffffff}
+</style>
+</helmet>
+<div class="mi-root" style="width:1440px;height:2200px">
+
+<div class="mi-strip"><span class="mi-strip-l">Page 13 · Membership · I · Compact</span><span class="mi-strip-r">Axis: everything a visitor needs is in the first screen; the rest is one line each. Everything else is Member-B, shortened.</span></div>
+
+<section class="mi-doc" aria-label="About this board">
+<div>
+<div class="k-row k-row-sm" style="gap:10px"><span class="k-kicker">13 · Membership · round 2 · option I</span><span class="k-tag k-tag-lca">Round 2</span></div>
+<h1 class="k-h2" style="margin:4px 0 6px">Membership · I · Member-I · Compact</h1>
+<p class="mi-meta"><b>Built from:</b> Member-B · Round 2 · <b>Axis:</b> density. Every Member-B region survives, each cut to one line: the hero trades its side card for the lookup, the tiers sit right under it, money and renewals are one card each, the questions are one column. <b>Replaces:</b> nothing yet; one of six Member-B readings (E to J).</p>
+<p class="mi-meta"><b>K's feedback applied (Tue, Oct 13):</b> service first, giving quiet. <b>Shown:</b> /membership at 1440px, signed out, arrived from the LCA TOC Qualifier page. The red dashed line is the 900px fold.</p>
+<div class="mi-lbox">
+<p class="k-label">Notes on this board</p>
+<ol class="mi-notes">
+<li><span class="k-num-badge">1</span><span><b>Above the fold:</b> Renew, the lookup and all four Join buttons sit above the 900px line; nothing a first-time visitor needs is below it.</span></li>
+<li><span class="k-num-badge">2</span><span><b>Money is two sentences</b> and the report link (the Treasurer's reports on the Minutes page); nothing here needs the treasurer's figures.</span></li>
+<li><span class="k-num-badge">3</span><span><b>Renewal mechanics are stated, not demonstrated;</b> Member-B's sample panels stay the reference for the build.</span></li>
+<li><span class="k-num-badge">4</span><span><b>One-column accordion,</b> led by LCA vs US Chess; only that answer is open.</span></li>
+<li><span class="k-num-badge">5</span><span><b>One quiet Give line;</b> Donate stays in the header (WS02). Entry fees are the same for everyone (D11); no club member counts (page 9).</span></li>
+<li><span class="k-num-badge">6</span><span><b>Am I a member?</b> is now a field in the hero. It shows first name, last initial, tier, status and the month it ends; 10 lookups an hour.</span></li>
+</ol>
+<p class="mi-removed"><b>Removed from Member-B for height:</b> the hero side card (its four benefits are the check line under the tiers), the four sample panels and the New tag, the six ledger rows and total, the treasurer's-report aside, the two-column question cards.</p>
+</div>
+</div>
+<aside class="mi-grey" aria-label="Board note">
+<p><b>What</b>Member-B made dense: the whole decision fits in the first screen at 1440 by 900, and every other region is one card or one line.</p>
+<p><b>Built from</b>Member-B's tier copy, honest family math, renewal ideas, dues categories and questions, minus the home-club member counts (page 9), member-price wording (D11), the Nationals fund framing and the expiry placeholder. Decided header and footer.</p>
+<p><b>K's feedback applied</b>Service first: joining, renewing and checking come first. Giving quiet: one cream line at the end, Give to the plain /give page (Give-A).</p>
+<div><p><b>Open for K</b></p>
+<ol>
+<li>Is one line each enough for the renewal ideas, or should one sample panel come back?</li>
+<li>Lookup field in the hero, or keep Member-B's link?</li>
+<li>Card fee and refund rule: the board still has to confirm both.</li>
+</ol></div>
+</aside>
+</section>
+
+<div class="mi-page">
+
+<div class="mi-fold" aria-hidden="true"></div><div class="mi-foldlab" aria-hidden="true"><span>Fold at 1440×900: Renew, Am I a member? and all four Join buttons sit above it</span></div>
+
+<header class="k-header mi-hd"><div class="k-wrap-wide k-header-in mi-hd-in"><a class="k-brand" href="#" aria-label="Louisiana Chess Association, home"><svg class="mi-rook" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span class="k-brand-name" aria-hidden="true"><b>Louisiana Chess</b><span>Association</span></span></a><nav class="k-navlinks mi-nav" aria-label="Main"><a href="#">Tournaments</a><a href="#">Clubs</a><a href="#">Scholastic</a><a href="#">News</a><a class="k-nav-on" href="#" aria-current="page">Membership</a><button class="mi-navbtn" type="button" aria-expanded="false" aria-haspopup="true">About<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></button></nav><a class="mi-sbtn" href="/search" aria-keyshortcuts="Meta+K Control+K"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg><span>Search</span><kbd class="mi-kbd" aria-hidden="true">&#8984;K</kbd></a><div class="k-utility mi-util"><a class="k-ulink" href="#">Donate</a><a class="k-ulink" href="#">Log in</a><a class="k-btn k-btn-gold k-btn-sm" href="#">Join LCA</a></div></div></header>
+
+<section class="k-navy">
+  <div class="k-wrap-wide mi-hero">
+    <div class="mi-hero-l">
+      <span class="k-label-gold" style="color:#e6cf86">Membership</span>
+      <h1 class="mi-h1">Join 300+ Louisiana chess players</h1>
+      <p class="mi-lead">From $5 a year. Same benefits on every membership; the price depends only on who it covers.</p>
+      <div class="k-row k-row-sm" style="gap:10px;margin-top:4px">
+        <a class="k-btn k-btn-gold" href="#tiers">See memberships</a>
+        <a class="k-btn k-btn-on-dark" href="#">Renew</a>
+      </div>
+    </div>
+    <form class="mi-look" aria-label="Am I a member?" style="position:relative">
+      <label class="k-label" for="mi-look">Am I a member?</label>
+      <div class="mi-look-row"><input id="mi-look" class="k-input" placeholder="US Chess ID or email"><button class="k-btn k-btn-navy" type="button">Check</button></div>
+      <div class="k-meta">Shows your first name, last initial, tier, status and the month it ends. Nothing else.</div>
+      <span class="k-num-badge mi-mk" style="right:-14px;top:-14px">6</span>
+    </form>
+  </div>
+</section>
+
+<section id="tiers">
+<div class="k-wrap-wide mi-sec k-stack" style="gap:14px">
+  <div class="k-between">
+    <div class="k-row k-row-sm"><span class="k-kicker">Pick by who it covers</span><span class="k-num-badge">1</span></div>
+    <a class="k-link k-small k-row k-row-sm" href="#">Not sure? Answer two questions<svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a>
+  </div>
+  <div class="mi-tiers">
+    <div class="mi-tier">
+      <div><h3 class="k-h3">Adult</h3><div class="k-small k-muted">For players 18 and up</div></div>
+      <div><span class="price">$15</span><span class="k-meta"> / year</span></div>
+      <div class="k-row k-row-sm k-small"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4.5 21c1-4 4-6 7.5-6s6.5 2 7.5 6"></path></svg>Covers 1 player</div>
+      <a class="k-btn k-btn-navy k-btn-block" href="#">Join · $15</a>
+      <a class="k-link k-small k-center" href="#">Renew Adult</a>
+    </div>
+    <div class="mi-tier">
+      <div><h3 class="k-h3">Scholastic</h3><div class="k-small k-muted">For K–12 students</div></div>
+      <div><span class="price">$5</span><span class="k-meta"> / year</span></div>
+      <div class="k-row k-row-sm k-small"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 9.5L12 5l9.5 4.5L12 14zM6.5 11.5V16c1.5 1.5 3.5 2.2 5.5 2.2s4-.7 5.5-2.2v-4.5M21.5 9.5v5"></path></svg>Covers 1 student</div>
+      <a class="k-btn k-btn-navy k-btn-block" href="#">Join · $5</a>
+      <a class="k-link k-small k-center" href="#">Renew Scholastic</a>
+    </div>
+    <div class="mi-tier pick">
+      <div><div class="mi-tname"><h3 class="k-h3">Family</h3><span class="k-tag k-tag-gold">Best value with 3 children</span></div><div class="k-small k-muted">You plus up to 3 children</div></div>
+      <div><span class="price">$25</span><span class="k-meta"> / year</span></div>
+      <div class="k-row k-row-sm k-small"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.5"></circle><path d="M2.5 20c.8-3.6 3.4-5.5 6.5-5.5s5.7 1.9 6.5 5.5M16 4.6a3.5 3.5 0 0 1 0 6.8M18 14.8c2 .7 3.2 2.4 3.6 5.2"></path></svg>Covers up to 4 people</div>
+      <a class="k-btn k-btn-gold k-btn-block" href="#">Join · $25</a>
+      <p class="mi-math">Honest math: with 1 child, Adult + Scholastic ($20) costs less; with 2 it's a tie; with 3 Family saves $5.</p>
+      <a class="k-link k-small k-center" href="#">Renew Family</a>
+    </div>
+    <div class="mi-tier">
+      <div><h3 class="k-h3">Senior</h3><div class="k-small k-muted">For players 65 and up</div></div>
+      <div><span class="price">$10</span><span class="k-meta"> / year</span></div>
+      <div class="k-row k-row-sm k-small"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4.5 21c1-4 4-6 7.5-6s6.5 2 7.5 6"></path></svg>Covers 1 player</div>
+      <a class="k-btn k-btn-navy k-btn-block" href="#">Join · $10</a>
+      <a class="k-link k-small k-center" href="#">Renew Senior</a>
+    </div>
+  </div>
+  <div class="mi-checks"><b>Every membership:</b>
+    <span class="mi-ck"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>entry to the tournaments LCA runs</span>·
+    <span class="mi-ck"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>a member profile</span>·
+    <span class="mi-ck"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>voting at the annual meeting, Labor Day weekend</span>·
+    <span class="mi-ck"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>online registration for you and your kids.</span>
+  </div>
+  <p class="k-meta" style="margin:-6px 0 0">Prices are per year. [Card fee: board to confirm whether it is added at checkout.] Renewing keeps your profile and history.</p>
+</div>
+</section>
+
+<section class="k-cream">
+<div class="k-wrap-wide mi-sec">
+  <div class="mi-two">
+    <div class="mi-sm">
+      <div class="mi-smh"><div class="ico"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3H6.5A1.5 1.5 0 0 0 5 4.5v15A1.5 1.5 0 0 0 6.5 21h11a1.5 1.5 0 0 0 1.5-1.5V8l-5-5zM14 3v5h5M8.5 13h7M8.5 17h5"></path></svg></div><h2 class="k-h4">Where the money goes</h2><span class="k-num-badge">2</span></div>
+      <p class="k-small" style="color:#2b3446">Dues and entry fees pay for the tournaments LCA runs, the scholastic program and the State Scholastic Championship, the State Championship on Labor Day weekend, equipment, and this website.</p>
+      <div class="k-row k-row-sm" style="gap:14px;margin-top:auto"><a class="k-btn k-btn-line k-btn-sm" href="#">Read the treasurer's report</a><span class="k-meta">[Fiscal year] · updated [date]</span></div>
+    </div>
+    <div class="mi-sm">
+      <div class="mi-smh"><div class="ico"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11.5A8 8 0 1 1 17.7 6M20 4v4.5h-4.5"></path></svg></div><h2 class="k-h4">Membership that takes care of itself</h2><span class="k-num-badge">3</span><span class="k-sample">Sample data</span></div>
+      <ul class="mi-lines">
+        <li><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="M3.5 6.5l8.5 6.5 8.5-6.5"></path></svg><span>Emails 30 and 7 days before it ends, with a one-tap renew link, no password.</span></li>
+        <li><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11.5A8 8 0 1 1 17.7 6M20 4v4.5h-4.5"></path></svg><span>Auto-renew is optional and off by default; we email a week before charging; cancel any time in My LCA.</span></li>
+        <li><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4.5" width="18" height="16" rx="2"></rect><path d="M3 9.5h18M8 2.5v4M16 2.5v4M9 15l2 2 4-4"></path></svg><span>Registering for an event checks your membership against the event date and adds a renewal if it's needed (LCA TOC Qualifier · Sat, Feb 13, 2027 · Add renewal · $25).</span></li>
+        <li><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="9" width="17" height="11.5" rx="1.5"></rect><path d="M2.5 9h19v-3.5h-19zM12 5.5v15M12 5.5C10.5 2.5 7 2.8 7.5 4.6 8 6 12 5.5 12 5.5zM12 5.5c1.5-3 5-2.7 4.5-.9C16 6 12 5.5 12 5.5z"></path></svg><span><a class="k-link" href="#">Give one as a gift</a>, Scholastic $5 or Adult $15; they claim it by email.</span></li>
+      </ul>
+    </div>
+  </div>
+</div>
+</section>
+
+<section>
+<div class="k-wrap-wide mi-sec">
+  <div class="mi-q k-stack" style="gap:14px">
+    <div class="k-between">
+      <div class="k-row k-row-sm"><h2 class="k-h2">Questions</h2><span class="k-num-badge">4</span></div>
+      <a class="k-link k-small" href="#">Ask us: LouisianaChess@gmail.com</a>
+    </div>
+    <div class="mi-acc">
+      <div class="mi-row">
+        <div class="mi-rowh"><h3 class="k-h4">Is this the same as US Chess membership?</h3><button class="k-iconbtn" type="button" aria-label="Hide answer" aria-expanded="true"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 15l7-7 7 7"></path></svg></button></div>
+        <p class="mi-ans">No. US Chess membership lets you play rated games anywhere in the country, and you buy it from US Chess. LCA membership is Louisiana's state association: it supports chess here and is required to enter the tournaments LCA runs.</p>
+      </div>
+      <div class="mi-row">
+        <div class="mi-rowh"><h3 class="k-h4">When does my membership end?</h3><button class="k-iconbtn" type="button" aria-label="Show answer" aria-expanded="false"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"></path></svg></button></div>
+        <p class="mi-ans" hidden>One year from the day you join. Renewing early adds a year on top of the time you have left, so it never loses you time. We email you 30 days and 7 days before it ends.</p>
+      </div>
+      <div class="mi-row">
+        <div class="mi-rowh"><h3 class="k-h4">Do I need to be a member to play in LCA events?</h3><button class="k-iconbtn" type="button" aria-label="Show answer" aria-expanded="false"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"></path></svg></button></div>
+        <p class="mi-ans" hidden>For tournaments LCA runs, yes, unless the event says otherwise; club-run events set their own rule. If you aren't a member yet, it's added at checkout when you register.</p>
+      </div>
+      <div class="mi-row">
+        <div class="mi-rowh"><h3 class="k-h4">Who counts as a child on the Family membership?</h3><button class="k-iconbtn" type="button" aria-label="Show answer" aria-expanded="false"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"></path></svg></button></div>
+        <p class="mi-ans" hidden>A K–12 student you're the parent or guardian of. Family covers you and up to 3; a 4th is a Scholastic membership at $5 in the same payment. We never ask for a grade, a birthdate or a child's email.</p>
+      </div>
+      <div class="mi-row">
+        <div class="mi-rowh"><h3 class="k-h4">Are there any fees on top of the price?</h3><button class="k-iconbtn" type="button" aria-label="Show answer" aria-expanded="false"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"></path></svg></button></div>
+        <p class="mi-ans" hidden>[Board to confirm the card fee.] Nothing else. Tournament entry fees are separate and the same for everyone.</p>
+      </div>
+      <div class="mi-row">
+        <div class="mi-rowh"><h3 class="k-h4">Can I get a refund?</h3><button class="k-iconbtn" type="button" aria-label="Show answer" aria-expanded="false"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"></path></svg></button></div>
+        <p class="mi-ans" hidden>[Board to confirm the refund rule.] If a payment went wrong, write to LouisianaChess@gmail.com and we'll put it right.</p>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+
+<section class="mi-give" aria-label="Giving">
+  <div class="k-wrap-wide mi-give-in">
+    <p class="mi-give-t" style="margin:0"><span class="k-num-badge">5</span><span><b>Want to give beyond your dues?</b> Most people support LCA by joining and playing. If you'd like to give more, you can, once or monthly.</span></p>
+    <a class="k-btn k-btn-line k-btn-sm" href="/give">Give</a>
+  </div>
+</section>
+
+<footer class="k-footer mi-foot"><div class="k-wrap-wide mi-foot-in"><div class="k-row-sm" style="gap:10px"><svg class="mi-rook mi-rook-sm" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><b style="font-size:15px">Louisiana Chess Association</b></div><span class="k-meta">US Chess state affiliate · Louisiana's chess community since 1915</span><nav class="k-row" aria-label="Footer" style="gap:18px"><a href="#">Contact</a><a href="#">Website help</a><a href="#">Bylaws &amp; rules</a><a href="#">Donate</a></nav></div></footer>
+
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":2200}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>
