@@ -199,7 +199,7 @@ describe('REDESIGN_STATUS.md, WS09 step 22: the parts against the files', () => 
     for (const piece of ['asks one thing, `getClubPage`', '`events`, `news` and `nearest`', 'makes no second call', 'only when the answer names the section and carries a row', 'one status']) {
       expect(builds, piece).toContain(piece)
     }
-    expect(read(PLAIN)).toContain('export const DRAWN_SECTIONS = [\'about\', \'when_and_where\', \'events\', \'news\'] as const')
+    expect(read(PLAIN)).toMatch(/export const DRAWN_SECTIONS = \['about', 'when_and_where', 'events', 'news'(?:, 'contact')?\] as const/)
     expect(codeOf(PAGE)).toContain('drawnSections(answer.sections, { events: answer.events.length, news: answer.news.length })')
     expect(codeOf(PAGE).match(/getClubPage\(/g)).toHaveLength(1)
   })
@@ -230,7 +230,7 @@ describe('REDESIGN_STATUS.md, WS09 step 22: the parts against the files', () => 
     const nav = codeOf(NAV)
     for (const piece of ['sticky top-[var(--header-h,0px)]', 'sticky top-[var(--header-h,4.0625rem)]', 'reflow ? \'static\'', '@max-3xl:min-h-8', 'overflow-x-auto']) expect(nav, piece).toContain(piece)
     expect(codeOf(BAR)).toContain('<DockBar kind="action">')
-    expect(codeOf(BAR)).toContain('if (!place) return null')
+    expect(codeOf(BAR)).toMatch(/if \(!place\) return null|\{place && \(/)
   })
 
   it('names the two mends and closes step 21\'s two follow-ups', () => {
@@ -281,7 +281,10 @@ describe('REDESIGN_STATUS.md, WS09 step 22: the parts against the files', () => 
     for (const [file] of MOVED) expect(pins, file).toContain(`\`${file}\``)
     expect(pins).toContain('no file changes its count of cases')
     for (const [file, count] of MOVED.slice(0, 3)) expect((read(file).match(/^\s*it\(/gm) ?? []).length + (read(file).match(/^\s*it\.each\(/gm) ?? []).length, file).toBeLessThanOrEqual(count)
-    expect(read('test/unit/routes.test.ts')).toContain('expect(real.filter((r) => r.startsWith(\'api/\')).length).toBe(110)')
+    // Moved at WS09 step 28, whose two routes are the 112th and 113th: 111 before it, a later figure now.
+    // Moved at WS09 step 31, whose two routes are the 116th and 117th: 115 before it.
+    // Moved when the newsletter's Send joined main: its route is the 118th, 117 before it.
+    expect(read('test/unit/routes.test.ts')).toContain('expect(real.filter((r) => r.startsWith(\'api/\')).length).toBe(118)')
     expect(read('test/unit/contracts-pending.ts')).toContain('export const PENDING_COUNT = 104')
     if (!latest) return
     expect(Object.values(contracts).reduce((n, route) => n + Object.keys(route).length, 0)).toBe(41)

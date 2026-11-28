@@ -6,8 +6,10 @@
 // alone, signed for the purpose club_confirm with the club's id and the
 // member's id and nothing else (functions/utils/tokens.ts).
 //
-// - GET changes nothing, so a mail scanner that opens the link stamps
-//   nothing: it answers the club's name and town while the link is good,
+// - GET stamps nothing (a call with a good link is only counted, as the
+//   paragraph on the limit below says), so a mail scanner that opens the
+//   link changes no club: it answers the club's name and town while the
+//   link is good,
 //   with how the club meets in the listing's own public words (statement,
 //   null when there are none), which the email itself shows, so a holder of
 //   a good link learns nothing new from it.
@@ -31,8 +33,22 @@
 //   404 CLUB_GONE     the club has been deleted since the email
 //   404 MEMBER_GONE   the person's account has been deleted since the email
 //   403 SEAT_ENDED    the person's seat no longer covers the club
+//   429 LINK_TOO_OFTEN a good link opened more than LINK_CALLS_AN_HOUR
+//                     times in an hour from one place (WS09 step 25), in
+//                     the link's own words, since the person sent nothing
+// and for POST then:
+//   409 LINK_WAITS    a visitor's suggestion for the club is open (WS09 step
+//                     28): nothing is written, and the page says in words
+//                     that a suggestion waits and is answered in My region
+//                     after logging in
 // The club is read only once the token holds, so no answer tells whether a
 // club exists to someone without a good link.
+//
+// The limit (functions/utils/rateLimit.ts) counts a call only once the token
+// holds, so a forged link is refused as before with no statement run, and
+// with no signing secret the 503 above is the answer, as before. GET and
+// POST share one count. On a database before migration 0071 the limiter
+// writes one log line and the call goes on as before.
 //
 // The token rides in the address, so nothing here logs it, puts it in an
 // answer's words or writes it to a row. Every answer carries no-store, no
@@ -42,9 +58,12 @@ import { errorResponse, handleOptions, jsonResponse, parseBody } from '../../../
 import { CLUB_KEEPERS_ON } from '../../../utils/clubs/pages'
 import { CONFIRM_PURPOSE } from '../../../utils/clubs/monthlyCheck'
 import { markStillAccurate } from '../../../utils/clubs/stillAccurate'
+import { hasOpenSuggestion } from '../../../utils/clubs/suggestions'
+import { LINK_WAITS } from '../../../../domain/clubs/suggestion'
 import { oneLine } from '../../../utils/clubs/emails'
 import { isRegionalRepFor } from '../../../utils/admin/permissions'
 import { readToken } from '../../../utils/tokens'
+import { limit } from '../../../utils/rateLimit'
 import { monthInWords } from '../../../../domain/clubs/monthlyCheck'
 import { clubLinkConfirmRequestSchema, type ClubLinkConfirmResponse, type ClubLinkResponse } from '../../../../domain/contracts/clubs'
 
@@ -62,6 +81,13 @@ export const CLUB_GONE = 'This club is no longer listed on the site.'
 export const MEMBER_GONE = 'The account this link was sent to is no longer on the site.'
 /** The 403 for a person whose seat no longer covers the club. */
 export const SEAT_ENDED = 'Your seat no longer covers this club.'
+/** The 429 for a good link opened too often in an hour from one place: the link's own words, not the limiter's. */
+export const LINK_TOO_OFTEN = 'This link has been opened too many times this hour. Try again in an hour.'
+
+/** How many calls one place may make with good links in an hour, GET and POST together. */
+export const LINK_CALLS_AN_HOUR = 30
+/** The route's name in the limiter's count. */
+export const LINK_LIMIT_ROUTE = 'clubs/confirm'
 
 /** What every answer carries: kept by no cache, sent on with no referrer, and indexed by no search engine. */
 const LINK_HEADERS = { 'Cache-Control': 'no-store', 'Referrer-Policy': 'no-referrer', 'X-Robots-Tag': 'noindex' } as const
@@ -99,6 +125,8 @@ async function opened(context: Parameters<PagesFunction<Env>>[0]): Promise<{ clu
   }
   const { club: clubId, member: memberId } = read.claim
   if (typeof clubId !== 'string' || clubId === '' || typeof memberId !== 'string' || memberId === '') return refuse(LINK_FORGED, 400)
+  const counted = await limit(context.env, context.request, LINK_LIMIT_ROUTE, { perHour: LINK_CALLS_AN_HOUR })
+  if (!counted.ok) return refuse(counted.status === 429 ? LINK_TOO_OFTEN : counted.error, counted.status)
 
   const db = context.env.DB
   const club = await db.prepare('SELECT id, name, city, how_we_meet_text FROM clubs WHERE id = ?').bind(clubId).first<LinkClub>()
@@ -130,6 +158,8 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
   if (link instanceof Response) return link
   const parsed = await parseBody(context.request, clubLinkConfirmRequestSchema)
   if (parsed instanceof Response) return withLinkHeaders(parsed)
+  // A suggestion no keeper has answered yet: the link waits for it, as Still accurate does in My region.
+  if (await hasOpenSuggestion(context.env.DB, link.club.id)) return refuse(LINK_WAITS, 409)
   const row = await markStillAccurate(context.env.DB, link.club.id, link.memberId)
   // Deleted between the read above and this write.
   if (!row) return refuse(CLUB_GONE, 404)

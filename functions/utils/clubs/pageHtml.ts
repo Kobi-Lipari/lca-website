@@ -15,21 +15,23 @@
 // W), so a reader before the app draws, or with no script at all, meets a
 // plain page rather than one dense block; the styling names the wrapper
 // alone and goes with it when the app draws. It sets no colour and no type,
-// so the page keeps the site's own. The body writes no Contact section (WS09
-// step 26 brings it), no email address, no officer and no roster: the
-// answer carries none. Every word a club or a keeper typed is escaped for
-// where it lands, and none enters the style element: for HTML text
+// so the page keeps the site's own. Contact comes last (WS09 step 26): its
+// heading and one line saying a message can be sent to the club through the
+// site, with no form, no name of a volunteer and no address. The body writes
+// no email address, no officer and no roster: the answer carries none.
+// Every word a club or a keeper typed is escaped for where it lands, and
+// none enters the style element: for HTML text
 // and attributes in the body, and in the JSON-LD block every "<", ">", "&"
 // and line separator is written as a JSON escape, so no value can end the
 // block or start a tag. The words the app's page also writes come from
 // domain/clubs/pageWords.ts, and the title and description from
-// domain/clubs/pageMeta.ts. The three sections carry the ids the app's page
-// gives them (PAGE_SECTION_IDS there), so a shared section link names its
-// section before any script, and how the club meets keeps the club's single
-// line breaks as <br> (checkpoint W's review).
+// domain/clubs/pageMeta.ts. The three sections before Contact carry the ids
+// the app's page gives them (PAGE_SECTION_IDS there), so a shared section
+// link names its section before any script, and how the club meets keeps the
+// club's single line breaks as <br> (checkpoint W's review).
 import { clubPageDescription, clubPageTitle, SITE_NAME } from '../../../domain/clubs/pageMeta'
 import {
-  ABOUT_LABELS, ABOUT_TICKS, EVENTS_HEADING, PAGE_SECTION_IDS, aboutHeading, cityLine, eventDates, whenAndWhereHeading,
+  ABOUT_LABELS, ABOUT_TICKS, CONTACT_HEADING, CONTACT_WRITTEN_LINE, EVENTS_HEADING, PAGE_SECTION_IDS, aboutHeading, cityLine, eventDates, whenAndWhereHeading,
 } from '../../../domain/clubs/pageWords'
 import { isFacebookAddress } from '../../../domain/clubs/facebook'
 import type { ClubPageResponse } from '../../../domain/contracts/clubPage'
@@ -225,6 +227,11 @@ function eventsHtml(answer: ClubPageResponse): string[] {
   return [`<section id="${PAGE_SECTION_IDS.events}"><h2>${EVENTS_HEADING}</h2><ul>${rows.join('')}</ul></section>`]
 }
 
+/** Contact: its heading and its one line, for every club, since every club can be written to through the site. */
+function contactHtml(): string[] {
+  return [`<section><h2>${CONTACT_HEADING}</h2><p>${CONTACT_WRITTEN_LINE}</p></section>`]
+}
+
 /** The attribute that marks the written body's wrapper: the styling below names it, and nothing the app draws uses it. */
 export const WRITTEN_PAGE_MARK = 'data-club-written-page'
 
@@ -258,12 +265,12 @@ export const WRITTEN_PAGE_STYLE = [
  * The body written inside the shell's root element: the wrapper with its
  * styling, then the club's name as the h1, the line under it and how it
  * meets, then About, When and where and Events, each only where the answer
- * has something to put under it.
+ * has something to put under it, and Contact, which every club has.
  */
 export function clubPageBody(answer: ClubPageResponse): string {
   const { club } = answer
   const top = [`<h1>${escapeHtml(club.name)}</h1>`, `<p>${escapeHtml(cityLine(club.city, club.region))}</p>`]
   if (hasWords(answer.statement.text)) top.push(...statementOf(answer.statement.text))
-  const words = [...top, ...aboutHtml(answer), ...placesHtml(answer), ...eventsHtml(answer)].join('')
+  const words = [...top, ...aboutHtml(answer), ...placesHtml(answer), ...eventsHtml(answer), ...contactHtml()].join('')
   return `<main ${WRITTEN_PAGE_MARK}><style>${WRITTEN_PAGE_STYLE}</style>${words}</main>`
 }

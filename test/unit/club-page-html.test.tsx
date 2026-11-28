@@ -39,7 +39,8 @@ function bare(): ClubPageResponse {
     about: { text: 'A made up club.', cost: null, welcome: null, facebook: null, website: null, other: null, weekend_play: false, scholastic_friendly: false },
     statement: { text: 'Tuesdays at 7:00 PM', told: 'Last checked November 2026' },
     places: [{ name: 'Example Library', street: null, note: null, latitude: null, longitude: null }],
-    contact: { name: 'Player One' },
+    contact: { name: 'Player One', goes_to: 'club' },
+    suggestion: { goes_to: 'club_rep' },
     events: [],
     news: [{ id: 'n1', title: 'Example news', excerpt: 'A made up note.', news_date: '2026-11-01' }],
     nearest: [],
@@ -82,16 +83,17 @@ describe('the words the server\'s page shares with the app\'s', () => {
 })
 
 describe('the server\'s page in strings', () => {
-  it('writes the bare club\'s own sections and nothing else: no News, no Contact, no told line', () => {
+  it('writes the bare club\'s own sections and nothing else: no News, no told line, and Contact\'s heading and line (WS09 step 26)', () => {
     const body = plainOf(clubPageBody(bare()))
     expect(body).toBe('<main><h1>Example Chess Club</h1><p>Chess club in Example City, Louisiana</p><p>Tuesdays at 7:00 PM</p>'
       + '<section id="about"><h2>About Example Chess Club</h2><p>A made up club.</p></section>'
-      + '<section id="when-and-where"><h2>When and where Example Chess Club meets</h2><ul><li><p>Example Library</p></li></ul></section></main>')
+      + '<section id="when-and-where"><h2>When and where Example Chess Club meets</h2><ul><li><p>Example Library</p></li></ul></section>'
+      + '<section><h2>Contact</h2><p>You can send the club a message through this site. Its address stays private.</p></section>' + '</main>')
   })
 
   it('writes no heading with nothing under it: a link the page would not draw writes no About', () => {
     const answer = { ...bare(), about: { ...bare().about, text: null, other: 'https://user@example.org' }, places: [] }
-    expect(plainOf(clubPageBody(answer))).toBe('<main><h1>Example Chess Club</h1><p>Chess club in Example City, Louisiana</p><p>Tuesdays at 7:00 PM</p></main>')
+    expect(plainOf(clubPageBody(answer))).toBe('<main><h1>Example Chess Club</h1><p>Chess club in Example City, Louisiana</p><p>Tuesdays at 7:00 PM</p>' + '<section><h2>Contact</h2><p>You can send the club a message through this site. Its address stays private.</p></section>' + '</main>')
   })
 
   it('escapes a club\'s words for HTML text and attributes', () => {

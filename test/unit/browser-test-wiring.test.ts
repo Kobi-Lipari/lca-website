@@ -320,6 +320,14 @@ describe('.dev.vars.a11y holds fake values only', () => {
     expect(setup).toContain('--local')
     expect(setup).not.toMatch(/--remote/)
   })
+
+  it('the browser builds empty the spam check\'s site key themselves, so no env file can put a real key into them', () => {
+    const setup = read('test/a11y/global-setup.ts')
+    const build = setup.slice(setup.indexOf('export function buildVariant'))
+    const body = build.slice(0, build.indexOf('\n}\n'))
+    expect(body).toContain("VITE_TURNSTILE_SITE_KEY: '',")
+    expect(body).toContain("VITE_GOOGLE_MAPS_API_KEY: '',")
+  })
 })
 
 describe('test/a11y/baseline.json', () => {

@@ -337,7 +337,7 @@ describe('empty and stale data', () => {
               facebook_url = 'ftp://example.org/chess', website_url = 'javascript:alert(1)', other_url = 'https://user:secret@example.org/chess' WHERE id = ?`,
     ).bind(club.id).run()
     const html = (await route(club.slug ?? '')).text
-    expect(plainOf(rootOf(html))).toBe(`<main><h1>${(await env.DB.prepare('SELECT name FROM clubs WHERE id = ?').bind(club.id).first<{ name: string }>())?.name}</h1><p>Chess club in Example City, Louisiana</p></main>`)
+    expect(plainOf(rootOf(html))).toBe(`<main><h1>${(await env.DB.prepare('SELECT name FROM clubs WHERE id = ?').bind(club.id).first<{ name: string }>())?.name}</h1><p>Chess club in Example City, Louisiana</p><section><h2>Contact</h2><p>You can send the club a message through this site. Its address stays private.</p></section></main>`)
     expect(html).not.toMatch(/secret|javascript:|ftp:/)
     const ld = jsonLdOf(html)
     expect(ld).not.toHaveProperty('sameAs')

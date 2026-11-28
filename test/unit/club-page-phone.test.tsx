@@ -98,7 +98,7 @@ describe('the section nav on a phone', () => {
   it('is a row of pills below 768 pixels of the page, each 32 pixels for the eye in a 44 pixel link with the look\'s focus ring', () => {
     const page = draw()
     const links = [...nav(page).querySelectorAll<HTMLAnchorElement>('a')]
-    expect(links.map((a) => a.textContent)).toEqual(['About', 'When and where', 'Events', 'News'])
+    expect(links.map((a) => a.textContent)).toEqual(['About', 'When and where', 'Events', 'News', 'Contact'])
     for (const link of links) {
       expect(link.className).toMatch(/\bmin-h-11\b/)
       expect(link.className).toMatch(/focus-visible:ring-3 focus-visible:ring-focus/)
@@ -164,7 +164,7 @@ describe('the section nav on a phone', () => {
 })
 
 describe('the club bar', () => {
-  it('holds Directions alone, to the club\'s first place with a point, as a bar of kind action in the dock, with Directions still in When and where', async () => {
+  it('holds Directions, to the club\'s first place with a point, and Message the club (WS09 step 26), as a bar of kind action in the dock, with Directions still in When and where', async () => {
     const page = draw()
     await act(async () => {})
     const bar = dockAction()!.querySelector<HTMLElement>('[data-slot="club-bar"]')!
@@ -172,20 +172,23 @@ describe('the club bar', () => {
     const links = within(bar).getAllByRole('link')
     expect(links.map((a) => [a.textContent, a.getAttribute('aria-label'), a.getAttribute('href'), a.getAttribute('target')])).toEqual([
       ['Directions', 'Directions to Example Library (opens in a new tab)', 'https://www.google.com/maps/dir/?api=1&destination=30.1,-91.2', '_blank'],
+      ['Message the club', null, '#contact', null],
     ])
-    expect(links[0].className).toMatch(/\bmin-h-11\b/)
-    expect(links[0].className).toMatch(/focus-visible:ring-3 focus-visible:ring-focus/)
-    expect(within(bar).queryByText(/Message the club/)).toBeNull()
+    for (const link of links) {
+      expect(link.className).toMatch(/\bmin-h-11\b/)
+      expect(link.className).toMatch(/focus-visible:ring-3 focus-visible:ring-focus/)
+    }
     expect(page.contains(bar)).toBe(false)
     expect(within(page.querySelector<HTMLElement>('#when-and-where')!).getByRole('link', { name: 'Directions to Example Library (opens in a new tab)' })).toBeTruthy()
   })
 
-  it('is not drawn, and leaves no empty bar, for a club with no place that has a point', async () => {
+  it('holds Message the club alone, and never an empty bar, for a club with no place that has a point', async () => {
     const answer = restAnswer()
     draw({ ...answer, places: answer.places.map((p) => ({ ...p, latitude: null, longitude: null })) })
     await act(async () => {})
-    expect(document.querySelector('[data-slot="club-bar"]')).toBeNull()
-    expect(dockAction()!.children).toHaveLength(0)
+    const bar = dockAction()!.querySelector<HTMLElement>('[data-slot="club-bar"]')!
+    expect(within(bar).getAllByRole('link').map((a) => [a.textContent, a.getAttribute('href')])).toEqual([['Message the club', '#contact']])
+    expect(within(bar).queryByText('Directions')).toBeNull()
   })
 
   it('is not drawn where there is no dock: with the chrome off, and from 768 pixels up', async () => {

@@ -12,8 +12,12 @@
 //
 // Each club comes as its card: the listing's name, town, region, colour,
 // logo address and statement, the last check with its words, the count of
-// its events the person is shown and its open items (empty until WS09 steps
-// 19 and 28 fill them), in My region's order (domain/clubs/regionCards.ts).
+// its events the person is shown and its open items, in My region's order
+// (domain/clubs/regionCards.ts). The one kind of open item is a visitor's
+// suggestion that no keeper has answered yet (WS09 step 28): its id, which
+// of the six parts it names, the visitor's words, whether an address was
+// left and its age in whole days, never the address itself
+// (functions/utils/clubs/suggestions.ts). With none open the list is empty.
 // This month gives the next check (domain/clubs/monthlyCheck.ts) and how
 // many clubs were checked in the last 90 days and how many not, and the
 // regions name who else keeps them: the name and seat title of each other
@@ -30,6 +34,23 @@
 // since the person runs them; with it unset the answer is as before, with
 // no query more.
 //
+// The open rows of Suggest a club and Start a club (WS09 step 30), which
+// have no club, come under `clubRequests`: for a holder of a seat, the rows
+// of the regions the seat covers; for an LCA admin, every row, those whose
+// place was not found among them. Each carries the person's name and
+// address, for the keeper to check with them, and no one else's answer
+// carries them (functions/utils/clubs/clubRequests.ts); an answer with such
+// rows is marked for no cache to keep. With none the key is absent, so the
+// answer is as before, its headers too.
+//
+// The open requests of Ask to be its named rep (WS09 step 31) come the same
+// way under `repRequests`: for a holder of a seat, those of the clubs in the
+// regions the seat covers; for an LCA admin, every one; never the person's
+// own, and never one of the club whose rep the person is
+// (functions/utils/clubs/repRequests.ts). Each carries the member's name and
+// address, for the keeper to write to them; an answer with such rows is
+// marked for no cache to keep, and with none the key is absent.
+//
 // While CLUB_KEEPERS_ON is unset everyone gets 403 in words before anything
 // is read: no sign in is checked and no query is made.
 import type { Env, MemberRow } from '../../types'
@@ -39,6 +60,9 @@ import { CLUB_KEEPERS_ON } from '../../utils/clubs/pages'
 import { REGION_EVENTS_ON } from '../../utils/clubs/pages'
 import { getRegionalClubIds } from '../../utils/admin/permissions'
 import { admittedByRegionAlone } from '../../utils/clubs/memberView'
+import { openSuggestionsOf } from '../../utils/clubs/suggestions'
+import { openClubRequests } from '../../utils/clubs/clubRequests'
+import { openRepRequests } from '../../utils/clubs/repRequests'
 import { checkCounts, checkWords, needsCheck, sortRegionCards } from '../../../domain/clubs/regionCards'
 import { nextCheckWords } from '../../../domain/clubs/monthlyCheck'
 import type { RegionClub, WorkspaceRegionResponse } from '../../../domain/contracts/clubs'
@@ -167,6 +191,11 @@ async function keepersOf(db: D1Database, regions: string[], memberId: string): P
   }))
 }
 
+/** The regions the seats name, each once; a seat with no region names none. */
+function namedRegions(seats: Array<{ region: string | null }>): string[] {
+  return [...new Set(seats.map((seat) => seat.region).filter((region): region is string => !!region))]
+}
+
 function byText(a: string, b: string): number {
   return a < b ? -1 : a > b ? 1 : 0
 }
@@ -195,6 +224,7 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
   const counts = await eventCounts(db, ids, regionEvents ? ids : ids.filter((id) => !admittedByRegionAlone(member, id)))
   const inReview = regionEvents ? await reviewCounts(db, ids) : null
   const now = Date.now()
+  const open = await openSuggestionsOf(db, ids, now)
   const cards: RegionClub[] = sortRegionCards(rows.map((row) => ({
     id: row.id,
     name: row.name,
@@ -207,7 +237,7 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
     lastCheckWords: checkWords(row.last_confirmed_at, now),
     needsCheck: needsCheck(row.last_confirmed_at, now),
     events: counts.get(row.id) ?? 0,
-    openItems: [],
+    openItems: open.get(row.id) ?? [],
     ...(inReview ? { inReview: inReview.get(row.id) ?? 0 } : {}),
   })))
 
@@ -223,5 +253,13 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
   }
   // This month's count of the events in LCA review, only while REGION_EVENTS_ON is set.
   if (inReview) answer.thisMonth.inReview = [...inReview.values()].reduce((sum, n) => sum + n, 0)
+  // The rows of Suggest a club and Start a club the person keeps, only when there is one.
+  const requests = await openClubRequests(db, { all: isAdmin, regions: namedRegions(seats) }, now)
+  if (requests.length > 0) answer.clubRequests = requests
+  // The requests of Ask to be its named rep the person may decide, only when there is one (WS09 step 31).
+  const repRequests = await openRepRequests(db, { member, all: isAdmin, regions: namedRegions(seats) })
+  if (repRequests.length > 0) answer.repRequests = repRequests
+  // People's names and addresses are in either: no cache keeps it.
+  if (requests.length > 0 || repRequests.length > 0) return jsonResponse(answer, 200, { 'Cache-Control': 'no-store' })
   return jsonResponse(answer)
 }

@@ -13,6 +13,11 @@
 // Directions. The map is the page's to pass (ClubPage.tsx), so the editor's
 // preview column, which draws this section from the form (compact), draws
 // no map, no told line it cannot know, and no links.
+//
+// On the page Suggest an update (WS09 step 28), one of the sheet's two ways
+// in, which the page passes (`suggest`), stands right under the told line;
+// with no told line it is not drawn here, and Contact's stays. The preview passes
+// none, so it draws none.
 import type { ReactNode } from 'react'
 import { ExternalLink, MapPin } from 'lucide-react'
 
@@ -46,7 +51,7 @@ function PlaceRow({ place, compact }: { place: Place; compact: boolean }) {
 }
 
 export function WhenAndWhere({
-  name, statement, told, places, map, compact = false, id,
+  name, statement, told, places, map, compact = false, id, suggest,
 }: {
   name: string
   /** How the club meets, in its own words. */
@@ -59,6 +64,8 @@ export function WhenAndWhere({
   compact?: boolean
   /** The section's id, for the section nav; none in the preview. */
   id?: string
+  /** Suggest an update, at the end of the told line; the page passes it, the preview never. */
+  suggest?: ReactNode
 }) {
   const meets = statement?.trim() ? statement.trim() : null
   const label = STATEMENT_LABEL
@@ -77,6 +84,7 @@ export function WhenAndWhere({
               </figure>
             )}
             {told && <p className={cn('text-sm text-ink-muted', meets && 'mt-3')}>{told}</p>}
+            {told && suggest}
           </div>
           {places.length > 0 && (
             <div className="min-w-0 space-y-2">

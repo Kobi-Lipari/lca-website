@@ -6,7 +6,8 @@
 // (WS09 step 23). Both find the club by clubNamedBy and build the answer by
 // clubPageAnswer, so the HTML a search engine reads and the page a visitor
 // sees come from the same queries and the same listing rule. Who may read is
-// each caller's own: this file reads no sign-in and no constant.
+// each caller's own: this file reads no sign-in, and one constant only,
+// CLUB_PAGES_ON, for the one key of WS09 step 31 (rep_wanted below).
 //
 // The address part is looked up in a fixed order: a current slug, then an
 // old slug from club_slug_history, then a club's id. A slug and an old slug
@@ -22,13 +23,20 @@
 // The answer is built from named columns, never a spread of a row, and
 // carries no email address, officer, roster, member's id, count of members,
 // keeper's id or name, told_by, confirmed_by, stored stamp or column of the
-// approval wait. Who keeps the club is not in it at all (K's decision 12).
+// approval wait. Who keeps the club is not in it at all (K's decision 12):
+// where a message from the Contact form goes is one word of a closed list,
+// read by relayKind in ./relay.ts (WS09 step 26), never a name or an address.
+// Where a suggestion from Suggest an update goes is one word of a closed list
+// too, read by suggestionGoesTo in ./suggestions.ts (WS09 step 28).
 // The told line comes as words, "Last checked" and a month
 // (functions/utils/clubs/authorLine.ts). The events are the club's listed
 // events, through listedWhere, with the keys a visitor's event answers
 // already carry; the news rows are today's club answer's, by its rule.
 import { clubToldLine } from './authorLine'
+import { CLUB_PAGES_ON } from './pages'
 import { nearestClubs } from './nearest'
+import { relayKind } from './relay'
+import { suggestionGoesTo } from './suggestions'
 import { listedWhere } from '../events/listing'
 import { clubPageSections, filled } from '../../../domain/clubs/sections'
 import type { ClubPageEvent, ClubPageResponse } from '../../../domain/contracts/clubPage'
@@ -168,6 +176,10 @@ export async function clubPageAnswer(db: D1Database, club: PageClub): Promise<Cl
 
   const told = clubToldLine(club)
   const nearest = await nearestClubs(db, club.id)
+  // Where the Contact form's message goes, as one word: never who, never an address (WS09 step 26).
+  const goesTo = await relayKind(db, club.id)
+  // Where Suggest an update's suggestion goes, as one word: never who, never an address (WS09 step 28).
+  const suggestionTo = await suggestionGoesTo(db, club.id)
 
   const about = {
     text: text(club.about_text),
@@ -219,7 +231,13 @@ export async function clubPageAnswer(db: D1Database, club: PageClub): Promise<Cl
     about,
     statement: { text: statement, told },
     places: placeRows,
-    contact: { name: text(club.contact_name_public) },
+    contact: { name: text(club.contact_name_public), goes_to: goesTo },
+    suggestion: { goes_to: suggestionTo },
+    // Whether the page invites a member to Ask to be its named rep (WS09 step 31): while the club has no named rep,
+    // which is exactly while the suggestion does not go to the club's rep, so no query more is made. Never who.
+    // Sent only while CLUB_PAGES_ON is set, read here at each call, so with it unset the keepers' preview is the
+    // base's answer to the byte.
+    ...(CLUB_PAGES_ON ? { rep_wanted: suggestionTo !== 'club_rep' } : {}),
     events: eventRows,
     news: newsRows,
     nearest,

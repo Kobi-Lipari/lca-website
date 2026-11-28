@@ -77,17 +77,17 @@ const wordsOf = (el: Element) => (el.textContent ?? '').replace(/\s+/g, ' ').tri
 const ADDRESS = () => `${window.location.origin}/clubs/${CLUB_SLUG}`
 
 describe('the rest of the page, from the one answer', () => {
-  it('draws Events, then News, then the nearest clubs, then the foot line, and lists Events and News in the nav, with no second ask', async () => {
+  it('draws Events, then News, then Contact (WS09 step 26), then the nearest clubs, then the foot line, and lists Events, News and Contact in the nav, with no second ask', async () => {
     const page = await draw()
     const nav = screen.getByRole('navigation', { name: 'On this page' })
     expect(within(nav).getAllByRole('link').map((a) => [a.textContent, a.getAttribute('href')])).toEqual([
-      ['About', '#about'], ['When and where', '#when-and-where'], ['Events', '#events'], ['News', '#news'],
+      ['About', '#about'], ['When and where', '#when-and-where'], ['Events', '#events'], ['News', '#news'], ['Contact', '#contact'],
     ])
-    expect([...page.querySelectorAll('section')].map((s) => s.id)).toEqual(['about', 'when-and-where', 'events', 'news'])
-    const order = ['#events', '#news', '[data-slot="nearby-clubs"]', '[data-slot="club-foot"]'].map((s) => page.querySelector(s)!)
+    expect([...page.querySelectorAll('section')].map((s) => s.id)).toEqual(['about', 'when-and-where', 'events', 'news', 'contact'])
+    const order = ['#events', '#news', '#contact', '[data-slot="nearby-clubs"]', '[data-slot="club-foot"]'].map((s) => page.querySelector(s)!)
     for (let i = 1; i < order.length; i++) expect(order[i - 1].compareDocumentPosition(order[i]) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
     expect(screen.getAllByRole('heading', { level: 2 }).map((h) => h.textContent)).toEqual([
-      'About Example Chess Club', 'When and where Example Chess Club meets', 'Events', 'Club news', 'Chess clubs near Example City',
+      'About Example Chess Club', 'When and where Example Chess Club meets', 'Events', 'Club news', 'Contact', 'Chess clubs near Example City',
     ])
     expect(asked).toEqual([`/api/clubs/${CLUB_SLUG}/page`])
   })
@@ -228,28 +228,33 @@ describe('the foot line and Copy link', () => {
 })
 
 describe('the bare club', () => {
-  it('gains the foot line and nothing else: no Events, no News, no nearest clubs and no new control but Copy link', async () => {
+  it('gains the foot line and Contact and nothing else: no Events, no News, no nearest clubs and no new control but Copy link and Contact\'s', async () => {
     answer = bareAnswer()
     const page = await draw()
-    expect([...page.querySelectorAll('section')].map((s) => s.id)).toEqual(['about', 'when-and-where'])
+    expect([...page.querySelectorAll('section')].map((s) => s.id)).toEqual(['about', 'when-and-where', 'contact'])
     expect(page.querySelector('[data-slot="nearby-clubs"], #events, #news')).toBeNull()
     expect(page.querySelector('[data-slot="club-foot"]')).not.toBeNull()
     const controls = [...page.querySelectorAll('a, button')].map((c) => c.getAttribute('aria-label') ?? c.textContent?.trim())
     expect(controls.at(-1)).toBe('Copy link')
-    expect(controls).toHaveLength(7)
+    // Contact (WS09 step 26) adds its nav link, Help, Close help and Send message; WS09 checkpoint X's review put two
+    // question marks where Help and Close help stood, and K's answer to its choice 5 brought Help and Close help back.
+    // Moved at WS09 step 28: Suggest an update adds its two ways in, under the told line and beside Contact.
+    expect(controls).toHaveLength(13)
     expect(wordsOf(page)).not.toMatch(/No events|No news|not listed|Schedule/i)
   })
 })
 
 describe('what is left out', () => {
-  it('draws no Follow this club, no Add to calendar, no partner row, no Photos, no Contact and no Suggest an update, absent and never greyed', async () => {
+  it('draws no Follow this club, no Add to calendar, no partner row, no Photos and no Suggest an update, absent and never greyed, and Contact, which WS09 step 26 built', async () => {
     answer = restAnswer({ sections: ['about', 'when_and_where', 'events', 'news', 'photos', 'contact'] })
     const page = await draw()
     const words = wordsOf(page)
-    expect(words).not.toMatch(/Follow|calendar|Partner event|organizer's site|Photos|Suggest an update/i)
-    expect(screen.queryByRole('heading', { name: /^Contact|^Photos/ })).toBeNull()
-    expect(page.querySelector('#photos, #contact, [data-status="partner"], [aria-disabled="true"], [disabled]')).toBeNull()
-    expect([...page.querySelectorAll('nav[aria-label="On this page"] a')].map((a) => a.textContent)).toEqual(['About', 'When and where', 'Events', 'News'])
+    // Moved at WS09 step 28: Suggest an update is in the page twice, under the told line and beside Contact, never on a block.
+    expect(words).not.toMatch(/Follow|calendar|Partner event|organizer's site|Photos/i)
+    expect(words.match(/Suggest an update/g)).toHaveLength(2)
+    expect(screen.queryByRole('heading', { name: /^Photos/ })).toBeNull()
+    expect(page.querySelector('#photos, [data-status="partner"], [aria-disabled="true"], [disabled]')).toBeNull()
+    expect([...page.querySelectorAll('nav[aria-label="On this page"] a')].map((a) => a.textContent)).toEqual(['About', 'When and where', 'Events', 'News', 'Contact'])
   })
 })
 

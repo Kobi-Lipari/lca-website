@@ -23,7 +23,7 @@ import { baseClubRoute } from './helpers/clubPreviewBase'
 
 import { onRequestGet as routeGet } from '../../functions/clubs/[id]'
 import { onRequestGet as pageGet } from '../../functions/api/clubs/[id]/page'
-import { ABOUT_LABELS, ABOUT_TICKS, EVENTS_HEADING, PAGE_SECTION_IDS, aboutHeading, cityLine, eventDates, whenAndWhereHeading } from '../../domain/clubs/pageWords'
+import { ABOUT_LABELS, ABOUT_TICKS, CONTACT_HEADING, CONTACT_WRITTEN_LINE, EVENTS_HEADING, PAGE_SECTION_IDS, aboutHeading, cityLine, eventDates, whenAndWhereHeading } from '../../domain/clubs/pageWords'
 import type { ClubPageResponse } from '../../domain/contracts/clubPage'
 import { clubLinks, escapeHtml, WRITTEN_PAGE_MARK, WRITTEN_PAGE_STYLE } from '../../functions/utils/clubs/pageHtml'
 
@@ -105,7 +105,9 @@ function baseBody(answer: ClubPageResponse): string {
   const { club } = answer
   const top = [`<h1>${escapeHtml(club.name)}</h1>`, `<p>${escapeHtml(cityLine(club.city, club.region))}</p>`]
   if (hasWords(answer.statement.text)) top.push(...baseStatementOf(answer.statement.text))
-  return `<main>${[...top, ...baseAboutHtml(answer), ...basePlacesHtml(answer), ...baseEventsHtml(answer)].join('')}</main>`
+  // Contact's heading and line, which WS09 step 26 added after the base's sections, the one change to the copy besides checkpoint W's two above.
+  const contact = `<section><h2>${CONTACT_HEADING}</h2><p>${CONTACT_WRITTEN_LINE}</p></section>`
+  return `<main>${[...top, ...baseAboutHtml(answer), ...basePlacesHtml(answer), ...baseEventsHtml(answer), contact].join('')}</main>`
 }
 
 let made = 0
@@ -200,7 +202,7 @@ describe('the written page with CLUB_PAGES_ON set', () => {
     const expected = baseBody(await pageAnswer(club.slug))
     expect(withoutTheLook(root)).toBe(expected)
     expect(headingsOf(root)).toEqual(headingsOf(expected))
-    expect(headingsOf(root).map(([level]) => level)).toEqual(['1', '2', '3', '3', '3', '2', '2', '3'])
+    expect(headingsOf(root).map(([level]) => level)).toEqual(['1', '2', '3', '3', '3', '2', '2', '3', '2'])
     expect(linksOf(root)).toEqual(linksOf(expected))
     expect(linksOf(root).length).toBe(4)
     expect(textOf(root)).toEqual(textOf(expected))

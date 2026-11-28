@@ -23,13 +23,24 @@ import {
   clubListResponseSchema,
   clubPlacesRequestSchema,
   clubPlacesResponseSchema,
+  monthlyCheckAnswerSchema,
   monthlyCheckRequestSchema,
-  monthlyCheckResponseSchema,
   updateClubRequestSchema,
   updateClubResponseSchema,
   workspaceRegionResponseSchema,
 } from './clubs'
+import { clubContactRequestSchema, clubContactResponseSchema } from './clubContact'
+import { clubReplyRequestSchema, clubReplyResponseSchema, clubReplySentResponseSchema } from './clubReply'
 import { clubPageResponseSchema } from './clubPage'
+import {
+  clubReportActionRequestSchema, clubReportActionResponseSchema, clubSuggestionRequestSchema, clubSuggestionResponseSchema,
+} from './clubReports'
+import {
+  repDecisionRequestSchema, repDecisionResponseSchema, repRequestResponseSchema, repRequestSchema,
+} from './clubRepRequests'
+import {
+  clubRequestHandledRequestSchema, clubRequestHandledResponseSchema, clubRequestResponseSchema, clubRequestSchema,
+} from './clubRequests'
 import {
   adminTournamentResponseSchema,
   clearinghouseQuerySchema,
@@ -108,6 +119,9 @@ export const contracts = {
   tournaments: {
     GET: { response: tournamentsListResponseSchema },
   },
+  'admin/club-reports/[reportId]': {
+    POST: { request: clubRequestHandledRequestSchema, response: clubRequestHandledResponseSchema },
+  },
   'admin/clubs/[id]': {
     GET: { response: adminClubResponseSchema },
     PATCH: { request: updateClubRequestSchema, response: updateClubResponseSchema },
@@ -118,8 +132,14 @@ export const contracts = {
   'admin/clubs/[id]/places': {
     PUT: { request: clubPlacesRequestSchema, response: clubPlacesResponseSchema },
   },
+  'admin/clubs/[id]/reports/[reportId]': {
+    POST: { request: clubReportActionRequestSchema, response: clubReportActionResponseSchema },
+  },
+  'admin/clubs/[id]/rep-requests/[requestId]': {
+    POST: { request: repDecisionRequestSchema, response: repDecisionResponseSchema },
+  },
   'admin/clubs/monthly-check': {
-    POST: { request: monthlyCheckRequestSchema, response: monthlyCheckResponseSchema },
+    POST: { request: monthlyCheckRequestSchema, response: monthlyCheckAnswerSchema },
   },
   'admin/mail/newsletter': {
     GET: { response: newsletterSummaryResponseSchema },
@@ -192,12 +212,28 @@ export const contracts = {
   'clubs/[id]': {
     GET: { response: clubDetailResponseSchema },
   },
+  'clubs/[id]/contact': {
+    POST: { request: clubContactRequestSchema, response: clubContactResponseSchema },
+  },
   'clubs/[id]/page': {
     GET: { response: clubPageResponseSchema },
+  },
+  'clubs/[id]/reports': {
+    POST: { request: clubSuggestionRequestSchema, response: clubSuggestionResponseSchema },
+  },
+  'clubs/[id]/rep-requests': {
+    POST: { request: repRequestSchema, response: repRequestResponseSchema },
   },
   'clubs/confirm/[token]': {
     GET: { response: clubLinkResponseSchema },
     POST: { request: clubLinkConfirmRequestSchema, response: clubLinkConfirmResponseSchema },
+  },
+  'clubs/reply/[token]': {
+    GET: { response: clubReplyResponseSchema },
+    POST: { request: clubReplyRequestSchema, response: clubReplySentResponseSchema },
+  },
+  'clubs/reports': {
+    POST: { request: clubRequestSchema, response: clubRequestResponseSchema },
   },
   'mail/preferences/[token]': {
     GET: { response: emailChoicesResponseSchema },

@@ -61,3 +61,9 @@ export function eventDates(event: { date: string; end_date: string | null }): st
   if (!event.end_date || event.end_date === event.date) return first
   return `${first} to ${formatDate(event.end_date, { year: true })}`
 }
+
+/** The heading over the club's Contact section, in the section nav, on the page and in the page written before any script. */
+export const CONTACT_HEADING = 'Contact'
+
+/** The one line the page written before any script puts under Contact: no form, no name of a volunteer, no address. */
+export const CONTACT_WRITTEN_LINE = 'You can send the club a message through this site. Its address stays private.'

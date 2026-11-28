@@ -236,7 +236,8 @@ describe('REDESIGN_STATUS.md, WS09 step 1: the step block', () => {
     const headings = sectionLines.filter((l) => l.startsWith('### '))
     const FIXED = [MAP, STEP, ...LISTS]
     for (const fixed of FIXED) expect(headings.filter((h) => h === fixed), fixed).toHaveLength(1)
-    for (const h of headings.filter((l) => !FIXED.includes(l))) expect(/^### (?:WS09 step (?:[1-9]|[1-3]\d): \S|Checkpoint [S-Z]: WS09 |WS09 checkpoint T: \S|WS09 checkpoint U: \S|WS09 checkpoint V: \S|WS09 checkpoint S, after K's second answer: \S|WS09 checkpoint W: \S|WS09 aside: \S|WS09 switch-on: \S|WS09 checkpoint S, after K's answers: \S)/.test(h), h).toBe(true)
+    // Checkpoint X's review adds the heading form `WS09 checkpoint X: `, as checkpoint W's did before it.
+    for (const h of headings.filter((l) => !FIXED.includes(l))) expect(/^### (?:WS09 step (?:[1-9]|[1-3]\d): \S|Checkpoint [S-Z]: WS09 |WS09 checkpoint T: \S|WS09 checkpoint U: \S|WS09 checkpoint V: \S|WS09 checkpoint S, after K's second answer: \S|WS09 checkpoint W: \S|WS09 checkpoint X: \S|WS09 aside: \S|WS09 switch-on: \S|WS09 checkpoint S, after K's answers: \S)/.test(h), h).toBe(true)
   })
 
   it('has every part, in order', () => {
@@ -320,8 +321,10 @@ describe('REDESIGN_STATUS.md, WS09 step 1: the lists', () => {
     for (const list of [decisions, verify, followUps]) {
       expect(entries(list).length).toBeGreaterThan(0)
       // The two follow-ups of the aside on the question marks' words are held in their own form by that aside's record test.
-      // The follow-ups tagged for checkpoint W are held in their form by test/unit/redesign-status-ws09-w-review.test.ts.
-      for (const entry of entries(list).filter((e) => !e.includes('(WS09 aside: the question marks\' words).** ') && !/^- \*\*[^*]+ \(WS09 checkpoint W\)\.\*\* \S/.test(e))) expect(entry).toMatch(/^- \*\*[^*]+ \(WS09 checkpoint V\)\.\*\* \S|^- \*\*[^*]+ \(WS09 (?:step (?:[1-9]|[1-3]\d)|checkpoint S)\)\.\*\* \S|^- \*\*[^*]+ \(WS09 checkpoint U\)\.\*\* \S/)
+      // The follow-ups tagged for checkpoint W are held in their form by test/unit/redesign-status-ws09-w-review.test.ts,
+      // and the one tagged for checkpoint X by test/unit/redesign-status-ws09-x-takes-w-2.test.ts.
+      // The two follow-ups of the aside on one Help button again are held by test/unit/redesign-status-ws09-x-help-button.test.ts.
+      for (const entry of entries(list).filter((e) => !e.includes('(WS09 aside: the question marks\' words).** ') && !e.includes('(WS09 aside: one Help button again).** ') && !/^- \*\*[^*]+ \(WS09 checkpoint [WX]\)\.\*\* \S/.test(e))) expect(entry).toMatch(/^- \*\*[^*]+ \(WS09 checkpoint V\)\.\*\* \S|^- \*\*[^*]+ \(WS09 (?:step (?:[1-9]|[1-3]\d)|checkpoint S)\)\.\*\* \S|^- \*\*[^*]+ \(WS09 checkpoint U\)\.\*\* \S/)
     }
     expect(deviations).toContain('None in WS09 step 1.')
   })

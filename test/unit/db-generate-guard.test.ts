@@ -160,8 +160,8 @@ describe('generateMigration', () => {
     expect(splitSql(written)).toHaveLength(1)
     // The staging SQL is gone; the snapshot and journal entry stay for the next diff.
     expect(listing(box.stagingDir)).toEqual(['meta'])
-    // The committed meta holds 0000 to 0017 (steps 6, 8 and 15, the champions lists and import, the membership status, the 2026 champion, the ticket kinds, the mail lists, the club regions, the club pages, the club pages seed, the automation runs, the club check marks, the club event approval, the newsletter's letters, the seat listing); this run adds 0018.
-    expect(listing(join(box.stagingDir, 'meta'))).toEqual(['0000_snapshot.json', '0001_snapshot.json', '0002_snapshot.json', '0003_snapshot.json', '0004_snapshot.json', '0005_snapshot.json', '0006_snapshot.json', '0007_snapshot.json', '0008_snapshot.json', '0009_snapshot.json', '0010_snapshot.json', '0011_snapshot.json', '0012_snapshot.json', '0013_snapshot.json', '0014_snapshot.json', '0015_snapshot.json', '0016_snapshot.json', '0017_snapshot.json', '0018_snapshot.json', '_journal.json'])
+    // The committed meta holds 0000 to 0018 (steps 6, 8 and 15, the champions lists and import, the membership status, the 2026 champion, the ticket kinds, the mail lists, the club regions, the club pages, the club pages seed, the automation runs, the club check marks, the club event approval, the newsletter's letters, the seat listing, the rate limits); this run adds 0019.
+    expect(listing(join(box.stagingDir, 'meta'))).toEqual(['0000_snapshot.json', '0001_snapshot.json', '0002_snapshot.json', '0003_snapshot.json', '0004_snapshot.json', '0005_snapshot.json', '0006_snapshot.json', '0007_snapshot.json', '0008_snapshot.json', '0009_snapshot.json', '0010_snapshot.json', '0011_snapshot.json', '0012_snapshot.json', '0013_snapshot.json', '0014_snapshot.json', '0015_snapshot.json', '0016_snapshot.json', '0017_snapshot.json', '0018_snapshot.json', '0019_snapshot.json', '_journal.json'])
   })
 
   it.each([

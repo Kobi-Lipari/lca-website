@@ -169,6 +169,11 @@ export const A11Y_EMPTY_SECRETS = [
   'SES_ACCESS_KEY_ID',
   'SES_SECRET_ACCESS_KEY',
   'SES_SNS_TOPIC_ARN',
+  // The spam check's two keys, each bound empty for the local server, as on the Preview environment until K sets them, so
+  // a form that checks refuses in words. This list reaches the server alone; the page's own key is emptied for the
+  // browser builds by buildVariant below.
+  'TURNSTILE_SECRET_KEY',
+  'VITE_TURNSTILE_SITE_KEY',
   // The secret of the expiring tokens in links: with none, as on the Preview environment until K sets it, no token is made.
   'SIGNING_SECRET',
   'SIGNING_SECRET_PREVIOUS',
@@ -251,6 +256,9 @@ export function buildVariant(variant: AnyA11yVariant): void {
       // loading Google Maps.
       VITE_GOOGLE_MAPS_API_KEY: '',
       VITE_FORMSPREE_FORM_ID: '',
+      // Empty on purpose: no env file on the machine can put a spam check
+      // key into a browser build, so no form loads the provider's script.
+      VITE_TURNSTILE_SITE_KEY: '',
       VITE_SITE_URL: `http://127.0.0.1:${variant.port}`,
     },
   )

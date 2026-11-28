@@ -10,3 +10,11 @@
 /clubs/confirm/*
   Referrer-Policy: no-referrer
   X-Robots-Tag: noindex
+
+# /clubs/reply/<token> is the Reply through LCA page a representative's or an
+# LCA admin's copy of a relayed message opens (WS09 step 27). Its token rides
+# in the address, so it is served the same way, and the page sets both in its
+# head while it draws.
+/clubs/reply/*
+  Referrer-Policy: no-referrer
+  X-Robots-Tag: noindex

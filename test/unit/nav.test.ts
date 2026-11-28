@@ -794,7 +794,7 @@ describe('the guard on the five switches that point rows at later pages', () => 
   it('has a route for Suggest a club once newClubs is on: the paths newClubs opens and src/App.tsx lacks are none (WS09 step 21)', () => {
     expect(missingRoutes('newClubs', APP_ROUTES)).toEqual([])
     // The route is written behind the switch, so with newClubs off the address is today's club page's, which says "Club not found".
-    expect(read('src/App.tsx')).toContain('{FEATURES.newClubs && <Route path="/clubs/suggest" element={<Navigate to="/contact?subject=club" replace />} />}')
+    expect(read('src/App.tsx')).toContain('{FEATURES.newClubs && <Route path="/clubs/suggest" element={<SuggestClubPage />} />}')
   })
 
   it.each(EARLY)('can fail: with %s on before its part ships, it names each path that has no route', (name) => {

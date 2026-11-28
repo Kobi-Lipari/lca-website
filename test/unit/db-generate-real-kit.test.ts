@@ -99,7 +99,7 @@ describe('drizzle-kit generate on the committed baseline', () => {
     const run = runDrizzleKit(['generate', '--name', 'check'], root)
     expect(run.status).toBe(0)
     expect(run.output).toMatch(/No schema changes/)
-    expect(run.output).toMatch(/43 tables/)
+    expect(run.output).toMatch(/44 tables/)
     expect({ drizzle: tree(join(root, 'drizzle')), migrations: tree(join(root, 'migrations')) }).toEqual(before)
   }, TIMEOUT)
 
@@ -110,10 +110,10 @@ describe('drizzle-kit generate on the committed baseline', () => {
     expect(migrationFiles(join(root, 'migrations'))).toEqual(migrationFiles())
   }, TIMEOUT)
 
-  it('keeps the baseline, the two step 8 entries, the step 15 entry, the two champions entries the membership status entry, the 2026 champion entry, the ticket kinds entry, the mail lists entry, the club regions entry, the club pages entry, the club pages seed entry, the automation runs entry, the club check marks entry, the club event approval entry, the newsletter issues entry and the seat listing entry in drizzle/meta, and no SQL in drizzle/', () => {
+  it('keeps the baseline, the two step 8 entries, the step 15 entry, the two champions entries the membership status entry, the 2026 champion entry, the ticket kinds entry, the mail lists entry, the club regions entry, the club pages entry, the club pages seed entry, the automation runs entry, the club check marks entry, the club event approval entry, the newsletter issues entry, the seat listing entry and the rate limits entry in drizzle/meta, and no SQL in drizzle/', () => {
     const journal = JSON.parse(readFileSync(join(ROOT, 'drizzle/meta/_journal.json'), 'utf8')) as { dialect: string; entries: unknown[] }
     expect(journal.dialect).toBe('sqlite')
-    expect(journal.entries).toHaveLength(18)
+    expect(journal.entries).toHaveLength(19)
     expect(readdirSync(join(ROOT, 'drizzle')).filter((f) => f.endsWith('.sql'))).toEqual([])
     expect(existsSync(join(ROOT, 'drizzle/meta/0000_snapshot.json'))).toBe(true)
   })
@@ -130,7 +130,7 @@ describe('db:generate with the real drizzle-kit', () => {
     expect(text).toMatch(/ALTER TABLE `clubs` ADD `nickname` text;/)
     expect(splitSql(text)).toHaveLength(1)
     expect(readdirSync(join(root, 'drizzle'))).toEqual(['meta'])
-    expect(readdirSync(join(root, 'drizzle/meta')).sort()).toEqual(['0000_snapshot.json', '0001_snapshot.json', '0002_snapshot.json', '0003_snapshot.json', '0004_snapshot.json', '0005_snapshot.json', '0006_snapshot.json', '0007_snapshot.json', '0008_snapshot.json', '0009_snapshot.json', '0010_snapshot.json', '0011_snapshot.json', '0012_snapshot.json', '0013_snapshot.json', '0014_snapshot.json', '0015_snapshot.json', '0016_snapshot.json', '0017_snapshot.json', '0018_snapshot.json', '_journal.json'])
+    expect(readdirSync(join(root, 'drizzle/meta')).sort()).toEqual(['0000_snapshot.json', '0001_snapshot.json', '0002_snapshot.json', '0003_snapshot.json', '0004_snapshot.json', '0005_snapshot.json', '0006_snapshot.json', '0007_snapshot.json', '0008_snapshot.json', '0009_snapshot.json', '0010_snapshot.json', '0011_snapshot.json', '0012_snapshot.json', '0013_snapshot.json', '0014_snapshot.json', '0015_snapshot.json', '0016_snapshot.json', '0017_snapshot.json', '0018_snapshot.json', '0019_snapshot.json', '_journal.json'])
 
     // The runner still reads it like any other migration.
     const plain = new DatabaseSync(':memory:')

@@ -7,19 +7,8 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import {
-  adminAddClubOfficer,
-  adminCreateClubNews,
-  adminDeleteClubNews,
-  adminGetClub,
-  adminGetClubNews,
-  adminRemoveClubOfficer,
-  adminUpdateClub,
-  adminUploadClubLogo,
-  type ApiAdminClubOfficer,
-  type ApiAdminClubTournament,
-  type ApiAdminMember,
-  type ApiClubDetail,
-  type ApiClubNews,
+  adminAddClubOfficer, adminCreateClubNews, adminDeleteClubNews, adminGetClub, adminGetClubNews, adminRemoveClubOfficer, adminUpdateClub,
+  adminUploadClubLogo, type ApiAdminClubOfficer, type ApiAdminClubTournament, type ApiAdminMember, type ApiClubDetail, type ApiClubNews,
   type ApiClubPlace,
 } from '@/lib/api'
 import { useAuth } from '@/contexts/auth-context'
@@ -35,6 +24,7 @@ import { usePageTitle } from '@/hooks/usePageTitle'
 import { LCA } from '@/lib/brand'
 import { ViewOnlyFieldset, ViewOnlyNote } from '@/lib/viewOnly'
 import { keepersOn, regionEventsOn } from '@/areas/clubs/switches'
+import { ClubSuggestionsBanner, type OpenSuggestion } from '@/areas/clubs/components/SuggestionRows'
 // The one club editor, fetched only when the Details tab draws it, with clubKeepers on.
 const ClubEditor = lazy(() => import('@/areas/clubs/components/ClubEditor').then((m) => ({ default: m.ClubEditor })))
 
@@ -64,6 +54,8 @@ export function AdminClubPage() {
   const [tournaments, setTournaments] = useState<ApiAdminClubTournament[]>([])
   const [officers, setOfficers] = useState<ApiAdminClubOfficer[]>([])
   const [places, setPlaces] = useState<ApiClubPlace[]>([])
+  // The club's open suggestions (WS09 step 28), answered to a keeper of the club only while one is open.
+  const [suggestions, setSuggestions] = useState<OpenSuggestion[]>([])
   const [officerForm, setOfficerForm] = useState({ memberId: '', title: '' })
   const [officerBusy, setOfficerBusy] = useState(false)
   const [loading, setLoading] = useState(true)
@@ -123,6 +115,7 @@ export function AdminClubPage() {
         if ('failed' in newsData) throw newsData.failed
         setClub(c)
         setTournaments(clubData.tournaments ?? [])
+        setSuggestions(clubData.openSuggestions ?? [])
         setOfficers(clubData.officers ?? [])
         setPlaces(clubData.places ?? [])
         setForm({
@@ -341,6 +334,13 @@ export function AdminClubPage() {
             {error}
           </p>
         )}
+
+        {/* A visitor's suggestions, for a keeper of the club, while any is open (WS09 step 28); with none it draws nothing. */}
+        <ClubSuggestionsBanner
+          key={club.id} suggestions={suggestions} clubId={club.id} clubName={club.name}
+          onApplied={() => setTab('details')}
+          className="mb-6"
+        />
 
         {/* ── Details tab ── */}
         <ViewOnlyNote />

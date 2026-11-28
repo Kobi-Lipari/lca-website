@@ -59,7 +59,7 @@ describe('collectRoutes', () => {
 describe('collectRoutes on the real functions folder', () => {
   const real = collectRoutes(join(__dirname, '../../functions')).map((s) => s.join('/'))
 
-  it('finds the 109 handler files under api plus the page routes', () => {
+  it('finds the 118 handler files under api plus the page routes', () => {
     // 88 at the end of checkpoint F; functions/api/search.ts, a new route rather than a moved one, is the 89th since WS02 step 9;
     // functions/api/me/tournament-creation.ts and functions/api/me/payout-request.ts, two new routes, are the 90th and 91st since WS08 step 7;
     // functions/api/mail/unsubscribe/[token].ts and functions/api/mail/preferences/[token].ts, two new routes, are the 92nd and 93rd since WS16 step 3;
@@ -73,8 +73,13 @@ describe('collectRoutes on the real functions folder', () => {
     // functions/api/admin/mail/newsletter/issue.ts, issue/start.ts and issues.ts, three new routes of WS16 part two, page step 3, are the 105th to 107th since main was brought in.
     // functions/api/admin/mail/newsletter/templates.ts, the newsletter's saved templates, a new route of WS16 part two, is the 108th.
     // functions/api/clubs/[id]/page.ts, the new club page's answer, a new route of WS09 step 20, is the 109th since checkpoint W took main in again.
-    // functions/api/admin/mail/newsletter/issue/send.ts, the page's real Send, a new route of WS16 part two, is the 110th.
-    expect(real.filter((r) => r.startsWith('api/')).length).toBe(110)
+    // functions/api/clubs/[id]/contact.ts, the contact relay, a new route, is the 110th since WS09 step 26.
+    // functions/api/clubs/reply/[token].ts, Reply through LCA, a new route, is the 111th since WS09 step 27.
+    // functions/api/clubs/[id]/reports.ts, Suggest an update, and functions/api/admin/clubs/[id]/reports/[reportId].ts, a keeper's answer to it, two new routes, are the 112th and 113th since WS09 step 28.
+    // functions/api/clubs/reports.ts, Suggest a club and Start a club, and functions/api/admin/club-reports/[reportId].ts, Mark as handled for its rows, two new routes, are the 114th and 115th since WS09 step 30.
+    // functions/api/clubs/[id]/rep-requests.ts, Ask to be its named rep, and functions/api/admin/clubs/[id]/rep-requests/[requestId].ts, a keeper's decision on it, two new routes, are the 116th and 117th since WS09 step 31.
+    // functions/api/admin/mail/newsletter/issue/send.ts, the page's real Send, a new route of WS16 part two, is the 118th here: the 110th on main, counted after checkpoint X's eight.
+    expect(real.filter((r) => r.startsWith('api/')).length).toBe(118)
     // functions/sitemap.xml.ts, the sitemap, is a page route outside api (WS09 step 24), so the count of api files stands.
     expect(real).toEqual(expect.arrayContaining(['tournaments/[id]', 'clubs/[id]', 'news/[slug]', 'sitemap.xml']))
     // functions/robots.txt.ts, the robots file that names the sitemap, is a page route outside api too (checkpoint W, K's decision 11).

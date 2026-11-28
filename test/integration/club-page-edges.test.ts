@@ -175,7 +175,7 @@ describe('GET /api/clubs/[id]/page: a club with little or nothing filled in', ()
     expect(body.events).toEqual([])
     expect(body.news).toEqual([])
     expect(body.statement).toEqual({ text: null, told: '' })
-    expect(body.contact).toEqual({ name: null })
+    expect(body.contact).toEqual({ name: null, goes_to: 'lca' })
     expect(body.about).toEqual({
       text: null, cost: null, welcome: null, facebook: null, website: null, other: null, weekend_play: false, scholastic_friendly: false,
     })

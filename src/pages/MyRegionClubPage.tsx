@@ -40,6 +40,18 @@
 // for each event the person runs, and the LCA admins' wait in words. After
 // the create the steps go to the event's manage page. With regionEvents off
 // the tab is as before.
+//
+// While a visitor's suggestion for the club is open (WS09 step 28) a banner
+// above the tabs' contents shows each, with Fix the listing, Reply to visitor
+// (only when the visitor left an address) and Not an issue
+// (SuggestionRows.tsx); Fix the listing marks it and opens Listing. A page
+// opened by My region's Apply this says the row was marked and puts the
+// focus on the heading. With none open the page is as before.
+//
+// While a member's request of Ask to be its named rep for the club is open
+// (WS09 step 31) and the person may decide it, its row stands under the
+// banner with Name as rep and Decline (RepRequestRows.tsx); with none the
+// page is as before.
 import { lazy, Suspense, useCallback, useEffect, useRef, useState, type FocusEvent, type FormEvent } from 'react'
 import { Link, useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { ArrowLeft, ExternalLink } from 'lucide-react'
@@ -55,6 +67,10 @@ import { usePageTitle } from '@/hooks/usePageTitle'
 import { ClubNewsPanel, type ClubNewsForm } from '@/areas/clubs/components/ClubNewsPanel'
 import { ClubEventsList, type EventLink } from '@/areas/clubs/components/ClubEventsList'
 import { errorWords } from '@/areas/clubs/region'
+import { ClubSuggestionsBanner } from '@/areas/clubs/components/SuggestionRows'
+import { RepRequestRows } from '@/areas/clubs/components/RepRequestRows'
+import { useRowsShown } from '@/areas/clubs/suggestionRows'
+import { RESOLVED_WORDS } from '@domain/clubs/suggestion'
 import { regionEventsOn } from '@/areas/clubs/switches'
 import { checkWords } from '@domain/clubs/regionCards'
 // The one club editor, fetched only when the Listing tab draws it.
@@ -206,6 +222,11 @@ function ClubInRegion({ id }: { id: string }) {
 
   usePageTitle(club ? `${club.name} · My region` : 'My region')
 
+  // The club's requests of Ask to be its named rep: drawn from the first draw that has one, and on after the last has
+  // gone, so the list's status and heading stay on the page.
+  const repRequests = data?.repRequests ?? []
+  const repRequestsShown = useRowsShown(repRequests.length > 0)
+
   // A change to the club in hand, made only while it is still the club the change was asked for.
   const setClubData = (forClub: string, change: (d: ClubAnswer) => ClubAnswer) => {
     setLoad((now) => (now && now.kind === 'ready' && now.data.club.id === forClub ? { kind: 'ready', data: change(now.data) } : now))
@@ -220,6 +241,28 @@ function ClubInRegion({ id }: { id: string }) {
     live.current = true
     return () => { live.current = false }
   }, [])
+
+  /**
+   * A rep request whose member has another role now: the club's answer again, quietly, so its rows are drawn with the
+   * question and the buttons that are true now. Only the rep requests are taken from it: the club and its places stay
+   * as the page has them, so nothing moves under what a keeper is typing in the editor. The page's heading keeps no
+   * focus from it, and a failure leaves the page as it is.
+   */
+  function readClubAgain(forClub: string) {
+    adminGetClub(forClub)
+      .then((fresh) => { if (live.current && fresh && fresh.club) setClubData(forClub, (d) => ({ ...d, repRequests: fresh.repRequests })) })
+      .catch(() => {})
+  }
+
+  // Opened by My region's Apply this: the page says the row was marked, once, with the focus on its heading.
+  const { state: arrival } = useLocation()
+  const appliedOnArrival = useRef((arrival as { suggestionApplied?: boolean } | null)?.suggestionApplied === true)
+  useEffect(() => {
+    if (!club || !appliedOnArrival.current) return
+    appliedOnArrival.current = false
+    setSaid(RESOLVED_WORDS.applied)
+    heading.current?.focus()
+  }, [club])
 
   async function stillAccurate() {
     if (!club || confirming) return
@@ -432,6 +475,19 @@ function ClubInRegion({ id }: { id: string }) {
           <Link to="/workspace/region" className={LINK}>
             <ArrowLeft className="size-4" aria-hidden="true" /> Back to My region
           </Link>
+        )}
+
+        {/* A visitor's suggestions, while any is open (WS09 step 28); with none it draws nothing. */}
+        {club && data && <ClubSuggestionsBanner key={club.id} suggestions={data.openSuggestions ?? []} clubId={club.id} clubName={club.name} onApplied={() => setTab('listing')} />}
+
+        {/* A member's requests to be the club's rep, while any is open and the person may decide it (WS09 step 31); with none it draws nothing. */}
+        {club && repRequestsShown && (
+          <RepRequestRows
+            rows={repRequests}
+            headingId="club-rep-requests-title"
+            onDecided={(row) => setClubData(club.id, (d) => ({ ...d, repRequests: (d.repRequests ?? []).filter((r) => r.id !== row.id) }))}
+            onStale={() => readClubAgain(club.id)}
+          />
         )}
 
         {/* Hidden, not taken away, while another tab shows: out of the tab order and of what a screen reader reads, with what was typed kept. */}

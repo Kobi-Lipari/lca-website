@@ -206,8 +206,8 @@ describe('REDESIGN_STATUS.md, WS09 step 21: the parts against the files', () => 
     expect(page).toContain('getClubPage(address)')
     expect(page).toContain('loading: \'Loading the club…\'')
     expect(page).toContain('err instanceof ApiError && err.status === 404 ? \'not-found\' : \'error\'')
-    expect(read(PLAIN)).toContain('export const DRAWN_SECTIONS = [\'about\', \'when_and_where\', \'events\', \'news\'] as const')
-    expect(codeOf(COVER)).toContain('<Link to="/contact"')
+    expect(read(PLAIN)).toMatch(/export const DRAWN_SECTIONS = \['about', 'when_and_where', 'events', 'news'(?:, 'contact')?\] as const/)
+    expect(codeOf(COVER)).toMatch(/<Link to="\/contact"|<a href=\{`#\$\{SECTION_IDS\.contact\}`\}/)
     expect(codeOf(COVER)).not.toMatch(/fetch\(|sendBeacon|XMLHttpRequest/)
   })
 
@@ -295,9 +295,13 @@ describe('REDESIGN_STATUS.md, WS09 step 21: the parts against the files', () => 
   it('names its pins with their figures, and the moved checks hold', () => {
     const pins = bullet(block, '- **Pins moved.**')
     for (const file of MOVED) expect(pins, file).toContain(`\`${file}\``)
-    expect(read('test/unit/app-routes.test.tsx')).toContain('expect(pages.length).toBe(41)')
+    // Moved at WS09 step 27, whose page is the 42nd, and at WS09 step 30, whose page is the 43rd: 40 at this step, a later figure now.
+    expect(read('test/unit/app-routes.test.tsx')).toContain('expect(pages.length).toBe(43)')
     expect(read('test/unit/redesign-status-ws09-step20.test.ts')).toContain('/clubPage(?!sOn\\b)|getClubPage|authorLine|nearestClubs|clubPageSections/')
-    expect(read('test/unit/routes.test.ts')).toContain('expect(real.filter((r) => r.startsWith(\'api/\')).length).toBe(110)')
+    // Moved at WS09 step 28, whose two routes are the 112th and 113th: 111 before it, a later figure now.
+    // Moved at WS09 step 31, whose two routes are the 116th and 117th: 115 before it.
+    // Moved when the newsletter's Send joined main: its route is the 118th, 117 before it.
+    expect(read('test/unit/routes.test.ts')).toContain('expect(real.filter((r) => r.startsWith(\'api/\')).length).toBe(118)')
     expect(read('test/unit/contracts-pending.ts')).toContain('export const PENDING_COUNT = 104')
     if (!latest) return
     expect(Object.values(contracts).reduce((n, route) => n + Object.keys(route).length, 0)).toBe(41)

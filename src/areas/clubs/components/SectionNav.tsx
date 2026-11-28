@@ -4,8 +4,9 @@
 // sections the page draws, in the page's order, which sticks under the
 // site's header as the page scrolls. It lists only what the page draws, so
 // it never links to nothing: About, When and where, Events and News, each
-// only when the page draws it (WS09 step 22 adds the last two); Contact and
-// Photos join it with the steps that build them. Below 768 pixels of the
+// only when the page draws it (WS09 step 22 adds the last two), and Contact
+// (WS09 step 26), which every club has; Photos joins it with the step that
+// builds it. Below 768 pixels of the
 // page's width it is a row of pills, as the phone boards draw it, which
 // scrolls sideways inside itself while the page never does: each pill is 32
 // pixels tall for the eye inside a link 44 pixels tall, and the row keeps

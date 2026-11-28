@@ -113,7 +113,7 @@ describe('the club\'s events', () => {
     for (const answer of [bareWith({ sections: ['about', 'when_and_where', 'events', 'contact'], events: [] }), restAnswer({ sections: ['about', 'when_and_where', 'contact'], news: [] })]) {
       const page = draw(answer)
       expect(page.querySelector('#events')).toBeNull()
-      expect([...page.querySelectorAll('nav[aria-label="On this page"] a')].map((a) => a.textContent)).toEqual(['About', 'When and where'])
+      expect([...page.querySelectorAll('nav[aria-label="On this page"] a')].map((a) => a.textContent)).toEqual(['About', 'When and where', 'Contact'])
       expect(within(page).queryByRole('heading', { name: 'Events' })).toBeNull()
       expect(wordsOf(page)).not.toMatch(/No events|no events yet|Register/i)
       cleanup()

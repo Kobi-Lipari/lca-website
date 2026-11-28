@@ -361,7 +361,8 @@ describe('My region with clubKeepers on: the page', () => {
 
   it('Confirm all asks once and skips a card with an open item', async () => {
     // A made-up answer of a later step: the Rooks' card has an open item, so Confirm all leaves it for its answer.
-    const withItem = { ...ROOKS, openItems: [{ kind: 'report' }] as unknown as never[] }
+    // Moved at WS09 step 28, which gives the list its rows: the open item is a suggestion of the contract's shape.
+    const withItem = { ...ROOKS, openItems: [{ kind: 'suggestion' as const, id: 1, field: 'venue' as const, message: 'Made up.', hasAddress: false, ageDays: 3 }] }
     answers['GET /api/workspace/region'] = () => json(answerOf([KNIGHTS, withItem, card('c-pawns', 'Example Pawns Club', true, 'Not checked since Jul 2026', null), CHESS]))
     answers['POST /api/admin/clubs/c-pawns/confirm'] = () => json(confirmed('c-pawns'))
     open('representative')
@@ -386,7 +387,8 @@ describe('My region with clubKeepers on: the page', () => {
     expect(stampOf('Example Pawns Club')).toBe('Checked Nov 2026')
     expect(stampOf('Example Rooks Club')).toBe('Not checked yet')
     expect(screen.queryByRole('dialog')).toBeNull()
-    expect(cardNames()).toEqual(['Example Knights Club', 'Example Rooks Club', 'Example Pawns Club', 'Example Chess Club'])
+    // Moved at WS09 step 28: the to-do list under the cards gives the suggestion a heading of the same level, after the cards.
+    expect(cardNames().slice(0, 4)).toEqual(['Example Knights Club', 'Example Rooks Club', 'Example Pawns Club', 'Example Chess Club'])
     // Only the card with its open item still needs a check, and Confirm all has none left to mark.
     expect(screen.queryByRole('button', { name: 'Confirm all still accurate' })).toBeNull()
     expect(bar().textContent).toContain('3 of 4 checked in the last 90 days')

@@ -325,15 +325,20 @@ describe('a block with only part of its content', () => {
     expect(clubPageResponseSchema.safeParse({ ...bareAnswer(), places: [place('One'), place('Two'), place('Three')] }).success).toBe(false)
   })
 
-  it('draws no section the answer does not name, and no nav at all when it names none the page builds yet', () => {
-    const none = drawView(answerWith({ sections: ['contact'] }))
+  it('draws no section the answer does not name, and no nav at all when it names none the page builds', () => {
+    // Contact alone (WS09 step 26): its section and a nav of one link, since every club can be written to.
+    const contactOnly = drawView(answerWith({ sections: ['contact'] }))
+    expect([...contactOnly.querySelectorAll('section')].map((s) => s.id)).toEqual(['contact'])
+    expect([...contactOnly.querySelectorAll('nav[aria-label="On this page"] a')].map((a) => a.textContent)).toEqual(['Contact'])
+    expect(contactOnly.querySelector('h1')!.textContent).toBe('Example Chess Club')
+    cleanup()
+    const none = drawView(answerWith({ sections: [] }))
     expect(none.querySelector('section')).toBeNull()
     expect(none.querySelector('nav[aria-label="On this page"]')).toBeNull()
-    expect(none.querySelector('h1')!.textContent).toBe('Example Chess Club')
     cleanup()
     const aboutOnly = drawView(answerWith({ sections: ['about', 'contact'] }))
-    expect([...aboutOnly.querySelectorAll('section')].map((s) => s.id)).toEqual(['about'])
-    expect([...aboutOnly.querySelectorAll('nav[aria-label="On this page"] a')].map((a) => a.textContent)).toEqual(['About'])
+    expect([...aboutOnly.querySelectorAll('section')].map((s) => s.id)).toEqual(['about', 'contact'])
+    expect([...aboutOnly.querySelectorAll('nav[aria-label="On this page"] a')].map((a) => a.textContent)).toEqual(['About', 'Contact'])
   })
 })
 

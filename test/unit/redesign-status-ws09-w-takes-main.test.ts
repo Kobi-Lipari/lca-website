@@ -145,7 +145,11 @@ describe('REDESIGN_STATUS.md, checkpoint W taking main in: the parts against the
       '`REDESIGN_STATUS.md`, in three places', '`test/unit/api-split-modules.test.ts`', '`test/unit/routes.test.ts`', '`test/unit/club-pages-no-dates.test.tsx`',
       '`REGION_HELP_SHOWN_KEY` is left out', 'Nothing of either side was dropped', 'checked file by file against each parent', '`git diff --stat 18634b8` ends', '`git diff --stat 216e7ae` ends',
     ]) expect(holds, piece).toContain(piece)
-    expect(read('test/unit/routes.test.ts')).toContain('expect(real.filter((r) => r.startsWith(\'api/\')).length).toBe(110)')
+    // 111 since checkpoint X took checkpoint W in: checkpoint X's two routes beside the mail work's four.
+    // Moved at WS09 step 28, whose two routes are the 112th and 113th: 111 before it, a later figure now.
+    // Moved at WS09 step 31, whose two routes are the 116th and 117th: 115 before it.
+    // Moved when the newsletter's Send joined main: its route is the 118th, 117 before it.
+    expect(read('test/unit/routes.test.ts')).toContain('expect(real.filter((r) => r.startsWith(\'api/\')).length).toBe(118)')
     expect(read('test/unit/api-split-modules.test.ts')).toContain('\'/api/clubs/*/page\'')
     expect(read('test/unit/club-pages-no-dates.test.tsx')).toContain('import type { ClubPageResponse, RegionClub, WorkspaceRegionResponse } from \'@domain/contracts\'')
   })
@@ -173,7 +177,8 @@ describe('REDESIGN_STATUS.md, checkpoint W taking main in: the parts against the
     // main's migrations after 0072 move the newest on, so it is read from the baseline test that holds it; the block's words stand.
     expect(migrations.at(-1)).toBe(/expect\(sql\.at\(-1\)\)\.toBe\('(\d{4}_\w+\.sql)'\)/.exec(read('test/unit/drizzle-baseline.test.ts'))?.[1])
     expect(migrations).toContain('0072_regions_by_seat.sql')
-    expect(migrations.some((name) => name.startsWith('0071'))).toBe(false)
+    // Since checkpoint X took checkpoint W in, its rate limits hold 0071, beside the regions' 0072.
+    expect(migrations.filter((name) => name.startsWith('0071'))).toEqual(['0071_rate_limits.sql'])
     expect(read('src/areas/clubs/components/ClubEditor.tsx')).toContain('<PagePreview')
     expect(read('src/areas/clubs/components/ClubEditor.tsx')).toContain('EditorHelpMark')
   })
@@ -190,13 +195,19 @@ describe('REDESIGN_STATUS.md, checkpoint W taking main in: the parts against the
       if (!file.endsWith('.tsx')) expect(casesIn(file), file).toBe(count)
     }
     expect(subBullets(pins)).toHaveLength(7)
+    // The figures read from the files that hold them, so a later route or page moves nothing here: 109 and 41 at this step.
+    const countLine = /expect\(real\.filter\(\(r\) => r\.startsWith\('api\/'\)\)\.length\)\.toBe\((\d+)\)/.exec(read('test/unit/routes.test.ts'))
+    expect(Number(countLine?.[1])).toBeGreaterThanOrEqual(109)
     for (const n of [20, 21, 22, 23, 24]) {
-      expect(read(`test/unit/redesign-status-ws09-step${n}.test.ts`), String(n)).toContain('expect(read(\'test/unit/routes.test.ts\')).toContain(\'expect(real.filter((r) => r.startsWith(\\\'api/\\\')).length).toBe(110)\')')
+      expect(read(`test/unit/redesign-status-ws09-step${n}.test.ts`), String(n)).toContain(`expect(read('test/unit/routes.test.ts')).toContain('${(countLine?.[0] ?? '').replace(/'/g, '\\\'')}')`)
     }
-    expect(read('test/unit/app-routes.test.tsx')).toContain('expect(pages.length).toBe(41)')
-    expect(read('test/unit/redesign-status-ws09-step21.test.ts')).toContain('expect(read(\'test/unit/app-routes.test.tsx\')).toContain(\'expect(pages.length).toBe(41)\')')
+    const pagesLine = /expect\(pages\.length\)\.toBe\((\d+)\)/.exec(read('test/unit/app-routes.test.tsx'))
+    expect(Number(pagesLine?.[1])).toBeGreaterThanOrEqual(41)
+    expect(read('test/unit/redesign-status-ws09-step21.test.ts')).toContain(`expect(read('test/unit/app-routes.test.tsx')).toContain('${pagesLine?.[0] ?? ''}')`)
     expect(read('test/unit/redesign-status-ws09-step20.test.ts')).toContain('\'### WS09 aside: how Thursday\\\'s changes reached main\'')
-    expect(read('test/unit/redesign-status-ws09-help-marks.test.ts')).toContain('on its own pull request; steps 1 to 14 and 16 to \')')
+    // Since checkpoint X took checkpoint W in, the Help test holds the two pieces on each side of checkpoint X's clauses.
+    expect(read('test/unit/redesign-status-ws09-help-marks.test.ts')).toContain('on its own pull request; \')')
+    expect(read('test/unit/redesign-status-ws09-help-marks.test.ts')).toContain('\'; steps 1 to 14 and 16 to \'')
     if (latest) expect(casesIn('test/unit/nav.test.ts')).toBe(43)
     if (latest) expect(casesIn('test/unit/club-pages-no-dates.test.tsx')).toBe(9)
     if (latest) expect(casesIn(PREVIEW_TEST)).toBe(3)

@@ -13,9 +13,9 @@
 // them, and a long run with no space in it, such as a web address, breaks
 // inside the column rather than widening the page.
 //
-// Two buttons: Contact the club, which leads where today's club page sends a
-// visitor while the club's address is hidden (the site's contact page) until
-// the page's own Contact section is built, and Share, which opens the
+// Two buttons: Contact the club, which leads to the page's own Contact form
+// (WS09 step 26; it led to the site's contact page until then) with the
+// focus on the form's heading, and Share, which opens the
 // visitor's own share sheet where the browser has one and otherwise copies
 // the page's address, and says what happened in words in a status beside
 // it. That status is the page's one status: the page holds what it says, so
@@ -25,11 +25,10 @@
 // Drawn in the club editor's preview column (compact), the cover is smaller,
 // the name is words rather than a heading, and there are no buttons.
 import type { Ref } from 'react'
-import { Link } from 'react-router-dom'
 import { CalendarDays, Mail, Share2 } from 'lucide-react'
 
 import { cn } from '@/lib/utils'
-import { CONTROL, cityLine, clubInitials, copyLink, pageLink } from '@/areas/clubs/clubPage'
+import { CONTROL, SECTION_IDS, cityLine, clubInitials, copyLink, focusContactForm, pageLink } from '@/areas/clubs/clubPage'
 import type { ClubPageResponse } from '@domain/contracts'
 
 /** The cover's quiet pattern of squares, a lighter wash over the club's colour on its right. */
@@ -121,10 +120,10 @@ function CoverButtons({ name, slug, said, say }: { name: string; slug: string; s
   return (
     <div className="flex flex-col gap-2 @xl:items-end @xl:self-end @xl:pb-1">
       <div className="flex flex-wrap items-center gap-3">
-        <Link to="/contact" className={cn(CONTROL, 'bg-ink text-ground hover:opacity-90')}>
+        <a href={`#${SECTION_IDS.contact}`} onClick={focusContactForm} className={cn(CONTROL, 'bg-ink text-ground hover:opacity-90')}>
           <Mail aria-hidden="true" className="size-4" />
           Contact the club
-        </Link>
+        </a>
         <button type="button" onClick={() => { void share() }} className={cn(CONTROL, 'border border-field bg-surface text-ink hover:bg-surface-2')}>
           <Share2 aria-hidden="true" className="size-4" />
           Share

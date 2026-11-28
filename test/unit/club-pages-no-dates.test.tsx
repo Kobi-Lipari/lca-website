@@ -262,6 +262,7 @@ const PAGE_ANSWER: ClubPageResponse = {
   statement: { text: PAGE_STATEMENT, told: PAGE_TOLD },
   places: [{ name: 'Example Library', street: null, note: 'Come at 6:45 PM on a first visit.', latitude: null, longitude: null }],
   contact: { name: 'Player One' },
+  suggestion: { goes_to: 'club_rep' },
   events: [], news: [], nearest: [],
 }
 

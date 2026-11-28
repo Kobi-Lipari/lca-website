@@ -13,6 +13,8 @@
 import { z } from 'zod'
 import { idSchema, isoDateSchema } from './common'
 import { registrationStatusSchema, tournamentStatusSchema } from './events'
+import { CONTACT_GOES_TO } from '../clubs/contactMessage'
+import { SUGGESTION_GOES_TO } from '../clubs/suggestion'
 
 /** The sections a club page names, in its nav's order (domain/clubs/sections.ts). */
 export const clubPageSectionSchema = z.enum(['about', 'when_and_where', 'events', 'news', 'photos', 'contact'])
@@ -71,8 +73,23 @@ export const clubPageResponseSchema = z.strictObject({
     latitude: z.number().nullable(),
     longitude: z.number().nullable(),
   })).max(2),
-  /** The contact name the club chose to show; its email is never answered. */
-  contact: z.strictObject({ name: z.string().nullable() }),
+  /**
+   * The contact name the club chose to show; its email is never answered. goes_to says where a message from the
+   * page's Contact form goes (WS09 step 26), as one word of a closed list: the club's own address, the region's
+   * representative, or LCA. It never names a person, an address, how many people, or whether an address works.
+   */
+  contact: z.strictObject({ name: z.string().nullable(), goes_to: z.enum(CONTACT_GOES_TO) }),
+  /**
+   * Where a suggestion from Suggest an update goes (WS09 step 28): the club's rep, the region's representative or LCA,
+   * as one word, never who and never an address.
+   */
+  suggestion: z.strictObject({ goes_to: z.enum(SUGGESTION_GOES_TO) }),
+  /**
+   * Whether the page invites a member to Ask to be its named rep (WS09 step 31): true while the club has no named rep.
+   * It says no more than suggestion.goes_to already does, and never who; the page draws the invitation only with
+   * clubPagesOn(), and the request it opens is refused while CLUB_PAGES_ON is unset.
+   */
+  rep_wanted: z.boolean().optional(),
   events: z.array(clubPageEventSchema),
   news: z.array(z.strictObject({
     id: idSchema,

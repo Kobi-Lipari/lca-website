@@ -184,12 +184,14 @@ describe('a long run with no space in it never widens the page', () => {
 describe('the written page\'s sections carry the drawn page\'s ids', () => {
   it('both sides read the same three ids, and the drawn page keeps its fourth for News', () => {
     expect(PAGE_SECTION_IDS).toEqual({ about: 'about', when_and_where: 'when-and-where', events: 'events' })
-    expect(SECTION_IDS).toEqual({ ...PAGE_SECTION_IDS, news: 'news' })
+    expect(SECTION_IDS).toEqual({ ...PAGE_SECTION_IDS, news: 'news', contact: 'contact' })
     const body = clubPageBody(answer())
     expect(body).toContain(`<section id="${SECTION_IDS.about}"><h2>About Example Chess Club</h2>`)
     expect(body).toContain(`<section id="${SECTION_IDS.when_and_where}"><h2>When and where Example Chess Club meets</h2>`)
     expect(body).toContain(`<section id="${SECTION_IDS.events}"><h2>Events</h2>`)
-    expect(body.match(/<section[^>]*>/g)).toEqual(['<section id="about">', '<section id="when-and-where">', '<section id="events">'])
+    // Since checkpoint X took checkpoint W in, the written page also writes Contact, as WS09 step 26 built it: with no id.
+    expect(body).toContain('<section><h2>Contact</h2>')
+    expect(body.match(/<section[^>]*>/g)).toEqual(['<section id="about">', '<section id="when-and-where">', '<section id="events">', '<section>'])
   })
 })
 

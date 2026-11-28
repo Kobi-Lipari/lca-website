@@ -21,6 +21,12 @@
 // says so in words, "Event in LCA review" or "2 events in LCA review", from
 // the server's count (`inReview`, sent only while REGION_EVENTS_ON is set);
 // with none in review, or with the switch off, the card is as before.
+//
+// While a visitor's suggestion for the club is open (WS09 step 28) the card
+// says so in words, "1 suggestion · 9 days" (the count and the oldest's age),
+// and its button reads "Answer it, then confirm" in place of Still accurate:
+// a press takes the focus to the club's first suggestion in My region's
+// to-do list. With none open the card is as before.
 import { Link } from 'react-router-dom'
 
 import { Button } from '@/components/ui/button'
@@ -28,6 +34,7 @@ import { LCA } from '@/lib/brand'
 import { initialsOf } from '@/areas/clubs/region'
 import type { RegionClub } from '@domain/contracts'
 import { regionEventsOn } from '@/areas/clubs/switches'
+import { ANSWER_FIRST, openSuggestionsWords } from '@domain/clubs/suggestion'
 
 /** A control on the card: 44px tall, a visible ring on focus. */
 const CONTROL = 'min-h-11 px-4 whitespace-normal'
@@ -51,16 +58,20 @@ function inReviewWords(n: number): string {
   return n === 1 ? 'Event in LCA review' : `${n} events in LCA review`
 }
 
-export function RegionClubCard({ club, busy, error, onConfirm }: {
+export function RegionClubCard({ club, busy, error, onConfirm, onAnswer }: {
   club: RegionClub
   /** A confirm for this club is on the way. */
   busy: boolean
   /** Why the last confirm for this club failed, in words, or null. */
   error: string | null
   onConfirm: (club: RegionClub) => void
+  /** Takes the keeper to the club's first open suggestion; called only while one is open. */
+  onAnswer?: (club: RegionClub) => void
 }) {
   const nameId = `region-club-${club.id}`
   const statement = club.statement?.trim() ?? ''
+  const open = club.openItems
+  const oldest = open.reduce((most, item) => Math.max(most, item.ageDays), 0)
   return (
     <article aria-labelledby={nameId} className="flex h-full min-w-0 flex-col overflow-hidden rounded-xl border bg-card shadow-sm">
       <div aria-hidden="true" className="h-2" style={{ backgroundColor: bandOf(club.color) }} />
@@ -87,17 +98,31 @@ export function RegionClubCard({ club, busy, error, onConfirm }: {
         {regionEventsOn() && (club.inReview ?? 0) > 0 && (
           <p className="break-words text-sm font-medium text-ink">{inReviewWords(club.inReview ?? 0)}</p>
         )}
+        {open.length > 0 && (
+          <p data-slot="region-open-items" className="break-words text-sm font-semibold text-ink">{openSuggestionsWords(open.length, oldest)}</p>
+        )}
         {error && <p className="break-words text-sm font-medium text-ink">{error}</p>}
         <div className="flex flex-wrap gap-2">
-          <Button
-            type="button"
-            className={CONTROL}
-            aria-label={`Still accurate: ${club.name}`}
-            aria-disabled={busy || undefined}
-            onClick={() => { if (!busy) onConfirm(club) }}
-          >
-            Still accurate
-          </Button>
+          {open.length > 0 ? (
+            <Button
+              type="button"
+              className={CONTROL}
+              aria-label={`${ANSWER_FIRST}: ${club.name}`}
+              onClick={() => onAnswer?.(club)}
+            >
+              {ANSWER_FIRST}
+            </Button>
+          ) : (
+            <Button
+              type="button"
+              className={CONTROL}
+              aria-label={`Still accurate: ${club.name}`}
+              aria-disabled={busy || undefined}
+              onClick={() => { if (!busy) onConfirm(club) }}
+            >
+              Still accurate
+            </Button>
+          )}
           <Button asChild variant="outline" className={CONTROL}>
             <Link to={`/workspace/region/clubs/${encodeURIComponent(club.id)}`} aria-label={`Open: ${club.name}`}>Open</Link>
           </Button>
