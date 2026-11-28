@@ -281,7 +281,7 @@ describe('REDESIGN_STATUS.md, WS09 step 22: the parts against the files', () => 
     for (const [file] of MOVED) expect(pins, file).toContain(`\`${file}\``)
     expect(pins).toContain('no file changes its count of cases')
     for (const [file, count] of MOVED.slice(0, 3)) expect((read(file).match(/^\s*it\(/gm) ?? []).length + (read(file).match(/^\s*it\.each\(/gm) ?? []).length, file).toBeLessThanOrEqual(count)
-    expect(read('test/unit/routes.test.ts')).toContain('expect(real.filter((r) => r.startsWith(\'api/\')).length).toBe(109)')
+    expect(read('test/unit/routes.test.ts')).toContain('expect(real.filter((r) => r.startsWith(\'api/\')).length).toBe(110)')
     expect(read('test/unit/contracts-pending.ts')).toContain('export const PENDING_COUNT = 104')
     if (!latest) return
     expect(Object.values(contracts).reduce((n, route) => n + Object.keys(route).length, 0)).toBe(41)

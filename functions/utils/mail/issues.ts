@@ -5,7 +5,9 @@
 // column holds): a list's open letter, its save, the start of a new one and
 // the last ones. The four methods under functions/api/admin/mail/newsletter/
 // call these behind requireListMailer and MAIL_PAGE_ON, and so, since page
-// step 6, does the test of the stored letter (letterToTest), which only reads.
+// step 6, does the test of the stored letter (letterToTest), which only reads,
+// and the page's real Send, which reads its letter with letterToTest too and
+// is held to sendGap before functions/utils/mail/lists.ts marks and copies it.
 //
 // - One open letter for a list: campaign_id and set_aside_at both empty,
 //   held by the unique index newsletter_issues_one_open, and each insert
@@ -218,7 +220,7 @@ export function startRefusalWords(reason: Refusal['reason']): string {
 }
 
 /** A letter's state as a write that changed nothing reads it: its last write, its send or its setting aside, and who did each. */
-interface StateRow {
+export interface StateRow {
   version: number
   updated_at: string
   campaign_id: string | null
@@ -228,8 +230,11 @@ interface StateRow {
   sent_by: string | null
 }
 
-/** One letter of a list by its id, as StateRow, with its last writer's name and its send's maker and time; nothing for a letter not the list's. */
-const stateStatement = (db: D1Database, id: string, listId: string) =>
+/**
+ * One letter of a list by its id, as StateRow, with its last writer's name and its send's maker and time; nothing for a
+ * letter not the list's. A save, a start and the page's send (createLetterCampaign) each read it in their own batch.
+ */
+export const letterStateStatement = (db: D1Database, id: string, listId: string) =>
   db
     .prepare(
       `SELECT i.version, i.updated_at, i.campaign_id, i.set_aside_at, m.full_name AS saved_by, c.created_at AS sent_at, s.full_name AS sent_by
@@ -242,7 +247,7 @@ const stateStatement = (db: D1Database, id: string, listId: string) =>
     .bind(id, listId)
 
 /**
- * The letter a test names, read as it is stored, when it is the list's open letter at the version given; else why not,
+ * The letter a test or a send names, read as it is stored, when it is the list's open letter at the version given; else why not,
  * in the refusal a save at that version gets (refusalOf): sent, set aside, or written to since; or not found for a
  * letter that is not the list's, whether or not it is another's. One query, and nothing written.
  */
@@ -268,8 +273,22 @@ export function bodyHasWords(bodyHtml: string): boolean {
   return bodyHtml.replace(/<\/?(?:p|br|strong|em|h2|h3|ul|ol|li|hr|a)(?: [^<>]*)?>/g, ' ').replace(/&nbsp;|&#160;|&#xa0;/gi, ' ').trim() !== ''
 }
 
+/**
+ * What a letter lacks before the page's real Send, or null when it lacks nothing: a subject, and words a person wrote.
+ * A starter's headings left untouched (untouchedStarter) are not words a person wrote, so such a letter is refused as
+ * one with no words, where a test of it is not. Where the send and the page read it the same way,
+ * src/areas/admin/newsletter/useIssue.ts keeps the page's copy.
+ */
+export function sendGap(letter: Pick<Letter, 'subject' | 'bodyHtml'>): 'subject' | 'words' | 'both' | null {
+  const noSubject = letter.subject.trim() === ''
+  const words = bodyHasWords(letter.bodyHtml) && !untouchedStarter(letter.bodyHtml)
+  if (noSubject && !words) return 'both'
+  if (noSubject) return 'subject'
+  return words ? null : 'words'
+}
+
 /** Why a write to a letter changed nothing, as the letter now stands: it was sent, it was set aside, or it was written to since it was read. */
-function refusalOf(row: StateRow): Refusal {
+export function refusalOf(row: StateRow): Refusal {
   if (row.campaign_id !== null) return { reason: 'sent', changedBy: nameOf(row.sent_by), changedAt: row.sent_at ?? row.updated_at }
   if (row.set_aside_at !== null) return { reason: 'set_aside', changedBy: nameOf(row.saved_by), changedAt: row.set_aside_at }
   return { reason: 'changed', changedBy: nameOf(row.saved_by), changedAt: row.updated_at }
@@ -331,7 +350,7 @@ export async function saveIssue(db: D1Database, args: SaveArgs): Promise<SaveRes
           WHERE id = ?1 AND list_id = ?2 AND version = ?3 AND campaign_id IS NULL AND set_aside_at IS NULL`,
       )
       .bind(args.id, args.listId, args.version, args.monthLabel, args.subject, args.preheader, args.bodyHtml, args.by),
-    stateStatement(db, args.id, args.listId),
+    letterStateStatement(db, args.id, args.listId),
   ])
   const row = (read.results as StateRow[])[0]
   if (!row) return { notFound: true }
@@ -439,7 +458,7 @@ export async function startIssue(db: D1Database, args: StartArgs): Promise<Start
   }
 
   const reads = [openStatement(db, args.listId)]
-  if (open !== null) reads.push(stateStatement(db, open.letter.id, args.listId))
+  if (open !== null) reads.push(letterStateStatement(db, open.letter.id, args.listId))
   const results = await db.batch([...statements, ...reads])
   const wrote = results[statements.length - 1]?.meta.changes === 1
   const now = (results[statements.length]?.results as LetterRow[] | undefined)?.[0]

@@ -10,7 +10,8 @@
 // "Could not save" with Try again, the server's own words for a letter it
 // refuses, and who changed, sent or replaced the letter and when, with
 // "Show their letter", which asks once before it replaces the person's
-// words. The quiet states are read out politely and a refusal at once, every
+// words; for a letter that was sent, "Start the next letter", which asks
+// in the same way. The quiet states are read out politely and a refusal at once, every
 // sentence of it in the one region, what follows it and a read of their
 // letter that failed among them, and neither takes the focus from where the
 // person is.
@@ -173,17 +174,24 @@ export function SavedLine({ line, onTryAgain, onShowTheirs, className }: SavedLi
           Try again
         </button>
       )}
-      {conflict && conflict.reason !== 'sent' && (
+      {/*
+        A letter that was sent cannot be shown in place of the person's words, so its step is the next letter, read as
+        "Show their letter" reads the open one, and asked first in the same form, since the saving has stopped and their
+        words may not be on the server.
+      */}
+      {conflict && (
         <DialogPrimitive.Root open={asking} onOpenChange={setAsking}>
-          <DialogPrimitive.Trigger className={LINE_BUTTON}>Show their letter</DialogPrimitive.Trigger>
+          <DialogPrimitive.Trigger className={LINE_BUTTON}>{conflict.reason === 'sent' ? 'Start the next letter' : 'Show their letter'}</DialogPrimitive.Trigger>
           <DialogPrimitive.Portal>
             <DialogPrimitive.Overlay className="fixed inset-0 z-[80] bg-brand-navy/55" />
             <DialogPrimitive.Content
               className="fixed left-1/2 top-1/2 z-[80] w-[min(28rem,calc(100vw-2rem))] -translate-x-1/2 -translate-y-1/2 rounded-xl border border-border bg-background p-5 text-ink shadow-xl outline-none"
             >
-              <DialogPrimitive.Title className="text-lg font-bold">Show their letter?</DialogPrimitive.Title>
+              <DialogPrimitive.Title className="text-lg font-bold">{conflict.reason === 'sent' ? 'Start the next letter?' : 'Show their letter?'}</DialogPrimitive.Title>
               <DialogPrimitive.Description className="mt-2 text-[15px] text-ink">
-                Their letter takes the place of your words on this page. Copy anything of yours you want to keep first.
+                {conflict.reason === 'sent'
+                  ? 'The next letter takes the place of your words on this page. Copy anything of yours you want to keep first.'
+                  : 'Their letter takes the place of your words on this page. Copy anything of yours you want to keep first.'}
               </DialogPrimitive.Description>
               <div className="mt-5 flex flex-wrap justify-end gap-2">
                 <DialogPrimitive.Close className="inline-flex min-h-11 items-center rounded-lg border border-muted-foreground bg-background px-4 text-[15px] font-semibold text-ink outline-none focus-visible:ring-3 focus-visible:ring-focus">
@@ -197,7 +205,7 @@ export function SavedLine({ line, onTryAgain, onShowTheirs, className }: SavedLi
                     onShowTheirs()
                   }}
                 >
-                  Show their letter
+                  {conflict.reason === 'sent' ? 'Start the next letter' : 'Show their letter'}
                 </button>
               </div>
             </DialogPrimitive.Content>

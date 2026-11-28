@@ -12,7 +12,8 @@
 //
 // Since WS16 part two's page step 6, the newsletter's own page reads the
 // refusals of a test of the stored letter, which the server answers and the
-// page says for a letter it holds no row for yet.
+// page says for a letter it holds no row for yet. The page's real Send of the
+// stored letter to the newsletter list reads its refusals here too.
 
 /**
  * The send's refusal while the site sends through Resend, and the reason beside Send on Group email's newsletter tab,
@@ -28,13 +29,33 @@ export const TEST_NO_SUBJECT = 'This letter has no subject yet, so no test was s
 export const TEST_NO_WORDS = 'This letter has no words yet, so no test was sent. Write the letter first.'
 export const TEST_NO_SUBJECT_OR_WORDS = 'This letter has no subject and no words yet, so no test was sent. Add a subject and write the letter first.'
 
+/** The send's refusal, and the page's, while nobody is on the newsletter list. */
+export const NOBODY_ON_THE_LIST = 'Nobody is on the newsletter list right now.'
+
+/** The page's Send of the stored letter refused, with nothing sent: the letter has no subject, no words, or neither. */
+export const SEND_NO_SUBJECT = 'This letter has no subject yet, so nothing was sent. Add a subject first.'
+export const SEND_NO_WORDS = 'This letter has no words yet, so nothing was sent. Write the letter first.'
+export const SEND_NO_SUBJECT_OR_WORDS = 'This letter has no subject and no words yet, so nothing was sent. Add a subject and write the letter first.'
+
+/** The page's Send refused, with nothing sent, for a letter changed, replaced or sent since it was read. */
+export const SEND_CHANGED = 'Nothing was sent: someone else has changed, replaced or sent this letter.'
+
+/** About how much longer an email is than EMAIL_MAX_BYTES: the bytes over, rounded up to the next hundred, with commas. */
+function aboutFigure(overBytes: number): string {
+  const about = Math.max(1, Math.ceil(overBytes / 100)) * 100
+  return String(about).replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+}
+
 /**
  * A test of the stored letter refused, with nothing sent, for an email longer as drawn than the most Gmail shows whole
  * (EMAIL_MAX_BYTES, the navy layout's own limit), with about how much longer: the bytes over, rounded up to the next
  * hundred and written with commas, as characters, which is what they are for a letter's own words.
  */
 export function testTooLong(overBytes: number): string {
-  const about = Math.max(1, Math.ceil(overBytes / 100)) * 100
-  const figure = String(about).replace(/\B(?=(\d{3})+(?!\d))/g, ',')
-  return `This email is too long: it is about ${figure} characters over what Gmail shows whole. Make the letter shorter, then send a test again.`
+  return `This email is too long: it is about ${aboutFigure(overBytes)} characters over what Gmail shows whole. Make the letter shorter, then send a test again.`
+}
+
+/** The page's Send refused, with nothing sent, for an email longer as drawn than the most Gmail shows whole, as testTooLong says it. */
+export function sendTooLong(overBytes: number): string {
+  return `This email is too long: it is about ${aboutFigure(overBytes)} characters over what Gmail shows whole. Make the letter shorter, then send it.`
 }

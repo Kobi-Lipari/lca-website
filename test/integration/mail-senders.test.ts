@@ -16,8 +16,9 @@
 //   both ship unset (the owner's decision 82) and only an LCA admin is asked;
 // - everyone else refused, an LCA Observer or Officer without either seat
 //   among them, with LIST_MAILERS_ONLY, and nothing written or sent.
-// MAIL_LISTS_ON, MAIL_PAGE_ON and MAIL_SENDER are read through getters on the
-// mocked functions/utils/mail/switches, set before every case. Nothing here
+// MAIL_LISTS_ON, MAIL_PAGE_ON, MAIL_PAGE_SEND_ON and MAIL_SENDER are read
+// through getters on the mocked functions/utils/mail/switches, set before
+// every case. Nothing here
 // reaches an outside service: the harness answers the mail service and the
 // sign-in service. Every name, address and subject here is made up.
 import { env } from 'cloudflare:test'
@@ -28,6 +29,7 @@ import { onRequestPost as previewPost } from '../../functions/api/admin/campaign
 import { onRequestPost as campaignTestPost } from '../../functions/api/admin/campaigns/test'
 import { onRequestGet as newsletterGet, onRequestPost as newsletterPost } from '../../functions/api/admin/mail/newsletter'
 import { onRequestGet as issueGet, onRequestPut as issuePut } from '../../functions/api/admin/mail/newsletter/issue'
+import { onRequestPost as issueSendPost } from '../../functions/api/admin/mail/newsletter/issue/send'
 import { onRequestPost as issueStartPost } from '../../functions/api/admin/mail/newsletter/issue/start'
 import { onRequestGet as issuesGet } from '../../functions/api/admin/mail/newsletter/issues'
 import { onRequestPost as stopPost } from '../../functions/api/admin/mail/newsletter/stop'
@@ -44,7 +46,14 @@ import { seedAdmin, seedMember, seedPresident, seedSeat } from './factories'
 import { emailOutbox, fetchCount, invoke, resetHarness, type Aal, type InvokeOptions } from './harness'
 import { countingDb } from './mailRuns'
 
-const flags = vi.hoisted(() => ({ listsOn: true, pageOn: true, sender: 'resend', presidentNeedsSecondFactor: true, mediaManagerNeedsSecondFactor: true }))
+const flags = vi.hoisted(() => ({
+  listsOn: true,
+  pageOn: true,
+  sendOn: true,
+  sender: 'resend',
+  presidentNeedsSecondFactor: true,
+  mediaManagerNeedsSecondFactor: true,
+}))
 vi.mock('../../functions/utils/mail/switches', async (importOriginal) => {
   const real = await importOriginal<typeof import('../../functions/utils/mail/switches')>()
   return {
@@ -54,6 +63,9 @@ vi.mock('../../functions/utils/mail/switches', async (importOriginal) => {
     },
     get MAIL_PAGE_ON() {
       return flags.pageOn
+    },
+    get MAIL_PAGE_SEND_ON() {
+      return flags.sendOn
     },
     get MAIL_SENDER() {
       return flags.sender
@@ -102,6 +114,7 @@ const NEWSLETTER: readonly Call[] = [
   ['GET /api/admin/mail/newsletter/issue', () => ({ handler: issueGet, options: {} })],
   ['PUT /api/admin/mail/newsletter/issue', () => ({ handler: issuePut, options: { method: 'PUT', body: { id: 'issue-sample', version: 1, bodyHtml: SAMPLE.bodyHtml } } })],
   ['POST /api/admin/mail/newsletter/issue/start', () => ({ handler: issueStartPost, options: { method: 'POST', body: {} } })],
+  ['POST /api/admin/mail/newsletter/issue/send', () => ({ handler: issueSendPost, options: { method: 'POST', body: { issueId: 'issue-sample', version: 1 } } })],
   ['GET /api/admin/mail/newsletter/issues', () => ({ handler: issuesGet, options: {} })],
   ['GET /api/admin/mail/newsletter/templates', () => ({ handler: templatesGet, options: {} })],
   ['POST /api/admin/mail/newsletter/templates', () => ({ handler: templatesPost, options: { method: 'POST', body: { name: 'Sample template', bodyHtml: SAMPLE.bodyHtml } } })],
@@ -170,6 +183,9 @@ beforeEach(async () => {
   resetHarness()
   flags.listsOn = true
   flags.pageOn = true
+  flags.sendOn = true
+  // With 'resend', issue/send answers 409 WAITS_FOR_SES to everyone it admits here, which shows only that the guard
+  // let them by; test/integration/newsletter-page-send.test.ts pins the real sends of those it admits.
   flags.sender = 'resend'
   // Both constants set, so the cases below hold the rule as it was to the byte; the cases at the foot turn them.
   flags.presidentNeedsSecondFactor = true
@@ -185,9 +201,9 @@ beforeEach(async () => {
 })
 
 describe('who may send, on Group email\'s five campaign methods and every newsletter method', () => {
-  it('lists the five campaign methods and twelve newsletter methods, which are every caller of the two guards', () => {
+  it('lists the five campaign methods and thirteen newsletter methods, which are every caller of the two guards', () => {
     expect(CAMPAIGNS).toHaveLength(5)
-    expect(NEWSLETTER).toHaveLength(12)
+    expect(NEWSLETTER).toHaveLength(13)
   })
 
   it('answers 401 signed out on both', async () => {

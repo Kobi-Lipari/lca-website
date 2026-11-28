@@ -3,8 +3,9 @@
 // The server half of the mail switches: constants, their type and their
 // comments, and nothing else. MAIL_LISTS_ON is the server half of
 // mailLists in src/lib/features.ts, which the functions and the workers
-// cannot read, and MAIL_PAGE_ON that of mailPage, the newsletter's own
-// page; MAIL_SENDER names the one service that sends every email.
+// cannot read, MAIL_PAGE_ON that of mailPage, the newsletter's own page,
+// and MAIL_PAGE_SEND_ON that of mailPageSend, the real Send on that page;
+// MAIL_SENDER names the one service that sends every email.
 //
 // Two settings follow no switch: WORKERS_PLAN, the hosting plan the mail
 // engine's budgets are sized for, and COMPLAINT_STOPS_OTHER_SENDERS, what a
@@ -41,6 +42,19 @@ export const MAIL_LISTS_ON = true
  * switch-on change; turned off again with mailPage, in one change, and the letters stay in their table.
  */
 export const MAIL_PAGE_ON = true
+
+/**
+ * Set: the real Send on the newsletter's own page on the server, POST
+ * /api/admin/mail/newsletter/issue/send, which answers 404 while it is unset, before
+ * reading anything. Turned on with mailPageSend in src/lib/features.ts, in the same
+ * change, and only while MAIL_PAGE_ON is set; test/unit/mail-switches.test.ts holds
+ * the two equal and holds it to MAIL_PAGE_ON. Whatever it says, the send is refused
+ * while MAIL_SENDER is 'resend'. Set since the Send's own switch-on change; turned off
+ * again with mailPageSend, in one change, and a send already started finishes.
+ * While a send is on its way, turn it off with this pair, never by reverting the change
+ * that set it: a revert would leave that send to finish in Group email's plain look.
+ */
+export const MAIL_PAGE_SEND_ON = true
 
 /**
  * Which service sends every email: 'ses' (Amazon SES) since the cutover, or 'resend' after a move back. It changes

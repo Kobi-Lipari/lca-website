@@ -23,8 +23,9 @@
 //   and no seat is read.
 // - (c) GET /api/me/media-manager reads true for them by the same rule.
 // - (d) Every Admin handler swept as an officer who holds the seat: the
-//   newsletter's files (part one's three, and the page's three while
-//   MAIL_PAGE_ON is set, as it ships) answer, and every other method answers exactly
+//   newsletter's files (part one's three, the page's three and its saved
+//   templates while MAIL_PAGE_ON is set, and its Send while
+//   MAIL_PAGE_SEND_ON is, as each ships) answer, and every other method answers exactly
 //   what it answers an officer without the seat, writing the same and
 //   sending nothing.
 // - (e) requireMailer and today's five campaign methods do not change: an
@@ -250,10 +251,13 @@ describe('(c) GET /api/me/media-manager', () => {
 
 describe('(d) every Admin handler, swept as an officer who holds the seat', () => {
   const modules = import.meta.glob('../../functions/api/admin/**/*.ts', { eager: true }) as Record<string, Record<string, unknown>>
-  // Part one's three files, then the page's three and its saved templates, which answer with MAIL_PAGE_ON set as it ships.
+  // Part one's three files, then the page's three and its saved templates, which answer with MAIL_PAGE_ON set as it ships,
+  // and the page's real Send, mail/newsletter/issue/send.ts, which answers with MAIL_PAGE_SEND_ON set as it ships since
+  // the Send's own switch-on change. Were MAIL_PAGE_SEND_ON unset again, the Send would answer 404 to every caller
+  // before the guard, and would leave this list and the methods that answer the seat's holder below.
   const NEWSLETTER_FILES = [
     'mail/newsletter.ts', 'mail/newsletter/stop.ts', 'mail/newsletter/test.ts',
-    'mail/newsletter/issue.ts', 'mail/newsletter/issue/start.ts', 'mail/newsletter/issues.ts', 'mail/newsletter/templates.ts',
+    'mail/newsletter/issue.ts', 'mail/newsletter/issue/start.ts', 'mail/newsletter/issue/send.ts', 'mail/newsletter/issues.ts', 'mail/newsletter/templates.ts',
   ]
   const METHODS: Record<string, string> = { Get: 'GET', Post: 'POST', Put: 'PUT', Patch: 'PATCH', Delete: 'DELETE' }
   const ID = 'sample-id'
@@ -302,7 +306,8 @@ describe('(d) every Admin handler, swept as an officer who holds the seat', () =
   const ANSWERING = [
     'DELETE mail/newsletter/templates.ts',
     'GET mail/newsletter.ts', 'GET mail/newsletter/issue.ts', 'GET mail/newsletter/issues.ts', 'GET mail/newsletter/templates.ts', 'POST mail/newsletter.ts',
-    'POST mail/newsletter/issue/start.ts', 'POST mail/newsletter/stop.ts', 'POST mail/newsletter/templates.ts', 'POST mail/newsletter/test.ts', 'PUT mail/newsletter/issue.ts',
+    'POST mail/newsletter/issue/send.ts', 'POST mail/newsletter/issue/start.ts', 'POST mail/newsletter/stop.ts', 'POST mail/newsletter/templates.ts', 'POST mail/newsletter/test.ts',
+    'PUT mail/newsletter/issue.ts',
     'PUT mail/newsletter/templates.ts',
   ]
 

@@ -66,6 +66,7 @@ import {
   newsletterIssueSaveRequestSchema,
   newsletterIssuesResponseSchema,
   newsletterIssueStartRequestSchema,
+  newsletterSendRequestSchema,
   newsletterTemplateRemovedResponseSchema,
   newsletterTemplateRemoveRequestSchema,
   newsletterTemplateRenameRequestSchema,
@@ -130,6 +131,9 @@ export const contracts = {
   },
   'admin/mail/newsletter/issue/start': {
     POST: { request: newsletterIssueStartRequestSchema, response: newsletterIssueResponseSchema },
+  },
+  'admin/mail/newsletter/issue/send': {
+    POST: { request: newsletterSendRequestSchema, response: newsletterResponseSchema },
   },
   'admin/mail/newsletter/issues': {
     GET: { response: newsletterIssuesResponseSchema },

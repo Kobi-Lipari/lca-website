@@ -145,7 +145,7 @@ describe('REDESIGN_STATUS.md, checkpoint W taking main in: the parts against the
       '`REDESIGN_STATUS.md`, in three places', '`test/unit/api-split-modules.test.ts`', '`test/unit/routes.test.ts`', '`test/unit/club-pages-no-dates.test.tsx`',
       '`REGION_HELP_SHOWN_KEY` is left out', 'Nothing of either side was dropped', 'checked file by file against each parent', '`git diff --stat 18634b8` ends', '`git diff --stat 216e7ae` ends',
     ]) expect(holds, piece).toContain(piece)
-    expect(read('test/unit/routes.test.ts')).toContain('expect(real.filter((r) => r.startsWith(\'api/\')).length).toBe(109)')
+    expect(read('test/unit/routes.test.ts')).toContain('expect(real.filter((r) => r.startsWith(\'api/\')).length).toBe(110)')
     expect(read('test/unit/api-split-modules.test.ts')).toContain('\'/api/clubs/*/page\'')
     expect(read('test/unit/club-pages-no-dates.test.tsx')).toContain('import type { ClubPageResponse, RegionClub, WorkspaceRegionResponse } from \'@domain/contracts\'')
   })
@@ -191,7 +191,7 @@ describe('REDESIGN_STATUS.md, checkpoint W taking main in: the parts against the
     }
     expect(subBullets(pins)).toHaveLength(7)
     for (const n of [20, 21, 22, 23, 24]) {
-      expect(read(`test/unit/redesign-status-ws09-step${n}.test.ts`), String(n)).toContain('expect(read(\'test/unit/routes.test.ts\')).toContain(\'expect(real.filter((r) => r.startsWith(\\\'api/\\\')).length).toBe(109)\')')
+      expect(read(`test/unit/redesign-status-ws09-step${n}.test.ts`), String(n)).toContain('expect(read(\'test/unit/routes.test.ts\')).toContain(\'expect(real.filter((r) => r.startsWith(\\\'api/\\\')).length).toBe(110)\')')
     }
     expect(read('test/unit/app-routes.test.tsx')).toContain('expect(pages.length).toBe(41)')
     expect(read('test/unit/redesign-status-ws09-step21.test.ts')).toContain('expect(read(\'test/unit/app-routes.test.tsx\')).toContain(\'expect(pages.length).toBe(41)\')')
