@@ -111,6 +111,6 @@ describe('the public Clubs page on a narrow phone', () => {
     expect(screen.getByRole('link', { name: 'Directions ↗' }).getAttribute('target')).toBe('_blank')
     // The count and the sort line above the list are as before.
     expect(screen.getByRole('heading', { level: 2, name: '2 clubs' })).toBeTruthy()
-    expect(screen.getByText(/^Sorted A.Z$/)).toBeTruthy()
+    expect(screen.getByText('Sorted A to Z')).toBeTruthy()
   })
 })
